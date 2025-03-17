@@ -31,7 +31,7 @@
 #ifndef _GAME_ENGINE_H_
 #define _GAME_ENGINE_H_
 
-#include "Common/SubsystemInterface.h"
+// #include "Common/SubsystemInterface.h"
 #include "Common/GameType.h"
 
 #define DEFAULT_MAX_FPS		45
@@ -58,7 +58,7 @@ class ParticleSystemManager;
 /**
  * The implementation of the game engine
  */
-class GameEngine : public SubsystemInterface
+class GameEngine //: public SubsystemInterface
 {
 
 public:
@@ -99,9 +99,9 @@ protected:
 	virtual ParticleSystemManager* createParticleSystemManager( void ) = 0;
 	virtual AudioManager *createAudioManager( void ) = 0;				///< Factory for Audio Manager
 
-	Int m_maxFPS;																									///< Maximum frames per second allowed
-  Bool m_quitting;  ///< true when we need to quit the game
-	Bool m_isActive;	///< app has OS focus.
+	Int m_maxFPS {};																									///< Maximum frames per second allowed
+	Bool m_quitting {};  ///< true when we need to quit the game
+	Bool m_isActive {};	///< app has OS focus.
 
 };
 inline void GameEngine::setQuitting( Bool quitting ) { m_quitting = quitting; }

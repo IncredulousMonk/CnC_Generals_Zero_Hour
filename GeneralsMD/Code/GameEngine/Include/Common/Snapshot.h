@@ -52,7 +52,7 @@ friend class XferCRC;
 public:
 	
 	Snapshot( void );
-	~Snapshot( void );
+	virtual ~Snapshot( void );
 
 protected:
 

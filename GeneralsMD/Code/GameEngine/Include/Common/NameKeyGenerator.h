@@ -46,7 +46,7 @@
 	determined at runtime. (The generated code is basically identical, of course.)
 */
 //------------------------------------------------------------------------------------------------- 
-enum NameKeyType
+enum NameKeyType: int
 {
 	NAMEKEY_INVALID					= 0,
 	NAMEKEY_MAX							= 1<<23,					// max ordinal value of a NameKey (some code relies on these fitting into 24 bits safely)
@@ -66,9 +66,13 @@ public:
 	Bucket();
 //~Bucket();
 
-	Bucket				*m_nextInSocket;
-	NameKeyType		m_key;
-	AsciiString		m_nameString;
+	// No copies allowed!
+	Bucket(const Bucket&) = delete;
+	Bucket& operator=(const Bucket&) = delete;
+
+	Bucket				*m_nextInSocket {};
+	NameKeyType		m_key {};
+	AsciiString		m_nameString {};
 };
 
 inline Bucket::Bucket() : m_nextInSocket(NULL), m_key(NAMEKEY_INVALID) { }
@@ -89,6 +93,10 @@ public:
 
 	NameKeyGenerator();
 	virtual ~NameKeyGenerator();
+
+	// No copies allowed!
+	NameKeyGenerator(const NameKeyGenerator&) = delete;
+	NameKeyGenerator& operator=(const NameKeyGenerator&) = delete;
 
 	virtual void init();
 	virtual void reset();

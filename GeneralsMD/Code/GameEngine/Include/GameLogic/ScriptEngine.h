@@ -134,6 +134,10 @@ public:
 	AttackPriorityInfo();
 	//~AttackPriorityInfo();
 
+	// No copies allowed!
+	AttackPriorityInfo(const AttackPriorityInfo&) = delete;
+	AttackPriorityInfo& operator=(const AttackPriorityInfo&) = delete;
+
 public:
 
 	void setPriority(const ThingTemplate *tThing, Int priority);
@@ -180,6 +184,10 @@ public:
 
 	SequentialScript();
 
+	// No copies allowed!
+	SequentialScript(const SequentialScript&) = delete;
+	SequentialScript& operator=(const SequentialScript&) = delete;
+
 protected:
 
 	// snapshot methods
@@ -225,6 +233,10 @@ public:
 	enum TFade {FADE_NONE, FADE_SUBTRACT, FADE_ADD, FADE_SATURATE, FADE_MULTIPLY};
 	ScriptEngine();
 	virtual ~ScriptEngine();
+
+	// No copies allowed!
+	ScriptEngine(const ScriptEngine&) = delete;
+	ScriptEngine& operator=(const ScriptEngine&) = delete;
 
 	virtual void init( void );		///< Init
 	virtual void reset( void );		///< Reset

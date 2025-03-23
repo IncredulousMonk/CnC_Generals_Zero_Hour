@@ -66,7 +66,7 @@ class WindowLayout;
 class TerrainLogic;
 class GhostObjectManager;
 class CommandButton;
-enum BuildableStatus;
+enum BuildableStatus: int;
 
 
 typedef const CommandButton* ConstCommandButtonPtr;
@@ -108,6 +108,10 @@ public:
 
 	GameLogic( void );
 	virtual ~GameLogic();
+
+	// No copies allowed!
+	GameLogic(const GameLogic&) = delete;
+	GameLogic& operator=(const GameLogic&) = delete;
 
 	// subsytem methods
 	virtual void init( void );															///< Initialize or re-initialize the instance
@@ -280,13 +284,13 @@ private:
 		overrides to thing template buildable status. doesn't really belong here,
 		but has to go somewhere. (srj)
 	*/
-	typedef std::hash_map< AsciiString, BuildableStatus, rts::hash<AsciiString>, rts::equal_to<AsciiString> > BuildableMap;
+	typedef std::unordered_map< AsciiString, BuildableStatus, rts::hash<AsciiString>, rts::equal_to<AsciiString> > BuildableMap;
 	BuildableMap m_thingTemplateBuildableOverrides;
 
 	/**
 		overrides to control bars. doesn't really belong here, but has to go somewhere. (srj)
 	*/
-	typedef std::hash_map< AsciiString, ConstCommandButtonPtr, rts::hash<AsciiString>, rts::equal_to<AsciiString> > ControlBarOverrideMap;
+	typedef std::unordered_map< AsciiString, ConstCommandButtonPtr, rts::hash<AsciiString>, rts::equal_to<AsciiString> > ControlBarOverrideMap;
 	ControlBarOverrideMap m_controlBarOverrides;
 
 	Real m_width, m_height;																	///< Dimensions of the world
@@ -417,8 +421,8 @@ inline Object* GameLogic::findObjectByID( ObjectID id )
 //		return NULL;
 //	
 //	return (*it).second;
-	if( (Int)id < m_objVector.size() )
-		return m_objVector[(Int)id];
+	if( (size_t)id < m_objVector.size() )
+		return m_objVector[(size_t)id];
 
 	return NULL;
 }

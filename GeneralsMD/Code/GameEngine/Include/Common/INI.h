@@ -42,7 +42,7 @@
 class INI;
 class Xfer;
 class File;
-enum ScienceType;
+enum ScienceType: int;
 
 //-------------------------------------------------------------------------------------------------
 /** These control the behavior of loading the INI data into items */
@@ -391,28 +391,28 @@ protected:
 
 	void readLine( void );
 
-	File *m_file;															///< file pointer of file currently loading
+	File *m_file {};															///< file pointer of file currently loading
 
   enum
   {
     INI_READ_BUFFER = 8192                  ///< size of internal read buffer
   };
-  char m_readBuffer[INI_READ_BUFFER];       ///< internal read buffer
-  unsigned m_readBufferNext;                ///< next char in read buffer
-  unsigned m_readBufferUsed;                ///< number of bytes in read buffer
+  char m_readBuffer[INI_READ_BUFFER] {};       ///< internal read buffer
+  unsigned m_readBufferNext {};                ///< next char in read buffer
+  unsigned m_readBufferUsed {};                ///< number of bytes in read buffer
 
-	AsciiString m_filename;										///< filename of file currently loading
-	INILoadType m_loadType;										///< load time for current file
-	UnsignedInt m_lineNum;										///< current line number that's been read
-	char m_buffer[ INI_MAX_CHARS_PER_LINE+1 ];///< buffer to read file contents into
-	const char *m_seps;												///< for strtok parsing
-	const char *m_sepsPercent;								///< m_seps with percent delimiter as well
-	const char *m_sepsColon;									///< m_seps with colon delimiter as well
-	const char *m_sepsQuote;									///< token to represent a quoted ascii string
-	const char *m_blockEndToken;							///< token to represent end of data block
-	Bool m_endOfFile;													///< TRUE when we've hit EOF
+	AsciiString m_filename {};										///< filename of file currently loading
+	INILoadType m_loadType {};										///< load time for current file
+	UnsignedInt m_lineNum {};										///< current line number that's been read
+	char m_buffer[ INI_MAX_CHARS_PER_LINE+1 ] {};///< buffer to read file contents into
+	const char *m_seps {};												///< for strtok parsing
+	const char *m_sepsPercent {};								///< m_seps with percent delimiter as well
+	const char *m_sepsColon {};									///< m_seps with colon delimiter as well
+	const char *m_sepsQuote {};									///< token to represent a quoted ascii string
+	const char *m_blockEndToken {};							///< token to represent end of data block
+	Bool m_endOfFile {};													///< TRUE when we've hit EOF
 #if defined(_DEBUG) || defined(_INTERNAL)
-	char m_curBlockStart[ INI_MAX_CHARS_PER_LINE ];	///< first line of cur block
+	char m_curBlockStart[ INI_MAX_CHARS_PER_LINE ] {};	///< first line of cur block
 #endif
 };
 

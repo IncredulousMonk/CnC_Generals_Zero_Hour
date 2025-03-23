@@ -623,6 +623,10 @@ public:
 
 	GameMessage( Type type );
 
+	// No copies allowed!
+	GameMessage(const GameMessage&) = delete;
+	GameMessage& operator=(const GameMessage&) = delete;
+
 	GameMessage *next( void ) { return m_next; }		///< Return next message in the stream
 	GameMessage *prev( void ) { return m_prev; }		///< Return prev message in the stream
 
@@ -694,6 +698,10 @@ public:
 	GameMessageList( void );
 	virtual ~GameMessageList();
 
+	// No copies allowed!
+	GameMessageList(const GameMessageList&) = delete;
+	GameMessageList& operator=(const GameMessageList&) = delete;
+
 	virtual void init( void ) { };			///< Initialize system
 	virtual void reset( void ) { };			///< Reset system
 	virtual void update( void ) { };		///< Update system
@@ -741,6 +749,10 @@ public:
 	MessageStream( void );
 	virtual ~MessageStream();
 
+	// No copies allowed!
+	MessageStream(const MessageStream&) = delete;
+	MessageStream& operator=(const MessageStream&) = delete;
+
 	// Inherited Methods ----------------------------------------------------------------------------
 	virtual void init( void );
 	virtual void reset( void );
@@ -777,6 +789,10 @@ protected:
 		{
 			delete m_translator;
 		}
+
+		// No copies allowed!
+		TranslatorData(const TranslatorData&) = delete;
+		TranslatorData& operator=(const TranslatorData&) = delete;
 	};
 
 	TranslatorData *m_firstTranslator;						///< List of registered translators, in order of priority

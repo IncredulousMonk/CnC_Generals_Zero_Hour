@@ -107,7 +107,7 @@ static const ModelConditionFlagType TheWeaponSetTypeToModelConditionTypeMap[WEAP
 #endif
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponSetConditionType
+enum WeaponSetConditionType: int
 {
 	WSF_INVALID = -1,
 
@@ -124,13 +124,13 @@ enum WeaponSetConditionType
 class WeaponTemplateSet
 {
 private:
-	const ThingTemplate*		m_thingTemplate;	// needed for save/load
-	WeaponSetFlags					m_types;
-	const WeaponTemplate*		m_template[WEAPONSLOT_COUNT];
-	UnsignedInt							m_autoChooseMask[WEAPONSLOT_COUNT];
-	KindOfMaskType					m_preferredAgainst[WEAPONSLOT_COUNT];
-	Bool										m_isReloadTimeShared;
-	Bool										m_isWeaponLockSharedAcrossSets; ///< A weapon set so similar that it is safe to hold locks across
+	const ThingTemplate*		m_thingTemplate {};	// needed for save/load
+	WeaponSetFlags					m_types {};
+	const WeaponTemplate*		m_template[WEAPONSLOT_COUNT] {};
+	UnsignedInt							m_autoChooseMask[WEAPONSLOT_COUNT] {};
+	KindOfMaskType					m_preferredAgainst[WEAPONSLOT_COUNT] {};
+	Bool										m_isReloadTimeShared {};
+	Bool										m_isWeaponLockSharedAcrossSets {}; ///< A weapon set so similar that it is safe to hold locks across
 
 	static void parseWeapon(INI* ini, void *instance, void *store, const void* userData);
 	static void parseAutoChoose(INI* ini, void *instance, void *store, const void* userData);
@@ -157,7 +157,7 @@ public:
 	inline const KindOfMaskType& getNthPreferredAgainstMask(WeaponSlotType n) const { return m_preferredAgainst[n]; } 
 
 	inline Int getConditionsYesCount() const { return 1; }
-	inline const WeaponSetFlags& getNthConditionsYes(Int i) const { return m_types; }
+	inline const WeaponSetFlags& getNthConditionsYes(Int) const { return m_types; }
 #if defined(_DEBUG) || defined(_INTERNAL)
 	inline AsciiString getDescription() const { return AsciiString("ArmorTemplateSet"); }
 #endif
@@ -170,14 +170,14 @@ typedef std::vector<WeaponTemplateSet> WeaponTemplateSetVector;
 typedef SparseMatchFinder<WeaponTemplateSet, WeaponSetFlags> WeaponTemplateSetFinder;
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponChoiceCriteria
+enum WeaponChoiceCriteria: int
 {
 	PREFER_MOST_DAMAGE,		///< choose the weapon that will do the most damage
 	PREFER_LONGEST_RANGE	///< choose the weapon with the longest range (that will do nonzero damage)
 };
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponLockType
+enum WeaponLockType: int
 {
 	NOT_LOCKED,							///< Weapon is not locked
 	LOCKED_TEMPORARILY,			///< Weapon is locked until clip is empty, or current "attack" state exits
@@ -185,7 +185,7 @@ enum WeaponLockType
 };
 
 //-------------------------------------------------------------------------------------------------
-enum CanAttackResult
+enum CanAttackResult: int
 {
 	//Worst scenario to best scenario -- These must be done this way now!
 	ATTACKRESULT_NOT_POSSIBLE,					//Can't possibly attack target.
@@ -221,6 +221,10 @@ public:
 	WeaponSet();
 	~WeaponSet();
 
+	// No copies allowed!
+	WeaponSet(const WeaponSet&) = delete;
+	WeaponSet& operator=(const WeaponSet&) = delete;
+
 	void updateWeaponSet(const Object* obj);
 	void reloadAllAmmo(const Object *obj, Bool now);
 	Bool isOutOfAmmo() const;
@@ -236,7 +240,7 @@ public:
 	const Weapon* findAmmoPipShowingWeapon() const;
 	void weaponSetOnWeaponBonusChange(const Object *source);
 	UnsignedInt getMostPercentReadyToFireAnyWeapon() const;
-	inline UnsignedInt getNthCommandSourceMask( WeaponSlotType n ) const { return m_curWeaponTemplateSet ? m_curWeaponTemplateSet->getNthCommandSourceMask( n ) : NULL; } 
+	inline UnsignedInt getNthCommandSourceMask( WeaponSlotType n ) const { return m_curWeaponTemplateSet ? m_curWeaponTemplateSet->getNthCommandSourceMask( n ) : 0; } 
 
 	Bool setWeaponLock( WeaponSlotType weaponSlot, WeaponLockType lockType );
 	void releaseWeaponLock(WeaponLockType lockType);

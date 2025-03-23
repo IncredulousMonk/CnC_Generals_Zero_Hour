@@ -142,7 +142,7 @@ public:
 	void loadMusicFilesFromCD();
 	void unloadMusicFilesFromCD();
 protected:
-  mutable std::map<unsigned,bool> m_fileExist;
+  mutable std::map<unsigned,bool> m_fileExist {};
 };
 
 extern FileSystem*	TheFileSystem;

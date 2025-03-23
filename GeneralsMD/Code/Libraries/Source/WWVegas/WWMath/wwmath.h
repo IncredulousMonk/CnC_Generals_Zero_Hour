@@ -112,9 +112,10 @@ static void			Shutdown(void);
 // These are meant to be a collection of small math utility functions to be optimized at some point.
 static WWINLINE float Fabs(float val)
 {
-	int value=*(int*)&val;
-	value&=0x7fffffff;
-	return *(float*)&value;
+	// int value=*(int*)&val;
+	// value&=0x7fffffff;
+	// return *(float*)&value;
+	return fabsf(val);
 }
 
 static WWINLINE int Float_To_Int_Chop(const float& f);
@@ -164,7 +165,8 @@ static double		Wrap(double val, double min = 0.0f, double max = 1.0f);
 static float		Min(float a, float b);
 static float		Max(float a, float b);
 
-static int			Float_As_Int(const float f) { return *((int*)&f); }
+// static int			Float_As_Int(const float f) { return *((int*)&f); }
+static int			Float_As_Int(const float f) { return (int)f; }
 
 static float		Lerp(float a, float b, float lerp );
 static double		Lerp(double a, double b, float lerp );
@@ -192,12 +194,12 @@ WWINLINE float WWMath::Sign(float val)
 
 WWINLINE bool WWMath::Fast_Is_Float_Positive(const float & val)
 {
-	return !((*(int *)(&val)) & 0x80000000);
+	return !((*(unsigned int *)(&val)) & 0x80000000);
 }
 
 WWINLINE bool WWMath::Is_Power_Of_2(const unsigned int val)
 {
-	return !((val)&val-1);
+	return !((val)&(val-1));
 }
 
 WWINLINE float WWMath::Random_Float(float min,float max) 
@@ -571,30 +573,32 @@ WWINLINE float WWMath::Sqrt(float val)
 }
 #endif
 
-WWINLINE int WWMath::Float_To_Int_Chop(const float& f)
+WWINLINE int WWMath::Float_To_Int_Chop(const float&)
 {
-    int a	= *reinterpret_cast<const int*>(&f);				// take bit pattern of float into a register
-    int sign	= (a>>31);												// sign = 0xFFFFFFFF if original value is negative, 0 if positive
-    int mantissa	= (a&((1<<23)-1))|(1<<23);						// extract mantissa and add the hidden bit
-    int exponent	= ((a&0x7fffffff)>>23)-127;					// extract the exponent
-    int r	= ((unsigned int)(mantissa)<<8)>>(31-exponent);	// ((1<<exponent)*mantissa)>>24 -- (we know that mantissa > (1<<24))
-    return ((r ^ (sign)) - sign ) &~ (exponent>>31);			// add original sign. If exponent was negative, make return value 0.
+	throw 1; // TODO: Fix this!
+    // int a	= *reinterpret_cast<const int*>(&f);				// take bit pattern of float into a register
+    // int sign	= (a>>31);												// sign = 0xFFFFFFFF if original value is negative, 0 if positive
+    // int mantissa	= (a&((1<<23)-1))|(1<<23);						// extract mantissa and add the hidden bit
+    // int exponent	= ((a&0x7fffffff)>>23)-127;					// extract the exponent
+    // int r	= ((unsigned int)(mantissa)<<8)>>(31-exponent);	// ((1<<exponent)*mantissa)>>24 -- (we know that mantissa > (1<<24))
+    // return ((r ^ (sign)) - sign ) &~ (exponent>>31);			// add original sign. If exponent was negative, make return value 0.
 }
 
-WWINLINE int WWMath::Float_To_Int_Floor (const float& f)
+WWINLINE int WWMath::Float_To_Int_Floor (const float&)
 {
-	int a			= *reinterpret_cast<const int*>(&f);			// take bit pattern of float into a register
-	int sign		= (a>>31);												// sign = 0xFFFFFFFF if original value is negative, 0 if positive
-	a&=0x7fffffff;															// we don't need the sign any more
+	throw 1; // TODO: Fix this!
+	// int a			= *reinterpret_cast<const int*>(&f);			// take bit pattern of float into a register
+	// int sign		= (a>>31);												// sign = 0xFFFFFFFF if original value is negative, 0 if positive
+	// a&=0x7fffffff;															// we don't need the sign any more
 
-	int exponent	= (a>>23)-127;										// extract the exponent
-	int expsign	= ~(exponent>>31);									// 0xFFFFFFFF if exponent is positive, 0 otherwise
-	int imask		= ( (1<<(31-(exponent))))-1;					// mask for true integer values
-	int mantissa	= (a&((1<<23)-1));								// extract mantissa (without the hidden bit)
-	int r			= ((unsigned int)(mantissa|(1<<23))<<8)>>(31-exponent);	// ((1<<exponent)*(mantissa|hidden bit))>>24 -- (we know that mantissa > (1<<24))
+	// int exponent	= (a>>23)-127;										// extract the exponent
+	// int expsign	= ~(exponent>>31);									// 0xFFFFFFFF if exponent is positive, 0 otherwise
+	// int imask		= ( (1<<(31-(exponent))))-1;					// mask for true integer values
+	// int mantissa	= (a&((1<<23)-1));								// extract mantissa (without the hidden bit)
+	// int r			= ((unsigned int)(mantissa|(1<<23))<<8)>>(31-exponent);	// ((1<<exponent)*(mantissa|hidden bit))>>24 -- (we know that mantissa > (1<<24))
 
-	r = ((r & expsign) ^ (sign)) + ((!((mantissa<<8)&imask)&(expsign^((a-1)>>31)))&sign);	// if (fabs(value)<1.0) value = 0; copy sign; if (value < 0 && value==(int)(value)) value++;
-	return r;
+	// r = ((r & expsign) ^ (sign)) + ((!((mantissa<<8)&imask)&(expsign^((a-1)>>31)))&sign);	// if (fabs(value)<1.0) value = 0; copy sign; if (value < 0 && value==(int)(value)) value++;
+	// return r;
 }
 
 // ----------------------------------------------------------------------------

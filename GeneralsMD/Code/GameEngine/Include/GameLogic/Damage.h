@@ -125,6 +125,8 @@ inline Bool IsSubdualDamage( DamageType type )
 		case DAMAGE_SUBDUAL_BUILDING:
 		case DAMAGE_SUBDUAL_UNRESISTABLE:
 			return TRUE;
+		default:
+			break;
 	}
 
 	return FALSE;
@@ -145,6 +147,8 @@ inline Bool IsHealthDamagingDamage( DamageType type )
 		case DAMAGE_KILLPILOT:
 		case DAMAGE_KILL_GARRISONED:
 			return FALSE;
+		default:
+			break;
 	}
 
 	return TRUE;
@@ -277,27 +281,31 @@ public:
     m_shockWaveTaperOff = 0.0f;
 	}
 
-	ObjectID		   m_sourceID;							///< source of the damage
-	const ThingTemplate *m_sourceTemplate;  ///< source of the damage (the template).
-	PlayerMaskType m_sourcePlayerMask;			///< Player mask of m_sourceID.
-	DamageType		 m_damageType;						///< type of damage
-	ObjectStatusTypes m_damageStatusType;		///< If status damage, what type
-	DamageType		 m_damageFXOverride;			///< If not marked as the default of Unresistable, the damage type to use in doDamageFX instead of the real damamge type
-	DeathType			 m_deathType;						///< if this kills us, death type to be used
-	Real					 m_amount;								///< # value of how much damage to inflict
-	Bool						m_kill;									///< will always cause object to die regardless of damage.
+	// No copies allowed!
+	DamageInfoInput(const DamageInfoInput&) = delete;
+	DamageInfoInput& operator=(const DamageInfoInput&) = delete;
+
+	ObjectID		   m_sourceID {};							///< source of the damage
+	const ThingTemplate *m_sourceTemplate {};  ///< source of the damage (the template).
+	PlayerMaskType m_sourcePlayerMask {};			///< Player mask of m_sourceID.
+	DamageType		 m_damageType {};						///< type of damage
+	ObjectStatusTypes m_damageStatusType {};		///< If status damage, what type
+	DamageType		 m_damageFXOverride {};			///< If not marked as the default of Unresistable, the damage type to use in doDamageFX instead of the real damamge type
+	DeathType			 m_deathType {};						///< if this kills us, death type to be used
+	Real					 m_amount {};								///< # value of how much damage to inflict
+	Bool						m_kill {};									///< will always cause object to die regardless of damage.
 
 	// These are used for damage causing shockwave, forcing units affected to be pushed around
-	Coord3D				 m_shockWaveVector;				///< This represents the incoming damage vector
-	Real					 m_shockWaveAmount;				///< This represents the amount of shockwave created by the damage. 0 = no shockwave, 1.0 = shockwave equal to damage.
-	Real					 m_shockWaveRadius;			  ///< This represents the effect radius of the shockwave. 
-	Real					 m_shockWaveTaperOff;			///< This represents the taper off effect of the shockwave at the tip of the radius. 0.0 means shockwave is 0% at the radius edge.
+	Coord3D				 m_shockWaveVector {};				///< This represents the incoming damage vector
+	Real					 m_shockWaveAmount {};				///< This represents the amount of shockwave created by the damage. 0 = no shockwave, 1.0 = shockwave equal to damage.
+	Real					 m_shockWaveRadius {};			  ///< This represents the effect radius of the shockwave. 
+	Real					 m_shockWaveTaperOff {};			///< This represents the taper off effect of the shockwave at the tip of the radius. 0.0 means shockwave is 0% at the radius edge.
 
 
 protected:
 
 	// snapshot methods
-	virtual void crc( Xfer *xfer ) { }
+	virtual void crc( Xfer * ) { }
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void ) { }
 	
@@ -333,14 +341,14 @@ public:
 		even though it was more than necessary to kill this object; game logic, on the other hand,
 		may want to know the "clipped" damage for ai purposes.
 	*/
-	Real m_actualDamageDealt;
-	Real m_actualDamageClipped;			///< (see comment for m_actualDamageDealt)
-	Bool m_noEffect;								///< if true, no damage was done at all (generally due to being InactiveBody)
+	Real m_actualDamageDealt {};
+	Real m_actualDamageClipped {};			///< (see comment for m_actualDamageDealt)
+	Bool m_noEffect {};								///< if true, no damage was done at all (generally due to being InactiveBody)
 
 protected:
 
 	// snapshot methods
-	virtual void crc( Xfer *xfer ) { }
+	virtual void crc( Xfer * ) { }
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void ) { }
 
@@ -366,7 +374,7 @@ public:
 
 protected:
 
-	virtual void crc( Xfer *xfer ) { }
+	virtual void crc( Xfer * ) { }
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void ){ }
 

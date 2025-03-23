@@ -40,51 +40,51 @@ class STLSpecialAlloc;
 // different .cpp files, so I bit the bullet and included it here.
 // PLEASE DO NOT ABUSE WINDOWS OR IT WILL BE REMOVED ENTIRELY. :-)
 //--------------------------------------------------------------------------------- System Includes 
-#define WIN32_LEAN_AND_MEAN
-#include <atlbase.h>
-#include <windows.h>
+// #define WIN32_LEAN_AND_MEAN
+// #include <atlbase.h>
+// #include <windows.h>
 
-#include <assert.h>
+// #include <assert.h>
 #include <ctype.h>
-#include <direct.h>
-#include <EXCPT.H>
-#include <float.h>
-#include <fstream.h>
-#include <imagehlp.h>
-#include <io.h>
-#include <limits.h>
-#include <lmcons.h>
-#include <mapicode.h>
-#include <math.h>
-#include <memory.h>
-#include <mmsystem.h>
-#include <objbase.h>
-#include <ocidl.h>
-#include <process.h>
-#include <shellapi.h>
-#include <shlobj.h>
-#include <shlguid.h>
-#include <snmp.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/timeb.h>
-#include <sys/types.h>
-#include <TCHAR.H>
-#include <time.h>
-#include <vfw.h>
-#include <winerror.h>
-#include <wininet.h>
-#include <winreg.h>
+// #include <direct.h>
+// #include <EXCPT.H>
+// #include <float.h>
+// #include <fstream.h>
+// #include <imagehlp.h>
+// #include <io.h>
+// #include <limits.h>
+// #include <lmcons.h>
+// #include <mapicode.h>
+// #include <math.h>
+// #include <memory.h>
+// #include <mmsystem.h>
+// #include <objbase.h>
+// #include <ocidl.h>
+// #include <process.h>
+// #include <shellapi.h>
+// #include <shlobj.h>
+// #include <shlguid.h>
+// #include <snmp.h>
+// #include <stdarg.h>
+// #include <stddef.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <sys/stat.h>
+// #include <sys/timeb.h>
+// #include <sys/types.h>
+// #include <TCHAR.H>
+// #include <time.h>
+// #include <vfw.h>
+// #include <winerror.h>
+// #include <wininet.h>
+// #include <winreg.h>
 
-#ifndef DIRECTINPUT_VERSION
-#	define DIRECTINPUT_VERSION	0x800
-#endif
+// #ifndef DIRECTINPUT_VERSION
+// #	define DIRECTINPUT_VERSION	0x800
+// #endif
 
-#include <dinput.h>
+// #include <dinput.h>
 
 //------------------------------------------------------------------------------------ STL Includes
 // srj sez: no, include STLTypesdefs below, instead, thanks
@@ -101,29 +101,29 @@ class STLSpecialAlloc;
 
 //------------------------------------------------------------------------------------ RTS Includes
 // Icky. These have to be in this order.
-#include "Lib/Basetype.h"
-#include "Common/STLTypedefs.h"
-#include "Common/Errors.h"
+// #include "Lib/BaseType.h"
+// #include "Common/STLTypedefs.h"
+// #include "Common/Errors.h"
 #include "Common/Debug.h"
 #include "Common/AsciiString.h"
-#include "Common/SubsystemInterface.h"
+// #include "Common/SubsystemInterface.h"
 
-#include "Common/GameCommon.h"
+// #include "Common/GameCommon.h"
 #include "Common/GameMemory.h"
-#include "Common/GameType.h"
+// #include "Common/GameType.h"
 #include "Common/GlobalData.h"
 
 // You might not want Kindof in here because it seems like it changes frequently, but the problem
 // is that Kindof is included EVERYWHERE, so it might as well be precompiled.
-#include "Common/INI.h"
-#include "Common/KindOf.h"
-#include "Common/DisabledTypes.h"
-#include "Common/NameKeyGenerator.h"
+// #include "Common/INI.h"
+// #include "Common/KindOf.h"
+// #include "Common/DisabledTypes.h"
+// #include "Common/NameKeyGenerator.h"
 #include "GameClient/ClientRandomValue.h"
 #include "GameLogic/LogicRandomValue.h"
-#include "Common/ObjectStatusTypes.h"
+// #include "Common/ObjectStatusTypes.h"
 
-#include "Common/Thing.h"
+// #include "Common/Thing.h"
 #include "Common/UnicodeString.h"
 
 #endif /* __PRERTS_H__ */

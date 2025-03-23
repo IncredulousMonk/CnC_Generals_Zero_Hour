@@ -41,7 +41,7 @@
 struct FieldParse;
 
 // USEFUL DECLARATIONS ////////////////////////////////////////////////////////////////////////////
-enum AudioType
+enum AudioType: int
 {
 	AT_Music,
 	AT_Streaming,
@@ -49,7 +49,7 @@ enum AudioType
 };
 
 extern char *theAudioPriorityNames[];
-enum AudioPriority
+enum AudioPriority: int
 {
 	AP_LOWEST,
 	AP_LOW,
@@ -59,7 +59,7 @@ enum AudioPriority
 };
 
 extern char *theSoundTypeNames[];
-enum SoundType
+enum SoundType: int
 {
 	ST_UI										= 0x0001,
 	ST_WORLD								= 0x0002,
@@ -73,7 +73,7 @@ enum SoundType
 };
 
 extern char *theAudioControlNames[];
-enum AudioControl
+enum AudioControl: int
 {
 	AC_LOOP									= 0x0001,
 	AC_RANDOM								= 0x0002,

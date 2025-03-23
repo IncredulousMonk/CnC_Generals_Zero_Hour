@@ -126,6 +126,10 @@ public:
 	ScriptGroup();
 	//~ScriptGroup();
 
+	// No copies allowed!
+	ScriptGroup(const ScriptGroup&) = delete;
+	ScriptGroup& operator=(const ScriptGroup&) = delete;
+
 public:
 
 	ScriptGroup *duplicate(void) const;		// note, duplicates just this node, not the full list.
@@ -166,6 +170,11 @@ protected:
 public:
 	OrCondition():m_nextOr(NULL),m_firstAnd(NULL){};
 	//~OrCondition();
+
+	// No copies allowed!
+	OrCondition(const OrCondition&) = delete;
+	OrCondition& operator=(const OrCondition&) = delete;
+
 	/// Duplicate creates a "deep" copy.  If it is head of a linked list, duplicates the entire list.
 	OrCondition *duplicate(void) const;
 	OrCondition *duplicateAndQualify(const AsciiString& qualifier, 
@@ -552,6 +561,10 @@ public:
 	ScriptAction(ScriptActionType type); 
 	//~ScriptAction(); 
 
+	// No copies allowed!
+	ScriptAction(const ScriptAction&) = delete;
+	ScriptAction& operator=(const ScriptAction&) = delete;
+
 	ScriptAction *duplicate(void) const;
 	ScriptAction *duplicateAndQualify(const AsciiString& qualifier, 
 			const AsciiString& playerTemplateName, const AsciiString& newPlayerName) const;		
@@ -639,6 +652,11 @@ protected:	// Note - If you add any member vars, you must take them into account
 public:
 	Script();
 	//~Script();
+
+	// No copies allowed!
+	Script(const Script&) = delete;
+	Script& operator=(const Script&) = delete;
+
 	Script *duplicate(void) const;	// note, duplicates just this node, not the full list.
 	Script *duplicateAndQualify(const AsciiString& qualifier, 
 			const AsciiString& playerTemplateName, const AsciiString& newPlayerName) const;		
@@ -795,8 +813,8 @@ public:
 	};
 
 	Parameter(ParameterType type, int val = 0) : 
-		m_initialized(false),
 		m_paramType(type),
+		m_initialized(false),
 		m_int(val),
 		m_real(0)
 	{
@@ -808,9 +826,9 @@ private:
 	Bool					m_initialized;
 	Int						m_int;
 	Real					m_real;
-	AsciiString		m_string;
-	Coord3D				m_coord;
-	ObjectStatusMaskType m_objectStatus;
+	AsciiString		m_string {};
+	Coord3D				m_coord {};
+	ObjectStatusMaskType m_objectStatus {};
 
 protected:
 	void setInt(Int i) {m_int = i;}
@@ -980,6 +998,10 @@ public:
 	Condition(enum ConditionType type); 
 	//~Condition(); 
 
+	// No copies allowed!
+	Condition(const Condition&) = delete;
+	Condition& operator=(const Condition&) = delete;
+
 	Condition *duplicate(void) const;
 	Condition *duplicateAndQualify(const AsciiString& qualifier, 
 			const AsciiString& playerTemplateName, const AsciiString& newPlayerName) const;		
@@ -1020,8 +1042,8 @@ public:
 	Int getCustomData(void) const {return m_customData;}
 	void setCustomData(Int val) { m_customData = val;}
 
-	Int getCustomFrame(void) const {return m_customFrame;}
-	void setCustomFrame(Int val) { m_customFrame = val;}
+	UnsignedInt getCustomFrame(void) const {return m_customFrame;}
+	void setCustomFrame(UnsignedInt val) { m_customFrame = val;}
 
 	static void WriteConditionDataChunk(DataChunkOutput &chunkWriter, Condition *pCond);
 	static Bool ParseConditionDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData);
@@ -1105,6 +1127,10 @@ protected:
 public:
 	ScriptList();
 	//~ScriptList();
+
+	// No copies allowed!
+	ScriptList(const ScriptList&) = delete;
+	ScriptList& operator=(const ScriptList&) = delete;
 
 public:
 	static void updateDefaults(void);

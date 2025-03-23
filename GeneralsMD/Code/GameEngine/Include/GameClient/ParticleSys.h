@@ -40,7 +40,7 @@
 #include "Common/SubsystemInterface.h"
 #include "GameClient/ClientRandomValue.h"
 
-#include "WWMath/Matrix3D.h"		///< @todo Replace with our own matrix library
+#include "WWMath/matrix3d.h"		///< @todo Replace with our own matrix library
 #include "Common/STLTypedefs.h"
 
  
@@ -56,7 +56,7 @@ class INI;
 class DebugWindowDialog;		// really ParticleEditorDialog
 class RenderInfoClass;			// ick
 
-enum ParticleSystemID
+enum ParticleSystemID: int
 {
 	INVALID_PARTICLE_SYSTEM_ID = 0
 };
@@ -82,7 +82,7 @@ struct RGBColorKeyframe
 	UnsignedInt frame;
 };
 
-enum ParticlePriorityType
+enum ParticlePriorityType: int
 {
 	INVALID_PRIORITY = 0, 
 	PARTICLE_PRIORITY_LOWEST = 1,
@@ -169,6 +169,10 @@ class Particle : public MemoryPoolObject,
 public:
 
 	Particle( ParticleSystem *system, const ParticleInfo *data );
+
+	// No copies allowed!
+	Particle(const Particle&) = delete;
+	Particle& operator=(const Particle&) = delete;
 
 	inline Bool update( void );												///< update this particle's behavior - return false if dead
 	void doWindMotion( void );									///< do wind motion (if present) from particle system
@@ -486,6 +490,10 @@ class ParticleSystemTemplate : public MemoryPoolObject, protected ParticleSystem
 public:
 	ParticleSystemTemplate( const AsciiString &name );
 
+	// No copies allowed!
+	ParticleSystemTemplate(const ParticleSystemTemplate&) = delete;
+	ParticleSystemTemplate& operator=(const ParticleSystemTemplate&) = delete;
+
 	AsciiString getName( void ) const { return m_name; }
 
 	// This function was made const because of update modules' module data being all const.
@@ -535,6 +543,10 @@ public:
 	ParticleSystem( const ParticleSystemTemplate *sysTemplate, 
 									ParticleSystemID id,
 									Bool createSlaves );			///< create a particle system from a template and assign it this ID
+
+	// No copies allowed!
+	ParticleSystem(const ParticleSystem&) = delete;
+	ParticleSystem& operator=(const ParticleSystem&) = delete;
 
 	inline ParticleSystemID getSystemID( void ) const { return m_systemID; }	///< get unique system ID
 
@@ -604,7 +616,7 @@ public:
 	Bool isSaveable( void ) const { return m_isSaveable; }
 
 	/// called when the particle this system is controlled by dies
-	void detachControlParticle( Particle *p ) { m_controlParticle = NULL; }
+	void detachControlParticle( Particle * ) { m_controlParticle = NULL; }
 
 	/// called to merge two systems info. If slaveNeedsFullPromotion is true, then the slave needs to be aware of how many particles
 	/// to generate as well.
@@ -718,10 +730,14 @@ public:
 
 	typedef std::list<ParticleSystem*> ParticleSystemList;
 	typedef std::list<ParticleSystem*>::iterator ParticleSystemListIt;
-	typedef std::hash_map<AsciiString, ParticleSystemTemplate *, rts::hash<AsciiString>, rts::equal_to<AsciiString> > TemplateMap;
+	typedef std::unordered_map<AsciiString, ParticleSystemTemplate *, rts::hash<AsciiString>, rts::equal_to<AsciiString> > TemplateMap;
 
 	ParticleSystemManager( void );
 	virtual ~ParticleSystemManager();
+
+	// No copies allowed!
+	ParticleSystemManager(const ParticleSystemManager&) = delete;
+	ParticleSystemManager& operator=(const ParticleSystemManager&) = delete;
 
 	virtual void init( void );									///< initialize the manager
 	virtual void reset( void );									///< reset the manager and all particle systems

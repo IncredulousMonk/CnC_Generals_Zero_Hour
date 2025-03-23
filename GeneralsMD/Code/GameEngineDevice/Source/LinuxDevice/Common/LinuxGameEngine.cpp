@@ -1,26 +1,20 @@
 /*
-**	Command & Conquer Generals Zero Hour(tm)
-**	Copyright 2025 Electronic Arts Inc.
+** Command & Conquer Generals Zero Hour(tm)
+** Copyright 2025 Electronic Arts Inc.
 **
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
 **
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
 **
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+** You should have received a copy of the GNU General Public License
+** along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-////////////////////////////////////////////////////////////////////////////////
-//																																						//
-//  (c) 2001-2003 Electronic Arts Inc.																				//
-//																																						//
-////////////////////////////////////////////////////////////////////////////////
 
 // FILE: LinuxGameEngine.cpp ////////////////////////////////////////////////////////////////////////
 // Author: Matthew Gill, March 2025
@@ -31,11 +25,13 @@
 
 #include "LinuxDevice/Common/LinuxGameEngine.h"
 #include "Common/PerfTimer.h"
+#include <SDL3/SDL.h>
 #include <iostream>
 
 // #include "GameNetwork/LANAPICallbacks.h"
 
 // extern DWORD TheMessageTime;
+extern void drawSplashImage(void);
 
 //-------------------------------------------------------------------------------------------------
 /** Constructor for LinuxGameEngine */
@@ -56,10 +52,8 @@ LinuxGameEngine::~LinuxGameEngine() {
 void LinuxGameEngine::init(int argc, char* argv[]) {
 
    // extending functionality
-   GameEngine::init();
+   GameEngine::init(argc, argv);
    std::cout << "LinuxGameEngine::init\n";
-   (void) argc;
-   (void) argv;
 
 }  // end init
 
@@ -69,7 +63,7 @@ void LinuxGameEngine::init(int argc, char* argv[]) {
 void LinuxGameEngine::reset(void) {
 
    // extending functionality
-   // GameEngine::reset();
+   GameEngine::reset();
    std::cout << "LinuxGameEngine::reset\n";
 
 }  // end reset
@@ -80,8 +74,7 @@ void LinuxGameEngine::reset(void) {
 //-------------------------------------------------------------------------------------------------
 void LinuxGameEngine::update(void) {
    // call the engine normal update
-   // GameEngine::update();
-   std::cout << "LinuxGameEngine::update\n";
+   GameEngine::update();
 
    //  extern HWND ApplicationHWnd;
    //  if (ApplicationHWnd && ::IsIconic(ApplicationHWnd)) {
@@ -113,18 +106,27 @@ void LinuxGameEngine::update(void) {
 
    // }
 
-   // allow windows to perform regular windows maintenance stuff like msgs
-   serviceWindowsOS();
+   drawSplashImage();
+
+   // Check for SDL events.
+   checkForEvents();
 
 }  // end update
 
 //-------------------------------------------------------------------------------------------------
-/** This function may be called from within this application to let
-  * Microsoft Windows do its message processing and dispatching.  Presumeably
-    * we would call this at least once each time around the game loop to keep
-    * Windows services from backing up */
+/** This function may be called from within this application to check
+  * for SDL events.  Presumeably we would call this at least once each time
+  * around the game loop to keep events from backing up. */
 //-------------------------------------------------------------------------------------------------
-void LinuxGameEngine::serviceWindowsOS(void) {
+void LinuxGameEngine::checkForEvents(void) {
+
+   SDL_Event e;
+   while (SDL_PollEvent(&e)) {
+      if (e.type == SDL_EVENT_QUIT) {
+         setQuitting(true);
+      }
+   }
+
 //    MSG msg;
 //    Int returnValue;
 
@@ -158,5 +160,5 @@ void LinuxGameEngine::serviceWindowsOS(void) {
             
 //    }  // end while
 
-}  // end ServiceWindowsOS
+}  // end checkForEvents
 

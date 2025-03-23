@@ -102,6 +102,8 @@ class BehaviorModuleInterface
 {
 public:
 
+	virtual ~BehaviorModuleInterface() {}
+
 	virtual BodyModuleInterface* getBody() = 0;
 	virtual CollideModuleInterface* getCollide() = 0;
 	virtual ContainModuleInterface* getContain() = 0;
@@ -232,6 +234,7 @@ public:
 		Real			runwayTakeoffDist;
 		Real			hangarInternalOrient;
 	};
+	virtual ~ParkingPlaceBehaviorInterface() {}
 	virtual Bool shouldReserveDoorWhenQueued(const ThingTemplate* thing) const = 0; 
 	virtual Bool hasAvailableSpaceFor(const ThingTemplate* thing) const = 0; 
 	virtual Bool hasReservedSpace(ObjectID id) const = 0; 
@@ -259,6 +262,7 @@ public:
 class TransportPassengerInterface
 {
 public:
+	virtual ~TransportPassengerInterface() {}
 	virtual Bool tryToEvacuate( Bool exposeStealthedUnits ) = 0; ///< Will try to kick everybody out with game checks, and will return whether anyone made it
 };
 
@@ -266,6 +270,7 @@ public:
 class CaveInterface
 {
 public:
+	virtual ~CaveInterface() {}
 	virtual void tryToSetCaveIndex( Int newIndex ) = 0;	///< Called by script as an alternative to instancing separate objects.  'Try', because can fail.
 	virtual void setOriginalTeam( Team *oldTeam ) = 0;	///< This is a distributed Garrison in terms of capturing, so when one node triggers the change, he needs to tell everyone, so anyone can do the un-change.
 };
@@ -274,6 +279,7 @@ public:
 class LandMineInterface
 {
 public:
+	virtual ~LandMineInterface() {}
 	virtual void setScootParms(const Coord3D& start, const Coord3D& end) = 0;
 	virtual void disarm() = 0;
 };

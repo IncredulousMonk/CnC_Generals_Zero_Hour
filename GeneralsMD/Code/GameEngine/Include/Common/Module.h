@@ -41,8 +41,8 @@
 #include "Common/Snapshot.h"
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
-enum TimeOfDay;
-enum StaticGameLODLevel;
+enum TimeOfDay: int;
+enum StaticGameLODLevel: int;
 class Drawable;
 class Object;
 class Player;
@@ -117,18 +117,18 @@ public:
 	virtual const W3DTreeDrawModuleData* getAsW3DTreeDrawModuleData() const { return NULL; }
 	virtual StaticGameLODLevel getMinimumRequiredGameLOD() const { return (StaticGameLODLevel)0;}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(MultiIniFieldParse&) 
 	{
 		// nothing
 	}
 
 public:
-	virtual void crc( Xfer *xfer ) {}
-	virtual void xfer( Xfer *xfer ) {}
+	virtual void crc( Xfer * ) {}
+	virtual void xfer( Xfer * ) {}
 	virtual void loadPostProcess( void ) {}
 
 private:
-	NameKeyType m_moduleTagNameKey;		///< module tag key, unique among all modules for an object instance
+	NameKeyType m_moduleTagNameKey {};		///< module tag key, unique among all modules for an object instance
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -189,6 +189,10 @@ public:
 	Module(const ModuleData* moduleData) : m_moduleData(moduleData) { }
 	// virtual destructor prototype defined by MemoryPoolObject
 
+	// No copies allowed!
+	Module(const Module&) = delete;
+	Module& operator=(const Module&) = delete;
+
 	// this method should NEVER be overridden by user code, only via the MAKE_STANDARD_MODULE_xxx macros!
 	// it should also NEVER be called directly; it's only for use by ModuleFactory!
 	static ModuleData* friend_newModuleData(INI* ini);
@@ -209,7 +213,7 @@ public:
 	virtual void onDrawableBoundToObject() { }
 
 	/// preload any assets we might have for this time of day
-	virtual void preloadAssets( TimeOfDay timeOfDay ) { }
+	virtual void preloadAssets( TimeOfDay ) { }
 
 	/** onDelete() will be called on all modules contained by an object or drawable before
 	the actual deletion of each of those modules happens */
@@ -250,8 +254,12 @@ public:
 	ObjectModule( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype defined by MemoryPoolObject
 
-	virtual void onCapture( Player *oldOwner, Player *newOwner ) { }
-	virtual void onDisabledEdge( Bool nowDisabled ) { }
+	// No copies allowed!
+	ObjectModule(const ObjectModule&) = delete;
+	ObjectModule& operator=(const ObjectModule&) = delete;
+
+	virtual void onCapture( Player *, Player * ) { }
+	virtual void onDisabledEdge( Bool ) { }
 
 protected:
 
@@ -295,6 +303,10 @@ public:
 
 	DrawableModule( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype defined by MemoryPoolObject
+
+	// No copies allowed!
+	DrawableModule(const DrawableModule&) = delete;
+	DrawableModule& operator=(const DrawableModule&) = delete;
 
 protected:
 

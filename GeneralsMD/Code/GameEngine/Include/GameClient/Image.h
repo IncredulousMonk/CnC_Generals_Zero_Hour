@@ -44,7 +44,7 @@ class INI;
 //-------------------------------------------------------------------------------------------------
 /** Image status bits.  Keep in sync with imageStatusNames[] */
 //-------------------------------------------------------------------------------------------------
-typedef enum
+typedef enum: UnsignedInt
 {
 	IMAGE_STATUS_NONE									= 0x00000000,
 	IMAGE_STATUS_ROTATED_90_CLOCKWISE	= 0x00000001,  // image should be treated as rotated
@@ -72,6 +72,10 @@ public:
 	
 	Image( void );
 	// virtual desctructor defined by memory pool object
+
+	// No copies allowed!
+	Image(const Image&) = delete;
+	Image& operator=(const Image&) = delete;
 
 	void setName( AsciiString name );							///< set image name
 	AsciiString getName( void ) const;									///< return name

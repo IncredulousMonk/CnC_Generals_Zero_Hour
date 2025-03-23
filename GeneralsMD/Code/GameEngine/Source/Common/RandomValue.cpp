@@ -200,7 +200,7 @@ DEBUG_LOG(( "InitRandom Logic %08lx\n",seed));
 //
 // Integer random value
 //
-Int GetGameLogicRandomValue( int lo, int hi, char *file, int line )
+Int GetGameLogicRandomValue( int lo, int hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )
 {
 	//Int delta = hi - lo + 1;
 	//Int rval;
@@ -210,7 +210,7 @@ Int GetGameLogicRandomValue( int lo, int hi, char *file, int line )
 
 	//rval = ((Int)(randomValue(theGameLogicSeed) % delta)) + lo;
 
-	UnsignedInt delta = hi - lo + 1;
+	UnsignedInt delta = static_cast<UnsignedInt>(hi - lo + 1);
 	//UnsignedInt temp;
 	Int rval;
 
@@ -236,9 +236,9 @@ DEBUG_LOG(( "%d: GetGameLogicRandomValue = %d (%d - %d), %s line %d\n",
 //
 // Integer random value
 //
-Int GetGameClientRandomValue( int lo, int hi, char *file, int line )
+Int GetGameClientRandomValue( int lo, int hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )
 {
-	UnsignedInt delta = hi - lo + 1;
+	UnsignedInt delta = static_cast<UnsignedInt>(hi - lo + 1);
 	Int rval;
 
 	if (delta == 0)
@@ -259,9 +259,9 @@ DEBUG_LOG(( "%d: GetGameClientRandomValue = %d (%d - %d), %s line %d\n",
 //
 // Integer random value
 //
-Int GetGameAudioRandomValue( int lo, int hi, char *file, int line )
+Int GetGameAudioRandomValue( int lo, int hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )
 {
-	UnsignedInt delta = hi - lo + 1;
+	UnsignedInt delta = static_cast<UnsignedInt>(hi - lo + 1);
 	Int rval;
 
 	if (delta == 0)
@@ -282,7 +282,7 @@ DEBUG_LOG(( "%d: GetGameAudioRandomValue = %d (%d - %d), %s line %d\n",
 //
 // Real valued random value
 //
-Real GetGameLogicRandomValueReal( Real lo, Real hi, char *file, int line )
+Real GetGameLogicRandomValueReal( Real lo, Real hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )
 {
 	Real delta = hi - lo;
 	Real rval;
@@ -306,7 +306,7 @@ DEBUG_LOG(( "%d: GetGameLogicRandomValueReal = %f, %s line %d\n",
 //
 // Real valued random value
 //
-Real GetGameClientRandomValueReal( Real lo, Real hi, char *file, int line )
+Real GetGameClientRandomValueReal( Real lo, Real hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )
 {
 	Real delta = hi - lo;
 	Real rval;
@@ -330,7 +330,7 @@ DEBUG_LOG(( "%d: GetGameClientRandomValueReal = %f, %s line %d\n",
 //
 // Real valued random value
 //
-Real GetGameAudioRandomValueReal( Real lo, Real hi, char *file, int line )
+Real GetGameAudioRandomValueReal( Real lo, Real hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )
 {
 	Real delta = hi - lo;
 	Real rval;
@@ -383,6 +383,7 @@ Real GameClientRandomVariable::getValue( void ) const
 			if (m_low == m_high) {
 				return m_low;
 			} // else return as though a UNIFORM.
+			return GameClientRandomValueReal( m_low, m_high );
 
 		case UNIFORM:
 			return GameClientRandomValueReal( m_low, m_high );
@@ -427,6 +428,7 @@ Real GameLogicRandomVariable::getValue( void ) const
 			if (m_low == m_high) {
 				return m_low;
 			} // else return as though a UNIFORM.
+			return GameLogicRandomValueReal( m_low, m_high );
 
 		case UNIFORM:
 			return GameLogicRandomValueReal( m_low, m_high );

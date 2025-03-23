@@ -37,10 +37,11 @@
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Image;
+class Anim2DCollection;
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-enum Anim2DMode
+enum Anim2DMode: int
 {
 	
 	ANIM_2D_INVALID = 0,
@@ -79,6 +80,10 @@ public:
 
 	Anim2DTemplate( AsciiString name );
 	//virtual ~Anim2DTemplate( void );
+
+	// No copies allowed!
+	Anim2DTemplate(const Anim2DTemplate&) = delete;
+	Anim2DTemplate& operator=(const Anim2DTemplate&) = delete;
 
 	AsciiString getName( void ) const { return m_name; }
 	const Image *getFrame( UnsignedShort frameNumber ) const;
@@ -120,7 +125,7 @@ protected:
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-enum Anim2DStatus
+enum Anim2DStatus: int
 {
 	ANIM_2D_STATUS_NONE			= 0x00,
 	ANIM_2D_STATUS_FROZEN		= 0x01,
@@ -142,6 +147,10 @@ public:
 
 	Anim2D( Anim2DTemplate *animTemplate, Anim2DCollection *collectionSystem );
 	// virtual destructor prototype provided by memory pool object
+
+	// No copies allowed!
+	Anim2D(const Anim2D&) = delete;
+	Anim2D& operator=(const Anim2D&) = delete;
 
 	UnsignedShort getCurrentFrame( void ) const { return m_currentFrame; }		///< get our current frame #
 	void setCurrentFrame( UnsignedShort frame );				///< set the current frame #
@@ -168,7 +177,7 @@ public:
 protected:
 
 	// snapshot methods
-	virtual void crc( Xfer *xfer ) { }
+	virtual void crc( Xfer * ) { }
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void ) { }
 
@@ -198,6 +207,10 @@ public:
 
 	Anim2DCollection( void );
 	virtual ~Anim2DCollection( void );
+
+	// No copies allowed!
+	Anim2DCollection(const Anim2DCollection&) = delete;
+	Anim2DCollection& operator=(const Anim2DCollection&) = delete;
 
 	virtual void init( void );						///< initialize system
 	virtual void reset( void ) { };				///< reset system

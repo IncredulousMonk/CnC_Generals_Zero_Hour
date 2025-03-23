@@ -124,10 +124,10 @@ public:
 class ArchivedFileInfo 
 {
 public:
-	AsciiString m_filename;
-	AsciiString m_archiveFilename;
-	UnsignedInt m_offset;
-	UnsignedInt m_size;
+	AsciiString m_filename {};
+	AsciiString m_archiveFilename {};
+	UnsignedInt m_offset {};
+	UnsignedInt m_size {};
 
 	ArchivedFileInfo()
 	{

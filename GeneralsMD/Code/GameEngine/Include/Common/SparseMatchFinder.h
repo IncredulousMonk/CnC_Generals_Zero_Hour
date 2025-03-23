@@ -100,7 +100,7 @@ private:
 	// MEMBER VARS
 	//-------------------------------------------------------------------------------------------------
 	
-	mutable MatchMap m_bestMatches;
+	mutable MatchMap m_bestMatches {};
 	//mutable HashMatchMap m_bestHashMatches;
 
 	//-------------------------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ private:
 		AsciiString curBestMatchStr, dupMatchStr;
 	#endif
 
-		for (std::vector<MATCHABLE>::const_iterator it = v.begin(); it != v.end(); ++it)
+		for (auto it = v.begin(); it != v.end(); ++it)
 		{
 			for (Int i = it->getConditionsYesCount()-1; i >= 0; --i)
 			{
@@ -197,7 +197,7 @@ public:
 	//-------------------------------------------------------------------------------------------------
 	const MATCHABLE* findBestInfo(const std::vector<MATCHABLE>& v, const BITSET& bits) const
 	{
-		MatchMap::const_iterator it = m_bestMatches.find(bits);
+		auto it = m_bestMatches.find(bits);
 
 		const MATCHABLE *first = NULL;
 		if (it != m_bestMatches.end())

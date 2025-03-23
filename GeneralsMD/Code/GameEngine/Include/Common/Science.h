@@ -40,7 +40,7 @@
 class Player;
 
 //-------------------------------------------------------------------------------------------------
-enum ScienceType
+enum ScienceType: int
 {
 	SCIENCE_INVALID = -1
 };
@@ -56,13 +56,13 @@ class ScienceInfo : public Overridable
 	friend class ScienceStore;
 
 private:
-	ScienceType						m_science;
-	UnicodeString					m_name;
-	UnicodeString					m_description;
-	ScienceVec						m_rootSciences;			// this is calced at runtime, NOT read from INI
-	ScienceVec						m_prereqSciences;
-	Int										m_sciencePurchasePointCost;
-	Bool									m_grantable;
+	ScienceType						m_science {};
+	UnicodeString					m_name {};
+	UnicodeString					m_description {};
+	ScienceVec						m_rootSciences {};			// this is calced at runtime, NOT read from INI
+	ScienceVec						m_prereqSciences {};
+	Int										m_sciencePurchasePointCost {};
+	Bool									m_grantable {};
 
 	ScienceInfo() :
 		m_science(SCIENCE_INVALID),

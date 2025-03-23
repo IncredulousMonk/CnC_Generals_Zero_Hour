@@ -37,7 +37,7 @@
 #include "Common/Thing.h"
 #include "Common/Geometry.h"
 #include "GameClient/Color.h"
-#include "WWMath/Matrix3D.h"
+#include "WWMath/matrix3d.h"
 #include "GameClient/DrawableInfo.h"
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
@@ -116,6 +116,10 @@ public:
 
 	DrawableIconInfo();
 	//~DrawableIconInfo();
+
+	// No copies allowed!
+	DrawableIconInfo(const DrawableIconInfo&) = delete;
+	DrawableIconInfo& operator=(const DrawableIconInfo&) = delete;
 	
 	void clear();
 	void killIcon(DrawableIconType t);
@@ -228,7 +232,7 @@ enum StealthLookType
 // ------------------------------------------------------------------------------------------------
 /** Drawable status bits */
 // ------------------------------------------------------------------------------------------------
-enum DrawableStatus
+enum DrawableStatus: UnsignedInt
 {
 	DRAWABLE_STATUS_NONE									= 0x00000000,		///< no status
 	DRAWABLE_STATUS_DRAWS_IN_MIRROR				=	0x00000001,		///< drawable can reflect
@@ -238,7 +242,7 @@ enum DrawableStatus
 	DRAWABLE_STATUS_NO_SAVE								= 0x00000010,		///< do *not* save this drawable (UI fluff only). ignored (error, actually) if attached to an object
 };
 
-enum TintStatus
+enum TintStatus: UnsignedInt
 {
 	TINT_STATUS_DISABLED		= 0x00000001,///< drawable tint color is deathly dark grey
 	TINT_STATUS_IRRADIATED	= 0x00000002,///< drawable tint color is sickly green
@@ -292,6 +296,10 @@ class Drawable : public Thing,
 public:
 
 	Drawable( const ThingTemplate *thing, DrawableStatus statusBits = DRAWABLE_STATUS_NONE );
+
+	// No copies allowed!
+	Drawable(const Drawable&) = delete;
+	Drawable& operator=(const Drawable&) = delete;
 
 	void onDestroy( void );																							///< run from GameClient::destroyDrawable
   void onLevelStart();                                                ///< run from GameLogic::startNewGame
@@ -349,7 +357,7 @@ public:
 
 	void reactToBodyDamageStateChange(BodyDamageType newState);
 	
-	const Real getScale (void) const ;
+	Real getScale (void) const ;
 
 	// access to modules
 	//---------------------------------------------------------------------------

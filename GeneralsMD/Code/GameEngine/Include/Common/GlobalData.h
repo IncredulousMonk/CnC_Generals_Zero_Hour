@@ -44,12 +44,12 @@
 
 // FORWARD DECLARATIONS ///////////////////////////////////////////////////////////////////////////
 struct FieldParse;
-typedef enum _TerrainLOD;
+enum TerrainLOD: int;
 class GlobalData;
 class INI;
 class WeaponBonusSet;
-enum BodyDamageType;
-enum AIDebugOptions;
+enum BodyDamageType: int;
+enum AIDebugOptions: int;
 
 // PUBLIC /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -114,7 +114,7 @@ public:
 	Bool m_stretchTerrain;
 	Bool m_useHalfHeightMap;
 	Bool m_drawEntireTerrain;
-	_TerrainLOD m_terrainLOD;
+	TerrainLOD m_terrainLOD;
 	Bool m_enableDynamicLOD;
 	Bool m_enableStaticLOD;
 	Int m_terrainLODTargetTimeMS;
@@ -532,8 +532,8 @@ private:
 																			override, and return it */
 
 
-	GlobalData(const GlobalData& that) { DEBUG_CRASH(("unimplemented")); }
-	GlobalData& operator=(const GlobalData& that) { DEBUG_CRASH(("unimplemented")); return *this; }
+	GlobalData(const GlobalData& that) = delete;
+	GlobalData& operator=(const GlobalData& that) = delete;
 
 };
 

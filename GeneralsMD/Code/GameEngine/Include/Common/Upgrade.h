@@ -40,9 +40,9 @@
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Player;
 class UpgradeTemplate;
-enum NameKeyType;
+enum NameKeyType: int;
 class Image;
-enum AcademyClassificationType;
+enum AcademyClassificationType: int;
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ typedef BitFlags<UPGRADE_MAX_COUNT>	UpgradeMaskType;
 #define MAKE_UPGRADE_MASK4(k,a,b,c) UpgradeMaskType(UpgradeMaskType::kInit, (k), (a), (b), (c))
 #define MAKE_UPGRADE_MASK5(k,a,b,c,d) UpgradeMaskType(UpgradeMaskType::kInit, (k), (a), (b), (c), (d))
 
-inline Bool TEST_UPGRADE_MASK( const UpgradeMaskType& m, Int index ) 
+inline Bool TEST_UPGRADE_MASK( const UpgradeMaskType& m, UnsignedInt index ) 
 { 
 	return m.test( index ); 
 }
@@ -115,6 +115,10 @@ public:
 	Upgrade( const UpgradeTemplate *upgradeTemplate );
 	// virtual destructor prototypes provided by memory pool object
 
+	// No copies allowed!
+	Upgrade(const Upgrade&) = delete;
+	Upgrade& operator=(const Upgrade&) = delete;
+
 	/// get the upgrade template for this instance
 	const UpgradeTemplate *getTemplate( void ) const { return m_template; }
 
@@ -144,7 +148,7 @@ protected:
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-enum UpgradeType
+enum UpgradeType: int
 {
 	UPGRADE_TYPE_PLAYER = 0,						// upgrade applies to a player as a whole
 	UPGRADE_TYPE_OBJECT,								// upgrade applies to an object instance only
@@ -165,6 +169,10 @@ public:
 
 	UpgradeTemplate( void );
 	// virtual destructor defined by memory pool object
+
+	// No copies allowed!
+	UpgradeTemplate(const UpgradeTemplate&) = delete;
+	UpgradeTemplate& operator=(const UpgradeTemplate&) = delete;
 
 	Int calcTimeToBuild( Player *player ) const;			///< time in logic frames it will take this player to "build" this UpgradeTemplate
 	Int calcCostToBuild( Player *player ) const;			///< calc the cost to build this upgrade
@@ -232,6 +240,10 @@ public:
 
 	UpgradeCenter( void );
 	virtual ~UpgradeCenter( void );
+
+	// No copies allowed!
+	UpgradeCenter(const UpgradeCenter&) = delete;
+	UpgradeCenter& operator=(const UpgradeCenter&) = delete;
 
 	void init( void );												///< subsystem interface
 	void reset( void );												///< subsystem interface

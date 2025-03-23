@@ -51,13 +51,14 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <atomic>
 #include "Lib/BaseType.h"
 #include "Common/Debug.h"
 #include "Common/Errors.h"
 
 class UnicodeString;
 
-#include "windows.h"
+// #include "windows.h"
 
 // -----------------------------------------------------
 /**
@@ -94,7 +95,7 @@ private:
 #if defined(_DEBUG) || defined(_INTERNAL)
 		const char* m_debugptr;	// just makes it easier to read in the debugger
 #endif
-		unsigned short	m_refCount;						// reference count
+		std::atomic<unsigned short>	m_refCount {0};						// reference count
 		unsigned short	m_numCharsAllocated;  // length of data allocated
 		// char m_stringdata[];
 
@@ -160,7 +161,7 @@ public:
 	/**
 		Return the length, in characters (not bytes!), of the string.
 	*/
-	int getLength() const;
+	size_t getLength() const;
 	/**
 		Return true iff the length of the string is zero. Equivalent
 		to (getLength() == 0) but slightly more efficient.
@@ -374,12 +375,8 @@ inline AsciiString::AsciiString(const char* s) : m_data(0)
 // -----------------------------------------------------
 inline AsciiString::AsciiString(const AsciiString& stringSrc) : m_data(stringSrc.m_data)
 {
-  // don't need this if we're using InterlockedIncrement
-  // FastCriticalSectionClass::LockClass lock(TheAsciiStringCriticalSection);
 	if (m_data)
-		// ++m_data->m_refCount;
-    // yes, I know it's not a DWord but we're incrementing so we're safe
-    InterlockedIncrement((long *)&m_data->m_refCount);
+		++m_data->m_refCount;
 	validate();
 }
 
@@ -391,7 +388,7 @@ inline void AsciiString::releaseBuffer()
 	validate();
 	if (m_data)
 	{
-    InterlockedDecrement((long *)&m_data->m_refCount);
+		--m_data->m_refCount;
 		if (!m_data->m_refCount)
 			freeBytes();
 		m_data = 0;
@@ -407,7 +404,7 @@ inline AsciiString::~AsciiString()
 }
 
 // -----------------------------------------------------
-inline int AsciiString::getLength() const
+inline size_t AsciiString::getLength() const
 {
 	validate();
 	return m_data ? strlen(peek()) : 0;
@@ -431,7 +428,7 @@ inline void AsciiString::clear()
 // -----------------------------------------------------
 inline char AsciiString::getCharAt(int index) const
 {
-	DEBUG_ASSERTCRASH(index >= 0 && index < getLength(), ("bad index in getCharAt"));
+	DEBUG_ASSERTCRASH(index >= 0 && static_cast<size_t>(index) < getLength(), ("bad index in getCharAt"));
 	validate();
 	return m_data ? peek()[index] : 0;
 }
@@ -452,18 +449,18 @@ inline void AsciiString::set(const AsciiString& stringSrc)
 	validate();
 	if (&stringSrc != this)
 	{
-    // do not call releaseBuffer(); here, it locks the CS twice
-    // from the same thread which is illegal using fast CS's
+	// do not call releaseBuffer(); here, it locks the CS twice
+	// from the same thread which is illegal using fast CS's
 		if (m_data)
-    {
-      InterlockedDecrement((long *)&m_data->m_refCount);
+	{
+		--m_data->m_refCount;
 		  if (!m_data->m_refCount)
 			  freeBytes();
-    }
+	}
 
 		m_data = stringSrc.m_data;
 		if (m_data)
-      InterlockedIncrement((long *)&m_data->m_refCount);
+			++m_data->m_refCount;
 	}
 	validate();
 }
@@ -509,7 +506,7 @@ inline AsciiString& AsciiString::operator=(const char* s)
 inline void AsciiString::concat(const char* s)
 {
 	validate();
-	int addlen = strlen(s);
+	size_t addlen = strlen(s);
 	if (addlen == 0)
 		return;	// my, that was easy
 
@@ -560,14 +557,14 @@ inline int AsciiString::compare(const char* s) const
 inline int AsciiString::compareNoCase(const AsciiString& stringSrc) const
 {
 	validate();
-	return _stricmp(this->str(), stringSrc.str());
+	return strcasecmp(this->str(), stringSrc.str());
 }
 
 // -----------------------------------------------------
 inline int AsciiString::compareNoCase(const char* s) const
 {
 	validate();
-	return _stricmp(this->str(), s);
+	return strcasecmp(this->str(), s);
 }
 
 // -----------------------------------------------------

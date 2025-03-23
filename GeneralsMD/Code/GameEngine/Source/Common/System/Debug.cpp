@@ -55,17 +55,35 @@
 #include "Common/SystemInfo.h"
 #include "Common/UnicodeString.h"
 #include "GameClient/GameText.h"
-#include "GameClient/Keyboard.h"
-#include "GameClient/Mouse.h"
+// #include "GameClient/Keyboard.h"
+// #include "GameClient/Mouse.h"
 #if defined(DEBUG_STACKTRACE) || defined(IG_DEBUG_STACKTRACE)
-	#include "Common/StackDump.h"
+	// #include "Common/StackDump.h"
 #endif
+#include <time.h>
+#include <signal.h>
 
 // Horrible reference, but we really, really need to know if we are windowed.
-extern bool DX8Wrapper_IsWindowed;
-extern HWND ApplicationHWnd;
+// extern bool DX8Wrapper_IsWindowed;
+// extern HWND ApplicationHWnd;
 
 extern char *gAppPrefix; /// So WB can have a different log file name.
+
+extern int MessageBox( const char* text, const char* caption, UnsignedInt uType );
+
+// Dummy Windows defines
+#define IDABORT 1
+#define IDRETRY 2
+#define IDIGNORE 3
+#define IDYES 4
+#define MB_OK 0
+#define MB_YESNO 0
+#define MB_ABORTRETRYIGNORE 0
+#define MB_TASKMODAL 0
+#define MB_SYSTEMMODAL 0
+#define MB_ICONWARNING 0
+#define MB_ICONERROR 0
+#define MB_DEFBUTTON3 0
 
 #ifdef _INTERNAL
 // this should ALWAYS be present
@@ -104,7 +122,6 @@ static FILE *theLogFile = NULL;
 #define LARGE_BUFFER	8192
 static char theBuffer[ LARGE_BUFFER ];	// make it big to avoid weird overflow bugs in debug mode
 static int theDebugFlags = 0;
-static DWORD theMainThreadID = 0;
 // ----------------------------------------------------------------------------
 // PUBLIC DATA 
 // ----------------------------------------------------------------------------
@@ -134,27 +151,18 @@ static void doStackDump();
 inline Bool ignoringAsserts()
 {
 #if defined(_DEBUG) || defined(_INTERNAL)
-	return !DX8Wrapper_IsWindowed || (TheGlobalData&&TheGlobalData->m_debugIgnoreAsserts);
+	// return !DX8Wrapper_IsWindowed || (TheGlobalData&&TheGlobalData->m_debugIgnoreAsserts);
+	return (TheGlobalData&&TheGlobalData->m_debugIgnoreAsserts);
 #else
 	return !DX8Wrapper_IsWindowed;
 #endif
 }
 
 // ----------------------------------------------------------------------------
-inline HWND getThreadHWND()
+
+int MessageBoxWrapper( const char* text, const char* caption, UnsignedInt uType )
 {
-	return (theMainThreadID == GetCurrentThreadId())?ApplicationHWnd:NULL;
-}
-
-// ----------------------------------------------------------------------------
-
-int MessageBoxWrapper( LPCSTR lpText, LPCSTR lpCaption, UINT uType )
-{
-	HWND threadHWND = getThreadHWND();
-	if (!threadHWND)
-		return (uType & MB_ABORTRETRYIGNORE)?IDIGNORE:IDYES;
-
-	return ::MessageBox(threadHWND, lpText, lpCaption, uType);
+	return ::MessageBox(text, caption, uType);
 }
 
 // ----------------------------------------------------------------------------
@@ -179,8 +187,12 @@ static const char *getCurrentTimeString(void)
 // ----------------------------------------------------------------------------
 static const char *getCurrentTickString(void)
 {
+    struct timespec ts {};
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    int64_t tickCount {(ts.tv_nsec / 1000000) + (ts.tv_sec * 1000L)};
 	static char TheTickString[32];
-	sprintf(TheTickString, "(T=%08lx)",::GetTickCount());
+	sprintf(TheTickString, "(T=%08lx)",tickCount);
 	return TheTickString;
 }
 
@@ -227,7 +239,7 @@ static void doLogOutput(const char *buffer)
 	// log message to dev studio output window
 	if (theDebugFlags & DEBUG_FLAG_LOG_TO_CONSOLE)
 	{
-		::OutputDebugString(buffer);
+		printf("%s", buffer);
 	}
 }
 #endif
@@ -264,7 +276,7 @@ static int doCrashBox(const char *buffer, Bool logResult)
 			if (logResult)
 				DebugLog("[Retry]\n");
 #endif
-			::DebugBreak();
+			raise(SIGTRAP);
 			break;
 		case IDIGNORE:
 #ifdef DEBUG_LOGGING
@@ -284,13 +296,13 @@ static int doCrashBox(const char *buffer, Bool logResult)
 */
 static void doStackDump()
 {
-	const int STACKTRACE_SIZE	= 24;
-	const int STACKTRACE_SKIP = 2;
-	void* stacktrace[STACKTRACE_SIZE];
+	// const int STACKTRACE_SIZE	= 24;
+	// const int STACKTRACE_SKIP = 2;
+	// void* stacktrace[STACKTRACE_SIZE];
 
-	doLogOutput("\nStack Dump:\n");
-	::FillStackAddresses(stacktrace, STACKTRACE_SIZE, STACKTRACE_SKIP);
-	::StackDumpFromAddresses(stacktrace, STACKTRACE_SIZE, doLogOutput);
+	// doLogOutput("\nStack Dump:\n");
+	// ::FillStackAddresses(stacktrace, STACKTRACE_SIZE, STACKTRACE_SKIP);
+	// ::StackDumpFromAddresses(stacktrace, STACKTRACE_SIZE, doLogOutput);
 }
 #endif
 
@@ -334,25 +346,26 @@ void DebugInit(int flags)
 	{
 		theDebugFlags = flags;
 
-		theMainThreadID = GetCurrentThreadId();
+		// theMainThreadID = GetCurrentThreadId();
 
 	#ifdef DEBUG_LOGGING
 
-		char dirbuf[ _MAX_PATH ];
-		::GetModuleFileName( NULL, dirbuf, sizeof( dirbuf ) );
-		char *pEnd = dirbuf + strlen( dirbuf );
-		while( pEnd != dirbuf ) 
-		{
-			if( *pEnd == '\\' ) 
-			{
-				*(pEnd + 1) = 0;
-				break;
-			}
-			pEnd--;
-		}
+		char dirbuf[ FILENAME_MAX ];
+		// ::GetModuleFileName( NULL, dirbuf, sizeof( dirbuf ) );
+		// char *pEnd = dirbuf + strlen( dirbuf );
+		// while( pEnd != dirbuf ) 
+		// {
+		// 	if( *pEnd == '\\' ) 
+		// 	{
+		// 		*(pEnd + 1) = 0;
+		// 		break;
+		// 	}
+		// 	pEnd--;
+		// }
+		strcpy(dirbuf, "./");
 
-		char prevbuf[ _MAX_PATH ];
-		char curbuf[ _MAX_PATH ];
+		char prevbuf[ FILENAME_MAX ];
+		char curbuf[ FILENAME_MAX ];
 
 		strcpy(prevbuf, dirbuf);
 		strcat(prevbuf, gAppPrefix);
@@ -424,11 +437,11 @@ void DebugCrash(const char *format, ...)
 	char theCrashBuffer[ LARGE_BUFFER ];	
 	if (theDebugFlags == 0)
 	{
-		if (!DX8Wrapper_IsWindowed) {
-			if (ApplicationHWnd) {
-				ShowWindow(ApplicationHWnd, SW_HIDE);
-			}
-		}
+		// if (!DX8Wrapper_IsWindowed) {
+		// 	if (ApplicationHWnd) {
+		// 		ShowWindow(ApplicationHWnd, SW_HIDE);
+		// 	}
+		// }
 		MessageBoxWrapper("DebugCrash - Debug not inited properly", "", MB_OK|MB_TASKMODAL);
 	}
 
@@ -442,11 +455,11 @@ void DebugCrash(const char *format, ...)
 
 	if (strlen(theCrashBuffer) >= sizeof(theCrashBuffer))
 	{
-		if (!DX8Wrapper_IsWindowed) {
-			if (ApplicationHWnd) {
-				ShowWindow(ApplicationHWnd, SW_HIDE);
-			}
-		}
+		// if (!DX8Wrapper_IsWindowed) {
+		// 	if (ApplicationHWnd) {
+		// 		ShowWindow(ApplicationHWnd, SW_HIDE);
+		// 	}
+		// }
 		MessageBoxWrapper("String too long for debug buffers", "", MB_OK|MB_TASKMODAL);
 	}
 
@@ -482,10 +495,10 @@ void DebugCrash(const char *format, ...)
 		}
 		if (yn == IDYES)
 			*TheCurrentIgnoreCrashPtr = 1;
-		if( TheKeyboard )
-			TheKeyboard->resetKeys();
-		if( TheMouse )
-			TheMouse->reset();
+		// if( TheKeyboard )
+		// 	TheKeyboard->resetKeys();
+		// if( TheMouse )
+		// 	TheMouse->reset();
 	}
 
 }  
@@ -545,7 +558,6 @@ void DebugSetFlags(int flags)
 // ----------------------------------------------------------------------------
 SimpleProfiler::SimpleProfiler()
 {
-	QueryPerformanceFrequency((LARGE_INTEGER*)&m_freq);
 	m_startThisSession = 0;
 	m_totalThisSession = 0;
 	m_totalAllSessions = 0;
@@ -556,7 +568,9 @@ SimpleProfiler::SimpleProfiler()
 void SimpleProfiler::start()
 {
 	DEBUG_ASSERTCRASH(m_startThisSession == 0, ("already started"));
-	QueryPerformanceCounter((LARGE_INTEGER*)&m_startThisSession);
+    struct timespec ts {};
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    m_startThisSession = ts.tv_nsec + ts.tv_sec * 1'000'000'000L;
 }
 
 // ----------------------------------------------------------------------------
@@ -564,8 +578,9 @@ void SimpleProfiler::stop()
 {
 	if (m_startThisSession != 0) 
 	{
-		__int64 stop;
-		QueryPerformanceCounter((LARGE_INTEGER*)&stop);
+		struct timespec ts {};
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		int64_t stop {ts.tv_nsec + ts.tv_sec * 1'000'000'000L};
 		m_totalThisSession = stop - m_startThisSession;
 		m_totalAllSessions += stop - m_startThisSession;
 		m_startThisSession = 0;
@@ -637,7 +652,7 @@ double SimpleProfiler::getAverageTime()
 
 	static FILE *theReleaseCrashLogFile = NULL;
 
-	static void releaseCrashLogOutput(const char *buffer)
+	[[maybe_unused]]static void releaseCrashLogOutput(const char *buffer)
 	{
 		if (theReleaseCrashLogFile)
 		{
@@ -650,11 +665,11 @@ void ReleaseCrash(const char *reason)
 {
 	/// do additional reporting on the crash, if possible
 
-	if (!DX8Wrapper_IsWindowed) {
-		if (ApplicationHWnd) {
-			ShowWindow(ApplicationHWnd, SW_HIDE);
-		}
-	}
+	// if (!DX8Wrapper_IsWindowed) {
+	// 	if (ApplicationHWnd) {
+	// 		ShowWindow(ApplicationHWnd, SW_HIDE);
+	// 	}
+	// }
 //#if defined(_DEBUG) || defined(_INTERNAL)
 //	/* static */ char buff[8192]; // not so static so we can be threadsafe
 //	_snprintf(buff, 8192, "Sorry, a serious error occurred. (%s)", reason);/
@@ -664,8 +679,8 @@ void ReleaseCrash(const char *reason)
 //	::MessageBox(NULL, "Sorry, a serious error occurred.", "Technical Difficulties...", MB_OK|MB_TASKMODAL|MB_ICONERROR);
 //#endif
 
-	char prevbuf[ _MAX_PATH ];
-	char curbuf[ _MAX_PATH ];
+	char prevbuf[ FILENAME_MAX ];
+	char curbuf[ FILENAME_MAX ];
 
 	if (TheGlobalData==NULL) {
 		return; // We are shutting down, and TheGlobalData has been freed.  jba. [4/15/2003]
@@ -683,28 +698,28 @@ void ReleaseCrash(const char *reason)
 	if (theReleaseCrashLogFile)
 	{
 		fprintf(theReleaseCrashLogFile, "Release Crash at %s; Reason %s\n", getCurrentTimeString(), reason);
-		fprintf(theReleaseCrashLogFile, "\nLast error:\n%s\n\nCurrent stack:\n", g_LastErrorDump.str());
-		const int STACKTRACE_SIZE	= 12;
-		const int STACKTRACE_SKIP = 6;
-		void* stacktrace[STACKTRACE_SIZE];
-		::FillStackAddresses(stacktrace, STACKTRACE_SIZE, STACKTRACE_SKIP);
-		::StackDumpFromAddresses(stacktrace, STACKTRACE_SIZE, releaseCrashLogOutput);
+		// fprintf(theReleaseCrashLogFile, "\nLast error:\n%s\n\nCurrent stack:\n", g_LastErrorDump.str());
+		// const int STACKTRACE_SIZE	= 12;
+		// const int STACKTRACE_SKIP = 6;
+		// void* stacktrace[STACKTRACE_SIZE];
+		// ::FillStackAddresses(stacktrace, STACKTRACE_SIZE, STACKTRACE_SKIP);
+		// ::StackDumpFromAddresses(stacktrace, STACKTRACE_SIZE, releaseCrashLogOutput);
 
 		fflush(theReleaseCrashLogFile);
 		fclose(theReleaseCrashLogFile);
 		theReleaseCrashLogFile = NULL;
 	}
 
-	if (!DX8Wrapper_IsWindowed) {
-		if (ApplicationHWnd) {
-			ShowWindow(ApplicationHWnd, SW_HIDE);
-		}
-	}
+	// if (!DX8Wrapper_IsWindowed) {
+	// 	if (ApplicationHWnd) {
+	// 		ShowWindow(ApplicationHWnd, SW_HIDE);
+	// 	}
+	// }
 #if defined(_DEBUG) || defined(_INTERNAL)
 	/* static */ char buff[8192]; // not so static so we can be threadsafe
-	_snprintf(buff, 8192, "Sorry, a serious error occurred. (%s)", reason);
+	snprintf(buff, 8192, "Sorry, a serious error occurred. (%s)", reason);
 	buff[8191] = 0;
-	::MessageBox(NULL, buff, "Technical Difficulties...", MB_OK|MB_SYSTEMMODAL|MB_ICONERROR);
+	::MessageBoxWrapper(buff, "Technical Difficulties...", MB_OK|MB_SYSTEMMODAL|MB_ICONERROR);
 #else
 // crash error messaged changed 3/6/03 BGC
 //	::MessageBox(NULL, "Sorry, a serious error occurred.", "Technical Difficulties...", MB_OK|MB_TASKMODAL|MB_ICONERROR);
@@ -721,6 +736,7 @@ void ReleaseCrash(const char *reason)
 	_exit(1);
 }  
 
+#if 0 // MG: Disabling for the moment.
 void ReleaseCrashLocalized(const AsciiString& p, const AsciiString& m)
 {
 	if (!TheGameText) {
@@ -735,15 +751,16 @@ void ReleaseCrashLocalized(const AsciiString& p, const AsciiString& m)
 
 	/// do additional reporting on the crash, if possible
 
-	if (!DX8Wrapper_IsWindowed) {
-		if (ApplicationHWnd) {
-			ShowWindow(ApplicationHWnd, SW_HIDE);
-		}
-	}
+	// if (!DX8Wrapper_IsWindowed) {
+	// 	if (ApplicationHWnd) {
+	// 		ShowWindow(ApplicationHWnd, SW_HIDE);
+	// 	}
+	// }
 
 	if (TheSystemIsUnicode) 
 	{
-		::MessageBoxW(NULL, mesg.str(), prompt.str(), MB_OK|MB_SYSTEMMODAL|MB_ICONERROR);
+		fprintf(stderr, "Sorry, WideChar message boxes not supported.  Message was %ls\n", mesg.str());
+		// ::MessageBoxWrapper(mesg.str(), prompt.str(), MB_OK|MB_SYSTEMMODAL|MB_ICONERROR);
 	} 
 	else 
 	{
@@ -753,12 +770,12 @@ void ReleaseCrashLocalized(const AsciiString& p, const AsciiString& m)
 		promptA.translate(prompt);
 		mesgA.translate(mesg);
 		//Make sure main window is not TOP_MOST
-		::SetWindowPos(ApplicationHWnd, HWND_NOTOPMOST, 0, 0, 0, 0,SWP_NOSIZE |SWP_NOMOVE);
-		::MessageBoxA(NULL, mesgA.str(), promptA.str(), MB_OK|MB_TASKMODAL|MB_ICONERROR);
+		// ::SetWindowPos(ApplicationHWnd, HWND_NOTOPMOST, 0, 0, 0, 0,SWP_NOSIZE |SWP_NOMOVE);
+		::MessageBoxWrapper(mesgA.str(), promptA.str(), MB_OK|MB_TASKMODAL|MB_ICONERROR);
 	}
 
-	char prevbuf[ _MAX_PATH ];
-	char curbuf[ _MAX_PATH ];
+	char prevbuf[ FILENAME_MAX ];
+	char curbuf[ FILENAME_MAX ];
 
 	strcpy(prevbuf, TheGlobalData->getPath_UserData().str());
 	strcat(prevbuf, RELEASECRASH_FILE_NAME_PREV);
@@ -771,13 +788,13 @@ void ReleaseCrashLocalized(const AsciiString& p, const AsciiString& m)
 	theReleaseCrashLogFile = fopen(curbuf, "w");
 	if (theReleaseCrashLogFile)
 	{
-		fprintf(theReleaseCrashLogFile, "Release Crash at %s; Reason %s\n", getCurrentTimeString(), mesg.str());
+		fprintf(theReleaseCrashLogFile, "Release Crash at %s; Reason %ls\n", getCurrentTimeString(), mesg.str());
 
-		const int STACKTRACE_SIZE	= 12;
-		const int STACKTRACE_SKIP = 6;
-		void* stacktrace[STACKTRACE_SIZE];
-		::FillStackAddresses(stacktrace, STACKTRACE_SIZE, STACKTRACE_SKIP);
-		::StackDumpFromAddresses(stacktrace, STACKTRACE_SIZE, releaseCrashLogOutput);
+		// const int STACKTRACE_SIZE	= 12;
+		// const int STACKTRACE_SKIP = 6;
+		// void* stacktrace[STACKTRACE_SIZE];
+		// ::FillStackAddresses(stacktrace, STACKTRACE_SIZE, STACKTRACE_SKIP);
+		// ::StackDumpFromAddresses(stacktrace, STACKTRACE_SIZE, releaseCrashLogOutput);
 
 		fflush(theReleaseCrashLogFile);
 		fclose(theReleaseCrashLogFile);
@@ -786,3 +803,4 @@ void ReleaseCrashLocalized(const AsciiString& p, const AsciiString& m)
 
 	_exit(1);
 }
+#endif

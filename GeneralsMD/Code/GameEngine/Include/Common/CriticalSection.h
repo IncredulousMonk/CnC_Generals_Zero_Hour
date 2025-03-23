@@ -32,6 +32,7 @@
 #define __CRITICALSECTION_H__
 
 #include "Common/PerfTimer.h"
+#include <mutex>
 
 #ifdef PERF_TIMERS
 extern PerfGather TheCritSecPerfGather;
@@ -39,24 +40,7 @@ extern PerfGather TheCritSecPerfGather;
 
 class CriticalSection
 {
-	CRITICAL_SECTION m_windowsCriticalSection;
-
-	public:
-		CriticalSection()
-		{
-			#ifdef PERF_TIMERS
-			AutoPerfGather a(TheCritSecPerfGather);
-			#endif
-			InitializeCriticalSection( &m_windowsCriticalSection );
-		}
-
-		virtual ~CriticalSection()
-		{
-			#ifdef PERF_TIMERS
-			AutoPerfGather a(TheCritSecPerfGather);
-			#endif
-			DeleteCriticalSection( &m_windowsCriticalSection );
-		}
+	std::recursive_mutex m_mutex {};
 
 	public:	// Use these when entering/exiting a critical section.
 		void enter( void ) 
@@ -64,7 +48,7 @@ class CriticalSection
 			#ifdef PERF_TIMERS
 			AutoPerfGather a(TheCritSecPerfGather);
 			#endif
-			EnterCriticalSection( &m_windowsCriticalSection );
+			m_mutex.lock();
 		}
 		
 		void exit( void )
@@ -72,7 +56,7 @@ class CriticalSection
 			#ifdef PERF_TIMERS
 			AutoPerfGather a(TheCritSecPerfGather);
 			#endif
-			LeaveCriticalSection( &m_windowsCriticalSection );
+			m_mutex.unlock();
 		}
 };
 
@@ -93,13 +77,17 @@ class ScopedCriticalSection
 			if (m_cs) 
 				m_cs->exit();
 		}
+
+	// No copies allowed!
+	ScopedCriticalSection(const ScopedCriticalSection&) = delete;
+	ScopedCriticalSection& operator=(const ScopedCriticalSection&) = delete;
 };
 
-#include "mutex.h"
+// #include "mutex.h"
 
 // These should be NULL on creation then non-NULL in WinMain or equivalent.
 // This allows us to be silently non-threadsafe for WB and other single-threaded apps.
-extern FastCriticalSectionClass TheAsciiStringCriticalSection;
+extern CriticalSection *TheAsciiStringCriticalSection;
 extern CriticalSection *TheUnicodeStringCriticalSection;
 extern CriticalSection *TheDmaCriticalSection;
 extern CriticalSection *TheMemoryPoolCriticalSection;

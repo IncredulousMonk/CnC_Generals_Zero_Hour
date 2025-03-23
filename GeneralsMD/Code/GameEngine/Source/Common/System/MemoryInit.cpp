@@ -78,8 +78,8 @@ void userMemoryManagerGetDmaParms(Int *numSubPools, const PoolInitRec **pParms)
 struct PoolSizeRec
 {
 	const char* name;
-	Int initial;
-	Int overflow;
+	size_t initial;
+	size_t overflow;
 };
 
 //-----------------------------------------------------------------------------
@@ -721,7 +721,7 @@ static PoolSizeRec sizes[] =
 };
 
 //-----------------------------------------------------------------------------
-void userMemoryAdjustPoolSize(const char *poolName, Int& initialAllocationCount, Int& overflowAllocationCount)
+void userMemoryAdjustPoolSize(const char *poolName, size_t& initialAllocationCount, size_t& overflowAllocationCount)
 {
 	if (initialAllocationCount > 0)
 		return;
@@ -740,9 +740,9 @@ void userMemoryAdjustPoolSize(const char *poolName, Int& initialAllocationCount,
 }
 
 //-----------------------------------------------------------------------------
-static Int roundUpMemBound(Int i)
+static size_t roundUpMemBound(size_t i)
 {
-	const int MEM_BOUND_ALIGNMENT = 4;
+	const size_t MEM_BOUND_ALIGNMENT = 8u;
 
 	if (i < MEM_BOUND_ALIGNMENT)
 		return MEM_BOUND_ALIGNMENT;
@@ -760,34 +760,34 @@ void userMemoryManagerInitPools()
 	
 	// since we're called prior to main, the cur dir might not be what
 	// we expect. so do it the hard way.
-	char buf[_MAX_PATH];
-	::GetModuleFileName(NULL, buf, sizeof(buf));
-	char* pEnd = buf + strlen(buf);
-	while (pEnd != buf) 
-	{
-		if (*pEnd == '\\') 
-		{
-			*pEnd = 0;
-			break;
-		}
-		--pEnd;
-	}
-	strcat(buf, "\\Data\\INI\\MemoryPools.ini");
+	char buf[FILENAME_MAX];
+	// ::GetModuleFileName(NULL, buf, sizeof(buf));
+	// char* pEnd = buf + strlen(buf);
+	// while (pEnd != buf) 
+	// {
+	// 	if (*pEnd == '\\') 
+	// 	{
+	// 		*pEnd = 0;
+	// 		break;
+	// 	}
+	// 	--pEnd;
+	// }
+	strcpy(buf, "./Data/INI/MemoryPools.ini");
 
 	FILE* fp = fopen(buf, "r");
 	if (fp)
 	{
 		char poolName[256];
-		int initial, overflow;
-		while (fgets(buf, _MAX_PATH, fp))
+		size_t initial, overflow;
+		while (fgets(buf, FILENAME_MAX, fp))
 		{
 			if (buf[0] == ';')
 				continue;
-			if (sscanf(buf, "%s %d %d", poolName, &initial, &overflow ) == 3)
+			if (sscanf(buf, "%s %lu %lu", poolName, &initial, &overflow ) == 3)
 			{
 				for (PoolSizeRec* p = sizes; p->name != NULL; ++p)
 				{
-					if (stricmp(p->name, poolName) == 0)
+					if (strcasecmp(p->name, poolName) == 0)
 					{
 						// currently, these must be multiples of 4. so round up.
 						p->initial = roundUpMemBound(initial);

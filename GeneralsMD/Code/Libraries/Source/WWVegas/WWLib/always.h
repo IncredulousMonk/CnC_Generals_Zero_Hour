@@ -43,7 +43,7 @@
 #include <assert.h>
 
 // Disable warning about exception handling not being enabled. It's used as part of STL - in a part of STL we don't use.
-#pragma warning(disable : 4530)
+// #pragma warning(disable : 4530)
 
 /*
 ** Define for debug memory allocation to include __FILE__ and __LINE__ for every memory allocation.
@@ -73,6 +73,10 @@
 
 #if 1 // (gth) killing the Generals Memory Manager!
 
+#if 0
+
+// MG: I'm going to disable this for the moment.
+
 #ifndef _OPERATOR_NEW_DEFINED_
 
 	#define _OPERATOR_NEW_DEFINED_
@@ -95,6 +99,8 @@
 	//inline void __cdecl operator delete						(void *, void *p)		{ }
 	inline void* __cdecl operator new[]						(size_t s, void *p) { return p; }
 	inline void __cdecl operator delete[]					(void *, void *p)		{ }
+
+#endif
 
 #endif
 
@@ -136,7 +142,7 @@ public: \
 	inline void* operator new(size_t s) { return allocateFromW3DMemPool(getClassMemoryPool(), s); } \
 	inline void operator delete(void *p) { freeFromW3DMemPool(getClassMemoryPool(), p); } \
 	inline void* operator new(size_t s, const char* msg, int unused) { return allocateFromW3DMemPool(getClassMemoryPool(), s, msg, unused); } \
-	inline void operator delete(void *p, const char* msg, int unused) { freeFromW3DMemPool(getClassMemoryPool(), p); } \
+	inline void operator delete(void *p, const char*, int) { freeFromW3DMemPool(getClassMemoryPool(), p); } \
 
 // ----------------------------------------------------------------------------
 class W3DMPO

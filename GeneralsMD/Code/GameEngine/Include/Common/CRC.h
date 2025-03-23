@@ -32,7 +32,7 @@
 #define _CRC_H_
 
 #include "Lib/BaseType.h"
-#include "winsock2.h" // for htonl
+// #include "winsock2.h" // for htonl
 
 #ifdef _DEBUG
 
@@ -49,7 +49,7 @@ public:
 private:
 	void addCRC( UnsignedByte val );									///< CRC a 4-byte block
 
-	UnsignedInt crc;
+	UnsignedInt crc {};
 };
 
 #else

@@ -45,6 +45,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/CriticalSection.h"
+#include <wctype.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -93,11 +94,11 @@ void UnicodeString::ensureUniqueBufferOfSize(int numCharsNeeded, Bool preserveDa
 		return;
 	}
 
-	int minBytes = sizeof(UnicodeStringData) + numCharsNeeded*sizeof(WideChar);
+	size_t minBytes = sizeof(UnicodeStringData) + static_cast<size_t>(numCharsNeeded)*sizeof(WideChar);
 	if (minBytes > MAX_LEN)
 		throw ERROR_OUT_OF_MEMORY;
 
-	int actualBytes = TheDynamicMemoryAllocator->getActualAllocationSize(minBytes);
+	size_t actualBytes = TheDynamicMemoryAllocator->getActualAllocationSize(minBytes);
 	UnicodeStringData* newData = (UnicodeStringData*)TheDynamicMemoryAllocator->allocateBytesDoNotZero(actualBytes, "STR_UnicodeString::ensureUniqueBufferOfSize");
 	newData->m_refCount = 1;
 	newData->m_numCharsAllocated = (actualBytes - sizeof(UnicodeStringData))/sizeof(WideChar);
@@ -237,7 +238,7 @@ void UnicodeString::trim()
 		const WideChar *c = peek();
 
 		//	Strip leading white space from the string.
-		while (c && iswspace(*c))
+		while (c && iswspace(static_cast<wint_t>(*c)))
 		{
 			c++;
 		}
@@ -252,7 +253,7 @@ void UnicodeString::trim()
 			int len = wcslen(peek());
 			for (int index = len-1; index >= 0; index--)
 			{
-				if (iswspace(getCharAt(index)))
+				if (iswspace(static_cast<wint_t>(getCharAt(index))))
 				{
 					removeLastChar();
 				}
@@ -309,7 +310,7 @@ void UnicodeString::format_va(const UnicodeString& format, va_list args)
 {
 	validate();
 	WideChar buf[MAX_FORMAT_BUF_LEN];
-  if (_vsnwprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format.str(), args) < 0)
+  if (vswprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format.str(), args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();
@@ -320,7 +321,7 @@ void UnicodeString::format_va(const WideChar* format, va_list args)
 {
 	validate();
 	WideChar buf[MAX_FORMAT_BUF_LEN];
-  if (_vsnwprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format, args) < 0)
+  if (vswprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format, args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();
@@ -345,7 +346,7 @@ Bool UnicodeString::nextToken(UnicodeString* tok, UnicodeString delimiters)
 
 	if (end > start)
 	{
-		Int len = end - start;
+		size_t len = static_cast<size_t>(end - start);
 		WideChar* tmp = tok->getBufferForRead(len + 1);
 		memcpy(tmp, start, len*2);
 		tmp[len] = 0;

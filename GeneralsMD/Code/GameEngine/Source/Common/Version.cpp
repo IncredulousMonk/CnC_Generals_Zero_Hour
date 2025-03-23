@@ -48,8 +48,8 @@ Version::Version()
 #endif
 }
 
-void Version::setVersion(Int major, Int minor, Int buildNum,
-												 Int localBuildNum, AsciiString user, AsciiString location,
+void Version::setVersion(UnsignedInt major, UnsignedInt minor, UnsignedInt buildNum,
+												 UnsignedInt localBuildNum, AsciiString user, AsciiString location,
 												 AsciiString buildTime, AsciiString buildDate)
 {
 	m_major = major;
@@ -88,11 +88,11 @@ UnicodeString Version::getUnicodeVersion( void )
 	UnicodeString version;
 
 #if defined _DEBUG || defined _INTERNAL
-	if (!m_localBuildNum)
-		version.format(TheGameText->fetch("Version:Format3").str(), m_major, m_minor, m_buildNum);
-	else
-		version.format(TheGameText->fetch("Version:Format4").str(), m_major, m_minor, m_buildNum, m_localBuildNum,
-			m_buildUser.getCharAt(0), m_buildUser.getCharAt(1));
+	// if (!m_localBuildNum)
+	// 	version.format(TheGameText->fetch("Version:Format3").str(), m_major, m_minor, m_buildNum);
+	// else
+	// 	version.format(TheGameText->fetch("Version:Format4").str(), m_major, m_minor, m_buildNum, m_localBuildNum,
+	// 		m_buildUser.getCharAt(0), m_buildUser.getCharAt(1));
 #else // defined _DEBUG || defined _INTERNAL
 	version.format(TheGameText->fetch("Version:Format2").str(), m_major, m_minor);
 #endif // defined _DEBUG || defined _INTERNAL
@@ -112,11 +112,11 @@ UnicodeString Version::getFullUnicodeVersion( void )
 {
 	UnicodeString version;
 
-	if (!m_localBuildNum)
-		version.format(TheGameText->fetch("Version:Format3").str(), m_major, m_minor, m_buildNum);
-	else
-		version.format(TheGameText->fetch("Version:Format4").str(), m_major, m_minor, m_buildNum, m_localBuildNum,
-			m_buildUser.getCharAt(0), m_buildUser.getCharAt(1));
+	// if (!m_localBuildNum)
+	// 	version.format(TheGameText->fetch("Version:Format3").str(), m_major, m_minor, m_buildNum);
+	// else
+	// 	version.format(TheGameText->fetch("Version:Format4").str(), m_major, m_minor, m_buildNum, m_localBuildNum,
+	// 		m_buildUser.getCharAt(0), m_buildUser.getCharAt(1));
 
 #ifdef _DEBUG
 	version.concat(UnicodeString(L" Debug"));
@@ -145,7 +145,7 @@ UnicodeString Version::getUnicodeBuildTime( void )
 
 	dateStr.translate(m_buildDate);
 	timeStr.translate(m_buildTime);
-	build.format(TheGameText->fetch("Version:BuildTime").str(), dateStr.str(), timeStr.str());
+	// build.format(TheGameText->fetch("Version:BuildTime").str(), dateStr.str(), timeStr.str());
 
 	return build;
 }
@@ -161,7 +161,7 @@ UnicodeString Version::getUnicodeBuildLocation( void )
 	UnicodeString machine;
 
 	machine.translate(AsciiString(m_buildLocation));
-	build.format(TheGameText->fetch("Version:BuildMachine").str(), machine.str());
+	// build.format(TheGameText->fetch("Version:BuildMachine").str(), machine.str());
 
 	return build;
 }
@@ -177,7 +177,7 @@ UnicodeString Version::getUnicodeBuildUser( void )
 	UnicodeString user;
 
 	user.translate(AsciiString(m_buildUser));
-	build.format(TheGameText->fetch("Version:BuildUser").str(), user.str());
+	// build.format(TheGameText->fetch("Version:BuildUser").str(), user.str());
 
 	return build;
 }

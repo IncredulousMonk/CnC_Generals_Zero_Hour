@@ -24,10 +24,10 @@
 
 // FILE: SubsystemInterface.cpp 
 // ----------------------------------------------------------------------------
-#include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
+// #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/SubsystemInterface.h"
-#include "Common/Xfer.h"
+// #include "Common/Xfer.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -136,14 +136,14 @@ SubsystemInterfaceList::~SubsystemInterfaceList()
 }
 
 //-----------------------------------------------------------------------------
-void SubsystemInterfaceList::addSubsystem(SubsystemInterface* sys)
+void SubsystemInterfaceList::addSubsystem([[maybe_unused]] SubsystemInterface* sys)
 {
 #ifdef DUMP_PERF_STATS
 	m_allSubsystems.push_back(sys);
 #endif
 }
 //-----------------------------------------------------------------------------
-void SubsystemInterfaceList::removeSubsystem(SubsystemInterface* sys)
+void SubsystemInterfaceList::removeSubsystem([[maybe_unused]] SubsystemInterface* sys)
 {
 #ifdef DUMP_PERF_STATS
 	for (SubsystemList::iterator it = m_allSubsystems.begin(); it != m_subsystems.end(); ++it)
@@ -156,18 +156,18 @@ void SubsystemInterfaceList::removeSubsystem(SubsystemInterface* sys)
 #endif
 }
 //-----------------------------------------------------------------------------
-void SubsystemInterfaceList::initSubsystem(SubsystemInterface* sys, const char* path1, const char* path2, const char* dirpath, Xfer *pXfer, AsciiString name)
+void SubsystemInterfaceList::initSubsystem(SubsystemInterface* sys, const char* /*path1*/, const char* /*path2*/, const char* /*dirpath*/, Xfer */*pXfer*/, AsciiString name)
 {
 	sys->setName(name);
 	sys->init();
 
-	INI ini;
-	if (path1)
-		ini.load(path1, INI_LOAD_OVERWRITE, pXfer );
-	if (path2)
-		ini.load(path2, INI_LOAD_OVERWRITE, pXfer );
-	if (dirpath)
-		ini.loadDirectory(dirpath, TRUE, INI_LOAD_OVERWRITE, pXfer );
+	// INI ini;
+	// if (path1)
+	// 	ini.load(path1, INI_LOAD_OVERWRITE, pXfer );
+	// if (path2)
+	// 	ini.load(path2, INI_LOAD_OVERWRITE, pXfer );
+	// if (dirpath)
+	// 	ini.loadDirectory(dirpath, TRUE, INI_LOAD_OVERWRITE, pXfer );
 
 	m_subsystems.push_back(sys);
 }

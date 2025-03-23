@@ -38,7 +38,7 @@
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Thing;
 enum StealthLookType;
-enum EvaMessage;
+enum EvaMessage: int;
 class FXList;
 
 enum
@@ -101,6 +101,11 @@ public:
   Bool          m_grantedBySpecialPower;
 
   StealthUpdateModuleData();
+
+	// No copies allowed!
+	StealthUpdateModuleData(const StealthUpdateModuleData&) = delete;
+	StealthUpdateModuleData& operator=(const StealthUpdateModuleData&) = delete;
+
 	static void buildFieldParse(MultiIniFieldParse& p);
 
 };
@@ -116,6 +121,10 @@ public:
 
 	StealthUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	StealthUpdate(const StealthUpdate&) = delete;
+	StealthUpdate& operator=(const StealthUpdate&) = delete;
 
 
   virtual StealthUpdate* getStealth() { return this; }

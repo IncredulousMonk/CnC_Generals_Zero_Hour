@@ -31,7 +31,7 @@
 #ifndef _GAME_ENGINE_H_
 #define _GAME_ENGINE_H_
 
-// #include "Common/SubsystemInterface.h"
+#include "Common/SubsystemInterface.h"
 #include "Common/GameType.h"
 
 #define DEFAULT_MAX_FPS		45
@@ -58,7 +58,7 @@ class ParticleSystemManager;
 /**
  * The implementation of the game engine
  */
-class GameEngine //: public SubsystemInterface
+class GameEngine : public SubsystemInterface
 {
 
 public:

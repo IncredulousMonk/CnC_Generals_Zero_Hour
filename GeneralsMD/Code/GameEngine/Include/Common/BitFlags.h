@@ -52,7 +52,7 @@ template <size_t NUMBITS>
 class BitFlags
 {
 private:
-	std::bitset<NUMBITS>				m_bits;
+	std::bitset<NUMBITS>				m_bits {};
 	static const char*					s_bitNameList[];
 
 public:
@@ -69,25 +69,25 @@ public:
 	{
 	}
 
-	inline BitFlags(BogusInitType k, Int idx1)
+	inline BitFlags(BogusInitType, UnsignedInt idx1)
 	{
 		m_bits.set(idx1);
 	}
 
-	inline BitFlags(BogusInitType k, Int idx1, Int idx2)
+	inline BitFlags(BogusInitType, UnsignedInt idx1, UnsignedInt idx2)
 	{
 		m_bits.set(idx1);
 		m_bits.set(idx2);
 	}
 
-	inline BitFlags(BogusInitType k, Int idx1, Int idx2, Int idx3)
+	inline BitFlags(BogusInitType, UnsignedInt idx1, UnsignedInt idx2, UnsignedInt idx3)
 	{
 		m_bits.set(idx1);
 		m_bits.set(idx2);
 		m_bits.set(idx3);
 	}
 
-	inline BitFlags(BogusInitType k, Int idx1, Int idx2, Int idx3, Int idx4)
+	inline BitFlags(BogusInitType, UnsignedInt idx1, UnsignedInt idx2, UnsignedInt idx3, UnsignedInt idx4)
 	{
 		m_bits.set(idx1);
 		m_bits.set(idx2);
@@ -95,7 +95,7 @@ public:
 		m_bits.set(idx4);
 	}
 
-	inline BitFlags(BogusInitType k, Int idx1, Int idx2, Int idx3, Int idx4, Int idx5)
+	inline BitFlags(BogusInitType, UnsignedInt idx1, UnsignedInt idx2, UnsignedInt idx3, UnsignedInt idx4, UnsignedInt idx5)
 	{
 		m_bits.set(idx1);
 		m_bits.set(idx2);
@@ -104,19 +104,19 @@ public:
 		m_bits.set(idx5);
 	}
 
-	inline BitFlags(BogusInitType k, 
-										Int idx1, 
-										Int idx2, 
-										Int idx3, 
-										Int idx4, 
-										Int idx5,
-										Int idx6,
-										Int idx7,
-										Int idx8,
-										Int idx9,
-										Int idx10,
-										Int idx11,
-										Int idx12
+	inline BitFlags(BogusInitType, 
+										UnsignedInt idx1, 
+										UnsignedInt idx2, 
+										UnsignedInt idx3, 
+										UnsignedInt idx4, 
+										UnsignedInt idx5,
+										UnsignedInt idx6,
+										UnsignedInt idx7,
+										UnsignedInt idx8,
+										UnsignedInt idx9,
+										UnsignedInt idx10,
+										UnsignedInt idx11,
+										UnsignedInt idx12
 									)
 	{
 		m_bits.set(idx1);
@@ -143,12 +143,12 @@ public:
 		return this->m_bits != that.m_bits;
 	}
 
-	inline void set(Int i, Int val = 1)
+	inline void set(UnsignedInt i, Int val = 1)
 	{
 		m_bits.set(i, val);
 	}
 
-	inline Bool test(Int i) const
+	inline Bool test(UnsignedInt i) const
 	{
 		return m_bits.test(i);
 	}
@@ -276,7 +276,7 @@ public:
     Int i = 0;
 	  for(const char** name = s_bitNameList; *name; ++name, ++i )
 	  {
-		  if( stricmp( *name, token ) == 0 )
+		  if( strcasecmp( *name, token ) == 0 )
 		  {
         return i;
 		  }

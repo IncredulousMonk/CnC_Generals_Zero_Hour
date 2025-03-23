@@ -49,4 +49,8 @@ public:
 			delete [] mFailureMessage;
 		}
 	}
+
+	// No copies allowed!
+	INIException(const INIException&) = delete;
+	INIException& operator=(const INIException&) = delete;
 };

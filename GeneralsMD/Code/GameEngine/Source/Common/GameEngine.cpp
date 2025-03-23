@@ -38,7 +38,7 @@
 // #include "Common/PlayerList.h"
 // #include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
-// #include "Common/INI.h"
+#include "Common/INI.h"
 // #include "Common/INIException.h"
 // #include "Common/MessageStream.h"
 // #include "Common/ThingFactory.h"
@@ -106,9 +106,7 @@
 // #include "GameNetwork/LANAPI.h"
 // #include "GameNetwork/GameSpy/GameResultsThread.h"
 
-// #include "Common/Version.h"
-
-#include <iostream>
+#include "Common/Version.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -158,16 +156,16 @@ void DeepCRCSanityCheck::reset(void)
 GameEngine *TheGameEngine = NULL;
 
 //-------------------------------------------------------------------------------------------------
-// SubsystemInterfaceList* TheSubsystemList = NULL;
+SubsystemInterfaceList* TheSubsystemList = NULL;
 
 //-------------------------------------------------------------------------------------------------
-// template<class SUBSYSTEM>
-// void initSubsystem(SUBSYSTEM*& sysref, AsciiString name, SUBSYSTEM* sys, Xfer *pXfer,  const char* path1 = NULL, 
-// 									 const char* path2 = NULL, const char* dirpath = NULL)
-// {
-// 	sysref = sys;
-// 	TheSubsystemList->initSubsystem(sys, path1, path2, dirpath, pXfer, name);
-// }
+template<class SUBSYSTEM>
+void initSubsystem(SUBSYSTEM*& sysref, AsciiString name, SUBSYSTEM* sys, Xfer *pXfer,  const char* path1 = NULL, 
+									 const char* path2 = NULL, const char* dirpath = NULL)
+{
+	sysref = sys;
+	TheSubsystemList->initSubsystem(sys, path1, path2, dirpath, pXfer, name);
+}
 
 //-------------------------------------------------------------------------------------------------
 // extern HINSTANCE ApplicationHInstance;  ///< our application instance
@@ -209,9 +207,9 @@ GameEngine::~GameEngine()
 
 	// TheGameResultsQueue->endThreads();
 
-	// TheSubsystemList->shutdownAll();
-	// delete TheSubsystemList;
-	// TheSubsystemList = NULL;
+	TheSubsystemList->shutdownAll();
+	delete TheSubsystemList;
+	TheSubsystemList = NULL;
 
 	// delete TheNetwork;
 	// TheNetwork = NULL;
@@ -256,7 +254,7 @@ void GameEngine::init( int argc, char *argv[] )
 	(void) argv;
 	// try {
 		//create an INI object to use for loading stuff
-		// INI ini;
+		// INI ini {};
 
 #ifdef DEBUG_LOGGING
 		if (TheVersion)
@@ -296,11 +294,11 @@ void GameEngine::init( int argc, char *argv[] )
   char Buf[256];//////////////////////////////////////////////////////////////////////
 	#endif//////////////////////////////////////////////////////////////////////////////
 		
-		// m_maxFPS = DEFAULT_MAX_FPS;
+		m_maxFPS = DEFAULT_MAX_FPS;
 
-		// TheSubsystemList = MSGNEW("GameEngineSubsystem") SubsystemInterfaceList;
+		TheSubsystemList = MSGNEW("GameEngineSubsystem") SubsystemInterfaceList;
 		
-		// TheSubsystemList->addSubsystem(this);
+		TheSubsystemList->addSubsystem(this);
 
 		// // initialize the random number system
 		// InitRandom();
@@ -378,7 +376,7 @@ void GameEngine::init( int argc, char *argv[] )
 
 	#if defined(_DEBUG) || defined(_INTERNAL)
 		// If we're in Debug or Internal, load the Debug info as well.
-		ini.load( AsciiString( "Data\\INI\\GameDataDebug.ini" ), INI_LOAD_OVERWRITE, NULL );
+		// ini.load( AsciiString( "Data\\INI\\GameDataDebug.ini" ), INI_LOAD_OVERWRITE, NULL );
 	#endif
 		
 		// // special-case: parse command-line parameters after loading global data
@@ -529,7 +527,7 @@ void GameEngine::init( int argc, char *argv[] )
 		// initSubsystem(TheMetaMap,"TheMetaMap", MSGNEW("GameEngineSubsystem") MetaMap(), NULL, fname.str(), "Data\\INI\\CommandMap.ini");
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-		ini.load("Data\\INI\\CommandMapDebug.ini", INI_LOAD_MULTIFILE, NULL);
+		// ini.load("Data\\INI\\CommandMapDebug.ini", INI_LOAD_MULTIFILE, NULL);
 #endif
 
 #if defined(_ALLOW_DEBUG_CHEATS_IN_RELEASE)
@@ -792,16 +790,14 @@ void GameEngine::update( void )
  */
 void GameEngine::execute( void )
 {
-	std::cout << "GameEngine::execute\n";
-	
 // 	DWORD prevTime = timeGetTime();
 // #if defined(_DEBUG) || defined(_INTERNAL)
 // 	DWORD startTime = timeGetTime() / 1000;
 // #endif
 
-// 	// pretty basic for now
-// 	while( !m_quitting )
-// 	{
+	// pretty basic for now
+	while( !m_quitting )
+	{
 
 // 		//if (TheGlobalData->m_vTune)
 // 		{
@@ -837,8 +833,8 @@ void GameEngine::execute( void )
 // 			{
 // 				try 
 // 				{
-// 					// compute a frame
-// 					update();
+					// compute a frame
+					update();
 // 				}
 // 				catch (INIException e)
 // 				{
@@ -910,7 +906,7 @@ void GameEngine::execute( void )
 // 		}
 // #endif
 
-// 	}
+	}
 
 }
 

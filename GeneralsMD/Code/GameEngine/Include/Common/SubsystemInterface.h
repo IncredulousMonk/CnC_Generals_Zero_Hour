@@ -32,7 +32,7 @@
 #ifndef __SUBSYSTEMINTERFACE_H_
 #define __SUBSYSTEMINTERFACE_H_
 
-#include "Common/INI.h"
+// #include "Common/INI.h"
 #include "Common/STLTypedefs.h"	
 
 class Xfer;
@@ -135,7 +135,7 @@ protected:
 	inline void DRAW(void) {draw();}
 #endif
 protected:
-	AsciiString m_name;	
+	AsciiString m_name {};
 public:
 	AsciiString getName(void) {return m_name;}
 	void setName(AsciiString name) {m_name = name;}
@@ -163,8 +163,8 @@ public:
 private:
 
 	typedef std::vector<SubsystemInterface*> SubsystemList;
-	SubsystemList m_subsystems;
-	SubsystemList m_allSubsystems;
+	SubsystemList m_subsystems {};
+	SubsystemList m_allSubsystems {};
 
 };
 

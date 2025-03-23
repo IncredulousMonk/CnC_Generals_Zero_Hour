@@ -38,7 +38,7 @@
 
 #include "GameLogic/Damage.h"
 
-#include "WWMath/Matrix3D.h"
+#include "WWMath/matrix3d.h"
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 struct FieldParse;
@@ -94,7 +94,7 @@ static const char *TheWeaponPrefireNames[] =
 #endif
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponAntiMaskType
+enum WeaponAntiMaskType: UnsignedInt
 {
 	WEAPON_ANTI_AIRBORNE_VEHICLE	= 0x01,
 	WEAPON_ANTI_GROUND						= 0x02,
@@ -107,7 +107,7 @@ enum WeaponAntiMaskType
 };
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponAffectsMaskType
+enum WeaponAffectsMaskType: UnsignedInt
 {
 	WEAPON_AFFECTS_SELF						= 0x01,
 	WEAPON_AFFECTS_ALLIES					= 0x02,
@@ -118,7 +118,9 @@ enum WeaponAffectsMaskType
 	WEAPON_DOESNT_AFFECT_AIRBORNE	= 0x40, // Radius damage doesn't affect airborne units, unless they are the primary target. (used for poison fields.)
 };
 
-//#ifdef DEFINE_WEAPONAFFECTSMASK_NAMES ; Removed protection so other clases can use these strings... not sure why this was protected in the 1st place
+#ifdef DEFINE_WEAPONAFFECTSMASK_NAMES
+//; Removed protection so other clases can use these strings... not sure why this was protected in the 1st place
+// MG: reinstated ifdef, because this doesn't seem to be used.
 static const char *TheWeaponAffectsMaskNames[] = 
 {
 	"SELF",
@@ -130,10 +132,10 @@ static const char *TheWeaponAffectsMaskNames[] =
 	"NOT_AIRBORNE",
 	NULL
 };
-//#endif
+#endif
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponCollideMaskType
+enum WeaponCollideMaskType: UnsignedInt
 {
 	// all of these apply to *nontargeted* things that might just happen to get in the way...
 	// the target can always be collided with, regardless of flags
@@ -169,7 +171,7 @@ static const char *TheWeaponCollideMaskNames[] =
 // Note: these values are saved in save files, so you MUST NOT REMOVE OR CHANGE
 // existing values!
 //
-enum WeaponBonusConditionType
+enum WeaponBonusConditionType: int
 {
 	// The access and use of this enum has the bit shifting built in, so this is a 0,1,2,3,4,5 enum
 	WEAPONBONUSCONDITION_INVALID = -1,
@@ -345,6 +347,10 @@ public:
 
 	WeaponTemplate();
 	// virtual destructor declared by memory pool
+
+	// No copies allowed!
+	WeaponTemplate(const WeaponTemplate&) = delete;
+	WeaponTemplate& operator=(const WeaponTemplate&) = delete;
 
 	void reset( void );
 

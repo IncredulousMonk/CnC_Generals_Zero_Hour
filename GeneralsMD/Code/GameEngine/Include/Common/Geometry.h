@@ -85,14 +85,14 @@ static const Real EXTENT_BIG_CHANGE = 10.0f;
 class GeometryInfo : public Snapshot
 {
 private:
-	GeometryType m_type;
-	Bool m_isSmall;						///< if true, geometry is assumed to fit in a single partition cell
-	Real m_height;
-	Real m_majorRadius;
-	Real m_minorRadius;
+	GeometryType m_type {};
+	Bool m_isSmall {};						///< if true, geometry is assumed to fit in a single partition cell
+	Real m_height {};
+	Real m_majorRadius {};
+	Real m_minorRadius {};
 	
-	Real m_boundingCircleRadius;	///< not in INI file -- size of bounding circle (2d)
-	Real m_boundingSphereRadius;	///< not in INI -- size of bounding sphere (3d)
+	Real m_boundingCircleRadius {};	///< not in INI file -- size of bounding circle (2d)
+	Real m_boundingSphereRadius {};	///< not in INI -- size of bounding sphere (3d)
 
 	void calcBoundingStuff();
 

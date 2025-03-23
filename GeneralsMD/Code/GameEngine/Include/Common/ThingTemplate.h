@@ -60,10 +60,10 @@ class ProductionPrerequisite;
 struct FieldParse;
 class Player;
 class INI;
-enum RadarPriorityType;
-enum ScienceType;
-enum EditorSortingType;
-enum ShadowType;
+enum RadarPriorityType: int;
+enum ScienceType: int;
+enum EditorSortingType: int;
+enum ShadowType: int;
 class WeaponTemplateSet;
 class ArmorTemplateSet;
 class FXList;
@@ -271,15 +271,19 @@ private:
 		{ 
 		}
 
+		// No copies allowed!
+		Nugget(const Nugget&) = delete;
+		Nugget& operator=(const Nugget&) = delete;
+
 	};
-	std::vector<Nugget> m_info;
+	std::vector<Nugget> m_info {};
 
 public:
 
 	ModuleInfo() { }
 
 	void addModuleInfo( ThingTemplate *thingTemplate, const AsciiString& name, const AsciiString& moduleTag, const ModuleData* data, Int interfaceMask, Bool inheritable, Bool overrideableByLikeKind = FALSE );
-	const ModuleInfo::Nugget *ModuleInfo::getNuggetWithTag( const AsciiString& tag ) const;
+	const ModuleInfo::Nugget *getNuggetWithTag( const AsciiString& tag ) const;
 
 	Int getCount() const 
 	{ 
@@ -298,27 +302,27 @@ public:
 
 	AsciiString getNthName(Int i) const
 	{
-		if (i >= 0 && i < m_info.size())
+		if (i >= 0 && static_cast<std::size_t>(i) < m_info.size())
 		{
-			return m_info[i].first;
+			return m_info[static_cast<std::size_t>(i)].first;
 		}
 		return AsciiString::TheEmptyString;
 	}
 
 	AsciiString getNthTag(Int i) const
 	{
-		if (i >= 0 && i < m_info.size())
+		if (i >= 0 && static_cast<std::size_t>(i) < m_info.size())
 		{
-			return m_info[i].m_moduleTag;
+			return m_info[static_cast<std::size_t>(i)].m_moduleTag;
 		}
 		return AsciiString::TheEmptyString;
 	}
 
 	const ModuleData* getNthData(Int i) const
 	{
-		if (i >= 0 && i < m_info.size())
+		if (i >= 0 && static_cast<std::size_t>(i) < m_info.size())
 		{
-			return m_info[i].second;
+			return m_info[static_cast<std::size_t>(i)].second;
 		}
 		return NULL;
 	}
@@ -333,7 +337,7 @@ public:
 
 	void setCopiedFromDefault(Bool v)
 	{
-		for (int i = 0; i < m_info.size(); i++)
+		for (std::size_t i = 0; i < m_info.size(); i++)
 			m_info[i].copiedFromDefault = v;
 	}
 
@@ -360,6 +364,9 @@ public:
 
 
 	ThingTemplate();
+
+	// No copies allowed!
+	ThingTemplate& operator=(const ThingTemplate&) = delete;
 	
 	// copy the guts of that into this, but preserve this' name, id, and list-links.
 	void copyFrom(const ThingTemplate* that);
@@ -560,7 +567,7 @@ public:
 	BuildableStatus getBuildable() const;
 	
 	Int getPrereqCount() const { return m_prereqInfo.size(); }
-	const ProductionPrerequisite *getNthPrereq(Int i) const { return &m_prereqInfo[i]; }
+	const ProductionPrerequisite *getNthPrereq(Int i) const { return &m_prereqInfo[static_cast<std::size_t>(i)]; }
 
 	/** 
 		return the BuildFacilityTemplate, if any. 
@@ -663,107 +670,107 @@ private:
 private:
 
 	// ---- Strings
-	UnicodeString			m_displayName;			///< UI display for onscreen display
-	AsciiString				m_nameString;					///< name of this thing template
-	AsciiString				m_defaultOwningSide;	///< default owning side (owning player is inferred)
-	AsciiString				m_commandSetString;
-	AsciiString				m_selectedPortraitImageName;
-	AsciiString				m_buttonImageName;
-	AsciiString				m_upgradeCameoUpgradeNames[MAX_UPGRADE_CAMEO_UPGRADES];	///< Use these to find the upgrade images to display on the control bar
-	AsciiString				m_shadowTextureName;					///< name of texture to use for shadow decal
-	AsciiString				m_moduleBeingReplacedName;		///< used only during map.ini loading... name (not tag) of Module being replaced, or empty if not inside ReplaceModule block
-	AsciiString				m_moduleBeingReplacedTag;			///< used only during map.ini loading... tag (not name) of Module being replaced, or empty if not inside ReplaceModule block
+	UnicodeString			m_displayName {};			///< UI display for onscreen display
+	AsciiString				m_nameString {};					///< name of this thing template
+	AsciiString				m_defaultOwningSide {};	///< default owning side (owning player is inferred)
+	AsciiString				m_commandSetString {};
+	AsciiString				m_selectedPortraitImageName {};
+	AsciiString				m_buttonImageName {};
+	AsciiString				m_upgradeCameoUpgradeNames[MAX_UPGRADE_CAMEO_UPGRADES] {};	///< Use these to find the upgrade images to display on the control bar
+	AsciiString				m_shadowTextureName {};					///< name of texture to use for shadow decal
+	AsciiString				m_moduleBeingReplacedName {};		///< used only during map.ini loading... name (not tag) of Module being replaced, or empty if not inside ReplaceModule block
+	AsciiString				m_moduleBeingReplacedTag {};			///< used only during map.ini loading... tag (not name) of Module being replaced, or empty if not inside ReplaceModule block
 #ifdef LOAD_TEST_ASSETS
-	AsciiString				m_LTAName;
+	AsciiString				m_LTAName {};
 #endif
 
 	// ---- Misc Larger-than-int things
 	GeometryInfo			m_geometryInfo;			///< geometry information
-	KindOfMaskType		m_kindof;					///< kindof bits
-	AudioArray				m_audioarray;
-	ModuleInfo				m_behaviorModuleInfo;
-	ModuleInfo				m_drawModuleInfo;
-	ModuleInfo				m_clientUpdateModuleInfo;
+	KindOfMaskType		m_kindof {};					///< kindof bits
+	AudioArray				m_audioarray {};
+	ModuleInfo				m_behaviorModuleInfo {};
+	ModuleInfo				m_drawModuleInfo {};
+	ModuleInfo				m_clientUpdateModuleInfo {};
 
 	// ---- Misc Arrays-of-things
-	Int											m_skillPointValues[LEVEL_COUNT];
-	Int											m_experienceValues[LEVEL_COUNT];		///< How much I am worth at each experience level
-	Int											m_experienceRequired[LEVEL_COUNT];	///< How many experience points I need for each level
+	Int											m_skillPointValues[LEVEL_COUNT] {};
+	Int											m_experienceValues[LEVEL_COUNT] {};		///< How much I am worth at each experience level
+	Int											m_experienceRequired[LEVEL_COUNT] {};	///< How many experience points I need for each level
 	
 	//Code renderer handles these states now.
 	//AsciiString							m_inventoryImage[ INV_IMAGE_NUM_IMAGES ];  ///< portrait inventory pictures
 
 	// ---- STL-sized things
-	std::vector<ProductionPrerequisite>	m_prereqInfo;				///< the unit Prereqs for this tech
-	std::vector<AsciiString>						m_buildVariations;	/**< if we build a unit of this type via script or ui, randomly choose one
+	std::vector<ProductionPrerequisite>	m_prereqInfo {};				///< the unit Prereqs for this tech
+	std::vector<AsciiString>						m_buildVariations {};	/**< if we build a unit of this type via script or ui, randomly choose one
 																														of these templates instead. (doesn't apply to MapObject-created items) */
-	WeaponTemplateSetVector							m_weaponTemplateSets;					///< our weaponsets
-	WeaponTemplateSetFinder							m_weaponTemplateSetFinder;		///< helper to allow us to find the best sets, quickly
-	ArmorTemplateSetVector							m_armorTemplateSets;	///< our armorsets
-	ArmorTemplateSetFinder							m_armorTemplateSetFinder;		///< helper to allow us to find the best sets, quickly
-	PerUnitSoundMap											m_perUnitSounds;					///< An additional set of sounds that only apply for this template.
-	PerUnitFXMap												m_perUnitFX;									///< An additional set of fx that only apply for this template.
+	WeaponTemplateSetVector							m_weaponTemplateSets {};					///< our weaponsets
+	WeaponTemplateSetFinder							m_weaponTemplateSetFinder {};		///< helper to allow us to find the best sets, quickly
+	ArmorTemplateSetVector							m_armorTemplateSets {};	///< our armorsets
+	ArmorTemplateSetFinder							m_armorTemplateSetFinder {};		///< helper to allow us to find the best sets, quickly
+	PerUnitSoundMap											m_perUnitSounds {};					///< An additional set of sounds that only apply for this template.
+	PerUnitFXMap												m_perUnitFX {};									///< An additional set of fx that only apply for this template.
 
 	// ---- Pointer-sized things
-	ThingTemplate*				m_nextThingTemplate;
-	const ThingTemplate*	m_reskinnedFrom;									///< non NULL if we were generated via a reskin
-	const Image *					m_selectedPortraitImage;		/// portrait image when selected (to display in GUI)
-	const Image	*					m_buttonImage;			
+	ThingTemplate*				m_nextThingTemplate {};
+	const ThingTemplate*	m_reskinnedFrom {};									///< non NULL if we were generated via a reskin
+	const Image *					m_selectedPortraitImage {};		/// portrait image when selected (to display in GUI)
+	const Image	*					m_buttonImage {};			
 
 	// ---- Real-sized things
-	Real					m_fenceWidth;								///< Fence width for fence type objects.
-	Real					m_fenceXOffset;							///< Fence X offset for fence type objects.
-	Real					m_visionRange;								///< object "sees" this far around itself
-	Real					m_shroudClearingRange;				///< Since So many things got added to "Seeing" functionality, we need to split this part out.
-	Real					m_shroudRevealToAllRange;			///< When > zero, the shroud gets revealed to all players.
-	Real					m_placementViewAngle;				///< when placing buildings this will be the angle of the building when "floating" at the mouse
-	Real					m_factoryExitWidth;					///< when placing buildings this will be the width of the reserved exit area on the right side.
-	Real					m_factoryExtraBibWidth;					///< when placing buildings this will be the width of the reserved exit area on the right side.
-	Real					m_buildTime;									///< Seconds to build
-	Real					m_assetScale;
-	Real					m_instanceScaleFuzziness; ///< scale randomization tolerance to init for each Drawable instance, 
-	Real					m_shadowSizeX;				///< world-space extent of decal shadow texture
-	Real					m_shadowSizeY;				///< world-space extent of decal shadow texture
-	Real					m_shadowOffsetX;			///< world-space offset of decal shadow texture
-	Real					m_shadowOffsetY;			///< world-space offset of decal shadow texture
+	Real					m_fenceWidth {};								///< Fence width for fence type objects.
+	Real					m_fenceXOffset {};							///< Fence X offset for fence type objects.
+	Real					m_visionRange {};								///< object "sees" this far around itself
+	Real					m_shroudClearingRange {};				///< Since So many things got added to "Seeing" functionality, we need to split this part out.
+	Real					m_shroudRevealToAllRange {};			///< When > zero, the shroud gets revealed to all players.
+	Real					m_placementViewAngle {};				///< when placing buildings this will be the angle of the building when "floating" at the mouse
+	Real					m_factoryExitWidth {};					///< when placing buildings this will be the width of the reserved exit area on the right side.
+	Real					m_factoryExtraBibWidth {};					///< when placing buildings this will be the width of the reserved exit area on the right side.
+	Real					m_buildTime {};									///< Seconds to build
+	Real					m_assetScale {};
+	Real					m_instanceScaleFuzziness {}; ///< scale randomization tolerance to init for each Drawable instance, 
+	Real					m_shadowSizeX {};				///< world-space extent of decal shadow texture
+	Real					m_shadowSizeY {};				///< world-space extent of decal shadow texture
+	Real					m_shadowOffsetX {};			///< world-space offset of decal shadow texture
+	Real					m_shadowOffsetY {};			///< world-space offset of decal shadow texture
 
 	// ---- Int-sized things
-	Int						m_energyProduction;						///< how much Energy this takes (negative values produce Energy, rather than consuming it)
-	Int						m_energyBonus;								///< how much extra Energy this produces due to the upgrade
-	Color					m_displayColor;								///< for the editor display color
-	UnsignedInt		m_occlusionDelay;							///< delay after object creation before building occlusion is allowed.
-  NameKeyType   m_maxSimultaneousLinkKey;     ///< If this is not NAMEKEY_INVALID, it indicates that all the templates which have the same name key should be counted as the same "type" when looking at getMaxSimultaneousOfType().
+	Int						m_energyProduction {};						///< how much Energy this takes (negative values produce Energy, rather than consuming it)
+	Int						m_energyBonus {};								///< how much extra Energy this produces due to the upgrade
+	Color					m_displayColor {};								///< for the editor display color
+	UnsignedInt		m_occlusionDelay {};							///< delay after object creation before building occlusion is allowed.
+  NameKeyType   m_maxSimultaneousLinkKey {};     ///< If this is not NAMEKEY_INVALID, it indicates that all the templates which have the same name key should be counted as the same "type" when looking at getMaxSimultaneousOfType().
 
 	// ---- Short-sized things
-	UnsignedShort		m_templateID;									///< id for net (etc.) transmission purposes
-	UnsignedShort		m_buildCost;									///< money to build (0 == not buildable)
-	UnsignedShort		m_refundValue;								///< custom resale value, if sold. (0 == use default)
-	UnsignedShort		m_threatValue;								///< Threat map info
-	UnsignedShort		m_maxSimultaneousOfType;			///< max simultaneous of this unit we can have (per player) at one time. (0 == unlimited)
+	UnsignedShort		m_templateID {};									///< id for net (etc.) transmission purposes
+	UnsignedShort		m_buildCost {};									///< money to build (0 == not buildable)
+	UnsignedShort		m_refundValue {};								///< custom resale value, if sold. (0 == use default)
+	UnsignedShort		m_threatValue {};								///< Threat map info
+	UnsignedShort		m_maxSimultaneousOfType {};			///< max simultaneous of this unit we can have (per player) at one time. (0 == unlimited)
 
 	// ---- Bool-sized things
-  Bool          m_maxSimultaneousDeterminedBySuperweaponRestriction; ///< If true, override value in m_maxSimultaneousOfType with value from GameInfo::getSuperweaponRestriction()
-	Bool					m_isPrerequisite;							///< Is this thing considered in a prerequisite for any other thing?
-	Bool					m_isBridge;										///< True if this model is a bridge.
- 	Bool					m_isBuildFacility;						///< is this the build facility for something? (calculated based on other template's prereqs)
-	Bool					m_isTrainable;								///< Whether or not I can even gain experience
-	Bool          m_enterGuard;									///< Whether or not I can enter objects when guarding
-	Bool          m_hijackGuard;								///< Whether or not I can hijack objects when guarding
-	Bool					m_isForbidden;								///< useful when overriding in <mapfile>.ini
-	Bool					m_armorCopiedFromDefault;
-	Bool					m_weaponsCopiedFromDefault;
+  Bool          m_maxSimultaneousDeterminedBySuperweaponRestriction {}; ///< If true, override value in m_maxSimultaneousOfType with value from GameInfo::getSuperweaponRestriction()
+	Bool					m_isPrerequisite {};							///< Is this thing considered in a prerequisite for any other thing?
+	Bool					m_isBridge {};										///< True if this model is a bridge.
+ 	Bool					m_isBuildFacility {};						///< is this the build facility for something? (calculated based on other template's prereqs)
+	Bool					m_isTrainable {};								///< Whether or not I can even gain experience
+	Bool          m_enterGuard {};									///< Whether or not I can enter objects when guarding
+	Bool          m_hijackGuard {};								///< Whether or not I can hijack objects when guarding
+	Bool					m_isForbidden {};								///< useful when overriding in <mapfile>.ini
+	Bool					m_armorCopiedFromDefault {};
+	Bool					m_weaponsCopiedFromDefault {};
 
 	// ---- Byte-sized things
-	Byte					m_radarPriority;						///< does object appear on radar, and if so at what priority
-	Byte					m_transportSlotCount;				///< how many "slots" we take in a transport (0 == not transportable)
-	Byte					m_buildable;								///< is this thing buildable at all?
-	Byte					m_buildCompletion;					///< how the units come into the world when build is complete
-	Byte					m_editorSorting;						///< editor sorting type, see EditorSortingType enum
-	Byte					m_structureRubbleHeight;
-	Byte					m_shadowType;								///< settings which determine the type of shadow rendered
-	Byte					m_moduleParsingMode;
-	UnsignedByte	m_crusherLevel;							///< crusher > crushable level to actually crush
-	UnsignedByte	m_crushableLevel;						///< Specifies the level of crushability (must be hit by a crusher greater than this to crush me).
+	Byte					m_radarPriority {};						///< does object appear on radar, and if so at what priority
+	Byte					m_transportSlotCount {};				///< how many "slots" we take in a transport (0 == not transportable)
+	Byte					m_buildable {};								///< is this thing buildable at all?
+	Byte					m_buildCompletion {};					///< how the units come into the world when build is complete
+	Byte					m_editorSorting {};						///< editor sorting type, see EditorSortingType enum
+	Byte					m_structureRubbleHeight {};
+	Byte					m_shadowType {};								///< settings which determine the type of shadow rendered
+	Byte					m_moduleParsingMode {};
+	UnsignedByte	m_crusherLevel {};							///< crusher > crushable level to actually crush
+	UnsignedByte	m_crushableLevel {};						///< Specifies the level of crushability (must be hit by a crusher greater than this to crush me).
 
 
 };

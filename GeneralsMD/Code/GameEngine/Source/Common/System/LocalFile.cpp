@@ -313,7 +313,7 @@ void LocalFile::close( void )
 // LocalFile::read 
 //=================================================================
 
-Int LocalFile::read( void *buffer, Int bytes )
+Int LocalFile::read( void *buffer, UnsignedInt bytes )
 {
 	//USE_PERF_TIMER(LocalFile)
 	if( !m_open )

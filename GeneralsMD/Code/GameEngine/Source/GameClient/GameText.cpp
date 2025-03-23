@@ -56,6 +56,7 @@
 #include "Common/File.h"
 #include "Common/FileSystem.h"
 
+extern void SetWindowText(const char* text);
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -96,15 +97,15 @@ Bool g_useStringFile = TRUE;
 
 struct StringInfo
 {
-	AsciiString			label;
-	UnicodeString		text;
-	AsciiString			speech;
+	AsciiString			label {};
+	UnicodeString		text {};
+	AsciiString			speech {};
 };
 
 struct StringLookUp
 {
-	AsciiString		*label;
-	StringInfo		*info;
+	AsciiString		*label {};
+	StringInfo		*info {};
 };
 
 //===============================
@@ -113,12 +114,12 @@ struct StringLookUp
 
 struct CSFHeader
 {
-	Int id;
-	Int version;
-	Int num_labels;
-	Int num_strings;
-	Int skip;
-	Int langid;
+	Int id {};
+	Int version {};
+	Int num_labels {};
+	Int num_strings {};
+	Int skip {};
+	Int langid {};
 
 };
 
@@ -128,8 +129,8 @@ struct CSFHeader
 
 struct NoString
 {
-	struct NoString *next;
-	UnicodeString text;
+	struct NoString *next {};
+	UnicodeString text {};
 };
 
 
@@ -143,6 +144,10 @@ class GameTextManager : public GameTextInterface
 
 		GameTextManager();
 		virtual ~GameTextManager();
+
+		// No copies allowed!
+		GameTextManager(const GameTextManager&) = delete;
+		GameTextManager& operator=(const GameTextManager&) = delete;
 
 		virtual void					init( void );						///< Initlaizes the text system
 		virtual void					deinit( void );					///< De-initlaizes the text system
@@ -158,7 +163,7 @@ class GameTextManager : public GameTextInterface
 	protected:
 
 		Int							m_textCount;
-		Int							m_maxLabelLen;
+		UnsignedInt					m_maxLabelLen;
 		Char						m_buffer[MAX_UITEXT_LENGTH];
 		Char						m_buffer2[MAX_UITEXT_LENGTH];
 		Char						m_buffer3[MAX_UITEXT_LENGTH];
@@ -167,22 +172,22 @@ class GameTextManager : public GameTextInterface
 		StringInfo			*m_stringInfo;
 		StringLookUp		*m_stringLUT;
 		Bool						m_initialized;
+		NoString				*m_noStringList;
 #if defined(_DEBUG) || defined(_INTERNAL)
 		Bool						m_jabberWockie;
 		Bool						m_munkee;
 #endif
-		NoString				*m_noStringList;
 		Int							m_useStringFile;
-		LanguageID			m_language;
-		UnicodeString		m_failed;
-
+		LanguageID			m_language {};
+		
 		StringInfo			*m_mapStringInfo;
 		StringLookUp		*m_mapStringLUT;
-		Int							m_mapTextCount;
+		UnicodeString		m_failed;
+		Int							m_mapTextCount {};
 
 		/// m_asciiStringVec will be altered every time that getStringsWithLabelPrefix is called,
 		/// so don't simply store a pointer to it.
-		AsciiStringVec			m_asciiStringVec;
+		AsciiStringVec			m_asciiStringVec {};
 
 		void						stripSpaces ( WideChar *string );
 		void						removeLeadingAndTrailing ( Char *m_buffer );
@@ -198,7 +203,7 @@ class GameTextManager : public GameTextInterface
 		Char						readChar( File *file );
 };
 
-static int _cdecl			compareLUT ( const void *,  const void*);
+static int compareLUT ( const void *,  const void*);
 //----------------------------------------------------------------------------
 //         Private Data                                                     
 //----------------------------------------------------------------------------
@@ -367,18 +372,18 @@ void GameTextManager::init( void )
 		info++;
 	}
 
-	qsort( m_stringLUT, m_textCount, sizeof(StringLookUp), compareLUT  );
+	qsort( m_stringLUT, static_cast<size_t>(m_textCount), sizeof(StringLookUp), compareLUT  );
 
 	UnicodeString ourName = fetch("GUI:Command&ConquerGenerals");
 	AsciiString ourNameA;
 	ourNameA.translate(ourName);	//get ASCII version for Win 9x
 
-	extern HWND ApplicationHWnd;  ///< our application window handle
-	if (ApplicationHWnd) {
-		//Set it twice because Win 9x does not support SetWindowTextW.
-		::SetWindowText(ApplicationHWnd, ourNameA.str());
-		::SetWindowTextW(ApplicationHWnd, ourName.str());
-	}
+	// extern HWND ApplicationHWnd;  ///< our application window handle
+	// if (ApplicationHWnd) {
+	// 	//Set it twice because Win 9x does not support SetWindowTextW.
+		::SetWindowText(ourNameA.str());
+	// 	::SetWindowTextW(ApplicationHWnd, ourName.str());
+	// }
 
 }
 
@@ -498,7 +503,7 @@ void GameTextManager::removeLeadingAndTrailing ( Char *buffer )
 
 	ptr = first = buffer;
 
-	while ( (ch = *first) != 0 && iswspace ( ch ))
+	while ( (ch = *first) != 0 && isspace ( ch ))
 	{
 			first++;
 	}
@@ -507,7 +512,7 @@ void GameTextManager::removeLeadingAndTrailing ( Char *buffer )
 
 	ptr -= 2;;
 
-	while ( (ptr > buffer) && (ch = *ptr) != 0 && iswspace ( ch ) )
+	while ( (ptr > buffer) && (ch = *ptr) != 0 && isspace ( ch ) )
 	{
 		ptr--;
 	}
@@ -524,9 +529,7 @@ void GameTextManager::readToEndOfQuote( File *file, Char *in, Char *out, Char *w
 {
 	Int slash = FALSE;
 	Int state = 0;
-	Int line_start = FALSE;
 	Char ch;
-	Int ccount = 0;
 	Int len = 0;
 	Int done = FALSE;
 
@@ -554,9 +557,7 @@ void GameTextManager::readToEndOfQuote( File *file, Char *in, Char *out, Char *w
 
 		if ( ch == '\n' )
 		{
-			line_start = TRUE;
 			slash = FALSE;
-			ccount = 0;
 			ch = ' ';
 		}
 		else if ( ch == '\\' && !slash)
@@ -576,7 +577,7 @@ void GameTextManager::readToEndOfQuote( File *file, Char *in, Char *out, Char *w
 			slash = FALSE;
 		}
 
-		if ( iswspace ( ch ))
+		if ( isspace ( ch ))
 		{
 			ch = ' ';
 		}
@@ -613,12 +614,14 @@ void GameTextManager::readToEndOfQuote( File *file, Char *in, Char *out, Char *w
 		{
 
 			case 0:
-				if ( iswspace ( ch ) || ch == '=' )
+				if ( isspace ( ch ) || ch == '=' )
 				{
 					break;
 				}
 
 				state = 1;
+				// TODO: Was this meant to be a fallthrough?  Needs testing.
+				[[fallthrough]];
 			case 1:
 				if ( ( ch >= 'a' && ch <= 'z') || ( ch >= 'A' && ch <='Z') || (ch >= '0' && ch <= '9') || ch == '_' )
 				{
@@ -627,6 +630,7 @@ void GameTextManager::readToEndOfQuote( File *file, Char *in, Char *out, Char *w
 					break;
 				}
 				state = 2;
+				[[fallthrough]];
 			case 2:
 				break;
 		}
@@ -846,7 +850,7 @@ Bool GameTextManager::getStringCount( const char *filename, Int& textCount )
 				m_buffer[ len+1] = 0;
 			readToEndOfQuote( file, &m_buffer[1], m_buffer2, m_buffer3, MAX_UITEXT_LENGTH );
 		}
-		else if( !stricmp( m_buffer, "END") )
+		else if( !strcasecmp( m_buffer, "END") )
 		{
 			textCount++;
 		}
@@ -905,7 +909,7 @@ Bool GameTextManager::parseCSF( const Char *filename )
 {
 	File *file;
 	Int id;
-	Int len;
+	UnsignedInt len;
 	Int listCount = 0;
 	Bool ok = FALSE;
 	CSFHeader header;
@@ -1042,7 +1046,7 @@ Bool GameTextManager::parseStringFile( const char *filename )
 
 	while( ok )
 	{
-		Int len;
+		UnsignedInt len;
 		if( !readLine( m_buffer, MAX_UITEXT_LENGTH, file ))
 		{
 			break;
@@ -1057,7 +1061,7 @@ Bool GameTextManager::parseStringFile( const char *filename )
 
 		for ( Int i = 0; i < listCount; i++ )
 		{
-			if ( !stricmp ( m_stringInfo[i].label.str(), m_buffer ))
+			if ( !strcasecmp ( m_stringInfo[i].label.str(), m_buffer ))
 			{
 				DEBUG_ASSERTCRASH ( FALSE, ("String label '%s' multiply defined!", m_buffer ));
 			}
@@ -1108,7 +1112,7 @@ Bool GameTextManager::parseStringFile( const char *filename )
 					readString = TRUE;
 				}
 			}
-			else if ( !stricmp ( m_buffer, "END" ))
+			else if ( !strcasecmp ( m_buffer, "END" ))
 			{
 				break;
 			}
@@ -1151,7 +1155,7 @@ void GameTextManager::initMapStringFile( const AsciiString& filename )
 		info++;
 	}
 
-	qsort( m_mapStringLUT, m_mapTextCount, sizeof(StringLookUp), compareLUT  );
+	qsort( m_mapStringLUT, static_cast<size_t>(m_mapTextCount), sizeof(StringLookUp), compareLUT  );
 }
 
 //============================================================================
@@ -1173,7 +1177,7 @@ Bool GameTextManager::parseMapStringFile( const char *filename )
 
 	while( ok )
 	{
-		Int len;
+		UnsignedInt len;
 		if( !readLine( m_buffer, MAX_UITEXT_LENGTH, file ))
 		{
 			break;
@@ -1188,7 +1192,7 @@ Bool GameTextManager::parseMapStringFile( const char *filename )
 
 		for ( Int i = 0; i < listCount; i++ )
 		{
-			if ( !stricmp ( m_mapStringInfo[i].label.str(), m_buffer ))
+			if ( !strcasecmp ( m_mapStringInfo[i].label.str(), m_buffer ))
 			{
 				DEBUG_ASSERTCRASH ( FALSE, ("String label '%s' multiply defined!", m_buffer ));
 			}
@@ -1243,7 +1247,7 @@ Bool GameTextManager::parseMapStringFile( const char *filename )
 					readString = TRUE;
 				}
 			}
-			else if ( !stricmp ( m_buffer, "END" ))
+			else if ( !strcasecmp ( m_buffer, "END" ))
 			{
 				break;
 			}
@@ -1282,11 +1286,11 @@ UnicodeString GameTextManager::fetch( const Char *label, Bool *exists )
 	key.info = NULL;
 	key.label = &lb;
 
-	lookUp = (StringLookUp *) bsearch( &key, (void*) m_stringLUT, m_textCount, sizeof(StringLookUp), compareLUT );
+	lookUp = (StringLookUp *) bsearch( &key, (void*) m_stringLUT, static_cast<size_t>(m_textCount), sizeof(StringLookUp), compareLUT );
 
 	if ( lookUp == NULL && m_mapStringLUT && m_mapTextCount )
 	{
-		lookUp = (StringLookUp *) bsearch( &key, (void*) m_mapStringLUT, m_mapTextCount, sizeof(StringLookUp), compareLUT );
+		lookUp = (StringLookUp *) bsearch( &key, (void*) m_mapStringLUT, static_cast<size_t>(m_mapTextCount), sizeof(StringLookUp), compareLUT );
 	}
 
 	if( lookUp == NULL )
@@ -1402,10 +1406,10 @@ Char	GameTextManager::readChar( File *file )
 // GameTextManager::compareLUT 
 //============================================================================
 
-static int __cdecl compareLUT ( const void *i1,  const void*i2)
+static int compareLUT ( const void *i1,  const void*i2)
 {
 	StringLookUp *lut1 = (StringLookUp*) i1;
 	StringLookUp *lut2 = (StringLookUp*) i2;
 
-	return stricmp( lut1->label->str(), lut2->label->str());
+	return strcasecmp( lut1->label->str(), lut2->label->str());
 }

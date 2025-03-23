@@ -87,9 +87,9 @@ class Vector3
 public:
 
 
-	float	X;
-	float Y;
-	float Z;
+	float X {};
+	float Y {};
+	float Z {};
 
 
 	// Constructors

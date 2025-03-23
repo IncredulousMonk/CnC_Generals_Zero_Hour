@@ -62,7 +62,7 @@ class DamageInfo;
 class ParticleSystemTemplate;
 class CommandButton;
 class Waypoint;
-enum CommandOption;
+enum CommandOption: int;
 
 //-------------------------------------------------------------------------------------------------
 enum UpdateSleepTime 
@@ -82,7 +82,7 @@ enum UpdateSleepTime
 // in an efficient way while still maintaining order-dependency; you should
 // really never specify anything other than PHASE_NORMAL without very
 // careful deliberation. If you need to, talk it over with folks first. (srj)
-enum SleepyUpdatePhase
+enum SleepyUpdatePhase: UnsignedInt
 {
 	// reserve 2 bits for phase. this still leaves us 30 bits for frame counter,
 	// which, at 30fps, will still run for ~414 days without overflowing...
@@ -96,6 +96,8 @@ enum SleepyUpdatePhase
 class UpdateModuleInterface
 {
 public:
+
+	virtual ~UpdateModuleInterface() {}
 
 	virtual UpdateSleepTime update() = 0;
 
@@ -181,7 +183,7 @@ public:
 	}
 
 #ifdef DIRECT_UPDATEMODULE_ACCESS
-	#define UPDATEMODULE_FRIEND_DECLARATOR __forceinline
+	#define UPDATEMODULE_FRIEND_DECLARATOR inline
 #else
 	#define UPDATEMODULE_FRIEND_DECLARATOR virtual 
 #endif
@@ -229,8 +231,8 @@ public:
 };
 inline UpdateModule::UpdateModule( Thing *thing, const ModuleData* moduleData ) : 
 	BehaviorModule( thing, moduleData ),
-	m_indexInLogic(-1),
-	m_nextCallFrameAndPhase(0) 
+	m_nextCallFrameAndPhase(0),
+	m_indexInLogic(-1)
 { 
 	// nothing
 }
@@ -250,6 +252,7 @@ typedef UpdateModuleInterface* UpdateModulePtr;
 class SlavedUpdateInterface
 {
 public:
+	virtual ~SlavedUpdateInterface() {}
 	virtual ObjectID getSlaverID() const = 0;
 	virtual void onEnslave( const Object *slaver ) = 0;
 	virtual void onSlaverDie( const DamageInfo *info ) = 0;
@@ -262,6 +265,7 @@ public:
 class ProjectileUpdateInterface
 {
 public:
+	virtual ~ProjectileUpdateInterface() {}
 	virtual void projectileLaunchAtObjectOrPosition(const Object *victim, const Coord3D* victimPos, const Object *launcher, WeaponSlotType wslot, Int specificBarrelToUse, const WeaponTemplate* detWeap, const ParticleSystemTemplate* exhaustSysOverride) = 0;						///< launch the projectile at the given victim
 	virtual void projectileFireAtObjectOrPosition( const Object *victim, const Coord3D *victimPos, const WeaponTemplate *detWeap, const ParticleSystemTemplate* exhaustSysOverride ) = 0;
 	virtual Bool projectileIsArmed() const = 0;													///< return true if the projectile is armed and ready to explode
@@ -275,6 +279,8 @@ public:
 class DockUpdateInterface
 {
 public:
+	virtual ~DockUpdateInterface() {}
+
 	/** Returns true if it is okay for the docker to approach and prepare to dock.
 			False could mean the queue is full, for example.
 	*/
@@ -351,18 +357,19 @@ enum ExitDoorType
 class ExitInterface
 { 
 public:
+	virtual ~ExitInterface() {}
 	virtual Bool isExitBusy() const = 0;	///< Contain style exiters are getting the ability to space out exits, so ask this before reserveDoor as a kind of no-commitment check.
 	virtual ExitDoorType reserveDoorForExit( const ThingTemplate* objType, Object *specificObject ) = 0;		///< All types can answer if they are free to exit or not, and you can ask about a specific guy or just exit anything in general
 	virtual void exitObjectViaDoor( Object *newObj, ExitDoorType exitDoor ) = 0;							///< Here is the object for you to exit to the world in your own special way
 	virtual void exitObjectByBudding( Object *newObj, Object *budHost ) = 0;	///< puts new spawn on top of an existing one
 	virtual void unreserveDoorForExit( ExitDoorType exitDoor ) = 0;	///< if you get permission to exit, but then don't/can't call exitObjectViaDoor, you should call this to "give up" your permission
 	
-	virtual void exitObjectInAHurry( Object *newObj) {}; ///< Special call for objects exiting a tunnel network, does NOT change the ai state. jba.
+	virtual void exitObjectInAHurry( Object *) {}; ///< Special call for objects exiting a tunnel network, does NOT change the ai state. jba.
 
 	virtual void setRallyPoint( const Coord3D *pos ) = 0;				///< define a "rally point" for units to move towards
 	virtual const Coord3D *getRallyPoint( void ) const = 0;			///< define a "rally point" for units to move towards
 	virtual Bool useSpawnRallyPoint( void ) const { return FALSE; }
-	virtual Bool getNaturalRallyPoint( Coord3D& rallyPoint, Bool offset = TRUE ) const {rallyPoint.x=rallyPoint.y=rallyPoint.z=0; return false;}	///< get the natural "rally point" for units to move towards
+	virtual Bool getNaturalRallyPoint( Coord3D& rallyPoint, Bool ) const {rallyPoint.x=rallyPoint.y=rallyPoint.z=0; return false;}	///< get the natural "rally point" for units to move towards
 	virtual Bool getExitPosition( Coord3D& exitPosition ) const {exitPosition.x=exitPosition.y=exitPosition.z=0; return false;};					///< access to the "Door" position of the production object
 };
 

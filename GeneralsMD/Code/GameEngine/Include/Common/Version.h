@@ -54,20 +54,20 @@ public:
 	Bool showFullVersion( void ) { return m_showFullVersion; }
 	void setShowFullVersion( Bool val ) { m_showFullVersion = val; }
 
-	void setVersion(Int major, Int minor, Int buildNum,
-		Int localBuildNum, AsciiString user, AsciiString location,
+	void setVersion(UnsignedInt major, UnsignedInt minor, UnsignedInt buildNum,
+		UnsignedInt localBuildNum, AsciiString user, AsciiString location,
 		AsciiString buildTime, AsciiString buildDate); ///< Set version info
 
 private:
-	Int m_major;
-	Int m_minor;
-	Int m_buildNum;
-	Int m_localBuildNum;
-	AsciiString m_buildLocation;
-	AsciiString m_buildUser;
-	AsciiString m_buildTime;
-	AsciiString m_buildDate;
-	Bool m_showFullVersion;
+	UnsignedInt m_major {};
+	UnsignedInt m_minor {};
+	UnsignedInt m_buildNum {};
+	UnsignedInt m_localBuildNum {};
+	AsciiString m_buildLocation {};
+	AsciiString m_buildUser {};
+	AsciiString m_buildTime {};
+	AsciiString m_buildDate {};
+	Bool m_showFullVersion {};
 };
 
 extern Version *TheVersion;	///< The Version singleton

@@ -59,6 +59,8 @@
 #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
 
+#include <cstdint>
+
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
@@ -214,7 +216,7 @@ INI::~INI( void )
 	* If we are to load subdirectories, we will load them *after* we load all the
 	* files in the current directory */
 //-------------------------------------------------------------------------------------------------
-void INI::loadDirectory( AsciiString dirName, Bool subdirs, INILoadType loadType, Xfer *pXfer )
+void INI::loadDirectory( AsciiString dirName, Bool, INILoadType loadType, Xfer *pXfer )
 {
 	// sanity
 	if( dirName.isEmpty() )
@@ -333,16 +335,19 @@ static INIFieldParseProc findFieldParse(const FieldParse* parseTable, const char
 		}
 	}
 
-	if (!parse->token && parse->parse) 
-	{
-		offset = parse->offset;
-		userData = token;
-		return parse->parse;
-	}
-	else
-	{
-		return NULL;
-	}
+	// MG: parse is out of scope here, so how did this compile?!
+	// if (!parse->token && parse->parse) 
+	// {
+	// 	offset = parse->offset;
+	// 	userData = token;
+	// 	return parse->parse;
+	// }
+	// else
+	// {
+	// 	return NULL;
+	// }
+
+	return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -435,7 +440,7 @@ void INI::readLine( void )
       {
         // refill buffer
         m_readBufferNext=0;
-        m_readBufferUsed=m_file->read(m_readBuffer,INI_READ_BUFFER);
+        m_readBufferUsed=static_cast<unsigned>(m_file->read(m_readBuffer,INI_READ_BUFFER)); // TODO: read can return -1!
 
         // EOF?
         if (!m_readBufferUsed)
@@ -582,7 +587,7 @@ void INI::parsePositiveNonZeroReal( INI* ini, void * /*instance*/, void *store, 
 	* in a Real */
 //-------------------------------------------------------------------------------------------------
 void INI::parseAngleReal( INI *ini, void * /*instance*/, 
-																			void *store, const void *userData )
+																			void *store, const void * )
 {
 	const char *token = ini->getNextToken();
 
@@ -596,7 +601,7 @@ void INI::parseAngleReal( INI *ini, void * /*instance*/,
 	* in a Real */
 //-------------------------------------------------------------------------------------------------
 void INI::parseAngularVelocityReal( INI *ini, void * /*instance*/, 
-																			void *store, const void *userData )
+																			void *store, const void * )
 {
 	const char *token = ini->getNextToken();
 
@@ -618,10 +623,11 @@ void INI::parseBool( INI* ini, void * /*instance*/, void *store, const void* /*u
 /** Parse Bool from buffer; if true, or in MASK, otherwise and out MASK. The buffer token must
 	* be in the form of a string "Yes" or "No" (case is ignored) */
 //-------------------------------------------------------------------------------------------------
-void INI::parseBitInInt32( INI *ini, void *instance, void *store, const void* userData )
+void INI::parseBitInInt32( INI *ini, void *, void *store, const void* userData )
 {
 	UnsignedInt* s = (UnsignedInt*)store;
-	UnsignedInt mask = (UnsignedInt)userData;
+	// UnsignedInt mask = (UnsignedInt)userData;
+	UnsignedInt mask = static_cast<UnsignedInt>(reinterpret_cast<uintptr_t>(userData)); // MG: Yuck!
 
 	if (INI::scanBool(ini->getNextToken()))
 		*s |= mask;
@@ -634,9 +640,9 @@ void INI::parseBitInInt32( INI *ini, void *instance, void *store, const void* us
 /*static*/ Bool INI::scanBool(const char* token)
 {
 	// translate string yes/no into TRUE/FALSE
-	if( stricmp( token, "yes" ) == 0 )
+	if( strcasecmp( token, "yes" ) == 0 )
 		return TRUE;
-	else if( stricmp( token, "no" ) == 0 )
+	else if( strcasecmp( token, "no" ) == 0 )
 		return FALSE;
 	else
 	{
@@ -695,13 +701,13 @@ void INI::parseAsciiStringVectorAppend( INI* ini, void * /*instance*/, void *sto
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-/* static */void INI::parseScienceVector( INI *ini, void * /*instance*/, void *store, const void *userData )
+/* static */void INI::parseScienceVector( INI *ini, void * /*instance*/, void *store, const void * )
 {
 	ScienceVec* asv = (ScienceVec*)store;
 	asv->clear();
 	for (const char *token = ini->getNextTokenOrNull(); token != NULL; token = ini->getNextTokenOrNull())
 	{
-		if (stricmp(token, "None") == 0)
+		if (strcasecmp(token, "None") == 0)
 		{
 			asv->clear();
 			return;
@@ -825,7 +831,7 @@ void INI::parseAndTranslateLabel( INI* ini, void * /*instance*/, void *store, co
 /** Parse a string label assumed as an image as part of the image collection.  Translate
 	* to an image pointer for storage */
 //-------------------------------------------------------------------------------------------------
-void INI::parseMappedImage( INI *ini, void * /*instance*/, void *store, const void *userData )
+void INI::parseMappedImage( INI *ini, void * /*instance*/, void *store, const void * )
 {
 	const char *token = ini->getNextToken();
 
@@ -847,7 +853,7 @@ void INI::parseMappedImage( INI *ini, void * /*instance*/, void *store, const vo
 /** Parse a string label assumed as a Anim2D template name.  Translate that name to an 
 	* actual template pointer for storage */
 // ------------------------------------------------------------------------------------------------
-/*static*/ void INI::parseAnim2DTemplate( INI *ini, void *instance, void *store, const void *userData )
+/*static*/ void INI::parseAnim2DTemplate( INI *ini, void *, void *store, const void * )
 {
 	const char *token = ini->getNextToken();
 
@@ -917,7 +923,7 @@ void INI::parseBitString32( INI* ini, void * /*instance*/, void *store, const vo
 	// loop through all tokens
 	for (const char *token = ini->getNextTokenOrNull(); token != NULL; token = ini->getNextTokenOrNull())
 	{
-		if (stricmp(token, "NONE") == 0)
+		if (strcasecmp(token, "NONE") == 0)
 		{
 			if (foundNormal || foundAddOrSub)
 			{
@@ -947,7 +953,7 @@ void INI::parseBitString32( INI* ini, void * /*instance*/, void *store, const vo
 				throw INI_INVALID_NAME_LIST;
 			}
 			Int bitIndex = INI::scanIndexList(token+1, flagList);	// this throws if the token is not found
-			*bits &= ~(1 << bitIndex);
+			*bits &= static_cast<UnsignedInt>(~(1 << bitIndex));
 			foundAddOrSub = true;
 		}
 		else
@@ -1023,7 +1029,7 @@ void INI::parseRGBAColorInt( INI* ini, void * /*instance*/, void *store, const v
 		else
 		{
 			// if present, the token must match.
-			if (stricmp(token, names[i]) != 0)
+			if (strcasecmp(token, names[i]) != 0)
 			{
 				throw INI_INVALID_DATA;				
 			}
@@ -1040,10 +1046,10 @@ void INI::parseRGBAColorInt( INI* ini, void * /*instance*/, void *store, const v
 	// the numbers as between 0 and 255
 	//
 	RGBAColorInt *theColor = (RGBAColorInt *)store;
-	theColor->red		= colors[ 0 ];
-	theColor->green = colors[ 1 ];
-	theColor->blue	= colors[ 2 ];
-	theColor->alpha = colors[ 3 ];
+	theColor->red		= static_cast<UnsignedInt>(colors[ 0 ]);
+	theColor->green = static_cast<UnsignedInt>(colors[ 1 ]);
+	theColor->blue	= static_cast<UnsignedInt>(colors[ 2 ]);
+	theColor->alpha = static_cast<UnsignedInt>(colors[ 3 ]);
 
 }  // end parseRGBAColorInt
 
@@ -1075,7 +1081,7 @@ void INI::parseColorInt( INI* ini, void * /*instance*/, void *store, const void*
 		else
 		{
 			// if present, the token must match.
-			if (stricmp(token, names[i]) != 0)
+			if (strcasecmp(token, names[i]) != 0)
 			{
 				throw INI_INVALID_DATA;				
 			}
@@ -1139,13 +1145,13 @@ void INI::parseICoord2D( INI* ini, void * /*instance*/, void *store, const void*
 //-------------------------------------------------------------------------------------------------
 /** Parse an audio event and assign to the 'AudioEventRTS*' at store */
 //-------------------------------------------------------------------------------------------------
-void INI::parseDynamicAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* userData )
+void INI::parseDynamicAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* )
 {
 	const char *token = ini->getNextToken();
 	DynamicAudioEventRTS** theSound = (DynamicAudioEventRTS**)store;
 	
 	// translate the string into a sound
-	if (stricmp(token, "NoSound") == 0) 
+	if (strcasecmp(token, "NoSound") == 0) 
 	{
 		if (*theSound)
 		{
@@ -1167,14 +1173,14 @@ void INI::parseDynamicAudioEventRTS( INI *ini, void * /*instance*/, void *store,
 //-------------------------------------------------------------------------------------------------
 /** Parse an audio event and assign to the 'AudioEventRTS*' at store */
 //-------------------------------------------------------------------------------------------------
-void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* userData )
+void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* )
 {
 	const char *token = ini->getNextToken();
 
 	AudioEventRTS *theSound = (AudioEventRTS*)store;
 	
 	// translate the string into a sound
-	if (stricmp(token, "NoSound") != 0) {
+	if (strcasecmp(token, "NoSound") != 0) {
 		theSound->setEventName(AsciiString(token));
 	}
 
@@ -1197,7 +1203,7 @@ void INI::parseThingTemplate( INI* ini, void * /*instance*/, void *store, const 
 	typedef const ThingTemplate *ConstThingTemplatePtr;
 	ConstThingTemplatePtr* theThingTemplate = (ConstThingTemplatePtr*)store;		
 
-	if (stricmp(token, "None") == 0)
+	if (strcasecmp(token, "None") == 0)
 	{
 		*theThingTemplate = NULL;
 	}
@@ -1221,7 +1227,7 @@ void INI::parseArmorTemplate( INI* ini, void * /*instance*/, void *store, const 
 	typedef const ArmorTemplate *ConstArmorTemplatePtr;
 	ConstArmorTemplatePtr* theArmorTemplate = (ConstArmorTemplatePtr*)store;		
 
-	if (stricmp(token, "None") == 0)
+	if (strcasecmp(token, "None") == 0)
 	{
 		*theArmorTemplate = NULL;
 	}
@@ -1246,7 +1252,7 @@ void INI::parseWeaponTemplate( INI* ini, void * /*instance*/, void *store, const
 	ConstWeaponTemplatePtr* theWeaponTemplate = (ConstWeaponTemplatePtr*)store;		
 
 	const WeaponTemplate *tt = TheWeaponStore->findWeaponTemplate(token);	// could be null!
-	DEBUG_ASSERTCRASH(tt || stricmp(token, "None") == 0, ("WeaponTemplate %s not found!\n",token));
+	DEBUG_ASSERTCRASH(tt || strcasecmp(token, "None") == 0, ("WeaponTemplate %s not found!\n",token));
 	// assign it, even if null!
 	*theWeaponTemplate = tt;
 
@@ -1263,7 +1269,7 @@ void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /
 	ConstFXListPtr* theFXList = (ConstFXListPtr*)store;		
 
 	const FXList *fxl = TheFXListStore->findFXList(token);	// could be null!
-	DEBUG_ASSERTCRASH(fxl != NULL || stricmp(token, "None") == 0, ("FXList %s not found!\n",token));
+	DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
 	// assign it, even if null!
 	*theFXList = fxl;
 
@@ -1272,12 +1278,12 @@ void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /
 //-------------------------------------------------------------------------------------------------
 /** Parse a particle system and assign to 'ParticleSystemTemplate *' at store */
 //-------------------------------------------------------------------------------------------------
-void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *store, const void *userData )
+void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *store, const void * )
 {
 	const char *token = ini->getNextToken();
 
 	const ParticleSystemTemplate *pSystemT = TheParticleSystemManager->findTemplate( AsciiString( token ) );
-	DEBUG_ASSERTCRASH( pSystemT || stricmp( token, "None" ) == 0, ("ParticleSystem %s not found!\n",token) );
+	DEBUG_ASSERTCRASH( pSystemT || strcasecmp( token, "None" ) == 0, ("ParticleSystem %s not found!\n",token) );
 
 	typedef const ParticleSystemTemplate* ConstParticleSystemTemplatePtr;
 	ConstParticleSystemTemplatePtr* theParticleSystemTemplate = (ConstParticleSystemTemplatePtr*)store;		
@@ -1296,7 +1302,7 @@ void INI::parseDamageFX( INI* ini, void * /*instance*/, void *store, const void*
 	typedef const DamageFX *ConstDamageFXPtr;
 	ConstDamageFXPtr* theDamageFX = (ConstDamageFXPtr*)store;		
 
-	if (stricmp(token, "None") == 0)
+	if (strcasecmp(token, "None") == 0)
 	{
 		*theDamageFX = NULL;
 	}
@@ -1321,7 +1327,7 @@ void INI::parseObjectCreationList( INI* ini, void * /*instance*/, void *store, c
 	ConstObjectCreationListPtr* theObjectCreationList = (ConstObjectCreationListPtr*)store;		
 
 	const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null!
-	DEBUG_ASSERTCRASH(ocl || stricmp(token, "None") == 0, ("ObjectCreationList %s not found!\n",token));
+	DEBUG_ASSERTCRASH(ocl || strcasecmp(token, "None") == 0, ("ObjectCreationList %s not found!\n",token));
 	// assign it, even if null!
 	*theObjectCreationList = ocl;
 
@@ -1341,7 +1347,7 @@ void INI::parseUpgradeTemplate( INI* ini, void * /*instance*/, void *store, cons
 	}
 
 	const UpgradeTemplate *uu = TheUpgradeCenter->findUpgrade( AsciiString( token ) );
-	DEBUG_ASSERTCRASH( uu || stricmp( token, "None" ) == 0, ("Upgrade %s not found!\n",token) );
+	DEBUG_ASSERTCRASH( uu || strcasecmp( token, "None" ) == 0, ("Upgrade %s not found!\n",token) );
 
 	typedef const UpgradeTemplate* ConstUpgradeTemplatePtr;
 	ConstUpgradeTemplatePtr* theUpgradeTemplate = (ConstUpgradeTemplatePtr *)store;		
@@ -1362,7 +1368,7 @@ void INI::parseSpecialPowerTemplate( INI* ini, void * /*instance*/, void *store,
 	}
 
 	const SpecialPowerTemplate *sPowerT = TheSpecialPowerStore->findSpecialPowerTemplate( AsciiString( token ) );
-	if( !sPowerT && stricmp( token, "None" ) != 0 )
+	if( !sPowerT && strcasecmp( token, "None" ) != 0 )
 	{
 		DEBUG_CRASH( ("[LINE: %d in '%s'] Specialpower %s not found!\n", ini->getLineNum(), ini->getFilename().str(), token) );
 	}
@@ -1375,7 +1381,7 @@ void INI::parseSpecialPowerTemplate( INI* ini, void * /*instance*/, void *store,
 //-------------------------------------------------------------------------------------------------
 /** Parse a science string and store as science type */
 //-------------------------------------------------------------------------------------------------
-/* static */void INI::parseScience( INI *ini, void * /*instance*/, void *store, const void *userData )
+/* static */void INI::parseScience( INI *ini, void * /*instance*/, void *store, const void * )
 {
 	const char *token = ini->getNextToken();
 
@@ -1494,7 +1500,7 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 		if( field )
 		{
 
-			if( stricmp( field, m_blockEndToken ) == 0 )
+			if( strcasecmp( field, m_blockEndToken ) == 0 )
 			{
 				done = TRUE;
 			}
@@ -1504,7 +1510,7 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 				for (int ptIdx = 0; ptIdx < parseTableList.getCount(); ++ptIdx)
 				{
 					int offset = 0;
-					void* userData = 0;
+					const void* userData {};
 					INIFieldParseProc parse = findFieldParse(parseTableList.getNthFieldParse(ptIdx), field, offset, userData);
 					if (parse)
 					{
@@ -1630,7 +1636,7 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 	Int count = 0;
 	for(ConstCharPtrArray name = nameList; *name; name++, count++ )
 	{
-		if( stricmp( *name, token ) == 0 )
+		if( strcasecmp( *name, token ) == 0 )
 		{
 			return count;
 		}
@@ -1651,14 +1657,11 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 	}
 
 	// search for matching name
-	Bool found = false;
 	for( const LookupListRec* lookup = &lookupList[0]; lookup->name; lookup++ )
 	{
-		if( stricmp( lookup->name, token ) == 0 )
+		if( strcasecmp( lookup->name, token ) == 0 )
 		{
 			return lookup->value;
-			found = true;
-			break;
 		}
 	}
 
@@ -1672,7 +1675,7 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 const char* INI::getNextSubToken(const char* expected)
 {
 	const char* token = getNextToken(getSepsColon());
-	if (stricmp(token, expected) != 0)
+	if (strcasecmp(token, expected) != 0)
 		throw INI_INVALID_DATA;
 	return getNextToken(getSepsColon());
 }
@@ -1753,12 +1756,12 @@ void INI::parseVeterancyLevelFlags(INI* ini, void* /*instance*/, void* store, co
 	VeterancyLevelFlags flags = VETERANCY_LEVEL_FLAGS_ALL;
 	for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
 	{
-		if (stricmp(token, "ALL") == 0)
+		if (strcasecmp(token, "ALL") == 0)
 		{
 			flags = VETERANCY_LEVEL_FLAGS_ALL;
 			continue;
 		}
-		else if (stricmp(token, "NONE") == 0)
+		else if (strcasecmp(token, "NONE") == 0)
 		{
 			flags = VETERANCY_LEVEL_FLAGS_NONE;
 			continue;
@@ -1785,7 +1788,7 @@ void INI::parseVeterancyLevelFlags(INI* ini, void* /*instance*/, void* store, co
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void INI::parseSoundsList( INI* ini, void *instance, void *store, const void* /*userData*/ )
+void INI::parseSoundsList( INI* ini, void *, void *store, const void* /*userData*/ )
 {
 	std::vector<AsciiString> *vec = (std::vector<AsciiString>*) store;
 	vec->clear();
@@ -1808,13 +1811,13 @@ void INI::parseDamageTypeFlags(INI* ini, void* /*instance*/, void* store, const 
 
 	for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
 	{
-		if (stricmp(token, "ALL") == 0)
+		if (strcasecmp(token, "ALL") == 0)
 		{
 			flags = DAMAGE_TYPE_FLAGS_NONE;
 			flags.flip();
 			continue;
 		}
-		if (stricmp(token, "NONE") == 0)
+		if (strcasecmp(token, "NONE") == 0)
 		{
 			flags = DAMAGE_TYPE_FLAGS_NONE;
 			continue;
@@ -1843,12 +1846,12 @@ void INI::parseDeathTypeFlags(INI* ini, void* /*instance*/, void* store, const v
 	DeathTypeFlags flags = DEATH_TYPE_FLAGS_ALL;
 	for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
 	{
-		if (stricmp(token, "ALL") == 0)
+		if (strcasecmp(token, "ALL") == 0)
 		{
 			flags = DEATH_TYPE_FLAGS_ALL;
 			continue;
 		}
-		if (stricmp(token, "NONE") == 0)
+		if (strcasecmp(token, "NONE") == 0)
 		{
 			flags = DEATH_TYPE_FLAGS_NONE;
 			continue;
@@ -1886,8 +1889,8 @@ Bool INI::isDeclarationOfType( AsciiString blockType, AsciiString blockName, cha
 	
 	char restoreChar;
 	char *tempBuff = bufferToCheck;
-	int blockTypeLength = blockType.getLength();
-	int blockNameLength = blockName.getLength();
+	size_t blockTypeLength = blockType.getLength();
+	size_t blockNameLength = blockName.getLength();
 
 	while (isspace(*tempBuff)) {
 		++tempBuff;
@@ -1897,7 +1900,7 @@ Bool INI::isDeclarationOfType( AsciiString blockType, AsciiString blockName, cha
 		restoreChar = tempBuff[blockTypeLength];
 		tempBuff[blockTypeLength] = 0;
 		
-		if (stricmp(blockType.str(), tempBuff) != 0) {
+		if (strcasecmp(blockType.str(), tempBuff) != 0) {
 			retVal = false;
 		}
 
@@ -1915,7 +1918,7 @@ Bool INI::isDeclarationOfType( AsciiString blockType, AsciiString blockName, cha
 		restoreChar = tempBuff[blockNameLength];
 		tempBuff[blockNameLength] = 0;
 		
-		if (stricmp(blockName.str(), tempBuff) != 0) {
+		if (strcasecmp(blockName.str(), tempBuff) != 0) {
 			retVal = false;
 		}
 
@@ -1948,7 +1951,7 @@ Bool INI::isEndOfBlock( char *bufferToCheck )
 	// it is important to get through all the checks.
 	
 	static const char* endString = "End";
-	int endStringLength = strlen(endString);
+	size_t endStringLength = strlen(endString);
 	char restoreChar;
 	char *tempBuff = bufferToCheck;
 	
@@ -1961,7 +1964,7 @@ Bool INI::isEndOfBlock( char *bufferToCheck )
 		restoreChar = tempBuff[endStringLength];
 		tempBuff[endStringLength] = 0;
 		
-		if (stricmp(endString, tempBuff) != 0) {
+		if (strcasecmp(endString, tempBuff) != 0) {
 			retVal = false;
 		}
 

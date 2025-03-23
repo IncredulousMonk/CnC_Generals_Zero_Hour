@@ -133,11 +133,11 @@ void AsciiString::ensureUniqueBufferOfSize(int numCharsNeeded, Bool preserveData
 		return;
 	}
 
-	int minBytes = sizeof(AsciiStringData) + numCharsNeeded*sizeof(char);
+	size_t minBytes = sizeof(AsciiStringData) + static_cast<size_t>(numCharsNeeded)*sizeof(char);
 	if (minBytes > MAX_LEN)
 		throw ERROR_OUT_OF_MEMORY;
 
-	int actualBytes = TheDynamicMemoryAllocator->getActualAllocationSize(minBytes);
+	size_t actualBytes = TheDynamicMemoryAllocator->getActualAllocationSize(minBytes);
 	AsciiStringData* newData = (AsciiStringData*)TheDynamicMemoryAllocator->allocateBytesDoNotZero(actualBytes, "STR_AsciiString::ensureUniqueBufferOfSize");
 	newData->m_refCount = 1;
 	newData->m_numCharsAllocated = (actualBytes - sizeof(AsciiStringData))/sizeof(char);
@@ -285,7 +285,7 @@ void AsciiString::format_va(const AsciiString& format, va_list args)
 {
 	validate();
 	char buf[MAX_FORMAT_BUF_LEN];
-  if (_vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format.str(), args) < 0)
+  if (vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format.str(), args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();
@@ -296,7 +296,7 @@ void AsciiString::format_va(const char* format, va_list args)
 {
 	validate();
 	char buf[MAX_FORMAT_BUF_LEN];
-  if (_vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format, args) < 0)
+  if (vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format, args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();
@@ -308,8 +308,8 @@ Bool AsciiString::startsWith(const char* p) const
 	if (*p == 0)
 		return true;	// everything starts with the empty string
 
-	int lenThis = getLength();
-	int lenThat = strlen(p);
+	size_t lenThis = getLength();
+	size_t lenThat = strlen(p);
 	if (lenThis < lenThat)
 		return false;	// that must be smaller than this
 
@@ -322,12 +322,12 @@ Bool AsciiString::startsWithNoCase(const char* p) const
 	if (*p == 0)
 		return true;	// everything starts with the empty string
 
-	int lenThis = getLength();
-	int lenThat = strlen(p);
+	size_t lenThis = getLength();
+	size_t lenThat = strlen(p);
 	if (lenThis < lenThat)
 		return false;	// that must be smaller than this
 
-	return strnicmp(peek(), p, lenThat) == 0;
+	return strncasecmp(peek(), p, lenThat) == 0;
 }
 
 // -----------------------------------------------------
@@ -336,8 +336,8 @@ Bool AsciiString::endsWith(const char* p) const
 	if (*p == 0)
 		return true;	// everything ends with the empty string
 
-	int lenThis = getLength();
-	int lenThat = strlen(p);
+	size_t lenThis = getLength();
+	size_t lenThat = strlen(p);
 	if (lenThis < lenThat)
 		return false;	// that must be smaller than this
 
@@ -350,18 +350,18 @@ Bool AsciiString::endsWithNoCase(const char* p) const
 	if (*p == 0)
 		return true;	// everything ends with the empty string
 
-	int lenThis = getLength();
-	int lenThat = strlen(p);
+	size_t lenThis = getLength();
+	size_t lenThat = strlen(p);
 	if (lenThis < lenThat)
 		return false;	// that must be smaller than this
 
-	return strnicmp(peek() + lenThis - lenThat, p, lenThat) == 0;
+	return strncasecmp(peek() + lenThis - lenThat, p, lenThat) == 0;
 }
 
 //-----------------------------------------------------------------------------
 Bool AsciiString::isNone() const
 {
-	return m_data && stricmp(peek(), "None") == 0;
+	return m_data && strcasecmp(peek(), "None") == 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -378,9 +378,9 @@ Bool AsciiString::nextToken(AsciiString* tok, const char* seps)
 
 	if (end > start)
 	{
-		Int len = end - start;
+		std::ptrdiff_t len = end - start;
 		char* tmp = tok->getBufferForRead(len + 1);
-		memcpy(tmp, start, len);
+		memcpy(tmp, start, static_cast<size_t>(len));
 		tmp[len] = 0;
 
 		this->set(end);

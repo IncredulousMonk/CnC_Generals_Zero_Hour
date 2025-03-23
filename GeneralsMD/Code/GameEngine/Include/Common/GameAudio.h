@@ -61,15 +61,15 @@ class Object;
 class SoundManager;
 
 
-enum AudioAffect;
-enum AudioType;
+enum AudioAffect: int;
+enum AudioType: int;
 
 struct AudioEventInfo;
 struct AudioRequest;
 struct AudioSettings;
 struct MiscAudio;
 
-typedef std::hash_map<AsciiString, AudioEventInfo*, rts::hash<AsciiString>, rts::equal_to<AsciiString> > AudioEventInfoHash;
+typedef std::unordered_map<AsciiString, AudioEventInfo*, rts::hash<AsciiString>, rts::equal_to<AsciiString> > AudioEventInfoHash;
 typedef AudioEventInfoHash::iterator AudioEventInfoHashIt;
 typedef UnsignedInt AudioHandle;
 
@@ -136,6 +136,11 @@ class AudioManager : public SubsystemInterface
 	public:
 		AudioManager();
 		virtual ~AudioManager();
+
+	// No copies allowed!
+	AudioManager(const AudioManager&) = delete;
+	AudioManager& operator=(const AudioManager&) = delete;
+
 #if defined(_DEBUG) || defined(_INTERNAL)
 		virtual void audioDebugDisplay(DebugDisplayInterface *dd, void *userData, FILE *fp = NULL ) = 0;
 #endif

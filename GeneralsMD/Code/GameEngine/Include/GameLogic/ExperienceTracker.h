@@ -45,6 +45,10 @@ class ExperienceTracker : public MemoryPoolObject, public Snapshot
 public:
 	ExperienceTracker(Object *parent);
 
+	// No copies allowed!
+	ExperienceTracker(const ExperienceTracker&) = delete;
+	ExperienceTracker& operator=(const ExperienceTracker&) = delete;
+
 	VeterancyLevel getVeterancyLevel() const { return m_currentLevel; }			///< What level am I?
 	Int getExperienceValue( const Object* killer ) const;										///< How much do give for being killed
 	Int getCurrentExperience( void ) const { return m_currentExperience; };	///< How much experience do I have at the moment?

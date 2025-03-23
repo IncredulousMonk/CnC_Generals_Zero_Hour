@@ -106,10 +106,10 @@ private:
 	*/
 	struct DFX
 	{
-		Real									m_amountForMajorFX;				///< if damage done is >= this, use major fx
-		ConstFXListPtr				m_majorDamageFXList;			///< fx to make 
-		ConstFXListPtr				m_minorDamageFXList;			///< fx to make 
-		UnsignedInt						m_damageFXThrottleTime;
+		Real									m_amountForMajorFX {};				///< if damage done is >= this, use major fx
+		ConstFXListPtr				m_majorDamageFXList {};			///< fx to make 
+		ConstFXListPtr				m_minorDamageFXList {};			///< fx to make 
+		UnsignedInt						m_damageFXThrottleTime {};
 
 		DFX()
 		{
@@ -157,7 +157,7 @@ public:
 
 private:
 
-	typedef std::hash_map< NameKeyType, DamageFX, rts::hash<NameKeyType>, rts::equal_to<NameKeyType> > DamageFXMap;
+	typedef std::unordered_map< NameKeyType, DamageFX, rts::hash<NameKeyType>, rts::equal_to<NameKeyType> > DamageFXMap;
 	DamageFXMap m_dfxmap;
 
 };

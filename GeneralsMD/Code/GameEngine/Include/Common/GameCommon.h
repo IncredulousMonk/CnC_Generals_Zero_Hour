@@ -61,13 +61,14 @@
 
 // ----------------------------------------------------------------------------------------------
 #if defined(_INTERNAL) || defined(_DEBUG)
-	#define DUMP_PERF_STATS
+	// #define DUMP_PERF_STATS
+	#define NO_DUMP_PERF_STATS
 #else
 	#define NO_DUMP_PERF_STATS
 #endif
 
 // ----------------------------------------------------------------------------------------------
-enum
+enum: int
 {
 	LOGICFRAMES_PER_SECOND = 30,
 	MSEC_PER_SECOND = 1000
@@ -108,7 +109,7 @@ inline Real ConvertAngularVelocityInDegreesPerSecToRadsPerFrame(Real degPerSec)
 }
 
 // ----------------------------------------------------------------------------------------------
-enum 
+enum: int
 { 
 	MAX_PLAYER_COUNT = 16											///< max number of Players.
 };
@@ -126,7 +127,7 @@ enum
 #endif
 
 // ----------------------------------------------------------------------------------------------
-enum 
+enum: int
 { 
 	MAX_GLOBAL_GENERAL_TYPES = 9,		///< number of playable General Types, not including the boss)
 	
@@ -138,7 +139,7 @@ enum
 };
 
 //-------------------------------------------------------------------------------------------------
-enum GameDifficulty
+enum GameDifficulty: int
 {
 	DIFFICULTY_EASY,
 	DIFFICULTY_NORMAL,
@@ -148,7 +149,7 @@ enum GameDifficulty
 };
 
 //-------------------------------------------------------------------------------------------------
-enum PlayerType
+enum PlayerType: int
 {
 	PLAYER_HUMAN,				///< player is human-controlled
 	PLAYER_COMPUTER,		///< player is computer-controlled
@@ -158,7 +159,7 @@ enum PlayerType
 
 //-------------------------------------------------------------------------------------------------
 /// A PartitionCell can be one of three states for Shroud
-enum CellShroudStatus
+enum CellShroudStatus: int
 {
 	CELLSHROUD_CLEAR,
 	CELLSHROUD_FOGGED,
@@ -169,7 +170,7 @@ enum CellShroudStatus
 
 //-------------------------------------------------------------------------------------------------
 /// Since an object can take up more than a single PartitionCell, this is a status that applies to the whole Object
-enum ObjectShroudStatus
+enum ObjectShroudStatus: int
 {
 	OBJECTSHROUD_INVALID,				///< indeterminate state, will recompute
 	OBJECTSHROUD_CLEAR,					///< object is not shrouded at all (ie, completely visible)
@@ -182,7 +183,7 @@ enum ObjectShroudStatus
 };
 
 //-------------------------------------------------------------------------------------------------
-enum GuardMode
+enum GuardMode: int
 {
 	GUARDMODE_NORMAL,
 	GUARDMODE_GUARD_WITHOUT_PURSUIT,	// no pursuit out of guard area
@@ -203,7 +204,7 @@ enum
 
 /// Veterancy level define needed by several files that don't need the full Experience code.
 // NOTE NOTE NOTE: Keep TheVeterencyNames in sync with these.
-enum VeterancyLevel
+enum VeterancyLevel: int
 {
 	LEVEL_REGULAR = 0,
 	LEVEL_VETERAN,
@@ -222,7 +223,7 @@ extern const char *TheVeterancyNames[];
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-enum CommandSourceType 
+enum CommandSourceType: int
 { 
 
 	CMD_FROM_PLAYER = 0, 
@@ -234,7 +235,7 @@ enum CommandSourceType
 };		///< the source of a command
 
 //-------------------------------------------------------------------------------------------------
-enum AbleToAttackType
+enum AbleToAttackType: int
 {
 	_ATTACK_FORCED			= 0x01,
 	_ATTACK_CONTINUED		= 0x02,
@@ -430,6 +431,8 @@ private:																\
 			m_prev(0), m_next(0) { }					\
 		inline ~DLINK_##LISTNAME()					\
 			{ DEBUG_ASSERTCRASH(!m_prev && !m_next,("destroying dlink still in a list "  #LISTNAME)); } \
+		DLINK_##LISTNAME(const DLINK_##LISTNAME&) = delete; \
+		DLINK_##LISTNAME& operator=(const DLINK_##LISTNAME&) = delete; \
 	};																		\
 	DLINK_##LISTNAME m_dlink_##LISTNAME;	
 
@@ -472,7 +475,7 @@ public:
 
 // ------------------------------------------------------------------------
 
-enum WhichTurretType
+enum WhichTurretType: int
 {
 	TURRET_INVALID = -1,
 
@@ -495,7 +498,7 @@ inline Real stdAngleDiff(Real a1, Real a2)
 
 // ------------------------------------------------------------------------
 // NOTE NOTE NOTE: Keep TheRelationShipNames in sync with this enum
-enum Relationship
+enum Relationship: int
 {
 	ENEMIES = 0,
 	NEUTRAL,

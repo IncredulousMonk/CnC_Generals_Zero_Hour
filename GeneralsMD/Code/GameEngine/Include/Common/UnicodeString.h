@@ -404,14 +404,14 @@ inline int UnicodeString::compare(const WideChar* s) const
 inline int UnicodeString::compareNoCase(const UnicodeString& stringSrc) const
 {
 	validate();
-	return _wcsicmp(this->str(), stringSrc.str());
+	return wcscasecmp(this->str(), stringSrc.str());
 }
 
 // -----------------------------------------------------
 inline int UnicodeString::compareNoCase(const WideChar* s) const
 {
 	validate();
-	return _wcsicmp(this->str(), s);
+	return wcscasecmp(this->str(), s);
 }
 
 // -----------------------------------------------------

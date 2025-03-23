@@ -64,13 +64,13 @@ class STLSpecialAlloc;
 
 // FORWARD DECLARATIONS
 class Object;
-enum NameKeyType;
-enum ObjectID;
-enum DrawableID;
+enum NameKeyType: int;
+enum ObjectID: int;
+enum DrawableID: int;
 
 #include <algorithm>
 #include <bitset>
-#include <hash_map>
+// #include <hash_map>
 #include <list>
 #include <map>
 #include <queue>
@@ -153,8 +153,8 @@ namespace rts
 	{
 		size_t operator()(NameKeyType nkt) const
 		{ 
-			std::hash<UnsignedInt> tmp;
-			return tmp((UnsignedInt)nkt);
+			std::hash<size_t> tmp;
+			return tmp((size_t)nkt);
 		}
 	};
 
@@ -162,8 +162,8 @@ namespace rts
 	{
 		size_t operator()(DrawableID nkt) const
 		{ 
-			std::hash<UnsignedInt> tmp;
-			return tmp((UnsignedInt)nkt);
+			std::hash<size_t> tmp;
+			return tmp((size_t)nkt);
 		}
 	};
 
@@ -171,8 +171,8 @@ namespace rts
 	{
 		size_t operator()(ObjectID nkt) const
 		{ 
-			std::hash<UnsignedInt> tmp;
-			return tmp((UnsignedInt)nkt);
+			std::hash<size_t> tmp;
+			return tmp((size_t)nkt);
 		}
 	};
 

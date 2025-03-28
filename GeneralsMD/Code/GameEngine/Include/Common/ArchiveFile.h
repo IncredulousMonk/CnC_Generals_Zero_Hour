@@ -53,6 +53,10 @@ public:
 	ArchiveFile();
 	virtual ~ArchiveFile();
 
+	// No copies allowed!
+	ArchiveFile(const ArchiveFile&) = delete;
+	ArchiveFile& operator=(const ArchiveFile&) = delete;
+
 	virtual Bool					getFileInfo( const AsciiString& filename, FileInfo *fileInfo) const = 0;	///< fill in the fileInfo struct with info about the file requested.
 	virtual File*					openFile( const Char *filename, Int access = 0) = 0;	///< Open the specified file within the archive file
 	virtual void					closeAllFiles( void ) = 0;									///< Close all file opened in this archive file
@@ -70,8 +74,8 @@ public:
 protected:
 	const ArchivedFileInfo *		getArchivedFileInfo(const AsciiString& filename) const;	///< return the ArchivedFileInfo from the directory tree.
 
-	File *m_file; ///< file pointer to the archive file on disk.  Kept open so we don't have to continuously open and close the file all the time.
-	DetailedArchivedDirectoryInfo m_rootDirectory;
+	File *m_file {}; ///< file pointer to the archive file on disk.  Kept open so we don't have to continuously open and close the file all the time.
+	DetailedArchivedDirectoryInfo m_rootDirectory {};
 };
 
 #endif // __ARCHIVEFILE_H

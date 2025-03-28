@@ -49,7 +49,6 @@
 
 #include <stdio.h>
 #include <fcntl.h>
-#include <io.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -103,12 +102,12 @@
 // RAMFile::RAMFile
 //=================================================================
 
-RAMFile::RAMFile()
-: m_size(0),
+RAMFile::RAMFile():
 	m_data(NULL),
-//Added By Sadullah Nader
-//Initializtion(s) inserted
-	m_pos(0)
+	//Added By Sadullah Nader
+	//Initializtion(s) inserted
+	m_pos(0),
+	m_size(0)
 //
 {
 
@@ -276,7 +275,7 @@ Int RAMFile::read( void *buffer, Int bytes )
 
 	if (( bytes > 0 ) && ( buffer != NULL ))
 	{
-		memcpy ( buffer, &m_data[m_pos], bytes );
+		memcpy ( buffer, &m_data[m_pos], static_cast<size_t>(bytes) );
 	}
 
 	m_pos += bytes;
@@ -288,7 +287,7 @@ Int RAMFile::read( void *buffer, Int bytes )
 // RAMFile::write 
 //=================================================================
 
-Int RAMFile::write( const void *buffer, Int bytes )
+Int RAMFile::write( const void *, Int )
 {
 	return -1;
 }

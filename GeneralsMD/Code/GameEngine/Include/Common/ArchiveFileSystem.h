@@ -93,9 +93,9 @@ typedef std::map<AsciiString, AsciiString> ArchivedFileLocationMap; // first str
 class ArchivedDirectoryInfo 
 {
 public:
-	AsciiString								m_directoryName;
-	ArchivedDirectoryInfoMap	m_directories;
-	ArchivedFileLocationMap		m_files;
+	AsciiString								m_directoryName {};
+	ArchivedDirectoryInfoMap	m_directories {};
+	ArchivedFileLocationMap		m_files {};
 
 	void clear()
 	{
@@ -109,9 +109,9 @@ public:
 class DetailedArchivedDirectoryInfo 
 {
 public:
-	AsciiString												m_directoryName;
-	DetailedArchivedDirectoryInfoMap	m_directories;
-	ArchivedFileInfoMap								m_files;
+	AsciiString												m_directoryName {};
+	DetailedArchivedDirectoryInfoMap	m_directories {};
+	ArchivedFileInfoMap								m_files {};
 
 	void clear()
 	{
@@ -177,8 +177,8 @@ class ArchiveFileSystem : public SubsystemInterface
 protected:
 	virtual void					loadIntoDirectoryTree(const ArchiveFile *archiveFile, const AsciiString& archiveFilename, Bool overwrite = FALSE );	///< load the archive file's header information and apply it to the global archive directory tree.
 
-	ArchiveFileMap m_archiveFileMap;
-	ArchivedDirectoryInfo m_rootDirectory;
+	ArchiveFileMap m_archiveFileMap {};
+	ArchivedDirectoryInfo m_rootDirectory {};
 };
 
 

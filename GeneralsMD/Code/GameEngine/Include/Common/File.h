@@ -113,7 +113,7 @@ class File : public MemoryPoolObject
 
 	protected:
 
-		AsciiString	m_nameStr;						///< Stores file name
+		AsciiString	m_nameStr {}; 						///< Stores file name
 		Int					m_access;									///< How the file was opened
 		Bool				m_open;										///< Has the file been opened
 		Bool				m_deleteOnClose;					///< delete File object on close()
@@ -129,15 +129,15 @@ class File : public MemoryPoolObject
 		virtual Bool	open( const Char *filename, Int access = 0 );				///< Open a file for access
 		virtual void	close( void );																			///< Close the file !!! File object no longer valid after this call !!!
 
-		virtual Int		read( void *buffer, UnsignedInt bytes ) = 0 ;						/**< Read the specified number of bytes from the file in to the 
+		virtual Int		read( void *buffer, Int bytes ) = 0 ;						/**< Read the specified number of bytes from the file in to the 
 																																			  *  memory pointed at by buffer. Returns the number of bytes read.
 																																			  *  Returns -1 if an error occured.
 																																			  */
-		virtual Int		write( const void *buffer, UnsignedInt bytes ) = 0 ;						/**< Write the specified number of bytes from the    
+		virtual Int		write( const void *buffer, Int bytes ) = 0 ;						/**< Write the specified number of bytes from the    
 																																			  *	 memory pointed at by buffer to the file. Returns the number of bytes written.
 																																			  *	 Returns -1 if an error occured.
 																																			  */
-		virtual Int		seek( UnsignedInt bytes, seekMode mode = CURRENT ) = 0;	/**< Sets the file position of the next read/write operation. Returns the new file
+		virtual Int		seek( Int bytes, seekMode mode = CURRENT ) = 0;	/**< Sets the file position of the next read/write operation. Returns the new file
 																																				*  position as the number of bytes from the start of the file.
 																																				*  Returns -1 if an error occured.
 																																				*
@@ -147,7 +147,7 @@ class File : public MemoryPoolObject
 																																				*  CURRENT: means seek the specified the number of bytes from the current file position
 																																				*  END: means seek the specified number of bytes back from the end of the file
 																																				*/
-		virtual void	nextLine(Char *buf = NULL, UnsignedInt bufSize = 0) = 0;		///< reads until it reaches a new-line character
+		virtual void	nextLine(Char *buf = NULL, Int bufSize = 0) = 0;		///< reads until it reaches a new-line character
 
 		virtual Bool	scanInt(Int &newInt) = 0;														///< read an integer from the current file position.
 		virtual Bool	scanReal(Real &newReal) = 0;												///< read a real number from the current file position.

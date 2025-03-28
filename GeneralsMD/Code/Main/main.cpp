@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
    TheMemoryPoolFactory->debugMemoryReport(REPORT_POOLINFO | REPORT_POOL_OVERFLOW | REPORT_SIMPLE_LEAKS, 0, 0);
 #endif
 #if defined(_DEBUG) || defined(_INTERNAL)
-   TheMemoryPoolFactory->memoryPoolUsageReport("AAAMemStats");
+   // TheMemoryPoolFactory->memoryPoolUsageReport("AAAMemStats");
 #endif
 
    shutdownMemoryManager();

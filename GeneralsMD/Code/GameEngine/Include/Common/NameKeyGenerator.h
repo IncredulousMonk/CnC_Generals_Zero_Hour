@@ -119,7 +119,7 @@ public:
 	AsciiString keyToName(NameKeyType key);
 
   // Get a string out of the INI. Store it into a NameKeyType
-  static void parseStringAsNameKeyType( INI *ini, void *instance, void *store, const void* userData );
+//   static void parseStringAsNameKeyType( INI *ini, void *instance, void *store, const void* userData );
 
 private:
 
@@ -132,7 +132,7 @@ private:
 	void freeSockets();
 
 	Bucket*				m_sockets[SOCKET_COUNT];			///< Catalog of all Buckets already generated
-	UnsignedInt		m_nextID;											///< Next available ID
+	UnsignedInt		m_nextID {};											///< Next available ID
 
 };  // end class NameKeyGenerator
 

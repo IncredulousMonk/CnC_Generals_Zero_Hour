@@ -1,17 +1,23 @@
 
 # Command & Conquer Generals Zero Hour native Linux port
 
-I'm attempting to create a native Linux port of Zero Hour. I suspect that it's a fool's errand, but it should be an interesting experience.
+I'm attempting to create a native Linux port of Zero Hour. I suspect that it's a fool's errand, but it should be an interesting project.
+
+You can learn a lot by reading source code, but you can learn a lot more by trying to get that code working using a different compiler on a different operating system.
 
 
 ## Progress so far
 
 - Displays a window with the splash screen.
-- The DynamicMemoryAllocator works.
-
+- The DynamicMemoryAllocator works. If you compile in debug mode it dumps out memory pool stats, and tells you where you're leaking memory... neat! (I can't take any credit for that. It's all built in.)
+- Subsystems implemented:
+  - TheNameKeyGenerator
+  - TheFileSystem
+  - TheLocalFileSystem
 
 ## Still to do
 
+- Implement TheArchiveFileSystem.
 - Everything else.
 
 
@@ -28,7 +34,12 @@ I'm using a standard makefile. Open a terminal in the `GeneralsMD/Code` director
 
 The compiled executable is `GeneralsMD/Run/rts`.
 
-When you run it, if you get an error message that says:
+
+## Running
+
+You can type `make run` to run the executable.
+
+If you get an error message that says:
 
     ERROR: Could not load bitmap: Couldn't open ../assets/Install_Final.bmp: No such file or directory
 

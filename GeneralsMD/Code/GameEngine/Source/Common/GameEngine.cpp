@@ -43,14 +43,14 @@
 // #include "Common/MessageStream.h"
 // #include "Common/ThingFactory.h"
 // #include "Common/File.h"
-// #include "Common/FileSystem.h"
-// #include "Common/ArchiveFileSystem.h"
-// #include "Common/LocalFileSystem.h"
+#include "Common/FileSystem.h"
+#include "Common/ArchiveFileSystem.h"
+#include "Common/LocalFileSystem.h"
 // #include "Common/CDManager.h"
 // #include "Common/GlobalData.h"
 // #include "Common/PerfTimer.h"
 // #include "Common/RandomValue.h"
-// #include "Common/NameKeyGenerator.h"
+#include "Common/NameKeyGenerator.h"
 // #include "Common/ModuleFactory.h"
 // #include "Common/Debug.h"
 // #include "Common/GameState.h"
@@ -217,11 +217,11 @@ GameEngine::~GameEngine()
 	// delete TheCommandList;
 	// TheCommandList = NULL;
 
-	// delete TheNameKeyGenerator;
-	// TheNameKeyGenerator = NULL;
+	delete TheNameKeyGenerator;
+	TheNameKeyGenerator = NULL;
 
-	// delete TheFileSystem;
-	// TheFileSystem = NULL;
+	delete TheFileSystem;
+	TheFileSystem = NULL;
 
 	// if (TheGameLODManager)
 	// 	delete TheGameLODManager;
@@ -304,7 +304,7 @@ void GameEngine::init( int argc, char *argv[] )
 		// InitRandom();
 
 		// // Create the low-level file system interface
-		// TheFileSystem = createFileSystem();
+		TheFileSystem = createFileSystem();
 
 		// //Kris: Patch 1.01 - November 17, 2003
 		// //I was unable to resolve the RTPatch method of deleting a shipped file. English, Chinese, and Korean
@@ -313,8 +313,8 @@ void GameEngine::init( int argc, char *argv[] )
 		// DeleteFile( "Data\\INI\\INIZH.big" );
 
 		// not part of the subsystem list, because it should normally never be reset!
-		// TheNameKeyGenerator = MSGNEW("GameEngineSubsystem") NameKeyGenerator;
-		// TheNameKeyGenerator->init();
+		TheNameKeyGenerator = MSGNEW("GameEngineSubsystem") NameKeyGenerator;
+		TheNameKeyGenerator->init();
 
 
     	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
@@ -341,7 +341,7 @@ void GameEngine::init( int argc, char *argv[] )
 		// xferCRC.open("lightCRC");
 
 
-		// initSubsystem(TheLocalFileSystem, "TheLocalFileSystem", createLocalFileSystem(), NULL);
+		initSubsystem(TheLocalFileSystem, "TheLocalFileSystem", createLocalFileSystem(), NULL);
 
 
     	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
@@ -924,8 +924,7 @@ MessageStream *GameEngine::createMessageStream( void )
 //-------------------------------------------------------------------------------------------------
 FileSystem *GameEngine::createFileSystem( void )
 {
-	// return MSGNEW("GameEngineSubsystem") FileSystem;
-	return nullptr;
+	return MSGNEW("GameEngineSubsystem") FileSystem;
 }
 
 //-------------------------------------------------------------------------------------------------

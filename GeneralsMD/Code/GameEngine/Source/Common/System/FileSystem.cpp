@@ -50,8 +50,8 @@
 #include "Common/FileSystem.h"
 
 #include "Common/ArchiveFileSystem.h"
-#include "Common/CDManager.h"
-#include "Common/GameAudio.h"
+// #include "Common/CDManager.h"
+// #include "Common/GameAudio.h"
 #include "Common/LocalFileSystem.h"
 #include "Common/PerfTimer.h"
 
@@ -224,7 +224,7 @@ void FileSystem::getFileListInDirectory(const AsciiString& directory, const Asci
 {
 	USE_PERF_TIMER(FileSystem)
 	TheLocalFileSystem->getFileListInDirectory(AsciiString(""), directory, searchName, filenameList, searchSubdirectories);
-	TheArchiveFileSystem->getFileListInDirectory(AsciiString(""), directory, searchName, filenameList, searchSubdirectories);
+	// TheArchiveFileSystem->getFileListInDirectory(AsciiString(""), directory, searchName, filenameList, searchSubdirectories);
 }
 
 //============================================================================
@@ -261,6 +261,8 @@ Bool FileSystem::createDirectory(AsciiString directory)
 	return FALSE;
 }
 
+#if 0
+// TODO: Come back to this once CD and audio are ported.
 //============================================================================
 // FileSystem::areMusicFilesOnCD
 //============================================================================
@@ -330,3 +332,4 @@ void FileSystem::unloadMusicFilesFromCD()
 
 	TheArchiveFileSystem->closeArchiveFile( MUSIC_BIG );
 }
+#endif

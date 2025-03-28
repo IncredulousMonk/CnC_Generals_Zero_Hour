@@ -118,7 +118,7 @@ class STLSpecialAlloc;
 // #include "Common/INI.h"
 // #include "Common/KindOf.h"
 // #include "Common/DisabledTypes.h"
-// #include "Common/NameKeyGenerator.h"
+#include "Common/NameKeyGenerator.h"
 #include "GameClient/ClientRandomValue.h"
 #include "GameLogic/LogicRandomValue.h"
 // #include "Common/ObjectStatusTypes.h"

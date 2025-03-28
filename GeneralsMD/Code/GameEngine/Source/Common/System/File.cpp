@@ -100,12 +100,11 @@
 // File::File
 //=================================================================
 
-File::File()
-:	m_open(FALSE),
-	m_deleteOnClose(FALSE),
-	m_access(NONE)
+File::File():
+	m_access(NONE),
+	m_open(FALSE),
+	m_deleteOnClose(FALSE)
 {
-
 	setName("<no file>");
 
 }
@@ -244,7 +243,7 @@ Bool	File::print ( const Char *format, ...)
 	len = vsprintf( buffer, format, args );
 	va_end( args );
 
-	if ( len >= sizeof(buffer) )
+	if ( static_cast<size_t>(len) >= sizeof(buffer) )
 	{
 		// Big Problem
 		assert( FALSE );

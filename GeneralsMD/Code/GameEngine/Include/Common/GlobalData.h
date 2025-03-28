@@ -46,7 +46,7 @@
 struct FieldParse;
 enum TerrainLOD: int;
 class GlobalData;
-class INI;
+// class INI;
 class WeaponBonusSet;
 enum BodyDamageType: int;
 enum AIDebugOptions: int;

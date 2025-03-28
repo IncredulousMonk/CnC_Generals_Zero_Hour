@@ -86,6 +86,10 @@ class RAMFile : public File
 		RAMFile();
 		//virtual				~RAMFile();
 
+		// No copies allowed!
+		RAMFile(const RAMFile&) = delete;
+		RAMFile& operator=(const RAMFile&) = delete;
+
 
 		virtual Bool	open( const Char *filename, Int access = 0 );				///< Open a file for access
 		virtual void	close( void );																			///< Close the file

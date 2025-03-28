@@ -34,7 +34,7 @@
 // #include "GameNetwork/NetworkInterface.h"
 // #include "MilesAudioDevice/MilesAudioManager.h"
 // #include "Win32Device/Common/Win32BIGFileSystem.h"
-// #include "Win32Device/Common/Win32LocalFileSystem.h"
+#include "LinuxDevice/Common/LinuxLocalFileSystem.h"
 // #include "W3DDevice/Common/W3DModuleFactory.h"
 // #include "W3DDevice/GameLogic/W3DGameLogic.h"
 // #include "W3DDevice/GameClient/W3DGameClient.h"
@@ -84,31 +84,29 @@ protected:
 
 // INLINE -----------------------------------------------------------------------------------------
 // inline GameLogic *LinuxGameEngine::createGameLogic( void ) { return NEW W3DGameLogic; }
-// inline GameClient *LinuxGameEngine::createGameClient( void ) { return NEW W3DGameClient; }
-// inline ModuleFactory *LinuxGameEngine::createModuleFactory( void ) { return NEW W3DModuleFactory; }
-// inline ThingFactory *LinuxGameEngine::createThingFactory( void ) { return NEW W3DThingFactory; }
-// inline FunctionLexicon *LinuxGameEngine::createFunctionLexicon( void ) { return NEW W3DFunctionLexicon; }
-// inline LocalFileSystem *LinuxGameEngine::createLocalFileSystem( void ) { return NEW Win32LocalFileSystem; }
-// inline ArchiveFileSystem *LinuxGameEngine::createArchiveFileSystem( void ) { return NEW Win32BIGFileSystem; }
-// inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return NEW W3DParticleSystemManager; }
-
-// inline NetworkInterface *LinuxGameEngine::createNetwork( void ) { return NetworkInterface::createNetwork(); }
-// inline Radar *LinuxGameEngine::createRadar( void ) { return NEW W3DRadar; }
-// inline WebBrowser *LinuxGameEngine::createWebBrowser( void ) { return NEW CComObject<W3DWebBrowser>; }
-// inline AudioManager *LinuxGameEngine::createAudioManager( void ) { return NEW MilesAudioManager; }
-
 inline GameLogic *LinuxGameEngine::createGameLogic( void ) { return nullptr; }
+// inline GameClient *LinuxGameEngine::createGameClient( void ) { return NEW W3DGameClient; }
 inline GameClient *LinuxGameEngine::createGameClient( void ) { return nullptr; }
+// inline ModuleFactory *LinuxGameEngine::createModuleFactory( void ) { return NEW W3DModuleFactory; }
 inline ModuleFactory *LinuxGameEngine::createModuleFactory( void ) { return nullptr; }
+// inline ThingFactory *LinuxGameEngine::createThingFactory( void ) { return NEW W3DThingFactory; }
 inline ThingFactory *LinuxGameEngine::createThingFactory( void ) { return nullptr; }
+// inline FunctionLexicon *LinuxGameEngine::createFunctionLexicon( void ) { return NEW W3DFunctionLexicon; }
 inline FunctionLexicon *LinuxGameEngine::createFunctionLexicon( void ) { return nullptr; }
-inline LocalFileSystem *LinuxGameEngine::createLocalFileSystem( void ) { return nullptr; }
+inline LocalFileSystem *LinuxGameEngine::createLocalFileSystem( void ) { return NEW LinuxLocalFileSystem; }
+// inline LocalFileSystem *LinuxGameEngine::createLocalFileSystem( void ) { return nullptr; }
+// inline ArchiveFileSystem *LinuxGameEngine::createArchiveFileSystem( void ) { return NEW LinuxBIGFileSystem; }
 inline ArchiveFileSystem *LinuxGameEngine::createArchiveFileSystem( void ) { return nullptr; }
+// inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return NEW W3DParticleSystemManager; }
 inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return nullptr; }
 
+// inline NetworkInterface *LinuxGameEngine::createNetwork( void ) { return NetworkInterface::createNetwork(); }
 inline NetworkInterface *LinuxGameEngine::createNetwork( void ) { return nullptr; }
+// inline Radar *LinuxGameEngine::createRadar( void ) { return NEW W3DRadar; }
 inline Radar *LinuxGameEngine::createRadar( void ) { return nullptr; }
+// inline WebBrowser *LinuxGameEngine::createWebBrowser( void ) { return NEW CComObject<W3DWebBrowser>; }
 inline WebBrowser *LinuxGameEngine::createWebBrowser( void ) { return nullptr; }
+// inline AudioManager *LinuxGameEngine::createAudioManager( void ) { return NEW MilesAudioManager; }
 inline AudioManager *LinuxGameEngine::createAudioManager( void ) { return nullptr; }
 
 #endif  // end __LINUXGAMEENGINE_H_

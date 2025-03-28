@@ -123,7 +123,7 @@ void ArchiveFile::addFile(const AsciiString& path, const ArchivedFileInfo *fileI
 	//path.concat(fileInfo->m_filename);
 }
 
-void ArchiveFile::getFileListInDirectory(const AsciiString& currentDirectory, const AsciiString& originalDirectory, const AsciiString& searchName, FilenameList &filenameList, Bool searchSubdirectories) const
+void ArchiveFile::getFileListInDirectory(const AsciiString&, const AsciiString& originalDirectory, const AsciiString& searchName, FilenameList &filenameList, Bool searchSubdirectories) const
 {
 
 	AsciiString searchDir;

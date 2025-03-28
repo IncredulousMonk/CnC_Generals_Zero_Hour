@@ -53,7 +53,6 @@ void LinuxGameEngine::init(int argc, char* argv[]) {
 
    // extending functionality
    GameEngine::init(argc, argv);
-   std::cout << "LinuxGameEngine::init\n";
 
 }  // end init
 

@@ -92,7 +92,7 @@ void NameKeyGenerator::freeSockets()
 inline UnsignedInt calcHashForString(const char* p)
 {
 	UnsignedInt result = 0; 
-	Byte *pp = (Byte*)p;
+	UnsignedByte *pp = (UnsignedByte*)p;
 	while (*pp) 
 		result = (result << 5) + result + *pp++; 
 	return result;
@@ -102,9 +102,9 @@ inline UnsignedInt calcHashForString(const char* p)
 inline UnsignedInt calcHashForLowercaseString(const char* p)
 {
 	UnsignedInt result = 0; 
-	Byte *pp = (Byte*)p;
+	UnsignedByte *pp = (UnsignedByte*)p;
 	while (*pp) 
-		result = (result << 5) + result + tolower(*pp++); 
+		result = (result << 5) + result + static_cast<UnsignedInt>(tolower(*pp++)); 
 	return result;
 }
 
@@ -180,7 +180,7 @@ NameKeyType NameKeyGenerator::nameToLowercaseKey(const char* nameString)
 	// hmm, do we have it already?
 	for (b = m_sockets[hash]; b; b = b->m_nextInSocket)
 	{
-		if (_stricmp(nameString, b->m_nameString.str()) == 0)
+		if (strcasecmp(nameString, b->m_nameString.str()) == 0)
 			return b->m_key; 
 	}
 
@@ -221,10 +221,10 @@ NameKeyType NameKeyGenerator::nameToLowercaseKey(const char* nameString)
 //------------------------------------------------------------------------------------------------- 
 // Get a string out of the INI. Store it into a NameKeyType
 //------------------------------------------------------------------------------------------------- 
-void NameKeyGenerator::parseStringAsNameKeyType( INI *ini, void *instance, void *store, const void* userData )
-{
-  *(NameKeyType *)store = TheNameKeyGenerator->nameToKey( ini->getNextToken() );
-}
+// void NameKeyGenerator::parseStringAsNameKeyType( INI *ini, void *, void *store, const void* )
+// {
+//   *(NameKeyType *)store = TheNameKeyGenerator->nameToKey( ini->getNextToken() );
+// }
 
 
 //------------------------------------------------------------------------------------------------- 

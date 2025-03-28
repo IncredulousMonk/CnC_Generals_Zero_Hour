@@ -100,10 +100,8 @@ typedef FilenameList::iterator FilenameListIter;
 #endif
 
 struct FileInfo {
-	Int sizeHigh;
-	Int sizeLow;
-	Int timestampHigh;
-	Int timestampLow;
+	UnsignedInt64 size;
+	UnsignedInt64 timestamp;
 };
 
 //===============================
@@ -112,7 +110,7 @@ struct FileInfo {
 /**
   * FileSystem is an interface class for creating specific FileSystem objects.
   * 
-	* A FileSystem object's implemenation decides what derivative of File object needs to be 
+	* A FileSystem object's implementation decides what derivative of File object needs to be 
 	* created when FileSystem::Open() gets called.
 	*/
 //===============================
@@ -138,9 +136,9 @@ public:
 
 	Bool createDirectory(AsciiString directory); ///< create a directory of the given name.
 
-	Bool areMusicFilesOnCD();
-	void loadMusicFilesFromCD();
-	void unloadMusicFilesFromCD();
+	// Bool areMusicFilesOnCD();
+	// void loadMusicFilesFromCD();
+	// void unloadMusicFilesFromCD();
 protected:
   mutable std::map<unsigned,bool> m_fileExist {};
 };

@@ -620,7 +620,7 @@ void GameTextManager::readToEndOfQuote( File *file, Char *in, Char *out, Char *w
 				}
 
 				state = 1;
-				// TODO: Was this meant to be a fallthrough?  Needs testing.
+				// FIXME: Was this meant to be a fallthrough?  Needs testing.
 				[[fallthrough]];
 			case 1:
 				if ( ( ch >= 'a' && ch <= 'z') || ( ch >= 'A' && ch <='Z') || (ch >= '0' && ch <= '9') || ch == '_' )

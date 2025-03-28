@@ -224,7 +224,7 @@ void FileSystem::getFileListInDirectory(const AsciiString& directory, const Asci
 {
 	USE_PERF_TIMER(FileSystem)
 	TheLocalFileSystem->getFileListInDirectory(AsciiString(""), directory, searchName, filenameList, searchSubdirectories);
-	// TheArchiveFileSystem->getFileListInDirectory(AsciiString(""), directory, searchName, filenameList, searchSubdirectories);
+	TheArchiveFileSystem->getFileListInDirectory(AsciiString(""), directory, searchName, filenameList, searchSubdirectories);
 }
 
 //============================================================================
@@ -262,7 +262,7 @@ Bool FileSystem::createDirectory(AsciiString directory)
 }
 
 #if 0
-// TODO: Come back to this once CD and audio are ported.
+// FIXME: Come back to this once CD and audio are ported.
 //============================================================================
 // FileSystem::areMusicFilesOnCD
 //============================================================================

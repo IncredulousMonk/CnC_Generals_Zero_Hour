@@ -28,8 +28,7 @@
 #include "Common/LocalFile.h"
 #include <fstream>
 
-class LinuxLocalFile: public File
-{
+class LinuxLocalFile: public File {
    MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(LinuxLocalFile, "LinuxLocalFile")
 private:
    std::fstream m_fs {};
@@ -39,7 +38,7 @@ public:
 
    virtual Bool open(const Char *filename, Int access = 0);   ///< Open a file for access
    virtual void close(void);                                  ///< Close the file
-   virtual Int  read(void *buffer, Int bytes);        ///< Read the specified number of bytes in to buffer: See File::read
+   virtual Int  read(void *buffer, Int bytes);                ///< Read the specified number of bytes in to buffer: See File::read
    virtual Int  write(const void *buffer, Int bytes);         ///< Write the specified number of bytes from the buffer: See File::write
    virtual Int  seek(Int new_pos, seekMode mode = CURRENT);   ///< Set file position: See File::seek
    virtual void nextLine(Char *buf = NULL, Int bufSize = 0);  ///< moves file position to after the next new-line

@@ -2671,7 +2671,7 @@ MemoryPoolFactory::MemoryPoolFactory() :
 		m_physBytesSpecialPeak[i] = 0;
 	}
 	#ifdef USE_FILLER_VALUE
-	// TODO: Go back to using the random value.
+	// FIXME: Go back to using the random value.
 	// calcFillerValue(GameClientRandomValue(0, MAX_INIT_FILLER_COUNT-1));
 	calcFillerValue(3);
 	#endif
@@ -2869,7 +2869,7 @@ void MemoryPoolFactory::reset()
 		m_physBytesSpecialPeak[i] = 0;
 	}
 	#ifdef USE_FILLER_VALUE
-	// TODO: Go back to using the random value.
+	// FIXME: Go back to using the random value.
 	// calcFillerValue(GameClientRandomValue(0, MAX_INIT_FILLER_COUNT-1));
 	calcFillerValue(3);
 	#endif
@@ -2933,7 +2933,7 @@ void MemoryPoolFactory::debugSetInitFillerIndex(Int index)
 {
 	#ifdef USE_FILLER_VALUE
 	if (index < 0 || index >= MAX_INIT_FILLER_COUNT)
-		// TODO: Go back to using the random value.
+		// FIXME: Go back to using the random value.
 		// index = GameClientRandomValue(0, MAX_INIT_FILLER_COUNT-1);
 		index = 3;
 	calcFillerValue(index);

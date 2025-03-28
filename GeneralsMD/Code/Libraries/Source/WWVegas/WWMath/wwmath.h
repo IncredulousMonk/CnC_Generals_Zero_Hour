@@ -575,7 +575,7 @@ WWINLINE float WWMath::Sqrt(float val)
 
 WWINLINE int WWMath::Float_To_Int_Chop(const float&)
 {
-	throw 1; // TODO: Fix this!
+	throw 1; // FIXME: Fix this!
     // int a	= *reinterpret_cast<const int*>(&f);				// take bit pattern of float into a register
     // int sign	= (a>>31);												// sign = 0xFFFFFFFF if original value is negative, 0 if positive
     // int mantissa	= (a&((1<<23)-1))|(1<<23);						// extract mantissa and add the hidden bit
@@ -586,7 +586,7 @@ WWINLINE int WWMath::Float_To_Int_Chop(const float&)
 
 WWINLINE int WWMath::Float_To_Int_Floor (const float&)
 {
-	throw 1; // TODO: Fix this!
+	throw 1; // FIXME: Fix this!
 	// int a			= *reinterpret_cast<const int*>(&f);			// take bit pattern of float into a register
 	// int sign		= (a>>31);												// sign = 0xFFFFFFFF if original value is negative, 0 if positive
 	// a&=0x7fffffff;															// we don't need the sign any more

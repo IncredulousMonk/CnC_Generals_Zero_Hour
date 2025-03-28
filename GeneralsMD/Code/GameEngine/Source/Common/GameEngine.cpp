@@ -250,7 +250,7 @@ void GameEngine::setFramesPerSecondLimit( Int fps )
 void GameEngine::init( void ) {} /// @todo: I changed this to take argc & argv so we can parse those after the GDF is loaded.  We need to rethink this immediately as it is a nasty hack
 void GameEngine::init( int argc, char *argv[] )
 {
-	(void) argc; // TODO: Remove!
+	(void) argc; // FIXME: Remove!
 	(void) argv;
 	// try {
 		//create an INI object to use for loading stuff
@@ -352,7 +352,7 @@ void GameEngine::init( int argc, char *argv[] )
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 
 
-		// initSubsystem(TheArchiveFileSystem, "TheArchiveFileSystem", createArchiveFileSystem(), NULL); // this MUST come after TheLocalFileSystem creation
+		initSubsystem(TheArchiveFileSystem, "TheArchiveFileSystem", createArchiveFileSystem(), NULL); // this MUST come after TheLocalFileSystem creation
 
     	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////

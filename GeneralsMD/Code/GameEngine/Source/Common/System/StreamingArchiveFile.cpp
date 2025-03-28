@@ -47,12 +47,6 @@
 
 #include "PreRTS.h"
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <io.h>
-#include <string.h>
-#include <sys/stat.h>
-
 #include "Common/AsciiString.h"
 #include "Common/FileSystem.h"
 #include "Common/StreamingArchiveFile.h"
@@ -148,14 +142,14 @@ Bool StreamingArchiveFile::open( const Char *filename, Int access )
 		return FALSE;
 	}	
 
-	return (open( file ) != NULL);
+	return (open(file));
 }
 
 //============================================================================
 // StreamingArchiveFile::open
 //============================================================================
 
-Bool StreamingArchiveFile::open( File *file )
+Bool StreamingArchiveFile::open( File* )
 {
 	return TRUE;
 }
@@ -237,7 +231,7 @@ Int StreamingArchiveFile::read( void *buffer, Int bytes )
 // StreamingArchiveFile::write 
 //=================================================================
 
-Int StreamingArchiveFile::write( const void *buffer, Int bytes )
+Int StreamingArchiveFile::write( const void *, Int )
 {
 	DEBUG_CRASH(("Cannot write to streaming files.\n"));
 	return -1;

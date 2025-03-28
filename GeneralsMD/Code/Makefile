@@ -25,12 +25,18 @@ $(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB)
 
 # GameEngineDevice
 
-ENGINE_DEVICE_OBJS = $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o
+ENGINE_DEVICE_OBJS = $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o
 
 $(ENGINE_DEVICE_LIB): $(ENGINE_DEVICE_OBJS)
 	ar rcs $(ENGINE_DEVICE_LIB)  $(ENGINE_DEVICE_OBJS)
 
-$(GEDO)/LinuxGameEngine.o: $(GEDSLDC)/LinuxGameEngine.cpp
+$(GEDO)/LinuxBIGFile.o: $(GEDSLDC)/LinuxBIGFile.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxBIGFile.o $(GEDSLDC)/LinuxBIGFile.cpp
+
+$(GEDO)/LinuxBIGFileSystem.o: $(GEDSLDC)/LinuxBIGFileSystem.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxBIGFileSystem.o $(GEDSLDC)/LinuxBIGFileSystem.cpp
+
+$(GEDO)/LinuxGameEngine.o: $(GEDSLDC)/LinuxGameEngine.cpp GameEngineDevice/Include/LinuxDevice/Common/LinuxGameEngine.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameEngine.o $(GEDSLDC)/LinuxGameEngine.cpp
 
 $(GEDO)/LinuxLocalFile.o: $(GEDSLDC)/LinuxLocalFile.cpp
@@ -43,9 +49,9 @@ $(GEDO)/LinuxLocalFileSystem.o: $(GEDSLDC)/LinuxLocalFileSystem.cpp
 # GameEngine
 
 ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
-$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o
+$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o
 #ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/INI.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
-$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/GameText.o
+$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/GameText.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
@@ -100,6 +106,9 @@ $(GEO)/MemoryInit.o: $(GES)/Common/System/MemoryInit.cpp
 
 $(GEO)/RAMFile.o: $(GES)/Common/System/RAMFile.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RAMFile.o $(GES)/Common/System/RAMFile.cpp
+
+$(GEO)/StreamingArchiveFile.o: $(GES)/Common/System/StreamingArchiveFile.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StreamingArchiveFile.o $(GES)/Common/System/StreamingArchiveFile.cpp
 
 $(GEO)/SubsystemInterface.o: $(GES)/Common/System/SubsystemInterface.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SubsystemInterface.o $(GES)/Common/System/SubsystemInterface.cpp

@@ -87,6 +87,10 @@ class StreamingArchiveFile : public RAMFile
 		StreamingArchiveFile();
 		//virtual				~StreamingArchiveFile();
 
+		// No copies allowed!
+		StreamingArchiveFile(const StreamingArchiveFile&) = delete;
+		StreamingArchiveFile& operator=(const StreamingArchiveFile&) = delete;
+
 
 		virtual Bool	open( const Char *filename, Int access = 0 );				///< Open a file for access
 		virtual void	close( void );																			///< Close the file
@@ -95,14 +99,14 @@ class StreamingArchiveFile : public RAMFile
 		virtual Int		seek( Int new_pos, seekMode mode = CURRENT );				///< Set file position: See File::seek
 		
 		// Ini's should not be parsed with streaming files, that's just dumb.
-		virtual void	nextLine(Char *buf = NULL, Int bufSize = 0) { DEBUG_CRASH(("Should not call nextLine on a streaming file.\n")); } 
-		virtual Bool	scanInt(Int &newInt) { DEBUG_CRASH(("Should not call scanInt on a streaming file.\n"));  return FALSE; } 
-		virtual Bool	scanReal(Real &newReal) { DEBUG_CRASH(("Should not call scanReal on a streaming file.\n")); return FALSE; } 
-		virtual Bool	scanString(AsciiString &newString) { DEBUG_CRASH(("Should not call scanString on a streaming file.\n")); return FALSE; } 
+		virtual void	nextLine(Char *, Int) { DEBUG_CRASH(("Should not call nextLine on a streaming file.\n")); } 
+		virtual Bool	scanInt(Int &) { DEBUG_CRASH(("Should not call scanInt on a streaming file.\n"));  return FALSE; } 
+		virtual Bool	scanReal(Real &) { DEBUG_CRASH(("Should not call scanReal on a streaming file.\n")); return FALSE; } 
+		virtual Bool	scanString(AsciiString &) { DEBUG_CRASH(("Should not call scanString on a streaming file.\n")); return FALSE; } 
 
 		virtual Bool	open( File *file );																	///< Open file for fast RAM access
 		virtual Bool	openFromArchive(File *archiveFile, const AsciiString& filename, Int offset, Int size); ///< copy file data from the given file at the given offset for the given size.
-		virtual Bool	copyDataToFile(File *localFile) { DEBUG_CRASH(("Are you sure you meant to copyDataToFile on a streaming file?")); return FALSE; }
+		virtual Bool	copyDataToFile(File *) { DEBUG_CRASH(("Are you sure you meant to copyDataToFile on a streaming file?")); return FALSE; }
 
 		virtual char* readEntireAndClose() { DEBUG_CRASH(("Are you sure you meant to readEntireAndClose on a streaming file?")); return NULL; }
 		virtual File* convertToRAMFile() { DEBUG_CRASH(("Are you sure you meant to readEntireAndClose on a streaming file?")); return this; }

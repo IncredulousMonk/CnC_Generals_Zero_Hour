@@ -14,10 +14,10 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheNameKeyGenerator
   - TheFileSystem
   - TheLocalFileSystem
+  - TheArchiveFileSystem
 
 ## Still to do
 
-- Implement TheArchiveFileSystem.
 - Everything else.
 
 

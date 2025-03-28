@@ -440,7 +440,7 @@ void INI::readLine( void )
       {
         // refill buffer
         m_readBufferNext=0;
-        m_readBufferUsed=static_cast<unsigned>(m_file->read(m_readBuffer,INI_READ_BUFFER)); // TODO: read can return -1!
+        m_readBufferUsed=static_cast<unsigned>(m_file->read(m_readBuffer,INI_READ_BUFFER)); // FIXME: read can return -1!
 
         // EOF?
         if (!m_readBufferUsed)

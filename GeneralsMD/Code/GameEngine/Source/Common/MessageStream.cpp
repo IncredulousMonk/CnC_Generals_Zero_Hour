@@ -113,7 +113,8 @@ GameMessageArgumentDataType GameMessage::getArgumentDataType( Int argIndex )
 		return ARGUMENTDATATYPE_UNKNOWN;
 	}
 	int i=0;
-	for (GameMessageArgument *a = m_argList; a && (i < argIndex); a=a->m_next, ++i );
+	GameMessageArgument *a {};
+	for (a = m_argList; a && (i < argIndex); a=a->m_next, ++i );
 
 	if (a != NULL)
 	{
@@ -1063,6 +1064,9 @@ Bool isInvalidDebugCommand( GameMessage::Type t )
 		case GameMessage::MSG_META_DEBUG_WIN:
 
 			return true;
+
+		default:
+			break;
 		}
 	}
 	return false;

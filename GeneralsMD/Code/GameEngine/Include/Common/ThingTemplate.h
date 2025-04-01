@@ -293,7 +293,7 @@ public:
 #if defined(_DEBUG) || defined(_INTERNAL)
 	Bool containsPartialName(const char* n) const
 	{
-		for (int i = 0; i < m_info.size(); i++)
+		for (size_t i = 0; i < m_info.size(); i++)
 			if (strstr(m_info[i].first.str(), n) != NULL)
 				return true;
 		return false;

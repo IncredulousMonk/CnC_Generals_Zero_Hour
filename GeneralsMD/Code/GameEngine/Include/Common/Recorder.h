@@ -27,6 +27,7 @@
 
 #include "Common/MessageStream.h"
 #include "GameNetwork/GameInfo.h"
+#include <ctime>
 
 /**
   * The ReplayGameInfo class holds information about the replay game and
@@ -58,6 +59,10 @@ public:
 	RecorderClass();																	///< Constructor.
 	virtual ~RecorderClass();													///< Destructor.
 
+	// No copies allowed!
+	RecorderClass(const RecorderClass&) = delete;
+	RecorderClass& operator=(const RecorderClass&) = delete;
+
 	void init();																			///< Initialize TheRecorder.
 	void reset();																			///< Reset the state of TheRecorder.
 	void update();																		///< General purpose update function.
@@ -88,7 +93,7 @@ public:
 		AsciiString filename;
 		Bool forPlayback;
 		UnicodeString replayName;
-		SYSTEMTIME timeVal;
+		std::tm timeVal;
 		UnicodeString versionString;
 		UnicodeString versionTimeString;
 		UnsignedInt versionNumber;

@@ -60,10 +60,10 @@ class WindowLayout;
 class Anim2DTemplate;
 class Anim2D;
 class Shadow;
-enum LegalBuildCode;
+enum LegalBuildCode: int;
 enum KindOfType;
 enum ShadowType;
-enum CanAttackResult;
+enum CanAttackResult: int;
 
 // ------------------------------------------------------------------------------------------------
 enum RadiusCursorType
@@ -196,6 +196,10 @@ public:
 		const SpecialPowerTemplate* spt
 	);
 
+	// No copies allowed!
+	SuperweaponInfo(const SuperweaponInfo&) = delete;
+	SuperweaponInfo& operator=(const SuperweaponInfo&) = delete;
+
 	const SpecialPowerTemplate*	getSpecialPowerTemplate() const { return m_powerTemplate; }
 	void setFont(const AsciiString& superweaponNormalFont, Int superweaponNormalPointSize, Bool superweaponNormalBold);
 	void setText(const UnicodeString& name, const UnicodeString& time);
@@ -267,6 +271,10 @@ public:
 	FloatingTextData(void);
 	//~FloatingTextData(void);
 
+	// No copies allowed!
+	FloatingTextData(const FloatingTextData&) = delete;
+	FloatingTextData& operator=(const FloatingTextData&) = delete;
+
 	Color						m_color;														///< It's current color
 	UnicodeString		m_text;											///< the text we're displaying
 	DisplayString*	m_dString;									///< The display string
@@ -303,6 +311,10 @@ public:
 
 	WorldAnimationData( void );
 	~WorldAnimationData( void ) { }
+
+	// No copies allowed!
+	WorldAnimationData(const WorldAnimationData&) = delete;
+	WorldAnimationData& operator=(const WorldAnimationData&) = delete;
 
 	Anim2D *m_anim;												///< the animation instance
 	Coord3D m_worldPos;										///< position in the world
@@ -361,6 +373,10 @@ public:  // ********************************************************************
 
 	InGameUI( void );
 	virtual ~InGameUI( void );
+
+	// No copies allowed!
+	InGameUI(const InGameUI&) = delete;
+	InGameUI& operator=(const InGameUI&) = delete;
 	
 	// Inherited from subsystem interface -----------------------------------------------------------
 	virtual	void init( void );															///< Initialize the in-game user interface
@@ -431,7 +447,7 @@ public:  // ********************************************************************
 	// build interface
 	virtual void placeBuildAvailable( const ThingTemplate *build, Drawable *buildDrawable );				///< built thing being placed
 	virtual const ThingTemplate *getPendingPlaceType( void );					///< get item we're trying to place
-	virtual const ObjectID getPendingPlaceSourceObjectID( void );			///< get producing object
+	virtual ObjectID getPendingPlaceSourceObjectID( void );			///< get producing object
 	virtual Bool getPreventLeftClickDeselectionInAlternateMouseModeForOneClick() const { return m_preventLeftClickDeselectionInAlternateMouseModeForOneClick; }
 	virtual void setPreventLeftClickDeselectionInAlternateMouseModeForOneClick( Bool set ) { m_preventLeftClickDeselectionInAlternateMouseModeForOneClick = set; }
 	virtual void setPlacementStart( const ICoord2D *start );					///< placement anchor point (for choosing angles)

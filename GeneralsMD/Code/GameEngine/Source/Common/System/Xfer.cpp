@@ -197,7 +197,7 @@ void Xfer::xferAsciiString( AsciiString *asciiStringData )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void Xfer::xferMarkerLabel( AsciiString asciiStringData )
+void Xfer::xferMarkerLabel( AsciiString )
 {
 }  // end xferMarkerLabel
 
@@ -846,24 +846,27 @@ void Xfer::xferMatrix3D( Matrix3D* mtx )
 	XferVersion version = currentVersion;
 	xferVersion( &version, currentVersion );
 
- 	Vector4& tmp0 = (*mtx)[0];
- 	Vector4& tmp1 = (*mtx)[1];
- 	Vector4& tmp2 = (*mtx)[2];
+	DEBUG_CRASH(("xferMatrix3D not fully implemented"));
+	(void) mtx;
+	// FIXME: Where is Vector4 being declared?
+ 	// Vector4& tmp0 = (*mtx)[0];
+ 	// Vector4& tmp1 = (*mtx)[1];
+ 	// Vector4& tmp2 = (*mtx)[2];
 
-	xferReal(&tmp0.X);
-	xferReal(&tmp0.Y);
-	xferReal(&tmp0.Z);
-	xferReal(&tmp0.W);
+	// xferReal(&tmp0.X);
+	// xferReal(&tmp0.Y);
+	// xferReal(&tmp0.Z);
+	// xferReal(&tmp0.W);
 
-	xferReal(&tmp1.X);
-	xferReal(&tmp1.Y);
-	xferReal(&tmp1.Z);
-	xferReal(&tmp1.W);
+	// xferReal(&tmp1.X);
+	// xferReal(&tmp1.Y);
+	// xferReal(&tmp1.Z);
+	// xferReal(&tmp1.W);
 
-	xferReal(&tmp2.X);
-	xferReal(&tmp2.Y);
-	xferReal(&tmp2.Z);
-	xferReal(&tmp2.W);
+	// xferReal(&tmp2.X);
+	// xferReal(&tmp2.Y);
+	// xferReal(&tmp2.Z);
+	// xferReal(&tmp2.W);
 }
 
 

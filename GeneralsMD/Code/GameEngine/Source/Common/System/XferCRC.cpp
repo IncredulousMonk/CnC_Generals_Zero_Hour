@@ -34,7 +34,7 @@
 #include "Common/XferDeepCRC.h"
 #include "Common/CRC.h"
 #include "Common/Snapshot.h"
-#include "winsock2.h" // for htonl
+#include <arpa/inet.h> // for htonl
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ void XferCRC::endBlock( void )
 //-------------------------------------------------------------------------------------------------
 void XferCRC::addCRC( UnsignedInt val )
 {
-	int hibit;
+	UnsignedInt hibit;
 
 	val = htonl(val);
 
@@ -137,7 +137,7 @@ void XferCRC::xferSnapshot( Snapshot *snapshot )
 //-------------------------------------------------------------------------------------------------
 /** Perform a single CRC operation on the data passed in */
 //-------------------------------------------------------------------------------------------------
-void XferCRC::xferImplementation( void *data, Int dataSize )
+void XferCRC::xferImplementation( void *data, UnsignedInt dataSize )
 {
 
 	if (!data || dataSize < 1)
@@ -147,7 +147,7 @@ void XferCRC::xferImplementation( void *data, Int dataSize )
 
 	const UnsignedInt *uintPtr = (const UnsignedInt *) (data);
 
-	for (Int i=0 ; i<dataSize/4 ; i++)
+	for (UnsignedInt i=0 ; i<dataSize/4 ; i++)
 	{
 		addCRC (*uintPtr++);
 	}
@@ -169,7 +169,7 @@ void XferCRC::xferImplementation( void *data, Int dataSize )
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void XferCRC::skip( Int dataSize )
+void XferCRC::skip( Int )
 {
 
 }  // end skip
@@ -273,7 +273,7 @@ void XferDeepCRC::close( void )
 //-------------------------------------------------------------------------------------------------
 /** Perform a single CRC operation on the data passed in */
 //-------------------------------------------------------------------------------------------------
-void XferDeepCRC::xferImplementation( void *data, Int dataSize )
+void XferDeepCRC::xferImplementation( void *data, UnsignedInt dataSize )
 {
 
 	if (!data || dataSize < 1)
@@ -301,7 +301,7 @@ void XferDeepCRC::xferImplementation( void *data, Int dataSize )
 // ------------------------------------------------------------------------------------------------
 /** Save ascii string */
 // ------------------------------------------------------------------------------------------------
-void XferDeepCRC::xferMarkerLabel( AsciiString asciiStringData )
+void XferDeepCRC::xferMarkerLabel( AsciiString )
 {
 
 }  // end xferAsciiString
@@ -347,8 +347,8 @@ void XferDeepCRC::xferUnicodeString( UnicodeString *unicodeStringData )
 	}  // end if
 
 	// save length of string to follow
-	Byte len = unicodeStringData->getLength();
-	xferByte( &len );
+	UnsignedByte len = unicodeStringData->getLength();
+	xferUnsignedByte( &len );
 
 	// save string data
 	if( len > 0 )

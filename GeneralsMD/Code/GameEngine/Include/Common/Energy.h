@@ -68,6 +68,10 @@ public:
 	
 	Energy();
 
+	// No copies allowed!
+	Energy(const Energy&) = delete;
+	Energy& operator=(const Energy&) = delete;
+
 	// reset energy information to base values.
 	void init( Player *owner)
 	{

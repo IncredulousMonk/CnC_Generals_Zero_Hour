@@ -82,6 +82,10 @@ public:
 	PlayerList();
 	~PlayerList();
 
+	// No copies allowed!
+	PlayerList(const PlayerList&) = delete;
+	PlayerList& operator=(const PlayerList&) = delete;
+
 	// subsystem methods
 	virtual void init( void );
 	virtual void reset( void );

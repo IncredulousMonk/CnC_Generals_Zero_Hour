@@ -35,13 +35,14 @@
 #include "Common/Dict.h"
 #include "Common/GameMemory.h"
 #include "GameClient/TerrainRoads.h"
+#include "GameLogic/TerrainLogic.h"
 
 
 
 class WorldHeightMapInterfaceClass
 {
 public:
-
+  virtual ~WorldHeightMapInterfaceClass() {}
   virtual Int getBorderSize() = 0;
   virtual Real getSeismicZVelocity(Int xIndex, Int yIndex) const = 0;
   virtual void setSeismicZVelocity(Int xIndex, Int yIndex, Real value) = 0; 
@@ -55,7 +56,7 @@ class WorldHeightMap;
 class RenderObjClass;
 class ThingTemplate;
 class Shadow;
-enum WaypointID;
+enum WaypointID: int;
 
 #define MAP_XY_FACTOR			(10.0f)	 //How wide and tall each height map square is in world space.
 #define MAP_HEIGHT_SCALE	(MAP_XY_FACTOR/16.0f)		//divide all map heights by 8.
@@ -117,6 +118,10 @@ public:
 	MapObject(Coord3D loc, AsciiString name, Real angle, Int flags, const Dict* props,
 						const ThingTemplate *thingTemplate );
 	//~MapObject(void);		///< Note that deleting the head of a list deletes all linked objects in the list.
+
+	// No copies allowed!
+	MapObject(const MapObject&) = delete;
+	MapObject& operator=(const MapObject&) = delete;
 
 public:
 

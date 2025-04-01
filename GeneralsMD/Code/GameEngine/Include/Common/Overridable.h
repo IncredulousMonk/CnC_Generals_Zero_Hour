@@ -50,9 +50,18 @@ class Overridable : public MemoryPoolObject
 	public:
 		Overridable() : m_nextOverride(NULL), m_isOverride(false) {}
 
-		// No copies allowed!
-		Overridable(const Overridable&) = delete;
-		Overridable& operator=(const Overridable&) = delete;
+		Overridable(const Overridable&) : m_nextOverride(NULL), m_isOverride(false) {}
+
+		Overridable& operator=(const Overridable& other)
+		{
+			if (this == &other)
+				return *this;
+			
+			m_nextOverride = nullptr;
+			m_isOverride = false;
+
+			return *this;
+		}
 
 		// return a constant version of m_nextOverride, which can be NULL if there is no 
 		// override

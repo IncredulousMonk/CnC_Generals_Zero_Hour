@@ -161,6 +161,7 @@ void SubsystemInterfaceList::initSubsystem(SubsystemInterface* sys, const char* 
 	sys->setName(name);
 	sys->init();
 
+	// FIXME: Uncomment once INI support is finished.
 	// INI ini;
 	// if (path1)
 	// 	ini.load(path1, INI_LOAD_OVERWRITE, pXfer );

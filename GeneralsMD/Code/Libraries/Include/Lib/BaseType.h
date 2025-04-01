@@ -133,8 +133,10 @@ inline Real deg2rad(Real rad) { return rad * (PI/180); }
 // note, this function depends on the cpu rounding mode, which we set to CHOP every frame, 
 // but apparently tends to be left in unpredictable modes by various system bits of
 // code, so use this function with caution -- it might not round in the way you want.
-// inline long fast_float2long_round(float f)
-// {
+inline long fast_float2long_round(float f)
+{
+   // FIXME: asm is a problem.
+   return std::round(f);
 //    long i;
 
 //    asm (
@@ -143,12 +145,14 @@ inline Real deg2rad(Real rad) { return rad * (PI/180); }
 //    );
 
 //    return i;
-// }
+}
 
 // super fast float trunc routine, works always (independent of any FPU modes)
 // code courtesy of Martin Hoffesommer (grin)
-// inline float fast_float_trunc(float f)
-// {
+inline float fast_float_trunc(float f)
+{
+   // FIXME: asm is a problem.
+   return std::trunc(f);
 //    asm (
 //       "mov ecx,%[f];"
 //       "shr ecx,23;"
@@ -160,25 +164,27 @@ inline Real deg2rad(Real rad) { return rad * (PI/180); }
 //       "and %[f],eax;"
 //   );
 //   return f;
-// }
+}
 
 // same here, fast floor function
-// inline float fast_float_floor(float f)
-// {
+inline float fast_float_floor(float f)
+{
+   return std::floor(f);
 //    static unsigned almost1=(126<<23)|0x7fffff;
 //    if (*(unsigned *)&f &0x80000000)
 //       f-=*(float *)&almost1;
 //    return fast_float_trunc(f);
-// }
+}
 
 // same here, fast ceil function
-// inline float fast_float_ceil(float f)
-// {
+inline float fast_float_ceil(float f)
+{
+   return std::ceil(f);
 //    static unsigned almost1=(126<<23)|0x7fffff;
 //    if ( (*(unsigned *)&f &0x80000000)==0)
 //       f+=*(float *)&almost1;
 //    return fast_float_trunc(f);
-// }
+}
 
 //-------------------------------------------------------------------------------------------------
 #define REAL_TO_INT(x)						((Int)(fast_float2long_round(fast_float_trunc(x))))

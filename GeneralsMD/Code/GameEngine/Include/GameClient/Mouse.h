@@ -240,6 +240,10 @@ public:
 	Mouse( void );
 	virtual ~Mouse( void );
 
+	// No copies allowed!
+	Mouse(const Mouse&) = delete;
+	Mouse& operator=(const Mouse&) = delete;
+
 	// you may need to extend these for your device
 	virtual void parseIni(void);	///< parse ini settings associated with mouse (do this before init()).
 	virtual void init( void );		///< init mouse, extend this functionality, do not replace

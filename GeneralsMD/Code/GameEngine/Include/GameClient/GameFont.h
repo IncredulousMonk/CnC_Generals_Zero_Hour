@@ -67,6 +67,10 @@ public:
 	FontLibrary( void );
 	virtual ~FontLibrary( void );
 
+	// No copies allowed!
+	FontLibrary(const FontLibrary&) = delete;
+	FontLibrary& operator=(const FontLibrary&) = delete;
+
 	virtual void init( void );
 	virtual void reset( void );
 	virtual void update( void ) { }
@@ -87,7 +91,7 @@ protected:
 	/// load the font data pointer based on everything else we already have set
 	virtual Bool loadFontData( GameFont *font ) = 0;
 	/// release the font data pointer
-	virtual void releaseFontData( GameFont *font ) { };
+	virtual void releaseFontData( GameFont * ) { };
 
 	GameFont *m_fontList;  ///< list of fonts we have loaded
 	Int m_count;  ///< number of unique fonts loaded in this lib

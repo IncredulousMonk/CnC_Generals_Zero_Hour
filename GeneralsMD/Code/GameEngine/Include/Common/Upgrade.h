@@ -33,9 +33,10 @@
 #define __UPGRADE_H_
 
 // USER INCLUDES //////////////////////////////////////////////////////////////////////////////////
-#include "Common/AudioEventRTS.h"
+// #include "Common/AudioEventRTS.h"
 #include "Common/INI.h"
 #include "Common/Snapshot.h"
+#include "Common/BitFlags.h"
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Player;
@@ -185,8 +186,9 @@ public:
 	const AsciiString& getDisplayNameLabel( void ) const { return m_displayNameLabel; }
 	UpgradeMaskType getUpgradeMask() const { return m_upgradeMask; }
 	UpgradeType getUpgradeType( void ) const { return m_type; }
-	const AudioEventRTS* getResearchCompleteSound() const { return &m_researchSound; }
-	const AudioEventRTS* getUnitSpecificSound() const { return &m_unitSpecificSound; }
+	// FIXME: Uncomment once audio subsystem added.
+	// const AudioEventRTS* getResearchCompleteSound() const { return &m_researchSound; }
+	// const AudioEventRTS* getUnitSpecificSound() const { return &m_unitSpecificSound; }
 	AcademyClassificationType getAcademyClassificationType() const { return m_academyClassificationType; }
 
 	/// inventory pictures
@@ -215,8 +217,9 @@ protected:
 	Real m_buildTime;										///< database # for how long it takes to "build" this
 	Int m_cost;													///< cost for production 
 	UpgradeMaskType m_upgradeMask;			///< Unique bitmask for this upgrade template
-	AudioEventRTS	m_researchSound;			///< Sound played when upgrade researched.
-	AudioEventRTS	m_unitSpecificSound;	///< Secondary sound played when upgrade researched.
+	// FIXME: Uncomment once audio subsystem added.
+	// AudioEventRTS	m_researchSound;			///< Sound played when upgrade researched.
+	// AudioEventRTS	m_unitSpecificSound;	///< Secondary sound played when upgrade researched.
 	AcademyClassificationType m_academyClassificationType; ///< A value used by the academy to evaluate advice based on what players do.
 
 	UpgradeTemplate *m_next;						///< next

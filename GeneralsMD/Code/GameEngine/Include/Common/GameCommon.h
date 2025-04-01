@@ -311,7 +311,7 @@ inline VeterancyLevelFlags clearVeterancyLevelFlag(VeterancyLevelFlags flags, Ve
 }
 
 // ----------------------------------------------------------------------------------------------
-#define BOGUSPTR(p) ((((unsigned int)(p)) & 1) != 0)
+#define BOGUSPTR(p) ((((uintptr_t)(p)) & 1) != 0)
 
 // ----------------------------------------------------------------------------------------------
 #define MAKE_DLINK_HEAD(OBJCLASS, LISTNAME)																						\
@@ -319,7 +319,7 @@ public:																																								\
 	inline DLINK_ITERATOR<OBJCLASS> iterate_##LISTNAME() const													\
 	{																																										\
 		DEBUG_ASSERTCRASH(!BOGUSPTR(m_dlinkhead_##LISTNAME.m_head), ("bogus head ptr"));	\
-		return DLINK_ITERATOR<OBJCLASS>(m_dlinkhead_##LISTNAME.m_head, OBJCLASS::dlink_next_##LISTNAME);	\
+		return DLINK_ITERATOR<OBJCLASS>(m_dlinkhead_##LISTNAME.m_head, &OBJCLASS::dlink_next_##LISTNAME);	\
 	}																																										\
 	inline OBJCLASS *getFirstItemIn_##LISTNAME() const																	\
 	{																																										\
@@ -377,6 +377,8 @@ private:																																							\
 			m_head(0) { }																																		\
 		inline ~DLINKHEAD_##LISTNAME()																										\
 			{ DEBUG_ASSERTCRASH(!m_head,("destroying dlinkhead still in a list " #LISTNAME)); }				\
+		inline DLINKHEAD_##LISTNAME(const DLINKHEAD_##LISTNAME&) = delete;									\
+		inline DLINKHEAD_##LISTNAME& operator=(const DLINKHEAD_##LISTNAME&) = delete;						\
 	};																																									\
 	DLINKHEAD_##LISTNAME m_dlinkhead_##LISTNAME;	
 

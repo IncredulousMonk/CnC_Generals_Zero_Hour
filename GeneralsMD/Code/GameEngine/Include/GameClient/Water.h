@@ -49,24 +49,24 @@ class WaterSetting
 public:
 
 	WaterSetting( void );
-	virtual ~WaterSetting( void );
+	~WaterSetting( void );
 
 	/// Get the INI parsing table for loading
 	const FieldParse *getFieldParse( void ) { return m_waterSettingFieldParseTable; }
 
 	static const FieldParse m_waterSettingFieldParseTable[];		///< the parse table for INI definition
-	AsciiString m_skyTextureFile;
-	AsciiString m_waterTextureFile;
-	Int m_waterRepeatCount;
-	Real m_skyTexelsPerUnit;	//texel density of sky plane (higher value repeats texture more).
-	RGBAColorInt m_vertex00Diffuse;
-	RGBAColorInt m_vertex10Diffuse;
-	RGBAColorInt m_vertex11Diffuse;
-	RGBAColorInt m_vertex01Diffuse;
-	RGBAColorInt m_waterDiffuseColor;
-	RGBAColorInt m_transparentWaterDiffuse;
-	Real m_uScrollPerMs;		
-	Real m_vScrollPerMs;
+	AsciiString m_skyTextureFile {};
+	AsciiString m_waterTextureFile {};
+	Int m_waterRepeatCount {};
+	Real m_skyTexelsPerUnit {};	//texel density of sky plane (higher value repeats texture more).
+	RGBAColorInt m_vertex00Diffuse {};
+	RGBAColorInt m_vertex10Diffuse {};
+	RGBAColorInt m_vertex11Diffuse {};
+	RGBAColorInt m_vertex01Diffuse {};
+	RGBAColorInt m_waterDiffuseColor {};
+	RGBAColorInt m_transparentWaterDiffuse {};
+	Real m_uScrollPerMs {};
+	Real m_vScrollPerMs {};
 
 };
 
@@ -79,38 +79,44 @@ class WaterTransparencySetting : public Overridable
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( WaterTransparencySetting, "WaterTransparencySetting"  )
 
 	public:
-		Real m_transparentWaterDepth;
-		Real m_minWaterOpacity;
-		RGBColor m_standingWaterColor;
-		RGBColor m_radarColor;
-		Bool m_additiveBlend;
-		AsciiString m_standingWaterTexture;
-		
-		AsciiString m_skyboxTextureN;
-		AsciiString m_skyboxTextureE;
-		AsciiString m_skyboxTextureS;
-		AsciiString m_skyboxTextureW;
-		AsciiString m_skyboxTextureT;
+		// MG: Cannot apply offsetof to WaterTransparencySetting, so had to move data into an embedded struct.
+		struct Data
+		{
+			Real m_transparentWaterDepth {};
+			Real m_minWaterOpacity {};
+			RGBColor m_standingWaterColor {};
+			RGBColor m_radarColor {};
+			Bool m_additiveBlend {};
+			AsciiString m_standingWaterTexture {};
+			
+			AsciiString m_skyboxTextureN {};
+			AsciiString m_skyboxTextureE {};
+			AsciiString m_skyboxTextureS {};
+			AsciiString m_skyboxTextureW {};
+			AsciiString m_skyboxTextureT {};
+		};
+
+		Data m_data {};
 
 	public:
 		WaterTransparencySetting()
 		{
-			m_transparentWaterDepth = 3.0f;
-			m_minWaterOpacity = 1.0f;
-			m_standingWaterColor.red = 1.0f;
-			m_standingWaterColor.green = 1.0f;
-			m_standingWaterColor.blue = 1.0f;
-			m_radarColor.red = 140;
-			m_radarColor.green = 140;
-			m_radarColor.blue = 255;
-			m_standingWaterTexture = "TWWater01.tga";
-			m_additiveBlend = FALSE;
+			m_data.m_transparentWaterDepth = 3.0f;
+			m_data.m_minWaterOpacity = 1.0f;
+			m_data.m_standingWaterColor.red = 1.0f;
+			m_data.m_standingWaterColor.green = 1.0f;
+			m_data.m_standingWaterColor.blue = 1.0f;
+			m_data.m_radarColor.red = 140;
+			m_data.m_radarColor.green = 140;
+			m_data.m_radarColor.blue = 255;
+			m_data.m_standingWaterTexture = "TWWater01.tga";
+			m_data.m_additiveBlend = FALSE;
 
-			m_skyboxTextureN = "TSMorningN.tga";
-			m_skyboxTextureE = "TSMorningE.tga";
-			m_skyboxTextureS = "TSMorningS.tga";
-			m_skyboxTextureW = "TSMorningW.tga";
-			m_skyboxTextureT = "TSMorningT.tga";
+			m_data.m_skyboxTextureN = "TSMorningN.tga";
+			m_data.m_skyboxTextureE = "TSMorningE.tga";
+			m_data.m_skyboxTextureS = "TSMorningS.tga";
+			m_data.m_skyboxTextureW = "TSMorningW.tga";
+			m_data.m_skyboxTextureT = "TSMorningT.tga";
 		}
 
 		static const FieldParse m_waterTransparencySettingFieldParseTable[];		///< the parse table for INI definition

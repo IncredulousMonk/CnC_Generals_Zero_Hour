@@ -35,7 +35,7 @@
 #include "Common/INI.h"
 #include "Common/GameType.h"
 
-#include "GameClient/TerrainVisual.h"
+// #include "GameClient/TerrainVisual.h"
 #include "GameClient/Water.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,12 +57,12 @@ void INI::parseWaterSettingDefinition( INI* ini )
 	name.set( token );
 
 	// get the water setting we want to load based on name
-	char **timeOfDayName = TimeOfDayNames;
+	const char **timeOfDayName = TimeOfDayNames;
 	Int timeOfDayIndex = 0;  // TIME_OF_DAY_INVALID
 	while( timeOfDayName && *timeOfDayName )
 	{
 
-		if( stricmp( *timeOfDayName, name.str() ) == 0 )
+		if( strcasecmp( *timeOfDayName, name.str() ) == 0 )
 		{
 
 			waterSetting = &WaterSettings[ timeOfDayIndex ];
@@ -106,7 +106,7 @@ void INI::parseWaterTransparencyDefinition( INI *ini )
 	WaterTransparencySetting* waterTrans = (WaterTransparencySetting*) (TheWaterTransparency.getNonOverloadedPointer());
 	waterTrans = (WaterTransparencySetting*) (waterTrans->friend_getFinalOverride());
 	// parse the data
-	ini->initFromINI( waterTrans, TheWaterTransparency->getFieldParse() );
+	ini->initFromINI( &waterTrans->m_data, TheWaterTransparency->getFieldParse() );
 	
 	// If we overrode any skybox textures, then call the W3D Water stuff.
 	if (ini->getLoadType() == INI_LOAD_CREATE_OVERRIDES) {
@@ -123,21 +123,22 @@ void INI::parseWaterTransparencyDefinition( INI *ini )
 		if (wtOriginal == wtOverride) 
 			return;
 
-		const AsciiString *oldTextures[5],*newTextures[5];
+		// const AsciiString *oldTextures[5],*newTextures[5];
 
 		//Copy current texture names into arrays
-		oldTextures[0]=&wtOriginal->m_skyboxTextureN;
-		newTextures[0]=&wtOverride->m_skyboxTextureN;
-		oldTextures[1]=&wtOriginal->m_skyboxTextureE;
-		newTextures[1]=&wtOverride->m_skyboxTextureE;
-		oldTextures[2]=&wtOriginal->m_skyboxTextureS;
-		newTextures[2]=&wtOverride->m_skyboxTextureS;
-		oldTextures[3]=&wtOriginal->m_skyboxTextureW;
-		newTextures[3]=&wtOverride->m_skyboxTextureW;
-		oldTextures[4]=&wtOriginal->m_skyboxTextureT;
-		newTextures[4]=&wtOverride->m_skyboxTextureT;
+		// oldTextures[0]=&wtOriginal->m_data.m_skyboxTextureN;
+		// newTextures[0]=&wtOverride->m_data.m_skyboxTextureN;
+		// oldTextures[1]=&wtOriginal->m_data.m_skyboxTextureE;
+		// newTextures[1]=&wtOverride->m_data.m_skyboxTextureE;
+		// oldTextures[2]=&wtOriginal->m_data.m_skyboxTextureS;
+		// newTextures[2]=&wtOverride->m_data.m_skyboxTextureS;
+		// oldTextures[3]=&wtOriginal->m_data.m_skyboxTextureW;
+		// newTextures[3]=&wtOverride->m_data.m_skyboxTextureW;
+		// oldTextures[4]=&wtOriginal->m_data.m_skyboxTextureT;
+		// newTextures[4]=&wtOverride->m_data.m_skyboxTextureT;
 
-		TheTerrainVisual->replaceSkyboxTextures(oldTextures, newTextures);
+		// FIXME: not yet implemented.
+		// TheTerrainVisual->replaceSkyboxTextures(oldTextures, newTextures);
 	}
 }
 

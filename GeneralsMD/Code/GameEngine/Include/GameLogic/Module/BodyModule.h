@@ -119,6 +119,7 @@ public:
 class BodyModuleInterface
 {
 public:
+	virtual ~BodyModuleInterface() {}
 	/**
 		Try to damage this Object. The module's Armor
 		will be taken into account, so the actual damage done may vary
@@ -266,14 +267,14 @@ public:
 	virtual Bool getFrontCrushed() const { return false; }
 	virtual Bool getBackCrushed() const { return false; }
 
-	virtual void setInitialHealth(Int initialPercent)  {  } ///< Sets the inital load health %.
-	virtual void setMaxHealth(Real maxHealth, MaxHealthChangeType healthChangeType = SAME_CURRENTHEALTH )  {  } ///< Sets the max health.
+	virtual void setInitialHealth(Int /*initialPercent*/)  {  } ///< Sets the inital load health %.
+	virtual void setMaxHealth(Real /*maxHealth*/, MaxHealthChangeType /*healthChangeType = SAME_CURRENTHEALTH*/ )  {  } ///< Sets the max health.
 
-	virtual void setFrontCrushed(Bool v) { DEBUG_CRASH(("you should never call this for generic Bodys")); }
-	virtual void setBackCrushed(Bool v) { DEBUG_CRASH(("you should never call this for generic Bodys")); }
+	virtual void setFrontCrushed(Bool) { DEBUG_CRASH(("you should never call this for generic Bodys")); }
+	virtual void setBackCrushed(Bool) { DEBUG_CRASH(("you should never call this for generic Bodys")); }
 
 
-	virtual void setIndestructible( Bool indestructible ) { }
+	virtual void setIndestructible( Bool /*indestructible*/ ) { }
 	virtual Bool isIndestructible( void ) const { return TRUE; }
 
 	//Allows outside systems to apply defensive bonuses or penalties (they all stack as a multiplier!)

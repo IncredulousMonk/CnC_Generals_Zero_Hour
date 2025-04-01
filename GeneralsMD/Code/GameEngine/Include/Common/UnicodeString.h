@@ -156,7 +156,7 @@ public:
 	/**
 		Return the length, in characters (not bytes!), of the string.
 	*/
-	int getLength() const;
+	size_t getLength() const;
 	/**
 		Return true iff the length of the string is zero. Equivalent
 		to (getLength() == 0) but slightly more efficient.
@@ -313,7 +313,7 @@ inline UnicodeString::~UnicodeString()
 }
 
 // -----------------------------------------------------
-inline int UnicodeString::getLength() const
+inline size_t UnicodeString::getLength() const
 {
 	validate();
 	return m_data ? wcslen(peek()) : 0;
@@ -337,7 +337,7 @@ inline void UnicodeString::clear()
 // -----------------------------------------------------
 inline WideChar UnicodeString::getCharAt(int index) const
 {
-	DEBUG_ASSERTCRASH(index >= 0 && index < getLength(), ("bad index in getCharAt"));
+	DEBUG_ASSERTCRASH(index >= 0 && static_cast<size_t>(index) < getLength(), ("bad index in getCharAt"));
 	validate();
 	return m_data ? peek()[index] : 0;
 }

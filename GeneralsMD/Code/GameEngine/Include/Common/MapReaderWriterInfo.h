@@ -61,6 +61,7 @@
 /** Virtual helper class, so that we can write map data using FILE* or CFile. */
 class OutputStream {
 public:
+	virtual ~OutputStream() {}
 	virtual Int write(const void *pData, Int numBytes) = 0;
 };
 
@@ -68,6 +69,7 @@ public:
 variety of sources, such as FILE* or CFile. */
 class InputStream {
 public:
+	virtual ~InputStream() {}
 	virtual Int read(void *pData, Int numBytes) = 0;
 };
 
@@ -75,6 +77,7 @@ public:
 variety of sources, such as FILE* or CFile. */
 class ChunkInputStream : public InputStream{
 public:
+	virtual ~ChunkInputStream() {}
 	virtual Int read(void *pData, Int numBytes) = 0;
 	virtual UnsignedInt tell(void) = 0;
 	virtual Bool absoluteSeek(UnsignedInt pos) = 0;
@@ -91,6 +94,9 @@ protected:
 public:
 	CachedFileInputStream(void);
 	~CachedFileInputStream(void);
+	// No copies allowed!
+	CachedFileInputStream(const CachedFileInputStream&) = delete;
+	CachedFileInputStream& operator=(const CachedFileInputStream&) = delete;
 	Bool open(AsciiString path);	///< Returns true if open succeeded.
 	void close(void);  ///< Explict close.  Destructor closes if file is left open.
 	virtual Int read(void *pData, Int numBytes);

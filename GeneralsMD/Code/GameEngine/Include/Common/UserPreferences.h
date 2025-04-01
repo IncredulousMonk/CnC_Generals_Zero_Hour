@@ -49,7 +49,8 @@ typedef std::map<AsciiString, AsciiString> PreferenceMap;
 //-----------------------------------------------------------------------------
 // UserPreferences base class 
 //-----------------------------------------------------------------------------
-class UserPreferences : public PreferenceMap
+// FIXME: Not allowed to inherit from std::map.
+class UserPreferences //: public PreferenceMap
 {
 public:
 	UserPreferences();
@@ -68,6 +69,7 @@ public:
 	void setInt(AsciiString key, Int val);
 	void setAsciiString(AsciiString key, AsciiString val);
 
+	AsciiString& operator[] (const char* index); // FIXME: Needs implementation.
 protected:
 	AsciiString m_filename;
 };

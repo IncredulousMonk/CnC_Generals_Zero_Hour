@@ -122,7 +122,6 @@ AudioEventRTS::AudioEventRTS( const AsciiString& eventName, ObjectID ownerID )
 										m_priority(AP_NORMAL), 
 										m_volume(-1.0),
 										m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-										m_objectID(ownerID),
 										m_ownerType(OT_INVALID),
 										m_shouldFade(false),
 										m_isLogicalAudio(false),
@@ -137,7 +136,8 @@ AudioEventRTS::AudioEventRTS( const AsciiString& eventName, ObjectID ownerID )
 										m_allCount(0),
 										m_playerIndex(-1),
 										m_delay(0.0f),
-										m_uninterruptable(FALSE)
+										m_uninterruptable(FALSE),
+										m_objectID(ownerID)
 {						
 	m_attackName.clear();
 	m_decayName.clear();
@@ -158,7 +158,6 @@ AudioEventRTS::AudioEventRTS( const AsciiString& eventName, DrawableID drawableI
 										m_priority(AP_NORMAL), 
 										m_volume(-1.0),
 										m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-										m_drawableID(drawableID),
 										m_ownerType(OT_INVALID),
 										m_shouldFade(false),
 										m_isLogicalAudio(false),
@@ -173,7 +172,8 @@ AudioEventRTS::AudioEventRTS( const AsciiString& eventName, DrawableID drawableI
 										m_allCount(0),
 										m_playerIndex(-1),
 										m_delay(0.0f),
-										m_uninterruptable(FALSE)
+										m_uninterruptable(FALSE),
+										m_drawableID(drawableID)
 {
 	m_attackName.clear();
 	m_decayName.clear();
@@ -352,18 +352,18 @@ void AudioEventRTS::generateFilename( void )
 			}
 
 			if (which == m_playingAudioIndex && m_eventInfo->m_sounds.size() > 2)
-				which = ( which + 1 ) % m_eventInfo->m_sounds.size();
+				which = ( which + 1 ) % static_cast<Int>(m_eventInfo->m_sounds.size());
 
 			m_playingAudioIndex = which;//caching random choice to compare next call
 
 		}
 		else
-			which = (++m_playingAudioIndex) % m_eventInfo->m_sounds.size();
+			which = (++m_playingAudioIndex) % static_cast<Int>(m_eventInfo->m_sounds.size());
  
 
 	}
 	
-	m_filenameToLoad.concat(m_eventInfo->m_sounds[which]);
+	m_filenameToLoad.concat(m_eventInfo->m_sounds[static_cast<size_t>(which)]);
 	m_filenameToLoad.concat(generateFilenameExtension(m_eventInfo->m_soundType));
 	adjustForLocalization(m_filenameToLoad);
 
@@ -397,7 +397,7 @@ void AudioEventRTS::generatePlayInfo( void )
 			attackToPlay = GameAudioRandomValue(0, attackSize - 1);
 		}
 		
-		m_attackName.concat(m_eventInfo->m_attackSounds[attackToPlay]);
+		m_attackName.concat(m_eventInfo->m_attackSounds[static_cast<size_t>(attackToPlay)]);
 		m_attackName.concat(generateFilenameExtension(m_eventInfo->m_soundType));
 		adjustForLocalization(m_attackName);
 	} else {
@@ -415,7 +415,7 @@ void AudioEventRTS::generatePlayInfo( void )
 			decayToPlay = GameAudioRandomValue(0, decaySize - 1);
 		}
 		
-		m_decayName.concat(m_eventInfo->m_decaySounds[decayToPlay]);
+		m_decayName.concat(m_eventInfo->m_decaySounds[static_cast<size_t>(decayToPlay)]);
 		m_decayName.concat(generateFilenameExtension(m_eventInfo->m_soundType));
 		adjustForLocalization(m_decayName);
 	}
@@ -476,7 +476,7 @@ void AudioEventRTS::advanceNextPlayPortion( void )
 		case PP_Sound:
 			if (m_eventInfo && BitTest(m_eventInfo->m_control, AC_ALL)) 
 			{
-				if (m_allCount == m_eventInfo->m_sounds.size()) {
+				if (m_allCount == static_cast<Int>(m_eventInfo->m_sounds.size())) {
 					m_portionToPlayNext = PP_Decay;
 				}
 
@@ -491,6 +491,8 @@ void AudioEventRTS::advanceNextPlayPortion( void )
 			break;
 		case PP_Decay:
 			m_portionToPlayNext = PP_Done;
+			break;
+		case PP_Done:
 			break;
 	}
 }

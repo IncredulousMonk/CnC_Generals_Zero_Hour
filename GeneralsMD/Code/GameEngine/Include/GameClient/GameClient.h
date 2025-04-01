@@ -31,7 +31,7 @@
 #ifndef _GAME_INTERFACE_H_
 #define _GAME_INTERFACE_H_
 
-#include "common/GameType.h"
+#include "Common/GameType.h"
 #include "Common/MessageStream.h"		// for GameMessageTranslator
 #include "Common/Snapshot.h"
 #include "Common/STLTypedefs.h"
@@ -90,6 +90,10 @@ public:
 
 	GameClient();
 	virtual ~GameClient();
+
+	// No copies allowed!
+	GameClient(const GameClient&) = delete;
+	GameClient& operator=(const GameClient&) = delete;
 
 	// subsystem methods
 	virtual void init( void );																					///< Initialize resources
@@ -249,8 +253,8 @@ inline Drawable* GameClient::findDrawableByID( const DrawableID id )
 //
 //	return (*it).second;
 
-	if( (Int)id < m_drawableVector.size() )
-		return m_drawableVector[(Int)id];
+	if( static_cast<size_t>(id) < m_drawableVector.size() )
+		return m_drawableVector[static_cast<size_t>(id)];
 
 	return NULL;
 }

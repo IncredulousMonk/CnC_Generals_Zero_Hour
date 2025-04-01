@@ -37,27 +37,27 @@
 #include "Common/DamageFX.h"
 #include "Common/File.h"
 #include "Common/FileSystem.h"
-#include "Common/GameAudio.h"
+// #include "Common/GameAudio.h"
 #include "Common/Science.h"
-#include "Common/SpecialPower.h"
-#include "Common/ThingFactory.h"
-#include "Common/ThingTemplate.h"
-#include "Common/Upgrade.h"
-#include "Common/Xfer.h"
-#include "Common/XferCRC.h"
+// #include "Common/SpecialPower.h"
+// #include "Common/ThingFactory.h"
+// #include "Common/ThingTemplate.h"
+// #include "Common/Upgrade.h"
+// #include "Common/Xfer.h"
+// #include "Common/XferCRC.h"
 
-#include "GameClient/Anim2D.h"
-#include "GameClient/Color.h"
-#include "GameClient/FXList.h"
-#include "GameClient/GameText.h"
-#include "GameClient/Image.h"
-#include "GameClient/ParticleSys.h"
-#include "GameLogic/Armor.h"
-#include "GameLogic/ExperienceTracker.h"
-#include "GameLogic/FPUControl.h"
-#include "GameLogic/ObjectCreationList.h"
-#include "GameLogic/ScriptEngine.h"
-#include "GameLogic/Weapon.h"
+// #include "GameClient/Anim2D.h"
+// #include "GameClient/Color.h"
+// #include "GameClient/FXList.h"
+// #include "GameClient/GameText.h"
+// #include "GameClient/Image.h"
+// #include "GameClient/ParticleSys.h"
+// #include "GameLogic/Armor.h"
+// #include "GameLogic/ExperienceTracker.h"
+// #include "GameLogic/FPUControl.h"
+// #include "GameLogic/ObjectCreationList.h"
+// #include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/Weapon.h"
 
 #include <cstdint>
 
@@ -71,7 +71,8 @@
 // PRIVATE DATA ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-static Xfer *s_xfer = NULL;
+// FIXME: Fix this, and all references to s_xfer
+// static Xfer *s_xfer = NULL;
 
 //-------------------------------------------------------------------------------------------------
 /** This is the table of data types we can have in INI files.  To add a new data type
@@ -85,68 +86,69 @@ struct BlockParse
 };
 static const BlockParse theTypeTable[] =
 {
-	{ "AIData",							INI::parseAIDataDefinition },
-	{ "Animation",					INI::parseAnim2DDefinition },
-	{ "Armor",							INI::parseArmorDefinition },
-	{ "AudioEvent",					INI::parseAudioEventDefinition },
-	{ "AudioSettings",			INI::parseAudioSettingsDefinition },
-	{ "Bridge",							INI::parseTerrainBridgeDefinition },
-	{ "Campaign",						INI::parseCampaignDefinition },
- 	{ "ChallengeGenerals",				INI::parseChallengeModeDefinition },
-	{ "CommandButton",			INI::parseCommandButtonDefinition },
-	{ "CommandMap",					INI::parseMetaMapDefinition },
-	{ "CommandSet",					INI::parseCommandSetDefinition },
-	{ "ControlBarScheme",		INI::parseControlBarSchemeDefinition },
-	{ "ControlBarResizer",	INI::parseControlBarResizerDefinition },
-	{ "CrateData",					INI::parseCrateTemplateDefinition },
-	{ "Credits",						INI::parseCredits},
-	{ "WindowTransition",		INI::parseWindowTransitions},
-	{ "DamageFX",						INI::parseDamageFXDefinition },
-	{ "DialogEvent",				INI::parseDialogDefinition },
-	{ "DrawGroupInfo",		INI::parseDrawGroupNumberDefinition },
-	{ "EvaEvent",						INI::parseEvaEvent },
-	{ "FXList",							INI::parseFXListDefinition },
-	{ "GameData",						INI::parseGameDataDefinition },
-	{ "InGameUI",						INI::parseInGameUIDefinition },
-	{ "Locomotor",					INI::parseLocomotorTemplateDefinition },
-	{ "Language",						INI::parseLanguageDefinition },
-	{ "MapCache",						INI::parseMapCacheDefinition },
-	{ "MapData",						INI::parseMapDataDefinition },
-	{ "MappedImage",				INI::parseMappedImageDefinition },
-	{ "MiscAudio",					INI::parseMiscAudio},
-	{ "Mouse",							INI::parseMouseDefinition },
-	{ "MouseCursor",				INI::parseMouseCursorDefinition },
-	{ "MultiplayerColor",		INI::parseMultiplayerColorDefinition },
-  { "MultiplayerStartingMoneyChoice",		INI::parseMultiplayerStartingMoneyChoiceDefinition },
-	{ "OnlineChatColors",		INI::parseOnlineChatColorDefinition },
-	{ "MultiplayerSettings",INI::parseMultiplayerSettingsDefinition },
-	{ "MusicTrack",					INI::parseMusicTrackDefinition },
-	{ "Object",							INI::parseObjectDefinition },
-	{ "ObjectCreationList",	INI::parseObjectCreationListDefinition },
-	{ "ObjectReskin",				INI::parseObjectReskinDefinition },
-	{ "ParticleSystem",			INI::parseParticleSystemDefinition },
-	{ "PlayerTemplate",			INI::parsePlayerTemplateDefinition },
-	{ "Road",								INI::parseTerrainRoadDefinition },
-	{ "Science",						INI::parseScienceDefinition },
-	{ "Rank",								INI::parseRankDefinition },
-	{ "SpecialPower",				INI::parseSpecialPowerDefinition },
-	{ "ShellMenuScheme",		INI::parseShellMenuSchemeDefinition },
-	{ "Terrain",						INI::parseTerrainDefinition },
-	{ "Upgrade",						INI::parseUpgradeDefinition },
-	{ "Video",							INI::parseVideoDefinition },
+	// FIXME: Uncomment these as they are added.
+// 	{ "AIData",							INI::parseAIDataDefinition },
+// 	{ "Animation",					INI::parseAnim2DDefinition },
+// 	{ "Armor",							INI::parseArmorDefinition },
+// 	{ "AudioEvent",					INI::parseAudioEventDefinition },
+// 	{ "AudioSettings",			INI::parseAudioSettingsDefinition },
+// 	{ "Bridge",							INI::parseTerrainBridgeDefinition },
+// 	{ "Campaign",						INI::parseCampaignDefinition },
+//  	{ "ChallengeGenerals",				INI::parseChallengeModeDefinition },
+// 	{ "CommandButton",			INI::parseCommandButtonDefinition },
+// 	{ "CommandMap",					INI::parseMetaMapDefinition },
+// 	{ "CommandSet",					INI::parseCommandSetDefinition },
+// 	{ "ControlBarScheme",		INI::parseControlBarSchemeDefinition },
+// 	{ "ControlBarResizer",	INI::parseControlBarResizerDefinition },
+// 	{ "CrateData",					INI::parseCrateTemplateDefinition },
+// 	{ "Credits",						INI::parseCredits},
+// 	{ "WindowTransition",		INI::parseWindowTransitions},
+// 	{ "DamageFX",						INI::parseDamageFXDefinition },
+// 	{ "DialogEvent",				INI::parseDialogDefinition },
+// 	{ "DrawGroupInfo",		INI::parseDrawGroupNumberDefinition },
+// 	{ "EvaEvent",						INI::parseEvaEvent },
+// 	{ "FXList",							INI::parseFXListDefinition },
+// 	{ "GameData",						INI::parseGameDataDefinition },
+// 	{ "InGameUI",						INI::parseInGameUIDefinition },
+// 	{ "Locomotor",					INI::parseLocomotorTemplateDefinition },
+// 	{ "Language",						INI::parseLanguageDefinition },
+// 	{ "MapCache",						INI::parseMapCacheDefinition },
+// 	{ "MapData",						INI::parseMapDataDefinition },
+// 	{ "MappedImage",				INI::parseMappedImageDefinition },
+// 	{ "MiscAudio",					INI::parseMiscAudio},
+// 	{ "Mouse",							INI::parseMouseDefinition },
+// 	{ "MouseCursor",				INI::parseMouseCursorDefinition },
+// 	{ "MultiplayerColor",		INI::parseMultiplayerColorDefinition },
+//   { "MultiplayerStartingMoneyChoice",		INI::parseMultiplayerStartingMoneyChoiceDefinition },
+// 	{ "OnlineChatColors",		INI::parseOnlineChatColorDefinition },
+// 	{ "MultiplayerSettings",INI::parseMultiplayerSettingsDefinition },
+// 	{ "MusicTrack",					INI::parseMusicTrackDefinition },
+// 	{ "Object",							INI::parseObjectDefinition },
+// 	{ "ObjectCreationList",	INI::parseObjectCreationListDefinition },
+// 	{ "ObjectReskin",				INI::parseObjectReskinDefinition },
+// 	{ "ParticleSystem",			INI::parseParticleSystemDefinition },
+// 	{ "PlayerTemplate",			INI::parsePlayerTemplateDefinition },
+// 	{ "Road",								INI::parseTerrainRoadDefinition },
+// 	{ "Science",						INI::parseScienceDefinition },
+// 	{ "Rank",								INI::parseRankDefinition },
+// 	{ "SpecialPower",				INI::parseSpecialPowerDefinition },
+// 	{ "ShellMenuScheme",		INI::parseShellMenuSchemeDefinition },
+// 	{ "Terrain",						INI::parseTerrainDefinition },
+// 	{ "Upgrade",						INI::parseUpgradeDefinition },
+// 	{ "Video",							INI::parseVideoDefinition },
 	{ "WaterSet",						INI::parseWaterSettingDefinition },
 	{ "WaterTransparency",	INI::parseWaterTransparencyDefinition},
-	{ "Weather",	INI::parseWeatherDefinition},
-	{ "Weapon",							INI::parseWeaponTemplateDefinition },
-	{ "WebpageURL",					INI::parseWebpageURLDefinition },
-	{ "HeaderTemplate",			INI::parseHeaderTemplateDefinition },
-	{ "StaticGameLOD",			INI::parseStaticGameLODDefinition },
-	{ "DynamicGameLOD",			INI::parseDynamicGameLODDefinition },
-	{ "LODPreset",					INI::parseLODPreset },
-	{	"BenchProfile",				INI::parseBenchProfile },
-	{	"ReallyLowMHz",				parseReallyLowMHz },
-	{	"ScriptAction",				ScriptEngine::parseScriptAction },
-	{	"ScriptCondition",		ScriptEngine::parseScriptCondition },
+// 	{ "Weather",	INI::parseWeatherDefinition},
+// 	{ "Weapon",							INI::parseWeaponTemplateDefinition },
+// 	{ "WebpageURL",					INI::parseWebpageURLDefinition },
+// 	{ "HeaderTemplate",			INI::parseHeaderTemplateDefinition },
+// 	{ "StaticGameLOD",			INI::parseStaticGameLODDefinition },
+// 	{ "DynamicGameLOD",			INI::parseDynamicGameLODDefinition },
+// 	{ "LODPreset",					INI::parseLODPreset },
+// 	{	"BenchProfile",				INI::parseBenchProfile },
+// 	{	"ReallyLowMHz",				parseReallyLowMHz },
+// 	{	"ScriptAction",				ScriptEngine::parseScriptAction },
+// 	{	"ScriptCondition",		ScriptEngine::parseScriptCondition },
 	
 	{ NULL,									NULL },		// keep this last!
 };
@@ -218,6 +220,7 @@ INI::~INI( void )
 //-------------------------------------------------------------------------------------------------
 void INI::loadDirectory( AsciiString dirName, Bool, INILoadType loadType, Xfer *pXfer )
 {
+	DEBUG_LOG(("INI::loadDirectory %s\n", dirName.str()));
 	// sanity
 	if( dirName.isEmpty() )
 		throw INI_INVALID_DIRECTORY;
@@ -306,7 +309,7 @@ void INI::unPrepFile()
 	m_loadType = INI_LOAD_INVALID;
 	m_lineNum = 0;
 	m_endOfFile = FALSE;
-	s_xfer = NULL;
+	// s_xfer = NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -325,7 +328,8 @@ static INIBlockParse findBlockParse(const char* token)
 //-------------------------------------------------------------------------------------------------
 static INIFieldParseProc findFieldParse(const FieldParse* parseTable, const char* token, int& offset, const void*& userData)
 {
-	for (const FieldParse* parse = parseTable; parse->token; ++parse)
+	const FieldParse* parse {};
+	for (parse = parseTable; parse->token; ++parse)
 	{
 		if (strcmp( parse->token, token ) == 0)
 		{
@@ -335,17 +339,16 @@ static INIFieldParseProc findFieldParse(const FieldParse* parseTable, const char
 		}
 	}
 
-	// MG: parse is out of scope here, so how did this compile?!
-	// if (!parse->token && parse->parse) 
-	// {
-	// 	offset = parse->offset;
-	// 	userData = token;
-	// 	return parse->parse;
-	// }
-	// else
-	// {
-	// 	return NULL;
-	// }
+	if (!parse->token && parse->parse) 
+	{
+		offset = parse->offset;
+		userData = token;
+		return parse->parse;
+	}
+	else
+	{
+		return NULL;
+	}
 
 	return NULL;
 }
@@ -353,11 +356,13 @@ static INIFieldParseProc findFieldParse(const FieldParse* parseTable, const char
 //-------------------------------------------------------------------------------------------------
 /** Load and parse an INI file */
 //-------------------------------------------------------------------------------------------------
-void INI::load( AsciiString filename, INILoadType loadType, Xfer *pXfer )
+void INI::load( AsciiString filename, INILoadType loadType, Xfer */*pXfer*/ )
 {
-	setFPMode(); // so we have consistent Real values for GameLogic -MDC
+	DEBUG_LOG(("INI::load %s\n", filename.str()));
+	// FIXME: Is this needed?
+	// setFPMode(); // so we have consistent Real values for GameLogic -MDC
 
-	s_xfer = pXfer;
+	// s_xfer = pXfer;
 	prepFile(filename, loadType);
 
 	try
@@ -484,12 +489,12 @@ void INI::readLine( void )
 		}  // end if
   }
 
-	if (s_xfer)
-	{
-		s_xfer->xferUser( m_buffer, sizeof( char ) * strlen( m_buffer ) );
-		//DEBUG_LOG(("Xfer val is now 0x%8.8X in %s, line %s\n", ((XferCRC *)s_xfer)->getCRC(),
-			//m_filename.str(), m_buffer));
-	}
+	// if (s_xfer)
+	// {
+	// 	s_xfer->xferUser( m_buffer, sizeof( char ) * strlen( m_buffer ) );
+	// 	//DEBUG_LOG(("Xfer val is now 0x%8.8X in %s, line %s\n", ((XferCRC *)s_xfer)->getCRC(),
+	// 		//m_filename.str(), m_buffer));
+	// }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -703,17 +708,20 @@ void INI::parseAsciiStringVectorAppend( INI* ini, void * /*instance*/, void *sto
 //-------------------------------------------------------------------------------------------------
 /* static */void INI::parseScienceVector( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	ScienceVec* asv = (ScienceVec*)store;
-	asv->clear();
-	for (const char *token = ini->getNextTokenOrNull(); token != NULL; token = ini->getNextTokenOrNull())
-	{
-		if (strcasecmp(token, "None") == 0)
-		{
-			asv->clear();
-			return;
-		}
-		asv->push_back(INI::scanScience( token ));
-	}
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseScienceVector not yet implemented"));
+	// ScienceVec* asv = (ScienceVec*)store;
+	// asv->clear();
+	// for (const char *token = ini->getNextTokenOrNull(); token != NULL; token = ini->getNextTokenOrNull())
+	// {
+	// 	if (strcasecmp(token, "None") == 0)
+	// 	{
+	// 		asv->clear();
+	// 		return;
+	// 	}
+	// 	asv->push_back(INI::scanScience( token ));
+	// }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -814,16 +822,19 @@ AsciiString INI::getNextAsciiString()
 //-------------------------------------------------------------------------------------------------
 void INI::parseAndTranslateLabel( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseAndTranslateLabel not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	// translate
-	UnicodeString translated = TheGameText->fetch( token );
-	if( translated.isEmpty() )
-		throw INI_INVALID_DATA;
+	// // translate
+	// UnicodeString translated = TheGameText->fetch( token );
+	// if( translated.isEmpty() )
+	// 	throw INI_INVALID_DATA;
 
-	// save the translated text
-	UnicodeString *theString = (UnicodeString *)store;
-	theString->set( translated.str() );
+	// // save the translated text
+	// UnicodeString *theString = (UnicodeString *)store;
+	// theString->set( translated.str() );
 
 }  // end parseAndTranslateLabel
 
@@ -833,13 +844,16 @@ void INI::parseAndTranslateLabel( INI* ini, void * /*instance*/, void *store, co
 //-------------------------------------------------------------------------------------------------
 void INI::parseMappedImage( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseMappedImage not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	if( TheMappedImageCollection )
-	{
-		typedef const Image* ConstImagePtr;
-		*(ConstImagePtr*)store = TheMappedImageCollection->findImageByName( AsciiString( token ) );
-	}
+	// if( TheMappedImageCollection )
+	// {
+	// 	typedef const Image* ConstImagePtr;
+	// 	*(ConstImagePtr*)store = TheMappedImageCollection->findImageByName( AsciiString( token ) );
+	// }
 	
 	//KM: If we are in the worldbuilder, we want to parse commandbuttons for informational purposes,
 	//but we don't care about the images -- because we never access them. In RTS/GUIEdit, they always
@@ -855,20 +869,23 @@ void INI::parseMappedImage( INI *ini, void * /*instance*/, void *store, const vo
 // ------------------------------------------------------------------------------------------------
 /*static*/ void INI::parseAnim2DTemplate( INI *ini, void *, void *store, const void * )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseAnim2DTemplate not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	if( TheAnim2DCollection )
-	{
-		Anim2DTemplate **anim2DTemplate = (Anim2DTemplate **)store;
-		*anim2DTemplate = TheAnim2DCollection->findTemplate( AsciiString( token ) );
-	}  // end if
-	else
-	{
+	// if( TheAnim2DCollection )
+	// {
+	// 	Anim2DTemplate **anim2DTemplate = (Anim2DTemplate **)store;
+	// 	*anim2DTemplate = TheAnim2DCollection->findTemplate( AsciiString( token ) );
+	// }  // end if
+	// else
+	// {
 
-		DEBUG_CRASH(( "INI::parseAnim2DTemplate - TheAnim2DCollection is NULL\n" ));
-		throw INI_UNKNOWN_ERROR;
+	// 	DEBUG_CRASH(( "INI::parseAnim2DTemplate - TheAnim2DCollection is NULL\n" ));
+	// 	throw INI_UNKNOWN_ERROR;
 
-	}  // end else
+	// }  // end else
 
 }  // end parseAnim2DTemplate
 
@@ -1147,27 +1164,30 @@ void INI::parseICoord2D( INI* ini, void * /*instance*/, void *store, const void*
 //-------------------------------------------------------------------------------------------------
 void INI::parseDynamicAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* )
 {
-	const char *token = ini->getNextToken();
-	DynamicAudioEventRTS** theSound = (DynamicAudioEventRTS**)store;
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseDynamicAudioEventRTS not yet implemented"));
+	// const char *token = ini->getNextToken();
+	// DynamicAudioEventRTS** theSound = (DynamicAudioEventRTS**)store;
 	
-	// translate the string into a sound
-	if (strcasecmp(token, "NoSound") == 0) 
-	{
-		if (*theSound)
-		{
-			(*theSound)->deleteInstance();
-			*theSound = NULL;
-		}
-	}
-	else
-	{
-		if (*theSound == NULL)
-			*theSound = newInstance(DynamicAudioEventRTS);
-		(*theSound)->m_event.setEventName(AsciiString(token));
-	}
+	// // translate the string into a sound
+	// if (strcasecmp(token, "NoSound") == 0) 
+	// {
+	// 	if (*theSound)
+	// 	{
+	// 		(*theSound)->deleteInstance();
+	// 		*theSound = NULL;
+	// 	}
+	// }
+	// else
+	// {
+	// 	if (*theSound == NULL)
+	// 		*theSound = newInstance(DynamicAudioEventRTS);
+	// 	(*theSound)->m_event.setEventName(AsciiString(token));
+	// }
 	
-	if (*theSound)
-		TheAudio->getInfoForAudioEvent(&(*theSound)->m_event);
+	// if (*theSound)
+	// 	TheAudio->getInfoForAudioEvent(&(*theSound)->m_event);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1175,16 +1195,19 @@ void INI::parseDynamicAudioEventRTS( INI *ini, void * /*instance*/, void *store,
 //-------------------------------------------------------------------------------------------------
 void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseAudioEventRTS not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	AudioEventRTS *theSound = (AudioEventRTS*)store;
+	// AudioEventRTS *theSound = (AudioEventRTS*)store;
 	
-	// translate the string into a sound
-	if (strcasecmp(token, "NoSound") != 0) {
-		theSound->setEventName(AsciiString(token));
-	}
+	// // translate the string into a sound
+	// if (strcasecmp(token, "NoSound") != 0) {
+	// 	theSound->setEventName(AsciiString(token));
+	// }
 
-	TheAudio->getInfoForAudioEvent(theSound);
+	// TheAudio->getInfoForAudioEvent(theSound);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1192,28 +1215,31 @@ void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void *store, const 
 //-------------------------------------------------------------------------------------------------
 void INI::parseThingTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseThingTemplate not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	if (!TheThingFactory)
-	{
-		DEBUG_CRASH(("TheThingFactory not inited yet"));
-		throw ERROR_BUG;
-	}
+	// if (!TheThingFactory)
+	// {
+	// 	DEBUG_CRASH(("TheThingFactory not inited yet"));
+	// 	throw ERROR_BUG;
+	// }
 
-	typedef const ThingTemplate *ConstThingTemplatePtr;
-	ConstThingTemplatePtr* theThingTemplate = (ConstThingTemplatePtr*)store;		
+	// typedef const ThingTemplate *ConstThingTemplatePtr;
+	// ConstThingTemplatePtr* theThingTemplate = (ConstThingTemplatePtr*)store;		
 
-	if (strcasecmp(token, "None") == 0)
-	{
-		*theThingTemplate = NULL;
-	}
-	else
-	{
-		const ThingTemplate *tt = TheThingFactory->findTemplate(token);	// could be null!
-		DEBUG_ASSERTCRASH(tt, ("ThingTemplate %s not found!\n",token));
-		// assign it, even if null!
-		*theThingTemplate = tt;
-	}
+	// if (strcasecmp(token, "None") == 0)
+	// {
+	// 	*theThingTemplate = NULL;
+	// }
+	// else
+	// {
+	// 	const ThingTemplate *tt = TheThingFactory->findTemplate(token);	// could be null!
+	// 	DEBUG_ASSERTCRASH(tt, ("ThingTemplate %s not found!\n",token));
+	// 	// assign it, even if null!
+	// 	*theThingTemplate = tt;
+	// }
 
 } 
 
@@ -1222,22 +1248,25 @@ void INI::parseThingTemplate( INI* ini, void * /*instance*/, void *store, const 
 //-------------------------------------------------------------------------------------------------
 void INI::parseArmorTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseArmorTemplate not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	typedef const ArmorTemplate *ConstArmorTemplatePtr;
-	ConstArmorTemplatePtr* theArmorTemplate = (ConstArmorTemplatePtr*)store;		
+	// typedef const ArmorTemplate *ConstArmorTemplatePtr;
+	// ConstArmorTemplatePtr* theArmorTemplate = (ConstArmorTemplatePtr*)store;		
 
-	if (strcasecmp(token, "None") == 0)
-	{
-		*theArmorTemplate = NULL;
-	}
-	else
-	{
-		const ArmorTemplate *tt = TheArmorStore->findArmorTemplate(token);	// could be null!
-		DEBUG_ASSERTCRASH(tt, ("ArmorTemplate %s not found!\n",token));
-		// assign it, even if null!
-		*theArmorTemplate = tt;
-	}
+	// if (strcasecmp(token, "None") == 0)
+	// {
+	// 	*theArmorTemplate = NULL;
+	// }
+	// else
+	// {
+	// 	const ArmorTemplate *tt = TheArmorStore->findArmorTemplate(token);	// could be null!
+	// 	DEBUG_ASSERTCRASH(tt, ("ArmorTemplate %s not found!\n",token));
+	// 	// assign it, even if null!
+	// 	*theArmorTemplate = tt;
+	// }
 
 } 
 
@@ -1246,15 +1275,18 @@ void INI::parseArmorTemplate( INI* ini, void * /*instance*/, void *store, const 
 //-------------------------------------------------------------------------------------------------
 void INI::parseWeaponTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseWeaponTemplate not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	typedef const WeaponTemplate *ConstWeaponTemplatePtr;
-	ConstWeaponTemplatePtr* theWeaponTemplate = (ConstWeaponTemplatePtr*)store;		
+	// typedef const WeaponTemplate *ConstWeaponTemplatePtr;
+	// ConstWeaponTemplatePtr* theWeaponTemplate = (ConstWeaponTemplatePtr*)store;		
 
-	const WeaponTemplate *tt = TheWeaponStore->findWeaponTemplate(token);	// could be null!
-	DEBUG_ASSERTCRASH(tt || strcasecmp(token, "None") == 0, ("WeaponTemplate %s not found!\n",token));
-	// assign it, even if null!
-	*theWeaponTemplate = tt;
+	// const WeaponTemplate *tt = TheWeaponStore->findWeaponTemplate(token);	// could be null!
+	// DEBUG_ASSERTCRASH(tt || strcasecmp(token, "None") == 0, ("WeaponTemplate %s not found!\n",token));
+	// // assign it, even if null!
+	// *theWeaponTemplate = tt;
 
 } 
 
@@ -1263,15 +1295,18 @@ void INI::parseWeaponTemplate( INI* ini, void * /*instance*/, void *store, const
 //-------------------------------------------------------------------------------------------------
 void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseFXList not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	typedef const FXList *ConstFXListPtr;
-	ConstFXListPtr* theFXList = (ConstFXListPtr*)store;		
+	// typedef const FXList *ConstFXListPtr;
+	// ConstFXListPtr* theFXList = (ConstFXListPtr*)store;		
 
-	const FXList *fxl = TheFXListStore->findFXList(token);	// could be null!
-	DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
-	// assign it, even if null!
-	*theFXList = fxl;
+	// const FXList *fxl = TheFXListStore->findFXList(token);	// could be null!
+	// DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
+	// // assign it, even if null!
+	// *theFXList = fxl;
 
 } 
 
@@ -1280,15 +1315,18 @@ void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /
 //-------------------------------------------------------------------------------------------------
 void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseParticleSystemTemplate not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	const ParticleSystemTemplate *pSystemT = TheParticleSystemManager->findTemplate( AsciiString( token ) );
-	DEBUG_ASSERTCRASH( pSystemT || strcasecmp( token, "None" ) == 0, ("ParticleSystem %s not found!\n",token) );
+	// const ParticleSystemTemplate *pSystemT = TheParticleSystemManager->findTemplate( AsciiString( token ) );
+	// DEBUG_ASSERTCRASH( pSystemT || strcasecmp( token, "None" ) == 0, ("ParticleSystem %s not found!\n",token) );
 
-	typedef const ParticleSystemTemplate* ConstParticleSystemTemplatePtr;
-	ConstParticleSystemTemplatePtr* theParticleSystemTemplate = (ConstParticleSystemTemplatePtr*)store;		
+	// typedef const ParticleSystemTemplate* ConstParticleSystemTemplatePtr;
+	// ConstParticleSystemTemplatePtr* theParticleSystemTemplate = (ConstParticleSystemTemplatePtr*)store;		
 
-	*theParticleSystemTemplate = pSystemT;
+	// *theParticleSystemTemplate = pSystemT;
 
 }  // end parseParticleSystemTemplate
 
@@ -1297,22 +1335,25 @@ void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *stor
 //-------------------------------------------------------------------------------------------------
 void INI::parseDamageFX( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseDamageFX not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	typedef const DamageFX *ConstDamageFXPtr;
-	ConstDamageFXPtr* theDamageFX = (ConstDamageFXPtr*)store;		
+	// typedef const DamageFX *ConstDamageFXPtr;
+	// ConstDamageFXPtr* theDamageFX = (ConstDamageFXPtr*)store;		
 
-	if (strcasecmp(token, "None") == 0)
-	{
-		*theDamageFX = NULL;
-	}
-	else
-	{
-		const DamageFX *fxl = TheDamageFXStore->findDamageFX(token);	// could be null!
-		DEBUG_ASSERTCRASH(fxl, ("DamageFX %s not found!\n",token));
-		// assign it, even if null!
-		*theDamageFX = fxl;
-	}
+	// if (strcasecmp(token, "None") == 0)
+	// {
+	// 	*theDamageFX = NULL;
+	// }
+	// else
+	// {
+	// 	const DamageFX *fxl = TheDamageFXStore->findDamageFX(token);	// could be null!
+	// 	DEBUG_ASSERTCRASH(fxl, ("DamageFX %s not found!\n",token));
+	// 	// assign it, even if null!
+	// 	*theDamageFX = fxl;
+	// }
 
 } 
 
@@ -1321,15 +1362,18 @@ void INI::parseDamageFX( INI* ini, void * /*instance*/, void *store, const void*
 //-------------------------------------------------------------------------------------------------
 void INI::parseObjectCreationList( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseObjectCreationList not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	typedef const ObjectCreationList *ConstObjectCreationListPtr;
-	ConstObjectCreationListPtr* theObjectCreationList = (ConstObjectCreationListPtr*)store;		
+	// typedef const ObjectCreationList *ConstObjectCreationListPtr;
+	// ConstObjectCreationListPtr* theObjectCreationList = (ConstObjectCreationListPtr*)store;		
 
-	const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null!
-	DEBUG_ASSERTCRASH(ocl || strcasecmp(token, "None") == 0, ("ObjectCreationList %s not found!\n",token));
-	// assign it, even if null!
-	*theObjectCreationList = ocl;
+	// const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null!
+	// DEBUG_ASSERTCRASH(ocl || strcasecmp(token, "None") == 0, ("ObjectCreationList %s not found!\n",token));
+	// // assign it, even if null!
+	// *theObjectCreationList = ocl;
 
 } 
 
@@ -1338,20 +1382,23 @@ void INI::parseObjectCreationList( INI* ini, void * /*instance*/, void *store, c
 //-------------------------------------------------------------------------------------------------
 void INI::parseUpgradeTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseUpgradeTemplate not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	if (!TheUpgradeCenter)
-	{
-		DEBUG_CRASH(("TheUpgradeCenter not inited yet"));
-		throw ERROR_BUG;
-	}
+	// if (!TheUpgradeCenter)
+	// {
+	// 	DEBUG_CRASH(("TheUpgradeCenter not inited yet"));
+	// 	throw ERROR_BUG;
+	// }
 
-	const UpgradeTemplate *uu = TheUpgradeCenter->findUpgrade( AsciiString( token ) );
-	DEBUG_ASSERTCRASH( uu || strcasecmp( token, "None" ) == 0, ("Upgrade %s not found!\n",token) );
+	// const UpgradeTemplate *uu = TheUpgradeCenter->findUpgrade( AsciiString( token ) );
+	// DEBUG_ASSERTCRASH( uu || strcasecmp( token, "None" ) == 0, ("Upgrade %s not found!\n",token) );
 
-	typedef const UpgradeTemplate* ConstUpgradeTemplatePtr;
-	ConstUpgradeTemplatePtr* theUpgradeTemplate = (ConstUpgradeTemplatePtr *)store;		
-	*theUpgradeTemplate = uu;
+	// typedef const UpgradeTemplate* ConstUpgradeTemplatePtr;
+	// ConstUpgradeTemplatePtr* theUpgradeTemplate = (ConstUpgradeTemplatePtr *)store;		
+	// *theUpgradeTemplate = uu;
 } 
 
 //-------------------------------------------------------------------------------------------------
@@ -1359,23 +1406,26 @@ void INI::parseUpgradeTemplate( INI* ini, void * /*instance*/, void *store, cons
 //-------------------------------------------------------------------------------------------------
 void INI::parseSpecialPowerTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseSpecialPowerTemplate not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	if (!TheSpecialPowerStore)
-	{
-		DEBUG_CRASH(("TheSpecialPowerStore not inited yet"));
-		throw ERROR_BUG;
-	}
+	// if (!TheSpecialPowerStore)
+	// {
+	// 	DEBUG_CRASH(("TheSpecialPowerStore not inited yet"));
+	// 	throw ERROR_BUG;
+	// }
 
-	const SpecialPowerTemplate *sPowerT = TheSpecialPowerStore->findSpecialPowerTemplate( AsciiString( token ) );
-	if( !sPowerT && strcasecmp( token, "None" ) != 0 )
-	{
-		DEBUG_CRASH( ("[LINE: %d in '%s'] Specialpower %s not found!\n", ini->getLineNum(), ini->getFilename().str(), token) );
-	}
+	// const SpecialPowerTemplate *sPowerT = TheSpecialPowerStore->findSpecialPowerTemplate( AsciiString( token ) );
+	// if( !sPowerT && strcasecmp( token, "None" ) != 0 )
+	// {
+	// 	DEBUG_CRASH( ("[LINE: %d in '%s'] Specialpower %s not found!\n", ini->getLineNum(), ini->getFilename().str(), token) );
+	// }
 
-	typedef const SpecialPowerTemplate* ConstSpecialPowerTemplatePtr;
-	ConstSpecialPowerTemplatePtr* theSpecialPowerTemplate = (ConstSpecialPowerTemplatePtr *)store;		
-	*theSpecialPowerTemplate = sPowerT;
+	// typedef const SpecialPowerTemplate* ConstSpecialPowerTemplatePtr;
+	// ConstSpecialPowerTemplatePtr* theSpecialPowerTemplate = (ConstSpecialPowerTemplatePtr *)store;		
+	// *theSpecialPowerTemplate = sPowerT;
 } 
 
 //-------------------------------------------------------------------------------------------------
@@ -1383,15 +1433,18 @@ void INI::parseSpecialPowerTemplate( INI* ini, void * /*instance*/, void *store,
 //-------------------------------------------------------------------------------------------------
 /* static */void INI::parseScience( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	const char *token = ini->getNextToken();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseScience not yet implemented"));
+	// const char *token = ini->getNextToken();
 
-	if (!TheScienceStore)
-	{
-		DEBUG_CRASH(("TheScienceStore not inited yet"));
-		throw ERROR_BUG;
-	}
+	// if (!TheScienceStore)
+	// {
+	// 	DEBUG_CRASH(("TheScienceStore not inited yet"));
+	// 	throw ERROR_BUG;
+	// }
 
-	*((ScienceType *)store) = INI::scanScience(token);
+	// *((ScienceType *)store) = INI::scanScience(token);
 
 }
 
@@ -1448,6 +1501,9 @@ void INI::parseLookupList( INI* ini, void * /*instance*/, void *store, const voi
 //-------------------------------------------------------------------------------------------------
 void MultiIniFieldParse::add(const FieldParse* f, UnsignedInt e)
 {
+	// MG: offsets are scary enough without adding extra displacements.
+	DEBUG_ASSERTCRASH(e == 0, ("MultiIniFieldParse::add extra offset is not zero"));
+
 	if (m_count < MAX_MULTI_FIELDS)
 	{
 		m_fieldParse[m_count] = f;
@@ -1582,7 +1638,10 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 //-------------------------------------------------------------------------------------------------
 /*static*/ ScienceType INI::scanScience(const char* token)
 {
-	return TheScienceStore->friend_lookupScience( token );
+	(void) token;
+	DEBUG_CRASH(("scanScience not yet implemented"));
+	return SCIENCE_INVALID;
+	// return TheScienceStore->friend_lookupScience( token );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1687,24 +1746,27 @@ const char* INI::getNextSubToken(const char* expected)
  */
 void INI::parseGameClientRandomVariable( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	GameClientRandomVariable *var = static_cast<GameClientRandomVariable *>(store);
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseGameClientRandomVariable not yet implemented"));
+	// GameClientRandomVariable *var = static_cast<GameClientRandomVariable *>(store);
 
-	const char* token;
+	// const char* token;
 
-	token = ini->getNextToken();
-	Real low = INI::scanReal(token);
+	// token = ini->getNextToken();
+	// Real low = INI::scanReal(token);
 
-	token = ini->getNextToken();
-	Real high = INI::scanReal(token);
+	// token = ini->getNextToken();
+	// Real high = INI::scanReal(token);
 
-	// if omitted, assume uniform
-	GameClientRandomVariable::DistributionType type = GameClientRandomVariable::UNIFORM;
-	token = ini->getNextTokenOrNull();
-	if (token)
-		type = (GameClientRandomVariable::DistributionType)INI::scanIndexList(token, GameClientRandomVariable::DistributionTypeNames);
+	// // if omitted, assume uniform
+	// GameClientRandomVariable::DistributionType type = GameClientRandomVariable::UNIFORM;
+	// token = ini->getNextTokenOrNull();
+	// if (token)
+	// 	type = (GameClientRandomVariable::DistributionType)INI::scanIndexList(token, GameClientRandomVariable::DistributionTypeNames);
 
-	// set the range of the random variable
-	var->setRange( low, high, type );
+	// // set the range of the random variable
+	// var->setRange( low, high, type );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1753,37 +1815,40 @@ void INI::parseAccelerationReal( INI *ini, void * /*instance*/, void *store, con
 //-------------------------------------------------------------------------------------------------
 void INI::parseVeterancyLevelFlags(INI* ini, void* /*instance*/, void* store, const void* /*userData*/)
 {
-	VeterancyLevelFlags flags = VETERANCY_LEVEL_FLAGS_ALL;
-	for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
-	{
-		if (strcasecmp(token, "ALL") == 0)
-		{
-			flags = VETERANCY_LEVEL_FLAGS_ALL;
-			continue;
-		}
-		else if (strcasecmp(token, "NONE") == 0)
-		{
-			flags = VETERANCY_LEVEL_FLAGS_NONE;
-			continue;
-		}
-		else if (token[0] == '+')
-		{
-			VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
-			flags = setVeterancyLevelFlag(flags, dt);
-			continue;
-		}
-		else if (token[0] == '-')
-		{
-			VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
-			flags = clearVeterancyLevelFlag(flags, dt);
-			continue;
-		}
-		else
-		{
-			throw INI_UNKNOWN_TOKEN;
-		}
-	}
-	*(VeterancyLevelFlags*)store = flags;
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseVeterancyLevelFlags not yet implemented"));
+	// VeterancyLevelFlags flags = VETERANCY_LEVEL_FLAGS_ALL;
+	// for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
+	// {
+	// 	if (strcasecmp(token, "ALL") == 0)
+	// 	{
+	// 		flags = VETERANCY_LEVEL_FLAGS_ALL;
+	// 		continue;
+	// 	}
+	// 	else if (strcasecmp(token, "NONE") == 0)
+	// 	{
+	// 		flags = VETERANCY_LEVEL_FLAGS_NONE;
+	// 		continue;
+	// 	}
+	// 	else if (token[0] == '+')
+	// 	{
+	// 		VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
+	// 		flags = setVeterancyLevelFlag(flags, dt);
+	// 		continue;
+	// 	}
+	// 	else if (token[0] == '-')
+	// 	{
+	// 		VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
+	// 		flags = clearVeterancyLevelFlag(flags, dt);
+	// 		continue;
+	// 	}
+	// 	else
+	// 	{
+	// 		throw INI_UNKNOWN_TOKEN;
+	// 	}
+	// }
+	// *(VeterancyLevelFlags*)store = flags;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1806,37 +1871,40 @@ void INI::parseSoundsList( INI* ini, void *, void *store, const void* /*userData
 //-------------------------------------------------------------------------------------------------
 void INI::parseDamageTypeFlags(INI* ini, void* /*instance*/, void* store, const void* /*userData*/)
 {
-	DamageTypeFlags flags = DAMAGE_TYPE_FLAGS_NONE;
-	flags.flip();
+	(void) ini;
+	(void) store;
+	DEBUG_CRASH(("parseDamageTypeFlags not yet implemented"));
+	// DamageTypeFlags flags = DAMAGE_TYPE_FLAGS_NONE;
+	// flags.flip();
 
-	for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
-	{
-		if (strcasecmp(token, "ALL") == 0)
-		{
-			flags = DAMAGE_TYPE_FLAGS_NONE;
-			flags.flip();
-			continue;
-		}
-		if (strcasecmp(token, "NONE") == 0)
-		{
-			flags = DAMAGE_TYPE_FLAGS_NONE;
-			continue;
-		}
-		if (token[0] == '+')
-		{
-			DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
-			flags = setDamageTypeFlag(flags, dt);
-			continue;
-		}
-		if (token[0] == '-')
-		{
-			DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
-			flags = clearDamageTypeFlag(flags, dt);
-			continue;
-		}
-		throw INI_UNKNOWN_TOKEN;
-	}
-	*(DamageTypeFlags*)store = flags;
+	// for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
+	// {
+	// 	if (strcasecmp(token, "ALL") == 0)
+	// 	{
+	// 		flags = DAMAGE_TYPE_FLAGS_NONE;
+	// 		flags.flip();
+	// 		continue;
+	// 	}
+	// 	if (strcasecmp(token, "NONE") == 0)
+	// 	{
+	// 		flags = DAMAGE_TYPE_FLAGS_NONE;
+	// 		continue;
+	// 	}
+	// 	if (token[0] == '+')
+	// 	{
+	// 		DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
+	// 		flags = setDamageTypeFlag(flags, dt);
+	// 		continue;
+	// 	}
+	// 	if (token[0] == '-')
+	// 	{
+	// 		DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
+	// 		flags = clearDamageTypeFlag(flags, dt);
+	// 		continue;
+	// 	}
+	// 	throw INI_UNKNOWN_TOKEN;
+	// }
+	// *(DamageTypeFlags*)store = flags;
 }
 
 //-------------------------------------------------------------------------------------------------

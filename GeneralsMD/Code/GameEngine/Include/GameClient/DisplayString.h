@@ -80,6 +80,10 @@ public:
 	DisplayString( void );
 	// virtual ~DisplayString( void );  // destructor defined by memory pool
 
+	// No copies allowed!
+	DisplayString(const DisplayString&) = delete;
+	DisplayString& operator=(const DisplayString&) = delete;
+
 	virtual void setText( UnicodeString text );		///< set text for this string
 	virtual UnicodeString getText( void );				///< get text for this string
 	virtual Int getTextLength( void );				///< return number of chars in string
@@ -121,7 +125,7 @@ inline UnicodeString DisplayString::getText( void ) { return m_textString; }
 inline Int DisplayString::getTextLength( void ) { return m_textString.getLength(); }
 inline void DisplayString::setFont( GameFont *font ) { m_font = font; }
 inline GameFont *DisplayString::getFont( void ) { return m_font; }
-inline void DisplayString::setClipRegion( IRegion2D *region ) {}
+inline void DisplayString::setClipRegion( IRegion2D * ) {}
 inline void DisplayString::notifyTextChanged( void ) {}
 inline DisplayString *DisplayString::next( void ) { return m_next; }
 

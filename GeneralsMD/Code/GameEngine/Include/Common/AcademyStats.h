@@ -86,6 +86,10 @@ public:
 
 	AcademyStats();
 
+	// No copies allowed!
+	AcademyStats(const AcademyStats&) = delete;
+	AcademyStats& operator=(const AcademyStats&) = delete;
+
 	void init( const Player *player );
 	void update();
 
@@ -98,7 +102,7 @@ public:
 	void recordIncome();
 
 	void recordBuildingCapture() { m_structuresCaptured++; }
-	void recordGeneralsPointsSpent( Int points ) { m_generalsPointsSpent += points; }
+	void recordGeneralsPointsSpent( UnsignedInt points ) { m_generalsPointsSpent += points; }
 	void recordBuildingGarrisoned() { m_structuresGarrisoned++; }
 	void recordDragSelection() { m_dragSelectUnits++; }
 	void recordStrategyCenter() { m_hadAStrategyCenter = TRUE; }

@@ -161,44 +161,42 @@ protected:
 	void adjustForLocalization( AsciiString &strToAdjust );
 
 protected:
-	AsciiString m_filenameToLoad;
-	mutable const AudioEventInfo *m_eventInfo;	// Mutable so that it can be modified even on const objects
-	AudioHandle m_playingHandle;
-	
-	AudioHandle m_killThisHandle;		///< Sometimes sounds will canabilize other sounds in order to take their handle away.
+	AsciiString m_eventName {};				///< This should correspond with an entry in Dialog.ini, Speech.ini, or Audio.ini
+	AudioPriority m_priority {};				///< This should be the priority as given by the event info, or the overrided priority.
+	Real m_volume {};									///< This is the override for the volume. It will either be the normal 
+	TimeOfDay m_timeOfDay {};					///< This should be the current Time Of Day.
+	OwnerType m_ownerType {};
+	Bool m_shouldFade {};							///< This should fade in or out (if it is starting or stopping)
+	Bool m_isLogicalAudio {};					///< Should probably only be true for scripted sounds
+	AsciiString m_filenameToLoad {};
+	mutable const AudioEventInfo *m_eventInfo {};	// Mutable so that it can be modified even on const objects
+	AudioHandle m_playingHandle {};
+	AudioHandle m_killThisHandle {};		///< Sometimes sounds will canabilize other sounds in order to take their handle away.
 																	///< This is one of those instances.
 
-	AsciiString m_eventName;				///< This should correspond with an entry in Dialog.ini, Speech.ini, or Audio.ini
-	AsciiString m_attackName;				///< This is the filename that should be used during the attack.
-	AsciiString m_decayName;				///< This is the filename that should be used during the decay.
+	// Playing attributes
+	Real m_pitchShift {};							///< Pitch shift that should occur on this piece of audio
+	Real m_volumeShift {};							///< Volume shift that should occur on this piece of audio
+	Int m_loopCount {};								///< The current loop count value. Only valid if this is a looping type event or the override has been set.
+	Int m_playingAudioIndex {};				///< The sound index we are currently playing. In the case of non-random, we increment this to move to the next sound
+	Int m_allCount {};									///< If this sound is an ALL type, then this is how many sounds we have played so far.
+	Int m_playerIndex {};							///< The index of the player who owns this sound. Used for sounds that should have an owner, but don't have an object, etc.
+	Real m_delay {};										///< Amount to delay before playing this sound
 
-	AudioPriority m_priority;				///< This should be the priority as given by the event info, or the overrided priority.
-	Real m_volume;									///< This is the override for the volume. It will either be the normal 
-	TimeOfDay m_timeOfDay;					///< This should be the current Time Of Day.
+	Bool m_uninterruptable {};
 
-	Coord3D m_positionOfAudio;			///< Position of the sound if no further positional updates are necessary
 	union	// These are now unioned.
 	{
 		ObjectID m_objectID;						///< ObjectID of the object that this sound is tied to. Position can be automatically updated from this.
 		DrawableID m_drawableID;				///< DrawableID of the drawable that owns this sound
 	};
-	OwnerType m_ownerType;
 
-	Bool m_shouldFade;							///< This should fade in or out (if it is starting or stopping)
-	Bool m_isLogicalAudio;					///< Should probably only be true for scripted sounds
-	Bool m_uninterruptable;
+	AsciiString m_attackName {};				///< This is the filename that should be used during the attack.
+	AsciiString m_decayName {};				///< This is the filename that should be used during the decay.
 
-	// Playing attributes
-	Real m_pitchShift;							///< Pitch shift that should occur on this piece of audio
-	Real m_volumeShift;							///< Volume shift that should occur on this piece of audio
-	Real m_delay;										///< Amount to delay before playing this sound
-	Int m_loopCount;								///< The current loop count value. Only valid if this is a looping type event or the override has been set.
-	Int m_playingAudioIndex;				///< The sound index we are currently playing. In the case of non-random, we increment this to move to the next sound
-	Int m_allCount;									///< If this sound is an ALL type, then this is how many sounds we have played so far.
-	
-	Int m_playerIndex;							///< The index of the player who owns this sound. Used for sounds that should have an owner, but don't have an object, etc.
+	Coord3D m_positionOfAudio {};			///< Position of the sound if no further positional updates are necessary
 
-	PortionToPlay m_portionToPlayNext;	///< Which portion (attack, sound, decay) should be played next?
+	PortionToPlay m_portionToPlayNext {};	///< Which portion (attack, sound, decay) should be played next?
 };
 
 class DynamicAudioEventRTS : public MemoryPoolObject

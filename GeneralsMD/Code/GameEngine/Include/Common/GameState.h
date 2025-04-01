@@ -38,6 +38,7 @@
 #include "Common/SubsystemInterface.h"
 #include "Common/UnicodeString.h"
 #include "GameNetwork/NetworkDefs.h"
+#include <ctime>
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class GameWindow;
@@ -69,14 +70,14 @@ struct SaveDate
 	SaveDate() { year = month = day = dayOfWeek = hour = minute = second = milliseconds = 0; }
 	Bool isNewerThan( SaveDate *other );
 
-	UnsignedShort year;
-	UnsignedShort month;
-	UnsignedShort day;
-	UnsignedShort dayOfWeek;
-	UnsignedShort hour;
-	UnsignedShort minute;
-	UnsignedShort second;
-	UnsignedShort milliseconds;
+	UnsignedShort year {};
+	UnsignedShort month {};
+	UnsignedShort day {};
+	UnsignedShort dayOfWeek {};
+	UnsignedShort hour {};
+	UnsignedShort minute {};
+	UnsignedShort second {};
+	UnsignedShort milliseconds {};
 
 };
 
@@ -157,6 +158,10 @@ public:
 	GameState( void );
 	virtual ~GameState( void );
 
+	// No copies allowed!
+	GameState(const GameState&) = delete;
+	GameState& operator=(const GameState&) = delete;
+
 	// subsystem interface
 	virtual void init( void );
 	virtual void reset( void );
@@ -198,7 +203,7 @@ public:
 protected:
 
 	// snapshot methods
-	virtual void crc( Xfer *xfer ) { }
+	virtual void crc( Xfer * ) { }
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void ) { }
 
@@ -240,8 +245,8 @@ private:
 extern GameState *TheGameState;	
 
 
-UnicodeString getUnicodeTimeBuffer(SYSTEMTIME timeVal); 
-UnicodeString getUnicodeDateBuffer(SYSTEMTIME timeVal); 
+UnicodeString getUnicodeTimeBuffer(std::tm timeVal); 
+UnicodeString getUnicodeDateBuffer(std::tm timeVal); 
 
 
 #endif  // end __GAME_STATE_H_

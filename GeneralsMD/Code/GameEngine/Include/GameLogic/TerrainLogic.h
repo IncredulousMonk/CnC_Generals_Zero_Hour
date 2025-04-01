@@ -52,7 +52,7 @@ class Matrix3D;
 class WaterHandle;
 class Xfer;
 
-enum WaypointID
+enum WaypointID: int
 {
 	INVALID_WAYPOINT_ID = 0x7FFFFFFF
 };
@@ -71,6 +71,11 @@ public:
 	Waypoint(WaypointID id, AsciiString name, const Coord3D *pLoc, AsciiString label1, 
 						AsciiString label2, AsciiString label3, Bool biDirectional);
 	//~Waypoint();
+
+	// No copies allowed!
+	Waypoint(const Waypoint&) = delete;
+	Waypoint& operator=(const Waypoint&) = delete;
+
 	enum {MAX_LINKS=8};
 
 protected:
@@ -171,6 +176,10 @@ public: // ctor/dtor.
 	Bridge(Object *bridgeObj);
 	//~Bridge();
 
+	// No copies allowed!
+	Bridge(const Bridge&) = delete;
+	Bridge& operator=(const Bridge&) = delete;
+
 protected:
 	Bridge*						m_next;		///< Link for traversing all bridges in the current map.
 	AsciiString				m_templateName;			///< bridge template name
@@ -223,6 +232,10 @@ public:
 	TerrainLogic();
 	virtual ~TerrainLogic();
 
+	// No copies allowed!
+	TerrainLogic(const TerrainLogic&) = delete;
+	TerrainLogic& operator=(const TerrainLogic&) = delete;
+
 	virtual void init( void );		///< Init
 	virtual void reset( void );		///< Reset
 	virtual void update( void );	///< Update
@@ -232,9 +245,9 @@ public:
 
 	virtual Real getGroundHeight( Real x, Real y, Coord3D* normal = NULL )  const;
 	virtual Real getLayerHeight(Real x, Real y, PathfindLayerEnum layer, Coord3D* normal = NULL, Bool clip = true) const;
-	virtual void getExtent( Region3D *extent ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
-	virtual void getExtentIncludingBorder( Region3D *extent ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
-	virtual void getMaximumPathfindExtent( Region3D *extent ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
+	virtual void getExtent( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
+	virtual void getExtentIncludingBorder( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
+	virtual void getMaximumPathfindExtent( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
 	virtual Coord3D findClosestEdgePoint( const Coord3D *closestTo ) const ;
 	virtual Coord3D findFarthestEdgePoint( const Coord3D *farthestFrom ) const ;
 	virtual Bool isClearLineOfSight(const Coord3D& pos, const Coord3D& posOther) const;

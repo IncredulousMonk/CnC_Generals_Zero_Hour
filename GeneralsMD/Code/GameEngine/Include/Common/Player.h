@@ -85,7 +85,7 @@ class SpecialPowerModule;
 
 class BattlePlanBonuses;
 
-enum BattlePlanStatus;
+enum BattlePlanStatus: int;
 enum UpgradeStatusType;
 enum CommandSourceType;
 
@@ -142,14 +142,14 @@ struct SpecialPowerReadyTimerType
 		m_templateID = INVALID_ID;
 	};
 
-	UnsignedInt m_templateID;   ///< The ID of the specialpower template associated with this timer... no dupes allowed
-	UnsignedInt m_readyFrame;   ///< on what game frame will this special power be ready?
+	UnsignedInt m_templateID {};   ///< The ID of the specialpower template associated with this timer... no dupes allowed
+	UnsignedInt m_readyFrame {};   ///< on what game frame will this special power be ready?
 };
 
 
 
 // ------------------------------------------------------------------------------------------------
-typedef std::hash_map< PlayerIndex, Relationship, std::hash<PlayerIndex>, std::equal_to<PlayerIndex> > PlayerRelationMapType;
+typedef std::unordered_map< PlayerIndex, Relationship, std::hash<PlayerIndex>, std::equal_to<PlayerIndex> > PlayerRelationMapType;
 class PlayerRelationMap : public MemoryPoolObject,
 													public Snapshot
 {
@@ -211,6 +211,10 @@ public:
 
 	Player( Int playerIndex );
 	virtual ~Player();
+
+	// No copies allowed!
+	Player(const Player&) = delete;
+	Player& operator=(const Player&) = delete;
 
 	void update();			///< player update opportunity
 	

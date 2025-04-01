@@ -267,6 +267,10 @@ public:
 	BuildListInfo(void);
 	//~BuildListInfo(void);								///< Note that deleting the head of a list deletes all linked objects in the list.
 
+	// No copies allowed!
+	BuildListInfo(const BuildListInfo&) = delete;
+	BuildListInfo& operator=(const BuildListInfo&) = delete;
+
 	static void parseStructure(INI *ini, void *instance, void* /*store*/, const void* /*userData*/);
 
 protected:
@@ -326,7 +330,7 @@ public:
 	AsciiString getBuildingName(void) const {return m_buildingName;} ///< Gets the name.
 	AsciiString getTemplateName(void) const {return m_templateName;} ///< Gets the name.
 	void setTemplateName(AsciiString name) {m_templateName = name;}
-	Int getNumRebuilds(void) {return m_numRebuilds;}
+	UnsignedInt getNumRebuilds(void) {return m_numRebuilds;}
 	void decrementNumRebuilds(void);
 	void incrementNumRebuilds(void);
 	const Coord3D *getLocation(void) const {return &m_location;}

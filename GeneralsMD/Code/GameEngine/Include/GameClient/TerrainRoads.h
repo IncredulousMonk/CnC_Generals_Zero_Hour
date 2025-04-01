@@ -71,6 +71,10 @@ public:
 	TerrainRoadType( void );
 	// destructor prototypes defined by memory pool object
 
+	// No copies allowed!
+	TerrainRoadType(const TerrainRoadType&) = delete;
+	TerrainRoadType& operator=(const TerrainRoadType&) = delete;
+
 	inline AsciiString getName( void ) { return m_name; }
 	inline AsciiString getTexture( void ) { return m_texture; }
 	inline Bool isBridge( void ) { return m_isBridge; }
@@ -202,6 +206,10 @@ public:
 	
 	TerrainRoadCollection( void );
 	~TerrainRoadCollection( void );
+
+	// No copies allowed!
+	TerrainRoadCollection(const TerrainRoadCollection&) = delete;
+	TerrainRoadCollection& operator=(const TerrainRoadCollection&) = delete;
 
 	void init() { }
 	void reset() { }

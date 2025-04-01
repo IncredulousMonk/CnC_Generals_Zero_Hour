@@ -36,7 +36,7 @@
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "Common/STLTypedefs.h"
-#include "Common/ModelState.h"
+// #include "Common/ModelState.h"
 #include "Common/Science.h"
 #include "Common/Upgrade.h"
 
@@ -180,9 +180,9 @@ protected:
 	// this is the actual xfer impelmentation that each derived class should implement
 	virtual void xferImplementation( void *data, Int dataSize ) = 0;
 
-	UnsignedInt m_options;					///< xfer options
-	XferMode m_xferMode;						///< the current xfer mode
-	AsciiString m_identifier;				///< the string identifier
+	UnsignedInt m_options {};					///< xfer options
+	XferMode m_xferMode {};						///< the current xfer mode
+	AsciiString m_identifier {};				///< the string identifier
 			
 };
 

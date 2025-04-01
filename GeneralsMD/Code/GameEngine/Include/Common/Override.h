@@ -72,7 +72,7 @@ template <class T> class OVERRIDE
 	private:
 		// Because OVERRIDE is meant to live on the object and not in the store, it currently contains
 		// a constant pointer. We could change this if it seems weird.
-		const T *m_overridable;
+		const T *m_overridable {};
 };
 
 //-------------------------------------------------------------------------------------------------

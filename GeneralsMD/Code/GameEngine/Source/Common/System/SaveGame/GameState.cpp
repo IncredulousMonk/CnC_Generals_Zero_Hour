@@ -210,7 +210,7 @@ GameState::SnapshotBlock *GameState::findBlockInfoByToken( AsciiString token, Sn
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-UnicodeString getUnicodeDateBuffer(SYSTEMTIME timeVal) 
+UnicodeString getUnicodeDateBuffer(std::tm timeVal) 
 {
 	// setup date buffer for local region date format
 	#define DATE_BUFFER_SIZE 256
@@ -242,7 +242,7 @@ UnicodeString getUnicodeDateBuffer(SYSTEMTIME timeVal)
 	//displayDateBuffer.format( L"%ls", dateBuffer );
 }															
 
-UnicodeString getUnicodeTimeBuffer(SYSTEMTIME timeVal) 
+UnicodeString getUnicodeTimeBuffer(std::tm timeVal) 
 {
 	// setup time buffer for local region time format
 	UnicodeString displayTimeBuffer;

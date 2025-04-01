@@ -64,6 +64,7 @@ public:
     SEISMIC_STATUS_ZERO_ENERGY,
   };
   
+  virtual ~SeismicSimulationFilterBase() {}
   virtual SeismicSimStatusCode filterCallback( WorldHeightMapInterfaceClass *heightMap, const SeismicSimulationNode *node ) = 0;
   virtual Real applyGravityCallback( Real velocityIn ) = 0;
 };
@@ -109,7 +110,7 @@ struct SeismicSimulationNode
     m_center.x    = REAL_TO_INT_FLOOR(ctr->x/MAP_XY_FACTOR);
     m_center.y    = REAL_TO_INT_FLOOR(ctr->y/MAP_XY_FACTOR);
     m_radius      = (rad-1)/MAP_XY_FACTOR;
-    UnsignedInt regionSize = rad/MAP_XY_FACTOR;
+    Int regionSize = rad/MAP_XY_FACTOR;
     m_region.lo.x = m_center.x - regionSize;
     m_region.lo.y = m_center.y - regionSize;
     m_region.hi.x = m_center.x + regionSize;
@@ -142,14 +143,14 @@ struct SeismicSimulationNode
     
   }
 
-  IRegion2D   m_region;
-  ICoord2D    m_center;
-  Bool        m_clean;
-  Real        m_magnitude;
-  UnsignedInt m_radius;
-  UnsignedInt m_life;
+  IRegion2D   m_region {};
+  ICoord2D    m_center {};
+  Bool        m_clean {};
+  Real        m_magnitude {};
+  UnsignedInt m_radius {};
+  UnsignedInt m_life {};
   
-  SeismicSimulationFilterBase *callbackFilter;
+  SeismicSimulationFilterBase *callbackFilter {};
   
 };
 typedef std::list<SeismicSimulationNode> SeismicSimulationList;
@@ -232,9 +233,9 @@ public:
 
 	/** intersect the ray with the terrain, if a hit occurs TRUE is returned
 	and the result point on the terrain is returned in "result" */
-	virtual Bool intersectTerrain( Coord3D *rayStart, 
-																 Coord3D *rayEnd, 
-																 Coord3D *result ) { return FALSE; }
+	virtual Bool intersectTerrain( Coord3D */*rayStart*/, 
+																 Coord3D */*rayEnd*/, 
+																 Coord3D */*result*/ ) { return FALSE; }
 
 	//
 	// water methods

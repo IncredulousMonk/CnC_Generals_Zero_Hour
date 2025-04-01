@@ -268,7 +268,7 @@ public:
 
   static const char* getNameFromSingleBit(Int i)
   {
-    return (i >= 0 && i < NUMBITS) ? s_bitNameList[i] : NULL;
+    return (i >= 0 && static_cast<size_t>(i) < NUMBITS) ? s_bitNameList[i] : NULL;
   }
 
   static Int getSingleBitFromName(const char* token)

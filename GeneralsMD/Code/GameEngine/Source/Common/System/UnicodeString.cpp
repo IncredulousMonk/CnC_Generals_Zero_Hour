@@ -213,7 +213,7 @@ void UnicodeString::translate(const AsciiString& stringSrc)
 void UnicodeString::concat(const WideChar* s)
 {
 	validate();
-	int addlen = wcslen(s);
+	size_t addlen = wcslen(s);
 	if (addlen == 0)
 		return;	// my, that was easy
 

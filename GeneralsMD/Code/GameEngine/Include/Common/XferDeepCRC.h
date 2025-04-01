@@ -49,6 +49,10 @@ public:
 	XferDeepCRC( void );
 	virtual ~XferDeepCRC( void );
 
+	// No copies allowed!
+	XferDeepCRC(const XferDeepCRC&) = delete;
+	XferDeepCRC& operator=(const XferDeepCRC&) = delete;
+
 	// Xfer methods
 	virtual void open( AsciiString identifier );		///< start a CRC session with this xfer instance
 	virtual void close( void );											///< stop CRC session
@@ -60,9 +64,9 @@ public:
 
 protected:
 
-	virtual void xferImplementation( void *data, Int dataSize );
+	virtual void xferImplementation( void *data, UnsignedInt dataSize );
 
-	FILE * m_fileFP;																			///< pointer to file
+	FILE * m_fileFP {};																			///< pointer to file
 };
 
 #endif // __XFERDEEPCRC_H_

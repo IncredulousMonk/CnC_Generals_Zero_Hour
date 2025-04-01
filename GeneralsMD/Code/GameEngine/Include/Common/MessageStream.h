@@ -85,9 +85,9 @@ class GameMessageArgument : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(GameMessageArgument, "GameMessageArgument")		
 public:
-	GameMessageArgument*				m_next;									///< The next argument
-	GameMessageArgumentType			m_data;									///< The data storage of an argument
-	GameMessageArgumentDataType	m_type;									///< The type of the argument.
+	GameMessageArgument*				m_next {};									///< The next argument
+	GameMessageArgumentType			m_data {};									///< The data storage of an argument
+	GameMessageArgumentDataType	m_type {};									///< The type of the argument.
 };
 EMPTY_DTOR(GameMessageArgument)
 
@@ -668,17 +668,17 @@ private:
 	// friend classes are bad. don't use them. no, really.
 	// if for no other reason than the fact that they subvert MemoryPoolObject. (srj)
 
-	GameMessage *m_next, *m_prev;								///< List links for message list
-	GameMessageList *m_list;										///< The list this message is on
+	GameMessage *m_next {}, *m_prev {};								///< List links for message list
+	GameMessageList *m_list {};										///< The list this message is on
 
-	Type m_type;										///< The type of this message
+	Type m_type {};										///< The type of this message
 
-	Int m_playerIndex;													///< The Player who issued the command
+	Int m_playerIndex {};													///< The Player who issued the command
 
 	/// @todo If a GameMessage needs more than 255 arguments, it needs to be split up into multiple GameMessage's.
-	UnsignedByte m_argCount;										///< The number of arguments of this message
+	UnsignedByte m_argCount {};										///< The number of arguments of this message
 
-	GameMessageArgument *m_argList, *m_argTail;						///< This message's arguments
+	GameMessageArgument *m_argList {}, *m_argTail {};						///< This message's arguments
 
 	/// allocate a new argument, add it to list, return pointer to its data
 	GameMessageArgument *allocArg( void );
@@ -716,8 +716,8 @@ public:
 
 
 protected:
-	GameMessage *m_firstMessage;								///< The first message on the list
-	GameMessage *m_lastMessage;									///< The last message on the list
+	GameMessage *m_firstMessage {};								///< The first message on the list
+	GameMessage *m_lastMessage {};									///< The last message on the list
 };
 
 /** 
@@ -795,9 +795,9 @@ protected:
 		TranslatorData& operator=(const TranslatorData&) = delete;
 	};
 
-	TranslatorData *m_firstTranslator;						///< List of registered translators, in order of priority
-	TranslatorData *m_lastTranslator;
-	TranslatorID m_nextTranslatorID;							///< For issuing unique translator ID's
+	TranslatorData *m_firstTranslator {};						///< List of registered translators, in order of priority
+	TranslatorData *m_lastTranslator {};
+	TranslatorID m_nextTranslatorID {};							///< For issuing unique translator ID's
 
 };
 

@@ -61,6 +61,7 @@ class GameSlot
 {
 public:
 	GameSlot();
+	virtual ~GameSlot() {};
 	virtual void reset();
 
 	void setAccept( void ) { m_isAccepted = true; }		///< Accept the current options
@@ -156,6 +157,11 @@ class GameInfo
 {
 public:
 	GameInfo();
+	virtual ~GameInfo() {};
+
+	// No copies allowed!
+	GameInfo(const GameInfo&) = delete;
+	GameInfo& operator=(const GameInfo&) = delete;
 	
 	void init( void );
 	virtual void reset( void );

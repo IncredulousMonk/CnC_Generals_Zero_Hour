@@ -45,7 +45,7 @@ typedef UnsignedInt TeamPrototypeID;
 #define TEAM_PROTOTYPE_ID_INVALID 0
 
 // ------------------------------------------------------------------------------------------------
-typedef std::hash_map< TeamID, Relationship, std::hash<TeamID>, std::equal_to<TeamID> > TeamRelationMapType;
+typedef std::unordered_map< TeamID, Relationship, std::hash<TeamID>, std::equal_to<TeamID> > TeamRelationMapType;
 class TeamRelationMap : public MemoryPoolObject,
 												public Snapshot
 {
@@ -110,7 +110,7 @@ class ThingTemplate;
 class Waypoint;
 class PlayerRelationMap;
 
-enum AttitudeType;
+enum AttitudeType: int;
 
 typedef struct {
 	Int	minUnits;
@@ -244,6 +244,10 @@ public:
 
 	Team( TeamPrototype *proto, TeamID id );
 	// ~Team();
+
+	// No copies allowed!
+	Team(const Team&) = delete;
+	Team& operator=(const Team&) = delete;
 
 	/// return the prototype used to create this team
 	const TeamPrototype *getPrototype( void ) { return m_proto; }
@@ -527,6 +531,10 @@ public:
 								 Dict *d,
 								 TeamPrototypeID id );
 	// virtual destructor prototype provided by memory pool object
+
+	// No copies allowed!
+	TeamPrototype(const TeamPrototype&) = delete;
+	TeamPrototype& operator=(const TeamPrototype&) = delete;
 
 	inline TeamPrototypeID getID() const { return m_id; }
 	inline const AsciiString& getName() const { return m_name; }

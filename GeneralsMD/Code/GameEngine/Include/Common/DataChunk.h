@@ -100,6 +100,10 @@ public:
 	DataChunkTableOfContents( void );
 	~DataChunkTableOfContents();
 
+	// No copies allowed!
+	DataChunkTableOfContents(const DataChunkTableOfContents&) = delete;
+	DataChunkTableOfContents& operator=(const DataChunkTableOfContents&) = delete;
+
 	UnsignedInt getID( const AsciiString& name );				// convert name to integer identifier
 	AsciiString getName( UnsignedInt id );	// convert integer identifier to name
 	UnsignedInt allocateID( const AsciiString& name );		// create new ID for given name or return existing mapping
@@ -125,6 +129,10 @@ protected:
 public:
 	DataChunkOutput(  OutputStream *pOut  );
 	~DataChunkOutput();
+
+	// No copies allowed!
+	DataChunkOutput(const DataChunkOutput&) = delete;
+	DataChunkOutput& operator=(const DataChunkOutput&) = delete;
 
 	void openDataChunk( char *name, DataChunkVersionType ver );
 	void closeDataChunk( void );
@@ -197,6 +205,10 @@ public:
 public:
 	DataChunkInput( ChunkInputStream *pStream );
 	~DataChunkInput();
+
+	// No copies allowed!
+	DataChunkInput(const DataChunkInput&) = delete;
+	DataChunkInput& operator=(const DataChunkInput&) = delete;
 
 	// register a parser function for data chunks with labels matching "label", whose parent
 	// chunks labels match "parentLabel" (or NULL for global scope)

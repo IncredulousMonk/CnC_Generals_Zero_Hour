@@ -67,7 +67,7 @@
 // #include "Common/UserPreferences.h"
 // #include "Common/Xfer.h"
 // #include "Common/XferCRC.h"
-// #include "Common/GameLOD.h"
+#include "Common/GameLOD.h"
 // #include "Common/Registry.h"
 // #include "Common/GameCommon.h"	// FOR THE ALLOW_DEBUG_CHEATS_IN_RELEASE #define
 
@@ -92,7 +92,7 @@
 // #include "GameClient/Shell.h"
 // #include "GameClient/GameText.h"
 // #include "GameClient/ParticleSys.h"
-// #include "GameClient/Water.h"
+#include "GameClient/Water.h"
 // #include "GameClient/TerrainRoads.h"
 // #include "GameClient/MetaEvent.h"
 // #include "GameClient/MapUtil.h"
@@ -199,6 +199,14 @@ GameEngine::~GameEngine()
 	//extern std::vector<std::string>	preloadTextureNamesGlobalHack;
 	//preloadTextureNamesGlobalHack.clear();
 
+	// FIXME: Remove this once the water renderer code is added (here temporarily to stop memory leaks).
+	for  (Int i {0}; i<TIME_OF_DAY_COUNT; ++i) {
+		WaterSettings[i].m_skyTextureFile.clear();
+		WaterSettings[i].m_waterTextureFile.clear();
+	}
+	((WaterTransparencySetting*)TheWaterTransparency.getNonOverloadedPointer())->deleteInstance();
+	TheWaterTransparency = NULL;
+
 	// delete TheMapCache;
 	// TheMapCache = NULL;
 
@@ -254,7 +262,7 @@ void GameEngine::init( int argc, char *argv[] )
 	(void) argv;
 	// try {
 		//create an INI object to use for loading stuff
-		// INI ini {};
+		INI ini {};
 
 #ifdef DEBUG_LOGGING
 		if (TheVersion)
@@ -393,8 +401,8 @@ void GameEngine::init( int argc, char *argv[] )
 		// }
 
 		// // read the water settings from INI (must do prior to initing GameClient, apparently)
-		// ini.load( AsciiString( "Data\\INI\\Default\\Water.ini" ), INI_LOAD_OVERWRITE, &xferCRC );
-		// ini.load( AsciiString( "Data\\INI\\Water.ini" ), INI_LOAD_OVERWRITE, &xferCRC );
+		ini.load( AsciiString( "Data\\INI\\Default\\Water.ini" ), INI_LOAD_OVERWRITE, nullptr /*&xferCRC*/ );
+		ini.load( AsciiString( "Data\\INI\\Water.ini" ), INI_LOAD_OVERWRITE, nullptr /*&xferCRC*/ );
 		// ini.load( AsciiString( "Data\\INI\\Default\\Weather.ini" ), INI_LOAD_OVERWRITE, &xferCRC );
 		// ini.load( AsciiString( "Data\\INI\\Weather.ini" ), INI_LOAD_OVERWRITE, &xferCRC );
 

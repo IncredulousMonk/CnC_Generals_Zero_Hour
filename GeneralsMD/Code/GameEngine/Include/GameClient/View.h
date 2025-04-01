@@ -36,7 +36,7 @@
 #include "Common/GameType.h"
 #include "Common/Snapshot.h"
 #include "Lib/BaseType.h"
-#include "WW3D2/ColType.h"			///< we don't generally do this, but we need the W3D collision types
+#include "WW3D2/coltype.h"			///< we don't generally do this, but we need the W3D collision types
 
 #define DEFAULT_VIEW_WIDTH 640
 #define DEFAULT_VIEW_HEIGHT 480
@@ -49,6 +49,8 @@ class ViewLocation;
 class Thing;
 class Waypoint;
 class LookAtTranslator;
+enum FilterTypes: int;
+enum FilterModes: int;
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -66,6 +68,10 @@ enum PickType
 // ------------------------------------------------------------------------------------------------
 /** The implementation of common view functionality. */
 // ------------------------------------------------------------------------------------------------
+
+// MG: Too many unused parameters to deal with!
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 class View : public Snapshot
 {
 
@@ -97,6 +103,10 @@ public:
 
 	View( void );
 	virtual ~View( void );
+
+	// No copies allowed!
+	View(const View&) = delete;
+	View& operator=(const View&) = delete;
 
 	virtual void init( void );
 	virtual void reset( void );
@@ -298,11 +308,11 @@ class ViewLocation
 	friend class LookAtTranslator;
 
 	protected:
-		Bool m_valid;																								///< Is this location valid
-		Coord3D m_pos;																							///< Position of this view, in world coordinates
-		Real m_angle;																								///< Angle at which view has been rotated about the Z axis
-		Real m_pitch;																								///< Angle at which view has been rotated about the Y axis
-		Real m_zoom;																								///< Current zoom value
+		Bool m_valid {};																								///< Is this location valid
+		Coord3D m_pos {};																							///< Position of this view, in world coordinates
+		Real m_angle {};																								///< Angle at which view has been rotated about the Z axis
+		Real m_pitch {};																								///< Angle at which view has been rotated about the Y axis
+		Real m_zoom {};																								///< Current zoom value
 
 	public:
 

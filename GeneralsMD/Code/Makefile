@@ -23,7 +23,7 @@ $(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB)
 	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDFLAGS) -l:GameEngineDevice.a -l:GameEngine.a
 
 
-# GameEngineDevice
+# ===== GameEngineDevice =====
 
 ENGINE_DEVICE_OBJS = $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o
 
@@ -46,21 +46,31 @@ $(GEDO)/LinuxLocalFileSystem.o: $(GEDSLDC)/LinuxLocalFileSystem.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxLocalFileSystem.o $(GEDSLDC)/LinuxLocalFileSystem.cpp
 
 
-# GameEngine
+# ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
-$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o
-#ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/INI.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
-$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/GameText.o
+ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/INI.o $(GEO)/INIWater.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
+$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o \
+$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/Water.o
+#ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameLOD.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/Version.o $(GEO)/AudioEventRTS.o $(GEO)/PlayerList.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o \
+$(GEO)/INI.o $(GEO)/INIWater.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
+$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/MessageStream.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o \
+$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/Xfer.o $(GEO)/XferCRC.o $(GEO)/GameText.o $(GEO)/Water.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
 
+# --- GameEngine/Source/Common ---
 $(GEO)/GameEngine.o: $(GES)/Common/GameEngine.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameEngine.o $(GES)/Common/GameEngine.cpp
 
+#$(GEO)/GameLOD.o: $(GES)/Common/GameLOD.cpp
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameLOD.o $(GES)/Common/GameLOD.cpp
+
 $(GEO)/GameMain.o: $(GES)/Common/GameMain.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameMain.o $(GES)/Common/GameMain.cpp
+
+#$(GEO)/MessageStream.o: $(GES)/Common/MessageStream.cpp GameEngine/Include/Common/MessageStream.h
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MessageStream.o $(GES)/Common/MessageStream.cpp
 
 $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/NameKeyGenerator.o $(GES)/Common/NameKeyGenerator.cpp
@@ -71,9 +81,22 @@ $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 $(GEO)/Version.o: $(GES)/Common/Version.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Version.o $(GES)/Common/Version.cpp
 
-#$(GEO)/INI.o: $(GES)/Common/INI/INI.cpp
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INI.o $(GES)/Common/INI/INI.cpp
+$(GEO)/INI.o: $(GES)/Common/INI/INI.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INI.o $(GES)/Common/INI/INI.cpp
 
+# --- GameEngine/Source/Common/Audio ---
+#$(GEO)/AudioEventRTS.o: $(GES)/Common/Audio/AudioEventRTS.cpp
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AudioEventRTS.o $(GES)/Common/Audio/AudioEventRTS.cpp
+
+# --- GameEngine/Source/Common/INI ---
+$(GEO)/INIWater.o: $(GES)/Common/INI/INIWater.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIWater.o $(GES)/Common/INI/INIWater.cpp
+
+# --- GameEngine/Source/Common/RTS ---
+#$(GEO)/PlayerList.o: $(GES)/Common/RTS/PlayerList.cpp
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PlayerList.o $(GES)/Common/RTS/PlayerList.cpp
+
+# --- GameEngine/Source/Common/System ---
 $(GEO)/ArchiveFile.o: $(GES)/Common/System/ArchiveFile.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ArchiveFile.o $(GES)/Common/System/ArchiveFile.cpp
 
@@ -98,6 +121,9 @@ $(GEO)/FileSystem.o: $(GES)/Common/System/FileSystem.cpp
 $(GEO)/GameMemory.o: $(GES)/Common/System/GameMemory.cpp GameEngine/Include/Common/GameMemory.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameMemory.o $(GES)/Common/System/GameMemory.cpp
 
+$(GEO)/GameType.o: $(GES)/Common/System/GameType.cpp GameEngine/Include/Common/GameType.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameType.o $(GES)/Common/System/GameType.cpp
+
 $(GEO)/LocalFileSystem.o: $(GES)/Common/System/LocalFileSystem.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/LocalFileSystem.o $(GES)/Common/System/LocalFileSystem.cpp
 
@@ -116,9 +142,18 @@ $(GEO)/SubsystemInterface.o: $(GES)/Common/System/SubsystemInterface.cpp
 $(GEO)/UnicodeString.o: $(GES)/Common/System/UnicodeString.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UnicodeString.o $(GES)/Common/System/UnicodeString.cpp
 
+#$(GEO)/Xfer.o: $(GES)/Common/System/Xfer.cpp
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Xfer.o $(GES)/Common/System/Xfer.cpp
 
+#$(GEO)/XferCRC.o: $(GES)/Common/System/XferCRC.cpp
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/XferCRC.o $(GES)/Common/System/XferCRC.cpp
+
+# --- GameEngine/Source/GameClient ---
 #$(GEO)/GameText.o: $(GES)/GameClient/GameText.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameText.o $(GES)/GameClient/GameText.cpp
+
+$(GEO)/Water.o: $(GES)/GameClient/Water.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Water.o $(GES)/GameClient/Water.cpp
 
 
 run: $(PROG)

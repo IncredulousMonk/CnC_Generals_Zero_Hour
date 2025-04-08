@@ -629,8 +629,8 @@ static PoolSizeRec sizes[] =
 	{ "DrawableLocoInfo", 128, 32 },
 	{ "W3DPrototypeClass", 512, 256 },
 	{ "EnumeratedIP", 32, 32 },
-	{ "WaterTransparencySetting", 4, 4 },
-	{ "WeatherSetting", 4, 4 },
+	{ "WaterTransparencySetting", 1, 1 },
+	{ "WeatherSetting", 1, 1 },
 	
 	// W3D pools!
 	{ "BoxPrototypeClass", 128, 128 },

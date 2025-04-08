@@ -51,11 +51,11 @@ class PolygonTrigger;
 class UpgradeTemplate;
 class WeaponTemplate;
 
-enum GUICommandType;
-enum HackerAttackMode;
-enum WeaponSetType;
-enum WeaponLockType;
-enum SpecialPowerType;
+enum GUICommandType: int;
+enum HackerAttackMode: int;
+enum WeaponSetType: int;
+enum WeaponLockType: int;
+enum SpecialPowerType: int;
 
 typedef std::vector<ObjectID> VecObjectID;
 typedef VecObjectID::iterator VecObjectIDIt;
@@ -102,17 +102,21 @@ public:
 		m_baseDefenseStructure1.clear();
 	}
 
-	AsciiString m_side;						///< Name of the side
-	Int					m_easy;						///< Number of gatherers to use in easy, normal & hard
-	Int					m_normal;	
-	Int					m_hard;
-	TSkillSet		m_skillSet1;
-	TSkillSet		m_skillSet2;
-	TSkillSet		m_skillSet3;
-	TSkillSet		m_skillSet4;
-	TSkillSet		m_skillSet5;
-	AsciiString m_baseDefenseStructure1;
-	AISideInfo *m_next;
+	// No copies allowed!
+	AISideInfo(const AISideInfo&) = delete;
+	AISideInfo& operator=(const AISideInfo&) = delete;
+
+	AsciiString m_side {};						///< Name of the side
+	Int					m_easy {};						///< Number of gatherers to use in easy, normal & hard
+	Int					m_normal {};	
+	Int					m_hard {};
+	TSkillSet		m_skillSet1 {};
+	TSkillSet		m_skillSet2 {};
+	TSkillSet		m_skillSet3 {};
+	TSkillSet		m_skillSet4 {};
+	TSkillSet		m_skillSet5 {};
+	AsciiString m_baseDefenseStructure1 {};
+	AISideInfo *m_next {};
 };
 EMPTY_DTOR(AISideInfo)
 
@@ -122,6 +126,10 @@ class AISideBuildList : public MemoryPoolObject
 public:
 	AISideBuildList( AsciiString side ); 
 	//~AISideBuildList();
+
+	// No copies allowed!
+	AISideBuildList(const AISideBuildList&) = delete;
+	AISideBuildList& operator=(const AISideBuildList&) = delete;
 	
 	void addInfo(BuildListInfo *info);
 
@@ -138,6 +146,10 @@ class TAiData : public Snapshot
 public:
 	TAiData();
 	~TAiData();
+
+	// No copies allowed!
+	TAiData(const TAiData&) = delete;
+	TAiData& operator=(const TAiData&) = delete;
 
 	void addSideInfo(AISideInfo *info);
 	void addFactionBuildList(AISideBuildList *buildList);
@@ -244,6 +256,10 @@ class AI : public SubsystemInterface, public Snapshot
 public:
 	AI( void );
 	~AI();
+
+	// No copies allowed!
+	AI(const AI&) = delete;
+	AI& operator=(const AI&) = delete;
 
 	virtual void init( void );						///< initialize AI to default values
 	virtual void reset( void );						///< reset the AI system to prepare for a new map
@@ -416,6 +432,10 @@ struct AICommandParms
 	Path*										m_path;
 
 	AICommandParms(AICommandType cmd, CommandSourceType cmdSource);
+
+	// No copies allowed!
+	AICommandParms(const AICommandParms&) = delete;
+	AICommandParms& operator=(const AICommandParms&) = delete;
 };
 
 class AICommandParmsStorage
@@ -452,7 +472,8 @@ public:
 class AICommandInterface
 {
 public:
-	
+	virtual ~AICommandInterface() {}
+
 	virtual void aiDoCommand(const AICommandParms* parms) = 0;
 
 	inline void aiMoveToPosition( const Coord3D *pos, CommandSourceType cmdSource )

@@ -93,11 +93,11 @@ void AsciiString::freeBytes(void)
 void AsciiString::validate() const
 {
 	if (!m_data) return;
-	DEBUG_ASSERTCRASH(m_data->m_refCount > 0, ("m_refCount is zero"));
-	DEBUG_ASSERTCRASH(m_data->m_refCount < 32000, ("m_refCount is suspiciously large"));
-	DEBUG_ASSERTCRASH(m_data->m_numCharsAllocated > 0, ("m_numCharsAllocated is zero"));
-//	DEBUG_ASSERTCRASH(m_data->m_numCharsAllocated < 1024, ("m_numCharsAllocated suspiciously large"));
-	DEBUG_ASSERTCRASH(strlen(m_data->peek())+1 <= m_data->m_numCharsAllocated,("str is too long (%d) for storage",strlen(m_data->peek())+1));
+	DEBUG_ASSERTCRASH(m_data->m_refCount > 0, ("AsciiString::validate(): m_refCount is zero"));
+	DEBUG_ASSERTCRASH(m_data->m_refCount < 32000, ("AsciiString::validate(): m_refCount is suspiciously large (%d) for string '%s'", m_data->m_refCount.load(), m_data->peek()));
+	DEBUG_ASSERTCRASH(m_data->m_numCharsAllocated > 0, ("AsciiString::validate(): m_numCharsAllocated is zero"));
+//	DEBUG_ASSERTCRASH(m_data->m_numCharsAllocated < 1024, ("AsciiString::validate(): m_numCharsAllocated suspiciously large"));
+	DEBUG_ASSERTCRASH(strlen(m_data->peek())+1 <= m_data->m_numCharsAllocated,("AsciiString::validate(): str is too long (%d) for storage",strlen(m_data->peek())+1));
 }
 #endif
 

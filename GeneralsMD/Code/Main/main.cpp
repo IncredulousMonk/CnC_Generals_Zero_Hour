@@ -155,5 +155,4 @@ void SetWindowText(const char* text) {
    SDL_SetWindowTitle(win, text);
 }
 
-void* TheWritableGlobalData = NULL;
 const char *gAppPrefix = ""; /// So WB can have a different debug log file name.

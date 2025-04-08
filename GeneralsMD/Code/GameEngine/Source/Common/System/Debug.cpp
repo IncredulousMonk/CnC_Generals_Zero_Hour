@@ -152,7 +152,7 @@ inline Bool ignoringAsserts()
 {
 #if defined(_DEBUG) || defined(_INTERNAL)
 	// return !DX8Wrapper_IsWindowed || (TheGlobalData&&TheGlobalData->m_debugIgnoreAsserts);
-	return (TheGlobalData&&TheGlobalData->m_debugIgnoreAsserts);
+	return (TheGlobalData&&TheGlobalData->m_data.m_debugIgnoreAsserts);
 #else
 	return !DX8Wrapper_IsWindowed;
 #endif
@@ -472,7 +472,7 @@ void DebugCrash(const char *format, ...)
 	doLogOutput(theCrashBuffer);
 #endif
 #ifdef DEBUG_STACKTRACE
-	if (!(TheGlobalData && TheGlobalData->m_debugIgnoreStackTrace))
+	if (!(TheGlobalData && TheGlobalData->m_data.m_debugIgnoreStackTrace))
 	{
 		doStackDump();
 	}

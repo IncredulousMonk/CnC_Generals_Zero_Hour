@@ -1607,7 +1607,7 @@ void MemoryPool::operator delete(void* ptr) noexcept {
 MemoryPoolBlob* MemoryPool::createBlob(size_t allocationCount)
 {
 	// MG: I don't think that the "evenly divisible by 4" thing really matters for the allocation count... it's the allocation size that's important.
-	DEBUG_ASSERTCRASH(allocationCount > 0 && allocationCount%4==0, ("MemoryPool %s bad allocationCount: %d (must be >0 and evenly divisible by %d)", m_poolName, allocationCount, 4));
+	DEBUG_ASSERTCRASH(allocationCount > 0, ("MemoryPool %s bad allocationCount: %d (must be >0)", m_poolName, allocationCount));
 
 	// MemoryPoolBlob* blob = new (::sysAllocateDoNotZero(sizeof MemoryPoolBlob)) MemoryPoolBlob;	// will throw on failure
 	MemoryPoolBlob* blob = new MemoryPoolBlob;	// will throw on failure

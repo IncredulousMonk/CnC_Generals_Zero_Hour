@@ -172,29 +172,29 @@ void ArchiveFileSystem::loadIntoDirectoryTree(const ArchiveFile *archiveFile, co
 }
 
 void ArchiveFileSystem::loadMods() {
-	if (TheGlobalData->m_modBIG.isNotEmpty())
+	if (TheGlobalData->m_data.m_modBIG.isNotEmpty())
 	{
-		ArchiveFile *archiveFile = openArchiveFile(TheGlobalData->m_modBIG.str());
+		ArchiveFile *archiveFile = openArchiveFile(TheGlobalData->m_data.m_modBIG.str());
 
 		if (archiveFile != NULL) {
-			DEBUG_LOG(("ArchiveFileSystem::loadMods - loading %s into the directory tree.\n", TheGlobalData->m_modBIG.str()));
-			loadIntoDirectoryTree(archiveFile, TheGlobalData->m_modBIG, TRUE);
-			m_archiveFileMap[TheGlobalData->m_modBIG] = archiveFile;
-			DEBUG_LOG(("ArchiveFileSystem::loadMods - %s inserted into the archive file map.\n", TheGlobalData->m_modBIG.str()));
+			DEBUG_LOG(("ArchiveFileSystem::loadMods - loading %s into the directory tree.\n", TheGlobalData->m_data.m_modBIG.str()));
+			loadIntoDirectoryTree(archiveFile, TheGlobalData->m_data.m_modBIG, TRUE);
+			m_archiveFileMap[TheGlobalData->m_data.m_modBIG] = archiveFile;
+			DEBUG_LOG(("ArchiveFileSystem::loadMods - %s inserted into the archive file map.\n", TheGlobalData->m_data.m_modBIG.str()));
 		}
 		else
 		{
-			DEBUG_LOG(("ArchiveFileSystem::loadMods - could not openArchiveFile(%s)\n", TheGlobalData->m_modBIG.str()));
+			DEBUG_LOG(("ArchiveFileSystem::loadMods - could not openArchiveFile(%s)\n", TheGlobalData->m_data.m_modBIG.str()));
 		}
 	}
 
-	if (TheGlobalData->m_modDir.isNotEmpty())
+	if (TheGlobalData->m_data.m_modDir.isNotEmpty())
 	{
 #ifdef DEBUG_LOGGING
 		Bool ret =
 #endif
-		loadBigFilesFromDirectory(TheGlobalData->m_modDir, "*.big", TRUE);
-		DEBUG_ASSERTLOG(ret, ("loadBigFilesFromDirectory(%s) returned FALSE!\n", TheGlobalData->m_modDir.str()));
+		loadBigFilesFromDirectory(TheGlobalData->m_data.m_modDir, "*.big", TRUE);
+		DEBUG_ASSERTLOG(ret, ("loadBigFilesFromDirectory(%s) returned FALSE!\n", TheGlobalData->m_data.m_modDir.str()));
 	}
 }
 

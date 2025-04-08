@@ -47,7 +47,7 @@
 #include "Common/ArchiveFileSystem.h"
 #include "Common/LocalFileSystem.h"
 // #include "Common/CDManager.h"
-// #include "Common/GlobalData.h"
+#include "Common/GlobalData.h"
 // #include "Common/PerfTimer.h"
 // #include "Common/RandomValue.h"
 #include "Common/NameKeyGenerator.h"
@@ -93,6 +93,7 @@
 // #include "GameClient/GameText.h"
 // #include "GameClient/ParticleSys.h"
 #include "GameClient/Water.h"
+#include "GameClient/Snow.h" // MG: Only needed to delete TheWeatherSetting
 // #include "GameClient/TerrainRoads.h"
 // #include "GameClient/MetaEvent.h"
 // #include "GameClient/MapUtil.h"
@@ -206,6 +207,10 @@ GameEngine::~GameEngine()
 	}
 	((WaterTransparencySetting*)TheWaterTransparency.getNonOverloadedPointer())->deleteInstance();
 	TheWaterTransparency = NULL;
+
+	// FIXME: Cannot find where TheWeatherSetting is deleted (maybe done by TheSnowManager, which is in GameClient).
+	((WeatherSetting*)TheWeatherSetting.getNonOverloadedPointer())->deleteInstance();
+	TheWeatherSetting = NULL;
 
 	// delete TheMapCache;
 	// TheMapCache = NULL;
@@ -370,7 +375,7 @@ void GameEngine::init( int argc, char *argv[] )
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 
 
-		// initSubsystem(TheWritableGlobalData, "TheWritableGlobalData", MSGNEW("GameEngineSubsystem") GlobalData(), &xferCRC, "Data\\INI\\Default\\GameData.ini", "Data\\INI\\GameData.ini");
+		initSubsystem(TheWritableGlobalData, "TheWritableGlobalData", MSGNEW("GameEngineSubsystem") GlobalData(), nullptr /*&xferCRC, "Data\\INI\\Default\\GameData.ini", "Data\\INI\\GameData.ini"*/);
 
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
@@ -403,8 +408,8 @@ void GameEngine::init( int argc, char *argv[] )
 		// // read the water settings from INI (must do prior to initing GameClient, apparently)
 		ini.load( AsciiString( "Data\\INI\\Default\\Water.ini" ), INI_LOAD_OVERWRITE, nullptr /*&xferCRC*/ );
 		ini.load( AsciiString( "Data\\INI\\Water.ini" ), INI_LOAD_OVERWRITE, nullptr /*&xferCRC*/ );
-		// ini.load( AsciiString( "Data\\INI\\Default\\Weather.ini" ), INI_LOAD_OVERWRITE, &xferCRC );
-		// ini.load( AsciiString( "Data\\INI\\Weather.ini" ), INI_LOAD_OVERWRITE, &xferCRC );
+		ini.load( AsciiString( "Data\\INI\\Default\\Weather.ini" ), INI_LOAD_OVERWRITE, nullptr /*&xferCRC*/ );
+		ini.load( AsciiString( "Data\\INI\\Weather.ini" ), INI_LOAD_OVERWRITE, nullptr /*&xferCRC*/ );
 
 
 

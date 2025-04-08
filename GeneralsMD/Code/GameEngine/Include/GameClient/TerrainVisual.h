@@ -188,7 +188,7 @@ enum TerrainLOD: int
 
 };
 #ifdef DEFINE_TERRAIN_LOD_NAMES
-static char * TerrainLODNames[] = 
+static const char * TerrainLODNames[] = 
 {
 	"NONE",
 	"MIN",

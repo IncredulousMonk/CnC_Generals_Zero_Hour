@@ -48,13 +48,14 @@ $(GEDO)/LinuxLocalFileSystem.o: $(GEDSLDC)/LinuxLocalFileSystem.cpp
 
 # ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/INI.o $(GEO)/INIWater.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
-$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o \
-$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/Water.o
-#ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameLOD.o $(GEO)/GameMain.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/Version.o $(GEO)/AudioEventRTS.o $(GEO)/PlayerList.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o \
-$(GEO)/INI.o $(GEO)/INIWater.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
+ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/INI.o $(GEO)/INIGameData.o $(GEO)/INIWater.o \
+$(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
+$(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o \
+$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/Snow.o $(GEO)/Water.o
+#ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameLOD.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/Version.o $(GEO)/AudioEventRTS.o $(GEO)/PlayerList.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o \
+$(GEO)/INI.o $(GEO)/INIGameData.o $(GEO)/INIWater.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
 $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/MessageStream.o $(GEO)/RAMFile.o $(GEO)/StreamingArchiveFile.o \
-$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/Xfer.o $(GEO)/XferCRC.o $(GEO)/GameText.o $(GEO)/Water.o
+$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/Xfer.o $(GEO)/XferCRC.o $(GEO)/GameText.o $(GEO)/Snow.o $(GEO)/Water.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
@@ -68,6 +69,9 @@ $(GEO)/GameEngine.o: $(GES)/Common/GameEngine.cpp
 
 $(GEO)/GameMain.o: $(GES)/Common/GameMain.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameMain.o $(GES)/Common/GameMain.cpp
+
+$(GEO)/GlobalData.o: $(GES)/Common/GlobalData.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GlobalData.o $(GES)/Common/GlobalData.cpp
 
 #$(GEO)/MessageStream.o: $(GES)/Common/MessageStream.cpp GameEngine/Include/Common/MessageStream.h
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MessageStream.o $(GES)/Common/MessageStream.cpp
@@ -89,6 +93,9 @@ $(GEO)/INI.o: $(GES)/Common/INI/INI.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AudioEventRTS.o $(GES)/Common/Audio/AudioEventRTS.cpp
 
 # --- GameEngine/Source/Common/INI ---
+$(GEO)/INIGameData.o: $(GES)/Common/INI/INIGameData.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIGameData.o $(GES)/Common/INI/INIGameData.cpp
+
 $(GEO)/INIWater.o: $(GES)/Common/INI/INIWater.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIWater.o $(GES)/Common/INI/INIWater.cpp
 
@@ -151,6 +158,9 @@ $(GEO)/UnicodeString.o: $(GES)/Common/System/UnicodeString.cpp
 # --- GameEngine/Source/GameClient ---
 #$(GEO)/GameText.o: $(GES)/GameClient/GameText.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameText.o $(GES)/GameClient/GameText.cpp
+
+$(GEO)/Snow.o: $(GES)/GameClient/Snow.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Snow.o $(GES)/GameClient/Snow.cpp
 
 $(GEO)/Water.o: $(GES)/GameClient/Water.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Water.o $(GES)/GameClient/Water.cpp

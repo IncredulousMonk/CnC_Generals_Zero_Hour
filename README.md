@@ -15,6 +15,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheFileSystem
   - TheLocalFileSystem
   - TheArchiveFileSystem
+  - TheWritableGlobalData
 
 ## Still to do
 
@@ -24,6 +25,10 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 ## Dependencies
 
 I'm using SDL3 for the window management, so you'll have to install that.
+<!--- Shh... coming soon!
+
+I'm using FFmpeg to replace Bink, so I installed libavformat-dev, libswscale-dev, and libavdevice-dev.
+-->
 
 You need to create a symlink called `assets` in the `GeneralsMD` directory that points to the directory where you have Zero Hour installed, such that typing `ls assets/AudioZH.big` should work. At the moment it's used to load the splash screen, but eventually it will be used to load all of the assets.
 
@@ -46,3 +51,10 @@ If you get an error message that says:
 then you forgot to create the symlink mentioned above.
 
 Click on the close button in the splash screen window to exit the "game".
+
+<!---
+## What I've learned so far
+
+My professional programming experience is in corporate systems, not games, so I was interested so see how a commercial game was put together. Zero Hour seems like a good case study
+because, while it relies on a number of third-party libraries, it doesn't use a separate game engine.
+-->

@@ -115,7 +115,7 @@ class STLSpecialAlloc;
 
 // You might not want Kindof in here because it seems like it changes frequently, but the problem
 // is that Kindof is included EVERYWHERE, so it might as well be precompiled.
-// #include "Common/INI.h"
+#include "Common/INI.h"
 // #include "Common/KindOf.h"
 // #include "Common/DisabledTypes.h"
 #include "Common/NameKeyGenerator.h"

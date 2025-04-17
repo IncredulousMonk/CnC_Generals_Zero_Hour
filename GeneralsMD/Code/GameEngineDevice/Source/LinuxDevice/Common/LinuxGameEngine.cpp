@@ -51,6 +51,8 @@ LinuxGameEngine::~LinuxGameEngine() {
 //-------------------------------------------------------------------------------------------------
 void LinuxGameEngine::init(int argc, char* argv[]) {
 
+   drawSplashImage();
+
    // extending functionality
    GameEngine::init(argc, argv);
 
@@ -104,8 +106,6 @@ void LinuxGameEngine::update(void) {
    //    TheAudio->setVolume(TheAudio->getVolume( aa ), aa );
 
    // }
-
-   drawSplashImage();
 
    // Check for SDL events.
    checkForEvents();

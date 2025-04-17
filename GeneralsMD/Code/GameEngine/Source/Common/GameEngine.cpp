@@ -39,7 +39,7 @@
 // #include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
 #include "Common/INI.h"
-// #include "Common/INIException.h"
+#include "Common/INIException.h"
 // #include "Common/MessageStream.h"
 // #include "Common/ThingFactory.h"
 // #include "Common/File.h"
@@ -87,7 +87,7 @@
 
 // #include "GameClient/Display.h"
 // #include "GameClient/FXList.h"
-// #include "GameClient/GameClient.h"
+#include "GameClient/GameClient.h"
 // #include "GameClient/Keyboard.h"
 // #include "GameClient/Shell.h"
 // #include "GameClient/GameText.h"
@@ -108,6 +108,9 @@
 // #include "GameNetwork/GameSpy/GameResultsThread.h"
 
 #include "Common/Version.h"
+
+#include <chrono>
+#include <thread>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -265,7 +268,7 @@ void GameEngine::init( int argc, char *argv[] )
 {
 	(void) argc; // FIXME: Remove!
 	(void) argv;
-	// try {
+	try {
 		//create an INI object to use for loading stuff
 		INI ini {};
 
@@ -505,7 +508,7 @@ void GameEngine::init( int argc, char *argv[] )
     
     
 		// initSubsystem(TheUpgradeCenter,"TheUpgradeCenter", MSGNEW("GameEngineSubsystem") UpgradeCenter, &xferCRC, "Data\\INI\\Default\\Upgrade.ini", "Data\\INI\\Upgrade.ini");
-		// initSubsystem(TheGameClient,"TheGameClient", createGameClient(), NULL);
+		initSubsystem(TheGameClient,"TheGameClient", createGameClient(), NULL);
 
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
@@ -693,19 +696,19 @@ void GameEngine::init( int argc, char *argv[] )
 	// 	{
 	// 		RELEASE_CRASHLOCALIZED("ERROR:D3DFailurePrompt", "ERROR:D3DFailureMessage");
 	// 	}
-	// }
-	// catch (INIException e)
-	// {
-	// 	if (e.mFailureMessage)
-	// 		RELEASE_CRASH((e.mFailureMessage));
-	// 	else
-	// 		RELEASE_CRASH(("Uncaught Exception during initialization."));
+	}
+	catch (INIException& e)
+	{
+		if (e.mFailureMessage)
+			RELEASE_CRASH((e.mFailureMessage));
+		else
+			RELEASE_CRASH(("Uncaught Exception during initialization."));
 
-	// }
-	// catch (...)
-	// {
-	// 	RELEASE_CRASH(("Uncaught Exception during initialization."));
-	// }
+	}
+	catch (...)
+	{
+		RELEASE_CRASH(("Uncaught Exception during initialization."));
+	}
 
 	// if(!TheGlobalData->m_playIntro)
 	// 	TheWritableGlobalData->m_afterIntro = TRUE;
@@ -773,7 +776,7 @@ void GameEngine::update( void )
 	// 		/// @todo Move audio init, update, etc, into GameClient update
 			
 	// 		TheAudio->UPDATE();
-	// 		TheGameClient->UPDATE();
+			TheGameClient->UPDATE();
 	// 		TheMessageStream->propagateMessages();
 
 	// 		if (TheNetwork != NULL)
@@ -843,45 +846,46 @@ void GameEngine::execute( void )
 // 			}
 // #endif
 			
-// 			{
-// 				try 
-// 				{
+			{
+				try 
+				{
 					// compute a frame
 					update();
-// 				}
-// 				catch (INIException e)
-// 				{
-// 					// Release CRASH doesn't return, so don't worry about executing additional code.
-// 					if (e.mFailureMessage)
-// 						RELEASE_CRASH((e.mFailureMessage));
-// 					else
-// 						RELEASE_CRASH(("Uncaught Exception in GameEngine::update"));
-// 				}
-// 				catch (...)
-// 				{
-// 					// try to save info off
-// 					try 
-// 					{
-// 						if (TheRecorder && TheRecorder->getMode() == RECORDERMODETYPE_RECORD && TheRecorder->isMultiplayer())
-// 							TheRecorder->cleanUpReplayFile();
-// 					}
-// 					catch (...)
-// 					{
-// 					}
-// 					RELEASE_CRASH(("Uncaught Exception in GameEngine::update"));
-// 				}	// catch
-// 			}	// perf
+				}
+				catch (INIException& e)
+				{
+					// Release CRASH doesn't return, so don't worry about executing additional code.
+					if (e.mFailureMessage)
+						RELEASE_CRASH((e.mFailureMessage));
+					else
+						RELEASE_CRASH(("Uncaught Exception in GameEngine::update"));
+				}
+				catch (...)
+				{
+					// // try to save info off
+					// try 
+					// {
+					// 	if (TheRecorder && TheRecorder->getMode() == RECORDERMODETYPE_RECORD && TheRecorder->isMultiplayer())
+					// 		TheRecorder->cleanUpReplayFile();
+					// }
+					// catch (...)
+					// {
+					// }
+					RELEASE_CRASH(("Uncaught Exception in GameEngine::update"));
+				}	// catch
+			}	// perf
 
 // 			{
 
 // 				if (TheTacticalView->getTimeMultiplier()<=1 && !TheScriptEngine->isTimeFast()) 
 // 				{
 
-// 		// I'm disabling this in internal because many people need alt-tab capability.  If you happen to be
-// 		// doing performance tuning, please just change this on your local system. -MDC
-// 		#if defined(_DEBUG) || defined(_INTERNAL)
-// 					::Sleep(1); // give everyone else a tiny time slice.
-// 		#endif
+		// I'm disabling this in internal because many people need alt-tab capability.  If you happen to be
+		// doing performance tuning, please just change this on your local system. -MDC
+		#if defined(_DEBUG) || defined(_INTERNAL)
+					// ::Sleep(1); // give everyone else a tiny time slice.
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		#endif
 
 
 // 		#if defined(_ALLOW_DEBUG_CHEATS_IN_RELEASE)

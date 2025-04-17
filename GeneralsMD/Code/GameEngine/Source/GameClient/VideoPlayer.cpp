@@ -100,15 +100,15 @@ VideoPlayerInterface *TheVideoPlayer = NULL;
 // VideoBuffer::VideoBuffer
 //============================================================================
 
-VideoBuffer::VideoBuffer( Type format)
-: m_width(0),
+VideoBuffer::VideoBuffer(Type format) :
+	m_xPos(0),
+	m_yPos(0),
+	m_width(0),
 	m_height(0),
 	m_textureWidth(0),
 	m_textureHeight(0),
-	m_format(format),
 	m_pitch(0),
-	m_xPos(0),
-	m_yPos(0)
+	m_format(format)
 {
 
 	if ( m_format >= NUM_TYPES || m_format < 0 )
@@ -210,12 +210,17 @@ void	VideoPlayer::reset( void )
 void	VideoPlayer::update( void )
 {
 
-	VideoStreamInterface *stream = firstStream();
+	VideoStreamInterface *stream {firstStream()};
 
 	while ( stream )
 	{
 		stream->update();
+
+		VideoStreamInterface *current {stream};
 		stream = stream->next();
+		if (current->isVideoFinished()) {
+			current->close();
+		}
 	}
 
 }
@@ -242,7 +247,7 @@ void	VideoPlayer::regainFocus( void )
 // VideoPlayer::open
 //============================================================================
 
-VideoStreamInterface*	VideoPlayer::open( AsciiString movieTitle )
+VideoStreamInterface*	VideoPlayer::open( AsciiString )
 {
 	return NULL;
 }
@@ -251,7 +256,7 @@ VideoStreamInterface*	VideoPlayer::open( AsciiString movieTitle )
 // VideoPlayer::load
 //============================================================================
 
-VideoStreamInterface*	VideoPlayer::load( AsciiString movieTitle )
+VideoStreamInterface*	VideoPlayer::load( AsciiString )
 {
 	return NULL;
 }
@@ -345,7 +350,7 @@ Int VideoPlayer::getNumVideos( void )
 }
 
 //============================================================================
-// VideoPlayer::removeVideo
+// VideoPlayer::getVideo
 //============================================================================
 const Video* VideoPlayer::getVideo( AsciiString movieTitle )
 {
@@ -360,9 +365,9 @@ const Video* VideoPlayer::getVideo( AsciiString movieTitle )
 //============================================================================
 // VideoPlayer::getVideo
 //============================================================================
-const Video* VideoPlayer::getVideo( Int index )
+const Video* VideoPlayer::getVideo( UnsignedInt index )
 {
-	if (index < 0 || index >= mVideosAvailableForPlay.size()) {
+	if (index >= mVideosAvailableForPlay.size()) {
 		return NULL;
 	}
 
@@ -373,11 +378,10 @@ const Video* VideoPlayer::getVideo( Int index )
 // VideoStream::VideoStream
 //============================================================================
 
-VideoStream::VideoStream()
-: m_next(NULL),
-	m_player(NULL)
+VideoStream::VideoStream() :
+	m_player(NULL),
+	m_next(NULL)
 {
-
 }
 
 //============================================================================
@@ -422,6 +426,15 @@ void VideoStream::close( void )
 }
 
 //============================================================================
+// VideoStream::isVideoFinished
+//============================================================================
+
+Bool VideoStream::isVideoFinished( void )
+{
+	return FALSE;
+}
+
+//============================================================================
 // VideoStream::isFrameReady
 //============================================================================
 
@@ -443,7 +456,7 @@ void VideoStream::frameDecompress( void )
 // VideoStream::frameRender
 //============================================================================
 
-void VideoStream::frameRender( VideoBuffer *buffer )
+void VideoStream::frameRender( VideoBuffer * )
 {
 
 }
@@ -479,7 +492,7 @@ Int	VideoStream::frameCount( void )
 // VideoStream::frameGoto
 //============================================================================
 
-void VideoStream::frameGoto( Int index )
+void VideoStream::frameGoto( Int )
 {
 
 }
@@ -505,8 +518,8 @@ Int		VideoStream::width( void )
 
 const FieldParse VideoPlayer::m_videoFieldParseTable[] = 
 {
-	{ "Filename",								INI::parseAsciiString,							NULL, offsetof( Video, m_filename) },
-	{ "Comment",								INI::parseAsciiString,							NULL, offsetof( Video, m_commentForWB) },
-	{ NULL,											NULL,																NULL, 0 },
+	{ "Filename",	INI::parseAsciiString,	NULL, offsetof( Video, m_filename) },
+	{ "Comment",	INI::parseAsciiString,	NULL, offsetof( Video, m_commentForWB) },
+	{ NULL,			NULL,					NULL, 0 },
 };
 

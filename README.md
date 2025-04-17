@@ -9,6 +9,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 ## Progress so far
 
 - Displays a window with the splash screen.
+- Plays the logo movie.
 - The DynamicMemoryAllocator works. If you compile in debug mode it dumps out memory pool stats, and tells you where you're leaking memory... neat! (I can't take any credit for that. It's all built in.)
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -16,6 +17,8 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheLocalFileSystem
   - TheArchiveFileSystem
   - TheWritableGlobalData
+  - TheGameClient (partial)
+  - TheVideoPlayer
 
 ## Still to do
 
@@ -25,10 +28,8 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 ## Dependencies
 
 I'm using SDL3 for the window management, so you'll have to install that.
-<!--- Shh... coming soon!
 
 I'm using FFmpeg to replace Bink, so I installed libavformat-dev, libswscale-dev, and libavdevice-dev.
--->
 
 You need to create a symlink called `assets` in the `GeneralsMD` directory that points to the directory where you have Zero Hour installed, such that typing `ls assets/AudioZH.big` should work. At the moment it's used to load the splash screen, but eventually it will be used to load all of the assets.
 

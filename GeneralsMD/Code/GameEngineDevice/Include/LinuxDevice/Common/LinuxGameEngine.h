@@ -37,7 +37,7 @@
 #include "LinuxDevice/Common/LinuxLocalFileSystem.h"
 // #include "W3DDevice/Common/W3DModuleFactory.h"
 // #include "W3DDevice/GameLogic/W3DGameLogic.h"
-// #include "W3DDevice/GameClient/W3DGameClient.h"
+#include "LinuxDevice/GameClient/LinuxGameClient.h"
 // #include "W3DDevice/GameClient/W3DWebBrowser.h"
 // #include "W3DDevice/Common/W3DFunctionLexicon.h"
 // #include "W3DDevice/Common/W3DRadar.h"
@@ -84,27 +84,26 @@ protected:
 
 // INLINE -----------------------------------------------------------------------------------------
 // inline GameLogic* LinuxGameEngine::createGameLogic( void ) { return NEW W3DGameLogic; }
-inline GameLogic* LinuxGameEngine::createGameLogic( void ) { return nullptr; }
-// inline GameClient* LinuxGameEngine::createGameClient( void ) { return NEW W3DGameClient; }
-inline GameClient* LinuxGameEngine::createGameClient( void ) { return nullptr; }
+inline GameLogic* LinuxGameEngine::createGameLogic( void ) { printf("Creating NULL GameLogic!\n"); return nullptr; }
+inline GameClient* LinuxGameEngine::createGameClient( void ) { return NEW LinuxGameClient; }
 // inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { return NEW W3DModuleFactory; }
-inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { return nullptr; }
+inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { printf("Creating NULL ModuleFactory!\n"); return nullptr; }
 // inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { return NEW W3DThingFactory; }
-inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { return nullptr; }
+inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { printf("Creating NULL ThingFactory!\n"); return nullptr; }
 // inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { return NEW W3DFunctionLexicon; }
-inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { return nullptr; }
+inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { printf("Creating NULL FunctionLexicon!\n"); return nullptr; }
 inline LocalFileSystem* LinuxGameEngine::createLocalFileSystem( void ) { return NEW LinuxLocalFileSystem; }
 inline ArchiveFileSystem* LinuxGameEngine::createArchiveFileSystem( void ) { return NEW LinuxBIGFileSystem; }
 // inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return NEW W3DParticleSystemManager; }
-inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return nullptr; }
+inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { printf("Creating NULL ParticleSystemManager!\n"); return nullptr; }
 
 // inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { return NetworkInterface::createNetwork(); }
-inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { return nullptr; }
+inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { printf("Creating NULL Network!\n"); return nullptr; }
 // inline Radar* LinuxGameEngine::createRadar( void ) { return NEW W3DRadar; }
-inline Radar* LinuxGameEngine::createRadar( void ) { return nullptr; }
+inline Radar* LinuxGameEngine::createRadar( void ) { printf("Creating NULL Radar!\n"); return nullptr; }
 // inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { return NEW CComObject<W3DWebBrowser>; }
-inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { return nullptr; }
+inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { printf("Creating NULL WebBrowser!\n"); return nullptr; }
 // inline AudioManager* LinuxGameEngine::createAudioManager( void ) { return NEW MilesAudioManager; }
-inline AudioManager* LinuxGameEngine::createAudioManager( void ) { return nullptr; }
+inline AudioManager* LinuxGameEngine::createAudioManager( void ) { printf("Creating NULL AudioManager!\n"); return nullptr; }
 
 #endif  // end __LINUXGAMEENGINE_H_

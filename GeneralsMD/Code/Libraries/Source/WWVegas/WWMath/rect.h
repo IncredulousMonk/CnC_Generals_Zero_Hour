@@ -47,10 +47,10 @@
 class RectClass
 {
 public:
-	float	Left;
-	float	Top;
-	float	Right;
-	float	Bottom;
+	float	Left {};
+	float	Top {};
+	float	Right {};
+	float	Bottom {};
 
 	// Constructors
 	RectClass( void )		{};

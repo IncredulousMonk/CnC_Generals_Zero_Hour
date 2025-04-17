@@ -135,7 +135,7 @@ static const BlockParse theTypeTable[] =
 // 	{ "ShellMenuScheme",		INI::parseShellMenuSchemeDefinition },
 // 	{ "Terrain",						INI::parseTerrainDefinition },
 // 	{ "Upgrade",						INI::parseUpgradeDefinition },
-// 	{ "Video",							INI::parseVideoDefinition },
+	{ "Video",							INI::parseVideoDefinition },
 	{ "WaterSet",						INI::parseWaterSettingDefinition },
 	{ "WaterTransparency",	INI::parseWaterTransparencyDefinition},
 	{ "Weather",	INI::parseWeatherDefinition},

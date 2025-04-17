@@ -32,29 +32,29 @@
 #include "Common/Version.h"
 #include "BuildVersion.h"
 
-SDL_Window* win {};
-SDL_Renderer* ren {};
-SDL_Texture* tex {};
+SDL_Window* window {};
+SDL_Renderer* renderer {};
+static SDL_Texture* texture {};
 static CriticalSection critSec4 {};
 
 void initialiseSdl(void) {
-   if (!SDL_Init(SDL_INIT_VIDEO)) {
+   if (!SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialise SDL: %s", SDL_GetError());
       SDL_Quit();
       exit(1);
    }
 
-   win = SDL_CreateWindow("Command and Conquer Generals", 800, 600, SDL_WINDOW_HIDDEN);
-   if (!win) {
+   window = SDL_CreateWindow("Command and Conquer Generals", 800, 600, SDL_WINDOW_HIDDEN);
+   if (!window) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s", SDL_GetError());
       SDL_Quit();
       exit(1);
    }
 
-   ren = SDL_CreateRenderer(win, NULL);
-   if (!ren) {
+   renderer = SDL_CreateRenderer(window, NULL);
+   if (!renderer) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create renderer: %s", SDL_GetError());
-      SDL_DestroyWindow(win);
+      SDL_DestroyWindow(window);
       SDL_Quit();
       exit(1);
    }
@@ -62,33 +62,33 @@ void initialiseSdl(void) {
    SDL_Surface* bmp = SDL_LoadBMP("../assets/Install_Final.bmp");
    if (!bmp) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not load bitmap: %s", SDL_GetError());
-      SDL_DestroyRenderer(ren);
-      SDL_DestroyWindow(win);
+      SDL_DestroyRenderer(renderer);
+      SDL_DestroyWindow(window);
       SDL_Quit();
       exit(1);
    }
 
-   tex = SDL_CreateTextureFromSurface(ren, bmp);
+   texture = SDL_CreateTextureFromSurface(renderer, bmp);
    SDL_DestroySurface(bmp);
-   if (!tex) {
+   if (!texture) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create texture: %s", SDL_GetError());
-      SDL_DestroyRenderer(ren);
-      SDL_DestroyWindow(win);
+      SDL_DestroyRenderer(renderer);
+      SDL_DestroyWindow(window);
       SDL_Quit();
       exit(1);
    }
 }
 
 void drawSplashImage(void) {
-   SDL_RenderClear(ren);
-   SDL_RenderTexture(ren, tex, NULL, NULL);
-   SDL_RenderPresent(ren);
+   SDL_RenderClear(renderer);
+   SDL_RenderTexture(renderer, texture, NULL, NULL);
+   SDL_RenderPresent(renderer);
 }
 
 void cleanupSdl(void) {
-   SDL_DestroyTexture(tex);
-   SDL_DestroyRenderer(ren);
-   SDL_DestroyWindow(win);
+   SDL_DestroyTexture(texture);
+   SDL_DestroyRenderer(renderer);
+   SDL_DestroyWindow(window);
 }
 
 int main(int argc, char* argv[]) {
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 
    initialiseSdl();
 
-   SDL_ShowWindow(win);
+   SDL_ShowWindow(window);
 
    DEBUG_INIT(DEBUG_FLAGS_DEFAULT);
    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Initialising memory manager.");
@@ -147,12 +147,12 @@ GameEngine* CreateGameEngine(void) {
 }  // end CreateGameEngine
 
 int MessageBox(const char* text, const char* caption, UnsignedInt) {
-   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, win);
+   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, window);
    return 1;
 }
 
 void SetWindowText(const char* text) {
-   SDL_SetWindowTitle(win, text);
+   SDL_SetWindowTitle(window, text);
 }
 
 const char *gAppPrefix = ""; /// So WB can have a different debug log file name.

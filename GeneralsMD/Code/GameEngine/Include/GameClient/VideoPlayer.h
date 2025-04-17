@@ -74,9 +74,9 @@ typedef std::vector<Video>::iterator	VecVideoIt;
 //----------------------------------------------------------------------------
 struct Video
 {
-	AsciiString m_filename;																	///< should be filled with the filename on disk
-	AsciiString m_internalName;															///< should be our internal reference name
-	AsciiString m_commentForWB;
+	AsciiString m_filename {};			///< should be filled with the filename on disk
+	AsciiString m_internalName {};		///< should be our internal reference name
+	AsciiString m_commentForWB {};
 };
 
 //===============================
@@ -165,6 +165,7 @@ class VideoStreamInterface
 		virtual void update( void ) = 0;									///< Update stream
 		virtual void close( void ) = 0;										///< Close and free stream
 																											
+		virtual Bool	isVideoFinished( void ) = 0;						///< Has the video finished playing
 		virtual Bool	isFrameReady( void ) = 0;						///< Is the frame ready to be displayed
 		virtual void	frameDecompress( void ) = 0;				///< Render current frame in to buffer
 		virtual void	frameRender( VideoBuffer *buffer ) = 0; ///< Render current frame in to buffer
@@ -195,12 +196,17 @@ class VideoStream : public VideoStreamInterface
 		VideoStream();																		///< only VideoPlayer can create these
 		virtual ~VideoStream();
 
+		// No copies allowed!
+		VideoStream(const VideoStream&) = delete;
+		VideoStream& operator=(const VideoStream&) = delete;
+
 	public:
 
  		virtual	VideoStreamInterface* next( void );				///< Returns next open stream
 		virtual void update( void );											///< Update stream
 		virtual void close( void );												///< Close and free stream
 																											
+		virtual Bool	isVideoFinished( void );						///< Has the video finished playing
 		virtual Bool	isFrameReady( void );								///< Is the frame ready to be displayed
 		virtual void	frameDecompress( void );						///< Render current frame in to buffer
 		virtual void	frameRender( VideoBuffer *buffer ); ///< Render current frame in to buffer
@@ -249,7 +255,7 @@ class VideoPlayerInterface : public SubsystemInterface
 		virtual void	removeVideo( Video* videoToRemove ) = 0;		///< Remove a video to the list of videos we can play
 		virtual Int getNumVideos( void ) = 0;											///< Retrieve info about the number of videos currently listed
 		virtual const Video* getVideo( AsciiString movieTitle ) = 0;	///< Retrieve info about a movie based on internal name
-		virtual const Video* getVideo( Int index ) = 0;						///< Retrieve info about a movie based on index
+		virtual const Video* getVideo( UnsignedInt index ) = 0;						///< Retrieve info about a movie based on index
 
 		virtual const FieldParse *getFieldParse( void ) const = 0;		///< Return the field parse info
 
@@ -268,8 +274,8 @@ class VideoPlayerInterface : public SubsystemInterface
 class VideoPlayer : public VideoPlayerInterface
 {
 	protected:
-		VecVideo mVideosAvailableForPlay;
-		VideoStream		*m_firstStream;
+		VecVideo mVideosAvailableForPlay {};
+		VideoStream		*m_firstStream {};
 		static const FieldParse m_videoFieldParseTable[];
 
 	public:
@@ -284,6 +290,10 @@ class VideoPlayer : public VideoPlayerInterface
 																													
 		VideoPlayer();																				
 		~VideoPlayer();																				
+
+		// No copies allowed!
+		VideoPlayer(const VideoPlayer&) = delete;
+		VideoPlayer& operator=(const VideoPlayer&) = delete;
 																													
 		// service																						
 		virtual void	loseFocus( void );											///< Should be called when application loses focus
@@ -298,10 +308,10 @@ class VideoPlayer : public VideoPlayerInterface
 		virtual void	removeVideo( Video* videoToRemove );		///< Remove a video to the list of videos we can play
 		virtual Int getNumVideos( void );											///< Retrieve info about the number of videos currently listed
 		virtual const Video* getVideo( AsciiString movieTitle );	///< Retrieve info about a movie based on internal name
-		virtual const Video* getVideo( Int index );						///< Retrieve info about a movie based on index
+		virtual const Video* getVideo( UnsignedInt index );						///< Retrieve info about a movie based on index
 		virtual const FieldParse *getFieldParse( void ) const { return m_videoFieldParseTable; }		///< Return the field parse info
 
-		virtual void notifyVideoPlayerOfNewProvider( Bool nowHasValid ) { }
+		virtual void notifyVideoPlayerOfNewProvider( Bool /*nowHasValid*/ ) { }
 
 		// Implementation specific
 		void remove( VideoStream *stream );										///< remove stream from active list

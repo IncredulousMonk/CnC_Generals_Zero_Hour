@@ -67,7 +67,7 @@ void userMemoryManagerGetDmaParms(Int *numSubPools, const PoolInitRec **pParms)
 		{ "dmaPool_128", 128,		80000,	10000 },
 		{ "dmaPool_256", 256,		20000,	5000 },
 		{ "dmaPool_512", 512,		16000,	5000 },
-		{ "dmaPool_1024", 1024, 6000,		1024}
+		{ "dmaPool_1024", 1024, 	6000,	1024}
 	};
 
 	*numSubPools = 7;

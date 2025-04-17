@@ -36,8 +36,8 @@
 #include "Common/Snapshot.h"
 #include "Common/STLTypedefs.h"
 #include "Common/SubsystemInterface.h"
-#include "GameClient/CommandXlat.h"
-#include "GameClient/Drawable.h"
+// #include "GameClient/CommandXlat.h"
+// #include "GameClient/Drawable.h"
 
 // forward declarations
 class AsciiString;
@@ -113,9 +113,9 @@ public:
 
 	virtual Drawable *firstDrawable( void ) { return m_drawableList; }
 
-	virtual GameMessage::Type evaluateContextCommand( Drawable *draw, 
-																										const Coord3D *pos, 
-																										CommandTranslator::CommandEvaluateType cmdType );
+	// virtual GameMessage::Type evaluateContextCommand( Drawable *draw, 
+	// 																									const Coord3D *pos, 
+	// 																									CommandTranslator::CommandEvaluateType cmdType );
 	void addTextBearingDrawable( Drawable *tbd );
 	void flushTextBearingDrawables( void);
 	void updateFakeDrawables(void);
@@ -131,7 +131,7 @@ public:
 
 	virtual void iterateDrawablesInRegion( Region3D *region, GameClientFuncPtr userFunc, void *userData );		///< Calls userFunc for each drawable contained within the region
 
-	virtual Drawable *friend_createDrawable( const ThingTemplate *thing, DrawableStatus statusBits = DRAWABLE_STATUS_NONE ) = 0;
+	// virtual Drawable *friend_createDrawable( const ThingTemplate *thing, DrawableStatus statusBits = DRAWABLE_STATUS_NONE ) = 0;
 	virtual void destroyDrawable( Drawable *draw );											///< Destroy the given drawable
 
 	virtual void setTimeOfDay( TimeOfDay tod );													///< Tell all the drawables what time of day it is now
@@ -166,23 +166,23 @@ protected:
 	virtual void loadPostProcess( void );
 
 	// @todo Should there be a separate GameClient frame counter?
-	UnsignedInt m_frame;																				///< Simulation frame number from server
+	UnsignedInt m_frame {};																				///< Simulation frame number from server
 
-	Drawable *m_drawableList;																		///< All of the drawables in the world
-//	DrawablePtrHash m_drawableHash;															///< Used for DrawableID lookups
-	DrawablePtrVector m_drawableVector;
+	Drawable *m_drawableList {};																		///< All of the drawables in the world
+//	DrawablePtrHash m_drawableHash {};															///< Used for DrawableID lookups
+	DrawablePtrVector m_drawableVector {};
 
-	DrawableID m_nextDrawableID;																///< For allocating drawable id's
-	DrawableID allocDrawableID( void );													///< Returns a new unique drawable id
+	DrawableID m_nextDrawableID {};																///< For allocating drawable id's
+	// DrawableID allocDrawableID( void );													///< Returns a new unique drawable id
 
 	enum { MAX_CLIENT_TRANSLATORS = 32 };
 	TranslatorID m_translators[ MAX_CLIENT_TRANSLATORS ];				///< translators we have used
-	UnsignedInt m_numTranslators;																///< number of translators in m_translators[]
-	CommandTranslator *m_commandTranslator;											///< the command translator on the message stream
+	UnsignedInt m_numTranslators {};																///< number of translators in m_translators[]
+	// CommandTranslator *m_commandTranslator {};											///< the command translator on the message stream
 
 private:
 
-	UnsignedInt m_renderedObjectCount;													///< Keeps track of the number of rendered objects -- resets each frame.
+	UnsignedInt m_renderedObjectCount {};													///< Keeps track of the number of rendered objects -- resets each frame.
 
 	//---------------------------------------------------------------------------
 
@@ -201,12 +201,12 @@ private:
 	// ----------------------------------------------------------------------------------------------
 	struct DrawableTOCEntry
 	{
-		AsciiString name;
-		UnsignedShort id;
+		AsciiString name {};
+		UnsignedShort id {};
 	};
 	typedef std::list< DrawableTOCEntry > DrawableTOCList;
 	typedef DrawableTOCList::iterator DrawableTOCListIterator;
-	DrawableTOCList m_drawableTOC;														///< the drawable TOC
+	DrawableTOCList m_drawableTOC {};														///< the drawable TOC
 	void addTOCEntry( AsciiString name, UnsignedShort id );		///< add a new name/id TOC pair
 	DrawableTOCEntry *findTOCEntryByName( AsciiString name );	///< find DrawableTOC by name
 	DrawableTOCEntry *findTOCEntryById( UnsignedShort id );		///< find DrawableTOC by id
@@ -214,7 +214,7 @@ private:
 	
 	typedef std::list< Drawable* > TextBearingDrawableList;
 	typedef TextBearingDrawableList::iterator TextBearingDrawableListIterator;
-	TextBearingDrawableList m_textBearingDrawableList;	///< the drawables that have registered here during drawablepostdraw
+	TextBearingDrawableList m_textBearingDrawableList {};	///< the drawables that have registered here during drawablepostdraw
 };
 
 //Kris: Try not to use this if possible. In every case I found in the code base, the status was always Drawable::SELECTED.

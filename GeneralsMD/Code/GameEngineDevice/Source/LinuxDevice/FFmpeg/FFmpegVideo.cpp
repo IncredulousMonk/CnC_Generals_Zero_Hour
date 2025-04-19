@@ -109,6 +109,7 @@ bool FFmpegVideo::open(const char* filename, SDL_Renderer* renderer, int left, i
    library_function_address(m_avformat_lib, "av_format_inject_global_side_data", reinterpret_cast<void **>(&av_format_inject_global_side_data));
    library_function_address(m_avformat_lib, "avio_feof", reinterpret_cast<void **>(&avio_feof));
 
+   m_video_finished = false;
    m_last_video_stream = m_video_stream = -1;
    m_last_audio_stream = m_audio_stream = -1;
    m_last_subtitle_stream = m_subtitle_stream = -1;
@@ -158,6 +159,7 @@ fail:
 }
 
 void FFmpegVideo::close() {
+   m_video_finished = true;
    m_abort_request = 1;
    SDL_WaitThread(m_read_tid, NULL);
 

@@ -81,6 +81,13 @@ WinInstanceData::WinInstanceData( void )
 
 }  // end WinInstanceData
 
+WinInstanceData::WinInstanceData(const WinInstanceData& other)
+{
+
+	copyData(other);
+
+}  // end WinInstanceData
+
 // WinInstanceData::~WinInstanceData ==========================================
 //=============================================================================
 WinInstanceData::~WinInstanceData( void )
@@ -95,6 +102,45 @@ WinInstanceData::~WinInstanceData( void )
 	m_videoBuffer = NULL; //Video Buffer needs to be clean up by the control that is in charge of the video.
 
 }  // end ~WinInstanceData
+
+// WinInstanceData::copyData ==================================================
+//=============================================================================
+void WinInstanceData::copyData(const WinInstanceData& source)
+{
+
+	// MG: I'm a bit dubious about this, but there is code that makes copies of WinInstanceData.
+	m_id = source.m_id;
+	m_state = source.m_state;
+	m_style = source.m_style;
+	m_status = source.m_status;
+	m_owner = source.m_owner;
+	m_enabledText = source.m_enabledText;
+	m_disabledText = source.m_disabledText;
+	m_hiliteText = source.m_hiliteText;
+	m_imeCompositeText = source.m_imeCompositeText;
+	m_imageOffset = source.m_imageOffset;
+	m_font = source.m_font;
+	m_textLabelString = source.m_textLabelString;
+	m_decoratedNameString = source.m_decoratedNameString;
+	m_tooltipString = source.m_tooltipString;
+	m_headerTemplateName = source.m_headerTemplateName;
+	m_tooltipDelay = source.m_tooltipDelay;
+	// m_text not copied
+	// m_tooltip not copied
+	// m_videoBuffer not copied
+  
+}  // end WinInstanceData
+
+// WinInstanceData::operator= =================================================
+//=============================================================================
+WinInstanceData& WinInstanceData::operator=(const WinInstanceData& other)
+{
+	if (this != &other) {
+		copyData(other);
+	}
+	return *this;
+}
+
 
 // WinInstanceData::init ======================================================
 /** Set initial values for instance data if desired */

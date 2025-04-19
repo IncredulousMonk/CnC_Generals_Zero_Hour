@@ -10,7 +10,7 @@ ENGINE_LIB = GameEngine/Lib/GameEngine.a
 GEDO = GameEngineDevice/Obj
 GEDSLDC = GameEngineDevice/Source/LinuxDevice/Common
 GEDSLDF = GameEngineDevice/Source/LinuxDevice/FFmpeg
-GEDSLDGC = GameEngineDevice/Source/LinuxDevice/GameClient
+GEDSLD = GameEngineDevice/Source/LinuxDevice
 GEO = GameEngine/Obj
 GES = GameEngine/Source
 CUR_DIR := $(shell pwd)
@@ -20,7 +20,7 @@ ifdef DEBUG
 CXXFLAGS += -D_DEBUG -O0 -g3
 endif
 
-.PHONY: run clean
+.PHONY: run debug clean
 
 $(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB)
 	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a $(LDFLAGS)
@@ -29,7 +29,7 @@ $(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB)
 # ===== GameEngineDevice =====
 
 ENGINE_DEVICE_OBJS = $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o \
-$(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o $(GEDO)/LinuxGameClient.o
+$(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxGameClient.o
 
 $(ENGINE_DEVICE_LIB): $(ENGINE_DEVICE_OBJS)
 	ar rcs $(ENGINE_DEVICE_LIB)  $(ENGINE_DEVICE_OBJS)
@@ -70,21 +70,20 @@ $(GEDO)/Clock.o: $(GEDSLDF)/Clock.cpp GameEngineDevice/Include/LinuxDevice/FFmpe
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/Clock.o $(GEDSLDF)/Clock.cpp
 
 # --- GameEngineDevice/Source/LinuxDevice/GameClient ---
-$(GEDO)/LinuxGameClient.o: $(GEDSLDGC)/LinuxGameClient.cpp
-	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameClient.o $(GEDSLDGC)/LinuxGameClient.cpp
+$(GEDO)/LinuxDisplay.o: $(GEDSLD)/GameClient/LinuxDisplay.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxDisplay.o $(GEDSLD)/GameClient/LinuxDisplay.cpp
+
+$(GEDO)/LinuxGameClient.o: $(GEDSLD)/GameClient/LinuxGameClient.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameClient.o $(GEDSLD)/GameClient/LinuxGameClient.cpp
 
 
 # ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o \
+ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o \
 $(GEO)/INI.o $(GEO)/INIGameData.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
-$(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
-$(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o \
-$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/GameClient.o $(GEO)/Snow.o $(GEO)/VideoPlayer.o $(GEO)/Water.o
-#ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameLOD.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/Version.o $(GEO)/AudioEventRTS.o $(GEO)/PlayerList.o $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o \
-$(GEO)/INI.o $(GEO)/INIGameData.o $(GEO)/INIVideo.o $(GEO)/INIWater.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o \
-$(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/MessageStream.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o \
-$(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o $(GEO)/Xfer.o $(GEO)/XferCRC.o $(GEO)/GameClient.o $(GEO)/GameText.o $(GEO)/Snow.o $(GEO)/VideoPlayer.o $(GEO)/Water.o
+$(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
+   $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o \
+$(GEO)/Display.o $(GEO)/DisplayStringManager.o $(GEO)/GameClient.o $(GEO)/Snow.o $(GEO)/VideoPlayer.o $(GEO)/Water.o $(GEO)/GameWindow.o $(GEO)/GameWindowManager.o $(GEO)/Shell.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
@@ -102,8 +101,8 @@ $(GEO)/GameMain.o: $(GES)/Common/GameMain.cpp
 $(GEO)/GlobalData.o: $(GES)/Common/GlobalData.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GlobalData.o $(GES)/Common/GlobalData.cpp
 
-#$(GEO)/MessageStream.o: $(GES)/Common/MessageStream.cpp GameEngine/Include/Common/MessageStream.h
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MessageStream.o $(GES)/Common/MessageStream.cpp
+$(GEO)/MessageStream.o: $(GES)/Common/MessageStream.cpp GameEngine/Include/Common/MessageStream.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MessageStream.o $(GES)/Common/MessageStream.cpp
 
 $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/NameKeyGenerator.o $(GES)/Common/NameKeyGenerator.cpp
@@ -114,14 +113,14 @@ $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 $(GEO)/Version.o: $(GES)/Common/Version.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Version.o $(GES)/Common/Version.cpp
 
-$(GEO)/INI.o: $(GES)/Common/INI/INI.cpp
-	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INI.o $(GES)/Common/INI/INI.cpp
-
 # --- GameEngine/Source/Common/Audio ---
 #$(GEO)/AudioEventRTS.o: $(GES)/Common/Audio/AudioEventRTS.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AudioEventRTS.o $(GES)/Common/Audio/AudioEventRTS.cpp
 
 # --- GameEngine/Source/Common/INI ---
+$(GEO)/INI.o: $(GES)/Common/INI/INI.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INI.o $(GES)/Common/INI/INI.cpp
+
 $(GEO)/INIGameData.o: $(GES)/Common/INI/INIGameData.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIGameData.o $(GES)/Common/INI/INIGameData.cpp
 
@@ -191,6 +190,12 @@ $(GEO)/UnicodeString.o: $(GES)/Common/System/UnicodeString.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/XferCRC.o $(GES)/Common/System/XferCRC.cpp
 
 # --- GameEngine/Source/GameClient ---
+$(GEO)/Display.o: $(GES)/GameClient/Display.cpp GameEngine/Include/GameClient/Display.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Display.o $(GES)/GameClient/Display.cpp
+
+$(GEO)/DisplayStringManager.o: $(GES)/GameClient/DisplayStringManager.cpp GameEngine/Include/GameClient/DisplayStringManager.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DisplayStringManager.o $(GES)/GameClient/DisplayStringManager.cpp
+
 $(GEO)/GameClient.o: $(GES)/GameClient/GameClient.cpp GameEngine/Include/GameClient/GameClient.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameClient.o $(GES)/GameClient/GameClient.cpp
 
@@ -206,9 +211,23 @@ $(GEO)/VideoPlayer.o: $(GES)/GameClient/VideoPlayer.cpp
 $(GEO)/Water.o: $(GES)/GameClient/Water.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Water.o $(GES)/GameClient/Water.cpp
 
+# --- GameEngine/Source/GameClient/GUI ---
+$(GEO)/GameWindow.o: $(GES)/GameClient/GUI/GameWindow.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindow.o $(GES)/GameClient/GUI/GameWindow.cpp
+
+$(GEO)/GameWindowManager.o: $(GES)/GameClient/GUI/GameWindowManager.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindowManager.o $(GES)/GameClient/GUI/GameWindowManager.cpp
+
+# --- GameEngine/Source/GameClient/GUI/Shell ---
+$(GEO)/Shell.o: $(GES)/GameClient/GUI/Shell/Shell.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Shell.o $(GES)/GameClient/GUI/Shell/Shell.cpp
+
 
 run: $(PROG)
 	cd ../Run && ./rts && cd $(CUR_DIR)
+
+debug: $(PROG)
+	cd ../Run && gdb -q ./rts && cd $(CUR_DIR)
 
 clean:
 	rm -v $(GEDO)/*.o $(GEO)/*.o $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(PROG)

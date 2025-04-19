@@ -49,12 +49,12 @@
 // #include "GameClient/CommandXlat.h"
 // #include "GameClient/ControlBar.h"
 // #include "GameClient/Diplomacy.h"
-// #include "GameClient/Display.h"
-// #include "GameClient/DisplayStringManager.h"
+#include "GameClient/Display.h"
+#include "GameClient/DisplayStringManager.h"
 // #include "GameClient/Drawable.h"
 // #include "GameClient/DrawGroupInfo.h"
 // #include "GameClient/Eva.h"
-// #include "GameClient/GameWindowManager.h"
+#include "GameClient/GameWindowManager.h"
 // #include "GameClient/GlobalLanguage.h"
 // #include "GameClient/GraphDraw.h"
 // #include "GameClient/GUICommandTranslator.h"
@@ -72,7 +72,7 @@
 // #include "GameClient/PlaceEventTranslator.h"
 // #include "GameClient/RayEffect.h"
 // #include "GameClient/SelectionXlat.h"
-// #include "GameClient/Shell.h"
+#include "GameClient/Shell.h"
 // #include "GameClient/Snow.h"
 // #include "GameClient/TerrainVisual.h"
 // #include "GameClient/View.h"
@@ -204,9 +204,9 @@ GameClient::~GameClient()
 	// delete TheTerrainVisual;
 	// TheTerrainVisual = NULL;
 
-	// // destroy the display
-	// delete TheDisplay;
-	// TheDisplay = NULL;
+	// destroy the display
+	delete TheDisplay;
+	TheDisplay = NULL;
 
 	// delete TheHeaderTemplateManager;
 	// TheHeaderTemplateManager = NULL;
@@ -232,8 +232,8 @@ GameClient::~GameClient()
 	// delete TheKeyboard;
 	// TheKeyboard = NULL;
 
-	// delete TheDisplayStringManager;
-	// TheDisplayStringManager = NULL;
+	delete TheDisplayStringManager;
+	TheDisplayStringManager = NULL;
 
 	// delete TheEva;
 	// TheEva = NULL;
@@ -263,13 +263,13 @@ void GameClient::init( void )
 // 		TheDrawGroupInfo->m_fontIsBold = TheGlobalLanguageData->m_drawGroupInfoFont.bold;
 // 	}
 
-// 	// create the display string factory
-// 	TheDisplayStringManager = createDisplayStringManager();
-// 	if( TheDisplayStringManager )	{
-// 		TheDisplayStringManager->init();
-// 		TheDisplayStringManager->setName("TheDisplayStringManager");
-// 	}
-	
+	// create the display string factory
+	TheDisplayStringManager = createDisplayStringManager();
+	if (TheDisplayStringManager) {
+		TheDisplayStringManager->init();
+		TheDisplayStringManager->setName("TheDisplayStringManager");
+	}
+
 // 	// create the keyboard
 // 	TheKeyboard = createKeyboard();
 // 	TheKeyboard->init();
@@ -327,12 +327,12 @@ void GameClient::init( void )
 // 	TheMouse->initCursorResources();
 //  	TheMouse->setName("TheMouse");
 
-// 	// instantiate the display
-// 	TheDisplay = createGameDisplay();
-// 	if( TheDisplay ) {
-// 		TheDisplay->init();
-//  		TheDisplay->setName("TheDisplay");
-// 	}
+	// instantiate the display
+	TheDisplay = createGameDisplay();
+	if( TheDisplay ) {
+		TheDisplay->init();
+ 		TheDisplay->setName("TheDisplay");
+	}
 	
 // 	TheHeaderTemplateManager = MSGNEW("GameClientSubsystem") HeaderTemplateManager;
 // 	if(TheHeaderTemplateManager){
@@ -358,12 +358,12 @@ void GameClient::init( void )
 //  		TheIMEManager->setName("TheIMEManager");
 // 	}
 
-// 	// create the shell
-// 	TheShell = MSGNEW("GameClientSubsystem") Shell;
-// 	if( TheShell ) {
-// 		TheShell->init();
-//  		TheShell->setName("TheShell");
-// 	}
+	// // create the shell
+	// TheShell = MSGNEW("GameClientSubsystem") Shell;
+	// if( TheShell ) {
+	// 	TheShell->init();
+ 	// 	TheShell->setName("TheShell");
+	// }
 
 // 	// instantiate the in-game user interface
 // 	TheInGameUI = createInGameUI();
@@ -467,7 +467,7 @@ void GameClient::reset( void )
 // 	}
 // 	m_drawableList = NULL;
 
-// 	TheDisplay->reset();
+	TheDisplay->reset();
 // 	TheTerrainVisual->reset();
 // 	TheRayEffects->reset();
 	TheVideoPlayer->reset();
@@ -516,38 +516,34 @@ void GameClient::update( void )
 // 	// create the FRAME_TICK message
 // 	GameMessage *frameMsg = TheMessageStream->appendMessage( GameMessage::MSG_FRAME_TICK );
 // 	frameMsg->appendTimestampArgument( getFrame() );
-// 	static Bool playSizzle = FALSE;
-// 	// We need to show the movie first.
-// 	if(TheGlobalData->m_playIntro && !TheDisplay->isMoviePlaying())
-// 	{
-// 		if(TheGameLODManager && TheGameLODManager->didMemPass())
-// 			TheDisplay->playLogoMovie("EALogoMovie", 5000, 3000);
-// 		else
-// 			TheDisplay->playLogoMovie("EALogoMovie640", 5000, 3000);
-// 		TheWritableGlobalData->m_playIntro = FALSE;
-// 		TheWritableGlobalData->m_afterIntro = TRUE;
-// 		playSizzle = TRUE;
-// 	}
-	if (TheGlobalData->m_data.m_playIntro) {
-		TheVideoPlayer->open("EALogoMovie640");
+	static Bool playSizzle = FALSE;
+	// We need to show the movie first.
+	if (TheGlobalData->m_data.m_playIntro && !TheDisplay->isMoviePlaying())
+	{
+		// if(TheGameLODManager && TheGameLODManager->didMemPass())
+			TheDisplay->playLogoMovie("EALogoMovie", 5000, 3000);
+		// else
+			// TheDisplay->playLogoMovie("EALogoMovie640", 5000, 3000);
 		TheWritableGlobalData->m_data.m_playIntro = FALSE;
 		TheWritableGlobalData->m_data.m_afterIntro = TRUE;
+		// playSizzle = TRUE;
 	}
 
-// 	//Initial Game Codition.  We must show the movie first and then we can display the shell	
-// 	if(TheGlobalData->m_afterIntro && !TheDisplay->isMoviePlaying())
-// 	{
-// 		if( playSizzle && TheGlobalData->m_playSizzle )
-// 		{
-// 			TheWritableGlobalData->m_allowExitOutOfMovies = TRUE;
-// 			if(TheGameLODManager && TheGameLODManager->didMemPass())
-// 				TheDisplay->playMovie("Sizzle");
-// 			else
-// 				TheDisplay->playMovie("Sizzle640");
-// 			playSizzle = FALSE;
-// 		}
-// 		else
-// 		{
+	//Initial Game Codition.  We must show the movie first and then we can display the shell	
+	if(TheGlobalData->m_data.m_afterIntro && !TheDisplay->isMoviePlaying())
+	{
+		if( playSizzle && TheGlobalData->m_data.m_playSizzle )
+		{
+			TheWritableGlobalData->m_data.m_allowExitOutOfMovies = TRUE;
+			TheDisplay->playLogoMovie("EALogoMovie", 5000, 3000);
+			// if(TheGameLODManager && TheGameLODManager->didMemPass())
+				// TheDisplay->playMovie("Sizzle");
+			// else
+				// TheDisplay->playMovie("Sizzle640");
+			playSizzle = FALSE;
+		}
+		else
+		{
 // 			TheWritableGlobalData->m_breakTheMovie = TRUE;
 // 			TheWritableGlobalData->m_allowExitOutOfMovies = TRUE;
 
@@ -582,9 +578,9 @@ void GameClient::update( void )
 
 // 			TheShell->showShellMap(TRUE);
 // 			TheShell->showShell();
-// 			TheWritableGlobalData->m_afterIntro = FALSE;
-// 		}
-// 	}
+			TheWritableGlobalData->m_data.m_afterIntro = FALSE;
+		}
+	}
 
 // 	//Update snow particles.
 // 	if (TheSnowManager)
@@ -625,17 +621,17 @@ void GameClient::update( void )
 //       TheInGameUI->setCameraTrackingDrawable( FALSE );
 //   }
 
-// 	if(TheGlobalData->m_playIntro || TheGlobalData->m_afterIntro)
-// 	{
-// 		// redraw all views, update the GUI
-// 		{
-// 			TheDisplay->DRAW();
-// 		}
-// 		{
-// 			TheDisplay->UPDATE();
-// 		}
-// 		return;
-// 	}
+	if(TheGlobalData->m_data.m_playIntro || TheGlobalData->m_data.m_afterIntro)
+	{
+		// redraw all views, update the GUI
+		{
+			TheDisplay->DRAW();
+		}
+		{
+			TheDisplay->UPDATE();
+		}
+		// return;
+	}
 
 // 	// update the window system itself
 // 	{

@@ -26,6 +26,7 @@
 #define __LINUXGAMECLIENT_H
 
 #include "GameClient/GameClient.h"
+#include "LinuxDevice/GameClient/LinuxDisplay.h"
 #include "LinuxDevice/FFmpeg/FFmpegVideoPlayer.h"
 
 class LinuxGameClient: public GameClient {
@@ -50,7 +51,7 @@ protected:
    virtual Mouse *createMouse(void);            ///< factory for the mouse
 
    /// factory for creating TheDisplay
-   virtual Display *createGameDisplay(void) { printf("Creating NULL GameDisplay!\n"); return nullptr; }
+   virtual Display *createGameDisplay(void) { return NEW LinuxDisplay; }
 
    /// factory for creating TheInGameUI
    virtual InGameUI *createInGameUI(void) { printf("Creating NULL InGameUI!\n"); return nullptr; }	

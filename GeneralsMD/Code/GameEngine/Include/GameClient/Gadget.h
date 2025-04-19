@@ -88,7 +88,7 @@ enum
 };
 
 // Gadget window styles, keep in same order as WindowStyleNames[]
-enum
+enum: UnsignedInt
 {
 						
 	GWS_PUSH_BUTTON				= 0x00000001,

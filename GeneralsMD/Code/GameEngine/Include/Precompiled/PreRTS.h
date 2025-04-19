@@ -44,7 +44,7 @@ class STLSpecialAlloc;
 // #include <atlbase.h>
 // #include <windows.h>
 
-// #include <assert.h>
+#include <cassert>
 #include <ctype.h>
 // #include <direct.h>
 // #include <EXCPT.H>

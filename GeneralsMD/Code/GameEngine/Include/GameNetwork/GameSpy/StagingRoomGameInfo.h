@@ -99,6 +99,11 @@ private:
 
 public:
 	GameSpyStagingRoom();
+
+	// No copies allowed!
+	GameSpyStagingRoom(const GameSpyStagingRoom&) = delete;
+	GameSpyStagingRoom& operator=(const GameSpyStagingRoom&) = delete;
+
 	virtual void reset( void );
 
 	void cleanUpSlotPointers(void);

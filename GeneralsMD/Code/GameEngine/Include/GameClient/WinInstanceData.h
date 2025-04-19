@@ -106,6 +106,9 @@ public:
 	WinInstanceData( void );  ///< constructor automatically runs init()
 	virtual ~WinInstanceData( void );
 
+	WinInstanceData(const WinInstanceData&);
+	WinInstanceData& operator=(const WinInstanceData&);
+
 	void init( void );  ///< initialize default values if desired
 
 
@@ -138,44 +141,47 @@ public:
 	really should be protected and have the rest of the code use access
 	functions to edit them */
 
-  Int m_id;								            // Id of the window (used mainly for scripts)
-  Int m_state;                 // Flags indicating state of window
-  UnsignedInt m_style;         // Flags indicating style of window
-	UnsignedInt m_status;	       // Status bits for this window (mirrored in GameWindow)
-  GameWindow *m_owner;
+	Int m_id {};								            // Id of the window (used mainly for scripts)
+	Int m_state {};                 // Flags indicating state of window
+	UnsignedInt m_style {};         // Flags indicating style of window
+	UnsignedInt m_status {};	       // Status bits for this window (mirrored in GameWindow)
+	GameWindow *m_owner {};
 
-	WinDrawData m_enabledDrawData[ MAX_DRAW_DATA ];  ///< image/color info for enabled state
-	WinDrawData m_disabledDrawData[ MAX_DRAW_DATA ];  ///< image/color info for disabled state
-	WinDrawData m_hiliteDrawData[ MAX_DRAW_DATA ];  ///< image/color info for hilite state
+	WinDrawData m_enabledDrawData[ MAX_DRAW_DATA ] {};  ///< image/color info for enabled state
+	WinDrawData m_disabledDrawData[ MAX_DRAW_DATA ] {};  ///< image/color info for disabled state
+	WinDrawData m_hiliteDrawData[ MAX_DRAW_DATA ] {};  ///< image/color info for hilite state
 
-	TextDrawData m_enabledText;   ///< enabled text colors
-	TextDrawData m_disabledText;  ///< disabled text colors
-	TextDrawData m_hiliteText;		///< hilite text colors
-	TextDrawData m_imeCompositeText;///< IME composite text colors
+	TextDrawData m_enabledText {};   ///< enabled text colors
+	TextDrawData m_disabledText {};  ///< disabled text colors
+	TextDrawData m_hiliteText {};		///< hilite text colors
+	TextDrawData m_imeCompositeText {};///< IME composite text colors
 
-  ICoord2D	m_imageOffset;		 // dx, dy for blitting bkgnd images
+	ICoord2D	m_imageOffset {};		 // dx, dy for blitting bkgnd images
 
-	GameFont *m_font;								 // font which this window should use
+	GameFont *m_font {};								 // font which this window should use
 
-	AsciiString m_textLabelString;  ///< text label from window file if present
-	AsciiString m_decoratedNameString;  ///< window text name from GUIEdit
-	AsciiString m_tooltipString;  ///< tooltip Label from window file if present
+	AsciiString m_textLabelString {};  ///< text label from window file if present
+	AsciiString m_decoratedNameString {};  ///< window text name from GUIEdit
+	AsciiString m_tooltipString {};  ///< tooltip Label from window file if present
 
-	AsciiString m_headerTemplateName;		///< name of the template we're going to base our font off of.
+	AsciiString m_headerTemplateName {};		///< name of the template we're going to base our font off of.
 
-  Int m_tooltipDelay;           ///< desired delay before showing tooltip
+	Int m_tooltipDelay {};           ///< desired delay before showing tooltip
 
-	DisplayString *m_text;				 ///< generic text for any window to display
-	DisplayString *m_tooltip;		 ///< tooltip for display
+	DisplayString *m_text {};				 ///< generic text for any window to display
+	DisplayString *m_tooltip {};		 ///< tooltip for display
 	
 	//NOTE Video Buffer cannot be transfered to another window.
-	VideoBuffer *m_videoBuffer;			///< Each window can be made to play a video in it.
+	VideoBuffer *m_videoBuffer {};			///< Each window can be made to play a video in it.
 	
 // NOTE if you add data to this make sure you update winSetInstanceData()
 // NOTE if you add data to this make sure you update winSetInstanceData()
 // NOTE if you add data to this make sure you update winSetInstanceData()
 
 protected:
+
+private:
+	void copyData(const WinInstanceData& source);
 
 };
 
@@ -184,7 +190,7 @@ protected:
 ///////////////////////////////////////////////////////////////////////////////
 inline UnsignedInt WinInstanceData::getStyle( void ) { return m_style; }
 inline UnsignedInt WinInstanceData::getStatus( void ) { return m_status; }
-inline UnsignedInt WinInstanceData::getState( void ) { return m_state; }  
+inline UnsignedInt WinInstanceData::getState( void ) { return static_cast<UnsignedInt>(m_state); }  
 inline GameWindow *WinInstanceData::getOwner( void ) { return m_owner; }  
 inline GameFont		*WinInstanceData::getFont( void ) { return m_font; }    
 inline DisplayString *WinInstanceData::getTextDisplayString( void ) { return m_text; }

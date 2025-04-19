@@ -22,7 +22,7 @@
 // $Revision: #1 $
 // $DateTime: 2003/07/09 10:57:23 $
 //
-// ©2003 Electronic Arts
+// (c) 2003 Electronic Arts
 //
 // Result function interface and result functions
 //////////////////////////////////////////////////////////////////////////////
@@ -40,6 +40,8 @@
 */
 class ProfileResultInterface
 {
+  ~ProfileResultInterface() {}
+
   // no copying
   ProfileResultInterface(const ProfileResultInterface&);
   ProfileResultInterface& operator=(const ProfileResultInterface&);

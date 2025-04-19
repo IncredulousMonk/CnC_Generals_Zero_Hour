@@ -39,10 +39,12 @@
 #include "GameClient/AnimateWindowManager.h"
 #include "GameClient/ShellMenuScheme.h"
 #include "GameLogic/GameLogic.h"
-#include "GameNetwork/GameSpyOverlay.h"
-#include "GameNetwork/GameSpy/PeerDefsImplementation.h"
+// #include "GameNetwork/GameSpyOverlay.h"
+// #include "GameNetwork/GameSpy/PeerDefsImplementation.h"
 
 #include <rts/profile.h>
+
+#include <chrono>
 
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 Shell *TheShell = NULL;  ///< the shell singleton definition
@@ -177,15 +179,17 @@ void Shell::reset( void )
 //-------------------------------------------------------------------------------------------------
 void Shell::update( void )
 {
-	static Int lastUpdate = timeGetTime();
+
+	static auto lastUpdate {std::chrono::steady_clock::now()};
 	static const Int shellUpdateDelay = 30;  // try to update 30 frames a second
-	Int now = timeGetTime();
+	auto now {std::chrono::steady_clock::now()};
 	
 	//
-	// we keep the shell updates fixed in time so that we can write consitent animation
+	// we keep the shell updates fixed in time so that we can write consistent animation
 	// speeds during the screen update functions
 	//
-	if( now - lastUpdate >= ((1000.0f / shellUpdateDelay ) - 1) )
+	std::chrono::duration<double, std::milli> elapsed {now - lastUpdate};
+	if(elapsed.count() >= ((1000.0f / shellUpdateDelay ) - 1) )
 	{
 
 		// run the updates for every window layout on the stack
@@ -196,7 +200,7 @@ void Shell::update( void )
 			m_screenStack[ i ]->runUpdate( NULL );
 
 		}  // end for i
-		if(TheGlobalData->m_shellMapOn && m_shellMapOn &&m_background)
+		if(TheGlobalData->m_data.m_shellMapOn && m_shellMapOn &&m_background)
 		{
 			
 			m_background->destroyWindows();
@@ -267,8 +271,8 @@ void Shell::push( AsciiString filename, Bool shutdownImmediate )
 	// sanity
 	if( filename.isEmpty() )
 		return;
-	if(TheGameSpyInfo)
-			GameSpyCloseAllOverlays();
+	// if(TheGameSpyInfo)
+	// 		GameSpyCloseAllOverlays();
 
 
 #ifdef DEBUG_LOGGING
@@ -330,8 +334,8 @@ void Shell::push( AsciiString filename, Bool shutdownImmediate )
 void Shell::pop( void )
 {
 	WindowLayout *screen = top();
-	if(TheGameSpyInfo)
-			GameSpyCloseAllOverlays();
+	// if(TheGameSpyInfo)
+	// 		GameSpyCloseAllOverlays();
 
 
 	// sanity
@@ -408,9 +412,9 @@ void Shell::popImmediate( void )
 //-------------------------------------------------------------------------------------------------
 void Shell::showShell( Bool runInit )
 {
-	DEBUG_LOG(("Shell:showShell() - %s (%s)\n", TheGlobalData->m_initialFile.str(), (top())?top()->getFilename().str():"no top screen"));
+	DEBUG_LOG(("Shell:showShell() - %s (%s)\n", TheGlobalData->m_data.m_initialFile.str(), (top())?top()->getFilename().str():"no top screen"));
 
-	if(!TheGlobalData->m_initialFile.isEmpty())
+	if(!TheGlobalData->m_data.m_initialFile.isEmpty())
 	{
 		return;
 	}
@@ -458,7 +462,7 @@ void Shell::showShell( Bool runInit )
 	//	}
 	
 
-	if (!TheGlobalData->m_shellMapOn && m_screenCount == 0)
+	if (!TheGlobalData->m_data.m_shellMapOn && m_screenCount == 0)
   {
 #ifdef _PROFILE
     Profile::StopRange("init");
@@ -471,44 +475,46 @@ void Shell::showShell( Bool runInit )
 
 void Shell::showShellMap(Bool useShellMap )
 {
-	// we don't want any of this to show if we're loading straight into a file
-	if(TheGlobalData->m_initialFile.isNotEmpty() || !TheGameLogic )
-		return;
-	if(useShellMap && TheGlobalData->m_shellMapOn)
-	{
-		// we're already in a shell game, return
-		if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
-			return;
-		// we're in some other kind of game, clear it out foo!
-		if(TheGameLogic->isInGame())
-			TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
+	(void) useShellMap;
+	// FIXME: Uncomment once TheGameLogic is implemented.
+	// // we don't want any of this to show if we're loading straight into a file
+	// if(TheGlobalData->m_data.m_initialFile.isNotEmpty() || !TheGameLogic )
+	// 	return;
+	// if(useShellMap && TheGlobalData->m_data.m_shellMapOn)
+	// {
+	// 	// we're already in a shell game, return
+	// 	if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
+	// 		return;
+	// 	// we're in some other kind of game, clear it out foo!
+	// 	if(TheGameLogic->isInGame())
+	// 		TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
 
-		TheWritableGlobalData->m_pendingFile = TheGlobalData->m_shellMapName;
-		InitGameLogicRandom(0);
-		GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_NEW_GAME );
-		msg->appendIntegerArgument(GAME_SHELL);
-		m_shellMapOn = TRUE;
-	}
-	else
-	{
-		// we're in a shell game, stop it!
-		if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
-			TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
+	// 	TheWritableGlobalData->m_data.m_pendingFile = TheGlobalData->m_data.m_shellMapName;
+	// 	InitGameLogicRandom(0);
+	// 	GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_NEW_GAME );
+	// 	msg->appendIntegerArgument(GAME_SHELL);
+	// 	m_shellMapOn = TRUE;
+	// }
+	// else
+	// {
+	// 	// we're in a shell game, stop it!
+	// 	if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
+	// 		TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
 
-		// if the shell is active,we need a background
-		if(!m_isShellActive)
-			return;
-		if(!m_background)
-			m_background = TheWindowManager->winCreateLayout("Menus/BlankWindow.wnd");
+	// 	// if the shell is active,we need a background
+	// 	if(!m_isShellActive)
+	// 		return;
+	// 	if(!m_background)
+	// 		m_background = TheWindowManager->winCreateLayout("Menus/BlankWindow.wnd");
 		
-		DEBUG_ASSERTCRASH(m_background,("We Couldn't Load Menus/BlankWindow.wnd"));
-		m_background->getFirstWindow()->winSetStatus(WIN_STATUS_IMAGE);
-		m_background->hide(FALSE);
-		if (top())
-			top()->bringForward();
-		m_shellMapOn = FALSE;
-		m_clearBackground = FALSE;
-	}
+	// 	DEBUG_ASSERTCRASH(m_background,("We Couldn't Load Menus/BlankWindow.wnd"));
+	// 	m_background->getFirstWindow()->winSetStatus(WIN_STATUS_IMAGE);
+	// 	m_background->hide(FALSE);
+	// 	if (top())
+	// 		top()->bringForward();
+	// 	m_shellMapOn = FALSE;
+	// 	m_clearBackground = FALSE;
+	// }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -606,8 +612,8 @@ void Shell::unlinkScreen( WindowLayout *screen )
 //-------------------------------------------------------------------------------------------------
 void Shell::doPush( AsciiString layoutFile )
 {
-	if(TheGameSpyInfo)
-			GameSpyCloseAllOverlays();
+	// if(TheGameSpyInfo)
+	// 		GameSpyCloseAllOverlays();
 	WindowLayout *newScreen;
 	
 	// create new layout and load from window manager
@@ -669,7 +675,7 @@ void Shell::doPop( Bool impendingPush )
 	*       short circuiting the shutdown logic because there is no layout
 	*				to actually shutdown (ie, the stack is empty and we push) */
 //-------------------------------------------------------------------------------------------------
-void Shell::shutdownComplete( WindowLayout *screen, Bool impendingPush )
+void Shell::shutdownComplete( WindowLayout *, Bool impendingPush )
 {
 
 	// there should never be a pending push AND pop operation
@@ -724,7 +730,7 @@ void Shell::registerWithAnimateManager( GameWindow *win, AnimTypes animType, Boo
 		DEBUG_CRASH(("We called registerWithAnimateManager and we don't have an Animate Manager created"));
 		return;
 	}
-	if (TheGlobalData->m_animateWindows)
+	if (TheGlobalData->m_data.m_animateWindows)
 		m_animateWindowManager->registerGameWindow(win,animType,needsToFinish, 500,delayMS);
 }
 
@@ -739,7 +745,7 @@ Bool Shell::isAnimFinished( void )
 		DEBUG_CRASH(("We called registerWithAnimateManager and we don't have an Animate Manager created"));
 		return TRUE;
 	}
-	if (TheGlobalData->m_animateWindows)
+	if (TheGlobalData->m_data.m_animateWindows)
 		return m_animateWindowManager->isFinished();
 	else
 		return TRUE;
@@ -752,7 +758,7 @@ void Shell::reverseAnimatewindow( void )
 		DEBUG_CRASH(("We called registerWithAnimateManager and we don't have an Animate Manager created"));
 		return;
 	}
-	if (TheGlobalData->m_animateWindows)
+	if (TheGlobalData->m_data.m_animateWindows)
 		m_animateWindowManager->reverseAnimateWindow();
 }
 
@@ -763,7 +769,7 @@ Bool Shell::isAnimReversed( void )
 		DEBUG_CRASH(("We called registerWithAnimateManager and we don't have an Animate Manager created"));
 		return TRUE;
 	}
-	if (TheGlobalData->m_animateWindows)
+	if (TheGlobalData->m_data.m_animateWindows)
 		return m_animateWindowManager->isReversed();
 	else
 		return TRUE;

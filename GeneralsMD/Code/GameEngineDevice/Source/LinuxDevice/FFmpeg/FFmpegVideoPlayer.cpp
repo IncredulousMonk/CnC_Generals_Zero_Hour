@@ -21,7 +21,8 @@
 ///////////////////////////////////////////////////////
 
 #include "LinuxDevice/FFmpeg/FFmpegVideoPlayer.h"
- 
+#include "Common/LocalFileSystem.h"
+
 //----------------------------------------------------------------------------
 //         Defines                                                         
 //----------------------------------------------------------------------------
@@ -29,7 +30,8 @@
 #define VIDEO_LANG_PATH_FORMAT "../assets/Data/%s/Movies/%s.%s"
 // #define VIDEO_LANG_PATH_FORMAT "Data/%s/Movies/%s.%s"
 #define VIDEO_PATH "Data\\Movies"
-#define VIDEO_EXT "BIK"
+#define VIDEO_EXT_1 "bik"
+#define VIDEO_EXT_2 "BIK" // Movies have lower case extension, except for the logo movie, which is upper case.  Grr!
 
 extern SDL_Renderer* renderer; // FIXME: How to handle this?
 
@@ -132,7 +134,7 @@ VideoStreamInterface* FFmpegVideoPlayer::createStream(FFmpegVideo* video)
 // FFmpegVideoPlayer::open
 //============================================================================
 
-VideoStreamInterface* FFmpegVideoPlayer::open( AsciiString movieTitle )
+VideoStreamInterface* FFmpegVideoPlayer::open(AsciiString movieTitle)
 {
    VideoStreamInterface* stream = NULL;
 
@@ -155,7 +157,10 @@ VideoStreamInterface* FFmpegVideoPlayer::open( AsciiString movieTitle )
       char localizedFilePath[PATH_MAX] {};
       // sprintf( localizedFilePath, VIDEO_LANG_PATH_FORMAT, GetRegistryLanguage().str(), pVideo->m_filename.str(), VIDEO_EXT );
       const char* language {"English"};
-      sprintf( localizedFilePath, VIDEO_LANG_PATH_FORMAT, language, pVideo->m_filename.str(), VIDEO_EXT );
+      sprintf(localizedFilePath, VIDEO_LANG_PATH_FORMAT, language, pVideo->m_filename.str(), VIDEO_EXT_1);
+      if (!TheLocalFileSystem->doesFileExist(localizedFilePath)) {
+         sprintf(localizedFilePath, VIDEO_LANG_PATH_FORMAT, language, pVideo->m_filename.str(), VIDEO_EXT_2);
+      }
       FFmpegVideo* video = NEW FFmpegVideo {};
       if (video->open(localizedFilePath, renderer, 0, 0, 800, 600)) { // FIXME: Hard-coded size is bad.
          DEBUG_ASSERTLOG(!video, ("opened localized movie file %s\n", localizedFilePath));
@@ -178,7 +183,7 @@ VideoStreamInterface* FFmpegVideoPlayer::open( AsciiString movieTitle )
 // FFmpegVideoPlayer::load
 //============================================================================
 
-VideoStreamInterface*	FFmpegVideoPlayer::load( AsciiString movieTitle )
+VideoStreamInterface* FFmpegVideoPlayer::load(AsciiString movieTitle)
 {
    return open(movieTitle); // load() used to have the same body as open(), so I'm combining them.  Munkee.
 }
@@ -208,7 +213,7 @@ FFmpegVideoStream::~FFmpegVideoStream() {
 
 void FFmpegVideoStream::update( void )
 {
-   if (m_video) {
+   if (m_video && !m_video_finished) {
       double remaining_time {0.0};
       m_video_finished = !m_video->update(&remaining_time);
    }

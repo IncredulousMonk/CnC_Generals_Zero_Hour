@@ -60,8 +60,8 @@ Display::Display()
 	m_cinematicTextFrames = 0;  
 	m_movieHoldTime	= -1;
 	m_copyrightHoldTime = -1;
-	m_elapsedMovieTime = 0;
-	m_elapsedCopywriteTime = 0;
+	m_movieStartTime = std::chrono::steady_clock::time_point::min();
+	m_elapsedCopywriteTime = std::chrono::steady_clock::time_point::min();
 	m_copyrightDisplayString = NULL;
 
 	// Added by Sadullah Nader
@@ -143,24 +143,25 @@ void Display::draw( void )
 }
 
 /** Sets screen resolution/mode*/
-Bool Display::setDisplayMode( UnsignedInt xres, UnsignedInt yres, UnsignedInt bitdepth, Bool windowed )
+Bool Display::setDisplayMode( UnsignedInt xres, UnsignedInt yres, UnsignedInt, Bool )
 {
-	//Get old values
-	UnsignedInt oldDisplayHeight=getHeight();
-	UnsignedInt oldDisplayWidth=getWidth();
-	Int oldViewWidth=TheTacticalView->getWidth();
-	Int oldViewHeight=TheTacticalView->getHeight();
-	Int oldViewOriginX,oldViewOriginY;
-	TheTacticalView->getOrigin(&oldViewOriginX,&oldViewOriginY);
+	// FIXME: Uncomment when TheTacticalView is implemented.
+	// //Get old values
+	// UnsignedInt oldDisplayHeight=getHeight();
+	// UnsignedInt oldDisplayWidth=getWidth();
+	// Int oldViewWidth=TheTacticalView->getWidth();
+	// Int oldViewHeight=TheTacticalView->getHeight();
+	// Int oldViewOriginX,oldViewOriginY;
+	// TheTacticalView->getOrigin(&oldViewOriginX,&oldViewOriginY);
 
 	setWidth(xres);
 	setHeight(yres);
 
-	//Adjust view to match previous proportions
-	TheTacticalView->setWidth((Real)oldViewWidth/(Real)oldDisplayWidth*(Real)xres);
-	TheTacticalView->setHeight((Real)oldViewHeight/(Real)oldDisplayHeight*(Real)yres);
-	TheTacticalView->setOrigin((Real)oldViewOriginX/(Real)oldDisplayWidth*(Real)xres,
-	(Real)oldViewOriginY/(Real)oldDisplayHeight*(Real)yres);
+	// //Adjust view to match previous proportions
+	// TheTacticalView->setWidth((Real)oldViewWidth/(Real)oldDisplayWidth*(Real)xres);
+	// TheTacticalView->setHeight((Real)oldViewHeight/(Real)oldDisplayHeight*(Real)yres);
+	// TheTacticalView->setOrigin((Real)oldViewOriginX/(Real)oldDisplayWidth*(Real)xres,
+	// (Real)oldViewOriginY/(Real)oldDisplayHeight*(Real)yres);
 	return TRUE;
 }
 
@@ -173,9 +174,10 @@ void Display::setWidth( UnsignedInt width )
 	// set the new width
 	m_width = width;
 
-	// set the new mouse limits
-	if( TheMouse )
-		TheMouse->setMouseLimits();
+	// FIXME: Uncomment when TheMouse is implemented.
+	// // set the new mouse limits
+	// if( TheMouse )
+	// 	TheMouse->setMouseLimits();
 
 }  // end setWidth
 
@@ -188,9 +190,10 @@ void Display::setHeight( UnsignedInt height )
 	// se the new height
 	m_height = height;
 
-	// set the new mouse limits
-	if( TheMouse )
-		TheMouse->setMouseLimits();
+	// FIXME: Uncomment when TheMouse is implemented.
+	// // set the new mouse limits
+	// if( TheMouse )
+	// 	TheMouse->setMouseLimits();
 
 }  // end setHeight
 
@@ -215,17 +218,17 @@ void Display::playLogoMovie( AsciiString movieName, Int minMovieLength, Int minC
 	m_currentlyPlayingMovie = movieName;
 	m_movieHoldTime = minMovieLength;
 	m_copyrightHoldTime = minCopyrightLength;
-	m_elapsedMovieTime = timeGetTime();  // we're using time get time becuase legal want's actual "Seconds"
+	m_movieStartTime = std::chrono::steady_clock::now();  // we're using time get time because legal want's actual "Seconds"
 	
-	m_videoBuffer = createVideoBuffer();
-	if (	m_videoBuffer == NULL || 
-				!m_videoBuffer->allocate(	m_videoStream->width(), 
-													m_videoStream->height())
-		)
-	{
-		stopMovie();
-		return;
-	}
+	// m_videoBuffer = createVideoBuffer();
+	// if (m_videoBuffer == NULL || 
+	// 		!m_videoBuffer->allocate(static_cast<UnsignedInt>(m_videoStream->width()), 
+	// 			static_cast<UnsignedInt>(m_videoStream->height()))
+	// 	)
+	// {
+	// 	stopMovie();
+	// 	return;
+	// }
 	
 }
 
@@ -249,15 +252,15 @@ void Display::playMovie( AsciiString movieName)
 	
 	m_currentlyPlayingMovie = movieName;
 
-	m_videoBuffer = createVideoBuffer();
-	if (	m_videoBuffer == NULL || 
-				!m_videoBuffer->allocate(	m_videoStream->width(), 
-													m_videoStream->height())
-		)
-	{
-		stopMovie();
-		return;
-	}
+	// m_videoBuffer = createVideoBuffer();
+	// if (m_videoBuffer == NULL || 
+	// 		!m_videoBuffer->allocate(static_cast<UnsignedInt>(m_videoStream->width()), 
+	// 			static_cast<UnsignedInt>(m_videoStream->height()))
+	// 	)
+	// {
+	// 	stopMovie();
+	// 	return;
+	// }
 	
 }
 
@@ -267,8 +270,8 @@ void Display::playMovie( AsciiString movieName)
 
 void Display::stopMovie( void )
 {
-	delete m_videoBuffer;
-	m_videoBuffer = NULL;
+	// delete m_videoBuffer;
+	// m_videoBuffer = NULL;
 
 	if ( m_videoStream )
 	{
@@ -280,11 +283,11 @@ void Display::stopMovie( void )
 		//TheScriptEngine->notifyOfCompletedVideo(m_currentlyPlayingMovie); // Removing this sync-error cause MDC
 		m_currentlyPlayingMovie = AsciiString::TheEmptyString;
 	}
-	if(m_copyrightDisplayString)
-	{
-		TheDisplayStringManager->freeDisplayString(m_copyrightDisplayString);
-		m_copyrightDisplayString = NULL;
-	}
+	// if(m_copyrightDisplayString)
+	// {
+	// 	TheDisplayStringManager->freeDisplayString(m_copyrightDisplayString);
+	// 	m_copyrightDisplayString = NULL;
+	// }
 	m_copyrightHoldTime = -1;
 	m_movieHoldTime = -1;
 }
@@ -295,47 +298,52 @@ void Display::stopMovie( void )
 
 void Display::update( void )
 {
-	if ( m_videoStream && m_videoBuffer )
-	{
-		if ( m_videoStream->isFrameReady())
-		{
-			m_videoStream->frameDecompress();
-			m_videoStream->frameRender( m_videoBuffer );
-			if( m_videoStream->frameIndex() != m_videoStream->frameCount() - 1)
-				m_videoStream->frameNext();
-			else if( m_copyrightHoldTime >= 0 ||m_movieHoldTime >= 0 )
-			{
-				if( m_elapsedCopywriteTime == 0 && m_elapsedCopywriteTime >= 0)
-				{
-					//display the copyrighttext;		
-					if(m_copyrightDisplayString)
-						m_copyrightDisplayString->deleteInstance();
-					m_copyrightDisplayString = TheDisplayStringManager->newDisplayString();
-					m_copyrightDisplayString->setText(TheGameText->fetch("GUI:EACopyright"));
-					if (TheGlobalLanguageData && TheGlobalLanguageData->m_copyrightFont.name.isNotEmpty())
-					{	FontDesc	*fontdesc=&TheGlobalLanguageData->m_copyrightFont;
-						m_copyrightDisplayString->setFont(TheFontLibrary->getFont(fontdesc->name,
-							TheGlobalLanguageData->adjustFontSize(fontdesc->size),
-							fontdesc->bold));	
-					}
-					else
-						m_copyrightDisplayString->setFont(TheFontLibrary->getFont("Courier", 
-						TheGlobalLanguageData->adjustFontSize(12), TRUE));	
-					m_elapsedCopywriteTime = timeGetTime();
-				}
-				if(m_movieHoldTime + m_elapsedMovieTime < timeGetTime() && 
-						m_copyrightHoldTime + m_elapsedCopywriteTime < timeGetTime())
-				{
-					m_movieHoldTime = -1;
-					m_elapsedMovieTime = 0;
-					m_elapsedCopywriteTime = 0;
-					m_copyrightHoldTime = -1;
-				}
-			}
-			else
-			{
-				stopMovie();
-			}
+	// if ( m_videoStream && m_videoBuffer )
+	// {
+	// 	if ( m_videoStream->isFrameReady())
+	// 	{
+	// 		m_videoStream->frameDecompress();
+	// 		m_videoStream->frameRender( m_videoBuffer );
+	// 		if (m_videoStream->frameIndex() != m_videoStream->frameCount() - 1) {
+	// 			m_videoStream->frameNext();
+	// 		} else if (m_copyrightHoldTime >= 0 || m_movieHoldTime >= 0) {
+	// 			// MG: I don't think that this copyright display message thing works.
+	// 			// if (m_elapsedCopywriteTime == 0 && m_elapsedCopywriteTime >= 0) {
+	// 			// 	//display the copyrighttext;
+	// 			// 	if (m_copyrightDisplayString) {
+	// 			// 		m_copyrightDisplayString->deleteInstance();
+	// 			// 	}
+	// 			// 	m_copyrightDisplayString = TheDisplayStringManager->newDisplayString();
+	// 			// 	m_copyrightDisplayString->setText(TheGameText->fetch("GUI:EACopyright"));
+	// 			// 	if (TheGlobalLanguageData && TheGlobalLanguageData->m_copyrightFont.name.isNotEmpty())
+	// 			// 	{
+	// 			// 		FontDesc *fontdesc=&TheGlobalLanguageData->m_copyrightFont;
+	// 			// 		m_copyrightDisplayString->setFont(TheFontLibrary->getFont(fontdesc->name,
+	// 			// 			TheGlobalLanguageData->adjustFontSize(fontdesc->size),
+	// 			// 			fontdesc->bold));	
+	// 			// 	} else {
+	// 			// 		m_copyrightDisplayString->setFont(TheFontLibrary->getFont("Courier", 
+	// 			// 		TheGlobalLanguageData->adjustFontSize(12), TRUE));	
+	// 			// 	}
+	// 			// 	m_elapsedCopywriteTime = std::chrono::steady_clock::now();
+	// 			// }
+	// 			auto now {std::chrono::steady_clock::now()};
+	// 			std::chrono::duration<double, std::milli> movieElapsed {now - m_movieStartTime};
+	// 			if (m_movieHoldTime + m_copyrightHoldTime < movieElapsed.count()) {
+	// 				m_movieHoldTime = -1;
+	// 				m_movieStartTime = std::chrono::steady_clock::time_point::min();
+	// 				m_elapsedCopywriteTime = std::chrono::steady_clock::time_point::min();
+	// 				m_copyrightHoldTime = -1;
+	// 			}
+	// 		}
+	// 		else {
+	// 			stopMovie();
+	// 		}
+	// 	}
+	// }
+	if (m_videoStream) {
+		if (m_videoStream->isVideoFinished()) {
+			stopMovie();
 		}
 	}
 }
@@ -362,7 +370,8 @@ void Display::reset()
 
 Bool Display::isMoviePlaying(void)
 {
-	return m_videoStream != NULL && m_videoBuffer != NULL;
+	// return m_videoStream != NULL && m_videoBuffer != NULL;
+	return m_videoStream && !m_currentlyPlayingMovie.isEmpty();
 }
 
 //============================================================================

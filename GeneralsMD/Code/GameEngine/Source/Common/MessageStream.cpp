@@ -29,12 +29,12 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/MessageStream.h"
-#include "Common/Player.h"
-#include "Common/PlayerList.h"
-#include "Common/Recorder.h"
+// #include "Common/Player.h"
+// #include "Common/PlayerList.h"
+// #include "Common/Recorder.h"
 
-#include "GameClient/InGameUI.h"
-#include "GameLogic/GameLogic.h"
+// #include "GameClient/InGameUI.h"
+// #include "GameLogic/GameLogic.h"
 
 /// The singleton message stream for messages going to TheGameLogic
 MessageStream *TheMessageStream = NULL;
@@ -59,7 +59,8 @@ CommandList *TheCommandList = NULL;
  */
 GameMessage::GameMessage( GameMessage::Type type ) 
 { 
-	m_playerIndex = ThePlayerList->getLocalPlayer()->getPlayerIndex();
+	m_playerIndex = 0; // FIXME: Uncomment once ThePlayerList is implemented.
+	// m_playerIndex = ThePlayerList->getLocalPlayer()->getPlayerIndex();
 	m_type = type; 
 	m_argList = NULL;
 	m_argTail = NULL;
@@ -1001,74 +1002,75 @@ void MessageStream::removeTranslator( TranslatorID id )
 // ------------------------------------------------------------------------------------------------
 #if defined(_DEBUG) || defined(_INTERNAL)
 
-Bool isInvalidDebugCommand( GameMessage::Type t )
+Bool isInvalidDebugCommand( GameMessage::Type /*t*/ )
 {
-	// see if this is something that should be prevented in multiplayer games
-	// Don't reject this stuff in skirmish games.
-	if (TheGameLogic && !TheGameLogic->isInSkirmishGame() && 
-			(TheRecorder && TheRecorder->isMultiplayer() && TheRecorder->getMode() == RECORDERMODETYPE_RECORD))
-	{
-		switch (t)
-		{
-		case GameMessage::MSG_META_DEMO_SWITCH_TEAMS:
-		case GameMessage::MSG_META_DEMO_SWITCH_TEAMS_BETWEEN_CHINA_USA:
-		case GameMessage::MSG_META_DEMO_KILL_ALL_ENEMIES:
-		case GameMessage::MSG_META_DEMO_KILL_SELECTION:
-		case GameMessage::MSG_META_DEMO_TOGGLE_HURT_ME_MODE:
-		case GameMessage::MSG_META_DEMO_TOGGLE_HAND_OF_GOD_MODE:
-		case GameMessage::MSG_META_DEMO_TOGGLE_SPECIAL_POWER_DELAYS:
-		case GameMessage::MSG_META_DEMO_TIME_OF_DAY:
-		case GameMessage::MSG_META_DEMO_LOCK_CAMERA_TO_PLANES:
-		case GameMessage::MSG_META_DEMO_REMOVE_PREREQ:
-		case GameMessage::MSG_META_DEMO_INSTANT_BUILD:
-		case GameMessage::MSG_META_DEMO_FREE_BUILD:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT1:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT2:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT3:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT4:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT5:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT6:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT7:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT8:
-		case GameMessage::MSG_META_DEMO_RUNSCRIPT9:
-		case GameMessage::MSG_META_DEMO_ENSHROUD:
-		case GameMessage::MSG_META_DEMO_DESHROUD:
-		case GameMessage::MSG_META_DEBUG_GIVE_VETERANCY:
-		case GameMessage::MSG_META_DEBUG_TAKE_VETERANCY:
-//#pragma MESSAGE ("WARNING - DEBUG key in multiplayer!")
-		case GameMessage::MSG_META_DEMO_ADD_CASH:
-		case GameMessage::MSG_META_DEBUG_INCR_ANIM_SKATE_SPEED:
-		case GameMessage::MSG_META_DEBUG_DECR_ANIM_SKATE_SPEED:
-		case GameMessage::MSG_META_DEBUG_CYCLE_EXTENT_TYPE:
-		case GameMessage::MSG_META_DEMO_TOGGLE_RENDER:
-		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MAJOR:
-		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MAJOR_BIG:
-		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MAJOR:
-		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MAJOR_BIG:
-		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MINOR:
-		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MINOR_BIG:
-		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MINOR:
-		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MINOR_BIG:
-		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_HEIGHT:
-		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_HEIGHT_BIG:
-		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_HEIGHT:
-		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_HEIGHT_BIG:
-		case GameMessage::MSG_META_DEMO_KILL_AREA_SELECTION:
-		case GameMessage::MSG_DEBUG_KILL_SELECTION:
-		case GameMessage::MSG_DEBUG_HURT_OBJECT:
-		case GameMessage::MSG_DEBUG_KILL_OBJECT:
-		case GameMessage::MSG_META_DEMO_GIVE_SCIENCEPURCHASEPOINTS:
-		case GameMessage::MSG_META_DEMO_GIVE_ALL_SCIENCES:
-		case GameMessage::MSG_META_DEMO_GIVE_RANKLEVEL:
-		case GameMessage::MSG_META_DEMO_TAKE_RANKLEVEL:
-		case GameMessage::MSG_META_DEBUG_WIN:
+	// FIXME: Uncomment once TheGameLogic and TheRecorder are implemented.
+// 	// see if this is something that should be prevented in multiplayer games
+// 	// Don't reject this stuff in skirmish games.
+// 	if (TheGameLogic && !TheGameLogic->isInSkirmishGame() && 
+// 			(TheRecorder && TheRecorder->isMultiplayer() && TheRecorder->getMode() == RECORDERMODETYPE_RECORD))
+// 	{
+// 		switch (t)
+// 		{
+// 		case GameMessage::MSG_META_DEMO_SWITCH_TEAMS:
+// 		case GameMessage::MSG_META_DEMO_SWITCH_TEAMS_BETWEEN_CHINA_USA:
+// 		case GameMessage::MSG_META_DEMO_KILL_ALL_ENEMIES:
+// 		case GameMessage::MSG_META_DEMO_KILL_SELECTION:
+// 		case GameMessage::MSG_META_DEMO_TOGGLE_HURT_ME_MODE:
+// 		case GameMessage::MSG_META_DEMO_TOGGLE_HAND_OF_GOD_MODE:
+// 		case GameMessage::MSG_META_DEMO_TOGGLE_SPECIAL_POWER_DELAYS:
+// 		case GameMessage::MSG_META_DEMO_TIME_OF_DAY:
+// 		case GameMessage::MSG_META_DEMO_LOCK_CAMERA_TO_PLANES:
+// 		case GameMessage::MSG_META_DEMO_REMOVE_PREREQ:
+// 		case GameMessage::MSG_META_DEMO_INSTANT_BUILD:
+// 		case GameMessage::MSG_META_DEMO_FREE_BUILD:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT1:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT2:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT3:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT4:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT5:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT6:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT7:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT8:
+// 		case GameMessage::MSG_META_DEMO_RUNSCRIPT9:
+// 		case GameMessage::MSG_META_DEMO_ENSHROUD:
+// 		case GameMessage::MSG_META_DEMO_DESHROUD:
+// 		case GameMessage::MSG_META_DEBUG_GIVE_VETERANCY:
+// 		case GameMessage::MSG_META_DEBUG_TAKE_VETERANCY:
+// //#pragma MESSAGE ("WARNING - DEBUG key in multiplayer!")
+// 		case GameMessage::MSG_META_DEMO_ADD_CASH:
+// 		case GameMessage::MSG_META_DEBUG_INCR_ANIM_SKATE_SPEED:
+// 		case GameMessage::MSG_META_DEBUG_DECR_ANIM_SKATE_SPEED:
+// 		case GameMessage::MSG_META_DEBUG_CYCLE_EXTENT_TYPE:
+// 		case GameMessage::MSG_META_DEMO_TOGGLE_RENDER:
+// 		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MAJOR:
+// 		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MAJOR_BIG:
+// 		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MAJOR:
+// 		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MAJOR_BIG:
+// 		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MINOR:
+// 		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_MINOR_BIG:
+// 		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MINOR:
+// 		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_MINOR_BIG:
+// 		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_HEIGHT:
+// 		case GameMessage::MSG_META_DEBUG_INCREASE_EXTENT_HEIGHT_BIG:
+// 		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_HEIGHT:
+// 		case GameMessage::MSG_META_DEBUG_DECREASE_EXTENT_HEIGHT_BIG:
+// 		case GameMessage::MSG_META_DEMO_KILL_AREA_SELECTION:
+// 		case GameMessage::MSG_DEBUG_KILL_SELECTION:
+// 		case GameMessage::MSG_DEBUG_HURT_OBJECT:
+// 		case GameMessage::MSG_DEBUG_KILL_OBJECT:
+// 		case GameMessage::MSG_META_DEMO_GIVE_SCIENCEPURCHASEPOINTS:
+// 		case GameMessage::MSG_META_DEMO_GIVE_ALL_SCIENCES:
+// 		case GameMessage::MSG_META_DEMO_GIVE_RANKLEVEL:
+// 		case GameMessage::MSG_META_DEMO_TAKE_RANKLEVEL:
+// 		case GameMessage::MSG_META_DEBUG_WIN:
 
-			return true;
+// 			return true;
 
-		default:
-			break;
-		}
-	}
+// 		default:
+// 			break;
+// 		}
+// 	}
 	return false;
 }
 #endif

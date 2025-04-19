@@ -48,6 +48,10 @@ public:
 	Transport();
 	~Transport();
 
+	// No copies allowed!
+	Transport(const Transport&) = delete;
+	Transport& operator=(const Transport&) = delete;
+
 	Bool init( AsciiString ip, UnsignedShort port );
 	Bool init( UnsignedInt ip, UnsignedShort port );
 	void reset( void );

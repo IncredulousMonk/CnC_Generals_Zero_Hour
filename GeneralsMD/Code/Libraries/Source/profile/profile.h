@@ -22,7 +22,7 @@
 // $Revision: #4 $
 // $DateTime: 2003/08/14 13:43:29 $
 //
-// ©2003 Electronic Arts
+// (c) 2003 Electronic Arts
 //
 // Profiling module
 //////////////////////////////////////////////////////////////////////////////
@@ -37,15 +37,15 @@
 #endif
 
 // Define which libraries to use. 
-#if defined(_INTERNAL)
-#  pragma comment (lib,"profileinternal.lib")
-#elif defined(_DEBUG)
-#  pragma comment (lib,"profiledebug.lib")
-#elif defined(_PROFILE)
-#  pragma comment (lib,"profileprofile.lib")
-#else
-#  pragma comment (lib,"profile.lib")
-#endif
+// #if defined(_INTERNAL)
+// #  pragma comment (lib,"profileinternal.lib")
+// #elif defined(_DEBUG)
+// #  pragma comment (lib,"profiledebug.lib")
+// #elif defined(_PROFILE)
+// #  pragma comment (lib,"profileprofile.lib")
+// #else
+// #  pragma comment (lib,"profile.lib")
+// #endif
 
 // include all our public header files (use double quotes here)
 #include "profile_doc.h"
@@ -134,7 +134,7 @@ public:
 
     \return number of CPU clock cycles per second
   */
-  static _int64 GetClockCyclesPerSecond(void);
+  static int64_t GetClockCyclesPerSecond(void);
   
   /**
     \brief Add the given result function interface.
@@ -219,7 +219,7 @@ private:
   static FrameName *m_frameNames;
 
   /// CPU clock cycles/second
-  static _int64 m_clockCycles;
+  static int64_t m_clockCycles;
 };
 
 #endif // PROFILE_H

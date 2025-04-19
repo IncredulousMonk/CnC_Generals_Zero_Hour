@@ -58,6 +58,7 @@
 #include "GameClient/DisplayString.h"
 #include "GameClient/WinInstanceData.h"
 #include "GameClient/Color.h"
+#include <cassert>
 
 ///////////////////////////////////////////////////////////////////////////////
 // FORWARD REFERENCES /////////////////////////////////////////////////////////
@@ -75,7 +76,7 @@ enum { WIN_COLOR_UNDEFINED = GAME_COLOR_UNDEFINED };
 
 // WindowMsgData --------------------------------------------------------------
 //-----------------------------------------------------------------------------
-typedef UnsignedInt WindowMsgData;
+typedef UnsignedInt64 WindowMsgData;
 
 //-----------------------------------------------------------------------------
 enum WindowMsgHandledType { MSG_IGNORED, MSG_HANDLED };
@@ -152,7 +153,7 @@ enum WinInputReturnCode
 
 // Window status flags --------------------------------------------------------
 //-----------------------------------------------------------------------------
-enum
+enum: UnsignedInt
 {
 
 	// when you edit this, remember to edit WindowStatusNames[]
@@ -238,6 +239,10 @@ public:
 	GameWindow( void );
 	// already defined by MPO.
 	// virtual ~GameWindow( void );
+
+	// No copies allowed!
+	GameWindow(const GameWindow&) = delete;
+	GameWindow& operator=(const GameWindow&) = delete;
 
 	/// draw border for this window only, NO child windows or anything
 	virtual void winDrawBorder( void ) = 0;
@@ -391,38 +396,38 @@ protected:
 
 	// **************************************************************************
 
-	Int m_status;      									// Status bits for this window
-	ICoord2D  m_size;						     	  // Width and height of the window
-	IRegion2D m_region;      					  // Current region occupied by window.
+	UnsignedInt m_status {};      									// Status bits for this window
+	ICoord2D  m_size {};						     	  // Width and height of the window
+	IRegion2D m_region {};      					  // Current region occupied by window.
 																			// Low x,y is the window's origin
-	Int m_cursorX;											// window cursor X position if any
-	Int m_cursorY;											// window cursor Y position if any
+	Int m_cursorX {};											// window cursor X position if any
+	Int m_cursorY {};											// window cursor Y position if any
 
-	void *m_userData;										// User defined data area
-	WinInstanceData m_instData;					// Class data, varies by window type
-	void *m_inputData;								  // Client data
+	void *m_userData {};										// User defined data area
+	WinInstanceData m_instData {};					// Class data, varies by window type
+	// void *m_inputData {};								  // Client data
 
   // user defined callbacks
-	GameWinInputFunc			m_input;					///< callback for input
-	GameWinSystemFunc			m_system;					///< callback for system messages
-	GameWinDrawFunc				m_draw;						///< callback for drawing
-	GameWinTooltipFunc		m_tooltip;				///< callback for tooltip execution
+	GameWinInputFunc			m_input {};					///< callback for input
+	GameWinSystemFunc			m_system {};					///< callback for system messages
+	GameWinDrawFunc				m_draw {};						///< callback for drawing
+	GameWinTooltipFunc		m_tooltip {};				///< callback for tooltip execution
 
-	GameWindow *m_next, *m_prev;	// List of sibling windows
-	GameWindow *m_parent;				// Window which contains this window
-	GameWindow *m_child;			  // List of windows within this window
+	GameWindow *m_next {}, *m_prev {};	// List of sibling windows
+	GameWindow *m_parent {};				// Window which contains this window
+	GameWindow *m_child {};			  // List of windows within this window
 
 	//
 	// the following are for "layout screens" and ONLY apply to root/parent
 	// windows in a layout, any children of a window that is part of a layout
 	// does NOT have layout screen information
 	//
-	GameWindow *m_nextLayout;  ///< next in layout
-	GameWindow *m_prevLayout;  ///< prev in layout
-	WindowLayout *m_layout;    ///< layout this window is a part of
+	GameWindow *m_nextLayout {};  ///< next in layout
+	GameWindow *m_prevLayout {};  ///< prev in layout
+	WindowLayout *m_layout {};    ///< layout this window is a part of
 
 	// game window edit data for the GUIEditor only
-	GameWindowEditData *m_editData;
+	GameWindowEditData *m_editData {};
 
 };  // end class GameWindow
 
@@ -432,8 +437,8 @@ class ModalWindow : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ModalWindow, "ModalWindow" )
 public:
-	GameWindow *window;						// Pointer to Modal Window
-	ModalWindow *next;		// Next Window Pointer
+	GameWindow *window {};						// Pointer to Modal Window
+	ModalWindow *next {};		// Next Window Pointer
 
 };
 EMPTY_DTOR(ModalWindow)

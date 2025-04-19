@@ -42,7 +42,7 @@
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Snapshot;
-typedef Int Color;
+typedef UnsignedInt Color;
 enum ObjectID: int;
 enum DrawableID: int;
 enum KindOfType: int;

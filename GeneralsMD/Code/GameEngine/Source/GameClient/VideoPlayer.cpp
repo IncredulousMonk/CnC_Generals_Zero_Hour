@@ -215,12 +215,7 @@ void	VideoPlayer::update( void )
 	while ( stream )
 	{
 		stream->update();
-
-		VideoStreamInterface *current {stream};
 		stream = stream->next();
-		if (current->isVideoFinished()) {
-			current->close();
-		}
 	}
 
 }

@@ -40,7 +40,7 @@
 #include "Common/GameEngine.h"
 #include "Common/INI.h"
 #include "Common/INIException.h"
-// #include "Common/MessageStream.h"
+#include "Common/MessageStream.h"
 // #include "Common/ThingFactory.h"
 // #include "Common/File.h"
 #include "Common/FileSystem.h"
@@ -230,8 +230,8 @@ GameEngine::~GameEngine()
 	// delete TheNetwork;
 	// TheNetwork = NULL;
 
-	// delete TheCommandList;
-	// TheCommandList = NULL;
+	delete TheCommandList;
+	TheCommandList = NULL;
 
 	delete TheNameKeyGenerator;
 	TheNameKeyGenerator = NULL;
@@ -341,9 +341,9 @@ void GameEngine::init( int argc, char *argv[] )
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 
 
-		// // not part of the subsystem list, because it should normally never be reset!
-		// TheCommandList = MSGNEW("GameEngineSubsystem") CommandList;
-		// TheCommandList->init();
+		// not part of the subsystem list, because it should normally never be reset!
+		TheCommandList = MSGNEW("GameEngineSubsystem") CommandList;
+		TheCommandList->init();
 
     	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////
@@ -463,7 +463,7 @@ void GameEngine::init( int argc, char *argv[] )
 
 		// initSubsystem(TheFunctionLexicon,"TheFunctionLexicon", createFunctionLexicon(), NULL);
 		// initSubsystem(TheModuleFactory,"TheModuleFactory", createModuleFactory(), NULL);
-		// initSubsystem(TheMessageStream,"TheMessageStream", createMessageStream(), NULL);
+		initSubsystem(TheMessageStream,"TheMessageStream", createMessageStream(), NULL);
 		// initSubsystem(TheSidesList,"TheSidesList", MSGNEW("GameEngineSubsystem") SidesList(), NULL);
 		// initSubsystem(TheCaveSystem,"TheCaveSystem", MSGNEW("GameEngineSubsystem") CaveSystem(), NULL);
 		// initSubsystem(TheRankInfoStore,"TheRankInfoStore", MSGNEW("GameEngineSubsystem") RankInfoStore(), &xferCRC, NULL, "Data\\INI\\Rank.ini");
@@ -777,7 +777,7 @@ void GameEngine::update( void )
 			
 	// 		TheAudio->UPDATE();
 			TheGameClient->UPDATE();
-	// 		TheMessageStream->propagateMessages();
+			TheMessageStream->propagateMessages();
 
 	// 		if (TheNetwork != NULL)
 	// 		{
@@ -934,8 +934,7 @@ MessageStream *GameEngine::createMessageStream( void )
 {
 	// if you change this update the tools that use the engine systems
 	// like GUIEdit, it creates a message stream to run in "test" mode
-	// return MSGNEW("GameEngineSubsystem") MessageStream;
-	return nullptr;
+	return MSGNEW("GameEngineSubsystem") MessageStream;
 }
 
 //-------------------------------------------------------------------------------------------------

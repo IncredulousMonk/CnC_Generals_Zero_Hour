@@ -13,12 +13,16 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - The DynamicMemoryAllocator works. If you compile in debug mode it dumps out memory pool stats, and tells you where you're leaking memory... neat! (I can't take any credit for that. It's all built in.)
 - Subsystems implemented:
   - TheNameKeyGenerator
+  - TheCommandList
   - TheFileSystem
   - TheLocalFileSystem
   - TheArchiveFileSystem
   - TheWritableGlobalData
+  - TheMessageStream
   - TheGameClient (partial)
-  - TheVideoPlayer
+    - TheDisplayStringManager
+    - TheDisplay
+    - TheVideoPlayer
 
 ## Still to do
 

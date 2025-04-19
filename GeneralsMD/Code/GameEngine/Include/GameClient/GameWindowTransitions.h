@@ -118,6 +118,10 @@ public:
 	Transition ( void );
 	virtual ~Transition( void );
 
+	// No copies allowed!
+	Transition(const Transition&) = delete;
+	Transition& operator=(const Transition&) = delete;
+
 	virtual void init( GameWindow *win ) = 0;
 	virtual void update( Int frame ) = 0;
 	virtual void reverse( void ) = 0;
@@ -213,6 +217,10 @@ public:
 	ControlBarArrowTransition ( void );
 	virtual ~ControlBarArrowTransition( void );
 
+	// No copies allowed!
+	ControlBarArrowTransition(const ControlBarArrowTransition&) = delete;
+	ControlBarArrowTransition& operator=(const ControlBarArrowTransition&) = delete;
+
 	virtual void init( GameWindow *win );
 	virtual void update( Int frame );
 	virtual void reverse( void );
@@ -301,6 +309,10 @@ public:
 	TextTypeTransition ( void );
 	virtual ~TextTypeTransition( void );
 
+	// No copies allowed!
+	TextTypeTransition(const TextTypeTransition&) = delete;
+	TextTypeTransition& operator=(const TextTypeTransition&) = delete;
+
 	virtual void init( GameWindow *win );
 	virtual void update( Int frame );
 	virtual void reverse( void );
@@ -327,6 +339,10 @@ class MainMenuScaleUpTransition : public Transition
 public:
 	MainMenuScaleUpTransition ( void );
 	virtual ~MainMenuScaleUpTransition( void );
+
+	// No copies allowed!
+	MainMenuScaleUpTransition(const MainMenuScaleUpTransition&) = delete;
+	MainMenuScaleUpTransition& operator=(const MainMenuScaleUpTransition&) = delete;
 
 	virtual void init( GameWindow *win );
 	virtual void update( Int frame );
@@ -358,6 +374,10 @@ public:
 	MainMenuMediumScaleUpTransition ( void );
 	virtual ~MainMenuMediumScaleUpTransition( void );
 
+	// No copies allowed!
+	MainMenuMediumScaleUpTransition(const MainMenuMediumScaleUpTransition&) = delete;
+	MainMenuMediumScaleUpTransition& operator=(const MainMenuMediumScaleUpTransition&) = delete;
+
 	virtual void init( GameWindow *win );
 	virtual void update( Int frame );
 	virtual void reverse( void );
@@ -385,6 +405,10 @@ class MainMenuSmallScaleDownTransition : public Transition
 public:
 	MainMenuSmallScaleDownTransition ( void );
 	virtual ~MainMenuSmallScaleDownTransition( void );
+
+	// No copies allowed!
+	MainMenuSmallScaleDownTransition(const MainMenuSmallScaleDownTransition&) = delete;
+	MainMenuSmallScaleDownTransition& operator=(const MainMenuSmallScaleDownTransition&) = delete;
 
 	virtual void init( GameWindow *win );
 	virtual void update( Int frame );
@@ -564,6 +588,10 @@ public:
 	ButtonFlashTransition ( void );
 	virtual ~ButtonFlashTransition( void );
 
+	// No copies allowed!
+	ButtonFlashTransition(const ButtonFlashTransition&) = delete;
+	ButtonFlashTransition& operator=(const ButtonFlashTransition&) = delete;
+
 	virtual void init( GameWindow *win );
 	virtual void update( Int frame );
 	virtual void reverse( void );
@@ -602,6 +630,10 @@ class TransitionWindow
 public:
 	TransitionWindow( void );
 	~TransitionWindow( void );
+
+	// No copies allowed!
+	TransitionWindow(const TransitionWindow&) = delete;
+	TransitionWindow& operator=(const TransitionWindow&) = delete;
 
 	Bool init( void );
 	void update( Int frame );
@@ -657,6 +689,10 @@ class GameWindowTransitionsHandler: public SubsystemInterface
 public:
 	GameWindowTransitionsHandler(void);
 	~GameWindowTransitionsHandler( void );
+
+	// No copies allowed!
+	GameWindowTransitionsHandler(const GameWindowTransitionsHandler&) = delete;
+	GameWindowTransitionsHandler& operator=(const GameWindowTransitionsHandler&) = delete;
 
 	void init(void );
 	void load(void );

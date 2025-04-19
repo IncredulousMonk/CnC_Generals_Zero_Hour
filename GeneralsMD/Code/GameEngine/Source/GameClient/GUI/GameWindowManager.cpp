@@ -38,7 +38,7 @@
 #include "GameClient/GameWindow.h"
 #include "GameClient/Mouse.h"
 #include "GameClient/DisplayStringManager.h"
-#include "Gameclient/WindowLayout.h"
+#include "GameClient/WindowLayout.h"
 #include "GameClient/Gadget.h"
 #include "GameClient/GameWindowGlobal.h"
 #include "GameClient/GadgetListBox.h"
@@ -53,6 +53,7 @@
 #include "GameClient/GlobalLanguage.h"
 #include "GameClient/GameWindowTransitions.h"
 #include "Common/NameKeyGenerator.h"
+#include <cassert>
 
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 GameWindowManager *TheWindowManager = NULL;
@@ -836,7 +837,7 @@ WinInputReturnCode GameWindowManager::winProcessMouseEvent( GameWindowMessage ms
 																														void *data )
 {
 	WinInputReturnCode returnCode = WIN_INPUT_NOT_USED;
-	Bool objectTooltip = FALSE;
+	// Bool objectTooltip = FALSE;
 	UnsignedInt packedMouseCoords;
 	GameWindow *window = NULL;
 	GameWindow *toolTipWindow = NULL;
@@ -993,6 +994,9 @@ WinInputReturnCode GameWindowManager::winProcessMouseEvent( GameWindowMessage ms
 					break;
 
 				}  // end mouse event none or left drag
+
+				default:
+					break;
 
 			}  // end switch
 
@@ -1232,7 +1236,7 @@ WinInputReturnCode GameWindowManager::winProcessMouseEvent( GameWindowMessage ms
 					// whatever we like now that we know no other tooltip was set from
 					// a window
 					//
-					objectTooltip = TRUE;
+					// objectTooltip = TRUE;
 
 				}  // end else
 
@@ -2352,6 +2356,8 @@ GameWindow *GameWindowManager::gogoGadgetSlider( GameWindow *parent,
 		button = gogoGadgetPushButton( slider, statusFlags, 0, 0,
 																	 width, width+1, &buttonInstData, NULL, TRUE );
 
+	(void) button;  // Button never used?!
+
 	// Protect against divide by zero
 	if( sliderData->maxVal == sliderData->minVal )
 		sliderData->maxVal = sliderData->minVal + 1;
@@ -2463,6 +2469,8 @@ GameWindow *GameWindowManager::gogoGadgetComboBox( GameWindow *parent,
 	fontHeight = TheWindowManager->winFontHeight( comboBox->winGetFont() );
 	top = title ? (fontHeight + 1):0;
 	bottom = title ? (height - (fontHeight + 1)):height;
+	(void) top;
+	(void) bottom;
 
 	// intialize instData
 	winInstData.init();
@@ -2470,6 +2478,7 @@ GameWindow *GameWindowManager::gogoGadgetComboBox( GameWindow *parent,
 	// size of button
 	buttonWidth = 21;
 	buttonHeight = 22;
+	(void) buttonHeight;
 
 	// ----------------------------------------------------------------------
 	// Create Drop Down Button
@@ -2874,17 +2883,17 @@ void GameWindowManager::assignDefaultGadgetLook( GameWindow *gadget,
 	static Color darkGreen	= TheWindowManager->winMakeColor(   0, 128,   0, alpha );
 	static Color lightGreen	= TheWindowManager->winMakeColor( 128, 255, 128, alpha );
 	static Color blue				= TheWindowManager->winMakeColor(   0,   0, 255, alpha );
-	static Color darkBlue		= TheWindowManager->winMakeColor(   0,   0, 128, alpha );
+	// static Color darkBlue		= TheWindowManager->winMakeColor(   0,   0, 128, alpha );
 	static Color lightBlue	= TheWindowManager->winMakeColor( 128, 128, 255, alpha );
-	static Color purple			= TheWindowManager->winMakeColor( 255,   0, 255, alpha );
-	static Color darkPurple	= TheWindowManager->winMakeColor( 128,   0, 128, alpha );
-	static Color lightPurple= TheWindowManager->winMakeColor( 255, 128, 255, alpha );
+	// static Color purple			= TheWindowManager->winMakeColor( 255,   0, 255, alpha );
+	// static Color darkPurple	= TheWindowManager->winMakeColor( 128,   0, 128, alpha );
+	// static Color lightPurple= TheWindowManager->winMakeColor( 255, 128, 255, alpha );
 	static Color yellow			= TheWindowManager->winMakeColor( 255, 255,   0, alpha );
-	static Color darkYellow	= TheWindowManager->winMakeColor( 128, 128,   0, alpha );
-	static Color lightYellow= TheWindowManager->winMakeColor( 255, 255, 128, alpha );
-	static Color cyan				= TheWindowManager->winMakeColor(   0, 255, 255, alpha );
-	static Color darkCyan		= TheWindowManager->winMakeColor(  64, 128, 128, alpha );
-	static Color lightCyan	= TheWindowManager->winMakeColor( 128, 255, 255, alpha );
+	// static Color darkYellow	= TheWindowManager->winMakeColor( 128, 128,   0, alpha );
+	// static Color lightYellow= TheWindowManager->winMakeColor( 255, 255, 128, alpha );
+	// static Color cyan				= TheWindowManager->winMakeColor(   0, 255, 255, alpha );
+	// static Color darkCyan		= TheWindowManager->winMakeColor(  64, 128, 128, alpha );
+	// static Color lightCyan	= TheWindowManager->winMakeColor( 128, 255, 255, alpha );
 	static Color gray				= TheWindowManager->winMakeColor( 128, 128, 128, alpha );
 	static Color darkGray		= TheWindowManager->winMakeColor(  64,  64,  64, alpha );
 	static Color lightGray	= TheWindowManager->winMakeColor( 192, 192, 192, alpha );

@@ -80,7 +80,7 @@ class ProcessAnimateWindow;
 // TYPE DEFINES ///////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 
-enum AnimTypes
+enum AnimTypes: int
 {
 	WIN_ANIMATION_NONE = 0,
 	WIN_ANIMATION_SLIDE_RIGHT,
@@ -101,6 +101,10 @@ class AnimateWindow : public MemoryPoolObject
 public:
 	AnimateWindow( void );
 	//~AnimateWindow( void );
+
+	// No copies allowed!
+	AnimateWindow(const AnimateWindow&) = delete;
+	AnimateWindow& operator=(const AnimateWindow&) = delete;
 	
 	void setAnimData( ICoord2D startPos, ICoord2D endPos, ICoord2D curPos, ICoord2D restPos, Coord2D vel, UnsignedInt startTime, UnsignedInt endTime);
 
@@ -158,6 +162,10 @@ class AnimateWindowManager : public SubsystemInterface
 public:
 	AnimateWindowManager( void );
 	~AnimateWindowManager( void );
+
+	// No copies allowed!
+	AnimateWindowManager(const AnimateWindowManager&) = delete;
+	AnimateWindowManager& operator=(const AnimateWindowManager&) = delete;
 
 	// Inhertited from subsystem ====================================================================
 	virtual void init( void );			

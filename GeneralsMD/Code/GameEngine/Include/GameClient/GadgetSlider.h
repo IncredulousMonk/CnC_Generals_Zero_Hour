@@ -85,9 +85,10 @@ inline GameWindow *GadgetSliderGetThumb( GameWindow *g ) { return g->winGetChild
 
 inline void GadgetSliderSetPosition( GameWindow *win, Int pos )
 {
+	DEBUG_ASSERTCRASH(pos >= 0, ("pos must not be negative"));
 	TheWindowManager->winSendSystemMsg( win,
 																			GSM_SET_SLIDER,
-																			pos,
+																			static_cast<WindowMsgData>(pos),
 																			0 );
 }
 

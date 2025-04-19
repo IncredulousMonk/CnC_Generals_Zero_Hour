@@ -61,6 +61,10 @@ public:
 	WindowLayout( void );
 	// ~WindowLayout( void );												///< defined by memory pool glue
 
+	// No copies allowed!
+	WindowLayout(const WindowLayout&) = delete;
+	WindowLayout& operator=(const WindowLayout&) = delete;
+
 	// manipulating screen properties ---------------------------------------------------------------
 	AsciiString getFilename( void );											///< return source window filename
 	Bool load( AsciiString filename );										///< create windows and load from .wnd file

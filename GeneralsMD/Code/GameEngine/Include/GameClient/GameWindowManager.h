@@ -83,6 +83,10 @@ public:
 	GameWindowManager( void );
 	virtual ~GameWindowManager( void );
 
+	// No copies allowed!
+	GameWindowManager(const GameWindowManager&) = delete;
+	GameWindowManager& operator=(const GameWindowManager&) = delete;
+
 	//-----------------------------------------------------------------------------------------------
 	virtual void init( void );		///< initialize function
 	virtual void reset( void );		///< reset the system
@@ -340,20 +344,20 @@ protected:
 
 	void dumpWindow( GameWindow *window );  ///< for debugging
 
-	GameWindow *m_windowList;			// list of all top level windows
-	GameWindow *m_windowTail;			// last in windowList
+	GameWindow *m_windowList {};			// list of all top level windows
+	GameWindow *m_windowTail {};			// last in windowList
 
-	GameWindow *m_destroyList;			// list of windows to destroy
+	GameWindow *m_destroyList {};			// list of windows to destroy
 
-	GameWindow *m_currMouseRgn;		// window that mouse is over
-	GameWindow *m_mouseCaptor;			// window that captured mouse
-	GameWindow *m_keyboardFocus;		// window that has input focus
-	ModalWindow *m_modalHead;			// top of windows in the modal stack
-	GameWindow *m_grabWindow;			// window that grabbed the last down event
-	GameWindow *m_loneWindow;			// Set if we just opened a Lone Window
-	GameWindowList m_tabList;			// we have to register a tab list to make a tab list.
-	const Image *m_cursorBitmap;
-	UnsignedInt m_captureFlags;
+	GameWindow *m_currMouseRgn {};		// window that mouse is over
+	GameWindow *m_mouseCaptor {};			// window that captured mouse
+	GameWindow *m_keyboardFocus {};		// window that has input focus
+	ModalWindow *m_modalHead {};			// top of windows in the modal stack
+	GameWindow *m_grabWindow {};			// window that grabbed the last down event
+	GameWindow *m_loneWindow {};			// Set if we just opened a Lone Window
+	GameWindowList m_tabList {};			// we have to register a tab list to make a tab list.
+	const Image *m_cursorBitmap {};
+	UnsignedInt m_captureFlags {};
 
 };  // end GameWindowManager
 

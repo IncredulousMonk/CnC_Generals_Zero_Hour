@@ -100,7 +100,7 @@ GameWindow::GameWindow( void )
 
 	m_userData = 0;
 
-	m_inputData = NULL;
+	// m_inputData = NULL;
 
 	winSetDrawFunc( TheWindowManager->getDefaultDraw() );
 	winSetInputFunc( TheWindowManager->getDefaultInput() );
@@ -128,9 +128,9 @@ GameWindow::GameWindow( void )
 GameWindow::~GameWindow( void )
 {
 
-	if(	m_inputData )
-		delete m_inputData;
-	m_inputData = NULL;
+	// if(	m_inputData )
+	// 	delete m_inputData;
+	// m_inputData = NULL;
 	
 	if( m_editData )
 		delete m_editData;

@@ -46,6 +46,10 @@ public:
 	DisplayStringManager( void );
 	virtual ~DisplayStringManager( void );
 
+	// No copies allowed!
+	DisplayStringManager(const DisplayStringManager&) = delete;
+	DisplayStringManager& operator=(const DisplayStringManager&) = delete;
+
 	virtual void init( void ) {}			///< initialize the factory
 	virtual void reset( void ) {}			///< reset system
 	virtual void update( void ) {};		///< update anything we need to in our strings
@@ -60,8 +64,8 @@ protected:
 	void link( DisplayString *string );  ///< link display string to list
 	void unLink( DisplayString *string );  ///< unlink display string from list
 
-	DisplayString *m_stringList;  ///< list of all display strings
-	DisplayString *m_currentCheckpoint; ///< current checkpoint of strings to be freed
+	DisplayString *m_stringList {};  ///< list of all display strings
+	DisplayString *m_currentCheckpoint {}; ///< current checkpoint of strings to be freed
 };
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////

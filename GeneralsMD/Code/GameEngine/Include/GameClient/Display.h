@@ -37,6 +37,8 @@
 #include "GameClient/Color.h"
 #include "GameClient/GameFont.h"
 
+#include <chrono>
+
 class View;
 
 struct ShroudLevel
@@ -51,7 +53,7 @@ class DebugDisplayInterface;
 class Radar;
 class Image;
 class DisplayString;
-enum StaticGameLODLevel;
+enum StaticGameLODLevel: int;
 /**
  * The Display class implements the Display interface
  */
@@ -71,6 +73,10 @@ public:
 
 	Display();
 	virtual ~Display();
+
+	// No copies allowed!
+	Display(const Display&) = delete;
+	Display& operator=(const Display&) = delete;
 
 	virtual void init( void ) { };																///< Initialize
 	virtual void reset( void );																		///< Reset system
@@ -186,33 +192,33 @@ public:
 protected:
 
 	virtual void deleteViews( void );   ///< delete all views
-	UnsignedInt m_width, m_height;			///< Dimensions of the display
-	UnsignedInt m_bitDepth;							///< bit depth of the display
-	Bool m_windowed;										///< TRUE when windowed, FALSE when fullscreen
-	View *m_viewList;										///< All of the views into the world
+	UnsignedInt m_width {}, m_height {};			///< Dimensions of the display
+	UnsignedInt m_bitDepth {};							///< bit depth of the display
+	Bool m_windowed {};										///< TRUE when windowed, FALSE when fullscreen
+	View *m_viewList {};										///< All of the views into the world
 
 	// Cinematic text data
-	AsciiString m_cinematicText;        ///< string of the cinematic text that should be displayed
-	GameFont *m_cinematicFont;           ///< font for cinematic text
-	Int m_cinematicTextFrames;          ///< count of how long the cinematic text should be displayed
+	AsciiString m_cinematicText {};        ///< string of the cinematic text that should be displayed
+	GameFont *m_cinematicFont {};           ///< font for cinematic text
+	Int m_cinematicTextFrames {};          ///< count of how long the cinematic text should be displayed
 
 	// Video playback data
-	VideoBuffer						*m_videoBuffer;						///< Video playback buffer
-	VideoStreamInterface	*m_videoStream;						///< Video stream;
-	AsciiString						 m_currentlyPlayingMovie;	///< The currently playing video. Used to notify TheScriptEngine of completed videos.
+	VideoBuffer						*m_videoBuffer {};						///< Video playback buffer
+	VideoStreamInterface	*m_videoStream {};						///< Video stream;
+	AsciiString						 m_currentlyPlayingMovie {};	///< The currently playing video. Used to notify TheScriptEngine of completed videos.
 
 	// Debug display data
-	DebugDisplayInterface *m_debugDisplay;					///< Actual debug display
-	DebugDisplayCallback	*m_debugDisplayCallback;	///< Code to update the debug display
-	void									*m_debugDisplayUserData;	///< Data for debug display update handler
-	Real	m_letterBoxFadeLevel;	///<tracks the current alpha level for fading letter-boxed mode in/out.
-	Bool	m_letterBoxEnabled;		///<current state of letterbox
-	UnsignedInt	m_letterBoxFadeStartTime;		///< time of letterbox fade start
-	Int		m_movieHoldTime;									///< time that we hold on the last frame of the movie
-	Int		m_copyrightHoldTime;							///< time that the copyright must be on the screen
-	UnsignedInt m_elapsedMovieTime;					///< used to make sure we show the stuff long enough
-	UnsignedInt m_elapsedCopywriteTime;			///< Hold on the last frame until both have expired
-	DisplayString *m_copyrightDisplayString;///< this'll hold the display string
+	DebugDisplayInterface *m_debugDisplay {};					///< Actual debug display
+	DebugDisplayCallback	*m_debugDisplayCallback {};	///< Code to update the debug display
+	void									*m_debugDisplayUserData {};	///< Data for debug display update handler
+	Real	m_letterBoxFadeLevel {};	///<tracks the current alpha level for fading letter-boxed mode in/out.
+	Bool	m_letterBoxEnabled {};		///<current state of letterbox
+	UnsignedInt	m_letterBoxFadeStartTime {};		///< time of letterbox fade start
+	Int		m_movieHoldTime {};									///< time that we hold on the last frame of the movie
+	Int		m_copyrightHoldTime {};							///< time that the copyright must be on the screen
+	std::chrono::time_point<std::chrono::steady_clock> m_movieStartTime {};					///< used to make sure we show the stuff long enough
+	std::chrono::time_point<std::chrono::steady_clock> m_elapsedCopywriteTime {};			///< Hold on the last frame until both have expired
+	DisplayString *m_copyrightDisplayString {};///< this'll hold the display string
 };
 
 // the singleton

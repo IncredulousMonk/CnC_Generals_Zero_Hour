@@ -84,6 +84,10 @@ public:
 	ShellMenuSchemeImage( void );
 	~ShellMenuSchemeImage( void );	
 
+	// No copies allowed!
+	ShellMenuSchemeImage(const ShellMenuSchemeImage&) = delete;
+	ShellMenuSchemeImage& operator=(const ShellMenuSchemeImage&) = delete;
+
 	AsciiString m_name;						///< Name of the image
 	ICoord2D m_position;					///< the position we'll draw it at
 	ICoord2D m_size;							///< the size of the image needed when we draw it
@@ -121,6 +125,10 @@ class ShellMenuSchemeManager
 public:
 	ShellMenuSchemeManager( void );
 	~ShellMenuSchemeManager( void );
+
+	// No copies allowed!
+	ShellMenuSchemeManager(const ShellMenuSchemeManager&) = delete;
+	ShellMenuSchemeManager& operator=(const ShellMenuSchemeManager&) = delete;
 	
 	void init( void );
 	void update( void );

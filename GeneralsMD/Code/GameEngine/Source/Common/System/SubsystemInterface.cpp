@@ -198,6 +198,7 @@ void SubsystemInterfaceList::shutdownAll()
 	for (SubsystemList::reverse_iterator it = m_subsystems.rbegin(); it != m_subsystems.rend(); ++it)
 	{
 		SubsystemInterface* sys = *it;
+		DEBUG_LOG(("Shutting down subsystem: %s\n", sys->getName().str()));
 		delete sys;
 	}
 	m_subsystems.clear();

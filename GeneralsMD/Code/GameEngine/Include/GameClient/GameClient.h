@@ -36,7 +36,7 @@
 #include "Common/Snapshot.h"
 #include "Common/STLTypedefs.h"
 #include "Common/SubsystemInterface.h"
-// #include "GameClient/CommandXlat.h"
+#include "GameClient/CommandXlat.h"
 // #include "GameClient/Drawable.h"
 
 // forward declarations
@@ -178,7 +178,7 @@ protected:
 	enum { MAX_CLIENT_TRANSLATORS = 32 };
 	TranslatorID m_translators[ MAX_CLIENT_TRANSLATORS ];				///< translators we have used
 	UnsignedInt m_numTranslators {};																///< number of translators in m_translators[]
-	// CommandTranslator *m_commandTranslator {};											///< the command translator on the message stream
+	CommandTranslator *m_commandTranslator {};											///< the command translator on the message stream
 
 private:
 

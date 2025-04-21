@@ -68,13 +68,13 @@
 struct KeyboardIO
 {
 
-	enum StatusType
+	enum StatusType: UnsignedByte
 	{
 		STATUS_UNUSED		= 0x00,					// Key has not been used
 		STATUS_USED			= 0x01					// Key has been eaten
 	};
 
-	UnsignedByte	key;										// key data
+	UnsignedShort	key;									// key data
 	UnsignedByte	status;									// StatusType, above
 	UnsignedShort	state;									// KEY_STATE_* in KeyDefs.h
 	UnsignedInt		sequence;								// sequence info from DirectX used for order
@@ -134,7 +134,7 @@ protected:
 	UnsignedInt getKeySequenceData( UnsignedByte key );  ///< get key sequence
 	void setKeyStateData( UnsignedByte key, UnsignedByte data );  ///< get key state
 
-	UnsignedShort m_modifiers;
+	UnsignedShort m_modifiers {};
 	// internal keyboard data members
 	//Bool m_capsState;			// 1 if caps lock is on
 	//Bool m_shiftState;		// 1 if either shift key is pressed
@@ -145,7 +145,7 @@ protected:
 	//Bool m_rControlState; // 1 if right control is down
 	//Bool m_lAltState;			// 1 if left alt is down
 	//Bool m_rAltState;			// 1 if right alt is down
-	UnsignedByte m_shift2Key;  // what key is the secondary shift key
+	UnsignedByte m_shift2Key {};  // what key is the secondary shift key
 
 	enum { NUM_KEYS  = 256 };
 	KeyboardIO m_keys[ NUM_KEYS ];  ///< the keys
@@ -154,13 +154,12 @@ protected:
 	enum { KEY_NAMES_COUNT = 256 };
 	struct 
 	{
-
 		WideChar stdKey;
 		WideChar shifted;
 		WideChar shifted2;
 
 	} m_keyNames[ KEY_NAMES_COUNT ];
-	UnsignedInt m_inputFrame;  ///< frame input was gathered on
+	UnsignedInt m_inputFrame {};  ///< frame input was gathered on
 
 };  // end Keyboard
 

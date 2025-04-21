@@ -50,6 +50,7 @@
 #define __MOUSE_H_
 
 // SYSTEM INCLUDES ////////////////////////////////////////////////////////////
+#include <chrono>
 
 // USER INCLUDES //////////////////////////////////////////////////////////////
 #include "Lib/BaseType.h"
@@ -100,7 +101,7 @@ struct MouseIO
 {
 
 	ICoord2D pos;  ///< mouse pointer position
-	UnsignedInt time;	///< The time that this message was posted.
+	UnsignedInt64 time;	///< The time that this message was posted.
 
 	Int wheelPos;  /**< mouse wheel position, 0 is no event, + is up/away from
 								 user while - is down/toward user */
@@ -123,20 +124,20 @@ class CursorInfo
 {
 public:
 	CursorInfo();
-	AsciiString		cursorName;
-	AsciiString		cursorText;
-	RGBAColorInt	cursorTextColor;
-	RGBAColorInt	cursorTextDropColor;
-	AsciiString		textureName;
-	AsciiString		imageName;
-	AsciiString		W3DModelName;
-	AsciiString		W3DAnimName;
-	Real					W3DScale;
-	Bool					loop;
-	ICoord2D			hotSpotPosition;
-	Int						numFrames;
-	Real					fps;	//frames per ms.
-	Int						numDirections;	//number of directions for cursors like scrolling/panning.
+	AsciiString		cursorName {};
+	AsciiString		cursorText {};
+	RGBAColorInt	cursorTextColor {};
+	RGBAColorInt	cursorTextDropColor {};
+	AsciiString		textureName {};
+	AsciiString		imageName {};
+	AsciiString		W3DModelName {};
+	AsciiString		W3DAnimName {};
+	Real			W3DScale {};
+	Bool			loop {};
+	ICoord2D		hotSpotPosition {};
+	Int				numFrames {};
+	Real			fps {};	//frames per ms.
+	Int				numDirections {};	//number of directions for cursors like scrolling/panning.
 };
 
 // Mouse ----------------------------------------------------------------------
@@ -265,15 +266,15 @@ public:
 	// access methods for the mouse data
 	const MouseIO *getMouseStatus( void ) { return &m_currMouse; }							///< get current mouse status
 
-  Int  getCursorTooltipDelay() { return m_tooltipDelay; }
-  void setCursorTooltipDelay(Int delay) { m_tooltipDelay = delay; }
+	Int  getCursorTooltipDelay() { return m_tooltipDelay; }
+	void setCursorTooltipDelay(Int delay) { m_tooltipDelay = delay; }
 
 	void setCursorTooltip( UnicodeString tooltip, Int tooltipDelay = -1, const RGBColor *color = NULL, Real width = 1.0f );		///< set tooltip string at cursor
 	void setMouseText( UnicodeString text, const RGBAColorInt *color, const RGBAColorInt *dropColor );					///< set the cursor text, *NOT* the tooltip text
 	virtual void setMouseLimits( void );					///< update the limit extents the mouse can move in
 	MouseCursor getMouseCursor(void) { return m_currentCursor; }	///< get the current mouse cursor image type
-	virtual void setRedrawMode(RedrawMode mode)	{m_currentRedrawMode=mode;} ///<set cursor drawing method.
-	virtual RedrawMode getRedrawMode(void) { return m_currentRedrawMode; } //get cursor drawing method
+	virtual void setRedrawMode(RedrawMode mode)	{m_data.m_currentRedrawMode=mode;} ///<set cursor drawing method.
+	virtual RedrawMode getRedrawMode(void) { return m_data.m_currentRedrawMode; } //get cursor drawing method
 	virtual void setVisibility(Bool visible) { m_visible = visible; } // set visibility for load screens, etc
 	inline Bool getVisibility(void) { return m_visible; } // get visibility state
 	
@@ -287,34 +288,39 @@ public:
 	Bool isClick(const ICoord2D *anchor, const ICoord2D *dest, UnsignedInt previousMouseClick, UnsignedInt currentMouseClick);
 
 
-	AsciiString m_tooltipFontName;		///< tooltip font
-	Int m_tooltipFontSize;						///< tooltip font
-	Bool m_tooltipFontIsBold;					///< tooltip font
-	Bool m_tooltipAnimateBackground;	///< animate the background with the text
-	Int m_tooltipFillTime;						///< milliseconds to animate tooltip
-	Int m_tooltipDelayTime;						///< milliseconds to wait before showing tooltip
-	Real m_tooltipWidth;							///< default tooltip width in screen width %
-	Real m_lastTooltipWidth;
-	RGBAColorInt m_tooltipColorText;
-	RGBAColorInt m_tooltipColorHighlight;
-	RGBAColorInt m_tooltipColorShadow;
-	RGBAColorInt m_tooltipColorBackground;
-	RGBAColorInt m_tooltipColorBorder;
-	RedrawMode	m_currentRedrawMode;	///< mouse cursor drawing method
-	Bool m_useTooltipAltTextColor;		///< draw tooltip text with house colors?
-	Bool m_useTooltipAltBackColor;		///< draw tooltip backgrounds with house colors?
-	Bool m_adjustTooltipAltColor;			///< adjust house colors (darker/brighter) for tooltips?
-	Bool m_orthoCamera;								///< use an ortho camera for 3D cursors?
-	Real m_orthoZoom;									///< uniform zoom to apply to 3D cursors when using ortho cameras
-	UnsignedInt m_dragTolerance;
-	UnsignedInt m_dragTolerance3D;
-	UnsignedInt m_dragToleranceMS;
-	
+	// MG: Cannot apply offsetof to Mouse, so had to move data into an embedded struct.
+	struct Data
+	{
+		AsciiString m_tooltipFontName;		///< tooltip font
+		Int m_tooltipFontSize;						///< tooltip font
+		Bool m_tooltipFontIsBold;					///< tooltip font
+		Bool m_tooltipAnimateBackground;	///< animate the background with the text
+		Int m_tooltipFillTime;						///< milliseconds to animate tooltip
+		Int m_tooltipDelayTime;						///< milliseconds to wait before showing tooltip
+		Real m_tooltipWidth;							///< default tooltip width in screen width %
+		Real m_lastTooltipWidth;
+		RGBAColorInt m_tooltipColorText;
+		RGBAColorInt m_tooltipColorHighlight;
+		RGBAColorInt m_tooltipColorShadow;
+		RGBAColorInt m_tooltipColorBackground;
+		RGBAColorInt m_tooltipColorBorder;
+		RedrawMode	m_currentRedrawMode;	///< mouse cursor drawing method
+		Bool m_useTooltipAltTextColor;		///< draw tooltip text with house colors?
+		Bool m_useTooltipAltBackColor;		///< draw tooltip backgrounds with house colors?
+		Bool m_adjustTooltipAltColor;			///< adjust house colors (darker/brighter) for tooltips?
+		Bool m_orthoCamera;								///< use an ortho camera for 3D cursors?
+		Real m_orthoZoom;									///< uniform zoom to apply to 3D cursors when using ortho cameras
+		UnsignedInt m_dragTolerance;
+		UnsignedInt m_dragTolerance3D;
+		UnsignedInt m_dragToleranceMS;
+	};
+
+	Data m_data {};
 
 protected:
 
 	/// you must implement getting a buffered mouse event from you device here
-	virtual UnsignedByte getMouseEvent( MouseIO *result, Bool flush ) = 0;
+	virtual UnsignedByte getMouseEvent( MouseIO *result ) = 0;
 
 	//-----------------------------------------------------------------------------------------------
 
@@ -327,51 +333,51 @@ protected:
 	//---------------------------------------------------------------------------
 	// internal mouse data members
 
-	UnsignedByte m_numButtons;  ///< number of buttons on this mouse
-	UnsignedByte m_numAxes;			///< number of axes this mouse has
-	Bool m_forceFeedback;				///< set to TRUE if mouse supprots force feedback
+	UnsignedByte m_numButtons {};  ///< number of buttons on this mouse
+	UnsignedByte m_numAxes {};			///< number of axes this mouse has
+	Bool m_forceFeedback {};				///< set to TRUE if mouse supprots force feedback
 
-	UnicodeString m_tooltipString;	///< tooltip text
-	DisplayString *m_tooltipDisplayString; ///< tooltipDisplayString
-	Bool m_displayTooltip;  /**< when the mouse has been still long enough this will be
+	UnicodeString m_tooltipString {};	///< tooltip text
+	DisplayString *m_tooltipDisplayString {}; ///< tooltipDisplayString
+	Bool m_displayTooltip {};  /**< when the mouse has been still long enough this will be
 													set to TRUE indicating it's Ok to fire off a tooltip */
-	Bool m_isTooltipEmpty;
+	Bool m_isTooltipEmpty {};
 
 	enum { NUM_MOUSE_EVENTS = 256 };
-	MouseIO m_mouseEvents[ NUM_MOUSE_EVENTS ];  ///< for event list
-	MouseIO m_currMouse;												///< for current mouse data
-	MouseIO m_prevMouse;												///< for previous mouse data
+	MouseIO m_mouseEvents[ NUM_MOUSE_EVENTS ] {};  ///< for event list
+	MouseIO m_currMouse {};												///< for current mouse data
+	MouseIO m_prevMouse {};												///< for previous mouse data
 
-	Int m_minX;							///< mouse is locked to this region
-	Int m_maxX;							///< mouse is locked to this region
-	Int m_minY;							///< mouse is locked to this region
-	Int m_maxY;							///< mouse is locked to this region
+	Int m_minX {};							///< mouse is locked to this region
+	Int m_maxX {};							///< mouse is locked to this region
+	Int m_minY {};							///< mouse is locked to this region
+	Int m_maxY {};							///< mouse is locked to this region
 
-	UnsignedInt m_inputFrame;				///< frame input was gathered on
-	UnsignedInt m_deadInputFrame;		///< Frame which last input occured
+	UnsignedInt m_inputFrame {};				///< frame input was gathered on
+	UnsignedInt m_deadInputFrame {};		///< Frame which last input occured
 
-	Bool m_inputMovesAbsolute;			/**< if TRUE, when processing mouse position
+	Bool m_inputMovesAbsolute {};			/**< if TRUE, when processing mouse position
 																	chanages the movement will be done treating
 																	the	coords as ABSOLUTE positions and NOT
 																	relative coordinate changes */
 
-	Bool m_visible;	// visibility status
+	Bool m_visible {};	// visibility status
 	
-	MouseCursor m_currentCursor;		///< current mouse cursor
+	MouseCursor m_currentCursor {};		///< current mouse cursor
 
-	DisplayString *m_cursorTextDisplayString;		///< text to display on the cursor (if specified)
-	RGBAColorInt m_cursorTextColor;							///< color of the cursor text
-	RGBAColorInt m_cursorTextDropColor;					///< color of the cursor text drop shadow
+	DisplayString *m_cursorTextDisplayString {};		///< text to display on the cursor (if specified)
+	RGBAColorInt m_cursorTextColor {};							///< color of the cursor text
+	RGBAColorInt m_cursorTextDropColor {};					///< color of the cursor text drop shadow
 
-  Int m_tooltipDelay;                                ///< millisecond delay for tooltips
+	Int m_tooltipDelay {};                                ///< millisecond delay for tooltips
 
-	Int m_highlightPos;
-	UnsignedInt m_highlightUpdateStart;
-	UnsignedInt m_stillTime;
-	RGBAColorInt m_tooltipTextColor;
-	RGBAColorInt m_tooltipBackColor;
+	Int m_highlightPos {};
+	std::chrono::time_point<std::chrono::steady_clock> m_highlightUpdateStart {};
+	std::chrono::time_point<std::chrono::steady_clock> m_stillTime {};
+	RGBAColorInt m_tooltipTextColor {};
+	RGBAColorInt m_tooltipBackColor {};
 
-	Int m_eventsThisFrame;
+	Int m_eventsThisFrame {};
 
 };  // end class Mouse
 

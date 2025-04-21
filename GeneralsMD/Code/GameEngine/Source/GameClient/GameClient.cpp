@@ -63,7 +63,7 @@
 // #include "GameClient/HotKey.h"
 // #include "GameClient/IMEManager.h"
 // #include "GameClient/InGameUI.h"
-// #include "GameClient/Keyboard.h"
+#include "GameClient/Keyboard.h"
 // #include "GameClient/LanguageFilter.h"
 // #include "GameClient/LookAtXlat.h"
 // #include "GameClient/MetaEvent.h"
@@ -98,11 +98,11 @@ GameClient *TheGameClient = NULL;
 GameClient::GameClient()
 {
 
-	// // zero our translator list
-	// for( Int i = 0; i < MAX_CLIENT_TRANSLATORS; i++ )
-	// 	m_translators[ i ] = TRANSLATOR_ID_INVALID;
-	// m_numTranslators = 0;
-	// m_commandTranslator = NULL;
+	// zero our translator list
+	for( Int i = 0; i < MAX_CLIENT_TRANSLATORS; i++ )
+		m_translators[ i ] = TRANSLATOR_ID_INVALID;
+	m_numTranslators = 0;
+	m_commandTranslator = NULL;
 	
 	// // Added By Sadullah Nader
 	// // Initializations missing and needed
@@ -193,8 +193,8 @@ GameClient::~GameClient()
 	// delete TheFontLibrary;
 	// TheFontLibrary = NULL;
 
-	// delete TheMouse;
-	// TheMouse = NULL;
+	delete TheMouse;
+	TheMouse = NULL;
 
 	// ///@todo :  TheTerrainVisual used to be the first thing destroyed.
 	// //I had to put in here so that drawables free their track marks before
@@ -217,11 +217,11 @@ GameClient::~GameClient()
 	delete TheVideoPlayer;
 	TheVideoPlayer = NULL;
 
-	// // destroy all translators
-	// for( Int i = 0; i < m_numTranslators; i++ )
-	// 	TheMessageStream->removeTranslator( m_translators[ i ] );	
-	// m_numTranslators = 0;
-	// m_commandTranslator = NULL;
+	// destroy all translators
+	for( UnsignedInt i = 0; i < m_numTranslators; i++ )
+		TheMessageStream->removeTranslator( m_translators[ i ] );	
+	m_numTranslators = 0;
+	m_commandTranslator = NULL;
 
 	// delete TheAnim2DCollection;
 	// TheAnim2DCollection = NULL;	
@@ -229,8 +229,8 @@ GameClient::~GameClient()
 	// delete TheMappedImageCollection;
 	// TheMappedImageCollection = NULL;	
 	
-	// delete TheKeyboard;
-	// TheKeyboard = NULL;
+	delete TheKeyboard;
+	TheKeyboard = NULL;
 
 	delete TheDisplayStringManager;
 	TheDisplayStringManager = NULL;
@@ -270,10 +270,10 @@ void GameClient::init( void )
 		TheDisplayStringManager->setName("TheDisplayStringManager");
 	}
 
-// 	// create the keyboard
-// 	TheKeyboard = createKeyboard();
-// 	TheKeyboard->init();
-// 	TheKeyboard->setName("TheKeyboard");
+	// create the keyboard
+	TheKeyboard = createKeyboard();
+	TheKeyboard->init();
+	TheKeyboard->setName("TheKeyboard");
 
 // 	// allocate and load image collection for the GUI and just load the 256x256 ones for now
 // 	TheMappedImageCollection = MSGNEW("GameClientSubsystem") ImageCollection;
@@ -284,48 +284,48 @@ void GameClient::init( void )
 // 	TheAnim2DCollection->init();
 //  	TheAnim2DCollection->setName("TheAnim2DCollection");
 
-// 	// register message translators
-// 	if( TheMessageStream )
-// 	{
+	// register message translators
+	if( TheMessageStream )
+	{
 
-// 		//
-// 		// NOTE: Make sure m_translators[] is large enough to accomodate all the translators you
-// 		// are loading here.  See MAX_CLIENT_TRANSLATORS
-// 		//
+		//
+		// NOTE: Make sure m_translators[] is large enough to accomodate all the translators you
+		// are loading here.  See MAX_CLIENT_TRANSLATORS
+		//
 
-// 		// since we only allocate one of each, don't bother pooling 'em
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") WindowTranslator,     10 );
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") MetaEventTranslator,	20 );
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") HotKeyTranslator,	25 );
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") PlaceEventTranslator,	30 );
-// 		m_translators[ m_numTranslators++ ] = TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") GUICommandTranslator, 40 );
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") SelectionTranslator,	50 );
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") LookAtTranslator,			60 );
-// 		m_translators[ m_numTranslators ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") CommandTranslator,		70 );
-// 		// we keep a pointer to the command translator because it's useful
-// 		m_commandTranslator = (CommandTranslator *)TheMessageStream->findTranslator( m_translators[ m_numTranslators++ ] );
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") HintSpyTranslator,		100 );
+		// // since we only allocate one of each, don't bother pooling 'em
+		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") WindowTranslator,     10 );
+		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") MetaEventTranslator,	20 );
+		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") HotKeyTranslator,	25 );
+		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") PlaceEventTranslator,	30 );
+		// m_translators[ m_numTranslators++ ] = TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") GUICommandTranslator, 40 );
+		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") SelectionTranslator,	50 );
+		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") LookAtTranslator,			60 );
+		// m_translators[ m_numTranslators ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") CommandTranslator,		70 );
+		// // we keep a pointer to the command translator because it's useful
+		// m_commandTranslator = (CommandTranslator *)TheMessageStream->findTranslator( m_translators[ m_numTranslators++ ] );
+		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") HintSpyTranslator,		100 );
 
-// 		//
-// 		// the client message translator should probably remain as the last reaction of the
-// 		// client before the messages are given to the network for processing.  This
-// 		// lets all systems in the client give events that can be processed by the
-// 		// client message translator
-// 		//
-// 		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") GameClientMessageDispatcher, 999999999 );
+		//
+		// the client message translator should probably remain as the last reaction of the
+		// client before the messages are given to the network for processing.  This
+		// lets all systems in the client give events that can be processed by the
+		// client message translator
+		//
+		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") GameClientMessageDispatcher, 999999999 );
 
-// 	}  
+	}  
 
 // 	// create the font library
 // 	TheFontLibrary = createFontLibrary();
 // 	if( TheFontLibrary )
 // 		TheFontLibrary->init();
 
-// 	// create the mouse
-// 	TheMouse = createMouse();
-// 	TheMouse->parseIni();
-// 	TheMouse->initCursorResources();
-//  	TheMouse->setName("TheMouse");
+	// create the mouse
+	TheMouse = createMouse();
+	TheMouse->parseIni();
+	TheMouse->initCursorResources();
+	TheMouse->setName("TheMouse");
 
 	// instantiate the display
 	TheDisplay = createGameDisplay();
@@ -589,24 +589,24 @@ void GameClient::update( void )
 // 	// update animation 2d collection
 // 	TheAnim2DCollection->UPDATE();
 
-// 	// update the keyboard
-// 	if( TheKeyboard )
-// 	{
-// 		TheKeyboard->UPDATE();
-// 		TheKeyboard->createStreamMessages();
+	// update the keyboard
+	if( TheKeyboard )
+	{
+		TheKeyboard->UPDATE();
+		TheKeyboard->createStreamMessages();
 
-// 	}  // end if
+	}  // end if
 
 // 	// Update the Eva stuff
 // 	TheEva->UPDATE();
 
-// 	// update the mouse
-// 	if( TheMouse )
-// 	{
-// 		TheMouse->UPDATE();
-// 		TheMouse->createStreamMessages();
+	// update the mouse
+	if( TheMouse )
+	{
+		TheMouse->UPDATE();
+		TheMouse->createStreamMessages();
 
-// 	}  // end if
+	}  // end if
 	
 
 //   if (TheInGameUI->isCameraTrackingDrawable())

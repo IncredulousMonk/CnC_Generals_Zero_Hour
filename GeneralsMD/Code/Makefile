@@ -29,7 +29,8 @@ $(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB)
 # ===== GameEngineDevice =====
 
 ENGINE_DEVICE_OBJS = $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o \
-$(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxGameClient.o
+$(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
+$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxGameClient.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o
 
 $(ENGINE_DEVICE_LIB): $(ENGINE_DEVICE_OBJS)
 	ar rcs $(ENGINE_DEVICE_LIB)  $(ENGINE_DEVICE_OBJS)
@@ -76,14 +77,21 @@ $(GEDO)/LinuxDisplay.o: $(GEDSLD)/GameClient/LinuxDisplay.cpp
 $(GEDO)/LinuxGameClient.o: $(GEDSLD)/GameClient/LinuxGameClient.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameClient.o $(GEDSLD)/GameClient/LinuxGameClient.cpp
 
+$(GEDO)/SdlKeyboard.o: $(GEDSLD)/GameClient/SdlKeyboard.cpp GameEngineDevice/Include/LinuxDevice/GameClient/SdlKeyboard.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/SdlKeyboard.o $(GEDSLD)/GameClient/SdlKeyboard.cpp
+
+$(GEDO)/SdlMouse.o: $(GEDSLD)/GameClient/SdlMouse.cpp GameEngineDevice/Include/LinuxDevice/GameClient/SdlMouse.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/SdlMouse.o $(GEDSLD)/GameClient/SdlMouse.cpp
+
 
 # ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o \
+ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/Version.o \
 $(GEO)/INI.o $(GEO)/INIGameData.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
    $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o \
-$(GEO)/Display.o $(GEO)/DisplayStringManager.o $(GEO)/GameClient.o $(GEO)/Snow.o $(GEO)/VideoPlayer.o $(GEO)/Water.o $(GEO)/GameWindow.o $(GEO)/GameWindowManager.o $(GEO)/Shell.o
+$(GEO)/Display.o $(GEO)/DisplayStringManager.o $(GEO)/GameClient.o $(GEO)/GameClientDispatch.o $(GEO)/Snow.o $(GEO)/VideoPlayer.o $(GEO)/Water.o \
+$(GEO)/GameWindow.o $(GEO)/GameWindowManager.o $(GEO)/Shell.o $(GEO)/Keyboard.o $(GEO)/Mouse.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
@@ -100,6 +108,9 @@ $(GEO)/GameMain.o: $(GES)/Common/GameMain.cpp
 
 $(GEO)/GlobalData.o: $(GES)/Common/GlobalData.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GlobalData.o $(GES)/Common/GlobalData.cpp
+
+$(GEO)/Language.o: $(GES)/Common/Language.cpp GameEngine/Include/Common/Language.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Language.o $(GES)/Common/Language.cpp
 
 $(GEO)/MessageStream.o: $(GES)/Common/MessageStream.cpp GameEngine/Include/Common/MessageStream.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MessageStream.o $(GES)/Common/MessageStream.cpp
@@ -199,6 +210,9 @@ $(GEO)/DisplayStringManager.o: $(GES)/GameClient/DisplayStringManager.cpp GameEn
 $(GEO)/GameClient.o: $(GES)/GameClient/GameClient.cpp GameEngine/Include/GameClient/GameClient.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameClient.o $(GES)/GameClient/GameClient.cpp
 
+$(GEO)/GameClientDispatch.o: $(GES)/GameClient/GameClientDispatch.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameClientDispatch.o $(GES)/GameClient/GameClientDispatch.cpp
+
 #$(GEO)/GameText.o: $(GES)/GameClient/GameText.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameText.o $(GES)/GameClient/GameText.cpp
 
@@ -221,6 +235,13 @@ $(GEO)/GameWindowManager.o: $(GES)/GameClient/GUI/GameWindowManager.cpp
 # --- GameEngine/Source/GameClient/GUI/Shell ---
 $(GEO)/Shell.o: $(GES)/GameClient/GUI/Shell/Shell.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Shell.o $(GES)/GameClient/GUI/Shell/Shell.cpp
+
+# --- GameEngine/Source/GameClient/Input ---
+$(GEO)/Keyboard.o: $(GES)/GameClient/Input/Keyboard.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Keyboard.o $(GES)/GameClient/Input/Keyboard.cpp
+
+$(GEO)/Mouse.o: $(GES)/GameClient/Input/Mouse.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Mouse.o $(GES)/GameClient/Input/Mouse.cpp
 
 
 run: $(PROG)

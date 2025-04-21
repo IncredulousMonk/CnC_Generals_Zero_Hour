@@ -38,14 +38,14 @@
 #include "GameClient/Display.h"
 #include "GameClient/DisplayStringManager.h"
 #include "GameClient/GameClient.h"
-#include "GameClient/GameText.h"
+// #include "GameClient/GameText.h"
 #include "GameClient/GameWindow.h"
 #include "GameClient/InGameUI.h"
 #include "GameClient/Keyboard.h"
 #include "GameClient/Mouse.h"
-#include "GameClient/GlobalLanguage.h"
+// #include "GameClient/GlobalLanguage.h"
 
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -69,44 +69,44 @@ const char *Mouse::RedrawModeName[RM_MAX] = {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 static const FieldParse TheMouseCursorFieldParseTable[] = 
 {
-	{ "CursorText",						INI::parseAsciiString,	NULL, offsetof( CursorInfo, cursorText ) },
-	{ "CursorTextColor",			INI::parseRGBAColorInt,	NULL, offsetof( CursorInfo, cursorTextColor ) },
-	{ "CursorTextDropColor",	INI::parseRGBAColorInt,	NULL, offsetof( CursorInfo, cursorTextDropColor ) },
-	{ "W3DModel",							INI::parseAsciiString,	NULL,	offsetof( CursorInfo, W3DModelName ) },
-	{ "W3DAnim",							INI::parseAsciiString,	NULL,	offsetof( CursorInfo, W3DAnimName ) },
-	{ "W3DScale",							INI::parseReal,					NULL,	offsetof( CursorInfo, W3DScale ) },
-	{ "Loop",									INI::parseBool,					NULL,	offsetof( CursorInfo, loop ) },
-	{ "Image",							INI::parseAsciiString,	NULL,	offsetof( CursorInfo, imageName ) },
-	{ "Texture",							INI::parseAsciiString,	NULL,	offsetof( CursorInfo, textureName ) },
-	{ "HotSpot",							INI::parseICoord2D,	NULL,	offsetof( CursorInfo, hotSpotPosition ) },
-	{ "Frames",							INI::parseInt,	NULL,	offsetof( CursorInfo, numFrames ) },
-	{ "FPS",							INI::parseReal, NULL, offsetof( CursorInfo, fps)},
-	{ "Directions",							INI::parseInt,	NULL,	offsetof( CursorInfo, numDirections ) },
+	{ "CursorText",				INI::parseAsciiString,	NULL, 	offsetof( CursorInfo, cursorText ) },
+	{ "CursorTextColor",		INI::parseRGBAColorInt,	NULL, 	offsetof( CursorInfo, cursorTextColor ) },
+	{ "CursorTextDropColor",	INI::parseRGBAColorInt,	NULL, 	offsetof( CursorInfo, cursorTextDropColor ) },
+	{ "W3DModel",				INI::parseAsciiString,	NULL,	offsetof( CursorInfo, W3DModelName ) },
+	{ "W3DAnim",				INI::parseAsciiString,	NULL,	offsetof( CursorInfo, W3DAnimName ) },
+	{ "W3DScale",				INI::parseReal,			NULL,	offsetof( CursorInfo, W3DScale ) },
+	{ "Loop",					INI::parseBool,			NULL,	offsetof( CursorInfo, loop ) },
+	{ "Image",					INI::parseAsciiString,	NULL,	offsetof( CursorInfo, imageName ) },
+	{ "Texture",				INI::parseAsciiString,	NULL,	offsetof( CursorInfo, textureName ) },
+	{ "HotSpot",				INI::parseICoord2D,		NULL,	offsetof( CursorInfo, hotSpotPosition ) },
+	{ "Frames",					INI::parseInt,			NULL,	offsetof( CursorInfo, numFrames ) },
+	{ "FPS",					INI::parseReal, 		NULL, 	offsetof( CursorInfo, fps)},
+	{ "Directions",				INI::parseInt,			NULL,	offsetof( CursorInfo, numDirections ) },
 };
 
 static const FieldParse TheMouseFieldParseTable[] = 
 {
-	{ "TooltipFontName",						INI::parseAsciiString,NULL,			offsetof( Mouse, m_tooltipFontName ) },
-	{ "TooltipFontSize",						INI::parseInt,				NULL,			offsetof( Mouse, m_tooltipFontSize ) },
-	{ "TooltipFontIsBold",					INI::parseBool,				NULL,			offsetof( Mouse, m_tooltipFontIsBold ) },
-	{ "TooltipAnimateBackground",		INI::parseBool,				NULL,			offsetof( Mouse, m_tooltipAnimateBackground ) },
-	{ "TooltipFillTime",						INI::parseInt,				NULL,			offsetof( Mouse, m_tooltipFillTime ) },
-	{ "TooltipDelayTime",						INI::parseInt,				NULL,			offsetof( Mouse, m_tooltipDelayTime ) },
-	{ "TooltipTextColor",						INI::parseRGBAColorInt,	NULL,		offsetof( Mouse, m_tooltipColorText ) },
-	{ "TooltipHighlightColor",			INI::parseRGBAColorInt,	NULL,		offsetof( Mouse, m_tooltipColorHighlight ) },
-	{ "TooltipShadowColor",					INI::parseRGBAColorInt,	NULL,		offsetof( Mouse, m_tooltipColorShadow ) },
-	{ "TooltipBackgroundColor",			INI::parseRGBAColorInt,	NULL,		offsetof( Mouse, m_tooltipColorBackground ) },
-	{ "TooltipBorderColor",					INI::parseRGBAColorInt,	NULL,		offsetof( Mouse, m_tooltipColorBorder ) },
-	{ "TooltipWidth",								INI::parsePercentToReal,NULL,		offsetof( Mouse, m_tooltipWidth ) },
-	{ "CursorMode",									INI::parseInt,					NULL,		offsetof( Mouse, m_currentRedrawMode ) },
-	{ "UseTooltipAltTextColor",			INI::parseBool,					NULL,		offsetof( Mouse, m_useTooltipAltTextColor ) },
-	{ "UseTooltipAltBackColor",			INI::parseBool,					NULL,		offsetof( Mouse, m_useTooltipAltBackColor ) },
-	{ "AdjustTooltipAltColor",			INI::parseBool,					NULL,		offsetof( Mouse, m_adjustTooltipAltColor ) },
-	{ "OrthoCamera",								INI::parseBool,					NULL,		offsetof( Mouse, m_orthoCamera ) },
-	{ "OrthoZoom",									INI::parseReal,					NULL,		offsetof( Mouse, m_orthoZoom ) },
-	{ "DragTolerance",							INI::parseUnsignedInt,	NULL,		offsetof( Mouse, m_dragTolerance) },
-	{ "DragTolerance3D",						INI::parseUnsignedInt,	NULL,		offsetof( Mouse, m_dragTolerance3D) },
-	{ "DragToleranceMS",						INI::parseUnsignedInt,	NULL,		offsetof( Mouse, m_dragToleranceMS) },
+	{ "TooltipFontName",			INI::parseAsciiString,	NULL,	offsetof( Mouse::Data, m_tooltipFontName ) },
+	{ "TooltipFontSize",			INI::parseInt,			NULL,	offsetof( Mouse::Data, m_tooltipFontSize ) },
+	{ "TooltipFontIsBold",			INI::parseBool,			NULL,	offsetof( Mouse::Data, m_tooltipFontIsBold ) },
+	{ "TooltipAnimateBackground",	INI::parseBool,			NULL,	offsetof( Mouse::Data, m_tooltipAnimateBackground ) },
+	{ "TooltipFillTime",			INI::parseInt,			NULL,	offsetof( Mouse::Data, m_tooltipFillTime ) },
+	{ "TooltipDelayTime",			INI::parseInt,			NULL,	offsetof( Mouse::Data, m_tooltipDelayTime ) },
+	{ "TooltipTextColor",			INI::parseRGBAColorInt,	NULL,	offsetof( Mouse::Data, m_tooltipColorText ) },
+	{ "TooltipHighlightColor",		INI::parseRGBAColorInt,	NULL,	offsetof( Mouse::Data, m_tooltipColorHighlight ) },
+	{ "TooltipShadowColor",			INI::parseRGBAColorInt,	NULL,	offsetof( Mouse::Data, m_tooltipColorShadow ) },
+	{ "TooltipBackgroundColor",		INI::parseRGBAColorInt,	NULL,	offsetof( Mouse::Data, m_tooltipColorBackground ) },
+	{ "TooltipBorderColor",			INI::parseRGBAColorInt,	NULL,	offsetof( Mouse::Data, m_tooltipColorBorder ) },
+	{ "TooltipWidth",				INI::parsePercentToReal,NULL,	offsetof( Mouse::Data, m_tooltipWidth ) },
+	{ "CursorMode",					INI::parseInt,			NULL,	offsetof( Mouse::Data, m_currentRedrawMode ) },
+	{ "UseTooltipAltTextColor",		INI::parseBool,			NULL,	offsetof( Mouse::Data, m_useTooltipAltTextColor ) },
+	{ "UseTooltipAltBackColor",		INI::parseBool,			NULL,	offsetof( Mouse::Data, m_useTooltipAltBackColor ) },
+	{ "AdjustTooltipAltColor",		INI::parseBool,			NULL,	offsetof( Mouse::Data, m_adjustTooltipAltColor ) },
+	{ "OrthoCamera",				INI::parseBool,			NULL,	offsetof( Mouse::Data, m_orthoCamera ) },
+	{ "OrthoZoom",					INI::parseReal,			NULL,	offsetof( Mouse::Data, m_orthoZoom ) },
+	{ "DragTolerance",				INI::parseUnsignedInt,	NULL,	offsetof( Mouse::Data, m_dragTolerance) },
+	{ "DragTolerance3D",			INI::parseUnsignedInt,	NULL,	offsetof( Mouse::Data, m_dragTolerance3D) },
+	{ "DragToleranceMS",			INI::parseUnsignedInt,	NULL,	offsetof( Mouse::Data, m_dragToleranceMS) },
 
 };
 
@@ -149,7 +149,7 @@ void Mouse::moveMouse( Int x, Int y, Int relOrAbs )
 void Mouse::updateMouseData( )
 {
 	static Bool busy = FALSE;
-	Int index = 0;
+	UnsignedInt index = 0;
 	UnsignedByte result;
 
 	// prevent reentrancy in the event we make this mouse multi-threaded
@@ -163,7 +163,7 @@ void Mouse::updateMouseData( )
 		{
 			do
 			{
-				result = getMouseEvent( &m_mouseEvents[ index ], TRUE );
+				result = getMouseEvent( &m_mouseEvents[ index ] );
 			}
 			while( result == MOUSE_LOST );
 			index++;
@@ -176,7 +176,7 @@ void Mouse::updateMouseData( )
 	}  // end if
 
 	if( index > 0 )
-		m_eventsThisFrame = index - 1;
+		m_eventsThisFrame = static_cast<Int>(index - 1);
 	else
 		m_eventsThisFrame = 0;
 
@@ -228,21 +228,21 @@ void Mouse::processMouseEvent( Int index )
 				// Mouse Down
 				m_currMouse.leftEvent = GWM_LEFT_DOWN;
 				m_currMouse.leftState = MBS_Down;
-				m_currMouse.leftFrame = m_inputFrame;
+				m_currMouse.leftFrame = static_cast<Int>(m_inputFrame);
 			}
 			else if ( m_mouseEvents[ index ].leftState == MBS_DoubleClick )
 			{
 				// Mouse Double Click
 				m_currMouse.leftEvent = GWM_LEFT_DOUBLE_CLICK;
 				m_currMouse.leftState = MBS_DoubleClick;
-				m_currMouse.leftFrame = m_inputFrame;
+				m_currMouse.leftFrame = static_cast<Int>(m_inputFrame);
 			}
 			else
 			{
 				// Mouse Up
 				m_currMouse.leftEvent = GWM_LEFT_UP;
 				m_currMouse.leftState = MBS_Up;
-				m_currMouse.leftFrame = m_inputFrame;
+				m_currMouse.leftFrame = static_cast<Int>(m_inputFrame);
 			}
 		}
 	}
@@ -264,21 +264,21 @@ void Mouse::processMouseEvent( Int index )
 				// Mouse Down
 				m_currMouse.rightEvent = GWM_RIGHT_DOWN;
 				m_currMouse.rightState = MBS_Down;
-				m_currMouse.rightFrame = m_inputFrame;
+				m_currMouse.rightFrame = static_cast<Int>(m_inputFrame);
 			}
 			else if( m_mouseEvents[ index ].rightState == MBS_DoubleClick )
 			{
 				// Mouse Double Click
 				m_currMouse.rightEvent = GWM_RIGHT_DOUBLE_CLICK;
 				m_currMouse.rightState = MBS_DoubleClick;
-				m_currMouse.rightFrame = m_inputFrame;
+				m_currMouse.rightFrame = static_cast<Int>(m_inputFrame);
 			}
 			else
 			{
 				// Mouse Up
 				m_currMouse.rightEvent = GWM_RIGHT_UP;
 				m_currMouse.rightState = MBS_Up;
-				m_currMouse.rightFrame = m_inputFrame;
+				m_currMouse.rightFrame = static_cast<Int>(m_inputFrame);
 			}
 		}
 	}
@@ -299,20 +299,20 @@ void Mouse::processMouseEvent( Int index )
 			{
 				m_currMouse.middleEvent = GWM_MIDDLE_DOWN;
 				m_currMouse.middleState = MBS_Down;
-				m_currMouse.middleFrame = m_inputFrame;
+				m_currMouse.middleFrame = static_cast<Int>(m_inputFrame);
 			}
 			else if( m_mouseEvents[index].middleState == MBS_DoubleClick )
 			{
 				m_currMouse.middleEvent = GWM_MIDDLE_DOUBLE_CLICK;
 				m_currMouse.middleState = MBS_DoubleClick;
-				m_currMouse.middleFrame = m_inputFrame;
+				m_currMouse.middleFrame = static_cast<Int>(m_inputFrame);
 			}
 			else
 			{
 				// Mouse Up
 				m_currMouse.middleEvent = GWM_MIDDLE_UP;
 				m_currMouse.middleState = MBS_Up;
-				m_currMouse.middleFrame = m_inputFrame;
+				m_currMouse.middleFrame = static_cast<Int>(m_inputFrame);
 			}
 		}
 	}
@@ -402,9 +402,9 @@ Bool Mouse::isClick(const ICoord2D *anchor, const ICoord2D *dest, UnsignedInt pr
 
 	// if the mouse hasn't moved further than the tolerance distance
 	// or the click took less than the tolerance duration
-	if (	abs(delta.x) > m_dragTolerance
-		||	abs(delta.y) > m_dragTolerance
-		||	currentMouseClick - previousMouseClick > m_dragToleranceMS)
+	if (	abs(delta.x) > m_data.m_dragTolerance
+		||	abs(delta.y) > m_data.m_dragTolerance
+		||	currentMouseClick - previousMouseClick > m_data.m_dragToleranceMS)
 	{
 		return FALSE;
 	}
@@ -452,18 +452,18 @@ Mouse::Mouse( void )
 	m_numButtons = 0;
 	m_numAxes = 0;
 	m_forceFeedback = FALSE;
-	
+
 	//Added By Sadullah Nader
 	//Initializations missing and needed
-	m_dragTolerance = 0;
-	m_dragTolerance3D = 0;
-	m_dragToleranceMS = 0;
+	m_data.m_dragTolerance = 0;
+	m_data.m_dragTolerance3D = 0;
+	m_data.m_dragToleranceMS = 0;
 	//
-	
+
 	//m_tooltipString.clear();	// redundant
 	m_displayTooltip = FALSE;
 	m_tooltipDisplayString = NULL;
-  m_tooltipDelay = -1;  // default value
+	m_tooltipDelay = -1;  // default value
 	// initialize all the mouse io data
 	memset( m_mouseEvents, 0, sizeof( m_mouseEvents ) );
 	memset( &m_currMouse, 0, sizeof( m_currMouse ) );
@@ -481,35 +481,35 @@ Mouse::Mouse( void )
 	m_inputMovesAbsolute = FALSE;
 
 	m_currentCursor = ARROW;
-	if (TheGlobalData && TheGlobalData->m_winCursors)
-		m_currentRedrawMode = RM_WINDOWS;
+	if (TheGlobalData && TheGlobalData->m_data.m_winCursors)
+		m_data.m_currentRedrawMode = RM_WINDOWS;
 	else
-		m_currentRedrawMode = RM_W3D;//RM_WINDOWS;
+		m_data.m_currentRedrawMode = RM_W3D;//RM_WINDOWS;
 	m_visible = FALSE;
-	m_tooltipFontName = "Times New Roman";
-	m_tooltipFontSize = 12;
-	m_tooltipFontIsBold = FALSE;
-	m_tooltipAnimateBackground = TRUE;
-	m_tooltipFillTime = 50;
-	m_tooltipDelayTime = 50;
+	m_data.m_tooltipFontName = "Times New Roman";
+	m_data.m_tooltipFontSize = 12;
+	m_data.m_tooltipFontIsBold = FALSE;
+	m_data.m_tooltipAnimateBackground = TRUE;
+	m_data.m_tooltipFillTime = 50;
+	m_data.m_tooltipDelayTime = 50;
 
 #define setColor(x, r, g, b, a) { x.red = r; x.green = g; x.blue = b; x.alpha = a; }
-	setColor(m_tooltipColorText, 220, 220, 220, 255);
-	setColor(m_tooltipColorHighlight, 255, 255, 0, 255);
-	setColor(m_tooltipColorShadow, 0, 0, 0, 255);
-	setColor(m_tooltipColorBackground, 20, 20, 0, 127);
-	setColor(m_tooltipColorBorder, 0, 0, 0, 255);
+	setColor(m_data.m_tooltipColorText, 220, 220, 220, 255);
+	setColor(m_data.m_tooltipColorHighlight, 255, 255, 0, 255);
+	setColor(m_data.m_tooltipColorShadow, 0, 0, 0, 255);
+	setColor(m_data.m_tooltipColorBackground, 20, 20, 0, 127);
+	setColor(m_data.m_tooltipColorBorder, 0, 0, 0, 255);
 #undef setColor
 
-	m_tooltipWidth = 15.0f;
-	m_lastTooltipWidth = 0.0f;
+	m_data.m_tooltipWidth = 15.0f;
+	m_data.m_lastTooltipWidth = 0.0f;
 
-	m_useTooltipAltTextColor = FALSE;
-	m_useTooltipAltBackColor = FALSE;
-	m_adjustTooltipAltColor = FALSE;
+	m_data.m_useTooltipAltTextColor = FALSE;
+	m_data.m_useTooltipAltBackColor = FALSE;
+	m_data.m_adjustTooltipAltColor = FALSE;
 
-	m_orthoCamera = FALSE;
-	m_orthoZoom = 1.0f;
+	m_data.m_orthoCamera = FALSE;
+	m_data.m_orthoZoom = 1.0f;
 
 	m_isTooltipEmpty = TRUE;
 
@@ -524,8 +524,8 @@ Mouse::Mouse( void )
 	m_cursorTextDropColor.alpha = 255;
 	
 	m_highlightPos = 0;
-	m_highlightUpdateStart = 0;
-	m_stillTime = 0;
+	m_highlightUpdateStart = std::chrono::steady_clock::time_point::min();
+	m_stillTime = std::chrono::steady_clock::time_point::min();
 	m_tooltipTextColor.red = 255;
 	m_tooltipTextColor.green = 255;
 	m_tooltipTextColor.blue = 255;
@@ -564,8 +564,8 @@ void Mouse::parseIni(void)
 //-------------------------------------------------------------------------------------------------
 void Mouse::init( void )
 {
-	if (TheGlobalData && TheGlobalData->m_winCursors)
-		m_currentRedrawMode = RM_WINDOWS;
+	if (TheGlobalData && TheGlobalData->m_data.m_winCursors)
+		m_data.m_currentRedrawMode = RM_WINDOWS;
 
 	// device info
 	m_numButtons = 2;  // by default just have 2 buttons
@@ -609,20 +609,21 @@ void Mouse::mouseNotifyResolutionChange( void )
 
 	m_tooltipDisplayString = TheDisplayStringManager->newDisplayString();
 
-	if (TheGlobalLanguageData && TheGlobalLanguageData->m_tooltipFontName.name.isNotEmpty())
-	{
-		m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
-			TheGlobalLanguageData->m_tooltipFontName.name,
-			TheGlobalLanguageData->adjustFontSize(TheGlobalLanguageData->m_tooltipFontName.size),
-			TheGlobalLanguageData->m_tooltipFontName.bold) );
-	}
-	else
-	{
-		m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
-			m_tooltipFontName,
-			TheGlobalLanguageData->adjustFontSize(m_tooltipFontSize),
-			m_tooltipFontIsBold ) );
-	}
+	// FIXME: Uncomment once TheGlobalLanguageData is implemented.
+	// if (TheGlobalLanguageData && TheGlobalLanguageData->m_tooltipFontName.name.isNotEmpty())
+	// {
+	// 	m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
+	// 		TheGlobalLanguageData->m_tooltipFontName.name,
+	// 		TheGlobalLanguageData->adjustFontSize(TheGlobalLanguageData->m_tooltipFontName.size),
+	// 		TheGlobalLanguageData->m_tooltipFontName.bold) );
+	// }
+	// else
+	// {
+	// 	m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
+	// 		m_data.m_tooltipFontName,
+	// 		TheGlobalLanguageData->adjustFontSize(m_data.m_tooltipFontSize),
+	// 		m_data.m_tooltipFontIsBold ) );
+	// }
 
 	m_tooltipDisplayString->setWordWrap(120);
 
@@ -671,28 +672,29 @@ void Mouse::createStreamMessages( void )
 		return;  // no place to put messages
 
 	GameMessage *msg = NULL;
-	UnsignedInt now = timeGetTime();
+	auto now {std::chrono::steady_clock::now()};
 
 	// basic position messages are always created
 	msg = TheMessageStream->appendMessage( GameMessage::MSG_RAW_MOUSE_POSITION );
 	msg->appendPixelArgument( m_currMouse.pos );
 	msg->appendIntegerArgument( TheKeyboard->getModifierFlags() );
 
-  Int delay = m_tooltipDelayTime;
-  if(m_tooltipDelay >= 0 )
-     delay = m_tooltipDelay;
-	if( TheGlobalData->m_scriptDebug )
+	Int delay = m_data.m_tooltipDelayTime;
+	if(m_tooltipDelay >= 0 )
+		delay = m_tooltipDelay;
+	if( TheGlobalData->m_data.m_scriptDebug )
 	{
 		//No delay while scriptdebugging!
 		delay = 0;
 	}
-  
-	if( now - m_stillTime >= delay )
+
+	std::chrono::duration<double, std::milli> elapsed {now - m_stillTime};
+	if( elapsed.count() >= delay )
 	{
 		if (!m_displayTooltip)
 		{
 			m_highlightPos = 0;
-			m_highlightUpdateStart = timeGetTime();
+			m_highlightUpdateStart = std::chrono::steady_clock::now();
 		}
 
 		// display tooltip for current window
@@ -837,13 +839,13 @@ void Mouse::setCursorTooltip( UnicodeString tooltip, Int delay, const RGBColor *
 	//DEBUG_LOG(("%d Tooltip: %ls\n", TheGameClient->getFrame(), tooltip.str()));
 
 	m_isTooltipEmpty = tooltip.isEmpty();
-  m_tooltipDelay = delay;
+	m_tooltipDelay = delay;
 
 	Bool forceRecalc = FALSE;
-	if ( !tooltip.isEmpty() && width != m_lastTooltipWidth )
+	if ( !tooltip.isEmpty() && width != m_data.m_lastTooltipWidth )
 	{
 		forceRecalc = TRUE;
-		Int widthInPixels = (Int)(TheDisplay->getWidth()*m_tooltipWidth*width);
+		UnsignedInt widthInPixels = TheDisplay->getWidth()*m_data.m_tooltipWidth*width;
 		if (widthInPixels < 10)
 		{
 			widthInPixels = 120;
@@ -853,54 +855,54 @@ void Mouse::setCursorTooltip( UnicodeString tooltip, Int delay, const RGBColor *
 			widthInPixels = TheDisplay->getWidth();
 		}
 		//DEBUG_LOG(("Setting tooltip width to %d pixels (%g%% of the normal tooltip width)\n", widthInPixels, width*100));
-		m_tooltipDisplayString->setWordWrap( widthInPixels );
-		m_lastTooltipWidth = width;
+		m_tooltipDisplayString->setWordWrap( static_cast<Int>(widthInPixels) );
+		m_data.m_lastTooltipWidth = width;
 	}
 
-	if (forceRecalc || !m_isTooltipEmpty && tooltip.compare(m_tooltipDisplayString->getText()))
+	if (forceRecalc || (!m_isTooltipEmpty && tooltip.compare(m_tooltipDisplayString->getText())))
 	{
 		m_tooltipDisplayString->setText(tooltip);
 		//DEBUG_LOG(("Tooltip: %ls\n", tooltip.str()));
 	}
 	if (color)
 	{
-		if (m_useTooltipAltTextColor)
+		if (m_data.m_useTooltipAltTextColor)
 		{
-			if (m_adjustTooltipAltColor)
+			if (m_data.m_adjustTooltipAltColor)
 			{
-				m_tooltipTextColor.red   = REAL_TO_INT((color->red + 1.0f)   * 255.0f / 2.0f);
-				m_tooltipTextColor.green = REAL_TO_INT((color->green + 1.0f) * 255.0f / 2.0f);
-				m_tooltipTextColor.blue  = REAL_TO_INT((color->blue + 1.0f)  * 255.0f / 2.0f);
+				m_tooltipTextColor.red   = REAL_TO_UNSIGNEDINT((color->red + 1.0f)   * 255.0f / 2.0f);
+				m_tooltipTextColor.green = REAL_TO_UNSIGNEDINT((color->green + 1.0f) * 255.0f / 2.0f);
+				m_tooltipTextColor.blue  = REAL_TO_UNSIGNEDINT((color->blue + 1.0f)  * 255.0f / 2.0f);
 			}
 			else
 			{
-				m_tooltipTextColor.red   = REAL_TO_INT(color->red   * 255.0f);
-				m_tooltipTextColor.green = REAL_TO_INT(color->green * 255.0f);
-				m_tooltipTextColor.blue  = REAL_TO_INT(color->blue  * 255.0f);
+				m_tooltipTextColor.red   = REAL_TO_UNSIGNEDINT(color->red   * 255.0f);
+				m_tooltipTextColor.green = REAL_TO_UNSIGNEDINT(color->green * 255.0f);
+				m_tooltipTextColor.blue  = REAL_TO_UNSIGNEDINT(color->blue  * 255.0f);
 			}
-			m_tooltipTextColor.alpha = m_tooltipColorText.alpha;
+			m_tooltipTextColor.alpha = m_data.m_tooltipColorText.alpha;
 		}
-		if (m_useTooltipAltBackColor)
+		if (m_data.m_useTooltipAltBackColor)
 		{
-			if (m_adjustTooltipAltColor)
+			if (m_data.m_adjustTooltipAltColor)
 			{
-				m_tooltipBackColor.red   = REAL_TO_INT(color->red   * 255.0f * 0.5f);
-				m_tooltipBackColor.green = REAL_TO_INT(color->green * 255.0f * 0.5f);
-				m_tooltipBackColor.blue  = REAL_TO_INT(color->blue  * 255.0f * 0.5f);
+				m_tooltipBackColor.red   = REAL_TO_UNSIGNEDINT(color->red   * 255.0f * 0.5f);
+				m_tooltipBackColor.green = REAL_TO_UNSIGNEDINT(color->green * 255.0f * 0.5f);
+				m_tooltipBackColor.blue  = REAL_TO_UNSIGNEDINT(color->blue  * 255.0f * 0.5f);
 			}
 			else
 			{
-				m_tooltipBackColor.red   = REAL_TO_INT(color->red   * 255.0f);
-				m_tooltipBackColor.green = REAL_TO_INT(color->green * 255.0f);
-				m_tooltipBackColor.blue  = REAL_TO_INT(color->blue  * 255.0f);
+				m_tooltipBackColor.red   = REAL_TO_UNSIGNEDINT(color->red   * 255.0f);
+				m_tooltipBackColor.green = REAL_TO_UNSIGNEDINT(color->green * 255.0f);
+				m_tooltipBackColor.blue  = REAL_TO_UNSIGNEDINT(color->blue  * 255.0f);
 			}
-			m_tooltipBackColor.alpha = m_tooltipColorBackground.alpha;
+			m_tooltipBackColor.alpha = m_data.m_tooltipColorBackground.alpha;
 		}
 	}
 	else
 	{
-		m_tooltipTextColor = m_tooltipColorText;
-		m_tooltipBackColor = m_tooltipColorBackground;
+		m_tooltipTextColor = m_data.m_tooltipColorText;
+		m_tooltipBackColor = m_data.m_tooltipColorBackground;
 	}
 
 }  // end setCursorTooltip
@@ -941,7 +943,7 @@ void Mouse::setPosition( Int x, Int y )
 }  // end setPosition
 
 //-------------------------------------------------------------------------------------------------
-/** This default implemtation of SetMouseLimits will just set the limiting	
+/** This default implementation of SetMouseLimits will just set the limiting	
 	* rectangle to be the width and height of the game display with the
 	* origin in the upper left at (0,0).  However, if the game is running
 	* in a windowed mode then these limits should reflect the SCREEN
@@ -958,8 +960,8 @@ void Mouse::setMouseLimits( void )
 	if( TheDisplay )
 	{
 
-		m_maxX = TheDisplay->getWidth();
-		m_maxY = TheDisplay->getHeight();
+		m_maxX = static_cast<Int>(TheDisplay->getWidth());
+		m_maxY = static_cast<Int>(TheDisplay->getHeight());
 	
 	}  // end if
 
@@ -977,7 +979,7 @@ void Mouse::draw( void )
 // ------------------------------------------------------------------------------------------------
 void Mouse::resetTooltipDelay( void )
 {
-	m_stillTime = timeGetTime();
+	m_stillTime = std::chrono::steady_clock::now();
 	m_displayTooltip = FALSE;
 }
 
@@ -986,9 +988,10 @@ void Mouse::resetTooltipDelay( void )
 //-------------------------------------------------------------------------------------------------
 void Mouse::drawTooltip( void )
 {
-	if (TheScriptEngine->getFade()!=ScriptEngine::FADE_NONE) {
-		return;
-	}
+	// FIXME: Uncomment once TheScriptEngine is implemented.
+	// if (TheScriptEngine->getFade()!=ScriptEngine::FADE_NONE) {
+	// 	return;
+	// }
 
 	/// @todo: Still need to put in display logic so it puts the tool tips in a visable position on the edge of the screen
 	if( m_displayTooltip && TheDisplay && m_tooltipDisplayString && (m_tooltipDisplayString->getTextLength() > 0) && !m_isTooltipEmpty)
@@ -1010,10 +1013,10 @@ void Mouse::drawTooltip( void )
 			yPos -= /*40 +*/ height;
 		}
 
-		Int boxWidth = (m_tooltipAnimateBackground)?(min(width, m_highlightPos)):width;
+		Int boxWidth = (m_data.m_tooltipAnimateBackground)?(std::min(width, m_highlightPos)):width;
 
 #define GMC(x) GameMakeColor(x.red, x.green, x.blue, x.alpha)
-#define COLOR(x) GMC(m_tooltipColor##x)
+#define COLOR(x) GMC(m_data.m_tooltipColor##x)
 		TheDisplay->drawFillRect(xPos, yPos, boxWidth + 2,height + 2, GMC(m_tooltipBackColor));//GameMakeColor(0,0,0,125));
 		TheDisplay->drawOpenRect(xPos, yPos, boxWidth + 2,height + 2, 1.0, COLOR(Border));//GameMakeColor(20,20,20,255));
 
@@ -1038,8 +1041,8 @@ void Mouse::drawTooltip( void )
 		// get ready for the next part of the anim
 		if (m_highlightPos < width + HIGHLIGHT_WIDTH)
 		{
-			UnsignedInt now = timeGetTime();
-			m_highlightPos = (width*(now-m_highlightUpdateStart))/m_tooltipFillTime;
+			std::chrono::duration<double, std::milli> elapsed {std::chrono::steady_clock::now() - m_highlightUpdateStart};
+			m_highlightPos = (width*elapsed.count())/m_data.m_tooltipFillTime;
 		}
 	}  // end if
 
@@ -1088,7 +1091,7 @@ Int Mouse::getCursorIndex(const AsciiString& name)
 
 	/** @todo This is silly to have to define these names from INI in the code ... 
 		* that should be changed (CBD) */
-	static char *CursorININames[NUM_MOUSE_CURSORS] =
+	static const char *CursorININames[NUM_MOUSE_CURSORS] =
 	{
 		//"InvalidMouseCursor",  // this entry is not actually a mouse cursor, but just a
 														 // reminder that it does exist
@@ -1166,23 +1169,24 @@ void Mouse::setCursor( MouseCursor cursor )
 	if( m_currentCursor == cursor )
 		return;
 
-	// only if we have a display cursor do we do anything with mouse text
-	if( m_cursorTextDisplayString != NULL )
-	{
-		CursorInfo *cursorInfo = &m_cursorInfo[ cursor ];
+	// FIXME: Uncomment once TheGameText is implemented.
+	// // only if we have a display cursor do we do anything with mouse text
+	// if( m_cursorTextDisplayString != NULL )
+	// {
+	// 	CursorInfo *cursorInfo = &m_cursorInfo[ cursor ];
 
-		//
-		// if there is text present into the cursor info, set it into the mouse, otherwise
-		// just clear out the text for the cursor text
-		//
-		if( cursorInfo->cursorText.isEmpty() == FALSE )
-			setMouseText( TheGameText->fetch( cursorInfo->cursorText.str() ),
-										 &(cursorInfo->cursorTextColor),
-										 &(cursorInfo->cursorTextDropColor) );
-		else
-			setMouseText( UnicodeString( L"" ), NULL, NULL );
+	// 	//
+	// 	// if there is text present into the cursor info, set it into the mouse, otherwise
+	// 	// just clear out the text for the cursor text
+	// 	//
+	// 	if( cursorInfo->cursorText.isEmpty() == FALSE )
+	// 		setMouseText( TheGameText->fetch( cursorInfo->cursorText.str() ),
+	// 									 &(cursorInfo->cursorTextColor),
+	// 									 &(cursorInfo->cursorTextDropColor) );
+	// 	else
+	// 		setMouseText( UnicodeString( L"" ), NULL, NULL );
 
-	}  // end if
+	// }  // end if
 
 }  // end setCursor
 
@@ -1222,8 +1226,6 @@ void INI::parseMouseDefinition( INI* ini )
 	if( TheMouse )
 	{
 		// parse the ini weapon definition
-		ini->initFromINI( TheMouse, TheMouseFieldParseTable );
+		ini->initFromINI( &TheMouse->m_data, TheMouseFieldParseTable );
 	}
 }
-
-

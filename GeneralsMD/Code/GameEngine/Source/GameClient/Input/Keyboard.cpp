@@ -329,28 +329,17 @@ void Keyboard::initKeyNames( void )
 
 	_set_keyname_(L' ',		L' ',		L'\0',	KEY_SPACE  );
 
-	HKL kLayout = GetKeyboardLayout(0);
+	// MG: Sorry... I don't think that SDL supports different keyboard layouts in this way.
+	// HKL kLayout = GetKeyboardLayout(0);
 
-	Int low = (UnsignedInt)kLayout & 0xFFFF;
 	LanguageID currentLanguage = OurLanguage;
-	if(low == 0x040c
-		 || low == 0x080c
-		 || low == 0x0c0c
-		 || low == 0x100c
-		 || low == 0x140c)
-		currentLanguage = LANGUAGE_ID_FRENCH;
 
 	switch( currentLanguage )
 	{
 		case LANGUAGE_ID_US:
-		case LANGUAGE_ID_JAPANESE:
-		case LANGUAGE_ID_KOREAN:
-		case LANGUAGE_ID_JABBER:
-		case LANGUAGE_ID_UNKNOWN:
-		case LANGUAGE_ID_SPANISH:		// not localized
 			_set_keyname_(L'-',				L'-',				L'\0',	KEY_KPMINUS );
 			_set_keyname_(L'+',				L'+',				L'\0',	KEY_KPPLUS );
-			_set_keyname_(L'\n',			L'\n',			L'\0',	KEY_KPENTER );
+			_set_keyname_(L'\n',			L'\n',				L'\0',	KEY_KPENTER );
 			_set_keyname_(L'/',				L'/',				L'\0',	KEY_KPSLASH );
 			_set_keyname_(L'.',				L'.',				L'\0',	KEY_KPDEL );
 			_set_keyname_(L'*',				L'*',				L'\0',	KEY_KPSTAR );
@@ -401,7 +390,7 @@ void Keyboard::initKeyNames( void )
 			_set_keyname_(L']',				L'}',				L'\0',	KEY_RBRACKET  );
 
 			_set_keyname_(L';',				L':',				L'\0',	KEY_SEMICOLON  );
-			_set_keyname_(L'\'',			L'\"',			L'\0',	KEY_APOSTROPHE  );
+			_set_keyname_(L'\'',			L'\"',				L'\0',	KEY_APOSTROPHE  );
 			_set_keyname_(L'`',				L'~',				L'\0',	KEY_TICK  );
 			_set_keyname_(L'\\',			L'|',				L'\0',	KEY_BACKSLASH  );
 
@@ -410,268 +399,8 @@ void Keyboard::initKeyNames( void )
 
 			break;
 
-		case LANGUAGE_ID_UK:
-			_set_keyname_(L'-',				L'-',				L'\0',	KEY_KPMINUS );
-			_set_keyname_(L'+',				L'+',				L'\0',	KEY_KPPLUS );
-			_set_keyname_(L'\n',			L'\n',			L'\0',	KEY_KPENTER );
-			_set_keyname_(L'/',				L'/',				L'\0',	KEY_KPSLASH );
-			_set_keyname_(L'.',				L'.',				L'\0',	KEY_KPDEL );
-			_set_keyname_(L'*',				L'*',				L'\0',	KEY_KPSTAR );
-
-			_set_keyname_(L'a',				L'A',				L'\0',	KEY_A  );
-			_set_keyname_(L'b',				L'B',				L'\0',	KEY_B  );
-			_set_keyname_(L'c',				L'C',				L'\0',	KEY_C  );
-			_set_keyname_(L'd',				L'D',				L'\0',	KEY_D  );
-			_set_keyname_(L'e',				L'E',				L'\0',	KEY_E  );
-			_set_keyname_(L'f',				L'F',				L'\0',	KEY_F  );
-			_set_keyname_(L'g',				L'G',				L'\0',	KEY_G  );
-			_set_keyname_(L'h',				L'H',				L'\0',	KEY_H  );
-			_set_keyname_(L'i',				L'I',				L'\0',	KEY_I  );
-			_set_keyname_(L'j',				L'J',				L'\0',	KEY_J  );
-			_set_keyname_(L'k',				L'K',				L'\0',	KEY_K  );
-			_set_keyname_(L'l',				L'L',				L'\0',	KEY_L  );
-			_set_keyname_(L'm',				L'M',				L'\0',	KEY_M  );
-			_set_keyname_(L'n',				L'N',				L'\0',	KEY_N  );
-			_set_keyname_(L'o',				L'O',				L'\0',	KEY_O  );
-			_set_keyname_(L'p',				L'P',				L'\0',	KEY_P  );
-			_set_keyname_(L'q',				L'Q',				L'\0',	KEY_Q  );
-			_set_keyname_(L'r',				L'R',				L'\0',	KEY_R  );
-			_set_keyname_(L's',				L'S',				L'\0',	KEY_S  );
-			_set_keyname_(L't',				L'T',				L'\0',	KEY_T  );
-			_set_keyname_(L'u',				L'U',				L'\0',	KEY_U  );
-			_set_keyname_(L'v',				L'V',				L'\0',	KEY_V  );
-			_set_keyname_(L'w',				L'W',				L'\0',	KEY_W  );
-			_set_keyname_(L'x',				L'X',				L'\0',	KEY_X  );
-			_set_keyname_(L'y',				L'Y',				L'\0',	KEY_Y  );
-			_set_keyname_(L'z',				L'Z',				L'\0',	KEY_Z  );
-
-			_set_keyname_(L'1',				L'!',				L'\0',	KEY_1  );
-			_set_keyname_(L'2',				L'\"',			L'\0',	KEY_2  );
-			_set_keyname_(L'3',				0x00A3,			L'\0',	KEY_3  );	//£
-			_set_keyname_(L'4',				L'$',				L'€',		KEY_4  );
-			_set_keyname_(L'5',				L'%',				L'\0',	KEY_5  );
-			_set_keyname_(L'6',				L'^',				L'\0',	KEY_6  );
-			_set_keyname_(L'7',				L'&',				L'\0',	KEY_7  );
-			_set_keyname_(L'8',				L'*',				L'\0',	KEY_8  );
-			_set_keyname_(L'9',				L'(',				L'\0',	KEY_9  );
-			_set_keyname_(L'0',				L')',				L'\0',	KEY_0  );
-
-			_set_keyname_(L',',				L'<',				L'\0',	KEY_COMMA  );
-			_set_keyname_(L'.',				L'>',				L'\0',	KEY_PERIOD  );
-			_set_keyname_(L'/',				L'?',				L'\0',	KEY_SLASH  );
-
-			_set_keyname_(L'[',				L'{',				L'\0',	KEY_LBRACKET  );
-			_set_keyname_(L']',				L'}',				L'\0',	KEY_RBRACKET  );
-
-			_set_keyname_(L';',				L':',				L'\0',	KEY_SEMICOLON  );
-			_set_keyname_(L'\'',			L'@',				L'\0',	KEY_APOSTROPHE  );
-			_set_keyname_(L'`',				0x00AC,			0x00A6,	KEY_TICK  );	//¬¦
-			_set_keyname_(L'#',				L'~',				L'\0',	KEY_BACKSLASH  );
-
-			_set_keyname_(L'-',				L'_',				L'\0',	KEY_MINUS  );
-			_set_keyname_(L'=',				L'+',				L'\0',	KEY_EQUAL  );
-
-			_set_keyname_(L'\\',			L'|',				L'\0',	KEY_102  );
-
-			m_shift2Key = KEY_RALT;
-			break;
-
-		case LANGUAGE_ID_GERMAN:
-			_set_keyname_(L'-',				L'-',				L'\0',	KEY_KPMINUS );
-			_set_keyname_(L'+',				L'+',				L'\0',	KEY_KPPLUS );
-			_set_keyname_(L'\n',			L'\n',			L'\0',	KEY_KPENTER );
-			_set_keyname_(L'/',				L'/',				L'\0',	KEY_KPSLASH );
-			_set_keyname_(L',',				L',',				L'\0',	KEY_KPDEL );
-			_set_keyname_(L'*',				L'*',				L'\0',	KEY_KPSTAR );
-
-			_set_keyname_(L'a',				L'A',				L'\0',	KEY_A  );
-			_set_keyname_(L'b',				L'B',				L'\0',	KEY_B  );
-			_set_keyname_(L'c',				L'C',				L'\0',	KEY_C  );
-			_set_keyname_(L'd',				L'D',				L'\0',	KEY_D  );
-			_set_keyname_(L'e',				L'E',				L'\0',	KEY_E  );
-			_set_keyname_(L'f',				L'F',				L'\0',	KEY_F  );
-			_set_keyname_(L'g',				L'G',				L'\0',	KEY_G  );
-			_set_keyname_(L'h',				L'H',				L'\0',	KEY_H  );
-			_set_keyname_(L'i',				L'I',				L'\0',	KEY_I  );
-			_set_keyname_(L'j',				L'J',				L'\0',	KEY_J  );
-			_set_keyname_(L'k',				L'K',				L'\0',	KEY_K  );
-			_set_keyname_(L'l',				L'L',				L'\0',	KEY_L  );
-			_set_keyname_(L'm',				L'M',				0x00B5,	KEY_M  );	//µ
-			_set_keyname_(L'n',				L'N',				L'\0',	KEY_N  );
-			_set_keyname_(L'o',				L'O',				L'\0',	KEY_O  );
-			_set_keyname_(L'p',				L'P',				L'\0',	KEY_P  );
-			_set_keyname_(L'q',				L'Q',				L'@',		KEY_Q  );
-			_set_keyname_(L'r',				L'R',				L'\0',	KEY_R  );
-			_set_keyname_(L's',				L'S',				L'\0',	KEY_S  );
-			_set_keyname_(L't',				L'T',				L'\0',	KEY_T  );
-			_set_keyname_(L'u',				L'U',				L'\0',	KEY_U  );
-			_set_keyname_(L'v',				L'V',				L'\0',	KEY_V  );
-			_set_keyname_(L'w',				L'W',				L'\0',	KEY_W  );
-			_set_keyname_(L'x',				L'X',				L'\0',	KEY_X  );
-			_set_keyname_(L'z',				L'Z',				L'\0',	KEY_Y  );
-			_set_keyname_(L'y',				L'Y',				L'\0',	KEY_Z  );
-
-			_set_keyname_(L'1',				L'!',				L'\0',	KEY_1  );
-			_set_keyname_(L'2',				L'"',				0x00B2,	KEY_2  );	//²
-			_set_keyname_(L'3',				0x00A7,			0x00B3,	KEY_3  );	//§³
-			_set_keyname_(L'4',				L'$',				L'\0',	KEY_4  );
-			_set_keyname_(L'5',				L'%',				L'\0',	KEY_5  );
-			_set_keyname_(L'6',				L'&',				L'\0',	KEY_6  );
-			_set_keyname_(L'7',				L'/',				L'{',		KEY_7  );
-			_set_keyname_(L'8',				L'(',				L'[',		KEY_8  );
-			_set_keyname_(L'9',				L')',				L']',		KEY_9  );
-			_set_keyname_(L'0',				L'=',				L'}',		KEY_0  );
-
-			_set_keyname_(L',',				L';',				L'\0',	KEY_COMMA  );
-			_set_keyname_(L'.',				L':',				L'\0',	KEY_PERIOD  );
-			_set_keyname_(L'-',				L'_',				L'\0',	KEY_SLASH  );
-
-			_set_keyname_(0x00FC,			0x00DC,			L'\0',	KEY_LBRACKET  );		//üÜ
-			_set_keyname_(L'+',				L'*',				L'~',		KEY_RBRACKET  );
-
-			_set_keyname_(0x00F6,			0x00D6,			L'\0',	KEY_SEMICOLON  );		//öÖ
-			_set_keyname_(0x00E4,			0x00C4,			L'\0',	KEY_APOSTROPHE  );	//äÄ
-			_set_keyname_(L'^',				0x00B0,			L'\0',	KEY_TICK  );				//°
-			_set_keyname_(L'#',				L'\'',			L'\0',	KEY_BACKSLASH  );
-
-			_set_keyname_(0x00DF,			L'?',				L'\\',	KEY_MINUS  );				//ß
-			_set_keyname_(0x00B4,			L'`',				L'\0',	KEY_EQUAL  );				//´
-
-			_set_keyname_(L'<',				L'>',				L'|',		KEY_102  );
-
-			m_shift2Key = KEY_RALT;
-			break;
-
-		case LANGUAGE_ID_FRENCH:
-			_set_keyname_(L'-',				L'-',				L'\0',	KEY_KPMINUS );
-			_set_keyname_(L'+',				L'+',				L'\0',	KEY_KPPLUS );
-			_set_keyname_(L'\n',			L'\n',			L'\0',	KEY_KPENTER );
-			_set_keyname_(L'/',				L'/',				L'\0',	KEY_KPSLASH );
-			_set_keyname_(L'.',				L'.',				L'\0',	KEY_KPDEL );
-			_set_keyname_(L'*',				L'*',				L'\0',	KEY_KPSTAR );
-
-			_set_keyname_(L'q',				L'Q',				L'\0',	KEY_A  );
-			_set_keyname_(L'b',				L'B',				L'\0',	KEY_B  );
-			_set_keyname_(L'c',				L'C',				L'\0',	KEY_C  );
-			_set_keyname_(L'd',				L'D',				L'\0',	KEY_D  );
-			_set_keyname_(L'e',				L'E',				L'\0',	KEY_E  );
-			_set_keyname_(L'f',				L'F',				L'\0',	KEY_F  );
-			_set_keyname_(L'g',				L'G',				L'\0',	KEY_G  );
-			_set_keyname_(L'h',				L'H',				L'\0',	KEY_H  );
-			_set_keyname_(L'i',				L'I',				L'\0',	KEY_I  );
-			_set_keyname_(L'j',				L'J',				L'\0',	KEY_J  );
-			_set_keyname_(L'k',				L'K',				L'\0',	KEY_K  );
-			_set_keyname_(L'l',				L'L',				L'\0',	KEY_L  );
-			_set_keyname_(L',',				L'?',				L'\0',	KEY_M  );
-			_set_keyname_(L'n',				L'N',				L'\0',	KEY_N  );
-			_set_keyname_(L'o',				L'O',				L'\0',	KEY_O  );
-			_set_keyname_(L'p',				L'P',				L'\0',	KEY_P  );
-			_set_keyname_(L'a',				L'A',				L'\0',	KEY_Q  );
-			_set_keyname_(L'r',				L'R',				L'\0',	KEY_R  );
-			_set_keyname_(L's',				L'S',				L'\0',	KEY_S  );
-			_set_keyname_(L't',				L'T',				L'\0',	KEY_T  );
-			_set_keyname_(L'u',				L'U',				L'\0',	KEY_U  );
-			_set_keyname_(L'v',				L'V',				L'\0',	KEY_V  );
-			_set_keyname_(L'z',				L'Z',				L'\0',	KEY_W  );
-			_set_keyname_(L'x',				L'X',				L'\0',	KEY_X  );
-			_set_keyname_(L'y',				L'Y',				L'\0',	KEY_Y  );
-			_set_keyname_(L'w',				L'W',				L'\0',	KEY_Z  );
-
-			_set_keyname_(L'&',				L'1',				L'\0',	KEY_1  );
-			_set_keyname_(0x00E9,			L'2',				L'~',		KEY_2  );	//é
-			_set_keyname_(L'"',				L'3',				L'#',		KEY_3  );
-			_set_keyname_(L'\'',			L'4',				L'{',		KEY_4  );
-			_set_keyname_(L'(',				L'5',				L'[',		KEY_5  );
-			_set_keyname_(L'-',				L'6',				L'|',		KEY_6  );
-			_set_keyname_(0x00E8,			L'7',				L'`',		KEY_7  );	//è
-			_set_keyname_(L'_',				L'8',				L'\\',	KEY_8  );
-			_set_keyname_(0x00E7,			L'9',				L'\0',	KEY_9  );	//ç
-			_set_keyname_(0x00E0,			L'0',				L'@',		KEY_0  );	//à
-
-			_set_keyname_(L';',				L'.',				L'\0',	KEY_COMMA  );
-			_set_keyname_(L':',				L'/',				L'\0',	KEY_PERIOD  );
-			_set_keyname_(L'!',				0x00A7,			L'\0',	KEY_SLASH  );				//§
-
-			_set_keyname_(L'^',				0x00A8,			L'\0',	KEY_LBRACKET  );		//¨
-			_set_keyname_(L'$',				0x00A3,			0x00A4,	KEY_RBRACKET  );		//£¤
-
-			_set_keyname_(L'm',				L'M',				L'\0',	KEY_SEMICOLON  );
-			_set_keyname_(0x00F9,			L'%',				L'\0',	KEY_APOSTROPHE  );	//ù
-			_set_keyname_(0x00B2,			L'\0',			L'\0',	KEY_TICK  );				//²
-			_set_keyname_(L'*',				0x00B5,			L'\0',	KEY_BACKSLASH  );		//µ
-
-			_set_keyname_(L')',				0x00B0,			L']',		KEY_MINUS  );				//°
-			_set_keyname_(L'=',				L'+',				L'}',		KEY_EQUAL  );
-
-			_set_keyname_(L'<',				L'>',				L'\0',	KEY_102  );
-
-			m_shift2Key = KEY_RALT;
-			break;
-
-		case LANGUAGE_ID_ITALIAN:
-			_set_keyname_(L'-',				L'-',				L'\0',	KEY_KPMINUS );
-			_set_keyname_(L'+',				L'+',				L'\0',	KEY_KPPLUS );
-			_set_keyname_(L'\n',			L'\n',			L'\0',	KEY_KPENTER );
-			_set_keyname_(L'/',				L'/',				L'\0',	KEY_KPSLASH );
-			_set_keyname_(L'.',				L'.',				L'\0',	KEY_KPDEL );
-			_set_keyname_(L'*',				L'*',				L'\0',	KEY_KPSTAR );
-
-			_set_keyname_(L'a',				L'A',				L'\0',	KEY_A  );
-			_set_keyname_(L'b',				L'B',				L'\0',	KEY_B  );
-			_set_keyname_(L'c',				L'C',				L'\0',	KEY_C  );
-			_set_keyname_(L'd',				L'D',				L'\0',	KEY_D  );
-			_set_keyname_(L'e',				L'E',				L'\0',	KEY_E  );
-			_set_keyname_(L'f',				L'F',				L'\0',	KEY_F  );
-			_set_keyname_(L'g',				L'G',				L'\0',	KEY_G  );
-			_set_keyname_(L'h',				L'H',				L'\0',	KEY_H  );
-			_set_keyname_(L'i',				L'I',				L'\0',	KEY_I  );
-			_set_keyname_(L'j',				L'J',				L'\0',	KEY_J  );
-			_set_keyname_(L'k',				L'K',				L'\0',	KEY_K  );
-			_set_keyname_(L'l',				L'L',				L'\0',	KEY_L  );
-			_set_keyname_(L'm',				L'M',				L'\0',	KEY_M  );
-			_set_keyname_(L'n',				L'N',				L'\0',	KEY_N  );
-			_set_keyname_(L'o',				L'O',				L'\0',	KEY_O  );
-			_set_keyname_(L'p',				L'P',				L'\0',	KEY_P  );
-			_set_keyname_(L'q',				L'Q',				L'\0',	KEY_Q  );
-			_set_keyname_(L'r',				L'R',				L'\0',	KEY_R  );
-			_set_keyname_(L's',				L'S',				L'\0',	KEY_S  );
-			_set_keyname_(L't',				L'T',				L'\0',	KEY_T  );
-			_set_keyname_(L'u',				L'U',				L'\0',	KEY_U  );
-			_set_keyname_(L'v',				L'V',				L'\0',	KEY_V  );
-			_set_keyname_(L'w',				L'W',				L'\0',	KEY_W  );
-			_set_keyname_(L'x',				L'X',				L'\0',	KEY_X  );
-			_set_keyname_(L'y',				L'Y',				L'\0',	KEY_Y  );
-			_set_keyname_(L'z',				L'Z',				L'\0',	KEY_Z  );
-
-			_set_keyname_(L'1',				L'!',				L'\0',	KEY_1  );
-			_set_keyname_(L'2',				L'"',				L'\0',	KEY_2  );
-			_set_keyname_(L'3',				0x00A3,			L'\0',	KEY_3  );		//£
-			_set_keyname_(L'4',				L'$',				L'\0',	KEY_4  );
-			_set_keyname_(L'5',				L'%',				L'\0',	KEY_5  );
-			_set_keyname_(L'6',				L'&',				L'\0',	KEY_6  );
-			_set_keyname_(L'7',				L'/',				L'\0',	KEY_7  );
-			_set_keyname_(L'8',				L'(',				L'\0',	KEY_8  );
-			_set_keyname_(L'9',				L')',				L'\0',	KEY_9  );
-			_set_keyname_(L'0',				L'=',				L'\0',	KEY_0  );
-
-			_set_keyname_(L',',				L';',				L'\0',	KEY_COMMA  );
-			_set_keyname_(L'.',				L':',				L'\0',	KEY_PERIOD  );
-			_set_keyname_(L'-',				L'_',				L'\0',	KEY_SLASH  );
-
-			_set_keyname_(0x00E8,			0x00E9,			L'[',		KEY_LBRACKET  );		//èé
-			_set_keyname_(L'+',				L'*',				L']',		KEY_RBRACKET  );
-
-			_set_keyname_(0x00F2,			0x00E7,			L'@',		KEY_SEMICOLON  );		//òç
-			_set_keyname_(0x00E0,			0x00B0,			L'#',		KEY_APOSTROPHE  );	//à°
-			_set_keyname_(L'\\',			L'|',				L'\0',	KEY_TICK  );
-			_set_keyname_(0x00F9,			0x00A7,			L'\0',	KEY_BACKSLASH  );		//ù§
-
-			_set_keyname_(L'\'',			L'?',				L'\0',	KEY_MINUS  );
-			_set_keyname_(0x00EC,			L'^',				L'\0',	KEY_EQUAL  );				//ì
-
-			_set_keyname_(L'<',				L'>',				L'\0',	KEY_102  );
-
-			m_shift2Key = KEY_RALT;
+		default:
+			printf("Non-US keyboard layouts may be a problem!");
 			break;
 
 	}  // end switch( Language )
@@ -829,7 +558,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 					if( m_modifiers & KEY_STATE_CAPSLOCK )
 					{
 						// Toggle caplocks off
-						m_modifiers &= ~KEY_STATE_CAPSLOCK;
+						m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_CAPSLOCK);
 					}
 					else
 					{
@@ -849,7 +578,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 			}
 			else
 			{
-				m_modifiers &= ~KEY_STATE_LSHIFT;
+				m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_LSHIFT);
 			}
 			return 0;
 
@@ -860,7 +589,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 			}
 			else
 			{
-				m_modifiers &= ~KEY_STATE_RSHIFT;
+				m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_RSHIFT);
 			}
 			return 0;
 
@@ -871,7 +600,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 			}
 			else
 			{
-				m_modifiers &= ~KEY_STATE_LCONTROL;
+				m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_LCONTROL);
 			}
 			return 0;
 
@@ -882,7 +611,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 			}
 			else
 			{
-				m_modifiers &= ~KEY_STATE_RCONTROL;
+				m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_RCONTROL);
 			}
 			return 0;
 
@@ -893,7 +622,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 			}
 			else
 			{
-				m_modifiers &= ~KEY_STATE_LALT;
+				m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_LALT);
 			}
 			return 0;
 
@@ -904,7 +633,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 			}
 			else
 			{
-				m_modifiers &= ~KEY_STATE_RALT;
+				m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_RALT);
 			}
 			return 0;
 
@@ -917,7 +646,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 				}
 				else
 				{
-					m_modifiers &= ~KEY_STATE_SHIFT2;
+					m_modifiers &= static_cast<UnsignedShort>(~KEY_STATE_SHIFT2);
 				}
 				return 0;
 			}
@@ -927,7 +656,7 @@ WideChar Keyboard::translateKey( WideChar keyCode )
 				return( m_keyNames[ ubKeyCode ].shifted2 );
 			}
 			
-			if( isShift() || getCapsState() && GameIsAlpha( m_keyNames[ ubKeyCode ].stdKey ) )
+			if( isShift() || (getCapsState() && GameIsAlpha( static_cast<wint_t>(m_keyNames[ ubKeyCode ].stdKey) )) )
 			{
 				return( m_keyNames[ ubKeyCode ].shifted );
 			}
@@ -975,8 +704,8 @@ Bool Keyboard::isAlt()
 
 WideChar Keyboard::getPrintableKey( UnsignedByte key,  Int state )
 {
-	if((key < 0 || key >=KEY_NAMES_COUNT) || ( state < 0 || state >= MAX_KEY_STATES))
-		return L'';
+	if((key == 0 || key >=KEY_NAMES_COUNT) || ( state < 0 || state >= MAX_KEY_STATES))
+		return L'\0';
 	if(state == 0)
 		return m_keyNames[key].stdKey;
 	else if(state == 1)

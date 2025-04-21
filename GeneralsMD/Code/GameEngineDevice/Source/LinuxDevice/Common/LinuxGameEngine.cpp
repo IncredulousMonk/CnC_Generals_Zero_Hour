@@ -24,6 +24,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "LinuxDevice/Common/LinuxGameEngine.h"
+#include "LinuxDevice/GameClient/SdlKeyboard.h"
+#include "LinuxDevice/GameClient/SdlMouse.h"
 #include "Common/PerfTimer.h"
 #include <SDL3/SDL.h>
 #include <iostream>
@@ -119,10 +121,28 @@ void LinuxGameEngine::update(void) {
 //-------------------------------------------------------------------------------------------------
 void LinuxGameEngine::checkForEvents(void) {
 
-   SDL_Event e;
-   while (SDL_PollEvent(&e)) {
-      if (e.type == SDL_EVENT_QUIT) {
+   SDL_Event event;
+   while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+      case SDL_EVENT_KEY_DOWN:
+      case SDL_EVENT_KEY_UP:
+         if (TheSdlKeyboard) {
+            TheSdlKeyboard->addEvent(event.key);
+         }
+         break;
+      case SDL_EVENT_MOUSE_BUTTON_DOWN:
+      case SDL_EVENT_MOUSE_BUTTON_UP:
+      case SDL_EVENT_MOUSE_MOTION:
+      case SDL_EVENT_MOUSE_WHEEL:
+         if (TheSdlMouse) {
+            TheSdlMouse->addEvent(event);
+         }
+         break;
+      case SDL_EVENT_QUIT:
          setQuitting(true);
+         break;
+      default:
+         break;
       }
    }
 

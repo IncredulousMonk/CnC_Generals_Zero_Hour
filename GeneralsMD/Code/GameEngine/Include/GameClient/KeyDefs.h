@@ -58,6 +58,7 @@
 #define __KEYDEFS_H_
 
 // SYSTEM INCLUDES ////////////////////////////////////////////////////////////
+#include "Lib/BaseType.h"
 #include <stdlib.h>
 #include <SDL3/SDL.h>
 
@@ -220,7 +221,7 @@ enum KeyDefType
 };	// end KeyDefType
 
 // state for keyboard IO ------------------------------------------------------
-enum
+enum KeyStateType: UnsignedShort
 {
 	KEY_STATE_NONE			= 0x0000, // No modifier state
 	KEY_STATE_UP			= 0x0001,	// Key is up (default state)

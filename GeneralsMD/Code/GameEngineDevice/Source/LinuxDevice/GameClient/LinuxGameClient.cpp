@@ -21,6 +21,8 @@
 ///////////////////////////////////////////////////////
 
 #include "LinuxDevice/GameClient/LinuxGameClient.h"
+#include "LinuxDevice/GameClient/SdlKeyboard.h"
+#include "LinuxDevice/GameClient/SdlMouse.h"
 
 LinuxGameClient::LinuxGameClient() {
 }
@@ -196,10 +198,12 @@ void LinuxGameClient::notifyTerrainObjectMoved(Object *obj)
 }  // end setTimeOfDay
 
 Keyboard* LinuxGameClient::createKeyboard(void) {
-   printf("Creating NULL keyboard!\n");
-   return nullptr;
+   SdlKeyboard* keyboard {NEW SdlKeyboard};
+   TheSdlKeyboard = keyboard;
+   return keyboard;
 }
 Mouse* LinuxGameClient::createMouse(void) {
-   printf("Creating NULL mouse!\n");
-   return nullptr;
+   SdlMouse* mouse {NEW SdlMouse};
+   TheSdlMouse = mouse;
+   return mouse;
 }

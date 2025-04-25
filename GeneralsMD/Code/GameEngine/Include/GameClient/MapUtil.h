@@ -74,22 +74,22 @@ typedef std::list <Coord3D> Coord3DList;
 class MapMetaData
 {
 public:
-	UnicodeString m_displayName;
-	AsciiString m_nameLookupTag;
-	Region3D m_extent;
-	Int m_numPlayers;
-	Bool m_isMultiplayer;
+	UnicodeString m_displayName {};
+	AsciiString m_nameLookupTag {};
+	Region3D m_extent {};
+	Int m_numPlayers {};
+	Bool m_isMultiplayer {};
 
-	Bool m_isOfficial;
-	UnsignedInt m_filesize;
-	UnsignedInt m_CRC;
+	Bool m_isOfficial {};
+	UnsignedInt m_filesize {};
+	UnsignedInt m_CRC {};
 
-	WinTimeStamp m_timestamp;
+	WinTimeStamp m_timestamp {};
 
-	WaypointMap m_waypoints;
-	Coord3DList m_supplyPositions;
-	Coord3DList m_techPositions;
-	AsciiString m_fileName;
+	WaypointMap m_waypoints {};
+	Coord3DList m_supplyPositions {};
+	Coord3DList m_techPositions {};
+	AsciiString m_fileName {};
 };
 
 class MapCache : public std::map<AsciiString, MapMetaData>
@@ -117,9 +117,9 @@ private:
 	void writeCacheINI( Bool userDir );
 
 	static const char * m_mapCacheName;
-	std::map<AsciiString, Bool> m_seen;
+	std::map<AsciiString, Bool> m_seen {};
 
-	std::set<AsciiString> m_allowedMaps;
+	std::set<AsciiString> m_allowedMaps {};
 };
 
 extern MapCache *TheMapCache;

@@ -76,6 +76,10 @@ public:
 	FunctionLexicon( void );
 	virtual ~FunctionLexicon( void );
 
+	// No copies allowed!
+	FunctionLexicon(const FunctionLexicon&) = delete;
+	FunctionLexicon& operator=(const FunctionLexicon&) = delete;
+
 	virtual void init( void );
 	virtual void reset( void );
 	virtual void update( void );
@@ -87,7 +91,7 @@ public:
 	TableEntry *getTable( TableIndex index );
 
 	//
-	// !NOTE! We do NOT have a functionToName() method becuase we assume
+	// !NOTE! We do NOT have a functionToName() method because we assume
 	// that functions in the tables are unique and that there is a 1 to 1
 	// mapping of a symbol to a function address.  However, when compiling
 	// in release, functions that have the same arguments and the same

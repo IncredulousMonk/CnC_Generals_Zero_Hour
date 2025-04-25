@@ -85,6 +85,10 @@ public:
 		MusicTrack();
 		// virtual destructor prototype defined by memory pool object
 
+		// No copies allowed!
+		MusicTrack(const MusicTrack&) = delete;
+		MusicTrack& operator=(const MusicTrack&) = delete;
+
 		const FieldParse *getFieldParse( void ) const { return m_musicTrackFieldParseTable; }
 			
 		Int					index;									///< Track index

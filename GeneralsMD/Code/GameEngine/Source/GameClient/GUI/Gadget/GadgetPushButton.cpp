@@ -483,7 +483,7 @@ WindowMsgHandledType GadgetPushButtonSystem( GameWindow *window, UnsignedInt msg
 			TheWindowManager->winSendSystemMsg( instData->getOwner(), 
 																					GGM_FOCUS_CHANGE,
 																					(WindowMsgData)mData1, 
-																					window->winGetWindowId() );
+																					(WindowMsgData)window->winGetWindowId() );
 			if( mData1 == FALSE )
 				*(Bool*)mData2 = FALSE;
 			else

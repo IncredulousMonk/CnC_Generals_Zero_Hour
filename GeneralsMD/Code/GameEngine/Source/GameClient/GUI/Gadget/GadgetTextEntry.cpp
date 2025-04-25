@@ -65,7 +65,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // PRIVATE DATA ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-static Byte drawCnt = 0;
 // static TbIME *ourIME = NULL;  ///< @todo need this for IME kanji support
 static GameWindow *curWindow = NULL;  /**< so we can keep track of the input
 																					 window when using IME */
@@ -103,7 +102,7 @@ WindowMsgHandledType GadgetTextEntryInput( GameWindow *window, UnsignedInt msg,
 			WideChar ch = (WideChar) mData1;
 
 			// --------------------------------------------------------------------
-			if ( ch == VK_RETURN )
+			if ( ch == KEY_ENTER )
 			{
 				// Done with this edit
 			 		TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
@@ -405,7 +404,7 @@ WindowMsgHandledType GadgetTextEntrySystem( GameWindow *window, UnsignedInt msg,
 			TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																					GGM_FOCUS_CHANGE,
 																					mData1, 
-																					window->winGetWindowId() );
+																					(WindowMsgData)window->winGetWindowId() );
 
 			*(Bool*)mData2 = TRUE;
 			break;

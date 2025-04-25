@@ -61,10 +61,10 @@
 // #include "GameClient/HeaderTemplate.h"
 // #include "GameClient/HintSpy.h"
 // #include "GameClient/HotKey.h"
-// #include "GameClient/IMEManager.h"
+#include "GameClient/IMEManager.h"
 // #include "GameClient/InGameUI.h"
 #include "GameClient/Keyboard.h"
-// #include "GameClient/LanguageFilter.h"
+#include "GameClient/LanguageFilter.h"
 // #include "GameClient/LookAtXlat.h"
 // #include "GameClient/MetaEvent.h"
 // #include "GameClient/Mouse.h"
@@ -211,8 +211,8 @@ GameClient::~GameClient()
 	// delete TheHeaderTemplateManager;
 	// TheHeaderTemplateManager = NULL;
 	
-	// delete TheLanguageFilter;
-	// TheLanguageFilter = NULL;
+	delete TheLanguageFilter;
+	TheLanguageFilter = NULL;
 
 	delete TheVideoPlayer;
 	TheVideoPlayer = NULL;
@@ -339,8 +339,8 @@ void GameClient::init( void )
 // 		TheHeaderTemplateManager->init();
 // 	}
 
-// 	// create the window manager
-// 	TheWindowManager = createWindowManager();
+	// // create the window manager
+	// TheWindowManager = createWindowManager();
 // 	if( TheWindowManager )
 // 	{
 
@@ -415,13 +415,13 @@ void GameClient::init( void )
  		TheVideoPlayer->setName("TheVideoPlayer");
 	}
 
-// 	// create the language filter.
-// 	TheLanguageFilter = createLanguageFilter();
-// 	if (TheLanguageFilter)
-// 	{
-// 		TheLanguageFilter->init();
-//  		TheLanguageFilter->setName("TheLanguageFilter");
-// 	}
+	// create the language filter.
+	TheLanguageFilter = createLanguageFilter();
+	if (TheLanguageFilter)
+	{
+		TheLanguageFilter->init();
+ 		TheLanguageFilter->setName("TheLanguageFilter");
+	}
 
 // 	TheCampaignManager = MSGNEW("GameClientSubsystem") CampaignManager;
 // 	TheCampaignManager->init();

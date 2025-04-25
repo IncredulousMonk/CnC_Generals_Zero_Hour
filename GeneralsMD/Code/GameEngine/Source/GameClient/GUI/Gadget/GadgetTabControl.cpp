@@ -48,7 +48,7 @@
 
 // USER INCLUDES //////////////////////////////////////////////////////////////
 #include "Common/Language.h"
-#include "Gameclient/GameWindowManager.h"
+#include "GameClient/GameWindowManager.h"
 #include "GameClient/Gadget.h"
 #include "GameClient/GadgetTabControl.h"
 
@@ -72,15 +72,15 @@
 /** Handle input for TabControl */
 //=============================================================================
 WindowMsgHandledType GadgetTabControlInput( GameWindow *tabControl, UnsignedInt msg,
-														 WindowMsgData mData1, WindowMsgData mData2 )
+														 WindowMsgData mData1, WindowMsgData /*mData2*/ )
 {
 //	WinInstanceData *instData = tabControl->winGetInstanceData();
 	TabControlData *tabData = (TabControlData *)tabControl->winGetUserData();
 
 	Int tabX, tabY;
 	tabControl->winGetScreenPosition( &tabX, &tabY );
-	Int mouseX = LOLONGTOSHORT(mData1) - tabX;//mData1 is packedMouseCoords in screen space
-	Int mouseY = HILONGTOSHORT(mData1) - tabY;
+	Int mouseX = static_cast<Int>(LOLONGTOSHORT(mData1)) - tabX;//mData1 is packedMouseCoords in screen space
+	Int mouseY = static_cast<Int>(HILONGTOSHORT(mData1)) - tabY;
 	Int tabsLeft = tabData->tabsLeftLimit;
 	Int tabsRight = tabData->tabsRightLimit;
 	Int tabsBottom = tabData->tabsBottomLimit;
@@ -114,6 +114,7 @@ WindowMsgHandledType GadgetTabControlInput( GameWindow *tabControl, UnsignedInt 
 			Int tabPressed = distanceIn / tabSize;
 			if( ! tabData->subPaneDisabled[tabPressed]  &&  (tabPressed != tabData->activeTab) )
 				GadgetTabControlShowSubPane( tabControl, tabPressed );
+			break;
 		}
 
 		default:
@@ -164,6 +165,7 @@ WindowMsgHandledType GadgetTabControlSystem( GameWindow *tabControl, UnsignedInt
 
 			if( parent )
 				return TheWindowManager->winSendSystemMsg( parent, msg, mData1, mData2 );
+			break;
 		}
 
 		default:
@@ -289,7 +291,7 @@ void GadgetTabControlShowSubPane( GameWindow *tabControl, Int whichPane)
 	else
 		tabData->activeTab = 0;
 
-	tabData->activeTab = min( tabData->activeTab, tabData->tabCount - 1 );
+	tabData->activeTab = std::min( tabData->activeTab, tabData->tabCount - 1 );
 
 	tabData->subPanes[tabData->activeTab]->winHide( false );
 }

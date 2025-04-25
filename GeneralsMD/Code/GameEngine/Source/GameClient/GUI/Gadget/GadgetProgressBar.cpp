@@ -70,7 +70,7 @@
 /** Handle system messages for Progress Bar */
 //=============================================================================
 WindowMsgHandledType GadgetProgressBarSystem( GameWindow *window, UnsignedInt msg,
-									            WindowMsgData mData1, WindowMsgData mData2 )
+									            WindowMsgData mData1, WindowMsgData /*mData2*/ )
 {
 
   switch( msg )
@@ -84,7 +84,7 @@ WindowMsgHandledType GadgetProgressBarSystem( GameWindow *window, UnsignedInt ms
       if (newPos < 0 || newPos > 100)
         break;
 
-      window->winSetUserData( (void *)newPos );
+      window->winSetUserData( (void *)mData1 );
 
 			break;
 
@@ -108,5 +108,5 @@ void GadgetProgressBarSetProgress( GameWindow *g, Int progress )
 	if(!g)
 		return;
 
-	TheWindowManager->winSendSystemMsg( g, GPM_SET_PROGRESS, progress, 0);
+	TheWindowManager->winSendSystemMsg( g, GPM_SET_PROGRESS, (WindowMsgData)progress, 0);
 } // end GadgetProgressBarSetProgress

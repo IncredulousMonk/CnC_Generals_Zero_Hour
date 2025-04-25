@@ -77,30 +77,35 @@ public:
 	void reset();
 	void update() { }
 
-	AsciiString m_unicodeFontName;
-	AsciiString m_unicodeFontFileName;
-	Bool m_useHardWrap;
-	Int m_militaryCaptionSpeed;
-	Int m_militaryCaptionDelayMS;
-	FontDesc	m_copyrightFont;
-	FontDesc	m_messageFont;
-	FontDesc	m_militaryCaptionTitleFont;
-	FontDesc	m_militaryCaptionFont;
-	FontDesc	m_superweaponCountdownNormalFont;
-	FontDesc	m_superweaponCountdownReadyFont;
-	FontDesc	m_namedTimerCountdownNormalFont;
-	FontDesc	m_namedTimerCountdownReadyFont;
-	FontDesc	m_drawableCaptionFont;
-	FontDesc	m_defaultWindowFont;
-	FontDesc	m_defaultDisplayStringFont;
-	FontDesc	m_tooltipFontName;
-	FontDesc	m_nativeDebugDisplay;
-	FontDesc	m_drawGroupInfoFont;
-	FontDesc	m_creditsTitleFont;
-	FontDesc  m_creditsPositionFont;
-	FontDesc  m_creditsNormalFont;
+	// MG: Cannot apply offsetof to GlobalLanguage, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_unicodeFontName;
+		AsciiString m_unicodeFontFileName;
+		Bool 		m_useHardWrap;
+		Int 		m_militaryCaptionSpeed;
+		Int 		m_militaryCaptionDelayMS;
+		FontDesc	m_copyrightFont;
+		FontDesc	m_messageFont;
+		FontDesc	m_militaryCaptionTitleFont;
+		FontDesc	m_militaryCaptionFont;
+		FontDesc	m_superweaponCountdownNormalFont;
+		FontDesc	m_superweaponCountdownReadyFont;
+		FontDesc	m_namedTimerCountdownNormalFont;
+		FontDesc	m_namedTimerCountdownReadyFont;
+		FontDesc	m_drawableCaptionFont;
+		FontDesc	m_defaultWindowFont;
+		FontDesc	m_defaultDisplayStringFont;
+		FontDesc	m_tooltipFontName;
+		FontDesc	m_nativeDebugDisplay;
+		FontDesc	m_drawGroupInfoFont;
+		FontDesc	m_creditsTitleFont;
+		FontDesc	m_creditsPositionFont;
+		FontDesc	m_creditsNormalFont;
+		Real		m_resolutionFontSizeAdjustment;
+	};
 
-	Real			m_resolutionFontSizeAdjustment;
+	IniData m_ini {};
 
 	//UnicodeString	m_unicodeFontNameUStr;
 	
@@ -109,7 +114,7 @@ public:
 	typedef std::list<AsciiString> StringList;					// Used for our font file names that we want to load		
 	typedef StringList::iterator StringListIt;				
 
-	StringList m_localFonts;														// List of the font filenames that are in our local directory
+	StringList m_localFonts {};									// List of the font filenames that are in our local directory
 	static void parseFontFileName( INI *ini, void *instance, void *store, const void* userData );
 	static void parseFontDesc(INI *ini, void *instance, void *store, const void* userData);
 };

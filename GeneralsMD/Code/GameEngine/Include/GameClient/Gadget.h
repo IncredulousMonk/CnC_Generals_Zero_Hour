@@ -53,6 +53,7 @@
 // USER INCLUDES //////////////////////////////////////////////////////////////
 #include "GameClient/GameWindow.h"
 #include "GameClient/Image.h"
+#include <chrono>
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////
 
@@ -262,13 +263,13 @@ typedef struct _ListboxMsg
 typedef struct _SliderData 
 {
 
-	Int					minVal;						// Minimum slider value
-	Int					maxVal;						// Maximum slider value
+	Int					minVal {};						// Minimum slider value
+	Int					maxVal {};						// Maximum slider value
 
 	// The following fields are for internal use and
 	// should not be initialized by the user
-	Real				numTicks;					// Number of ticks between min and max
-	Int					position;					// Current position of the slider
+	Real				numTicks {};					// Number of ticks between min and max
+	Int					position {};					// Current position of the slider
 
 } SliderData;
 
@@ -346,42 +347,42 @@ typedef struct _ListEntryRow
 typedef struct _ListboxData 
 {
 
-	Short				listLength;				// Max Number of entries in the list
-	Short				columns;					// Number of Columns each line has
-	Int					*columnWidthPercentage;	 // Holds the percentage value of each column in an Int array;
-	Bool				autoScroll;				// If add exceeds number of lines in display
+	Short				listLength {};				// Max Number of entries in the list
+	Short				columns {};					// Number of Columns each line has
+	Int					*columnWidthPercentage {};	 // Holds the percentage value of each column in an Int array;
+	Bool				autoScroll {};				// If add exceeds number of lines in display
 																// scroll up automatically
-	Bool				autoPurge;				// If add exceeds number of entries in list
+	Bool				autoPurge {};				// If add exceeds number of entries in list
 																// delete top entry automatically
-	Bool				scrollBar;				// Automatically create the up/down/slider buttons
-	Bool				multiSelect;			// Allow for multiple selections
-	Bool				forceSelect;			// Do not allow users to unselect from a listbox
-	Bool				scrollIfAtEnd;		// If we're looking at the bottom of the listbox when a new entry is added,
+	Bool				scrollBar {};				// Automatically create the up/down/slider buttons
+	Bool				multiSelect {};			// Allow for multiple selections
+	Bool				forceSelect {};			// Do not allow users to unselect from a listbox
+	Bool				scrollIfAtEnd {};		// If we're looking at the bottom of the listbox when a new entry is added,
 																// scroll up automatically
 
-	Bool				audioFeedback;		// Audio click feedback?
+	Bool				audioFeedback {};		// Audio click feedback?
 
 	//
 	// The following fields are for internal use and should not be initialized 
 	// by the user
 	//
-	Int					*columnWidth;			// Pointer to array of column widths based off of user input
-	ListEntryRow	*listData;			// Pointer to an array of ListEntryRows that we create when we first create the List
-	GameWindow	*upButton;					// Child window for up arrow
-	GameWindow	*downButton;				// Child window for down arrow
-	GameWindow	*slider;						// Child window for slider bar
-	Int					totalHeight;			// total height of all entries
-	Short				endPos;						// End Insertion position
-	Short				insertPos;				// Insertion position
+	Int					*columnWidth {};			// Pointer to array of column widths based off of user input
+	ListEntryRow	*listData {};			// Pointer to an array of ListEntryRows that we create when we first create the List
+	GameWindow	*upButton {};					// Child window for up arrow
+	GameWindow	*downButton {};				// Child window for down arrow
+	GameWindow	*slider {};						// Child window for slider bar
+	Int					totalHeight {};			// total height of all entries
+	Short				endPos {};						// End Insertion position
+	Short				insertPos {};				// Insertion position
 
-	Int					selectPos;				// Position of current selected entry (for SINGLE select)
-	Int					*selections;			// Pointer to array of selections (for MULTI select)
+	Int					selectPos {};				// Position of current selected entry (for SINGLE select)
+	Int					*selections {};			// Pointer to array of selections (for MULTI select)
 
-	Short				displayHeight;		// Height in pixels of listbox display region
+	Short				displayHeight {};		// Height in pixels of listbox display region
 																// this is computed based on the existance
 																// of a title or not.
-	UnsignedInt doubleClickTime;	//
-	Short				displayPos;				// Position of current display entry in pixels
+	std::chrono::time_point<std::chrono::steady_clock> doubleClickTime {};	//
+	Short				displayPos {};				// Position of current display entry in pixels
 
 } ListboxData;
 
@@ -412,8 +413,8 @@ typedef struct _ComboBoxData
 typedef struct _RadioButtonData	
 {
 
-	Int screen;  ///< screen identifier
-	Int group;  ///< group identifier
+	Int screen {};  ///< screen identifier
+	Int group {};  ///< group identifier
 
 } RadioButtonData;
 
@@ -426,14 +427,14 @@ typedef struct _RadioButtonData
 
 typedef struct _PushButtonData
 {
-	UnsignedByte drawClock;	///< We only want to draw the clock if, well, we want to
-	Int  percentClock;			///< The percentage of the clock we want to draw
-	Color colorClock;				///< The color to display the clock at
-	Bool drawBorder;				///< We only want to draw the border if we want to
-	Color colorBorder;			///< The color for the border around the button
-	void *userData;					///< random additional data we can set
-	const Image *overlayImage; ///< An overlay image (like a veterancy symbol)
-	AsciiString altSound;		///< use an alternitive sound if one is set
+	UnsignedByte drawClock {};	///< We only want to draw the clock if, well, we want to
+	Int  percentClock {};			///< The percentage of the clock we want to draw
+	Color colorClock {};				///< The color to display the clock at
+	Bool drawBorder {};				///< We only want to draw the border if we want to
+	Color colorBorder {};			///< The color for the border around the button
+	void *userData {};					///< random additional data we can set
+	const Image *overlayImage {}; ///< An overlay image (like a veterancy symbol)
+	AsciiString altSound {};		///< use an alternitive sound if one is set
 } PushButtonData;
 
 // TabControlData ------------------------------------------------------------
@@ -458,24 +459,24 @@ enum
 typedef struct _TabControlData	
 {
 	//Set in editor
-	Int tabOrientation;
-	Int tabEdge;
+	Int tabOrientation {};
+	Int tabEdge {};
 
-	Int tabWidth;
-	Int tabHeight;
-	Int tabCount;
+	Int tabWidth {};
+	Int tabHeight {};
+	Int tabCount {};
 
-	GameWindow *subPanes[NUM_TAB_PANES];
-	Bool subPaneDisabled[NUM_TAB_PANES];//tabCount will control how many even exist.  Individual ones can be disabled
-	Int paneBorder; 
+	GameWindow *subPanes[NUM_TAB_PANES] {};
+	Bool subPaneDisabled[NUM_TAB_PANES] {};//tabCount will control how many even exist.  Individual ones can be disabled
+	Int paneBorder {}; 
 
 	//Working computations
-	Int activeTab;
+	Int activeTab {};
 
-	Int tabsLeftLimit;
-	Int tabsRightLimit;
-	Int tabsTopLimit;
-	Int tabsBottomLimit;
+	Int tabsLeftLimit {};
+	Int tabsRightLimit {};
+	Int tabsTopLimit {};
+	Int tabsBottomLimit {};
 
 } TabControlData;
 

@@ -44,7 +44,7 @@
 // #include "Common/GameAudio.h"
 #include "Common/INI.h"
 // #include "Common/Registry.h"
-// #include "Common/UserPreferences.h"
+#include "Common/UserPreferences.h"
 // #include "Common/Version.h"
 
 // #include "GameLogic/AI.h"
@@ -55,6 +55,8 @@
 // #include "GameClient/TerrainVisual.h"
 
 #include "GameNetwork/FirewallHelper.h"
+
+#include <SDL3/SDL.h>
 
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 GlobalData* TheWritableGlobalData = NULL;				///< The global data singleton
@@ -1060,34 +1062,10 @@ GlobalData::GlobalData()
 
 	m_data.m_keyboardCameraRotateSpeed = 0.1f;
 
-#if 0 // FIXME: Figure out where to store user data.
-  // Set user data directory based on registry settings instead of INI parameters. This allows us to 
-  // localize the leaf name.
-  char temp[_MAX_PATH + 1];
-  if (::SHGetSpecialFolderPath(NULL, temp, CSIDL_PERSONAL, true))
-  {
-    AsciiString myDocumentsDirectory = temp;
-
-    if (myDocumentsDirectory.getCharAt(myDocumentsDirectory.getLength() -1) != '\\')
-      myDocumentsDirectory.concat( '\\' );
-
-    AsciiString leafName;
-    
-    if ( !GetStringFromRegistry( "", "UserDataLeafName", leafName ) )
-    {
-      // Use something, anything
-      // [MH] had to remove this, otherwise mapcache build step won't run... DEBUG_CRASH( ( "Could not find registry key UserDataLeafName; defaulting to \"Command and Conquer Generals Zero Hour Data\" " ) );
-      leafName = "Command and Conquer Generals Zero Hour Data";
-    }
-
-    myDocumentsDirectory.concat( leafName );
-    if (myDocumentsDirectory.getCharAt( myDocumentsDirectory.getLength() - 1) != '\\')
-      myDocumentsDirectory.concat( '\\' );
-
-    CreateDirectory(myDocumentsDirectory.str(), NULL);
-    m_userDataDir = myDocumentsDirectory;
-  }
-#endif
+	char* prefsPath {SDL_GetPrefPath("IncredulousMonk", "Command and Conquer Generals Zero Hour Data")};
+	m_userDataDir = prefsPath;
+	SDL_free(prefsPath);
+	DEBUG_LOG(("User data directory: %s\n", m_userDataDir.str()));
 
 	//-allAdvice feature
 	//m_data.m_allAdvice = FALSE;
@@ -1231,7 +1209,6 @@ void GlobalData::parseGameDataDefinition( INI* ini )
 	ini->initFromINI( &TheWritableGlobalData->m_data, s_GlobalDataFieldParseTable );
 
 
-	// FIXME: Implement user preferences
 	// // override INI values with user preferences
 	// OptionPreferences optionPref;
 	// TheWritableGlobalData->m_data.m_useAlternateMouse = optionPref.getAlternateMouseModeEnabled();

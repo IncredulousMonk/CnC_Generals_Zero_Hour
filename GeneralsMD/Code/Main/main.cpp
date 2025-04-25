@@ -37,6 +37,10 @@ SDL_Renderer* renderer {};
 static SDL_Texture* texture {};
 static CriticalSection critSec4 {};
 
+// What are these for?
+const Char *g_strFile = "data\\Generals.str";
+const Char *g_csfFile = "data\\%s\\Generals.csf";
+
 void initialiseSdl(void) {
    if (!SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialise SDL: %s", SDL_GetError());

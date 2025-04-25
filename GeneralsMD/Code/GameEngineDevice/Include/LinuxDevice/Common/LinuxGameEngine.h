@@ -32,7 +32,7 @@
 #include "Common/GameEngine.h"
 // #include "GameLogic/GameLogic.h"
 // #include "GameNetwork/NetworkInterface.h"
-// #include "MilesAudioDevice/MilesAudioManager.h"
+#include "LinuxDevice/Audio/SdlAudioManager.h"
 #include "LinuxDevice/Common/LinuxBIGFileSystem.h"
 #include "LinuxDevice/Common/LinuxLocalFileSystem.h"
 // #include "W3DDevice/Common/W3DModuleFactory.h"
@@ -103,7 +103,6 @@ inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { printf("Creati
 inline Radar* LinuxGameEngine::createRadar( void ) { printf("Creating NULL Radar!\n"); return nullptr; }
 // inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { return NEW CComObject<W3DWebBrowser>; }
 inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { printf("Creating NULL WebBrowser!\n"); return nullptr; }
-// inline AudioManager* LinuxGameEngine::createAudioManager( void ) { return NEW MilesAudioManager; }
-inline AudioManager* LinuxGameEngine::createAudioManager( void ) { printf("Creating NULL AudioManager!\n"); return nullptr; }
+inline AudioManager* LinuxGameEngine::createAudioManager( void ) { printf("Creating NULL AudioManager!\n"); return nullptr; /*NEW SdlAudioManager;*/ }
 
 #endif  // end __LINUXGAMEENGINE_H_

@@ -48,7 +48,7 @@
 
 // USER INCLUDES //////////////////////////////////////////////////////////////
 #include "Common/Language.h"
-#include "Gameclient/GameWindowManager.h"
+#include "GameClient/GameWindowManager.h"
 #include "GameClient/Gadget.h"
 #include "GameClient/GadgetSlider.h"
 
@@ -221,7 +221,7 @@ WindowMsgHandledType GadgetHorizontalSliderInput( GameWindow *window, UnsignedIn
 							TheWindowManager->winSendSystemMsg( window->winGetOwner(),
 																									GSM_SLIDER_TRACK,
 																									(WindowMsgData)window, 
-																									s->position );
+																									(WindowMsgData)s->position );
 
 							// Translate to window coords
 							child->winSetPosition( (Int)((s->position - s->minVal) * s->numTicks), HORIZONTAL_SLIDER_THUMB_POSITION );
@@ -246,7 +246,7 @@ WindowMsgHandledType GadgetHorizontalSliderInput( GameWindow *window, UnsignedIn
 							TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																									GSM_SLIDER_TRACK,
 																									(WindowMsgData)window, 
-																									s->position );
+																									(WindowMsgData)s->position );
 
 							// Translate to window coords
 							child->winSetPosition( (Int)((s->position - s->minVal) * s->numTicks),HORIZONTAL_SLIDER_THUMB_POSITION );
@@ -329,12 +329,12 @@ WindowMsgHandledType GadgetHorizontalSliderSystem( GameWindow *window, UnsignedI
 			{
 
 				TheWindowManager->winSendSystemMsg( window, GSM_SET_SLIDER, 
-																						s->maxVal, 0 );
+					(WindowMsgData)s->maxVal, 0 );
 				// tell owner i moved
 				TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																						GSM_SLIDER_TRACK,
 																						(WindowMsgData)window, 
-																						s->position );
+																						(WindowMsgData)s->position );
 				break;
 			
 			}  // end if
@@ -342,12 +342,12 @@ WindowMsgHandledType GadgetHorizontalSliderSystem( GameWindow *window, UnsignedI
 			{
 
 				TheWindowManager->winSendSystemMsg( window, GSM_SET_SLIDER, 
-																						s->minVal, 0 );
+					(WindowMsgData)s->minVal, 0 );
 				// tell owner i moved
 				TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																						GSM_SLIDER_TRACK,
 																						(WindowMsgData)window, 
-																						s->position );
+																						(WindowMsgData)s->position );
 				break;
 
 			}  // end else if
@@ -387,7 +387,7 @@ WindowMsgHandledType GadgetHorizontalSliderSystem( GameWindow *window, UnsignedI
 			TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																					GSM_SLIDER_TRACK,
 																					(WindowMsgData)window, 
-																					s->position );
+																					(WindowMsgData)s->position );
 
 			break;
 
@@ -452,7 +452,7 @@ WindowMsgHandledType GadgetHorizontalSliderSystem( GameWindow *window, UnsignedI
 			TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																					GGM_FOCUS_CHANGE,
 																					mData1, 
-																					window->winGetWindowId() );
+																					(WindowMsgData)window->winGetWindowId() );
 
 			*(Bool*)mData2 = TRUE;
 			break;

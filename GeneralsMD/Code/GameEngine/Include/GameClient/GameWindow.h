@@ -114,7 +114,7 @@ enum
 
 // Game window messages -------------------------------------------------------
 //-----------------------------------------------------------------------------
-enum GameWindowMessage
+enum GameWindowMessage: UnsignedInt
 {
 
 	GWM_NONE = 0,

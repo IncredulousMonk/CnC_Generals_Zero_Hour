@@ -82,10 +82,10 @@ public:
 	void filterLine(UnicodeString &line);
 
 protected:
-	Bool readWord(File *file1, UnsignedShort *buf);
+	Bool readWord(File *file1, wchar_t *buf);
 	void unHaxor(UnicodeString &word);
-	LangMap m_wordList;
-	LangMap m_subWordList;
+	LangMap m_wordList {};
+	LangMap m_subWordList {};
 };
 
 extern LanguageFilter *TheLanguageFilter;

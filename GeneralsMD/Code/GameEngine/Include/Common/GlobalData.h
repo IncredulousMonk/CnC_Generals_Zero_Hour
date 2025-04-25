@@ -104,8 +104,8 @@ public:
 		Int m_framesPerSecondLimit;
 		Int	m_chipSetType;	///<See W3DShaderManager::ChipsetType for options
 		Bool m_windowed;
-		Int m_xResolution;
-		Int m_yResolution;
+		UnsignedInt m_xResolution;
+		UnsignedInt m_yResolution;
 		Int m_maxShellScreens;  ///< this many shells layouts can be loaded at once
 		Bool m_useCloudMap;
 		Int  m_use3WayTerrainBlends;	///< 0 is none, 1 is normal, 2 is debug.

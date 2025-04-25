@@ -159,11 +159,13 @@ void LanguageFilter::unHaxor(UnicodeString &word) {
 }
 
 // returning true means that there are more words in the file.
-Bool LanguageFilter::readWord(File *file1, UnsignedShort *buf) {
+Bool LanguageFilter::readWord(File *file1, wchar_t* buf) {
 	Int index = 0;
 	Bool retval = TRUE;
 	Int val = 0;
 
+	// MG: I'm concerned about wchar_t being UTF-32 on Linux and UTF-16 on Windows.
+	UnsignedInt wc;
 	UnsignedShort c;
 
 	val = file1->read(&c, sizeof(UnsignedShort));
@@ -176,13 +178,14 @@ Bool LanguageFilter::readWord(File *file1, UnsignedShort *buf) {
 	while (buf[index] != L' ') {
 		++index;
 		val = file1->read(&c, sizeof(UnsignedShort));
+		wc = c;
 		if ((val == -1) || (val == 0)) {
-			c = WEOF;
+			wc = WEOF;
 		}
 
-		if ((c == WEOF) || (c == L' ')) {
+		if ((wc == WEOF) || (wc == L' ')) {
 			buf[index] = 0;
-			if (c == WEOF) {
+			if (wc == WEOF) {
 				retval = FALSE;
 			}
 			break;

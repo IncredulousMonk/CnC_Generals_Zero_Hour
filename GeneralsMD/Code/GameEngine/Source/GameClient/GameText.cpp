@@ -295,7 +295,7 @@ extern const Char *g_csfFile;
 void GameTextManager::init( void )
 {
 	AsciiString csfFile;
-	csfFile.format(g_csfFile, GetRegistryLanguage().str());
+	csfFile.format(g_csfFile, "English" /*GetRegistryLanguage().str()*/);
 	Int format;
 
 	if ( m_initialized )
@@ -309,8 +309,8 @@ void GameTextManager::init( void )
 #if defined(_DEBUG) || defined(_INTERNAL)
 	if(TheGlobalData)
 	{
-		m_jabberWockie = TheGlobalData->m_jabberOn;
-		m_munkee = 	TheGlobalData->m_munkeeOn;
+		m_jabberWockie = TheGlobalData->m_data.m_jabberOn;
+		m_munkee = 	TheGlobalData->m_data.m_munkeeOn;
 	}
 #endif
 
@@ -836,6 +836,7 @@ Bool GameTextManager::getStringCount( const char *filename, Int& textCount )
 	{
 		return FALSE;
 	}
+	DEBUG_LOG(("File found\n"));
 
 	while(ok)
 	{
@@ -875,6 +876,7 @@ Bool GameTextManager::getCSFInfo ( const Char *filename )
 
 	if ( file != NULL )
 	{
+		DEBUG_LOG(("File found\n"));
 		if ( file->read( &header, sizeof ( header )) == sizeof ( header ) )
 		{
 			if ( header.id == CSF_ID )
@@ -942,7 +944,7 @@ Bool GameTextManager::parseCSF( const Char *filename )
 
 		if ( len )
 		{
-			file->read ( m_buffer, len );
+			file->read ( m_buffer, static_cast<Int>(len) );
 		}
 
 		m_buffer[len] = 0;
@@ -999,7 +1001,7 @@ Bool GameTextManager::parseCSF( const Char *filename )
 			 	file->read ( &len, sizeof ( Int ) );
 				if ( len )
 				{
-					file->read ( m_buffer, len );
+					file->read ( m_buffer, static_cast<Int>(len) );
 				}
 				m_buffer[len] = 0;
 

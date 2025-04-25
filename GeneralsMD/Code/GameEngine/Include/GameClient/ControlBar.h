@@ -61,19 +61,19 @@ class ControlBarResizer;
 class GameWindowTransitionsHandler;
 class DisplayString;
 
-enum ProductionID;
+enum ProductionID: int;
 
-enum CommandSourceType;
-enum ProductionType;
-enum GadgetGameMessage;
-enum ScienceType;
-enum TimeOfDay;
-enum RadiusCursorType;
+enum CommandSourceType: int;
+enum ProductionType: int;
+enum GadgetGameMessage: int;
+enum ScienceType: int;
+enum TimeOfDay: int;
+enum RadiusCursorType: int;
 
 //-------------------------------------------------------------------------------------------------
 /** Command options */
 //-------------------------------------------------------------------------------------------------
-enum CommandOption
+enum CommandOption: UnsignedInt
 {
 	COMMAND_OPTION_NONE					= 0x00000000,
 	NEED_TARGET_ENEMY_OBJECT		= 0x00000001, // command now needs user to select enemy target
@@ -306,6 +306,10 @@ public:
 	CommandButton( void );
 	// virtual destructor prototype provided by MemoryPoolObject
 
+	// No copies allowed!
+	CommandButton(const CommandButton&) = delete;
+	CommandButton& operator=(const CommandButton&) = delete;
+
 	/// INI parsing
 	const FieldParse *getFieldParse() const { return s_commandButtonFieldParseTable; }
 	static const FieldParse s_commandButtonFieldParseTable[];		///< the parse table
@@ -423,6 +427,10 @@ public:
 	CommandSet( const AsciiString& name );
 	// virtual destructor prototype provided by MemoryPoolObject
 
+	// No copies allowed!
+	CommandSet(const CommandSet&) = delete;
+	CommandSet& operator=(const CommandSet&) = delete;
+
 	const AsciiString& getName() const { return m_name; }
 	const CommandButton* getCommandButton(Int i) const;
 
@@ -479,15 +487,19 @@ public:
 		//
 	}
 	~SideSelectWindowData(void);
+
+	// No copies allowed!
+	SideSelectWindowData(const SideSelectWindowData&) = delete;
+	SideSelectWindowData& operator=(const SideSelectWindowData&) = delete;
 	
 	void init( ScienceType science, GameWindow *control );
 	void reset( void );
 	void update( void );
 	void draw( void );
 
-	GameWindow *sideWindow;
-	GameWindow *m_animWindowWin;
-	AudioEventRTS *generalSpeak;
+	GameWindow *sideWindow {};
+	GameWindow *m_animWindowWin {};
+	AudioEventRTS *generalSpeak {};
 private:
 	enum
 	{
@@ -500,75 +512,75 @@ private:
 		STATE_6
 	};
 
-	const PlayerTemplate *m_pTemplate;
+	const PlayerTemplate *m_pTemplate {};
 
-	GameWindow *m_gereralsNameWin;
-	GameWindow *m_sideNameWin;
-
-	
-	GameWindow *m_upgradeLabel1Win;
-	GameWindow *m_upgradeLabel2Win;
-	GameWindow *m_upgradeLabel3Win;
-	GameWindow *m_upgradeLabel4Win;
-
-	GameWindow *m_upgradeImage1Win;
-	GameWindow *m_upgradeImage2Win;
-	GameWindow *m_upgradeImage3Win;
-	GameWindow *m_upgradeImage4Win;
-	
-	Image *m_upgradeImage1;
-	Image *m_upgradeImage2;
-	Image *m_upgradeImage3;
-	Image *m_upgradeImage4;
-
-	IRegion2D m_leftLineFromButton;
-	IRegion2D m_rightLineFromButton;
-	
-	IRegion2D m_upgradeLine1a;
-	IRegion2D m_upgradeLine2a;
-	IRegion2D m_upgradeLine3a;
-	IRegion2D m_upgradeLine4a;
-
-	IRegion2D m_upgradeLine1;
-	IRegion2D m_upgradeLine2;
-	IRegion2D m_upgradeLine3;
-	IRegion2D m_upgradeLine4;
-	
-	IRegion2D m_upgradeLine1MidReg;
-	IRegion2D m_upgradeLine2MidReg;
-	IRegion2D m_upgradeLine3MidReg;
-	IRegion2D m_upgradeLine4MidReg;
-
-	IRegion2D m_upgrade1Clip;
-	IRegion2D m_upgrade2Clip;
-	IRegion2D m_upgrade3Clip;
-	IRegion2D m_upgrade4Clip;
-
-	Color m_currColor;
-	ICoord2D m_line1End;
-	ICoord2D m_line2End;
+	GameWindow *m_gereralsNameWin {};
+	GameWindow *m_sideNameWin {};
 
 	
-	ICoord2D m_upgradeLine1Mid;
-	ICoord2D m_upgradeLine2Mid;
-	ICoord2D m_upgradeLine3Mid;
-	ICoord2D m_upgradeLine4Mid;
+	GameWindow *m_upgradeLabel1Win {};
+	GameWindow *m_upgradeLabel2Win {};
+	GameWindow *m_upgradeLabel3Win {};
+	GameWindow *m_upgradeLabel4Win {};
+
+	GameWindow *m_upgradeImage1Win {};
+	GameWindow *m_upgradeImage2Win {};
+	GameWindow *m_upgradeImage3Win {};
+	GameWindow *m_upgradeImage4Win {};
 	
-	ICoord2D m_upgradeLine1End;
-	ICoord2D m_upgradeLine2End;
-	ICoord2D m_upgradeLine3End;
-	ICoord2D m_upgradeLine4End;
+	Image *m_upgradeImage1 {};
+	Image *m_upgradeImage2 {};
+	Image *m_upgradeImage3 {};
+	Image *m_upgradeImage4 {};
 
-	ICoord2D m_upgradeImagePos1;
-	ICoord2D m_upgradeImagePos2;
-	ICoord2D m_upgradeImagePos3;
-	ICoord2D m_upgradeImagePos4;
+	IRegion2D m_leftLineFromButton {};
+	IRegion2D m_rightLineFromButton {};
+	
+	IRegion2D m_upgradeLine1a {};
+	IRegion2D m_upgradeLine2a {};
+	IRegion2D m_upgradeLine3a {};
+	IRegion2D m_upgradeLine4a {};
 
-	ICoord2D m_upgradeImageSize;
+	IRegion2D m_upgradeLine1 {};
+	IRegion2D m_upgradeLine2 {};
+	IRegion2D m_upgradeLine3 {};
+	IRegion2D m_upgradeLine4 {};
+	
+	IRegion2D m_upgradeLine1MidReg {};
+	IRegion2D m_upgradeLine2MidReg {};
+	IRegion2D m_upgradeLine3MidReg {};
+	IRegion2D m_upgradeLine4MidReg {};
 
-	Int m_state;
-	UnsignedInt m_lastTime;
-	UnsignedInt m_startTime;
+	IRegion2D m_upgrade1Clip {};
+	IRegion2D m_upgrade2Clip {};
+	IRegion2D m_upgrade3Clip {};
+	IRegion2D m_upgrade4Clip {};
+
+	Color m_currColor {};
+	ICoord2D m_line1End {};
+	ICoord2D m_line2End {};
+
+	
+	ICoord2D m_upgradeLine1Mid {};
+	ICoord2D m_upgradeLine2Mid {};
+	ICoord2D m_upgradeLine3Mid {};
+	ICoord2D m_upgradeLine4Mid {};
+	
+	ICoord2D m_upgradeLine1End {};
+	ICoord2D m_upgradeLine2End {};
+	ICoord2D m_upgradeLine3End {};
+	ICoord2D m_upgradeLine4End {};
+
+	ICoord2D m_upgradeImagePos1 {};
+	ICoord2D m_upgradeImagePos2 {};
+	ICoord2D m_upgradeImagePos3 {};
+	ICoord2D m_upgradeImagePos4 {};
+
+	ICoord2D m_upgradeImageSize {};
+
+	Int m_state {};
+	UnsignedInt m_lastTime {};
+	UnsignedInt m_startTime {};
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -655,6 +667,10 @@ public:
 
 	ControlBar( void );
 	virtual ~ControlBar( void );
+
+	// No copies allowed!
+	ControlBar(const ControlBar&) = delete;
+	ControlBar& operator=(const ControlBar&) = delete;
 
 	virtual void init( void );					///< from subsystem interface
 	virtual void reset( void );					///< from subsystem interface

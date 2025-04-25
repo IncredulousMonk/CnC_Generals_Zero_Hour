@@ -435,7 +435,7 @@ WindowMsgHandledType GadgetComboBoxSystem( GameWindow *window, UnsignedInt msg,
 						HideListBox(window);
 					
 					// Nothing was actually selected, so we just want to 
-					if( mData2 == -1)
+					if( (Int)mData2 == -1)
 					{
 						break;
 					}
@@ -471,7 +471,7 @@ WindowMsgHandledType GadgetComboBoxSystem( GameWindow *window, UnsignedInt msg,
 			if ( comboData->listBox )
 				GadgetListBoxReset(comboData->listBox);
 			if ( comboData->editBox )
-				GadgetTextEntrySetText(comboData->editBox, UnicodeString.TheEmptyString );
+				GadgetTextEntrySetText(comboData->editBox, UnicodeString::TheEmptyString );
 			comboData->entryCount = 0;
 			//HideListBox(window);	
 			break;
@@ -620,7 +620,7 @@ WindowMsgHandledType GadgetComboBoxSystem( GameWindow *window, UnsignedInt msg,
 			TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																					GGM_FOCUS_CHANGE,
 																					mData1, 
-																					window->winGetWindowId() );
+																					(WindowMsgData)window->winGetWindowId() );
 
 			Bool wantsFocus = FALSE;
 			GameWindow *editBox = GadgetComboBoxGetEditBox(window);
@@ -1070,7 +1070,7 @@ void GadgetComboBoxSetSelectedPos( GameWindow *comboBox, Int selectedIndex, Bool
 		return;
 
 	// get selected indeces via system message
-	TheWindowManager->winSendSystemMsg( comboBox, GCM_SET_SELECTION, selectedIndex, dontHide );
+	TheWindowManager->winSendSystemMsg( comboBox, GCM_SET_SELECTION, (WindowMsgData)selectedIndex, dontHide );
 }
 // GadgetComboBoxSetItemData ==================================================
 /** Convenience wrapper function for setting the Item data for the listbox under the combo box */
@@ -1078,7 +1078,7 @@ void GadgetComboBoxSetSelectedPos( GameWindow *comboBox, Int selectedIndex, Bool
 void GadgetComboBoxSetItemData( GameWindow *comboBox, Int index, void *data )
 {
 	if (comboBox)
-		TheWindowManager->winSendSystemMsg( comboBox, GCM_SET_ITEM_DATA, index, (WindowMsgData)data);
+		TheWindowManager->winSendSystemMsg( comboBox, GCM_SET_ITEM_DATA, (WindowMsgData)index, (WindowMsgData)data);
 }
 // GadgetComboBoxGetItemData ==================================================
 /** Convenience wrapper function for getting the Item data from the listbox under the combo Box */
@@ -1089,7 +1089,7 @@ void *GadgetComboBoxGetItemData( GameWindow *comboBox, Int index )
 	
 	if (comboBox)
 	{
-		TheWindowManager->winSendSystemMsg( comboBox, GCM_GET_ITEM_DATA, index, (WindowMsgData)&data);
+		TheWindowManager->winSendSystemMsg( comboBox, GCM_GET_ITEM_DATA, (WindowMsgData)index, (WindowMsgData)&data);
 	}
 	return (data);
 }

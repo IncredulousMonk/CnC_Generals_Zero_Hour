@@ -1448,11 +1448,11 @@ GameWindow *GameWindowManager::winCreate( GameWindow *parent,
 		window->winSetInstanceData( instData );
 
 	// set default font
-	if (TheGlobalLanguageData && TheGlobalLanguageData->m_defaultWindowFont.name.isNotEmpty())
+	if (TheGlobalLanguageData && TheGlobalLanguageData->m_ini.m_defaultWindowFont.name.isNotEmpty())
 	{		window->winSetFont( winFindFont(
-			TheGlobalLanguageData->m_defaultWindowFont.name,
-			TheGlobalLanguageData->m_defaultWindowFont.size,
-			TheGlobalLanguageData->m_defaultWindowFont.bold) );
+			TheGlobalLanguageData->m_ini.m_defaultWindowFont.name,
+			TheGlobalLanguageData->m_ini.m_defaultWindowFont.size,
+			TheGlobalLanguageData->m_ini.m_defaultWindowFont.bold) );
 	}
 	else
 		window->winSetFont( winFindFont( AsciiString("Times New Roman"), 14, FALSE ) );
@@ -2201,7 +2201,7 @@ GameWindow *GameWindowManager::gogoGadgetListBox( GameWindow *parent,
   // Set display position to the top of the list
   listboxData->displayPos = 0;
   listboxData->selectPos = -1;
-	listboxData->doubleClickTime = 0;
+	listboxData->doubleClickTime = std::chrono::steady_clock::time_point::min();
   listboxData->insertPos = 0;
   listboxData->endPos = 0;
 	listboxData->totalHeight = 0;
@@ -2813,13 +2813,12 @@ GameWindow *GameWindowManager::gogoGadgetTextEntry( GameWindow *parent,
 	{
 		// we need to create the construct listbox
 		WinInstanceData boxInstData;
-		ListboxData lData;
+		ListboxData lData {};
 
 			// intialize instData
 		boxInstData.init();
 
 		// define display region
-		memset( &lData, 0, sizeof(ListboxData) );
 		lData.listLength = 128;
 		lData.autoScroll = FALSE;
 		lData.scrollIfAtEnd = FALSE;
@@ -2921,11 +2920,11 @@ void GameWindowManager::assignDefaultGadgetLook( GameWindow *gadget,
 		gadget->winSetFont( defaultFont );
 	else
 	{
-		if (TheGlobalLanguageData && TheGlobalLanguageData->m_defaultWindowFont.name.isNotEmpty())
+		if (TheGlobalLanguageData && TheGlobalLanguageData->m_ini.m_defaultWindowFont.name.isNotEmpty())
 		{		gadget->winSetFont( TheWindowManager->winFindFont(
-				TheGlobalLanguageData->m_defaultWindowFont.name,
-				TheGlobalLanguageData->m_defaultWindowFont.size,
-				TheGlobalLanguageData->m_defaultWindowFont.bold) );
+				TheGlobalLanguageData->m_ini.m_defaultWindowFont.name,
+				TheGlobalLanguageData->m_ini.m_defaultWindowFont.size,
+				TheGlobalLanguageData->m_ini.m_defaultWindowFont.bold) );
 		}
 		else
 			gadget->winSetFont( TheWindowManager->winFindFont( AsciiString("Times New Roman"), 14, FALSE ) );
@@ -3845,8 +3844,7 @@ Bool GameWindowManager::initTestGUI( void )
 	GadgetRadioSetEnabledBorderColor( radio, GameMakeColor( 0, 0, 255, 255 ) );
 
 	// make a listbox
-	ListboxData listData;
-	memset( &listData, 0, sizeof( ListboxData ) );
+	ListboxData listData {};
 	listData.listLength = 8;
 	listData.autoScroll = 1;
 	listData.scrollIfAtEnd = FALSE;
@@ -3879,7 +3877,7 @@ Bool GameWindowManager::initTestGUI( void )
 	window->winSetFont( TheFontLibrary->getFont( AsciiString("Times New Roman"), 12, FALSE ) );
 
 	// make a listbox
-	memset( &listData, 0, sizeof( ListboxData ) );
+	listData = {};
 	listData.listLength = 8;
 	listData.autoScroll = 1;
 	listData.scrollIfAtEnd = FALSE;
@@ -3911,8 +3909,7 @@ Bool GameWindowManager::initTestGUI( void )
 												 TheWindowManager->winMakeColor( 105, 205, 45, 255 ), -1, -1 );
 
 	// make a vert slider
-	SliderData sliderData;
-	memset( &sliderData, 0, sizeof( sliderData ) );
+	SliderData sliderData {};
 	sliderData.maxVal = 100;
 	sliderData.minVal = 0;
 	sliderData.numTicks = 100;
@@ -3927,7 +3924,7 @@ Bool GameWindowManager::initTestGUI( void )
 																							 &sliderData, NULL, TRUE );
 
 	// make a vert slider
-	memset( &sliderData, 0, sizeof( sliderData ) );
+	sliderData = {};
 	sliderData.maxVal = 100;
 	sliderData.minVal = 0;
 	sliderData.numTicks = 100;
@@ -3942,7 +3939,7 @@ Bool GameWindowManager::initTestGUI( void )
 																							 &sliderData, NULL, TRUE );
 
 	// make a horizontal slider
-	memset( &sliderData, 0, sizeof( sliderData ) );
+	sliderData = {};
 	sliderData.maxVal = 100;
 	sliderData.minVal = 0;
 	sliderData.numTicks = 100;
@@ -3957,7 +3954,7 @@ Bool GameWindowManager::initTestGUI( void )
 																							 &sliderData, NULL, TRUE );
 
 	// make a horizontal slider
-	memset( &sliderData, 0, sizeof( sliderData ) );
+	sliderData = {};
 	sliderData.maxVal = 100;
 	sliderData.minVal = 0;
 	sliderData.numTicks = 100;

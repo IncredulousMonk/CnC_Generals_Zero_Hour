@@ -68,7 +68,7 @@
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/TerrainLogic.h"
 
-#include "WWMath/Matrix3D.h"
+#include "WWMath/matrix3d.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef _INTERNAL
@@ -136,7 +136,7 @@ static const FieldParse audioSettingsFieldParseTable[] =
   { "ZoomMaxDistance",		INI::parseReal,									NULL,							offsetof( AudioSettings, m_zoomMaxDistance ) },
   { "ZoomSoundVolumePercentageAmount",		INI::parsePercentToReal,	NULL,		offsetof( AudioSettings, m_zoomSoundVolumePercentageAmount ) },
 
-	{ NULL, NULL, NULL, NULL }
+	{ 0, 0, 0, 0 }
 };
 
 // Singleton TheAudio /////////////////////////////////////////////////////////////////////////////
@@ -145,14 +145,14 @@ AudioManager *TheAudio = NULL;
 
 // AudioManager Device Independent functions //////////////////////////////////////////////////////
 AudioManager::AudioManager() : 
+	m_music(NULL), 
+	m_sound(NULL),
+	m_speechOn(TRUE), 
 	m_soundOn(TRUE), 
 	m_sound3DOn(TRUE), 
 	m_musicOn(TRUE), 
-	m_speechOn(TRUE), 
-	m_music(NULL), 
-	m_sound(NULL),
-	m_surroundSpeakers(FALSE),
 	m_hardwareAccel(FALSE),
+	m_surroundSpeakers(FALSE),
 	m_musicPlayingFromCD(FALSE)
 {
 	// Added by Sadullah Nader
@@ -235,32 +235,32 @@ void AudioManager::init()
 	
 	// determine if one of the music tracks exists. Since their now BIGd, one implies all.
 	// If they don't exist, then attempt to load them from the CD. 
-	if (!isMusicAlreadyLoaded()) 
-	{
-		m_musicPlayingFromCD = TRUE;
-		while (TRUE) 
-		{
-			// @todo Unload any files from CD first. - jkmcd
+// 	if (!isMusicAlreadyLoaded()) 
+// 	{
+// 		m_musicPlayingFromCD = TRUE;
+// 		while (TRUE) 
+// 		{
+// 			// @todo Unload any files from CD first. - jkmcd
 
-			TheFileSystem->loadMusicFilesFromCD();
-			if (isMusicAlreadyLoaded()) 
-			{
-				break;
-			}
-			// We loop infinitely on the splash screen if we don't allow breaking out of this loop.
-//#if !defined( _DEBUG ) && !defined( _INTERNAL )
-			else
-			{
-				// Display the warning.
+// 			TheFileSystem->loadMusicFilesFromCD();
+// 			if (isMusicAlreadyLoaded()) 
+// 			{
+// 				break;
+// 			}
+// 			// We loop infinitely on the splash screen if we don't allow breaking out of this loop.
+// //#if !defined( _DEBUG ) && !defined( _INTERNAL )
+// 			else
+// 			{
+// 				// Display the warning.
 				
-				if (OSDisplayWarningBox("GUI:InsertCDPrompt", "GUI:InsertCDMessage", OSDBT_OK | OSDBT_CANCEL, OSDOF_SYSTEMMODAL | OSDOF_EXCLAMATIONICON) == OSDBT_CANCEL) {
-					//TheGameEngine->setQuitting(TRUE);  // Can't do this to WorldBuilder
-					break;
-				}
-			}
-//#endif
-		}
-	}
+// 				if (OSDisplayWarningBox("GUI:InsertCDPrompt", "GUI:InsertCDMessage", OSDBT_OK | OSDBT_CANCEL, OSDOF_SYSTEMMODAL | OSDOF_EXCLAMATIONICON) == OSDBT_CANCEL) {
+// 					//TheGameEngine->setQuitting(TRUE);  // Can't do this to WorldBuilder
+// 					break;
+// 				}
+// 			}
+// //#endif
+// 		}
+// 	}
 	
 	m_music = NEW MusicManager;
 	m_sound = NEW SoundManager;
@@ -312,86 +312,87 @@ void AudioManager::reset()
 //-------------------------------------------------------------------------------------------------
 void AudioManager::update()
 {
-	Coord3D groundPos, microphonePos;
-	TheTacticalView->getPosition( &groundPos );
-	Real angle = TheTacticalView->getAngle();
-	Matrix3D rot = Matrix3D::Identity;
-	rot.Rotate_Z( angle );
-	Vector3 forward( 0, 1, 0 );
-	rot.mulVector3( forward );
+	// FIXME: Uncomment once TheTacticalView is implemented.
+	// Coord3D groundPos, microphonePos;
+	// TheTacticalView->getPosition( &groundPos );
+	// Real angle = TheTacticalView->getAngle();
+	// Matrix3D rot = Matrix3D::Identity;
+	// rot.Rotate_Z( angle );
+	// Vector3 forward( 0, 1, 0 );
+	// rot.mulVector3( forward );
 
-	Real desiredHeight = TheAudio->getAudioSettings()->m_microphoneDesiredHeightAboveTerrain;
-	Real maxPercentage = TheAudio->getAudioSettings()->m_microphoneMaxPercentageBetweenGroundAndCamera;
+	// Real desiredHeight = TheAudio->getAudioSettings()->m_microphoneDesiredHeightAboveTerrain;
+	// Real maxPercentage = TheAudio->getAudioSettings()->m_microphoneMaxPercentageBetweenGroundAndCamera;
 
-	Coord3D lookTo;
-	lookTo.set(forward.X, forward.Y, forward.Z);
+	// Coord3D lookTo;
+	// lookTo.set(forward.X, forward.Y, forward.Z);
 
-	//Kris: At this point, the microphone is calculated to be at the ground position where the camera is looking at.
-	//Instead we want to move the microphone towards the camera. Hopefully, it'll be a desired altitude, but if it
-	//gets too close to the camera (or even past it), that would be undesirable. Therefore, we have a backup method
-	//of making sure we only go a certain percentage towards the camera or the desired height, whichever occurs first.
-	Coord3D cameraPos = TheTacticalView->get3DCameraPosition();
-	Coord3D groundToCameraVector;
-	groundToCameraVector.set( &cameraPos );
-	groundToCameraVector.sub( &groundPos );
-	Real bestScaleFactor;
+	// //Kris: At this point, the microphone is calculated to be at the ground position where the camera is looking at.
+	// //Instead we want to move the microphone towards the camera. Hopefully, it'll be a desired altitude, but if it
+	// //gets too close to the camera (or even past it), that would be undesirable. Therefore, we have a backup method
+	// //of making sure we only go a certain percentage towards the camera or the desired height, whichever occurs first.
+	// Coord3D cameraPos = TheTacticalView->get3DCameraPosition();
+	// Coord3D groundToCameraVector;
+	// groundToCameraVector.set( &cameraPos );
+	// groundToCameraVector.sub( &groundPos );
+	// Real bestScaleFactor;
 
-	if( cameraPos.z <= desiredHeight || groundToCameraVector.z <= 0.0f )
-	{
-		//Use the percentage calculation!
-		bestScaleFactor = maxPercentage;
-	}
-	else
-	{
-		//Calculate the stopping position of the groundToCameraVector when we force z to be m_microphoneDesiredHeightAboveTerrain
-		Real zScale = desiredHeight / groundToCameraVector.z;
+	// if( cameraPos.z <= desiredHeight || groundToCameraVector.z <= 0.0f )
+	// {
+	// 	//Use the percentage calculation!
+	// 	bestScaleFactor = maxPercentage;
+	// }
+	// else
+	// {
+	// 	//Calculate the stopping position of the groundToCameraVector when we force z to be m_microphoneDesiredHeightAboveTerrain
+	// 	Real zScale = desiredHeight / groundToCameraVector.z;
 
-		//Use the smallest of the two scale calculations
-		bestScaleFactor = MIN( maxPercentage, zScale );
-	}
+	// 	//Use the smallest of the two scale calculations
+	// 	bestScaleFactor = MIN( maxPercentage, zScale );
+	// }
 
-	//Now apply the best scalar to the ground-to-camera vector.
-	groundToCameraVector.scale( bestScaleFactor );
+	// //Now apply the best scalar to the ground-to-camera vector.
+	// groundToCameraVector.scale( bestScaleFactor );
 
-	//Set the microphone to be the ground position adjusted for terrain plus the vector we just calculated.
-	groundPos.z = TheTerrainLogic->getGroundHeight( groundPos.x, groundPos.y );
-	microphonePos.set( &groundPos );
-	microphonePos.add( &groundToCameraVector );
+	// //Set the microphone to be the ground position adjusted for terrain plus the vector we just calculated.
+	// groundPos.z = TheTerrainLogic->getGroundHeight( groundPos.x, groundPos.y );
+	// microphonePos.set( &groundPos );
+	// microphonePos.add( &groundToCameraVector );
 
-	//Viola! A properly placed microphone.
-	setListenerPosition( &microphonePos, &lookTo );
+	// //Viola! A properly placed microphone.
+	// setListenerPosition( &microphonePos, &lookTo );
 
 
-	//Now determine if we would like to boost the volume based on the camera being close to the microphone!
-	Real maxBoostScalar = TheAudio->getAudioSettings()->m_zoomSoundVolumePercentageAmount;
-	Real minDist = TheAudio->getAudioSettings()->m_zoomMinDistance;
-	Real maxDist = TheAudio->getAudioSettings()->m_zoomMaxDistance;
+	// //Now determine if we would like to boost the volume based on the camera being close to the microphone!
+	// Real maxBoostScalar = TheAudio->getAudioSettings()->m_zoomSoundVolumePercentageAmount;
+	// Real minDist = TheAudio->getAudioSettings()->m_zoomMinDistance;
+	// Real maxDist = TheAudio->getAudioSettings()->m_zoomMaxDistance;
 
-	//We can't boost a sound above 100%, instead reduce the normal sound level.
-	m_zoomVolume = 1.0f - maxBoostScalar;
+	// //We can't boost a sound above 100%, instead reduce the normal sound level.
+	// m_zoomVolume = 1.0f - maxBoostScalar;
 
-	//Are we even using a boost?
-	if( maxBoostScalar > 0.0f )
-	{
-		//How far away is the camera from the microphone?
-		Coord3D vector = cameraPos;
-		vector.sub( &microphonePos );
-		Real dist = vector.length();
+	// //Are we even using a boost?
+	// if( maxBoostScalar > 0.0f )
+	// {
+	// 	//How far away is the camera from the microphone?
+	// 	Coord3D vector = cameraPos;
+	// 	vector.sub( &microphonePos );
+	// 	Real dist = vector.length();
 
-		if( dist < minDist )
-		{
-			//Max volume!
-			m_zoomVolume = 1.0f;
-		}
-		else if( dist < maxDist )
-		{
-			//Determine what the boost amount will be. 
-			Real scalar = (dist - minDist) / (maxDist - minDist);
-			m_zoomVolume = 1.0f - scalar * maxBoostScalar;
-		}
-	}
+	// 	if( dist < minDist )
+	// 	{
+	// 		//Max volume!
+	// 		m_zoomVolume = 1.0f;
+	// 	}
+	// 	else if( dist < maxDist )
+	// 	{
+	// 		//Determine what the boost amount will be. 
+	// 		Real scalar = (dist - minDist) / (maxDist - minDist);
+	// 		m_zoomVolume = 1.0f - scalar * maxBoostScalar;
+	// 	}
+	// }
 
-	set3DVolumeAdjustment( m_zoomVolume );
+	// set3DVolumeAdjustment( m_zoomVolume );
 
 }
 

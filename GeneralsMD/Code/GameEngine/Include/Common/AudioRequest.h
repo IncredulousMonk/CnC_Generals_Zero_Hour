@@ -48,14 +48,14 @@ struct AudioRequest : public MemoryPoolObject
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( AudioRequest, "AudioRequest" )
 
 public:
-	RequestType m_request;
+	RequestType m_request {};
 	union 
 	{
-		AudioEventRTS *m_pendingEvent;
+		AudioEventRTS *m_pendingEvent {};
 		AudioHandle m_handleToInteractOn;
 	};
-	Bool m_usePendingEvent;
-	Bool m_requiresCheckForSample;
+	Bool m_usePendingEvent {};
+	Bool m_requiresCheckForSample {};
 };
 
 #endif // _AUDIOREQUEST_H_

@@ -50,32 +50,32 @@ class GeneralPersona
 	friend class ChallengeGenerals;
 
 private:
-	Bool m_bStartsEnabled;
-	AsciiString m_strBioName;
-	AsciiString m_strBioDOB;
-	AsciiString m_strBioBirthplace;
-	AsciiString m_strBioStrategy;
-	AsciiString m_strBioRank;
-	AsciiString m_strBioBranch;
-	AsciiString m_strBioClassNumber;
-	Image *m_imageBioPortraitSmall;
-	Image *m_imageBioPortraitLarge;
-	AsciiString m_strCampaign;
-	AsciiString m_strPlayerTemplateName;
-	AsciiString m_strPortraitMovieLeftName;
-	AsciiString m_strPortraitMovieRightName;
-	Image *m_imageDefeated;
-	Image *m_imageVictorious;
-	AsciiString m_strDefeated;
-	AsciiString m_strVictorious;
-	AsciiString m_strSelectionSound;
-	AsciiString m_strTauntSound1;
-	AsciiString m_strTauntSound2;
-	AsciiString m_strTauntSound3;
-	AsciiString m_strWinSound;
-	AsciiString m_strLossSound;
-	AsciiString m_strPreviewSound;
-	AsciiString m_strNameSound ;
+	Bool m_bStartsEnabled {};
+	AsciiString m_strBioName {};
+	AsciiString m_strBioDOB {};
+	AsciiString m_strBioBirthplace {};
+	AsciiString m_strBioStrategy {};
+	AsciiString m_strBioRank {};
+	AsciiString m_strBioBranch {};
+	AsciiString m_strBioClassNumber {};
+	Image *m_imageBioPortraitSmall {};
+	Image *m_imageBioPortraitLarge {};
+	AsciiString m_strCampaign {};
+	AsciiString m_strPlayerTemplateName {};
+	AsciiString m_strPortraitMovieLeftName {};
+	AsciiString m_strPortraitMovieRightName {};
+	Image *m_imageDefeated {};
+	Image *m_imageVictorious {};
+	AsciiString m_strDefeated {};
+	AsciiString m_strVictorious {};
+	AsciiString m_strSelectionSound {};
+	AsciiString m_strTauntSound1 {};
+	AsciiString m_strTauntSound2 {};
+	AsciiString m_strTauntSound3 {};
+	AsciiString m_strWinSound {};
+	AsciiString m_strLossSound {};
+	AsciiString m_strPreviewSound {};
+	AsciiString m_strNameSound {};
 
 
 public:
@@ -85,8 +85,12 @@ public:
 	{
 	}
 //	~GeneralPersona( void );
+
+	// No copies allowed!
+	GeneralPersona(const GeneralPersona&) = delete;
+	GeneralPersona& operator=(const GeneralPersona&) = delete;
 	
-	const Bool	isStartingEnabled() const { return m_bStartsEnabled; }
+	Bool	isStartingEnabled() const { return m_bStartsEnabled; }
 	const AsciiString& getBioName() const { return m_strBioName; }
 	const AsciiString& getBioDOB() const { return m_strBioDOB; }
 	const AsciiString& getBioBirthplace() const { return m_strBioBirthplace; }
@@ -145,7 +149,7 @@ public:
 	Int getCurrentPlayerTemplateNum( void ) { return m_PlayerTemplateNum; }
 
 	void setCurrentDifficulty( GameDifficulty diff ) { m_currentDifficulty = diff; }
-	const GameDifficulty getCurrentDifficulty( void ) { return m_currentDifficulty; }
+	GameDifficulty getCurrentDifficulty( void ) { return m_currentDifficulty; }
 protected:
 	static const FieldParse s_fieldParseTable[];
 

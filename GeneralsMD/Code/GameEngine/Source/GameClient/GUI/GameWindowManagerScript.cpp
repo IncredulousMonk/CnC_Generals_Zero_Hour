@@ -99,7 +99,7 @@ enum
 struct LayoutScriptParse
 {
 
-	char *name;
+	const char *name;
 	Bool (*parse)( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo *info );
 
 };
@@ -110,7 +110,7 @@ struct LayoutScriptParse
 struct GameWindowParse
 {
 
-	char *name;
+	const char *name;
 	Bool (*parse)( char *token, WinInstanceData *, char *, void * );
 
 };
@@ -164,7 +164,7 @@ static GameWindow *windowStack[ WIN_STACK_DEPTH ];
 static GameWindow **stackPtr;
 
 // for parsing
-static char *seps = " =;\n\r\t";
+static const char *seps = " =;\n\r\t";
 WinDrawData enabledDropDownButtonDrawData[ MAX_DRAW_DATA ];  ///< for combo boxes
 WinDrawData disabledDropDownButtonDrawData[ MAX_DRAW_DATA ];  ///< for combo boxes
 WinDrawData hiliteDropDownButtonDrawData[ MAX_DRAW_DATA ];  ///< for combo boxes
@@ -213,7 +213,7 @@ static Bool parseBitFlag( const char *flagString, UnsignedInt *bits,
 	for( i = 0, c = flagList; *c; i++, c++ )
 	{
 
-		if( !stricmp( *c, flagString ) )
+		if( !strcasecmp( *c, flagString ) )
 		{
 			*bits |= (1 << i);
 			return TRUE;
@@ -333,7 +333,7 @@ static Int scanInt( const char *source, Int& val )
 //=============================================================================
 static Int scanUnsignedInt( const char *source, UnsignedInt& val )
 {
-	Int ret = sscanf( source, "%d", &val ); // not strictly necessary to wrap this, but it's more consistent
+	Int ret = sscanf( source, "%u", &val ); // not strictly necessary to wrap this, but it's more consistent
 
 	return ret;
 }  // end scanUnsignedInt
@@ -411,7 +411,7 @@ static void pushWindow( GameWindow *window )
 static Bool parseColor( Color *color, char *buffer )
 {
   char *c;
-  Byte red, green, blue;
+  UnsignedByte red, green, blue;
 
 	c = strtok( buffer, " \t\n\r" );
   red = atoi(c);
@@ -505,7 +505,7 @@ static Bool parseScreenRect( char *token, char *buffer,
 	GameWindow *parent = peekWindow();
 	IRegion2D screenRegion;
 	ICoord2D createRes;  // creation resolution
-	char *seps = " ,:=\n\r\t";
+	const char *seps = " ,:=\n\r\t";
 	char *c;
 
 	c = strtok( NULL, seps );  // UPPERLEFT token
@@ -596,8 +596,8 @@ static Bool parseFont( char *token, WinInstanceData *instData,
 											 char *buffer, void *data )
 {
 	char *c, *ptr;
-	char *seps = " ,\n\r\t";
-	char *stringSeps = ":,\n\r\t\"";
+	const char *seps = " ,\n\r\t";
+	const char *stringSeps = ":,\n\r\t\"";
 	char fontName[ 256 ];
 	Int fontSize;
 	Int fontBold;
@@ -643,8 +643,8 @@ static Bool parseName( char *token, WinInstanceData *instData,
 											 char *buffer, void *data )
 {
 	char *c, *ptr;
-//	char *seps = " ,\n\r\t";
-	char *stringSeps = "\"";
+//	const char *seps = " ,\n\r\t";
+	const char *stringSeps = "\"";
 
 	// scan to the first " mark
 	ptr = buffer;
@@ -698,8 +698,8 @@ static Bool parseSystemCallback( char *token, WinInstanceData *instData,
 																 char *buffer, void *data )
 {
 	char *c, *ptr;
-//	char *seps = " ,\n\r\t";
-	char *stringSeps = "\"";
+//	const char *seps = " ,\n\r\t";
+	const char *stringSeps = "\"";
 
 	// scan to the first " mark
 	ptr = buffer;
@@ -725,8 +725,8 @@ static Bool parseInputCallback( char *token, WinInstanceData *instData,
 																char *buffer, void *data )
 {
 	char *c, *ptr;
-//	char *seps = " ,\n\r\t";
-	char *stringSeps = "\"";
+//	const har *seps = " ,\n\r\t";
+	const char *stringSeps = "\"";
 
 	// scan to the first " mark
 	ptr = buffer;
@@ -752,8 +752,8 @@ static Bool parseTooltipCallback( char *token, WinInstanceData *instData,
 																  char *buffer, void *data )
 {
 	char *c, *ptr;
-//	char *seps = " ,\n\r\t";
-	char *stringSeps = "\"";
+//	const char *seps = " ,\n\r\t";
+	const char *stringSeps = "\"";
 
 	// scan to the first " mark
 	ptr = buffer;
@@ -779,8 +779,8 @@ static Bool parseDrawCallback( char *token, WinInstanceData *instData,
 															 char *buffer, void *data )
 {
 	char *c, *ptr;
-//	char *seps = " ,\n\r\t";
-	char *stringSeps = "\"";
+//	const char *seps = " ,\n\r\t";
+	const char *stringSeps = "\"";
 
 	// scan to the first " mark
 	ptr = buffer;
@@ -806,8 +806,8 @@ static Bool parseHeaderTemplate( char *token, WinInstanceData *instData,
 															 char *buffer, void *data )
 {
 	char *c, *ptr;
-//	char *seps = " ,\n\r\t";
-	char *stringSeps = "\"";
+//	const char *seps = " ,\n\r\t";
+	const char *stringSeps = "\"";
 
 	// scan to the first " mark
 	ptr = buffer;
@@ -833,7 +833,7 @@ static Bool parseListboxData( char *token, WinInstanceData *instData,
 {
 	ListboxData *listData = (ListboxData *)data;
 	char *c;
-	char *seps = " :,\n\r\t";
+	const char *seps = " :,\n\r\t";
 
 	// "LENGTH"
 	c = strtok( buffer, seps );  // label
@@ -847,7 +847,7 @@ static Bool parseListboxData( char *token, WinInstanceData *instData,
 
 	// "SCROLLIFATEND" (optional)
 	c = strtok( NULL, seps );  // label
-	if ( !stricmp(c, "ScrollIfAtEnd") )
+	if ( !strcasecmp(c, "ScrollIfAtEnd") )
 	{
 		c = strtok( NULL, seps );  // value
 		scanBool( c, listData->scrollIfAtEnd );
@@ -909,7 +909,7 @@ static Bool parseComboBoxData( char *token, WinInstanceData *instData,
 {
 	ComboBoxData *comboData = (ComboBoxData *)data;
 	char *c;
-	char *seps = " :,\n\r\t";
+	const char *seps = " :,\n\r\t";
 
 	c = strtok( buffer, seps );  // label
 	c = strtok( NULL, seps );	// value
@@ -943,7 +943,7 @@ static Bool parseSliderData( char *token, WinInstanceData *instData,
 {
 	SliderData *sliderData = (SliderData *)data;
 	char *c;
-	char *seps = " :,\n\r\t";
+	const char *seps = " :,\n\r\t";
 
 	// "MINVALUE"
 	c = strtok( buffer, seps );  // label
@@ -967,7 +967,7 @@ static Bool parseRadioButtonData( char *token, WinInstanceData *instData,
 {
 	RadioButtonData *radioData = (RadioButtonData *)data;
 	char *c;
-	char *seps = " :,\n\r\t";
+	const char *seps = " :,\n\r\t";
 
 	// "GROUP"
 	c = strtok( buffer, seps );  // label
@@ -987,7 +987,7 @@ static Bool parseTooltipText( char *token, WinInstanceData *instData,
 {
 	char *ptr = buffer;
 	char *c;
-	char *stringSeps = "\n\r\t\""; 
+	const char *stringSeps = "\n\r\t\""; 
 
 	// scan to the first " mark
 	while( *ptr != '"' )
@@ -1020,7 +1020,7 @@ static Bool parseTooltipDelay( char *token, WinInstanceData *instData,
 {
 	//RadioButtonData *radioData = (RadioButtonData *)data;
 	char *c;
-	char *seps = " :,\n\r\t";
+	const char *seps = " :,\n\r\t";
 
 	// "getvalue"
 	c = strtok( buffer, seps );  // value
@@ -1039,7 +1039,7 @@ static Bool parseText( char *token, WinInstanceData *instData,
 {
 	char *ptr = buffer;
 	char *c;
-	char *stringSeps = "\n\r\t\""; 
+	const char *stringSeps = "\n\r\t\""; 
 
 	// scan to the first " mark
 	while( *ptr != '"' )
@@ -1069,7 +1069,7 @@ static Bool parseTextColor( char *token, WinInstanceData *instData,
 														char *buffer, void *data )
 {
 	char *c;
-	char *seps       = " :,\n\r\t";
+	const char *seps       = " :,\n\r\t";
 	UnsignedInt r, g, b, a;
 	Int i, states = 3;
 	TextDrawData *textData;
@@ -1136,7 +1136,7 @@ static Bool parseStaticTextData( char *token, WinInstanceData *instData,
 {
 	TextData *textData = (TextData *)data;
 	char *c;
-	char *seps       = " :,\n\r\t";
+	const char *seps       = " :,\n\r\t";
 
 	// "CENTERED"
 	c = strtok( buffer, seps );  // label
@@ -1162,7 +1162,7 @@ static Bool parseTextEntryData( char *token, WinInstanceData *instData,
 {
 	EntryData *entryData = (EntryData *)data;
 	char *c;
-	char *seps       = " :,\n\r\t";
+	const char *seps       = " :,\n\r\t";
 
 	// "MAXLEN"
 	c = strtok( buffer, seps );  // label
@@ -1201,7 +1201,7 @@ static Bool parseTabControlData( char *token, WinInstanceData *instData,
 {
 	TabControlData *tabControlData = (TabControlData *)data;
 	char *c;
-	char *seps       = " :,\n\r\t";
+	const char *seps       = " :,\n\r\t";
 
 	//TABORIENTATION
 	c = strtok( buffer, seps );  // label
@@ -1259,7 +1259,7 @@ static Bool parseDrawData( char *token, WinInstanceData *instData,
 	WinDrawData *drawData;
 	Bool first = TRUE;
 	char *c;
-	char *seps       = " :,\n\r\t";
+	const char *seps       = " :,\n\r\t";
 
 	for( i = 0; i < MAX_DRAW_DATA; i++ )
 	{
@@ -1367,62 +1367,55 @@ static Bool parseDrawData( char *token, WinInstanceData *instData,
 // getDataTemplate ============================================================
 /** Given a window type style string return the address of a static
 	* gadget data type used for the generic data pointers in the
-	* GUI gadget contorls */
+	* GUI gadget controls */
 //=============================================================================
 void *getDataTemplate( char *type )
 {
-  static EntryData eData;
-  static SliderData sData;
-  static ListboxData lData;
-  static TextData tData;
-	static RadioButtonData rData;
-	static TabControlData tcData;
-	static ComboBoxData	cData;
-	void *data;
+	static EntryData eData {};
+	static SliderData sData {};
+	static ListboxData lData {};
+	static TextData tData {};
+	static RadioButtonData rData {};
+	static TabControlData tcData {};
+	static ComboBoxData	cData {};
+	void *data {};
 
   if( !strcmp( type, "VERTSLIDER" ) || !strcmp( type, "HORZSLIDER" ) ) 
 	{
 
-    memset( &sData, 0, sizeof( SliderData ) );
     data = &sData;
 
   } 
 	else if( !strcmp( type, "SCROLLLISTBOX" ) ) 
 	{
 
-    memset( &lData, 0, sizeof( ListboxData ) );
     data = &lData;
 
   } 
 	else if( !strcmp( type, "TABCONTROL" ) ) 
 	{
-    memset( &tcData, 0, sizeof( TabControlData ) );
     data = &tcData;
   } 
 	else if( !strcmp( type, "ENTRYFIELD" ) ) 
 	{
 
-    memset( &eData, 0, sizeof( EntryData ) );
     data = &eData;
 
   } 
 	else if( !strcmp( type, "STATICTEXT" ) ) 
 	{
 
-		memset( &tData, 0, sizeof( TextData ) );
 		data = &tData;
 
   }
 	else if( !strcmp( type, "RADIOBUTTON" ) ) 
 	{ 
 
-		memset( &rData, 0, sizeof( RadioButtonData ) );
 		data = &rData;
 	}	
 	else if( !strcmp( type, "COMBOBOX" ) ) 
 	{ 
 
-		memset( &cData, 0, sizeof( ComboBoxData ) );
 		data = &cData;
 	}	
 	else
@@ -1454,18 +1447,16 @@ void *getDataTemplate( char *type )
 //=============================================================================
 static Bool parseData( void **data, char *type, char *buffer )
 {
-  char *c;
-  static EntryData eData;
-  static SliderData sData;
-  static ListboxData lData;
-  static TextData tData;
-	static RadioButtonData rData;
-	static ComboBoxData cData;
+	char *c {};
+	static EntryData eData {};
+	static SliderData sData {};
+	static ListboxData lData {};
+	static TextData tData {};
+	static RadioButtonData rData {};
+	// static ComboBoxData cData {};
 
   if( !strcmp( type, "VERTSLIDER" ) || !strcmp( type, "HORZSLIDER" ) ) 
 	{
-
-    memset( &sData, 0, sizeof( SliderData ) );
 
 	  c = strtok( buffer, " \t\n\r" );
     sData.minVal = atoi(c);
@@ -1478,8 +1469,6 @@ static Bool parseData( void **data, char *type, char *buffer )
   } 
 	else if( !strcmp( type, "SCROLLLISTBOX" ) ) 
 	{
-
-    memset( &lData, 0, sizeof( ListboxData ) );
 
 	  c = strtok( buffer, " \t\n\r" );
     lData.listLength = atoi(c);
@@ -1507,8 +1496,6 @@ static Bool parseData( void **data, char *type, char *buffer )
   } 
 	else if( !strcmp( type, "ENTRYFIELD" ) ) 
 	{
-
-    memset( &eData, 0, sizeof( EntryData ) );
 
 	  c = strtok( buffer, " \t\n\r" );
     eData.maxTextLen = atoi(c);
@@ -1623,7 +1610,7 @@ static void setWindowText( GameWindow *window, AsciiString textLabel )
 //=============================================================================
 static GameWindow *createGadget( char *type, 
 																 GameWindow *parent, 
-																 Int status,
+																 UnsignedInt status,
 																 Int x, Int y, 
 																 Int width, Int height, 
 																 WinInstanceData *instData, 
@@ -1838,9 +1825,7 @@ static GameWindow *createGadget( char *type,
 	{
 		ComboBoxData *cData = (ComboBoxData *)data;
 		cData->entryData = NEW EntryData;
-		memset ( cData->entryData, 0, sizeof(EntryData));
 		cData->listboxData = NEW ListboxData;
-		memset ( cData->listboxData, 0, sizeof(ListboxData));
 		
 		//initialize combo box data
 		//cData->isEditable = TRUE;
@@ -2025,7 +2010,7 @@ static GameWindow *createGadget( char *type,
 //=============================================================================
 static GameWindow *createWindow( char *type, 
 																 Int id, 
-																 Int status, 
+																 UnsignedInt status, 
 																 Int x, Int y,
 																 Int width, Int height, 
 																 WinInstanceData *instData, 
@@ -2135,7 +2120,7 @@ static GameWindow *createWindow( char *type,
 
   // If there is a parent window, send it the SCRIPT_CREATE message
   if( window && parent )
-		TheWindowManager->winSendInputMsg( parent, GWM_SCRIPT_CREATE, id, 0 );
+		TheWindowManager->winSendInputMsg( parent, GWM_SCRIPT_CREATE, static_cast<WindowMsgData>(id), 0 );
 
   return window;
 
@@ -2351,8 +2336,8 @@ static GameWindow *parseWindow( File *inFile, char *buffer )
 	}  // end if
 	else
 	{
-		parentSize.x = TheDisplay->getWidth();
-		parentSize.y = TheDisplay->getHeight();
+		parentSize.x = static_cast<Int>(TheDisplay->getWidth());
+		parentSize.y = static_cast<Int>(TheDisplay->getHeight());
 	}  // end else
 
 	// Initialize the instance data to the defaults
@@ -2519,7 +2504,7 @@ cleanupAndExit:
 Bool parseInit( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo *info )
 {
 	char *c;
-	char *seps = " \n\r\t";
+	const char *seps = " \n\r\t";
 
 	// get string
 	c = strtok( buffer, seps );
@@ -2538,7 +2523,7 @@ Bool parseInit( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo
 Bool parseUpdate( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo *info )
 {
 	char *c;
-	char *seps = " \n\r\t";
+	const char *seps = " \n\r\t";
 
 	// get string
 	c = strtok( buffer, seps );
@@ -2557,7 +2542,7 @@ Bool parseUpdate( char *token, char *buffer, UnsignedInt version, WindowLayoutIn
 Bool parseShutdown( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo *info )
 {
 	char *c;
-	char *seps = " \n\r\t";
+	const char *seps = " \n\r\t";
 
 	// get string
 	c = strtok( buffer, seps );
@@ -2709,9 +2694,9 @@ GameWindow *GameWindowManager::winCreateFromScript( AsciiString filenameString,
 	const char* filename = filenameString.str();
 	static char buffer[ WIN_BUFFER_LENGTH ]; 		// input buffer for reading
 	GameWindow *firstWindow = NULL;
-  GameWindow *window;
-  char filepath[ _MAX_PATH ] = "Window\\";
-  File *inFile;
+	GameWindow *window;
+	char filepath[ PATH_MAX ] = "Window\\";
+	File *inFile;
 	WindowLayoutInfo scriptInfo;
 	AsciiString asciibuf;
 
@@ -2755,11 +2740,11 @@ GameWindow *GameWindowManager::winCreateFromScript( AsciiString filenameString,
 	if( version >= 2 )
 	{
 
-		if( parseLayoutBlock( inFile, buffer, version, &scriptInfo ) == FALSE )
+		if( parseLayoutBlock( inFile, buffer, static_cast<UnsignedInt>(version), &scriptInfo ) == FALSE )
 		{
 
 			DEBUG_LOG(( "WinCreateFromScript: Error parsing layout block\n" ));
-			return FALSE;
+			return NULL;
 
 		}  // end if
 

@@ -29,21 +29,22 @@
 class ScopedMutex
 {
 	private:
-		HANDLE m_mutex;
+		SDL_Mutex* m_mutex;
 
 	public:
-		ScopedMutex(HANDLE mutex) : m_mutex(mutex)
+		ScopedMutex(SDL_Mutex* mutex) : m_mutex(mutex)
 		{
-			DWORD status = WaitForSingleObject(m_mutex, 500);
-			if (status != WAIT_OBJECT_0) {
-				DEBUG_LOG(("ScopedMutex WaitForSingleObject timed out - status %d\n", status));
-			}
+			SDL_LockMutex(m_mutex);
 		}
 
 		~ScopedMutex()
 		{
-			ReleaseMutex(m_mutex);
+			SDL_UnlockMutex(m_mutex);
 		}
+
+		// No copies allowed!
+		ScopedMutex(const ScopedMutex&) = delete;
+		ScopedMutex& operator=(const ScopedMutex&) = delete;
 };
 
 #endif /* __SCOPEDMUTEX_H__ */

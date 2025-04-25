@@ -62,7 +62,7 @@ class DamageInfo;
 class ParticleSystemTemplate;
 class CommandButton;
 class Waypoint;
-enum CommandOption: int;
+enum CommandOption: UnsignedInt;
 
 //-------------------------------------------------------------------------------------------------
 enum UpdateSleepTime 

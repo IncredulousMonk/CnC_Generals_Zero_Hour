@@ -49,7 +49,7 @@ typedef std::map<AsciiString, AsciiString> PreferenceMap;
 //-----------------------------------------------------------------------------
 // UserPreferences base class 
 //-----------------------------------------------------------------------------
-// FIXME: Not allowed to inherit from std::map.
+// MG: Not allowed to inherit from std::map.
 class UserPreferences //: public PreferenceMap
 {
 public:
@@ -69,9 +69,10 @@ public:
 	void setInt(AsciiString key, Int val);
 	void setAsciiString(AsciiString key, AsciiString val);
 
-	AsciiString& operator[] (const char* index); // FIXME: Needs implementation.
+	AsciiString& operator[] (const AsciiString& index) { return m_preferences[index]; }
 protected:
-	AsciiString m_filename;
+	AsciiString m_filename {};
+	PreferenceMap m_preferences {};
 };
 
 //-----------------------------------------------------------------------------
@@ -110,7 +111,7 @@ public:
 	Int	 getIdealStaticGameDetail(void);	// detail level detected for user.
  	Real getGammaValue(void);
 	Int	 getTextureReduction(void);
-	void getResolution(Int *xres, Int *yres);
+	void getResolution(UnsignedInt *xres, UnsignedInt *yres);
 	Bool get3DShadowsEnabled(void);
 	Bool get2DShadowsEnabled(void);
 	Bool getCloudShadowsEnabled(void);

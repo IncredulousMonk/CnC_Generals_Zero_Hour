@@ -49,7 +49,7 @@
 #include "Common/MultiplayerSettings.h"
 #include "GameClient/MapUtil.h"
 #include "GameClient/ChallengeGenerals.h"
-#include "GameNetwork/GameSpy/PeerDefs.h"
+// #include "GameNetwork/GameSpy/PeerDefs.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -163,8 +163,8 @@ Bool UserPreferences::write( void )
 	FILE *fp = fopen(m_filename.str(), "w");
 	if (fp)
 	{
-		PreferenceMap::const_iterator it = begin();
-		while (it != end())
+		PreferenceMap::const_iterator it = m_preferences.begin();
+		while (it != m_preferences.end())
 		{
 			fprintf(fp, "%s = %s\n", it->first.str(), it->second.str());
 			++it;
@@ -211,8 +211,8 @@ Int UserPreferences::getInt(AsciiString key, Int defaultValue) const
 
 AsciiString UserPreferences::getAsciiString(AsciiString key, AsciiString defaultValue) const
 {
-	UserPreferences::const_iterator it = find(key);
-	if (it == end())
+	PreferenceMap::const_iterator it = m_preferences.find(key);
+	if (it == m_preferences.end())
 	{
 		return defaultValue;
 	}
@@ -240,6 +240,8 @@ void UserPreferences::setAsciiString(AsciiString key, AsciiString val)
 	(*this)[key] = val;
 }
 
+// FIXME: Figure out how to do this without GameSpy.
+#if 0
 //-----------------------------------------------------------------------------
 // QuickMatchPreferences base class 
 //-----------------------------------------------------------------------------
@@ -966,3 +968,4 @@ void LadderPreferences::addRecentLadder( LadderPref ladder )
 
 	m_ladders[ladder.lastPlayDate] = ladder;
 }
+#endif

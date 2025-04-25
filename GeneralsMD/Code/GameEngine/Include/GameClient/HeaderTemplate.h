@@ -71,6 +71,10 @@ public:
 	HeaderTemplate( void );
 	~HeaderTemplate( void );
 
+	// No copies allowed!
+	HeaderTemplate(const HeaderTemplate&) = delete;
+	HeaderTemplate& operator=(const HeaderTemplate&) = delete;
+
 	GameFont *m_font;
 	AsciiString m_name;
 	AsciiString m_fontName;

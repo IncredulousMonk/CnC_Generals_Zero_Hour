@@ -42,6 +42,10 @@ class EnumeratedIP : public MemoryPoolObject
 public:
 	EnumeratedIP() { m_IPstring = ""; m_next = NULL; m_IP = 0; }
 
+	// No copies allowed!
+	EnumeratedIP(const EnumeratedIP&) = delete;
+	EnumeratedIP& operator=(const EnumeratedIP&) = delete;
+
 	// Access functions
 	inline AsciiString getIPstring( void ) { return m_IPstring; }
 	inline void setIPstring( AsciiString name ) { m_IPstring = name; }
@@ -51,9 +55,9 @@ public:
 	inline void setNext( EnumeratedIP *next ) { m_next = next; }
 
 protected:
-	AsciiString m_IPstring;
-	UnsignedInt m_IP;
-	EnumeratedIP *m_next;
+	AsciiString m_IPstring {};
+	UnsignedInt m_IP {};
+	EnumeratedIP *m_next {};
 };
 EMPTY_DTOR(EnumeratedIP)
 
@@ -68,6 +72,10 @@ public:
 
 	IPEnumeration();
 	~IPEnumeration();
+
+	// No copies allowed!
+	IPEnumeration(const IPEnumeration&) = delete;
+	IPEnumeration& operator=(const IPEnumeration&) = delete;
 
 	EnumeratedIP * getAddresses( void );		///< Return a linked list of local IP addresses
 	AsciiString getMachineName( void );			///< Return the Network Neighborhood machine name

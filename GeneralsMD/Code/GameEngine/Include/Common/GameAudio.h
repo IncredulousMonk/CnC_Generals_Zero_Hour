@@ -44,8 +44,9 @@
 #ifndef __COMMON_GAMEAUDIO_H_
 #define __COMMON_GAMEAUDIO_H_
 
-// Includes                                                      
+// Includes
 #include "Lib/BaseType.h"
+#include "Common/INI.h"
 #include "Common/STLTypedefs.h"
 #include "Common/SubsystemInterface.h"
 
@@ -328,53 +329,53 @@ class AudioManager : public SubsystemInterface
     void removeAllAudioRequests( void );
     
 	protected:
-		AudioSettings *m_audioSettings;
-		MiscAudio *m_miscAudio;
-		MusicManager *m_music;
-		SoundManager *m_sound;
-		Coord3D m_listenerPosition;
-		Coord3D m_listenerOrientation;
-		std::list<AudioRequest*> m_audioRequests;
-		std::vector<AsciiString> m_musicTracks;
+		AudioSettings *m_audioSettings {};
+		MiscAudio *m_miscAudio {};
+		MusicManager *m_music {};
+		SoundManager *m_sound {};
+		Coord3D m_listenerPosition {};
+		Coord3D m_listenerOrientation {};
+		std::list<AudioRequest*> m_audioRequests {};
+		std::vector<AsciiString> m_musicTracks {};
 
-		AudioEventInfoHash m_allAudioEventInfo;
-		AudioHandle theAudioHandlePool;
-		std::list<std::pair<AsciiString, Real> > m_adjustedVolumes;
+		AudioEventInfoHash m_allAudioEventInfo {};
+		AudioHandle theAudioHandlePool {};
+		std::list<std::pair<AsciiString, Real> > m_adjustedVolumes {};
 
-		Real m_musicVolume;
-		Real m_soundVolume;
-		Real m_sound3DVolume;
-		Real m_speechVolume;
+		Real m_musicVolume {};
+		Real m_soundVolume {};
+		Real m_sound3DVolume {};
+		Real m_speechVolume {};
 
-		Real m_scriptMusicVolume;
-		Real m_scriptSoundVolume;
-		Real m_scriptSound3DVolume;
-		Real m_scriptSpeechVolume;
+		Real m_scriptMusicVolume {};
+		Real m_scriptSoundVolume {};
+		Real m_scriptSound3DVolume {};
+		Real m_scriptSpeechVolume {};
 		
-		Real m_systemMusicVolume;
-		Real m_systemSoundVolume;
-		Real m_systemSound3DVolume;
-		Real m_systemSpeechVolume;
-		Real m_zoomVolume;
+		Real m_systemMusicVolume {};
+		Real m_systemSoundVolume {};
+		Real m_systemSound3DVolume {};
+		Real m_systemSpeechVolume {};
+		Real m_zoomVolume {};
 
 		
-		AudioEventRTS *m_silentAudioEvent;
+		AudioEventRTS *m_silentAudioEvent {};
 		
 		enum { NUM_VOLUME_TYPES = 4 };
-		Real *m_savedValues;
+		Real *m_savedValues {};
 
 		// Group of 8
-		Bool m_speechOn						: 1;
-		Bool m_soundOn						: 1;
-		Bool m_sound3DOn					: 1;
-		Bool m_musicOn						: 1;
-		Bool m_volumeHasChanged		: 1;
-		Bool m_hardwareAccel			: 1;
-		Bool m_surroundSpeakers		: 1;
-		Bool m_musicPlayingFromCD : 1;
+		Bool m_speechOn						: 1 {};
+		Bool m_soundOn						: 1 {};
+		Bool m_sound3DOn					: 1 {};
+		Bool m_musicOn						: 1 {};
+		Bool m_volumeHasChanged		: 1 {};
+		Bool m_hardwareAccel			: 1 {};
+		Bool m_surroundSpeakers		: 1 {};
+		Bool m_musicPlayingFromCD : 1 {};
 
 		// Next 8
-		Bool m_disallowSpeech			: 1;
+		Bool m_disallowSpeech			: 1 {};
 };
 
 extern AudioManager *TheAudio;

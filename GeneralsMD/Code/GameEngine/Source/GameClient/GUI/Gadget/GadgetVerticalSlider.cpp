@@ -48,7 +48,7 @@
 
 // USER INCLUDES //////////////////////////////////////////////////////////////
 #include "Common/Language.h"
-#include "Gameclient/GameWindowManager.h"
+#include "GameClient/GameWindowManager.h"
 #include "GameClient/Gadget.h"
 
 // DEFINES ////////////////////////////////////////////////////////////////////
@@ -202,7 +202,7 @@ WindowMsgHandledType GadgetVerticalSliderInput( GameWindow *window, UnsignedInt 
 							TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																									GSM_SLIDER_TRACK,
 																									(WindowMsgData)window, 
-																									s->position );
+																									(WindowMsgData)s->position );
 							// Translate to window coords
 							child->winSetPosition( 0, (Int)((s->maxVal - s->position) * s->numTicks) );
 
@@ -226,7 +226,7 @@ WindowMsgHandledType GadgetVerticalSliderInput( GameWindow *window, UnsignedInt 
 							TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																									GSM_SLIDER_TRACK,
 																									(WindowMsgData)window, 
-																									s->position );
+																									(WindowMsgData)s->position );
 							// Translate to window coords
 							child->winSetPosition( 0, (Int)((s->maxVal - s->position) * s->numTicks) );
 						}
@@ -285,7 +285,7 @@ WindowMsgHandledType GadgetVerticalSliderSystem( GameWindow *window, UnsignedInt
 			TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																					GSM_SLIDER_DONE,
 																					(WindowMsgData)window, 
-																					s->position );
+																					(WindowMsgData)s->position );
 			break;
 
 		}
@@ -315,12 +315,12 @@ WindowMsgHandledType GadgetVerticalSliderSystem( GameWindow *window, UnsignedInt
 
 				//s->position = s->minVal;
 				TheWindowManager->winSendSystemMsg( window, GSM_SET_SLIDER, 
-																						s->minVal, 0 );
+					(WindowMsgData)s->minVal, 0 );
 				// tell owner i moved
 				TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																						GSM_SLIDER_TRACK,
 																						(WindowMsgData)window, 
-																						s->position );
+																						(WindowMsgData)s->position );
 				break;
 			
 			}  // end if
@@ -329,12 +329,12 @@ WindowMsgHandledType GadgetVerticalSliderSystem( GameWindow *window, UnsignedInt
 
 				//s->position = s->maxVal;
 				TheWindowManager->winSendSystemMsg( window, GSM_SET_SLIDER, 
-																						s->maxVal, 0 );
+					(WindowMsgData)s->maxVal, 0 );
 				// tell owner i moved
 				TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																						GSM_SLIDER_TRACK,
 																						(WindowMsgData)window, 
-																						s->position );
+																						(WindowMsgData)s->position );
 				break;
 
 			}  // end else if
@@ -372,7 +372,7 @@ WindowMsgHandledType GadgetVerticalSliderSystem( GameWindow *window, UnsignedInt
 			TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																					GSM_SLIDER_TRACK,
 																					(WindowMsgData)window, 
-																					s->position );
+																					(WindowMsgData)s->position );
 			break;
 
 		}
@@ -442,7 +442,7 @@ WindowMsgHandledType GadgetVerticalSliderSystem( GameWindow *window, UnsignedInt
 			TheWindowManager->winSendSystemMsg( window->winGetOwner(), 
 																					GGM_FOCUS_CHANGE,
 																					mData1, 
-																					window->winGetWindowId() );
+																					(WindowMsgData)window->winGetWindowId() );
 
 			*(Bool*)mData2 = TRUE;
 			break;

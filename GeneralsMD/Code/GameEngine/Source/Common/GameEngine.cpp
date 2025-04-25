@@ -56,7 +56,7 @@
 // #include "Common/GameState.h"
 // #include "Common/GameStateMap.h"
 // #include "Common/Science.h"
-// #include "Common/FunctionLexicon.h"
+#include "Common/FunctionLexicon.h"
 // #include "Common/CommandLine.h"
 // #include "Common/DamageFX.h"
 // #include "Common/MultiplayerSettings.h"
@@ -90,7 +90,7 @@
 #include "GameClient/GameClient.h"
 // #include "GameClient/Keyboard.h"
 // #include "GameClient/Shell.h"
-// #include "GameClient/GameText.h"
+#include "GameClient/GameText.h"
 // #include "GameClient/ParticleSys.h"
 #include "GameClient/Water.h"
 #include "GameClient/Snow.h" // MG: Only needed to delete TheWeatherSetting
@@ -98,7 +98,7 @@
 // #include "GameClient/MetaEvent.h"
 // #include "GameClient/MapUtil.h"
 // #include "GameClient/GameWindowManager.h"
-// #include "GameClient/GlobalLanguage.h"
+#include "GameClient/GlobalLanguage.h"
 // #include "GameClient/Drawable.h"
 // #include "GameClient/GUICallbacks.h"
 
@@ -427,7 +427,7 @@ void GameEngine::init( int argc, char *argv[] )
 #ifdef DEBUG_CRC
 		initSubsystem(TheDeepCRCSanityCheck, "TheDeepCRCSanityCheck", MSGNEW("GameEngineSubystem") DeepCRCSanityCheck, NULL, NULL, NULL, NULL);
 #endif // DEBUG_CRC
-		// initSubsystem(TheGameText, "TheGameText", CreateGameTextInterface(), NULL);
+		initSubsystem(TheGameText, "TheGameText", CreateGameTextInterface(), NULL);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////
@@ -441,7 +441,7 @@ void GameEngine::init( int argc, char *argv[] )
 		// initSubsystem(TheMultiplayerSettings,"TheMultiplayerSettings", MSGNEW("GameEngineSubsystem") MultiplayerSettings(), &xferCRC, "Data\\INI\\Default\\Multiplayer.ini", "Data\\INI\\Multiplayer.ini");
 		// initSubsystem(TheTerrainTypes,"TheTerrainTypes", MSGNEW("GameEngineSubsystem") TerrainTypeCollection(), &xferCRC, "Data\\INI\\Default\\Terrain.ini", "Data\\INI\\Terrain.ini");
 		// initSubsystem(TheTerrainRoads,"TheTerrainRoads", MSGNEW("GameEngineSubsystem") TerrainRoadCollection(), &xferCRC, "Data\\INI\\Default\\Roads.ini", "Data\\INI\\Roads.ini");
-		// initSubsystem(TheGlobalLanguageData,"TheGlobalLanguageData",MSGNEW("GameEngineSubsystem") GlobalLanguage, NULL); // must be before the game text
+		initSubsystem(TheGlobalLanguageData,"TheGlobalLanguageData",MSGNEW("GameEngineSubsystem") GlobalLanguage, NULL); // must be before the game text
 		// initSubsystem(TheCDManager,"TheCDManager", CreateCDManager(), NULL);
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////

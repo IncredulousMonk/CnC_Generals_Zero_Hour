@@ -10,7 +10,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 
 - Displays a window with the splash screen.
 - Plays the logo movie.
-- The DynamicMemoryAllocator works. If you compile in debug mode it dumps out memory pool stats, and tells you where you're leaking memory... neat! (I can't take any credit for that. It's all built in.)
+- The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
   - TheCommandList
@@ -18,6 +18,8 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheLocalFileSystem
   - TheArchiveFileSystem
   - TheWritableGlobalData
+  - TheGameText
+  - TheGlobalLanguageData
   - TheMessageStream
   - TheGameClient (partial)
     - TheDisplayStringManager
@@ -25,6 +27,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheKeyboard
     - TheMouse
     - TheVideoPlayer
+    - TheLanguageFilter
 
 ## Still to do
 
@@ -64,4 +67,6 @@ Click on the close button in the splash screen window to exit the "game".
 
 My professional programming experience is in corporate systems, not games, so I was interested so see how a commercial game was put together. Zero Hour seems like a good case study
 because, while it relies on a number of third-party libraries, it doesn't use a separate game engine.
+
+The DynamicMemoryAllocator works. If you compile in debug mode it dumps out memory pool stats, and tells you where you're leaking memory... neat! (I can't take any credit for that. It's all built in.)
 -->

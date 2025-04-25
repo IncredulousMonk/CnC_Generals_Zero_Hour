@@ -95,11 +95,11 @@ protected:
 	// protected data ===============================================================================
 	//===============================================================================================
 
-	AsciiString m_filenameString;										///< layout filename
-	GameWindow *m_windowList;												///< list of windows in this layout
-	GameWindow *m_windowTail;												///< end of m_windowList
-	Int m_windowCount;															///< how man windows are in the list
-	Bool m_hidden;																	///< visible state of this screen
+	AsciiString m_filenameString {};										///< layout filename
+	GameWindow *m_windowList {};												///< list of windows in this layout
+	GameWindow *m_windowTail {};												///< end of m_windowList
+	Int m_windowCount {};															///< how man windows are in the list
+	Bool m_hidden {};																	///< visible state of this screen
 
 	//
 	// These are callbacks you can attach to a "layout file" ... they are not 
@@ -107,9 +107,9 @@ protected:
 	// the layout.  You can incorporate when and where init, shutdown and update should
 	// be called for any system or code that is uses these window layouts
 	//
-	WindowLayoutInitFunc		 m_init;								///< init callback
-	WindowLayoutUpdateFunc	 m_update;							///< update callback
-	WindowLayoutShutdownFunc m_shutdown;						///< shutdown callback
+	WindowLayoutInitFunc		 m_init {};								///< init callback
+	WindowLayoutUpdateFunc	 m_update {};							///< update callback
+	WindowLayoutShutdownFunc m_shutdown {};						///< shutdown callback
 
 };  // end class WindowLayout
 

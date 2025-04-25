@@ -59,14 +59,14 @@ class WindowLayoutInfo
 public:
 	WindowLayoutInfo();
 
-	UnsignedInt version;												///< file version that was loaded
-	WindowLayoutInitFunc init;									///< init method (if specified)
-	WindowLayoutUpdateFunc update;							///< update method (if specified)
-	WindowLayoutShutdownFunc shutdown;					///< shutdown method (if specified)
-	AsciiString initNameString;									///< init method in flavor of string name
-	AsciiString updateNameString;								///< update method in string flavor
-	AsciiString  shutdownNameString;						///< shutdown method in string flavor, mmm!
-	std::list<GameWindow *> windows;						///< list of top-level windows in the layout
+	UnsignedInt version {};												///< file version that was loaded
+	WindowLayoutInitFunc init {};									///< init method (if specified)
+	WindowLayoutUpdateFunc update {};							///< update method (if specified)
+	WindowLayoutShutdownFunc shutdown {};					///< shutdown method (if specified)
+	AsciiString initNameString {};									///< init method in flavor of string name
+	AsciiString updateNameString {};								///< update method in string flavor
+	AsciiString  shutdownNameString {};						///< shutdown method in string flavor, mmm!
+	std::list<GameWindow *> windows {};						///< list of top-level windows in the layout
 };
 
 //-------------------------------------------------------------------------------------------------

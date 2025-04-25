@@ -47,16 +47,13 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Windows.h"
-#include "mbstring.h"
-
 #include "Common/Debug.h"
 #include "Common/Language.h"
 #include "Common/UnicodeString.h"
-#include "GameClient/Display.h"
+// #include "GameClient/Display.h"
 #include "GameClient/GameWindow.h"
-#include "GameClient/GameWindowManager.h"
-#include "GameClient/GadgetListBox.h"
+// #include "GameClient/GameWindowManager.h"
+// #include "GameClient/GadgetListBox.h"
 #include "GameClient/IMEManager.h"
 #include "GameClient/Mouse.h"
 #include "GameClient/Color.h"
@@ -72,8 +69,9 @@
 //         Externals                                                     
 //----------------------------------------------------------------------------
 
-extern HWND ApplicationHWnd;  ///< our application window handle
+// extern HWND ApplicationHWnd;  ///< our application window handle
 extern Int	IMECandidateWindowLineSpacing;
+Int	IMECandidateWindowLineSpacing;
 
 //----------------------------------------------------------------------------
 //         Defines                                                         
@@ -97,6 +95,10 @@ class IMEManager : public IMEManagerInterface
 
 		IMEManager();
 		~IMEManager();
+
+		// No copies allowed!
+		IMEManager(const IMEManager&) = delete;
+		IMEManager& operator=(const IMEManager&) = delete;
 		
 		virtual void					init( void );
 		virtual void					reset( void );
@@ -144,8 +146,8 @@ class IMEManager : public IMEManagerInterface
 
 		Int										m_result;												///< last IME message's winProc return code
 		GameWindow						*m_window;											///< window we are accepting input for
-		HIMC									m_context;											///< Imput Manager Context
-		HIMC									m_oldContext;										///< Previous IME comtext
+		// HIMC									m_context;											///< Imput Manager Context
+		// HIMC									m_oldContext;										///< Previous IME comtext
 		Int										m_disabled;											///< IME disable count 0 = enabled
 		Bool									m_composing;										///< Are we currently composing a new string
 		WideChar							m_compositionString[MAX_COMPSTRINGLEN+1];
@@ -162,14 +164,14 @@ class IMEManager : public IMEManagerInterface
 		Bool									m_unicodeIME;										///< Is this an unicode IME
 		Int										m_compositionCharsDisplayed;		///< number of temporary composition characters displayed that need to be replaced with result string.
 
-		WideChar			convertCharToWide( WPARAM mbchar );						///< Convert multibyte character to wide
+		WideChar			convertCharToWide( /*WPARAM mbchar*/ );						///< Convert multibyte character to wide
 		void					updateCompositionString( void );							///< Update the context of the composition string from the IMM
 		void					getResultsString( void );											///< Get the final composition string result
 		void					updateProperties( void );											///< Read the current IME properties
 		void					openCandidateList( Int candidateFlags  );			///< open candidate window
 		void					closeCandidateList( Int candidateFlags  );		///< Close candidate window
 		void					updateCandidateList( Int candidateFlags  );		///< Update candidate window
-		void					updateListBox( CANDIDATELIST *candidateList  );	///< Update candidate list box gadget
+		// void					updateListBox( CANDIDATELIST *candidateList  );	///< Update candidate list box gadget
 		void					convertToUnicode( Char *mbcs, UnicodeString &unicode );
 		void					resizeCandidateWindow( Int pageSize );
 
@@ -500,29 +502,26 @@ IMEManagerInterface *CreateIMEManagerInterface( void )
 //============================================================================
 
 IMEManager::IMEManager()
-: m_window(NULL),
-	m_context(NULL),
-	m_candidateWindow(NULL),
-	m_statusWindow(NULL),
+: m_result(0),
+	m_window(NULL),
+	// m_context(NULL),
+	m_disabled(0),
+	m_composing(FALSE),
+	m_compositionCursorPos(0),
+	m_compositionStringLength(0),
+	m_indexBase(1),
+	m_pageStart(0),
+	m_pageSize(0),
+	m_selectedIndex(0),
 	m_candidateCount(0),
 	m_candidateString(NULL),
-	m_compositionStringLength(0),
-	m_composing(FALSE),
-	m_disabled(0),
-	m_result(0),
-	m_indexBase(1),
-
-	//Added By Sadullah Nader
-	//Initializations missing and needed
+	m_unicodeIME(FALSE),
 	m_compositionCharsDisplayed(0),
-	m_candidateDownArrow(NULL),
+	m_candidateWindow(NULL),
+	m_statusWindow(NULL),
 	m_candidateTextArea(NULL),
 	m_candidateUpArrow(NULL),
-	m_compositionCursorPos(0),
-	m_pageSize(0),
-	m_pageStart(0),
-	m_selectedIndex(0),
-	m_unicodeIME(FALSE)
+	m_candidateDownArrow(NULL)
 	//
 {
 }
@@ -533,28 +532,28 @@ IMEManager::IMEManager()
 
 IMEManager::~IMEManager()
 {
-	if ( m_candidateWindow )
-	{
-		TheWindowManager->winDestroy( m_candidateWindow );
-	}
+	// if ( m_candidateWindow )
+	// {
+	// 	TheWindowManager->winDestroy( m_candidateWindow );
+	// }
 
-	if ( m_statusWindow )
-	{
-		TheWindowManager->winDestroy( m_statusWindow );
-	}
+	// if ( m_statusWindow )
+	// {
+	// 	TheWindowManager->winDestroy( m_statusWindow );
+	// }
 
-	if ( m_candidateString )
-	{
-		delete [] m_candidateString;
-	}
+	// if ( m_candidateString )
+	// {
+	// 	delete [] m_candidateString;
+	// }
 
-	detatch();
-	ImmAssociateContext( ApplicationHWnd, m_oldContext );
-	ImmReleaseContext( ApplicationHWnd, m_oldContext );
-	if ( m_context )
-	{
-		ImmDestroyContext( m_context );
-	}
+	// detatch();
+	// ImmAssociateContext( ApplicationHWnd, m_oldContext );
+	// ImmReleaseContext( ApplicationHWnd, m_oldContext );
+	// if ( m_context )
+	// {
+	// 	ImmDestroyContext( m_context );
+	// }
 }
 
 //============================================================================
@@ -563,58 +562,58 @@ IMEManager::~IMEManager()
 
 void IMEManager::init( void )
 {
-	//HWND ImeWindow = ImmGetDefaultIMEWnd(ApplicationHWnd);
-  // if(ImeWindow) 
-	// {
-  //    DestroyWindow(ImeWindow);
-	//	}
+// 	//HWND ImeWindow = ImmGetDefaultIMEWnd(ApplicationHWnd);
+//   // if(ImeWindow) 
+// 	// {
+//   //    DestroyWindow(ImeWindow);
+// 	//	}
 
-	m_context = ImmCreateContext();
-	m_oldContext = ImmGetContext( ApplicationHWnd );
-	m_disabled = 0;
-	m_candidateWindow = TheWindowManager->winCreateFromScript( AsciiString("IMECandidateWindow.wnd"));
-	m_candidateWindow->winSetStatus(WIN_STATUS_ABOVE);
+// 	m_context = ImmCreateContext();
+// 	m_oldContext = ImmGetContext( ApplicationHWnd );
+// 	m_disabled = 0;
+// 	m_candidateWindow = TheWindowManager->winCreateFromScript( AsciiString("IMECandidateWindow.wnd"));
+// 	m_candidateWindow->winSetStatus(WIN_STATUS_ABOVE);
 	
-	if ( m_candidateWindow )
-	{
-		m_candidateWindow->winHide( TRUE );
+// 	if ( m_candidateWindow )
+// 	{
+// 		m_candidateWindow->winHide( TRUE );
 
-		// find text area window
-		NameKeyType id = TheNameKeyGenerator->nameToKey( AsciiString( "IMECandidateWindow.wnd:TextArea" ) );
-		m_candidateTextArea = TheWindowManager->winGetWindowFromId(m_candidateWindow, id);
+// 		// find text area window
+// 		NameKeyType id = TheNameKeyGenerator->nameToKey( AsciiString( "IMECandidateWindow.wnd:TextArea" ) );
+// 		m_candidateTextArea = TheWindowManager->winGetWindowFromId(m_candidateWindow, id);
 
-		// find arrows
-		id = TheNameKeyGenerator->nameToKey( AsciiString( "IMECandidateWindow.wnd:UpArrow" ) );
-		m_candidateUpArrow = TheWindowManager->winGetWindowFromId(m_candidateWindow, id);
+// 		// find arrows
+// 		id = TheNameKeyGenerator->nameToKey( AsciiString( "IMECandidateWindow.wnd:UpArrow" ) );
+// 		m_candidateUpArrow = TheWindowManager->winGetWindowFromId(m_candidateWindow, id);
 
-		id = TheNameKeyGenerator->nameToKey( AsciiString( "IMECandidateWindow.wnd:DownArrow" ) );
-		m_candidateDownArrow = TheWindowManager->winGetWindowFromId(m_candidateWindow, id);
+// 		id = TheNameKeyGenerator->nameToKey( AsciiString( "IMECandidateWindow.wnd:DownArrow" ) );
+// 		m_candidateDownArrow = TheWindowManager->winGetWindowFromId(m_candidateWindow, id);
 
 
 
-		if ( m_candidateTextArea == NULL )
-		{
-			TheWindowManager->winDestroy( m_candidateWindow );
-			m_candidateWindow = NULL;
-		}
-	}
+// 		if ( m_candidateTextArea == NULL )
+// 		{
+// 			TheWindowManager->winDestroy( m_candidateWindow );
+// 			m_candidateWindow = NULL;
+// 		}
+// 	}
 
-	m_statusWindow = TheWindowManager->winCreateFromScript( AsciiString("IMEStatusWindow.wnd"));
+// 	m_statusWindow = TheWindowManager->winCreateFromScript( AsciiString("IMEStatusWindow.wnd"));
 
-	if ( m_statusWindow )
-	{
-		m_statusWindow->winHide( TRUE );
-	}
+// 	if ( m_statusWindow )
+// 	{
+// 		m_statusWindow->winHide( TRUE );
+// 	}
 
-	// attach IMEManager to each window
-	if ( m_candidateWindow != NULL )
-	{
-		m_candidateWindow->winSetUserData( TheIMEManager );
-		m_candidateTextArea->winSetUserData( TheIMEManager );
-	}
+// 	// attach IMEManager to each window
+// 	if ( m_candidateWindow != NULL )
+// 	{
+// 		m_candidateWindow->winSetUserData( TheIMEManager );
+// 		m_candidateTextArea->winSetUserData( TheIMEManager );
+// 	}
 
-	detatch();
-	enable();
+// 	detatch();
+// 	enable();
 }
 
 //============================================================================
@@ -639,19 +638,19 @@ void IMEManager::update( void )
 // IMEManager::attach
 //============================================================================
 
-void IMEManager::attach( GameWindow *window )
+void IMEManager::attach( GameWindow */*window*/ )
 {
-	if ( m_window != window )
-	{
-		detatch();
-		if ( m_disabled == 0 )
-		{
-			ImmAssociateContext( ApplicationHWnd, m_context );
-			updateStatusWindow();
-			//openStatusWindow();
-		}
-		m_window = window;
-	}
+	// if ( m_window != window )
+	// {
+	// 	detatch();
+	// 	if ( m_disabled == 0 )
+	// 	{
+	// 		ImmAssociateContext( ApplicationHWnd, m_context );
+	// 		updateStatusWindow();
+	// 		//openStatusWindow();
+	// 	}
+	// 	m_window = window;
+	// }
 }
 
 //============================================================================
@@ -660,8 +659,8 @@ void IMEManager::attach( GameWindow *window )
 
 void IMEManager::detatch( void )
 {
-	//ImmAssociateContext( ApplicationHWnd, NULL );
-	m_window = NULL;
+	// //ImmAssociateContext( ApplicationHWnd, NULL );
+	// m_window = NULL;
 
 }
 
@@ -669,312 +668,312 @@ void IMEManager::detatch( void )
 // IMEManager::serviceIMEMessage
 //============================================================================
 
-Bool IMEManager::serviceIMEMessage(	void *windowsHandle, UnsignedInt message,	Int wParam,	Int lParam )
+Bool IMEManager::serviceIMEMessage(	void */*windowsHandle*/, UnsignedInt /*message*/,	Int /*wParam*/,	Int /*lParam*/ )
 {
 
-	DEBUG_ASSERTCRASH( windowsHandle == ApplicationHWnd, ("Unexpected window handle for IMEManager") );
-	#ifdef DEBUG_IME
-	printMessageInfo( message, wParam, lParam );
-	#endif
+// 	DEBUG_ASSERTCRASH( windowsHandle == ApplicationHWnd, ("Unexpected window handle for IMEManager") );
+// 	#ifdef DEBUG_IME
+// 	printMessageInfo( message, wParam, lParam );
+// 	#endif
 
-   switch(message){
+//    switch(message){
 
-			// --------------------------------------------------------------------
-			case WM_IME_CHAR:
-			{
-				WideChar wchar = convertCharToWide(wParam);
-				#ifdef DEBUG_IME
-				DEBUG_LOG(("IMM: WM_IME_CHAR - '%hc'0x%04x\n", wchar, wchar ));
-				#endif
+// 			// --------------------------------------------------------------------
+// 			case WM_IME_CHAR:
+// 			{
+// 				WideChar wchar = convertCharToWide(wParam);
+// 				#ifdef DEBUG_IME
+// 				DEBUG_LOG(("IMM: WM_IME_CHAR - '%hc'0x%04x\n", wchar, wchar ));
+// 				#endif
 																	 
-				if ( m_window && (wchar > 32 || wchar == VK_RETURN ))
-				{
-					TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, (wParam & 0xffff), lParam );
-					m_result = 0;
-					return TRUE;
-				}
-				return FALSE;
-			}
+// 				if ( m_window && (wchar > 32 || wchar == VK_RETURN ))
+// 				{
+// 					TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, (wParam & 0xffff), lParam );
+// 					m_result = 0;
+// 					return TRUE;
+// 				}
+// 				return FALSE;
+// 			}
 
-			// --------------------------------------------------------------------
-			case WM_CHAR:
-			{
-					WideChar wchar = (WideChar) (wParam & 0xffff);
+// 			// --------------------------------------------------------------------
+// 			case WM_CHAR:
+// 			{
+// 					WideChar wchar = (WideChar) (wParam & 0xffff);
 
-				#ifdef DEBUG_IME
-				DEBUG_LOG(("IMM: WM_CHAR - '%hc'0x%04x\n", wchar, wchar ));
-				#endif
+// 				#ifdef DEBUG_IME
+// 				DEBUG_LOG(("IMM: WM_CHAR - '%hc'0x%04x\n", wchar, wchar ));
+// 				#endif
 
-				if ( m_window && (wchar >= 32 || wchar == VK_RETURN) )
-				{
-					TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, (wParam & 0xffff), lParam );
-					m_result = 0;
-					return TRUE;
-				}
-				return FALSE;
-			}
+// 				if ( m_window && (wchar >= 32 || wchar == VK_RETURN) )
+// 				{
+// 					TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, (wParam & 0xffff), lParam );
+// 					m_result = 0;
+// 					return TRUE;
+// 				}
+// 				return FALSE;
+// 			}
 
-			// --------------------------------------------------------------------
-      case WM_IME_SELECT:
-					DEBUG_LOG(("IMM: WM_IME_SELECT\n"));
-				return FALSE;
-      case WM_IME_STARTCOMPOSITION:
-        //The WM_IME_STARTCOMPOSITION message is sent immediately before an 
-        //IME generates a composition string as a result of a user's keystroke.
-        //
-				m_composing = TRUE;
-				m_compositionCharsDisplayed = 0;
-				updateCompositionString();
-        m_result = 1;
-				return TRUE;
-			// --------------------------------------------------------------------
-      case WM_IME_ENDCOMPOSITION:
-			{
-				//First remove the composition characters
-				m_composing = FALSE;
-				while (m_compositionCharsDisplayed > 0)
-				{	//if cursor has moved since start of composition, we need to move it back using backspace message
-					TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
-					m_compositionCharsDisplayed--;
-				}
-				closeCandidateList(0);
-				return TRUE;
-				// I removed the rest of this message handler because we update
-				// the strings real time inside WM_IME_COMPOSITION
-				// instead of waiting for user to enter separator. -MW
+// 			// --------------------------------------------------------------------
+//       case WM_IME_SELECT:
+// 					DEBUG_LOG(("IMM: WM_IME_SELECT\n"));
+// 				return FALSE;
+//       case WM_IME_STARTCOMPOSITION:
+//         //The WM_IME_STARTCOMPOSITION message is sent immediately before an 
+//         //IME generates a composition string as a result of a user's keystroke.
+//         //
+// 				m_composing = TRUE;
+// 				m_compositionCharsDisplayed = 0;
+// 				updateCompositionString();
+//         m_result = 1;
+// 				return TRUE;
+// 			// --------------------------------------------------------------------
+//       case WM_IME_ENDCOMPOSITION:
+// 			{
+// 				//First remove the composition characters
+// 				m_composing = FALSE;
+// 				while (m_compositionCharsDisplayed > 0)
+// 				{	//if cursor has moved since start of composition, we need to move it back using backspace message
+// 					TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
+// 					m_compositionCharsDisplayed--;
+// 				}
+// 				closeCandidateList(0);
+// 				return TRUE;
+// 				// I removed the rest of this message handler because we update
+// 				// the strings real time inside WM_IME_COMPOSITION
+// 				// instead of waiting for user to enter separator. -MW
 
-        //IMEs send this message to the application when the IMEs' composition 
-        //windows have closed. Applications that display their own composition 
-        //characters should process this message. Other applications should 
-        //send the message to the application IME window or to DefWindowProc, 
-        //which will pass the message to  the default IME window.
-        //
+//         //IMEs send this message to the application when the IMEs' composition 
+//         //windows have closed. Applications that display their own composition 
+//         //characters should process this message. Other applications should 
+//         //send the message to the application IME window or to DefWindowProc, 
+//         //which will pass the message to  the default IME window.
+//         //
 
-				m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
+// 				m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
 
-				if ( m_window )
-				{
-					WideChar *ch = m_resultsString;
-					getResultsString();
-					while ( *ch )
-					{
-						TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, *ch, 0 );
-						ch++;
-					}
-				}
-				m_result = 1;
-				return TRUE;
-			}
-			// --------------------------------------------------------------------
-			case WM_IME_COMPOSITION:
-			{
-				//IMEs send this message to the application when they change composition 
-				//status in response to a keystroke. Applications that display their own 
-				//composition characters should process this message by calling 
-				//ImmGetCompositionString. Other applications should send the message to 
-				//the application IME window or to DefWindowProc, which will pass the 
-				//message to the default IME window.
-				//
-				//The WM_IME_COMPOSITION message is sent to an application when the IME 
-				//changes composition status as a result of a keystroke. An application 
-				//should process this message if it displays composition characters itself. 
-				//Otherwise, it should send the message to the IME window. This message 
-				//has no return value. wParam = DBCS character. lParam = change indicator.
-				//
+// 				if ( m_window )
+// 				{
+// 					WideChar *ch = m_resultsString;
+// 					getResultsString();
+// 					while ( *ch )
+// 					{
+// 						TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, *ch, 0 );
+// 						ch++;
+// 					}
+// 				}
+// 				m_result = 1;
+// 				return TRUE;
+// 			}
+// 			// --------------------------------------------------------------------
+// 			case WM_IME_COMPOSITION:
+// 			{
+// 				//IMEs send this message to the application when they change composition 
+// 				//status in response to a keystroke. Applications that display their own 
+// 				//composition characters should process this message by calling 
+// 				//ImmGetCompositionString. Other applications should send the message to 
+// 				//the application IME window or to DefWindowProc, which will pass the 
+// 				//message to the default IME window.
+// 				//
+// 				//The WM_IME_COMPOSITION message is sent to an application when the IME 
+// 				//changes composition status as a result of a keystroke. An application 
+// 				//should process this message if it displays composition characters itself. 
+// 				//Otherwise, it should send the message to the IME window. This message 
+// 				//has no return value. wParam = DBCS character. lParam = change indicator.
+// 				//
 
-				if (lParam & GCS_RESULTSTR)	//added to show instant updates as soon as a character is translated. -MW
-				{
-					if ( m_window )
-					{
-						m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
+// 				if (lParam & GCS_RESULTSTR)	//added to show instant updates as soon as a character is translated. -MW
+// 				{
+// 					if ( m_window )
+// 					{
+// 						m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
 
-						while (m_compositionCharsDisplayed > 0)
-						{	//if cursor has moved since start of composition, we need to move it back using backspace message
-							TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
-							m_compositionCharsDisplayed--;
-						}
+// 						while (m_compositionCharsDisplayed > 0)
+// 						{	//if cursor has moved since start of composition, we need to move it back using backspace message
+// 							TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
+// 							m_compositionCharsDisplayed--;
+// 						}
 
-						WideChar *ch = m_resultsString;
-						getResultsString();
-						while ( *ch )
-						{
-							TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, *ch, 0 );
-							ch++;
-						}
-					}
-					m_compositionCharsDisplayed = 0;
-				}
-				else
-				if (lParam & CS_INSERTCHAR && lParam & CS_NOMOVECARET)
-				{	//we are supposed to display the composition character without moving the cursor. (it's a candidate).
-					if (m_window)
-					{
-						m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
+// 						WideChar *ch = m_resultsString;
+// 						getResultsString();
+// 						while ( *ch )
+// 						{
+// 							TheWindowManager->winSendInputMsg( m_window, GWM_IME_CHAR, *ch, 0 );
+// 							ch++;
+// 						}
+// 					}
+// 					m_compositionCharsDisplayed = 0;
+// 				}
+// 				else
+// 				if (lParam & CS_INSERTCHAR && lParam & CS_NOMOVECARET)
+// 				{	//we are supposed to display the composition character without moving the cursor. (it's a candidate).
+// 					if (m_window)
+// 					{
+// 						m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
 
-						while (m_compositionCharsDisplayed > 0)
-						{	//if cursor has moved since start of composition, we need to move it back using backspace message
-							TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
-							m_compositionCharsDisplayed--;
-						}
+// 						while (m_compositionCharsDisplayed > 0)
+// 						{	//if cursor has moved since start of composition, we need to move it back using backspace message
+// 							TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
+// 							m_compositionCharsDisplayed--;
+// 						}
 
-						WideChar *ch = m_compositionString;
-						updateCompositionString();
-						while (*ch)
-						{
-							TheWindowManager->winSendInputMsg(m_window, GWM_IME_CHAR, *ch, 0 );
-							ch++;
-							m_compositionCharsDisplayed++;
-						}
-						m_composing = TRUE; // reset this flag before calling GWM_IME_CHAR
-					}
-				}
-				else
-				if (lParam & GCS_COMPSTR)
-				{	//we are supposed to display the composition character without moving the cursor. (it's a candidate).
-					if (m_window)
-					{
-						m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
+// 						WideChar *ch = m_compositionString;
+// 						updateCompositionString();
+// 						while (*ch)
+// 						{
+// 							TheWindowManager->winSendInputMsg(m_window, GWM_IME_CHAR, *ch, 0 );
+// 							ch++;
+// 							m_compositionCharsDisplayed++;
+// 						}
+// 						m_composing = TRUE; // reset this flag before calling GWM_IME_CHAR
+// 					}
+// 				}
+// 				else
+// 				if (lParam & GCS_COMPSTR)
+// 				{	//we are supposed to display the composition character without moving the cursor. (it's a candidate).
+// 					if (m_window)
+// 					{
+// 						m_composing = FALSE; // reset this flag before calling GWM_IME_CHAR
 
-						while (m_compositionCharsDisplayed > 0)
-						{	//if cursor has moved since start of composition, we need to move it back using backspace message
-							TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
-							m_compositionCharsDisplayed--;
-						}
+// 						while (m_compositionCharsDisplayed > 0)
+// 						{	//if cursor has moved since start of composition, we need to move it back using backspace message
+// 							TheWindowManager->winSendInputMsg( m_window, GWM_CHAR, KEY_BACKSPACE, KEY_STATE_DOWN);
+// 							m_compositionCharsDisplayed--;
+// 						}
 
-						WideChar *ch = m_compositionString;
-						updateCompositionString();
-						while (*ch)
-						{
-							TheWindowManager->winSendInputMsg(m_window, GWM_IME_CHAR, *ch, 0 );
-							ch++;
-							m_compositionCharsDisplayed++;
-						}
-						m_composing = TRUE; // reset this flag before calling GWM_IME_CHAR
-					}
-				}
+// 						WideChar *ch = m_compositionString;
+// 						updateCompositionString();
+// 						while (*ch)
+// 						{
+// 							TheWindowManager->winSendInputMsg(m_window, GWM_IME_CHAR, *ch, 0 );
+// 							ch++;
+// 							m_compositionCharsDisplayed++;
+// 						}
+// 						m_composing = TRUE; // reset this flag before calling GWM_IME_CHAR
+// 					}
+// 				}
 
-				m_result = 1;
-				return TRUE;
-			}
-			// --------------------------------------------------------------------
-			case WM_IME_SETCONTEXT:
-			{
-				//The system sends this message to an application when one of the 
-				//application's windows is activated. Applications should respond by 
-				//calling ImmGetContext.
-				//
-				updateProperties();
-				//ignore for now
-				m_result = 0;
-				return FALSE;
-			}
+// 				m_result = 1;
+// 				return TRUE;
+// 			}
+// 			// --------------------------------------------------------------------
+// 			case WM_IME_SETCONTEXT:
+// 			{
+// 				//The system sends this message to an application when one of the 
+// 				//application's windows is activated. Applications should respond by 
+// 				//calling ImmGetContext.
+// 				//
+// 				updateProperties();
+// 				//ignore for now
+// 				m_result = 0;
+// 				return FALSE;
+// 			}
 
 
-			// --------------------------------------------------------------------
-			case WM_IME_NOTIFY:
-			{
-				//IMEs generate this message to notify the application or the IME window 
-				//that the IME status has changed. The wParam value is a submessage that 
-				//specifies the nature of the change. 
-				//
-				switch(wParam)
-				{
-					case IMN_OPENCANDIDATE:
-					{
-						//This message is sent to the application when an IME is about to 
-						//open the candidate window. An application should process this 
-						//message if it displays candidates. The application can retrieve 
-						//a list of candidates to display by using theImmGetCandidateList 
-						//function. The application receives this notification message through 
-						//the WM_IME_NOTIFY message.
-						//
+// 			// --------------------------------------------------------------------
+// 			case WM_IME_NOTIFY:
+// 			{
+// 				//IMEs generate this message to notify the application or the IME window 
+// 				//that the IME status has changed. The wParam value is a submessage that 
+// 				//specifies the nature of the change. 
+// 				//
+// 				switch(wParam)
+// 				{
+// 					case IMN_OPENCANDIDATE:
+// 					{
+// 						//This message is sent to the application when an IME is about to 
+// 						//open the candidate window. An application should process this 
+// 						//message if it displays candidates. The application can retrieve 
+// 						//a list of candidates to display by using theImmGetCandidateList 
+// 						//function. The application receives this notification message through 
+// 						//the WM_IME_NOTIFY message.
+// 						//
 
-						// open candidate window
-						openCandidateList( lParam );
-						m_result =  1;
-						return TRUE;
-					}
-					case IMN_CLOSECANDIDATE:
-					{
-						//This message is sent to the application when an IME is about to 
-						//close the candidate window. An application should process this 
-						//message if it displays candidates. The application receives this 
-						//notification message through the WM_IME_NOTIFY message.
-						//
-						closeCandidateList( lParam );
-						m_result =  1;
-						return TRUE;
-					}
+// 						// open candidate window
+// 						openCandidateList( lParam );
+// 						m_result =  1;
+// 						return TRUE;
+// 					}
+// 					case IMN_CLOSECANDIDATE:
+// 					{
+// 						//This message is sent to the application when an IME is about to 
+// 						//close the candidate window. An application should process this 
+// 						//message if it displays candidates. The application receives this 
+// 						//notification message through the WM_IME_NOTIFY message.
+// 						//
+// 						closeCandidateList( lParam );
+// 						m_result =  1;
+// 						return TRUE;
+// 					}
 
-					case IMN_CHANGECANDIDATE:
-					{
-						//This message is sent to the application when an IME is about to 
-						//change the content of the candidate window. An application should 
-						//process this notification message if it displays candidates itself. 
-						//The application receives this notification message through the 
-						//WM_IME_NOTIFY message.
-						//
-						updateCandidateList( lParam );
-						m_result =  1;
-				 	  return TRUE;
-					}
-					case IMN_GUIDELINE:              //This message is sent when an IME is about to show an error message or other data. 
-					{
-						// display error message
-						m_result = 1;
-						return FALSE;
-					}
+// 					case IMN_CHANGECANDIDATE:
+// 					{
+// 						//This message is sent to the application when an IME is about to 
+// 						//change the content of the candidate window. An application should 
+// 						//process this notification message if it displays candidates itself. 
+// 						//The application receives this notification message through the 
+// 						//WM_IME_NOTIFY message.
+// 						//
+// 						updateCandidateList( lParam );
+// 						m_result =  1;
+// 				 	  return TRUE;
+// 					}
+// 					case IMN_GUIDELINE:              //This message is sent when an IME is about to show an error message or other data. 
+// 					{
+// 						// display error message
+// 						m_result = 1;
+// 						return FALSE;
+// 					}
 
-					case IMN_SETCONVERSIONMODE:      //This message is sent when the conversion mode of the input context is updated.
-					{
-						#ifdef DEBUG_IME
-						printConversionStatus();
-						#endif
-						return FALSE;
-					}
+// 					case IMN_SETCONVERSIONMODE:      //This message is sent when the conversion mode of the input context is updated.
+// 					{
+// 						#ifdef DEBUG_IME
+// 						printConversionStatus();
+// 						#endif
+// 						return FALSE;
+// 					}
 
-					case IMN_SETSENTENCEMODE:        //This message is sent when the sentence mode of the input context is updated.
-					{
-						#ifdef DEBUG_IME
-						printSentenceStatus();
-						#endif
-						return FALSE;
-					}
-/*
-					// pass the reset on through to the installed IME
-					case IMN_SETCANDIDATEPOS:        //This message is sent when the IME is about to move the candidate window.
-					case IMN_SETSTATUSWINDOWPOS:     //This message is sent when the status window position in the input context is updated.
-						return FALSE;
-					case IMN_OPENSTATUSWINDOW:       //This message is sent when an IME is about to create the status window.
-						DEBUG_LOG(("Open Status Window"));
-						return FALSE;
-					case IMN_CLOSESTATUSWINDOW:      //This message is sent to the application when an input method editor (IME) is about to close the status window.
-						DEBUG_LOG(("Close Status Window"));
-						return FALSE;
-					case IMN_SETOPENSTATUS:          //This message is sent when the open status of the input context is updated.
-					case IMN_SETCOMPOSITIONFONT:     //This message is sent when the font of the input context is updated. 
-					case IMN_SETCOMPOSITIONWINDOW:   //This message is sent when the style or position of the composition window is updated.
-					case IMN_PRIVATE:                //This message is for your own use, it seems.
-*/				default:
-						m_result =  1;
-						return TRUE;
-				}
-				break;
-		}
+// 					case IMN_SETSENTENCEMODE:        //This message is sent when the sentence mode of the input context is updated.
+// 					{
+// 						#ifdef DEBUG_IME
+// 						printSentenceStatus();
+// 						#endif
+// 						return FALSE;
+// 					}
+// /*
+// 					// pass the reset on through to the installed IME
+// 					case IMN_SETCANDIDATEPOS:        //This message is sent when the IME is about to move the candidate window.
+// 					case IMN_SETSTATUSWINDOWPOS:     //This message is sent when the status window position in the input context is updated.
+// 						return FALSE;
+// 					case IMN_OPENSTATUSWINDOW:       //This message is sent when an IME is about to create the status window.
+// 						DEBUG_LOG(("Open Status Window"));
+// 						return FALSE;
+// 					case IMN_CLOSESTATUSWINDOW:      //This message is sent to the application when an input method editor (IME) is about to close the status window.
+// 						DEBUG_LOG(("Close Status Window"));
+// 						return FALSE;
+// 					case IMN_SETOPENSTATUS:          //This message is sent when the open status of the input context is updated.
+// 					case IMN_SETCOMPOSITIONFONT:     //This message is sent when the font of the input context is updated. 
+// 					case IMN_SETCOMPOSITIONWINDOW:   //This message is sent when the style or position of the composition window is updated.
+// 					case IMN_PRIVATE:                //This message is for your own use, it seems.
+// */				default:
+// 						m_result =  1;
+// 						return TRUE;
+// 				}
+// 				break;
+// 		}
 
-			// --------------------------------------------------------------------
-      case WM_IME_COMPOSITIONFULL:
-			{
-				//IMEs send this message to the application when they are unable to 
-        //extend the composition window to accommodate any more characters. 
-        //Applications should tell IMEs how to display the composition window 
-        //using the IMC_SETCOMPOSITIONWINDOW message.
-        //
-        //I'm not sure what to do here.
-        m_result = 1;
-				return TRUE;
-			}
-   }
+// 			// --------------------------------------------------------------------
+//       case WM_IME_COMPOSITIONFULL:
+// 			{
+// 				//IMEs send this message to the application when they are unable to 
+//         //extend the composition window to accommodate any more characters. 
+//         //Applications should tell IMEs how to display the composition window 
+//         //using the IMC_SETCOMPOSITIONWINDOW message.
+//         //
+//         //I'm not sure what to do here.
+//         m_result = 1;
+// 				return TRUE;
+// 			}
+//    }
 
 	return FALSE;
 }
@@ -994,11 +993,11 @@ Int IMEManager::result( void )
 
 void IMEManager::enable( void )
 {
-	if ( --m_disabled <= 0 )
-	{
-		m_disabled = 0;
-		ImmAssociateContext( ApplicationHWnd, m_context );
-	}
+	// if ( --m_disabled <= 0 )
+	// {
+	// 	m_disabled = 0;
+	// 	ImmAssociateContext( ApplicationHWnd, m_context );
+	// }
 }
 
 //============================================================================
@@ -1007,8 +1006,8 @@ void IMEManager::enable( void )
 
 void IMEManager::disable( void )
 {
-	m_disabled++;
-	ImmAssociateContext( ApplicationHWnd, NULL );
+	// m_disabled++;
+	// ImmAssociateContext( ApplicationHWnd, NULL );
 }
 
 //============================================================================
@@ -1017,7 +1016,7 @@ void IMEManager::disable( void )
 
 Bool IMEManager::isEnabled( void )
 {
-	return m_context != NULL && m_disabled == 0;
+	return /*m_context != NULL &&*/ m_disabled == 0;
 }
 
 //============================================================================
@@ -1043,29 +1042,29 @@ GameWindow* IMEManager::getWindow( void )
 // IMEManager::convertChartoWide
 //============================================================================
 
-WideChar IMEManager::convertCharToWide( WPARAM wParam )
+WideChar IMEManager::convertCharToWide( /*WPARAM wParam*/ )
 {
-	char dcbsString[3];
+	// char dcbsString[3];
 
-	if ( wParam&0xff00 )
-	{
-		dcbsString[0] = (wParam>>8)&0xff;
-		dcbsString[1] = wParam&0xff;
-		dcbsString[2] = 0;
-	}
-	else
-	{
-		dcbsString[0] = wParam&0xff;
-		dcbsString[1] = 0;
-	}
+	// if ( wParam&0xff00 )
+	// {
+	// 	dcbsString[0] = (wParam>>8)&0xff;
+	// 	dcbsString[1] = wParam&0xff;
+	// 	dcbsString[2] = 0;
+	// }
+	// else
+	// {
+	// 	dcbsString[0] = wParam&0xff;
+	// 	dcbsString[1] = 0;
+	// }
 
 
-	WideChar uniString[2];
+	// WideChar uniString[2];
 
-	if ( MultiByteToWideChar( CP_ACP, 0, dcbsString, strlen( dcbsString ), uniString, 1 ) == 1 )
-	{
-		return uniString[0];
-	}
+	// if ( MultiByteToWideChar( CP_ACP, 0, dcbsString, strlen( dcbsString ), uniString, 1 ) == 1 )
+	// {
+	// 	return uniString[0];
+	// }
 
 	return 0;
 }
@@ -1100,67 +1099,67 @@ Int	IMEManager::getCompositionCursorPosition( void )
 
 void IMEManager::updateCompositionString( void )
 {
-	char tempBuf[ (MAX_COMPSTRINGLEN+1)*2];
+	// char tempBuf[ (MAX_COMPSTRINGLEN+1)*2];
 
-	m_compositionCursorPos = 0;
-	m_compositionString[0] = 0;
-	m_compositionStringLength = 0;
+	// m_compositionCursorPos = 0;
+	// m_compositionString[0] = 0;
+	// m_compositionStringLength = 0;
 
-	if ( m_context )
-	{
-		// try reading unicode directy
-		LONG result = ImmGetCompositionStringW( m_context, GCS_COMPSTR, m_compositionString, MAX_COMPSTRINGLEN );
+	// if ( m_context )
+	// {
+	// 	// try reading unicode directy
+	// 	LONG result = ImmGetCompositionStringW( m_context, GCS_COMPSTR, m_compositionString, MAX_COMPSTRINGLEN );
 
-		if ( result >= 0 )
-		{
-			m_compositionStringLength = result/2;
-			m_compositionCursorPos = (ImmGetCompositionStringW( m_context, GCS_CURSORPOS, NULL, 0) & 0xffff );
-		}
-		else
-		{
+	// 	if ( result >= 0 )
+	// 	{
+	// 		m_compositionStringLength = result/2;
+	// 		m_compositionCursorPos = (ImmGetCompositionStringW( m_context, GCS_CURSORPOS, NULL, 0) & 0xffff );
+	// 	}
+	// 	else
+	// 	{
 			
-			// read MBCS instead
-			result = ImmGetCompositionStringA( m_context, GCS_COMPSTR, tempBuf, MAX_COMPSTRINGLEN*2);
+	// 		// read MBCS instead
+	// 		result = ImmGetCompositionStringA( m_context, GCS_COMPSTR, tempBuf, MAX_COMPSTRINGLEN*2);
 			
-			if ( result > 0 )
-			{
-				tempBuf[ result ] = '\0';
+	// 		if ( result > 0 )
+	// 		{
+	// 			tempBuf[ result ] = '\0';
 			
-				int convRes = MultiByteToWideChar( CP_ACP, 0, tempBuf, -1, m_compositionString, MAX_COMPSTRINGLEN );
-				GameArrayEnd(m_compositionString);
+	// 			int convRes = MultiByteToWideChar( CP_ACP, 0, tempBuf, -1, m_compositionString, MAX_COMPSTRINGLEN );
+	// 			GameArrayEnd(m_compositionString);
 			
-				if ( convRes < 0)
-				{
-					convRes = 0;
-				}
-				else
-				{
-					m_compositionCursorPos = (ImmGetCompositionString( m_context, GCS_CURSORPOS, NULL, 0) & 0xffff );
-					convRes = GameStrlen ( m_compositionString );
-				}
+	// 			if ( convRes < 0)
+	// 			{
+	// 				convRes = 0;
+	// 			}
+	// 			else
+	// 			{
+	// 				m_compositionCursorPos = (ImmGetCompositionString( m_context, GCS_CURSORPOS, NULL, 0) & 0xffff );
+	// 				convRes = GameStrlen ( m_compositionString );
+	// 			}
 			
-				// m_compositionCursorPos is in DBCS characters, need to convert it to Wide characters
+	// 			// m_compositionCursorPos is in DBCS characters, need to convert it to Wide characters
 			
-				//msg_assert ( (int)strlen(tempBuf) >= convRes ,("bad DBCS string: DBCS = %d chars, Wide = %d chars", strlen(tempBuf), convRes));
-				m_compositionCursorPos = _mbsnccnt ( (unsigned char *) tempBuf, m_compositionCursorPos );
+	// 			//msg_assert ( (int)strlen(tempBuf) >= convRes ,("bad DBCS string: DBCS = %d chars, Wide = %d chars", strlen(tempBuf), convRes));
+	// 			m_compositionCursorPos = _mbsnccnt ( (unsigned char *) tempBuf, m_compositionCursorPos );
 			
-				m_compositionString[convRes] = 0;
-				m_compositionStringLength = convRes;
-				if ( m_compositionCursorPos > convRes )
-				{
-					m_compositionCursorPos = convRes;
-				}
-				else if ( m_compositionCursorPos < 0 )
-				{
-					m_compositionCursorPos = 0;
-				}
-			}
-		}
-	}
+	// 			m_compositionString[convRes] = 0;
+	// 			m_compositionStringLength = convRes;
+	// 			if ( m_compositionCursorPos > convRes )
+	// 			{
+	// 				m_compositionCursorPos = convRes;
+	// 			}
+	// 			else if ( m_compositionCursorPos < 0 )
+	// 			{
+	// 				m_compositionCursorPos = 0;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
-	DEBUG_ASSERTCRASH( m_compositionStringLength < MAX_COMPSTRINGLEN, ("composition string too large"));
-	m_compositionString[m_compositionStringLength] = 0;
-	GameArrayEnd(m_compositionString);
+	// DEBUG_ASSERTCRASH( m_compositionStringLength < MAX_COMPSTRINGLEN, ("composition string too large"));
+	// m_compositionString[m_compositionStringLength] = 0;
+	// GameArrayEnd(m_compositionString);
 }
 
 //============================================================================
@@ -1172,38 +1171,38 @@ void IMEManager::getResultsString ( void )
 	Int stringLen = 0;
 	m_resultsString[0] = 0;
 
-	if ( m_context )
-	{
-		// try reading unicode directy
-		LONG result = ImmGetCompositionStringW( m_context,  GCS_RESULTSTR, m_resultsString, MAX_COMPSTRINGLEN );
+	// if ( m_context )
+	// {
+	// 	// try reading unicode directy
+	// 	LONG result = ImmGetCompositionStringW( m_context,  GCS_RESULTSTR, m_resultsString, MAX_COMPSTRINGLEN );
 
-		if ( result >= 0 )
-		{
-		 stringLen = result/2;
-		}
-		else
-		{
-			char tempBuf[ (MAX_COMPSTRINGLEN+1)*2];
+	// 	if ( result >= 0 )
+	// 	{
+	// 	 stringLen = result/2;
+	// 	}
+	// 	else
+	// 	{
+	// 		char tempBuf[ (MAX_COMPSTRINGLEN+1)*2];
 			
-			// read MBCS instead
-			result = ImmGetCompositionStringA( m_context, GCS_RESULTSTR, tempBuf, MAX_COMPSTRINGLEN*2);
+	// 		// read MBCS instead
+	// 		result = ImmGetCompositionStringA( m_context, GCS_RESULTSTR, tempBuf, MAX_COMPSTRINGLEN*2);
 			
-			if ( result > 0 )
-			{
-				tempBuf[ result ] = '\0';
+	// 		if ( result > 0 )
+	// 		{
+	// 			tempBuf[ result ] = '\0';
 			
-				int convRes = MultiByteToWideChar( CP_ACP, 0, tempBuf, strlen(tempBuf), m_resultsString, MAX_COMPSTRINGLEN );
+	// 			int convRes = MultiByteToWideChar( CP_ACP, 0, tempBuf, strlen(tempBuf), m_resultsString, MAX_COMPSTRINGLEN );
 			
-				if ( convRes < 0)
-				{
-					convRes = 0;
-				}
-				stringLen = convRes;
-			}
-		}
-	}
+	// 			if ( convRes < 0)
+	// 			{
+	// 				convRes = 0;
+	// 			}
+	// 			stringLen = convRes;
+	// 		}
+	// 	}
+	// }
 
-	DEBUG_ASSERTCRASH( stringLen < MAX_COMPSTRINGLEN, ("results string too large"));
+	// DEBUG_ASSERTCRASH( stringLen < MAX_COMPSTRINGLEN, ("results string too large"));
 	m_resultsString[stringLen] = 0;
 	GameArrayEnd(m_resultsString);
 }
@@ -1212,103 +1211,103 @@ void IMEManager::getResultsString ( void )
 // IMEManager::convertToUnicode 
 //============================================================================
 
-void IMEManager::convertToUnicode ( Char *mbcs, UnicodeString &unicode )
+void IMEManager::convertToUnicode ( Char */*mbcs*/, UnicodeString &/*unicode*/ )
 {
- 	int size = MultiByteToWideChar( CP_ACP, 0, mbcs, strlen(mbcs), NULL, 0 );
+ 	// int size = MultiByteToWideChar( CP_ACP, 0, mbcs, strlen(mbcs), NULL, 0 );
 
-	unicode.clear();
+	// unicode.clear();
 
-	if ( size <= 0 )
-	{
-		return;
-	}
+	// if ( size <= 0 )
+	// {
+	// 	return;
+	// }
 
-	WideChar *buffer = NEW WideChar[ size + 1 ];
+	// WideChar *buffer = NEW WideChar[ size + 1 ];
 
-	if ( buffer )
-	{
-		size = MultiByteToWideChar( CP_ACP, 0, mbcs, strlen(mbcs), buffer, size );
+	// if ( buffer )
+	// {
+	// 	size = MultiByteToWideChar( CP_ACP, 0, mbcs, strlen(mbcs), buffer, size );
 		
-		if ( size <= 0 )
-		{
-			unicode.clear();
-		}
-		else
-		{
-			buffer[size] = 0;
-			unicode = buffer;
-		}
+	// 	if ( size <= 0 )
+	// 	{
+	// 		unicode.clear();
+	// 	}
+	// 	else
+	// 	{
+	// 		buffer[size] = 0;
+	// 		unicode = buffer;
+	// 	}
 
-		delete [] buffer;
-	}
+	// 	delete [] buffer;
+	// }
 }
 
 //============================================================================
 // IMEManager::openCandidateList
 //============================================================================
 
-void IMEManager::openCandidateList( Int candidateFlags )
+void IMEManager::openCandidateList( Int /*candidateFlags*/ )
 {
-	if ( m_candidateWindow == NULL )
-	{
-		return;
-	}
-	// first get lastest candidate list info
-	updateCandidateList( candidateFlags );
-  resizeCandidateWindow( m_pageSize );
+// 	if ( m_candidateWindow == NULL )
+// 	{
+// 		return;
+// 	}
+// 	// first get lastest candidate list info
+// 	updateCandidateList( candidateFlags );
+//   resizeCandidateWindow( m_pageSize );
 
-	m_candidateWindow->winHide( FALSE );
-	m_candidateWindow->winBringToTop();
-	TheWindowManager->winSetModal( m_candidateWindow ); 
+// 	m_candidateWindow->winHide( FALSE );
+// 	m_candidateWindow->winBringToTop();
+// 	TheWindowManager->winSetModal( m_candidateWindow ); 
 
-	Int wx, wy, wwidth, wheight, wcursorx, wcursory;
-	Int cx, cy, cwidth, cheight;
-	Int	textHeight = 20;
+// 	Int wx, wy, wwidth, wheight, wcursorx, wcursory;
+// 	Int cx, cy, cwidth, cheight;
+// 	Int	textHeight = 20;
 
 
-	if ( m_window )
-	{
-		m_window->winGetScreenPosition( &wx, &wy);
-		m_window->winGetSize( &wwidth, &wheight );
-		m_window->winGetCursorPosition( &wcursorx, &wcursory );
-		GameFont *font = m_window->winGetFont();
-		if ( font )
-		{
-			textHeight = font->height;
-		}
-	}
-	else
-	{
-		wx = wy = 0;
-		wwidth = 10;
-		wheight = 10;
-		wcursorx = 0;
-		wcursory = 0;
-	}
+// 	if ( m_window )
+// 	{
+// 		m_window->winGetScreenPosition( &wx, &wy);
+// 		m_window->winGetSize( &wwidth, &wheight );
+// 		m_window->winGetCursorPosition( &wcursorx, &wcursory );
+// 		GameFont *font = m_window->winGetFont();
+// 		if ( font )
+// 		{
+// 			textHeight = font->height;
+// 		}
+// 	}
+// 	else
+// 	{
+// 		wx = wy = 0;
+// 		wwidth = 10;
+// 		wheight = 10;
+// 		wcursorx = 0;
+// 		wcursory = 0;
+// 	}
 
-	m_candidateWindow->winGetSize( &cwidth, &cheight );
+// 	m_candidateWindow->winGetSize( &cwidth, &cheight );
 
-//	// try putting the candidate list above the text
-//	cx = wx + wcursorx;
-//	cy = wy  - cheight;
-//
-//	if ( cx + cwidth > (Int) TheDisplay->getWidth())
-//	{
-//		cx = cx - cwidth;
-//	}
-//	if( cx < 0 )
-//		cx = 0;
-//	if ( cy < 0 )
-//	{
-//		// place list below text
-//		cy = wy + textHeight + textHeight/2;
-//	}
-//	if( cy + cheight > TheDisplay->getHeight())
-//		cy = 0;
-	cx = TheDisplay->getWidth() - cwidth;
-	cy = 0;
-	updateProperties();
-	m_candidateWindow->winSetPosition( cx, cy );
+// //	// try putting the candidate list above the text
+// //	cx = wx + wcursorx;
+// //	cy = wy  - cheight;
+// //
+// //	if ( cx + cwidth > (Int) TheDisplay->getWidth())
+// //	{
+// //		cx = cx - cwidth;
+// //	}
+// //	if( cx < 0 )
+// //		cx = 0;
+// //	if ( cy < 0 )
+// //	{
+// //		// place list below text
+// //		cy = wy + textHeight + textHeight/2;
+// //	}
+// //	if( cy + cheight > TheDisplay->getHeight())
+// //		cy = 0;
+// 	cx = static_cast<Int>(TheDisplay->getWidth()) - cwidth;
+// 	cy = 0;
+// 	updateProperties();
+// 	m_candidateWindow->winSetPosition( cx, cy );
 
 }
 
@@ -1316,21 +1315,21 @@ void IMEManager::openCandidateList( Int candidateFlags )
 // IMEManager::closeCandidateList
 //============================================================================
 
-void IMEManager::closeCandidateList( Int candidateFlags  )
+void IMEManager::closeCandidateList( Int /*candidateFlags*/  )
 {
-	if ( m_candidateWindow != NULL )
-	{
-		m_candidateWindow->winHide( TRUE );
-		TheWindowManager->winUnsetModal( m_candidateWindow ); 
-	}
+	// if ( m_candidateWindow != NULL )
+	// {
+	// 	m_candidateWindow->winHide( TRUE );
+	// 	TheWindowManager->winUnsetModal( m_candidateWindow ); 
+	// }
 
-	if ( m_candidateString )
-	{
-		delete [] m_candidateString;
-		m_candidateString = NULL;
-	}
+	// if ( m_candidateString )
+	// {
+	// 	delete [] m_candidateString;
+	// 	m_candidateString = NULL;
+	// }
 
-	m_candidateCount = 0;
+	// m_candidateCount = 0;
 
 }
 
@@ -1338,132 +1337,132 @@ void IMEManager::closeCandidateList( Int candidateFlags  )
 // IMEManager::updateCandidateList
 //============================================================================
 
-void IMEManager::updateCandidateList( Int candidateFlags  )
+void IMEManager::updateCandidateList( Int /*candidateFlags*/  )
 {
 
-	if ( m_candidateString )
-	{
-		delete [] m_candidateString;
-		m_candidateString = NULL;
-	}
+	// if ( m_candidateString )
+	// {
+	// 	delete [] m_candidateString;
+	// 	m_candidateString = NULL;
+	// }
 
-	m_pageSize = 10;
-	m_candidateCount = 0;
-	m_pageStart = 0;
-	m_selectedIndex = 0;
+	// m_pageSize = 10;
+	// m_candidateCount = 0;
+	// m_pageStart = 0;
+	// m_selectedIndex = 0;
 
-	if (	m_candidateWindow == NULL || 
-				m_context == NULL || 
-				candidateFlags == 0)
-	{
-		return;
-	}
+	// if (	m_candidateWindow == NULL || 
+	// 			m_context == NULL || 
+	// 			candidateFlags == 0)
+	// {
+	// 	return;
+	// }
 
-	for( Int i = 0, candidate = 1; i < 32; i++, candidate = candidate << 1 )
-	{
-		if ( candidateFlags & candidate )
-		{
-			Bool unicode = TRUE;
-			unsigned long listCount = 0;
+	// for( Int i = 0, candidate = 1; i < 32; i++, candidate = candidate << 1 )
+	// {
+	// 	if ( candidateFlags & candidate )
+	// 	{
+	// 		Bool unicode = TRUE;
+	// 		unsigned long listCount = 0;
 
-			Int size = ImmGetCandidateListCountW( m_context, &listCount );
+	// 		Int size = ImmGetCandidateListCountW( m_context, &listCount );
 
-			if ( size <= 0 )
-			{
-				unicode = FALSE;
-				size = ImmGetCandidateListCountA( m_context, &listCount );
-				if ( size <= 0 )
-				{
-					return;
-				}
-			}
+	// 		if ( size <= 0 )
+	// 		{
+	// 			unicode = FALSE;
+	// 			size = ImmGetCandidateListCountA( m_context, &listCount );
+	// 			if ( size <= 0 )
+	// 			{
+	// 				return;
+	// 			}
+	// 		}
 			
-			// create a temporary buffer for reading the candidate list
-			Char *buffer = NEW Char[size];
+	// 		// create a temporary buffer for reading the candidate list
+	// 		Char *buffer = NEW Char[size];
 			
-			if ( buffer == NULL )
-			{
-				return;
-			}
+	// 		if ( buffer == NULL )
+	// 		{
+	// 			return;
+	// 		}
 			
-			memset( buffer, 0, size );
+	// 		memset( buffer, 0, size );
 			
-			CANDIDATELIST *clist = (CANDIDATELIST*) buffer;
+	// 		CANDIDATELIST *clist = (CANDIDATELIST*) buffer;
 
-			Bool ok = TRUE ;
-			Int bytesCopied;
+	// 		Bool ok = TRUE ;
+	// 		Int bytesCopied;
 
-			if ( unicode )
-			{
-				bytesCopied = ImmGetCandidateListW( m_context, i, (CANDIDATELIST*) clist, size );
-			}
-			else
-			{
-				bytesCopied = ImmGetCandidateListA( m_context, i, (CANDIDATELIST*) clist, size );
-			}
+	// 		if ( unicode )
+	// 		{
+	// 			bytesCopied = ImmGetCandidateListW( m_context, i, (CANDIDATELIST*) clist, size );
+	// 		}
+	// 		else
+	// 		{
+	// 			bytesCopied = ImmGetCandidateListA( m_context, i, (CANDIDATELIST*) clist, size );
+	// 		}
 
-			if ( bytesCopied == 0 || bytesCopied > size )
-			{
-				DEBUG_ASSERTCRASH(bytesCopied < size,("IME candidate buffer overrun"));
-				ok = FALSE;
-			}
+	// 		if ( bytesCopied == 0 || bytesCopied > size )
+	// 		{
+	// 			DEBUG_ASSERTCRASH(bytesCopied < size,("IME candidate buffer overrun"));
+	// 			ok = FALSE;
+	// 		}
 
-			if ( ok && clist->dwStyle != IME_CAND_UNKNOWN && clist->dwStyle != IME_CAND_CODE  )
-			{
-		    //Apparently there is an "IME98 bug" (IME bug under Windows 98?) that 
-		    //causes you to have to execute the following code. 
-		    if(( clist->dwPageStart >  clist->dwSelection) || 
-		       (clist->dwSelection >= clist->dwPageStart + clist->dwPageSize))
-		    {
-		       clist->dwPageStart = (clist->dwSelection / clist->dwPageSize) * clist->dwPageSize;
-		    }
+	// 		if ( ok && clist->dwStyle != IME_CAND_UNKNOWN && clist->dwStyle != IME_CAND_CODE  )
+	// 		{
+	// 	    //Apparently there is an "IME98 bug" (IME bug under Windows 98?) that 
+	// 	    //causes you to have to execute the following code. 
+	// 	    if(( clist->dwPageStart >  clist->dwSelection) || 
+	// 	       (clist->dwSelection >= clist->dwPageStart + clist->dwPageSize))
+	// 	    {
+	// 	       clist->dwPageStart = (clist->dwSelection / clist->dwPageSize) * clist->dwPageSize;
+	// 	    }
 
-				m_pageSize = clist->dwPageSize;
-				m_candidateCount = clist->dwCount;
-				m_pageStart = clist->dwPageStart;
-				m_selectedIndex = clist->dwSelection;
+	// 			m_pageSize = clist->dwPageSize;
+	// 			m_candidateCount = clist->dwCount;
+	// 			m_pageStart = clist->dwPageStart;
+	// 			m_selectedIndex = clist->dwSelection;
 
-				#ifdef DEBUG_IME
-				DEBUG_LOG(("IME: Candidate Update: Candidates = %d, pageSize = %d pageStart = %d, selected = %d\n", m_candidateCount, m_pageStart, m_pageSize, m_selectedIndex ));
-				#endif
+	// 			#ifdef DEBUG_IME
+	// 			DEBUG_LOG(("IME: Candidate Update: Candidates = %d, pageSize = %d pageStart = %d, selected = %d\n", m_candidateCount, m_pageStart, m_pageSize, m_selectedIndex ));
+	// 			#endif
 
-				if ( m_candidateUpArrow )
-				{
-					m_candidateUpArrow->winHide( m_pageStart == 0 );
-				}
+	// 			if ( m_candidateUpArrow )
+	// 			{
+	// 				m_candidateUpArrow->winHide( m_pageStart == 0 );
+	// 			}
 
-				if ( m_candidateDownArrow )
-				{
-					m_candidateDownArrow->winHide( m_candidateCount - m_pageStart <= m_pageSize );
-				}
+	// 			if ( m_candidateDownArrow )
+	// 			{
+	// 				m_candidateDownArrow->winHide( m_candidateCount - m_pageStart <= m_pageSize );
+	// 			}
 
-				if ( m_candidateCount > 0 )
-				{
-					m_candidateString = NEW UnicodeString[m_candidateCount];
-					if ( m_candidateString )
-					{
-						Int i;
+	// 			if ( m_candidateCount > 0 )
+	// 			{
+	// 				m_candidateString = NEW UnicodeString[m_candidateCount];
+	// 				if ( m_candidateString )
+	// 				{
+	// 					Int i;
 
-						for( i=0; i < m_candidateCount; i++ )
-						{
-							Char *string = (Char*) ((UnsignedInt) clist + (UnsignedInt) clist->dwOffset[i]);
-							if ( unicode )
-							{
-								m_candidateString[i].set( (WideChar *) string);
-							}
-							else
-							{
-								convertToUnicode( string, m_candidateString[i] );
-							}
-						}
-					}
-				}
+	// 					for( i=0; i < m_candidateCount; i++ )
+	// 					{
+	// 						Char *string = (Char*) ((UnsignedInt) clist + (UnsignedInt) clist->dwOffset[i]);
+	// 						if ( unicode )
+	// 						{
+	// 							m_candidateString[i].set( (WideChar *) string);
+	// 						}
+	// 						else
+	// 						{
+	// 							convertToUnicode( string, m_candidateString[i] );
+	// 						}
+	// 					}
+	// 				}
+	// 			}
 
-			}
-			delete [] buffer;
-			return;
-		}
-	}
+	// 		}
+	// 		delete [] buffer;
+	// 		return;
+	// 	}
+	// }
 }
 
 //============================================================================
@@ -1472,10 +1471,10 @@ void IMEManager::updateCandidateList( Int candidateFlags  )
 
 void IMEManager::updateProperties( void )
 {
-	HKL kb = GetKeyboardLayout( 0 );
-	Int prop = ImmGetProperty( kb, IGP_PROPERTY );
-	m_indexBase = prop & IME_PROP_CANDLIST_START_FROM_1 ? 1 : 0 ;
-	m_unicodeIME = (prop & IME_PROP_UNICODE) != 0 ;
+	// HKL kb = GetKeyboardLayout( 0 );
+	// Int prop = ImmGetProperty( kb, IGP_PROPERTY );
+	// m_indexBase = prop & IME_PROP_CANDLIST_START_FROM_1 ? 1 : 0 ;
+	// m_unicodeIME = (prop & IME_PROP_UNICODE) != 0 ;
 }
 
 //============================================================================
@@ -1583,11 +1582,11 @@ Int IMEManager::getCandidatePageStart()
 
 void IMEManager::openStatusWindow( void )
 {
-	if ( m_statusWindow == NULL )
-	{
-		return;
-	}
-	m_statusWindow->winHide( FALSE );
+	// if ( m_statusWindow == NULL )
+	// {
+	// 	return;
+	// }
+	// m_statusWindow->winHide( FALSE );
 }
 
 //============================================================================
@@ -1596,12 +1595,12 @@ void IMEManager::openStatusWindow( void )
 
 void IMEManager::closeStatusWindow( void )
 {
-	if ( m_statusWindow == NULL )
-	{
-		return;
-	}
+	// if ( m_statusWindow == NULL )
+	// {
+	// 	return;
+	// }
 
-	m_statusWindow->winHide( TRUE );
+	// m_statusWindow->winHide( TRUE );
 }
 
 //============================================================================

@@ -94,7 +94,7 @@ public:
 	virtual Bool getWindowed( void ) { return m_windowed; }				///< return widowed/fullscreen flag
 	virtual Bool setDisplayMode( UnsignedInt xres, UnsignedInt yres, UnsignedInt bitdepth, Bool windowed );	///<sets screen resolution/mode
 	virtual Int getDisplayModeCount(void) {return 0;}	///<return number of display modes/resolutions supported by video card.
-	virtual void getDisplayModeDescription(Int modeIndex, Int *xres, Int *yres, Int *bitDepth) {}	///<return description of mode
+	virtual void getDisplayModeDescription(Int modeIndex, UnsignedInt *xres, UnsignedInt *yres, UnsignedInt *bitDepth) {}	///<return description of mode
  	virtual void setGamma(Real gamma, Real bright, Real contrast, Bool calibrate) {};
 	virtual Bool testMinSpecRequirements(Bool *videoPassed, Bool *cpuPassed, Bool *memPassed,StaticGameLODLevel *idealVideoLevel=NULL, Real *cpuTime=NULL) {*videoPassed=*cpuPassed=*memPassed=true; return true;}
 	virtual void doSmartAssetPurgeAndPreload(const char* usageFileName) = 0;
@@ -232,9 +232,9 @@ extern void StatDebugDisplay( DebugDisplayInterface *dd, void *, FILE *fp = NULL
 
 typedef struct _DisplaySettings
 {
-	Int xRes;  //Resolution width
-	Int yRes;  //Resolution height
-	Int bitDepth; //Color Depth
+	UnsignedInt xRes;  //Resolution width
+	UnsignedInt yRes;  //Resolution height
+	UnsignedInt bitDepth; //Color Depth
 	Bool windowed; //Window mode TRUE: we're windowed, FALSE: we're not windowed
 } DisplaySettings;
 

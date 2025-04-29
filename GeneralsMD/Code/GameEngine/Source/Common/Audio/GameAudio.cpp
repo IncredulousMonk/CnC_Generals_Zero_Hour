@@ -57,16 +57,16 @@
 #include "Common/GameSounds.h"
 #include "Common/MiscAudio.h"
 #include "Common/OSDisplay.h"
-#include "Common/Player.h"
-#include "Common/PlayerList.h"
+// #include "Common/Player.h"
+// #include "Common/PlayerList.h"
 #include "Common/UserPreferences.h"
 
-#include "GameClient/ControlBar.h"
-#include "GameClient/Drawable.h"
-#include "GameClient/View.h"
+// #include "GameClient/ControlBar.h"
+// #include "GameClient/Drawable.h"
+// #include "GameClient/View.h"
 
-#include "GameLogic/GameLogic.h"
-#include "GameLogic/TerrainLogic.h"
+// #include "GameLogic/GameLogic.h"
+// #include "GameLogic/TerrainLogic.h"
 
 #include "WWMath/matrix3d.h"
 
@@ -429,7 +429,7 @@ AudioHandle AudioManager::addAudioEvent(const AudioEventRTS *eventToAdd)
 		}
 	}
 
-	switch (eventToAdd->getAudioEventInfo()->m_soundType)
+	switch (eventToAdd->getAudioEventInfo()->m_data.m_soundType)
 	{
 		case AT_Music:
 			if (!isOn(AudioAffect_Music)) 
@@ -446,7 +446,7 @@ AudioHandle AudioManager::addAudioEvent(const AudioEventRTS *eventToAdd)
 	}
 
 	// if we're currently playing uninterruptable speech, then disallow the addition of this sample
-	if (getDisallowSpeech() && eventToAdd->getAudioEventInfo()->m_soundType == AT_Streaming) {
+	if (getDisallowSpeech() && eventToAdd->getAudioEventInfo()->m_data.m_soundType == AT_Streaming) {
 		return AHSV_NoSound;
 	}
 
@@ -481,7 +481,7 @@ AudioHandle AudioManager::addAudioEvent(const AudioEventRTS *eventToAdd)
 		return AHSV_Muted;
 	}
 
-	AudioType type = eventToAdd->getAudioEventInfo()->m_soundType;
+	AudioType type = eventToAdd->getAudioEventInfo()->m_data.m_soundType;
 	if (type == AT_Music) 
 	{
 		m_music->addAudioEvent(audioEvent);
@@ -649,7 +649,7 @@ void AudioManager::removeDisabledEvents()
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool AudioManager::isCurrentlyPlaying( AudioHandle audioEvent )
+Bool AudioManager::isCurrentlyPlaying( AudioHandle /*audioEvent*/ )
 {
 	return true;
 }
@@ -858,15 +858,15 @@ AudioEventInfo *AudioManager::newAudioEventInfo( AsciiString audioName )
 void AudioManager::addAudioEventInfo( AudioEventInfo * newEvent )
 {
   // Warning: Don't try to copy the structure. It may be a derived class
-  AudioEventInfo *eventInfo = findAudioEventInfo( newEvent->m_audioName );
+  AudioEventInfo *eventInfo = findAudioEventInfo( newEvent->m_data.m_audioName );
   if (eventInfo) 
   {
-    DEBUG_CRASH(("Requested add of '%s' multiple times. Is this intentional? - jkmcd\n", newEvent->m_audioName.str()));
+    DEBUG_CRASH(("Requested add of '%s' multiple times. Is this intentional? - jkmcd\n", newEvent->m_data.m_audioName.str()));
     *eventInfo = *newEvent;
   }
   else
   {
-    m_allAudioEventInfo[newEvent->m_audioName] = newEvent;
+    m_allAudioEventInfo[newEvent->m_data.m_audioName] = newEvent;
   }
 }
 
@@ -968,7 +968,7 @@ Bool AudioManager::isMusicAlreadyLoaded(void) const
 	for (it = m_allAudioEventInfo.begin(); it != m_allAudioEventInfo.end(); ++it) {
 		if (it->second) {
 			const AudioEventInfo *aet = it->second;
-			if (aet->m_soundType == AT_Music) {
+			if (aet->m_data.m_soundType == AT_Music) {
 				musicToLoad = aet;
 			}
 		}
@@ -993,7 +993,7 @@ void AudioManager::findAllAudioEventsOfType( AudioType audioType, std::vector<Au
 	AudioEventInfoHashIt it;
 	for (it = m_allAudioEventInfo.begin(); it != m_allAudioEventInfo.end(); ++it) {
 		AudioEventInfo *aud = (*it).second;
-		if (aud->m_soundType == audioType) {
+		if (aud->m_data.m_soundType == audioType) {
 			allEvents.push_back(aud);
 		}
 	}
@@ -1020,67 +1020,69 @@ Bool AudioManager::isCurrentSpeakerTypeSurroundSound()
 //-------------------------------------------------------------------------------------------------
 Bool AudioManager::shouldPlayLocally(const AudioEventRTS *audioEvent)
 {
-	Player *localPlayer = ThePlayerList->getLocalPlayer();
-	if( !localPlayer->isPlayerActive() ) 
-	{
-		//We are dead, thus are observing. Get the player we are observing. It's 
-		//possible that we're not looking at any player, therefore it can be NULL.
-		localPlayer = TheControlBar->getObserverLookAtPlayer();
-	}
+	(void) audioEvent;
+	return true; // FIXME: ThePlayerList
+	// Player *localPlayer = ThePlayerList->getLocalPlayer();
+	// if( !localPlayer->isPlayerActive() ) 
+	// {
+	// 	//We are dead, thus are observing. Get the player we are observing. It's 
+	// 	//possible that we're not looking at any player, therefore it can be NULL.
+	// 	localPlayer = TheControlBar->getObserverLookAtPlayer();
+	// }
 
-	const AudioEventInfo *ei = audioEvent->getAudioEventInfo();
+	// const AudioEventInfo *ei = audioEvent->getAudioEventInfo();
 
-	// Music should always play locally.
-	if (ei->m_soundType == AT_Music) {
-		return TRUE;
-	}
+	// // Music should always play locally.
+	// if (ei->m_soundType == AT_Music) {
+	// 	return TRUE;
+	// }
 
-	if (!BitTest(ei->m_type, (ST_PLAYER | ST_ALLIES | ST_ENEMIES | ST_EVERYONE))) {
-		DEBUG_CRASH(("No player restrictions specified for '%s'. Using Everyone.\n", ei->m_audioName.str()));
-		return TRUE;
-	}
+	// if (!BitTest(ei->m_type, (ST_PLAYER | ST_ALLIES | ST_ENEMIES | ST_EVERYONE))) {
+	// 	DEBUG_CRASH(("No player restrictions specified for '%s'. Using Everyone.\n", ei->m_audioName.str()));
+	// 	return TRUE;
+	// }
 
-	if (BitTest(ei->m_type, ST_EVERYONE)) {
-		return TRUE;
-	}
+	// if (BitTest(ei->m_type, ST_EVERYONE)) {
+	// 	return TRUE;
+	// }
 
-	Player *owningPlayer = ThePlayerList->getNthPlayer(audioEvent->getPlayerIndex());
+	// Player *owningPlayer = ThePlayerList->getNthPlayer(audioEvent->getPlayerIndex());
 
-	if (BitTest(ei->m_type, ST_PLAYER) && BitTest(ei->m_type, ST_UI) && owningPlayer == NULL) {
-		DEBUG_ASSERTCRASH(!TheGameLogic->isInGameLogicUpdate(), ("Playing %s sound -- player-based UI sound without specifying a player.\n"));
-		return TRUE;
-	}
+	// if (BitTest(ei->m_type, ST_PLAYER) && BitTest(ei->m_type, ST_UI) && owningPlayer == NULL) {
+	// 	DEBUG_ASSERTCRASH(!TheGameLogic->isInGameLogicUpdate(), ("Playing %s sound -- player-based UI sound without specifying a player.\n"));
+	// 	return TRUE;
+	// }
 
-	if (owningPlayer == NULL) {
-		DEBUG_CRASH(("Sound '%s' expects an owning player, but the audio event that created it didn't specify one.\n", ei->m_audioName.str()));
-		return FALSE;
-	}
+	// if (owningPlayer == NULL) {
+	// 	DEBUG_CRASH(("Sound '%s' expects an owning player, but the audio event that created it didn't specify one.\n", ei->m_audioName.str()));
+	// 	return FALSE;
+	// }
 
-	if( !localPlayer )
-	{
-		return FALSE;
-	}
+	// if( !localPlayer )
+	// {
+	// 	return FALSE;
+	// }
 
-	const Team *localTeam = localPlayer->getDefaultTeam();
-	if (localTeam == NULL) { 
-		return FALSE;
-	}
+	// const Team *localTeam = localPlayer->getDefaultTeam();
+	// if (localTeam == NULL) { 
+	// 	return FALSE;
+	// }
 
-	if (BitTest(ei->m_type, ST_PLAYER))  {
-		return owningPlayer == localPlayer;
-	}
+	// if (BitTest(ei->m_type, ST_PLAYER))  {
+	// 	return owningPlayer == localPlayer;
+	// }
 
-	if (BitTest(ei->m_type, ST_ALLIES)) { 
-		// We have to also check that the owning player isn't the local player, because PLAYER 
-		// wasn't specified, or we wouldn't have gotten here.
-		return (owningPlayer != localPlayer) && owningPlayer->getRelationship(localTeam) == ALLIES;
-	}
+	// if (BitTest(ei->m_type, ST_ALLIES)) { 
+	// 	// We have to also check that the owning player isn't the local player, because PLAYER 
+	// 	// wasn't specified, or we wouldn't have gotten here.
+	// 	return (owningPlayer != localPlayer) && owningPlayer->getRelationship(localTeam) == ALLIES;
+	// }
 
-	if (BitTest(ei->m_type, ST_ENEMIES)) {
-		return owningPlayer->getRelationship(localTeam) == ENEMIES;
-	}
+	// if (BitTest(ei->m_type, ST_ENEMIES)) {
+	// 	return owningPlayer->getRelationship(localTeam) == ENEMIES;
+	// }
 	
-	return FALSE;
+	// return FALSE;
 }
 
 //-------------------------------------------------------------------------------------------------

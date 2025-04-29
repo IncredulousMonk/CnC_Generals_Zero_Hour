@@ -59,8 +59,9 @@ void INI::parseMappedImageDefinition( INI* ini )
 		return;
 	}
 	Image *image = const_cast<Image*>(TheMappedImageCollection->findImageByName( name ));
-	if(image)
-		DEBUG_ASSERTCRASH(!image->getRawTextureData(), ("We are trying to parse over an existing image that contains a non-null rawTextureData, you should fix that"));
+	if (image) {
+		DEBUG_ASSERTLOG(!image->getRawTextureData(), ("We are trying to parse over an existing image that contains a non-null rawTextureData, you should fix that (%s)\n", name.str()));
+	}
 
 	if( image == NULL )
 	{
@@ -69,12 +70,11 @@ void INI::parseMappedImageDefinition( INI* ini )
   	image = newInstance(Image);
 		image->setName( name );
 		TheMappedImageCollection->addImage(image);
-		DEBUG_ASSERTCRASH( image, ("parseMappedImage: unable to allocate image for '%s'\n",
-															name.str()) );
+		DEBUG_ASSERTCRASH( image, ("parseMappedImage: unable to allocate image for '%s'\n", name.str()) );
 
 	}  // end if
 
 	// parse the ini definition
-	ini->initFromINI( image, image->getFieldParse());
+	ini->initFromINI( &image->m_data, image->getFieldParse());
 
 }  // end parseMappedImage

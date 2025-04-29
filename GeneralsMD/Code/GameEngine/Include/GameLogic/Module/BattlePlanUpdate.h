@@ -49,6 +49,10 @@ enum  CommandOption;
 class BattlePlanUpdateModuleData : public ModuleData
 {
 public:
+	// No copies allowed!
+	BattlePlanUpdateModuleData(const BattlePlanUpdateModuleData&) = delete;
+	BattlePlanUpdateModuleData& operator=(const BattlePlanUpdateModuleData&) = delete;
+
 	SpecialPowerTemplate *m_specialPowerTemplate;
 
   UnsignedInt m_bombardmentPlanAnimationFrames;
@@ -98,7 +102,7 @@ enum TransitionStatus
 	TRANSITIONSTATUS_PACKING,
 };
 
-enum BattlePlanStatus
+enum BattlePlanStatus: int
 {
 	PLANSTATUS_NONE,
 	PLANSTATUS_BOMBARDMENT,
@@ -136,6 +140,10 @@ public:
 	BattlePlanUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	BattlePlanUpdate(const BattlePlanUpdate&) = delete;
+	BattlePlanUpdate& operator=(const BattlePlanUpdate&) = delete;
+
 	// SpecialPowerUpdateInterface
 	virtual Bool initiateIntentToDoSpecialPower(const SpecialPowerTemplate *specialPowerTemplate, const Object *targetObj, const Coord3D *targetPos, const Waypoint *way, UnsignedInt commandOptions );
 	virtual Bool isSpecialAbility() const { return false; }
@@ -144,7 +152,7 @@ public:
 	virtual SpecialPowerUpdateInterface* getSpecialPowerUpdateInterface() { return this; }
 	virtual Bool doesSpecialPowerHaveOverridableDestinationActive() const { return false; } //Is it active now?
 	virtual Bool doesSpecialPowerHaveOverridableDestination() const { return false; }	//Does it have it, even if it's not active?
-	virtual void setSpecialPowerOverridableDestination( const Coord3D *loc ) {}
+	virtual void setSpecialPowerOverridableDestination( const Coord3D * /*loc*/ ) {}
 	virtual Bool isPowerCurrentlyInUse( const CommandButton *command = NULL ) const;
 
 	//Returns the currently active battle plan -- unpacked and ready... returns PLANSTATUS_NONE if in transition!

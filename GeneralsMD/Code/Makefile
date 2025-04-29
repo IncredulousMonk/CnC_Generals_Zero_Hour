@@ -33,7 +33,7 @@ ENGINE_DEVICE_OBJS = $(GEDO)/SdlAudioManager.o \
 $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
 $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxGameClient.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
-$(GEDO)/W3DMOTD.o 
+$(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o $(GEDO)/W3DMOTD.o 
 
 $(ENGINE_DEVICE_LIB): $(ENGINE_DEVICE_OBJS)
 	ar rcs $(ENGINE_DEVICE_LIB)  $(ENGINE_DEVICE_OBJS)
@@ -81,7 +81,7 @@ $(GEDO)/Clock.o: $(GEDSLDF)/Clock.cpp GameEngineDevice/Include/LinuxDevice/FFmpe
 $(GEDO)/LinuxDisplay.o: $(GEDSLD)/GameClient/LinuxDisplay.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxDisplay.o $(GEDSLD)/GameClient/LinuxDisplay.cpp
 
-$(GEDO)/LinuxGameClient.o: $(GEDSLD)/GameClient/LinuxGameClient.cpp
+$(GEDO)/LinuxGameClient.o: $(GEDSLD)/GameClient/LinuxGameClient.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGameClient.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameClient.o $(GEDSLD)/GameClient/LinuxGameClient.cpp
 
 $(GEDO)/SdlKeyboard.o: $(GEDSLD)/GameClient/SdlKeyboard.cpp GameEngineDevice/Include/LinuxDevice/GameClient/SdlKeyboard.h
@@ -90,6 +90,13 @@ $(GEDO)/SdlKeyboard.o: $(GEDSLD)/GameClient/SdlKeyboard.cpp GameEngineDevice/Inc
 $(GEDO)/SdlMouse.o: $(GEDSLD)/GameClient/SdlMouse.cpp GameEngineDevice/Include/LinuxDevice/GameClient/SdlMouse.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/SdlMouse.o $(GEDSLD)/GameClient/SdlMouse.cpp
 
+# --- GameEngineDevice/Source/LinuxDevice/GameClient/GUI ---
+$(GEDO)/LinuxGameWindow.o: $(GEDSLD)/GameClient/GUI/LinuxGameWindow.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGameWindow.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameWindow.o $(GEDSLD)/GameClient/GUI/LinuxGameWindow.cpp
+
+$(GEDO)/LinuxGameWindowManager.o: $(GEDSLD)/GameClient/GUI/LinuxGameWindowManager.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGameWindowManager.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameWindowManager.o $(GEDSLD)/GameClient/GUI/LinuxGameWindowManager.cpp
+
 # --- GameEngineDevice/Source/W3DDevice/GameClient/GUI/GUICallbacks ---
 $(GEDO)/W3DMOTD.o: $(GEDSWD)/GameClient/GUI/GUICallbacks/W3DMOTD.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/W3DMOTD.o $(GEDSWD)/GameClient/GUI/GUICallbacks/W3DMOTD.cpp
@@ -97,19 +104,21 @@ $(GEDO)/W3DMOTD.o: $(GEDSWD)/GameClient/GUI/GUICallbacks/W3DMOTD.cpp
 
 # ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
-$(GEO)/AudioEventRTS.o $(GEO)/GameAudio.o \
-$(GEO)/INI.o $(GEO)/INIGameData.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
+ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
+$(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
+$(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o $(GEO)/GameMemory.o \
    $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o \
-$(GEO)/Display.o $(GEO)/DisplayStringManager.o $(GEO)/GameClient.o $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/LanguageFilter.o $(GEO)/Snow.o \
+$(GEO)/Color.o $(GEO)/Display.o $(GEO)/DisplayStringManager.o $(GEO)/GameClient.o $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/LanguageFilter.o $(GEO)/Snow.o \
    $(GEO)/VideoPlayer.o $(GEO)/Water.o \
-$(GEO)/GameWindow.o $(GEO)/GameWindowManager.o $(GEO)/GameWindowManagerScript.o $(GEO)/IMEManager.o $(GEO)/WinInstanceData.o $(GEO)/WindowLayout.o \
+$(GEO)/AnimateWindowManager.o $(GEO)/GameFont.o $(GEO)/GameWindow.o $(GEO)/GameWindowGlobal.o $(GEO)/GameWindowManager.o $(GEO)/GameWindowManagerScript.o $(GEO)/GameWindowTransitions.o \
+   $(GEO)/GameWindowTransitionsStyles.o $(GEO)/HeaderTemplate.o $(GEO)/IMEManager.o $(GEO)/ProcessAnimateWindow.o $(GEO)/WinInstanceData.o $(GEO)/WindowLayout.o \
 $(GEO)/GadgetCheckBox.o $(GEO)/GadgetComboBox.o $(GEO)/GadgetHorizontalSlider.o $(GEO)/GadgetListBox.o $(GEO)/GadgetProgressBar.o $(GEO)/GadgetPushButton.o $(GEO)/GadgetRadioButton.o \
    $(GEO)/GadgetStaticText.o $(GEO)/GadgetTabControl.o $(GEO)/GadgetTextEntry.o $(GEO)/GadgetVerticalSlider.o \
 $(GEO)/ExtendedMessageBox.o $(GEO)/MessageBox.o \
 $(GEO)/OptionsMenu.o \
-$(GEO)/Shell.o $(GEO)/Keyboard.o $(GEO)/Mouse.o
+$(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
+$(GEO)/Anim2D.o $(GEO)/Image.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
@@ -136,8 +145,8 @@ $(GEO)/MessageStream.o: $(GES)/Common/MessageStream.cpp GameEngine/Include/Commo
 $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/NameKeyGenerator.o $(GES)/Common/NameKeyGenerator.cpp
 
-#$(GEO)/RandomValue.o: $(GES)/Common/RandomValue.cpp
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RandomValue.o $(GES)/Common/RandomValue.cpp
+$(GEO)/RandomValue.o: $(GES)/Common/RandomValue.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RandomValue.o $(GES)/Common/RandomValue.cpp
 
 $(GEO)/UserPreferences.o: $(GES)/Common/UserPreferences.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UserPreferences.o $(GES)/Common/UserPreferences.cpp
@@ -149,15 +158,33 @@ $(GEO)/Version.o: $(GES)/Common/Version.cpp
 $(GEO)/AudioEventRTS.o: $(GES)/Common/Audio/AudioEventRTS.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AudioEventRTS.o $(GES)/Common/Audio/AudioEventRTS.cpp
 
+$(GEO)/AudioRequest.o: $(GES)/Common/Audio/AudioRequest.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AudioRequest.o $(GES)/Common/Audio/AudioRequest.cpp
+
 $(GEO)/GameAudio.o: $(GES)/Common/Audio/GameAudio.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameAudio.o $(GES)/Common/Audio/GameAudio.cpp
+
+$(GEO)/GameMusic.o: $(GES)/Common/Audio/GameMusic.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameMusic.o $(GES)/Common/Audio/GameMusic.cpp
+
+$(GEO)/GameSounds.o: $(GES)/Common/Audio/GameSounds.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameSounds.o $(GES)/Common/Audio/GameSounds.cpp
 
 # --- GameEngine/Source/Common/INI ---
 $(GEO)/INI.o: $(GES)/Common/INI/INI.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INI.o $(GES)/Common/INI/INI.cpp
 
+$(GEO)/INIAnimation.o: $(GES)/Common/INI/INIAnimation.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIAnimation.o $(GES)/Common/INI/INIAnimation.cpp
+
+$(GEO)/INIAudioEventInfo.o: $(GES)/Common/INI/INIAudioEventInfo.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIAudioEventInfo.o $(GES)/Common/INI/INIAudioEventInfo.cpp
+
 $(GEO)/INIGameData.o: $(GES)/Common/INI/INIGameData.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIGameData.o $(GES)/Common/INI/INIGameData.cpp
+
+$(GEO)/INIMappedImage.o: $(GES)/Common/INI/INIMappedImage.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIMappedImage.o $(GES)/Common/INI/INIMappedImage.cpp
 
 $(GEO)/INIVideo.o: $(GES)/Common/INI/INIVideo.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIVideo.o $(GES)/Common/INI/INIVideo.cpp
@@ -228,11 +255,17 @@ $(GEO)/UnicodeString.o: $(GES)/Common/System/UnicodeString.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/XferCRC.o $(GES)/Common/System/XferCRC.cpp
 
 # --- GameEngine/Source/GameClient ---
+$(GEO)/Color.o: $(GES)/GameClient/Color.cpp GameEngine/Include/GameClient/Color.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Color.o $(GES)/GameClient/Color.cpp
+
 $(GEO)/Display.o: $(GES)/GameClient/Display.cpp GameEngine/Include/GameClient/Display.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Display.o $(GES)/GameClient/Display.cpp
 
 $(GEO)/DisplayStringManager.o: $(GES)/GameClient/DisplayStringManager.cpp GameEngine/Include/GameClient/DisplayStringManager.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DisplayStringManager.o $(GES)/GameClient/DisplayStringManager.cpp
+
+#$(GEO)/Drawable.o: $(GES)/GameClient/Drawable.cpp GameEngine/Include/GameClient/Drawable.h
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Drawable.o $(GES)/GameClient/Drawable.cpp
 
 $(GEO)/GameClient.o: $(GES)/GameClient/GameClient.cpp GameEngine/Include/GameClient/GameClient.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameClient.o $(GES)/GameClient/GameClient.cpp
@@ -259,8 +292,17 @@ $(GEO)/Water.o: $(GES)/GameClient/Water.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Water.o $(GES)/GameClient/Water.cpp
 
 # --- GameEngine/Source/GameClient/GUI ---
+$(GEO)/AnimateWindowManager.o: $(GES)/GameClient/GUI/AnimateWindowManager.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AnimateWindowManager.o $(GES)/GameClient/GUI/AnimateWindowManager.cpp
+
+$(GEO)/GameFont.o: $(GES)/GameClient/GUI/GameFont.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameFont.o $(GES)/GameClient/GUI/GameFont.cpp
+
 $(GEO)/GameWindow.o: $(GES)/GameClient/GUI/GameWindow.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindow.o $(GES)/GameClient/GUI/GameWindow.cpp
+
+$(GEO)/GameWindowGlobal.o: $(GES)/GameClient/GUI/GameWindowGlobal.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindowGlobal.o $(GES)/GameClient/GUI/GameWindowGlobal.cpp
 
 $(GEO)/GameWindowManager.o: $(GES)/GameClient/GUI/GameWindowManager.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindowManager.o $(GES)/GameClient/GUI/GameWindowManager.cpp
@@ -268,8 +310,20 @@ $(GEO)/GameWindowManager.o: $(GES)/GameClient/GUI/GameWindowManager.cpp
 $(GEO)/GameWindowManagerScript.o: $(GES)/GameClient/GUI/GameWindowManagerScript.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindowManagerScript.o $(GES)/GameClient/GUI/GameWindowManagerScript.cpp
 
+$(GEO)/GameWindowTransitions.o: $(GES)/GameClient/GUI/GameWindowTransitions.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindowTransitions.o $(GES)/GameClient/GUI/GameWindowTransitions.cpp
+
+$(GEO)/GameWindowTransitionsStyles.o: $(GES)/GameClient/GUI/GameWindowTransitionsStyles.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameWindowTransitionsStyles.o $(GES)/GameClient/GUI/GameWindowTransitionsStyles.cpp
+
+$(GEO)/HeaderTemplate.o: $(GES)/GameClient/GUI/HeaderTemplate.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/HeaderTemplate.o $(GES)/GameClient/GUI/HeaderTemplate.cpp
+
 $(GEO)/IMEManager.o: $(GES)/GameClient/GUI/IMEManager.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/IMEManager.o $(GES)/GameClient/GUI/IMEManager.cpp
+
+$(GEO)/ProcessAnimateWindow.o: $(GES)/GameClient/GUI/ProcessAnimateWindow.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ProcessAnimateWindow.o $(GES)/GameClient/GUI/ProcessAnimateWindow.cpp
 
 $(GEO)/WinInstanceData.o: $(GES)/GameClient/GUI/WinInstanceData.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/WinInstanceData.o $(GES)/GameClient/GUI/WinInstanceData.cpp
@@ -326,12 +380,22 @@ $(GEO)/OptionsMenu.o: $(GES)/GameClient/GUI/GUICallbacks/Menus/OptionsMenu.cpp
 $(GEO)/Shell.o: $(GES)/GameClient/GUI/Shell/Shell.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Shell.o $(GES)/GameClient/GUI/Shell/Shell.cpp
 
+$(GEO)/ShellMenuScheme.o: $(GES)/GameClient/GUI/Shell/ShellMenuScheme.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ShellMenuScheme.o $(GES)/GameClient/GUI/Shell/ShellMenuScheme.cpp
+
 # --- GameEngine/Source/GameClient/Input ---
 $(GEO)/Keyboard.o: $(GES)/GameClient/Input/Keyboard.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Keyboard.o $(GES)/GameClient/Input/Keyboard.cpp
 
 $(GEO)/Mouse.o: $(GES)/GameClient/Input/Mouse.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Mouse.o $(GES)/GameClient/Input/Mouse.cpp
+
+# --- GameEngine/Source/GameClient/System ---
+$(GEO)/Anim2D.o: $(GES)/GameClient/System/Anim2D.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Anim2D.o $(GES)/GameClient/System/Anim2D.cpp
+
+$(GEO)/Image.o: $(GES)/GameClient/System/Image.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Image.o $(GES)/GameClient/System/Image.cpp
 
 
 run: $(PROG)

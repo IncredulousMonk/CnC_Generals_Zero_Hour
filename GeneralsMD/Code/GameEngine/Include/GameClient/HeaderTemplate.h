@@ -75,11 +75,11 @@ public:
 	HeaderTemplate(const HeaderTemplate&) = delete;
 	HeaderTemplate& operator=(const HeaderTemplate&) = delete;
 
-	GameFont *m_font;
-	AsciiString m_name;
-	AsciiString m_fontName;
-	Int m_point;
-	Bool m_bold;
+	GameFont *m_font {};
+	AsciiString m_name {};
+	AsciiString m_fontName {};
+	Int m_point {};
+	Bool m_bold {};
 	
 };
 
@@ -107,7 +107,7 @@ private:
 	void populateGameFonts( void );
 	typedef std::list< HeaderTemplate* > HeaderTemplateList;
 	typedef HeaderTemplateList::iterator HeaderTemplateListIt;
-	HeaderTemplateList m_headerTemplateList;
+	HeaderTemplateList m_headerTemplateList {};
 
 };
 

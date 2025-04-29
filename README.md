@@ -10,6 +10,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 
 - Displays a window with the splash screen.
 - Plays the logo movie.
+- Some progress with the window manager's test GUI.
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -26,6 +27,10 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheDisplay
     - TheKeyboard
     - TheMouse
+    - TheMappedImageCollection
+    - TheAnim2DCollection
+    - TheHeaderTemplateManager
+    - TheWindowManager
     - TheVideoPlayer
     - TheLanguageFilter
 

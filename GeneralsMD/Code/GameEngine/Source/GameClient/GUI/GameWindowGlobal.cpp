@@ -196,7 +196,7 @@ Int GameWindowManager::winFontHeight( GameFont *font )
 Int GameWindowManager::winIsDigit( Int c )
 {
 
-	return GameIsDigit( c );
+	return GameIsDigit( static_cast<wint_t>(c) );
 
 }  // end WinIsDigit
 
@@ -206,7 +206,8 @@ Int GameWindowManager::winIsDigit( Int c )
 Int GameWindowManager::winIsAscii( Int c )
 {
 
-	return GameIsAscii( c );
+	// return GameIsAscii( c );
+	return c >= 0 && c < 128; // MG: Maybe?
 
 }  // end WinIsDigit
 
@@ -216,7 +217,7 @@ Int GameWindowManager::winIsAscii( Int c )
 Int GameWindowManager::winIsAlNum( Int c )
 {
 
-	return GameIsAlNum( c );
+	return GameIsAlNum( static_cast<wint_t>(c) );
 
 }  // end WinIsAlNum
 
@@ -228,9 +229,10 @@ GameFont *GameWindowManager::winFindFont( AsciiString fontName,
 																					Bool bold )
 {
 
-	assert( TheFontLibrary );
-	if( TheFontLibrary )
-		return TheFontLibrary->getFont( fontName, pointSize, bold );
+	// FIXME: TheFontLibrary
+	// assert( TheFontLibrary );
+	// if( TheFontLibrary )
+	// 	return TheFontLibrary->getFont( fontName, pointSize, bold );
 
 	return NULL;
 

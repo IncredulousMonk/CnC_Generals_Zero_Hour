@@ -63,8 +63,9 @@ extern WindowMsgHandledType ExtendedMessageBoxSystem( GameWindow *window, Unsign
 // game window draw table -----------------------------------------------------------------------
 static FunctionLexicon::TableEntry gameWinDrawTable[] = 
 {
-	{ NAMEKEY_INVALID, "IMECandidateMainDraw",		reinterpret_cast<void*>(IMECandidateMainDraw) },
-	{ NAMEKEY_INVALID, "IMECandidateTextAreaDraw",	reinterpret_cast<void*>(IMECandidateTextAreaDraw) },
+	// FIXME: IME
+	// { NAMEKEY_INVALID, "IMECandidateMainDraw",		reinterpret_cast<void*>(IMECandidateMainDraw) },
+	// { NAMEKEY_INVALID, "IMECandidateTextAreaDraw",	reinterpret_cast<void*>(IMECandidateTextAreaDraw) },
 	{ NAMEKEY_INVALID, NULL,						NULL }
 };
 

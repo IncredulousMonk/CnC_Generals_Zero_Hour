@@ -55,7 +55,7 @@
 #include "PreRTS.h"
 
 #include "Common/INI.h"
-#include "Common/Filesystem.h"
+#include "Common/FileSystem.h"
 #include "Common/Registry.h"
 #include "GameClient/HeaderTemplate.h"
 #include "GameClient/GameFont.h"
@@ -70,9 +70,9 @@
 //-----------------------------------------------------------------------------
 const FieldParse HeaderTemplateManager::m_headerFieldParseTable[] =
 {
-	{ "Font",								INI::parseQuotedAsciiString,						NULL, offsetof( HeaderTemplate, m_fontName ) },
-	{ "Point",							INI::parseInt,										NULL, offsetof( HeaderTemplate, m_point) },
-	{ "Bold",								INI::parseBool,										NULL, offsetof( HeaderTemplate, m_bold ) },
+	{ "Font",	INI::parseQuotedAsciiString,	NULL, offsetof( HeaderTemplate, m_fontName ) },
+	{ "Point",	INI::parseInt,					NULL, offsetof( HeaderTemplate, m_point) },
+	{ "Bold",	INI::parseBool,					NULL, offsetof( HeaderTemplate, m_bold ) },
 	{ NULL, NULL, NULL, 0 },
 };
 
@@ -143,19 +143,8 @@ void HeaderTemplateManager::init( void )
 {
 	INI ini;
 	AsciiString fname;
-	fname.format("Data\\%s\\HeaderTemplate.ini", GetRegistryLanguage().str());
-	OSVERSIONINFO	osvi;
-	osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
-	if (GetVersionEx(&osvi))
-	{	//check if we're running Win9x variant since they may need different fonts
-		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
-		{	AsciiString tempName;
-
-			tempName.format("Data\\%s\\HeaderTemplate9x.ini", GetRegistryLanguage().str());
-			if (TheFileSystem->doesFileExist(tempName.str()))
-				fname = tempName;
-		}
-	}
+	// fname.format("Data\\%s\\HeaderTemplate.ini", GetRegistryLanguage().str());
+	fname.format("Data\\%s\\HeaderTemplate.ini", "English");
 	ini.load( fname, INI_LOAD_OVERWRITE, NULL );
 	populateGameFonts();
 }
@@ -235,16 +224,16 @@ void HeaderTemplateManager::headerNotifyResolutionChange( void )
 
 void HeaderTemplateManager::populateGameFonts( void )
 {
-	HeaderTemplateListIt it = m_headerTemplateList.begin();
-	while(it != m_headerTemplateList.end())
-	{
-		HeaderTemplate *hTemplate = *it;
-		Real pointSize = TheGlobalLanguageData->adjustFontSize(hTemplate->m_point);
-		GameFont *font = TheFontLibrary->getFont(hTemplate->m_fontName, pointSize,hTemplate->m_bold);
-		DEBUG_ASSERTCRASH(font,("HeaderTemplateManager::populateGameFonts - Could not find font %s %d",hTemplate->m_fontName, hTemplate->m_point));
+	// HeaderTemplateListIt it = m_headerTemplateList.begin();
+	// while(it != m_headerTemplateList.end())
+	// {
+	// 	HeaderTemplate *hTemplate = *it;
+	// 	Real pointSize = TheGlobalLanguageData->adjustFontSize(hTemplate->m_point);
+	// 	GameFont *font = TheFontLibrary->getFont(hTemplate->m_fontName, pointSize,hTemplate->m_bold);
+	// 	DEBUG_ASSERTCRASH(font,("HeaderTemplateManager::populateGameFonts - Could not find font %s %d",hTemplate->m_fontName, hTemplate->m_point));
 
-		hTemplate->m_font = font;
+	// 	hTemplate->m_font = font;
 		
-		++it;
-	}
+	// 	++it;
+	// }
 }

@@ -35,6 +35,7 @@
 #include <math.h>
 #include <string.h>
 #include <cstdint>
+#include <chrono>
 
 #ifndef PI
 #define PI     3.14159265359f
@@ -87,6 +88,14 @@ typedef bool     Bool;          //
 // note, the types below should use "long long", but MSVC doesn't support it yet
 typedef int64_t  Int64;         // 8 bytes 
 typedef uint64_t UnsignedInt64; // 8 bytes 
+
+/** @todo we need real color representation, this is just place holder so we
+can more easily identify sections of the code that need it */
+typedef UnsignedInt Color;
+
+using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
+using Millis = std::chrono::milliseconds;
+using Duration = std::chrono::duration<double, std::milli>;
 
 #include "Lib/Trig.h"
 
@@ -429,6 +438,13 @@ struct RGBColor
     }
 
     inline void setFromInt(Int c)
+    {
+        red = ((c >> 16) & 0xff) / 255.0f;
+        green = ((c >>  8) & 0xff) / 255.0f;
+        blue = ((c >>  0) & 0xff) / 255.0f;
+    }
+
+    inline void setFromColor(Color c)
     {
         red = ((c >> 16) & 0xff) / 255.0f;
         green = ((c >>  8) & 0xff) / 255.0f;

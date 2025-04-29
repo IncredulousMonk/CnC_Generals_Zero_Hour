@@ -21,6 +21,9 @@
 ///////////////////////////////////////////////////////
 
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
+#include <SDL3/SDL.h>
+
+extern SDL_Renderer* renderer; // FIXME: How to handle this?
 
 LinuxDisplay::LinuxDisplay()
 {
@@ -28,6 +31,17 @@ LinuxDisplay::LinuxDisplay()
 
 LinuxDisplay::~LinuxDisplay()
 {
+}
+
+// LinuxDisplay::init =========================================================
+/** Initialize or re-initialize the display system.  Here we need to
+  * create our window, and get our 3D hardware setup and online */
+//=============================================================================
+void LinuxDisplay::init()
+{
+   Display::init();
+
+   // FIXME: Asset manager gets created here.
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -90,7 +104,7 @@ void LinuxDisplay::createLightPulse(const Coord3D *pos, const RGBColor *color,
 /** draw a line on the display in pixel coordinates with the specified color */
 //=============================================================================
 void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY, 
-   Real lineWidth, UnsignedInt lineColor )
+   Real lineWidth, Color lineColor )
 {
    DEBUG_CRASH(("LinuxDisplay::drawLine not yet implemented."));
 }  // end drawLine
@@ -99,26 +113,50 @@ void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY,
 /** draw a line on the display in pixel coordinates with the specified color */
 //=============================================================================
 void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY, 
-   Real lineWidth, UnsignedInt lineColor1,UnsignedInt lineColor2)
+   Real lineWidth, Color lineColor1,Color lineColor2)
 {
    DEBUG_CRASH(("LinuxDisplay::drawLine not yet implemented."));
 }  // end drawLine
 
 // LinuxDisplay::drawOpenRect =================================================
 //=============================================================================
-void LinuxDisplay::drawOpenRect(Int startX, Int startY, Int width, Int height, Real lineWidth, UnsignedInt lineColor)
+void LinuxDisplay::drawOpenRect(Int startX, Int startY, Int width, Int height, Real lineWidth, Color lineColor)
 {
-   DEBUG_CRASH(("LinuxDisplay::drawOpenRect not yet implemented."));
+   DEBUG_ASSERTCRASH(lineWidth == 1.0f, ("LinuxDisplay::drawOpenRect: One pixel lines only\n"));
+   // FIXME: Do I need to worry about m_isClippedEnabled?
+   UnsignedByte r {};
+   UnsignedByte g {};
+   UnsignedByte b {};
+   UnsignedByte a {};
+   GameGetColorComponents(lineColor, &r, &g, &b, &a);
+   SDL_SetRenderDrawColor(renderer, r, g, b, a);
+   SDL_FRect frect {};
+   frect.x = startX;
+   frect.y = startY;
+   frect.w = width;
+   frect.h = height;
+   SDL_RenderRect(renderer, &frect);
 }  // end drawOpenRect
 
 // LinuxDisplay::drawFillRect =================================================
 //=============================================================================
-void LinuxDisplay::drawFillRect(Int startX, Int startY, Int width, Int height, UnsignedInt color)
+void LinuxDisplay::drawFillRect(Int startX, Int startY, Int width, Int height, Color color)
 {
-   DEBUG_CRASH(("LinuxDisplay::drawFillRect not yet implemented."));
+   UnsignedByte r {};
+   UnsignedByte g {};
+   UnsignedByte b {};
+   UnsignedByte a {};
+   GameGetColorComponents(color, &r, &g, &b, &a);
+   SDL_SetRenderDrawColor(renderer, r, g, b, a);
+   SDL_FRect frect {};
+   frect.x = startX;
+   frect.y = startY;
+   frect.w = width;
+   frect.h = height;
+   SDL_RenderFillRect(renderer, &frect);
 }  // end drawFillRect
 
-void LinuxDisplay::drawRectClock(Int startX, Int startY, Int width, Int height, Int percent, UnsignedInt color)
+void LinuxDisplay::drawRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color)
 {
    DEBUG_CRASH(("LinuxDisplay::drawRectClock not yet implemented."));
 }
@@ -129,7 +167,7 @@ void LinuxDisplay::drawRectClock(Int startX, Int startY, Int width, Int height, 
 // This version will overlay a clock progress from the specified percentage to 100%. Essentially, this function will
 // "reveal" an icon as it progresses towards completion.
 //--------------------------------------------------------------------------------------------------------------------
-void LinuxDisplay::drawRemainingRectClock(Int startX, Int startY, Int width, Int height, Int percent, UnsignedInt color)
+void LinuxDisplay::drawRemainingRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color)
 {
    DEBUG_CRASH(("LinuxDisplay::drawRemainingRectClock not yet implemented."));
 }

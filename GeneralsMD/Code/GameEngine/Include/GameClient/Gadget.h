@@ -134,7 +134,7 @@ enum
 };
 
 // Gadget game messages (sent to their owners)
-enum GadgetGameMessage
+enum GadgetGameMessage: int
 {
 
 	// Generic messages supported by all gadgets

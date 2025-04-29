@@ -33,6 +33,11 @@
 #include "Common/GameAudio.h"
 #include "Common/AudioEventInfo.h"
 
+AudioEventInfo::AudioEventInfo()
+{
+	m_data.m_obj = this;
+}
+
 AudioEventInfo::~AudioEventInfo()
 {
 
@@ -60,11 +65,11 @@ void INI::parseMusicTrackDefinition( INI* ini )
 		TheAudio->addTrackName( name );
 	}
 
-	track->m_audioName = name;
-	track->m_soundType = AT_Music;
+	track->m_data.m_audioName = name;
+	track->m_data.m_soundType = AT_Music;
 
 	// parse the ini definition
-	ini->initFromINI( track, track->getFieldParse() );
+	ini->initFromINI( &track->m_data, track->getFieldParse() );
 }  // end parseMusicTrackDefinition
 
 //-------------------------------------------------------------------------------------------------
@@ -87,11 +92,11 @@ void INI::parseAudioEventDefinition( INI* ini )
 		(*track) = (*defaultInfo);
 	}
 
-	track->m_audioName = name;
-	track->m_soundType = AT_SoundEffect;
+	track->m_data.m_audioName = name;
+	track->m_data.m_soundType = AT_SoundEffect;
 
 	// parse the ini definition
-	ini->initFromINI( track, track->getFieldParse() );
+	ini->initFromINI( &track->m_data, track->getFieldParse() );
 }  // end parseAudioEventDefinition
 
 //-------------------------------------------------------------------------------------------------
@@ -114,11 +119,11 @@ void INI::parseDialogDefinition( INI* ini )
 		(*track) = (*defaultInfo);
 	}
 
-	track->m_audioName = name;
-	track->m_soundType = AT_Streaming;
+	track->m_data.m_audioName = name;
+	track->m_data.m_soundType = AT_Streaming;
 
 	// parse the ini definition
-	ini->initFromINI( track, track->getFieldParse() );
+	ini->initFromINI( &track->m_data, track->getFieldParse() );
 }  // end parseAudioEventDefinition
 
 
@@ -129,57 +134,59 @@ static void parsePitchShift( INI* ini, void *instance, void *store, const void* 
 //-------------------------------------------------------------------------------------------------
 const FieldParse AudioEventInfo::m_audioEventInfo[] = 
 {
-	{ "Filename",							INI::parseAsciiString,		NULL,								offsetof( AudioEventInfo, m_filename) },
-	{ "Volume",								INI::parsePercentToReal,	NULL,								offsetof( AudioEventInfo, m_volume ) },
-	{ "VolumeShift",					INI::parsePercentToReal,	NULL,								offsetof( AudioEventInfo, m_volumeShift ) },
-	{ "MinVolume",						INI::parsePercentToReal,	NULL,								offsetof( AudioEventInfo, m_minVolume ) },
-	{ "PitchShift",						parsePitchShift,					NULL,								0 },
-	{ "Delay",								parseDelay,								NULL,								0 },
-	{ "Limit",								INI::parseInt,						NULL,								offsetof( AudioEventInfo, m_limit ) },
-	{ "LoopCount",						INI::parseInt,						NULL,								offsetof( AudioEventInfo, m_loopCount ) },
-	{ "Priority",							INI::parseIndexList,			theAudioPriorityNames,	offsetof( AudioEventInfo, m_priority ) },
-	{ "Type",									INI::parseBitString32,		theSoundTypeNames,			offsetof( AudioEventInfo, m_type ) },
-	{ "Control",							INI::parseBitString32,		theAudioControlNames,	offsetof( AudioEventInfo, m_control ) },
-	{ "Sounds",								INI::parseSoundsList,			NULL,								offsetof( AudioEventInfo, m_sounds ) },
-	{ "SoundsNight",					INI::parseSoundsList,			NULL,								offsetof( AudioEventInfo, m_soundsNight ) },
-	{ "SoundsEvening",				INI::parseSoundsList,			NULL,								offsetof( AudioEventInfo, m_soundsEvening ) },
-	{ "SoundsMorning",				INI::parseSoundsList,			NULL,								offsetof( AudioEventInfo, m_soundsMorning ) },
-	{ "Attack",								INI::parseSoundsList,			NULL,								offsetof( AudioEventInfo, m_attackSounds ) },
-	{ "Decay",								INI::parseSoundsList,			NULL,								offsetof( AudioEventInfo, m_decaySounds ) },
-	{ "MinRange",							INI::parseReal,						NULL,								offsetof( AudioEventInfo, m_minDistance) },
-	{ "MaxRange",							INI::parseReal,						NULL,								offsetof( AudioEventInfo, m_maxDistance) },
-	{ "LowPassCutoff",				INI::parsePercentToReal,	NULL,								offsetof( AudioEventInfo, m_lowPassFreq) },
+	{ "Filename",		INI::parseAsciiString,		NULL,					offsetof( AudioEventInfo::Data, m_filename) },
+	{ "Volume",			INI::parsePercentToReal,	NULL,					offsetof( AudioEventInfo::Data, m_volume ) },
+	{ "VolumeShift",	INI::parsePercentToReal,	NULL,					offsetof( AudioEventInfo::Data, m_volumeShift ) },
+	{ "MinVolume",		INI::parsePercentToReal,	NULL,					offsetof( AudioEventInfo::Data, m_minVolume ) },
+	{ "PitchShift",		parsePitchShift,			NULL,					0 },
+	{ "Delay",			parseDelay,					NULL,					0 },
+	{ "Limit",			INI::parseInt,				NULL,					offsetof( AudioEventInfo::Data, m_limit ) },
+	{ "LoopCount",		INI::parseInt,				NULL,					offsetof( AudioEventInfo::Data, m_loopCount ) },
+	{ "Priority",		INI::parseIndexList,		theAudioPriorityNames,	offsetof( AudioEventInfo::Data, m_priority ) },
+	{ "Type",			INI::parseBitString32,		theSoundTypeNames,		offsetof( AudioEventInfo::Data, m_type ) },
+	{ "Control",		INI::parseBitString32,		theAudioControlNames,	offsetof( AudioEventInfo::Data, m_control ) },
+	{ "Sounds",			INI::parseSoundsList,		NULL,					offsetof( AudioEventInfo::Data, m_sounds ) },
+	{ "SoundsNight",	INI::parseSoundsList,		NULL,					offsetof( AudioEventInfo::Data, m_soundsNight ) },
+	{ "SoundsEvening",	INI::parseSoundsList,		NULL,					offsetof( AudioEventInfo::Data, m_soundsEvening ) },
+	{ "SoundsMorning",	INI::parseSoundsList,		NULL,					offsetof( AudioEventInfo::Data, m_soundsMorning ) },
+	{ "Attack",			INI::parseSoundsList,		NULL,					offsetof( AudioEventInfo::Data, m_attackSounds ) },
+	{ "Decay",			INI::parseSoundsList,		NULL,					offsetof( AudioEventInfo::Data, m_decaySounds ) },
+	{ "MinRange",		INI::parseReal,				NULL,					offsetof( AudioEventInfo::Data, m_minDistance) },
+	{ "MaxRange",		INI::parseReal,				NULL,					offsetof( AudioEventInfo::Data, m_maxDistance) },
+	{ "LowPassCutoff",	INI::parsePercentToReal,	NULL,					offsetof( AudioEventInfo::Data, m_lowPassFreq) },
 };
 
 //-------------------------------------------------------------------------------------------------
-static void parseDelay( INI* ini, void *instance, void *store, const void* /*userData*/ )
+static void parseDelay( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
-	AudioEventInfo *attribs = (AudioEventInfo*) store;
+	AudioEventInfo::Data* data = (AudioEventInfo::Data*) instance;
+	AudioEventInfo* attribs = data->m_obj;
 
 	Int min = ini->scanInt(ini->getNextToken());
 	Int max = ini->scanInt(ini->getNextToken());
 
-	DEBUG_ASSERTCRASH( min >= 0 && max >= min, ("Bad delay values for audio event %s", attribs->m_audioName.str()));
-	attribs->m_delayMax = max;
-	attribs->m_delayMin = min;
+	DEBUG_ASSERTCRASH( min >= 0 && max >= min, ("Bad delay values for audio event %s", attribs->m_data.m_audioName.str()));
+	attribs->m_data.m_delayMax = max;
+	attribs->m_data.m_delayMin = min;
 }
 
 //-------------------------------------------------------------------------------------------------
-static void parsePitchShift( INI* ini, void *instance, void *store, const void* /*userData*/ )
+static void parsePitchShift( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
-	AudioEventInfo *attribs = (AudioEventInfo*) store;
+	AudioEventInfo::Data* data = (AudioEventInfo::Data*) instance;
+	AudioEventInfo* attribs = data->m_obj;
 
 	Real min = ini->scanReal(ini->getNextToken());
 	Real max = ini->scanReal(ini->getNextToken());
 
-	DEBUG_ASSERTCRASH( min > -100 && max >= min, ("Bad pitch shift values for audio event %s", attribs->m_audioName.str()));
-	attribs->m_pitchShiftMin = 1.0f + min/100;
-	attribs->m_pitchShiftMax = 1.0f + max/100;
+	DEBUG_ASSERTCRASH( min > -100 && max >= min, ("Bad pitch shift values for audio event %s", attribs->m_data.m_audioName.str()));
+	attribs->m_data.m_pitchShiftMin = 1.0f + min/100;
+	attribs->m_data.m_pitchShiftMax = 1.0f + max/100;
 }
 
 // STATIC DEFINIITIONS ////////////////////////////////////////////////////////////////////////////
 
-char *theAudioPriorityNames[] = 
+const char *theAudioPriorityNames[] = 
 {
 	"LOWEST",
 	"LOW",
@@ -189,7 +196,7 @@ char *theAudioPriorityNames[] =
 	NULL
 };
 
-char *theSoundTypeNames[] = 
+const char *theSoundTypeNames[] = 
 { 
 	"UI",
 	"WORLD",
@@ -203,7 +210,7 @@ char *theSoundTypeNames[] =
 	NULL
 };
 
-char *theAudioControlNames[] = 
+const char *theAudioControlNames[] = 
 {
 	"LOOP",
 	"RANDOM",

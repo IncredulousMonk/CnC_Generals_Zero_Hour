@@ -214,7 +214,7 @@ static const char *BuildCompletionNames[] =
 };
 #endif  // end DEFINE_BUILD_COMPLETION_NAMES
 
-enum BuildableStatus
+enum BuildableStatus: int
 {
 	// saved into savegames... do not change or remove values!
 	BSTATUS_YES = 0,
@@ -354,18 +354,13 @@ class ThingTemplate : public Overridable
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ThingTemplate, "ThingTemplatePool" )		
 
-private:
-	ThingTemplate(const ThingTemplate& that) : m_geometryInfo(that.m_geometryInfo) 
-	{ 
-		DEBUG_CRASH(("This should never be called\n")); 
-	}
-
 public:
 
 
 	ThingTemplate();
 
 	// No copies allowed!
+	ThingTemplate(const ThingTemplate&) = delete;
 	ThingTemplate& operator=(const ThingTemplate&) = delete;
 	
 	// copy the guts of that into this, but preserve this' name, id, and list-links.

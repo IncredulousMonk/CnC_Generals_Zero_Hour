@@ -239,7 +239,7 @@ void GameWindowManager::reset( void )
 }  // end reset
 
 //-------------------------------------------------------------------------------------------------
-/** Update cycle for game widnow manager */
+/** Update cycle for game window manager */
 //-------------------------------------------------------------------------------------------------
 void GameWindowManager::update( void )
 {
@@ -3741,22 +3741,24 @@ Bool GameWindowManager::initTestGUI( void )
 {
 
 //	winCreateFromScript( "_ATest.wnd" );
-	return TRUE;
+	// return TRUE;
 
 //	UnsignedByte alpha = 200;
 	GameWindow *window;
-	UnsignedInt statusFlags = WIN_STATUS_ENABLED | WIN_STATUS_DRAGABLE | WIN_STATUS_IMAGE;
+	// UnsignedInt statusFlags = WIN_STATUS_ENABLED | WIN_STATUS_DRAGABLE | WIN_STATUS_IMAGE;
+	UnsignedInt statusFlags = WIN_STATUS_ENABLED;
 	WinInstanceData instData;
 
 	// make some windows inside each other in the upper left
 	window = TheWindowManager->winCreate( NULL, statusFlags, 0, 0, 100, 100, NULL, NULL );
-	window->winSetInputFunc( testGrab );
-	window->winSetEnabledColor( 0, TheWindowManager->winMakeColor( 255, 254, 255, 255 ) );
+	// window->winSetInputFunc( testGrab );
+	window->winSetEnabledColor( 0, TheWindowManager->winMakeColor( 255, 255, 255, 255 ) );
 	window->winSetEnabledBorderColor( 0 , TheWindowManager->winMakeColor( 0, 0, 0, 255 ) );
 	window = TheWindowManager->winCreate( window, statusFlags, 10, 10, 50, 50, NULL, NULL );
-	window->winSetInputFunc( testGrab );
+	// window->winSetInputFunc( testGrab );
 	window->winSetEnabledColor( 0, TheWindowManager->winMakeColor( 128, 128, 128, 255 ) );
 	window->winSetEnabledBorderColor( 0 , TheWindowManager->winMakeColor( 0, 0, 0, 255 ) );
+	return TRUE;
 
 	// make a push button
 	instData.init();

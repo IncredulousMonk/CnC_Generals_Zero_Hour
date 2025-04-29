@@ -132,20 +132,20 @@ public:
 
 	/// draw a line on the display in pixel coordinates with the specified color
 	virtual void drawLine( Int startX, Int startY, Int endX, Int endY, 
-												 Real lineWidth, UnsignedInt lineColor ) = 0;
+												 Real lineWidth, Color lineColor ) = 0;
 	/// draw a line on the display in pixel coordinates with the specified 2 colors
 	virtual void drawLine( Int startX, Int startY, Int endX, Int endY, 
-												 Real lineWidth, UnsignedInt lineColor1, UnsignedInt lineColor2 ) = 0;
+												 Real lineWidth, Color lineColor1, Color lineColor2 ) = 0;
 	/// draw a rect border on the display in pixel coordinates with the specified color
 	virtual void drawOpenRect( Int startX, Int startY, Int width, Int height,
-														 Real lineWidth, UnsignedInt lineColor ) = 0;
+														 Real lineWidth, Color lineColor ) = 0;
 	/// draw a filled rect on the display in pixel coords with the specified color
 	virtual void drawFillRect( Int startX, Int startY, Int width, Int height,
-														 UnsignedInt color ) = 0;
+														 Color color ) = 0;
 	
 	/// Draw a percentage of a rectange, much like a clock
-	virtual void drawRectClock(Int startX, Int startY, Int width, Int height, Int percent, UnsignedInt color) = 0;
-	virtual void drawRemainingRectClock(Int startX, Int startY, Int width, Int height, Int percent, UnsignedInt color) = 0;
+	virtual void drawRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color) = 0;
+	virtual void drawRemainingRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color) = 0;
 
 	/// draw an image fit within the screen coordinates
 	virtual void drawImage( const Image *image, Int startX, Int startY, 

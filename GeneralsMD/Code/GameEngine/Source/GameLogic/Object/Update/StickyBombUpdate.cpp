@@ -145,7 +145,7 @@ void StickyBombUpdate::initStickyBomb( Object *target, const Object *bomber, con
 			//keep it at ground height for mine clearing units to reach
 		}
 		else
-			pos.z += d->m_offsetZ; // ride on the roof of the truck/tank
+			pos.z += d->m_data.m_offsetZ; // ride on the roof of the truck/tank
 
 		getObject()->setPosition( &pos );
 
@@ -195,7 +195,7 @@ UpdateSleepTime StickyBombUpdate::update( void )
 			Coord3D newPos;
 			newPos.x = pos->x;
 			newPos.y = pos->y;
-			newPos.z = pos->z + d->m_offsetZ;
+			newPos.z = pos->z + d->m_data.m_offsetZ;
 
 			self->setPosition( &newPos );
 		}
@@ -233,7 +233,7 @@ void StickyBombUpdate::detonate()
 	const StickyBombUpdateModuleData *data = getStickyBombUpdateModuleData();
 
 	Object* boobyTrappedObject = getTargetObject();
-	if( data->m_geometryBasedDamageWeaponTemplate )
+	if( data->m_data.m_geometryBasedDamageWeaponTemplate )
 	{
 		// We need to hurt people based on the size of the thing we are on.  The radius in our weapon
 		// is the radius beyond our borders
@@ -241,10 +241,10 @@ void StickyBombUpdate::detonate()
 		{
 			WeaponBonus nullBonus;
 			Real boundingCircle = boobyTrappedObject->getGeometryInfo().getBoundingCircleRadius();
-			Real primaryDamage = data->m_geometryBasedDamageWeaponTemplate->getPrimaryDamage(nullBonus);
-			Real secondaryDamage = data->m_geometryBasedDamageWeaponTemplate->getSecondaryDamage(nullBonus);
-			Real primaryDamageRange = data->m_geometryBasedDamageWeaponTemplate->getPrimaryDamageRadius(nullBonus);
-			Real secondaryDamageRange = data->m_geometryBasedDamageWeaponTemplate->getSecondaryDamageRadius(nullBonus);
+			Real primaryDamage = data->m_data.m_geometryBasedDamageWeaponTemplate->getPrimaryDamage(nullBonus);
+			Real secondaryDamage = data->m_data.m_geometryBasedDamageWeaponTemplate->getSecondaryDamage(nullBonus);
+			Real primaryDamageRange = data->m_data.m_geometryBasedDamageWeaponTemplate->getPrimaryDamageRadius(nullBonus);
+			Real secondaryDamageRange = data->m_data.m_geometryBasedDamageWeaponTemplate->getSecondaryDamageRadius(nullBonus);
 			primaryDamageRange += boundingCircle;
 			secondaryDamageRange += boundingCircle;
 			Real primaryDamageRangeSqr = sqr(primaryDamageRange);
@@ -256,11 +256,11 @@ void StickyBombUpdate::detonate()
 			Real curVictimDistSqr;
 			Object *curVictim = iter->firstWithNumeric(&curVictimDistSqr);
 			DamageInfo damageInfo;
-			damageInfo.in.m_damageType = data->m_geometryBasedDamageWeaponTemplate->getDamageType();
-			damageInfo.in.m_deathType = data->m_geometryBasedDamageWeaponTemplate->getDeathType();
+			damageInfo.in.m_damageType = data->m_data.m_geometryBasedDamageWeaponTemplate->getDamageType();
+			damageInfo.in.m_deathType = data->m_data.m_geometryBasedDamageWeaponTemplate->getDeathType();
 			damageInfo.in.m_sourceID = getObject()->getID();
 			damageInfo.in.m_sourcePlayerMask = getObject()->getControllingPlayer()->getPlayerMask();
-			damageInfo.in.m_damageStatusType = data->m_geometryBasedDamageWeaponTemplate->getDamageStatusType();
+			damageInfo.in.m_damageStatusType = data->m_data.m_geometryBasedDamageWeaponTemplate->getDamageStatusType();
 			
 			for (; curVictim != NULL; curVictim = iter ? iter->nextWithNumeric(&curVictimDistSqr) : NULL)
 			{
@@ -268,10 +268,10 @@ void StickyBombUpdate::detonate()
 				curVictim->attemptDamage(&damageInfo);
 			}
 
-			if( data->m_geometryBasedDamageFX )
+			if( data->m_data.m_geometryBasedDamageFX )
 			{
 				// And we make FX based on that size too.
-				FXList::doFXPos(data->m_geometryBasedDamageFX, boobyTrappedObject->getPosition(), NULL, 0, NULL, secondaryDamageRange);
+				FXList::doFXPos(data->m_data.m_geometryBasedDamageFX, boobyTrappedObject->getPosition(), NULL, 0, NULL, secondaryDamageRange);
 			}
 		}
 	}

@@ -86,7 +86,7 @@ enum CanMakeType
 //-------------------------------------------------------------------------------------------------
 /** Return codes for queries about legal build locations */
 //-------------------------------------------------------------------------------------------------
-enum LegalBuildCode
+enum LegalBuildCode: int
 {
 	LBC_OK = 0,
 	LBC_RESTRICTED_TERRAIN,
@@ -127,6 +127,10 @@ public:
 
 	BuildAssistant( void );
 	virtual ~BuildAssistant( void );
+
+	// No copies allowed!
+	BuildAssistant(const BuildAssistant&) = delete;
+	BuildAssistant& operator=(const BuildAssistant&) = delete;
 
 	virtual void init( void );					///< for subsytem
 	virtual void reset( void );					///< for subsytem

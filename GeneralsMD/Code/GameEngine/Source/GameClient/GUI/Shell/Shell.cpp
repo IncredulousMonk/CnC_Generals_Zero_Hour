@@ -38,7 +38,7 @@
 #include "GameClient/IMEManager.h"
 #include "GameClient/AnimateWindowManager.h"
 #include "GameClient/ShellMenuScheme.h"
-#include "GameLogic/GameLogic.h"
+// #include "GameLogic/GameLogic.h"
 // #include "GameNetwork/GameSpyOverlay.h"
 // #include "GameNetwork/GameSpy/PeerDefsImplementation.h"
 
@@ -723,7 +723,7 @@ void Shell::shutdownComplete( WindowLayout *, Bool impendingPush )
 }  // end shutdownComplete
 
 
-void Shell::registerWithAnimateManager( GameWindow *win, AnimTypes animType, Bool needsToFinish, UnsignedInt delayMS)
+void Shell::registerWithAnimateManager( GameWindow *win, AnimTypes animType, Bool needsToFinish, Millis delayMS)
 {
 	if(!m_animateWindowManager)
 	{
@@ -731,7 +731,7 @@ void Shell::registerWithAnimateManager( GameWindow *win, AnimTypes animType, Boo
 		return;
 	}
 	if (TheGlobalData->m_data.m_animateWindows)
-		m_animateWindowManager->registerGameWindow(win,animType,needsToFinish, 500,delayMS);
+		m_animateWindowManager->registerGameWindow(win,animType,needsToFinish, Millis{500}, delayMS);
 }
 
 Bool Shell::isAnimFinished( void )

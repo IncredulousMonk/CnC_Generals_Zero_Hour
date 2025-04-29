@@ -46,9 +46,9 @@ class INI;
 //-------------------------------------------------------------------------------------------------
 typedef enum: UnsignedInt
 {
-	IMAGE_STATUS_NONE									= 0x00000000,
+	IMAGE_STATUS_NONE					= 0x00000000,
 	IMAGE_STATUS_ROTATED_90_CLOCKWISE	= 0x00000001,  // image should be treated as rotated
-	IMAGE_STATUS_RAW_TEXTURE					= 0x00000002,  // image struct contains raw texture data
+	IMAGE_STATUS_RAW_TEXTURE			= 0x00000002,  // image struct contains raw texture data
 
 } ImageStatus;
 #ifdef DEFINE_IMAGE_STATUS_NAMES
@@ -105,14 +105,21 @@ public:
 protected:
 
 friend class ImageCollection;
+friend class INI;
 
-	AsciiString m_name;				///< name for this image
-	AsciiString m_filename;		///< texture filename this image is in
-	ICoord2D m_textureSize;		///< size of the texture this image is a part of
-	Region2D m_UVCoords;			///< texture UV coords for image
-	ICoord2D m_imageSize;			///< dimensions of image
-	void *m_rawTextureData;		///< raw texture data
-	UnsignedInt m_status;			///< status bits from ImageStatus
+	// MG: Cannot apply offsetof to Image, so had to move data into an embedded struct.
+	struct Data
+	{
+		AsciiString m_name {};				///< name for this image
+		AsciiString m_filename {};		///< texture filename this image is in
+		ICoord2D m_textureSize {};		///< size of the texture this image is a part of
+		Region2D m_UVCoords {};			///< texture UV coords for image
+		ICoord2D m_imageSize {};			///< dimensions of image
+		void *m_rawTextureData {};		///< raw texture data
+		UnsignedInt m_status {};			///< status bits from ImageStatus
+	};
+
+	Data m_data {};
 
 	static const FieldParse m_imageFieldParseTable[];		///< the parse table for INI definition
 
@@ -150,26 +157,26 @@ public:
   }
 
 protected:
-  std::map<unsigned,Image *> m_imageMap;  ///< maps named keys to images
+  std::map<unsigned,Image *> m_imageMap{};  ///< maps named keys to images
 };  // end ImageCollection
 
 // INLINING ///////////////////////////////////////////////////////////////////////////////////////
-inline void Image::setName( AsciiString name ) { m_name = name; }
-inline AsciiString Image::getName( void ) const { return m_name; }
-inline void Image::setFilename( AsciiString name ) { m_filename = name; }
-inline AsciiString Image::getFilename( void ) const { return m_filename; }
-inline void Image::setUV( Region2D *uv ) { if( uv ) m_UVCoords = *uv; }
-inline const Region2D *Image::getUV( void ) const { return &m_UVCoords; }
-inline void Image::setTextureWidth( Int width ) { m_textureSize.x = width; }
-inline void Image::setTextureHeight( Int height ) { m_textureSize.y = height; }
-inline void Image::setImageSize( ICoord2D *size ) { m_imageSize = *size; }
-inline const ICoord2D *Image::getImageSize( void ) const { return &m_imageSize; }
-inline const ICoord2D *Image::getTextureSize( void ) const { return &m_textureSize; }
-inline Int Image::getImageWidth( void ) const { return m_imageSize.x; }
-inline Int Image::getImageHeight( void ) const { return m_imageSize.y; }
-inline void Image::setRawTextureData( void *data ) { m_rawTextureData = data; }
-inline const void *Image::getRawTextureData( void ) const { return m_rawTextureData; }
-inline UnsignedInt Image::getStatus( void ) const { return m_status; }
+inline void Image::setName( AsciiString name ) { m_data.m_name = name; }
+inline AsciiString Image::getName( void ) const { return m_data.m_name; }
+inline void Image::setFilename( AsciiString name ) { m_data.m_filename = name; }
+inline AsciiString Image::getFilename( void ) const { return m_data.m_filename; }
+inline void Image::setUV( Region2D *uv ) { if( uv ) m_data.m_UVCoords = *uv; }
+inline const Region2D *Image::getUV( void ) const { return &m_data.m_UVCoords; }
+inline void Image::setTextureWidth( Int width ) { m_data.m_textureSize.x = width; }
+inline void Image::setTextureHeight( Int height ) { m_data.m_textureSize.y = height; }
+inline void Image::setImageSize( ICoord2D *size ) { m_data.m_imageSize = *size; }
+inline const ICoord2D *Image::getImageSize( void ) const { return &m_data.m_imageSize; }
+inline const ICoord2D *Image::getTextureSize( void ) const { return &m_data.m_textureSize; }
+inline Int Image::getImageWidth( void ) const { return m_data.m_imageSize.x; }
+inline Int Image::getImageHeight( void ) const { return m_data.m_imageSize.y; }
+inline void Image::setRawTextureData( void *data ) { m_data.m_rawTextureData = data; }
+inline const void *Image::getRawTextureData( void ) const { return m_data.m_rawTextureData; }
+inline UnsignedInt Image::getStatus( void ) const { return m_data.m_status; }
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////
 extern ImageCollection *TheMappedImageCollection;  ///< mapped images

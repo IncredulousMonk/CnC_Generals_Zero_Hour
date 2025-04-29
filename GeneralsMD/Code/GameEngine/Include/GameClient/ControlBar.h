@@ -36,6 +36,7 @@
 #include "Common/AudioEventRTS.h"
 #include "Common/GameType.h"
 #include "Common/Overridable.h"
+#include "Common/Override.h"
 #include "Common/Science.h"
 #include "GameClient/Color.h"
 

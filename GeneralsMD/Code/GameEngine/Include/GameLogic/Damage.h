@@ -283,7 +283,8 @@ public:
 
 	// No copies allowed!
 	DamageInfoInput(const DamageInfoInput&) = delete;
-	DamageInfoInput& operator=(const DamageInfoInput&) = delete;
+
+	DamageInfoInput& operator=(const DamageInfoInput&) = default;
 
 	ObjectID		   m_sourceID {};							///< source of the damage
 	const ThingTemplate *m_sourceTemplate {};  ///< source of the damage (the template).

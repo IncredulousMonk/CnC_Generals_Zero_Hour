@@ -31,9 +31,9 @@
 
 #include "Lib/BaseType.h"
 #include "Common/RandomValue.h"
-#include "Common/CRC.h"
+// #include "Common/CRC.h"
 #include "Common/Debug.h"
-#include "GameLogic/GameLogic.h"
+// #include "GameLogic/GameLogic.h"
 
 //#define DETERMINISTIC				// to allow repetition for debugging
 
@@ -148,9 +148,11 @@ UnsignedInt GetGameLogicRandomSeed( void )
 
 UnsignedInt GetGameLogicRandomSeedCRC( void )
 {
-	CRC c;
-	c.computeCRC(theGameLogicSeed, 6*sizeof(UnsignedInt));
-	return c.get();
+	printf("*** GetGameLogicRandomSeedCRC not yet implemented!\n");
+	// CRC c;
+	// c.computeCRC(theGameLogicSeed, 6*sizeof(UnsignedInt));
+	// return c.get();
+	return 0;
 }
 
 void InitRandom( void )

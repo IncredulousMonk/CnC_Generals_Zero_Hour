@@ -44,12 +44,12 @@ class GameFont : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(GameFont, "GameFont")		
 public:
-	GameFont*			next;  ///< for library use
-	AsciiString		nameString;
-	Int						pointSize;		 ///< point size of font
-	Int						height;				///< pixel height of font
-	void*					fontData;  ///< font data to be filled out for device specific font
-	Bool					bold;				 ///< is this font bold
+	GameFont*			next {};  ///< for library use
+	AsciiString		nameString {};
+	Int						pointSize {};		 ///< point size of font
+	Int						height {};				///< pixel height of font
+	void*					fontData {};  ///< font data to be filled out for device specific font
+	Bool					bold {};				 ///< is this font bold
 };
 EMPTY_DTOR(GameFont)
 
@@ -93,8 +93,8 @@ protected:
 	/// release the font data pointer
 	virtual void releaseFontData( GameFont * ) { };
 
-	GameFont *m_fontList;  ///< list of fonts we have loaded
-	Int m_count;  ///< number of unique fonts loaded in this lib
+	GameFont *m_fontList {};  ///< list of fonts we have loaded
+	Int m_count {};  ///< number of unique fonts loaded in this lib
 
 };
 

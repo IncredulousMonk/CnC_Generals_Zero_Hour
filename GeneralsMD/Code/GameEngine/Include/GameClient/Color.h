@@ -58,10 +58,6 @@
 // TYPE DEFINES ///////////////////////////////////////////////////////////////
 enum { GAME_COLOR_UNDEFINED = 0x00FFFFFF }; // this is white with zero alpha... safe to use!
 
-/** @todo we need real color representation, this is just palce holder so we
-can more easily identify sections of the code that need it */
-typedef UnsignedInt Color;
-
 // INLINING ///////////////////////////////////////////////////////////////////
 
 // EXTERNALS //////////////////////////////////////////////////////////////////

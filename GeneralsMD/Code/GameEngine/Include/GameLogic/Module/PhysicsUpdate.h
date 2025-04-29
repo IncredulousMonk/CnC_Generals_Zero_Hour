@@ -39,7 +39,7 @@
 
 enum ObjectID;
 
-enum PhysicsTurningType
+enum PhysicsTurningType: int
 {
 	TURN_NEGATIVE = -1,
 	TURN_NONE = 0,
@@ -50,6 +50,10 @@ enum PhysicsTurningType
 class PhysicsBehaviorModuleData : public UpdateModuleData
 {
 public:
+	// No copies allowed!
+	PhysicsBehaviorModuleData(const PhysicsBehaviorModuleData&) = delete;
+	PhysicsBehaviorModuleData& operator=(const PhysicsBehaviorModuleData&) = delete;
+
 	Real	m_mass;
 	Real	m_shockResistance;
 	Real	m_shockMaxYaw;
@@ -89,6 +93,10 @@ public:
 	PhysicsBehavior( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype defined by MemoryPoolObject
 
+	// No copies allowed!
+	PhysicsBehavior(const PhysicsBehavior&) = delete;
+	PhysicsBehavior& operator=(const PhysicsBehavior&) = delete;
+
 	static Int getInterfaceMask() { return UpdateModule::getInterfaceMask() | (MODULEINTERFACE_COLLIDE); }
 
 	virtual void onObjectCreated();
@@ -98,7 +106,7 @@ public:
 
 	// CollideModuleInterface
 	virtual void onCollide( Object *other, const Coord3D *loc, const Coord3D *normal );
-	virtual Bool wouldLikeToCollideWith(const Object* other) const { return false; }
+	virtual Bool wouldLikeToCollideWith(const Object* /*other*/) const { return false; }
 	virtual Bool isCarBombCrateCollide() const { return false; }
 	virtual Bool isHijackedVehicleCrateCollide() const { return false; }
 	virtual Bool isRailroad() const { return false;}

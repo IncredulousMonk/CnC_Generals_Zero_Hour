@@ -63,9 +63,9 @@
 const FieldParse ShellMenuSchemeManager::m_shellMenuSchemeFieldParseTable[] = 
 {
 
-	{ "ImagePart",						ShellMenuSchemeManager::parseImagePart,			NULL, NULL },
-	{ "LinePart",							ShellMenuSchemeManager::parseLinePart,	NULL, NULL },
-	{ NULL,										NULL,													NULL, 0 }  // keep this last
+	{ "ImagePart",	ShellMenuSchemeManager::parseImagePart,	NULL, 0 },
+	{ "LinePart",	ShellMenuSchemeManager::parseLinePart,	NULL, 0 },
+	{ NULL,			NULL,									NULL, 0 }  // keep this last
 
 };
 
@@ -115,7 +115,7 @@ ShellMenuSchemeImage::ShellMenuSchemeImage( void )
 {
 	m_name.clear();
 	m_position.x = m_position.y = 0;
-	m_size.x = m_size.x = 0;
+	m_size.x = m_size.y = 0;
 	m_image = NULL;
 }
 

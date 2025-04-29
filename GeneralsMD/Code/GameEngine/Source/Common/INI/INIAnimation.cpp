@@ -80,7 +80,7 @@ void INI::parseAnim2DDefinition( INI* ini )
 	}  // end else
 
 	// parse the ini definition
-	ini->initFromINI( animTemplate, animTemplate->getFieldParse() );
+	ini->initFromINI( &animTemplate->m_data, animTemplate->getFieldParse() );
 
 }  // end parseAnim2DDefinition
 

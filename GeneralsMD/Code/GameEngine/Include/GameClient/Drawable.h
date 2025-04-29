@@ -143,21 +143,21 @@ class DrawableLocoInfo : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(DrawableLocoInfo, "DrawableLocoInfo" )		
 public:
-	Real m_pitch;								///< pitch of the entire drawable
-	Real m_pitchRate;						///< rate of change of pitch
-	Real m_roll;								///< roll of the entire drawable
-	Real m_rollRate;						///< rate of change of roll
-	Real m_yaw;									///< yaw for entire drawable
-	Real m_accelerationPitch;					///< pitch of the drawable due to impact/acceleration
-	Real m_accelerationPitchRate;			///< rate of change of pitch
-	Real m_accelerationRoll;					///< roll of the entire drawable
-	Real m_accelerationRollRate;			///< rate of change of roll
-	Real m_overlapZVel;					///< fake Z velocity
-	Real m_overlapZ;						///< current height (additional)
-	Real m_wobble;							///< for wobbling
-  Real m_yawModulator;        ///< for the swimmy soft hover of a helicopter
-  Real m_pitchModulator;        ///< for the swimmy soft hover of a helicopter
-	TWheelInfo m_wheelInfo;			///< Wheel offset & angle info for a wheeled type locomotor.
+	Real m_pitch {};								///< pitch of the entire drawable
+	Real m_pitchRate {};						///< rate of change of pitch
+	Real m_roll {};								///< roll of the entire drawable
+	Real m_rollRate {};						///< rate of change of roll
+	Real m_yaw {};									///< yaw for entire drawable
+	Real m_accelerationPitch {};					///< pitch of the drawable due to impact/acceleration
+	Real m_accelerationPitchRate {};			///< rate of change of pitch
+	Real m_accelerationRoll {};					///< roll of the entire drawable
+	Real m_accelerationRollRate {};			///< rate of change of roll
+	Real m_overlapZVel {};					///< fake Z velocity
+	Real m_overlapZ {};						///< current height (additional)
+	Real m_wobble {};							///< for wobbling
+	Real m_yawModulator {};        ///< for the swimmy soft hover of a helicopter
+	Real m_pitchModulator {};        ///< for the swimmy soft hover of a helicopter
+	TWheelInfo m_wheelInfo {};			///< Wheel offset & angle info for a wheeled type locomotor.
 
 	DrawableLocoInfo();
 };
@@ -206,13 +206,13 @@ private:
 		ENVELOPE_STATE_SUSTAIN ///< RELEASE IS THE LOGICAL COMPLIMENT TO SUSTAIN								
 	};
 
-	Vector3							m_attackRate;		 	///< step amount to make tint turn on slow or fast 
-	Vector3							m_decayRate;			///< step amount to make tint turn off slow or fast
-	Vector3							m_peakColor;			///< um, the peak color, what color we are headed toward during attack
-	Vector3							m_currentColor;		///< um, the current color, how we are colored, now
-	UnsignedInt					m_sustainCounter;
-	Byte								m_envState;				///< a randomly switchable SUSTAIN state, release is compliment
-	Bool								m_affect;         ///< set TRUE if this has any effect (has a non 0,0,0 color).
+	Vector3							m_attackRate {};		 	///< step amount to make tint turn on slow or fast 
+	Vector3							m_decayRate {};			///< step amount to make tint turn off slow or fast
+	Vector3							m_peakColor {};			///< um, the peak color, what color we are headed toward during attack
+	Vector3							m_currentColor {};		///< um, the current color, how we are colored, now
+	UnsignedInt					m_sustainCounter {};
+	Byte								m_envState {};				///< a randomly switchable SUSTAIN state, release is compliment
+	Bool								m_affect {};         ///< set TRUE if this has any effect (has a non 0,0,0 color).
 };
 EMPTY_DTOR(TintEnvelope)
 
@@ -258,7 +258,7 @@ enum TintStatus: UnsignedInt
 // Note: these values are saved in save files, so you MUST NOT REMOVE OR CHANGE
 // existing values!
 //
-enum TerrainDecalType
+enum TerrainDecalType: int
 {
 #ifdef ALLOW_DEMORALIZE
 	TERRAIN_DECAL_DEMORALIZED = 0,
@@ -649,87 +649,87 @@ protected:
 private:
 
 	// note, these are lazily allocated!
-	TintEnvelope*		m_selectionFlashEnvelope;	///< used for selection flash, works WITH m_colorTintEnvelope
-	TintEnvelope*		m_colorTintEnvelope;			///< house color flashing, etc... works WITH m_selectionFlashEnvelope
+	TintEnvelope*		m_selectionFlashEnvelope {};	///< used for selection flash, works WITH m_colorTintEnvelope
+	TintEnvelope*		m_colorTintEnvelope {};			///< house color flashing, etc... works WITH m_selectionFlashEnvelope
 																//   this used to use m_ambientLight... but this replaces it
 																//   int most places. It works harder to change the drawable's
 																//   color, by tinting all four scene lights, not just ambient
 																//   zero = no effect
 																//   1    = full effect
 
-	TerrainDecalType m_terrainDecalType; ///<current decal in use by m_terrainDecal
+	TerrainDecalType m_terrainDecalType {}; ///<current decal in use by m_terrainDecal
 
-	Real m_explicitOpacity;			///< opacity level. 1.0f == Solid/Opaque.
-	Real m_stealthOpacity;			///< <<minimum>> opacity due to stealth. pulse is between opaque and this
-	Real m_effectiveStealthOpacity;			///< opacity actually used to render with, after the pulse and stuff.
+	Real m_explicitOpacity {};			///< opacity level. 1.0f == Solid/Opaque.
+	Real m_stealthOpacity {};			///< <<minimum>> opacity due to stealth. pulse is between opaque and this
+	Real m_effectiveStealthOpacity {};			///< opacity actually used to render with, after the pulse and stuff.
 
-	Real m_decalOpacityFadeTarget;
-	Real m_decalOpacityFadeRate;
-	Real m_decalOpacity;
+	Real m_decalOpacityFadeTarget {};
+	Real m_decalOpacityFadeRate {};
+	Real m_decalOpacity {};
 
-	Object *m_object;						///< object (if any) that this drawable represents
+	Object *m_object {};						///< object (if any) that this drawable represents
 		
-	DrawableID m_id;						///< this drawable's unique ID
-	Drawable *m_nextDrawable; 
-	Drawable *m_prevDrawable;		///< list links
+	DrawableID m_id {};						///< this drawable's unique ID
+	Drawable *m_nextDrawable {}; 
+	Drawable *m_prevDrawable {};		///< list links
 
-  DynamicAudioEventInfo *m_customSoundAmbientInfo; ///< If not NULL, info about the ambient sound to attach to this object
+  DynamicAudioEventInfo *m_customSoundAmbientInfo {}; ///< If not NULL, info about the ambient sound to attach to this object
 
-	UnsignedInt m_status;				///< status bits (see DrawableStatus enum)
-	UnsignedInt m_tintStatus;				///< tint color status bits (see TintStatus enum)
-	UnsignedInt m_prevTintStatus;///< for edge testing with m_tintStatus
+	UnsignedInt m_status {};				///< status bits (see DrawableStatus enum)
+	UnsignedInt m_tintStatus {};				///< tint color status bits (see TintStatus enum)
+	UnsignedInt m_prevTintStatus {};///< for edge testing with m_tintStatus
 	
-	enum FadingMode
+	enum FadingMode: int
 	{
 		FADING_NONE,
 		FADING_IN,
 		FADING_OUT
 	};
-	FadingMode		m_fadeMode;
-	UnsignedInt		m_timeElapsedFade;			///< for how many frames have i been fading
-	UnsignedInt		m_timeToFade;						///< how slowly am I fading
+	FadingMode		m_fadeMode {};
+	UnsignedInt		m_timeElapsedFade {};			///< for how many frames have i been fading
+	UnsignedInt		m_timeToFade {};						///< how slowly am I fading
 
-	UnsignedInt		m_shroudClearFrame;						///< Last frame the local player saw this drawable "OBJECTSHROUD_CLEAR"
+	UnsignedInt		m_shroudClearFrame {};						///< Last frame the local player saw this drawable "OBJECTSHROUD_CLEAR"
 
-	DrawableLocoInfo*	m_locoInfo;	// lazily allocated
+	DrawableLocoInfo*	m_locoInfo {};	// lazily allocated
 
-	DynamicAudioEventRTS*	m_ambientSound;		///< sound module for ambient sound (lazily allocated)
+	DynamicAudioEventRTS*	m_ambientSound {};		///< sound module for ambient sound (lazily allocated)
 
-	Module** m_modules[NUM_DRAWABLE_MODULE_TYPES];
+	Module** m_modules[NUM_DRAWABLE_MODULE_TYPES] {};
 
-	StealthLookType m_stealthLook;
+	StealthLookType m_stealthLook {};
 
-	Int m_flashCount;           ///< number of times to flash the drawable
-	Color m_flashColor;					///< color to flash the drawable
+	Int m_flashCount {};           ///< number of times to flash the drawable
+	Color m_flashColor {};					///< color to flash the drawable
 
-	Matrix3D m_instance;				///< The instance matrix that holds the initial/default position & orientation
-	Real m_instanceScale;				///< the uniform scale factor applied to the instance matrix before it is sent to W3D. 
+	Matrix3D m_instance {};				///< The instance matrix that holds the initial/default position & orientation
+	Real m_instanceScale {};				///< the uniform scale factor applied to the instance matrix before it is sent to W3D. 
 
-	DrawableInfo				m_drawableInfo;		///< structure pointed to by W3D render objects so they know which drawable they belong to.
+	DrawableInfo				m_drawableInfo {};		///< structure pointed to by W3D render objects so they know which drawable they belong to.
 
-	ModelConditionFlags	m_conditionState;				///< The Drawables current behavior state
-	Real								m_lastConstructDisplayed;						///< last construct percent used to make the string
-	DisplayString*			m_constructDisplayString;  ///< string to display construction % complete
-	DisplayString*			m_captionDisplayString;		///< string to display caption
-	DisplayString*			m_groupNumber;						///< string to display the group number of this drawable
+	ModelConditionFlags	m_conditionState {};				///< The Drawables current behavior state
+	Real					m_lastConstructDisplayed {};						///< last construct percent used to make the string
+	DisplayString*			m_constructDisplayString {};  ///< string to display construction % complete
+	DisplayString*			m_captionDisplayString {};		///< string to display caption
+	DisplayString*			m_groupNumber {};						///< string to display the group number of this drawable
 
-	UnsignedInt					m_expirationDate;		///< if nonzero, Drawable should destroy itself at this frame
-	DrawableIconInfo*		m_iconInfo;					///< lazily allocated!
+	UnsignedInt				m_expirationDate {};		///< if nonzero, Drawable should destroy itself at this frame
+	DrawableIconInfo*		m_iconInfo {};					///< lazily allocated!
 
-	Real m_secondMaterialPassOpacity;			///< drawable gets rendered again in hardware with an extra material layer
+	Real m_secondMaterialPassOpacity {};			///< drawable gets rendered again in hardware with an extra material layer
 	// --------- BYTE-SIZED THINGS GO HERE
-	Byte m_selected;						///< drawable is selected or not
-	Bool m_hidden;							///< drawable is "hidden" or not (overrides stealth effects)
-	Bool m_hiddenByStealth;			///< drawable is hidden due to stealth
-	Bool m_instanceIsIdentity;	///< If true, instance matrix can be skipped
-	Bool m_drawableFullyObscuredByShroud;	///<drawable is hidden by shroud/fog
-  Bool m_ambientSoundEnabled;
-  Bool m_ambientSoundEnabledFromScript;
+	Byte m_selected {};						///< drawable is selected or not
+	Bool m_hidden {};							///< drawable is "hidden" or not (overrides stealth effects)
+	Bool m_hiddenByStealth {};			///< drawable is hidden due to stealth
+	Bool m_instanceIsIdentity {};	///< If true, instance matrix can be skipped
+	Bool m_drawableFullyObscuredByShroud {};	///<drawable is hidden by shroud/fog
+  Bool m_ambientSoundEnabled {};
+  Bool m_ambientSoundEnabledFromScript {};
 
-  Bool m_receivesDynamicLights;
+  Bool m_receivesDynamicLights {};
 
 #ifdef DIRTY_CONDITION_FLAGS
-	mutable Bool m_isModelDirty;				///< if true, must call replaceModelConditionState() before drawing or accessing drawmodule info
+	mutable Bool m_isModelDirty {};				///< if true, must call replaceModelConditionState() before drawing or accessing drawmodule info
 #endif
 
 	//*******************************************

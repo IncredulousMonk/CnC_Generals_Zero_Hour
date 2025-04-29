@@ -55,8 +55,8 @@ class TracerDrawInterface;
 class RopeDrawInterface;
 class LaserDrawInterface;
 class FXList;
-enum TerrainDecalType;
-enum ShadowType;
+enum TerrainDecalType: int;
+enum ShadowType: int;
 
 //class ModelConditionFlags;
 
@@ -79,12 +79,12 @@ public:
 	virtual void allocateShadows(void) = 0; ///< create shadow resources if not already present. Used by Options screen.
 
 #if defined(_DEBUG) || defined(_INTERNAL)	
-	virtual void getRenderCost(RenderCost & rc) const { };  ///< estimates the render cost of this draw module
+	virtual void getRenderCost(RenderCost & /*rc*/) const { };  ///< estimates the render cost of this draw module
 #endif
 
-	virtual void setTerrainDecal(TerrainDecalType type) {};
-	virtual void setTerrainDecalSize(Real x, Real y) {};
-	virtual void setTerrainDecalOpacity(Real o) {};
+	virtual void setTerrainDecal(TerrainDecalType /*type*/) {};
+	virtual void setTerrainDecalSize(Real /*x*/, Real /*y*/) {};
+	virtual void setTerrainDecalOpacity(Real /*o*/) {};
 
 	virtual void setFullyObscuredByShroud(Bool fullyObscured) = 0;
 	
@@ -125,6 +125,7 @@ inline DrawModule::~DrawModule() { }
 class DebrisDrawInterface
 {
 public:
+	virtual ~DebrisDrawInterface();
 	virtual void setModelName(AsciiString name, Color color, ShadowType t) = 0;
 	virtual void setAnimNames(AsciiString initial, AsciiString flying, AsciiString final, const FXList* finalFX) = 0;
 };
@@ -133,6 +134,7 @@ public:
 class TracerDrawInterface
 {
 public:
+	virtual ~TracerDrawInterface();
 	virtual void setTracerParms(Real speed, Real length, Real width, const RGBColor& color, Real initialOpacity) = 0;
 };
 
@@ -140,6 +142,7 @@ public:
 class RopeDrawInterface
 {
 public:
+	virtual ~RopeDrawInterface();
 	virtual void initRopeParms(Real length, Real width, const RGBColor& color, Real wobbleLen, Real wobbleAmp, Real wobbleRate) = 0;
 	virtual void setRopeCurLen(Real length) = 0;
 	virtual void setRopeSpeed(Real curSpeed, Real maxSpeed, Real accel) = 0;
@@ -148,6 +151,7 @@ public:
 class LaserDrawInterface
 {
 public:
+	virtual ~LaserDrawInterface();
 	virtual Real getLaserTemplateWidth() const = 0;
 };
 
@@ -155,6 +159,7 @@ public:
 class ObjectDrawInterface
 {
 public:
+	virtual ~ObjectDrawInterface();
 
 	// this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
 	virtual Bool clientOnly_getRenderObjInfo(Coord3D* pos, Real* boundingSphereRadius, Matrix3D* transform) const = 0;
@@ -250,11 +255,11 @@ public:
 
 protected:
 
-	int		m_drawCallCount;
-	int		m_sortedMeshCount;
-	int		m_skinMeshCount;
-	int		m_boneCount;
-	int		m_shadowDrawCount;
+	int		m_drawCallCount {};
+	int		m_sortedMeshCount {};
+	int		m_skinMeshCount {};
+	int		m_boneCount {};
+	int		m_shadowDrawCount {};
 };
 
 

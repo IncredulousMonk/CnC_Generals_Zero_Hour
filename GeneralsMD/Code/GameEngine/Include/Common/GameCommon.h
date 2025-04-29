@@ -191,7 +191,7 @@ enum GuardMode: int
 };
 
 // ---------------------------------------------------
-enum 
+enum: UnsignedInt
 { 
 	NEVER				= 0,
 	FOREVER			= 0x3fffffff			// (we use 0x3fffffff so that we can add offsets and not overflow...

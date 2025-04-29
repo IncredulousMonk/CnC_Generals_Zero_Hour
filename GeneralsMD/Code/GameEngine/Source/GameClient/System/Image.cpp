@@ -40,18 +40,19 @@
 #include "Common/GlobalData.h"
 #include "GameClient/Image.h"
 #include "Common/NameKeyGenerator.h"
+#include "Common/LocalFileSystem.h"
 
 // PRIVATE DATA ///////////////////////////////////////////////////////////////////////////////////
 const FieldParse Image::m_imageFieldParseTable[] = 
 {
 
-	{ "Texture",				INI::parseAsciiString,							NULL, 		offsetof( Image, m_filename ) },
-	{ "TextureWidth",		INI::parseInt,											NULL, 		offsetof( Image, m_textureSize.x ) },
-	{ "TextureHeight",	INI::parseInt,											NULL, 		offsetof( Image, m_textureSize.y ) },
-	{ "Coords",					Image::parseImageCoords,						NULL, 		offsetof( Image, m_UVCoords ) },
-	{ "Status",					Image::parseImageStatus,						NULL, 		offsetof( Image, m_status ) },
+	{ "Texture",		INI::parseAsciiString,		NULL, 	offsetof( Image::Data, m_filename ) },
+	{ "TextureWidth",	INI::parseInt,				NULL, 	offsetof( Image::Data, m_textureSize.x ) },
+	{ "TextureHeight",	INI::parseInt,				NULL, 	offsetof( Image::Data, m_textureSize.y ) },
+	{ "Coords",			Image::parseImageCoords,	NULL, 	offsetof( Image::Data, m_UVCoords ) },
+	{ "Status",			Image::parseImageStatus,	NULL, 	offsetof( Image::Data, m_status ) },
 
-	{ NULL,							NULL,																NULL, 		0 }
+	{ NULL,				NULL,						NULL, 	0 }
 
 };
 
@@ -61,7 +62,7 @@ const FieldParse Image::m_imageFieldParseTable[] =
 	*
 	* COORDS = Left:AAA Top:BBB Right:CCC Bottom:DDD */
 //-------------------------------------------------------------------------------------------------
-void Image::parseImageCoords( INI* ini, void *instance, void *store, const void* /*userData*/ )
+void Image::parseImageCoords( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
 	Int left = INI::scanInt(ini->getNextSubToken("Left"));
 	Int top = INI::scanInt(ini->getNextSubToken("Top"));
@@ -142,18 +143,18 @@ ImageCollection *TheMappedImageCollection = NULL;  ///< mapped images
 Image::Image( void )
 {
 
-	m_name.clear();
-	m_filename.clear();
-	m_textureSize.x = 0;
-	m_textureSize.y = 0;
-	m_UVCoords.lo.x = 0.0f;
-	m_UVCoords.lo.y = 0.0f;
-	m_UVCoords.hi.x = 1.0f;
-	m_UVCoords.hi.y = 1.0f;
-	m_imageSize.x = 0;
-	m_imageSize.y = 0;
-	m_rawTextureData = NULL;
-	m_status = IMAGE_STATUS_NONE;
+	m_data.m_name.clear();
+	m_data.m_filename.clear();
+	m_data.m_textureSize.x = 0;
+	m_data.m_textureSize.y = 0;
+	m_data.m_UVCoords.lo.x = 0.0f;
+	m_data.m_UVCoords.lo.y = 0.0f;
+	m_data.m_UVCoords.hi.x = 1.0f;
+	m_data.m_UVCoords.hi.y = 1.0f;
+	m_data.m_imageSize.x = 0;
+	m_data.m_imageSize.y = 0;
+	m_data.m_rawTextureData = NULL;
+	m_data.m_status = IMAGE_STATUS_NONE;
 
 }  // end Image
 
@@ -170,9 +171,9 @@ Image::~Image( void )
 //-------------------------------------------------------------------------------------------------
 UnsignedInt Image::setStatus( UnsignedInt bit )
 {
-	UnsignedInt prevStatus = m_status;
+	UnsignedInt prevStatus = m_data.m_status;
 
-	BitSet( m_status, bit );
+	BitSet( m_data.m_status, bit );
 	return prevStatus;
 
 }  // end setStatus
@@ -183,9 +184,9 @@ UnsignedInt Image::setStatus( UnsignedInt bit )
 //-------------------------------------------------------------------------------------------------
 UnsignedInt Image::clearStatus( UnsignedInt bit )
 {
-	UnsignedInt prevStatus = m_status;
+	UnsignedInt prevStatus = m_data.m_status;
 
-	BitClear( m_status, bit );
+	BitClear( m_data.m_status, bit );
 	return prevStatus;
 
 }  // end clearStatus
@@ -231,15 +232,14 @@ const Image *ImageCollection::findImageByName( const AsciiString& name )
 //-------------------------------------------------------------------------------------------------
 void ImageCollection::load( Int textureSize )
 {
-	char buffer[ _MAX_PATH ];
+	char buffer[ PATH_MAX ];
 	INI ini;
 	// first load in the user created mapped image files if we have them.
-	WIN32_FIND_DATA findData;
 	AsciiString userDataPath;	
 	if(TheGlobalData)
 	{
 		userDataPath.format("%sINI\\MappedImages\\*.ini",TheGlobalData->getPath_UserData().str());
-		if(FindFirstFile(userDataPath.str(), &findData) !=INVALID_HANDLE_VALUE)
+		if (TheLocalFileSystem->doesFileExist(userDataPath.str()))
 		{
 			userDataPath.format("%sINI\\MappedImages",TheGlobalData->getPath_UserData().str());
 			ini.loadDirectory(userDataPath, TRUE, INI_LOAD_OVERWRITE, NULL );
@@ -247,9 +247,9 @@ void ImageCollection::load( Int textureSize )
 	}
 
 	// construct path to the mapped images folder of the correct texture size
-	sprintf( buffer, "Data\\INI\\MappedImages\\TextureSize_%d", textureSize );
+	sprintf( buffer, "Data/INI/MappedImages/TextureSize_%d", textureSize );
 
-	// load all the ine files in that directory
+	// load all the ini files in that directory
 
 	ini.loadDirectory( AsciiString( buffer ), TRUE, INI_LOAD_OVERWRITE, NULL );
 

@@ -47,6 +47,7 @@
 class CollideModuleInterface
 {
 public:
+	virtual ~CollideModuleInterface();
 	virtual void onCollide( Object *other, const Coord3D *loc, const Coord3D *normal ) = 0;
 	virtual Bool wouldLikeToCollideWith(const Object* other) const = 0;
 	virtual Bool isHijackedVehicleCrateCollide() const = 0;
@@ -91,7 +92,7 @@ public:
 	virtual void onCollide( Object *other, const Coord3D *loc, const Coord3D *normal ) = 0;
 
 	/// this is used for things like pilots, to determine if they can "enter" something
-	virtual Bool wouldLikeToCollideWith(const Object* other) const { return false; }
+	virtual Bool wouldLikeToCollideWith(const Object* /*other*/) const { return false; }
 	virtual Bool isHijackedVehicleCrateCollide() const { return false; }
 	virtual Bool isSabotageBuildingCrateCollide() const { return false; }
 	virtual Bool isCarBombCrateCollide() const { return false; }

@@ -27,6 +27,7 @@
 
 #include "GameClient/GameClient.h"
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
+#include "LinuxDevice/GameClient/LinuxGameWindowManager.h"
 #include "LinuxDevice/FFmpeg/FFmpegVideoPlayer.h"
 
 class LinuxGameClient: public GameClient {
@@ -57,7 +58,7 @@ protected:
    virtual InGameUI *createInGameUI(void) { printf("Creating NULL InGameUI!\n"); return nullptr; }	
 
    /// factory for creating the window manager
-   virtual GameWindowManager *createWindowManager(void) { printf("Creating NULL WindowManager!\n"); return nullptr; }
+   virtual GameWindowManager *createWindowManager(void) { return NEW LinuxGameWindowManager; }
 
    /// factory for creating the font library
    virtual FontLibrary *createFontLibrary(void) { printf("Creating NULL FontLibrary!\n"); return nullptr; }

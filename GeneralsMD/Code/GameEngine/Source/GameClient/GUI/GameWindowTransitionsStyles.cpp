@@ -65,12 +65,12 @@
 #include "GameClient/DisplayStringManager.h"
 #include "GameClient/GadgetPushButton.h"
 #include "GameClient/GadgetStaticText.h"
-#include "GameClient/Controlbar.h"
+// #include "GameClient/ControlBar.h"
 
 //-----------------------------------------------------------------------------
 // DEFINES ////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-void drawTypeText( GameWindow *window, DisplayString *str);
+static void drawTypeText( GameWindow *window, DisplayString *str);
 //-----------------------------------------------------------------------------
 // PUBLIC FUNCTIONS ///////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -140,8 +140,13 @@ void FlashTransition::update( Int frame )
 			{
 				TheAudio->addAudioEvent( &buttonClick );
 			}  // end if
-		
+
+			if(!m_win)
+				break;
+			m_win->winHide(TRUE);
+			m_drawState = frame;
 		}
+		break;
 	case FLASHTRANSITION_FADE_IN_2:
 	case FLASHTRANSITION_FADE_IN_3:
 		{
@@ -810,6 +815,10 @@ void ScaleUpTransition::update( Int frame )
 
 			
 		}
+		if(m_win)
+			m_win->winHide(TRUE);
+		m_drawState = frame;
+		break;
 
 	case SCALEUPTRANSITION_2:
 	case SCALEUPTRANSITION_3:
@@ -931,8 +940,11 @@ void ScoreScaleUpTransition::update( Int frame )
 				TheAudio->addAudioEvent( &buttonClick );
 			}  // end if
 
-			
+			if(m_win)
+				m_win->winHide(TRUE);
+			m_drawState = frame;
 		}
+		break;
 
 	case SCORESCALEUPTRANSITION_2:
 	case SCORESCALEUPTRANSITION_3:
@@ -1375,7 +1387,7 @@ void TextTypeTransition::init( GameWindow *win )
 	m_dStr = TheDisplayStringManager->newDisplayString();
 	m_fullText = GadgetStaticTextGetText(m_win);		
 	Int length = m_fullText.getLength();
-	m_frameLength = MIN(length, TEXTTYPETRANSITION_END);
+	m_frameLength = std::min(length, static_cast<Int>(TEXTTYPETRANSITION_END));
 }
 
 void TextTypeTransition::update( Int frame )
@@ -1498,17 +1510,17 @@ void CountUpTransition::init( GameWindow *win )
 	if(m_intValue < COUNTUPTRANSITION_END)
 	{
 		m_countState = COUNT_ONES;
-		m_frameLength = MIN(m_intValue, COUNTUPTRANSITION_END);
+		m_frameLength = std::min(m_intValue, static_cast<Int>(COUNTUPTRANSITION_END));
 	}
 	else if(m_intValue/100 < COUNTUPTRANSITION_END)
 	{
 		m_countState = COUNT_100S;
-		m_frameLength = MIN(m_intValue/100, COUNTUPTRANSITION_END);
+		m_frameLength = std::min(m_intValue/100, static_cast<Int>(COUNTUPTRANSITION_END));
 	}
 	else
 	{
 		m_countState = COUNT_1000S;
-		m_frameLength = MIN(m_intValue/1000, COUNTUPTRANSITION_END);
+		m_frameLength = std::min(m_intValue/1000, static_cast<Int>(COUNTUPTRANSITION_END));
 	}
 	
 	m_currentValue = 0;
@@ -1629,8 +1641,8 @@ void ScreenFadeTransition::init( GameWindow *win )
 	m_percent = 1.0f / (SCREENFADETRANSITION_END - 1);
 
 	m_pos.y = m_pos.x = 0;
-	m_size.x = TheDisplay->getWidth();
-	m_size.y = TheDisplay->getHeight();
+	m_size.x = static_cast<Int>(TheDisplay->getWidth());
+	m_size.y = static_cast<Int>(TheDisplay->getHeight());
 
 }
 
@@ -1697,33 +1709,34 @@ ControlBarArrowTransition::~ControlBarArrowTransition( void )
 
 void ControlBarArrowTransition::init( GameWindow *win )
 {
-	m_isForward = FALSE;
-	update(CONTROLBARARROWTRANSITION_START);
-	m_isFinished = FALSE;
-	m_isForward = TRUE;
+	DEBUG_CRASH(("ControlBarArrowTransition::init."));
+	// m_isForward = FALSE;
+	// update(CONTROLBARARROWTRANSITION_START);
+	// m_isFinished = FALSE;
+	// m_isForward = TRUE;
 
-	m_percent = 1.0f / CONTROLBARARROWTRANSITION_BEGIN_FADE;
-	m_fadePercent = 1.0f/ (CONTROLBARARROWTRANSITION_END - CONTROLBARARROWTRANSITION_BEGIN_FADE);
+	// m_percent = 1.0f / static_cast<Int>(CONTROLBARARROWTRANSITION_BEGIN_FADE);
+	// m_fadePercent = 1.0f/ (CONTROLBARARROWTRANSITION_END - CONTROLBARARROWTRANSITION_BEGIN_FADE);
 	
-	m_arrowImage = TheControlBar->getArrowImage();
-	GameWindow *twin = TheWindowManager->winGetWindowFromId(NULL, TheNameKeyGenerator->nameToKey("ControlBar.wnd:ButtonGeneral"));
-	if(!twin || !m_arrowImage)
-	{
-		m_isFinished = TRUE;
-		return;
-	}
-	ICoord2D screenPos, screenSize;
-	twin->winGetScreenPosition(&screenPos.x, &screenPos.y);
-	twin->winGetSize(&screenSize.x, &screenSize.y);
+	// m_arrowImage = TheControlBar->getArrowImage();
+	// GameWindow *twin = TheWindowManager->winGetWindowFromId(NULL, TheNameKeyGenerator->nameToKey("ControlBar.wnd:ButtonGeneral"));
+	// if(!twin || !m_arrowImage)
+	// {
+	// 	m_isFinished = TRUE;
+	// 	return;
+	// }
+	// ICoord2D screenPos, screenSize;
+	// twin->winGetScreenPosition(&screenPos.x, &screenPos.y);
+	// twin->winGetSize(&screenSize.x, &screenSize.y);
 	
-	m_incrementPos.x = 0;
-	m_incrementPos.y = screenPos.y * m_percent;
+	// m_incrementPos.x = 0;
+	// m_incrementPos.y = screenPos.y * m_percent;
 
-	m_pos.y = 0 - m_arrowImage->getImageHeight() + 20;
-	m_pos.x = (screenPos.x + screenSize.x /2) - m_arrowImage->getImageWidth() /2;
+	// m_pos.y = 0 - m_arrowImage->getImageHeight() + 20;
+	// m_pos.x = (screenPos.x + screenSize.x /2) - m_arrowImage->getImageWidth() /2;
 
-	m_size.x = m_arrowImage->getImageWidth();
-	m_size.y = m_arrowImage->getImageHeight();
+	// m_size.x = m_arrowImage->getImageWidth();
+	// m_size.y = m_arrowImage->getImageHeight();
 
 }
 
@@ -2025,8 +2038,12 @@ void ReverseSoundTransition::update( Int frame )
 			{
 				TheAudio->addAudioEvent( &buttonClick );
 			}  // end if		
+			if(!m_isForward  )
+				break;
+			m_isFinished = TRUE;
 
 		}
+		break;
 	case REVERSESOUNDTRANSITION_END:
 		{
 			if(!m_isForward  )
@@ -2066,7 +2083,7 @@ void PushButtonImageDrawThree(GameWindow *window, Int alpha )
 	ICoord2D origin, size, start, end;
 	Int xOffset, yOffset;
 	Int i;
-	Int color = GameMakeColor(255,255,255,alpha);
+	Color color = GameMakeColor(255,255,255,alpha);
 	// get screen position and size
 	window->winGetScreenPosition( &origin.x, &origin.y );
 	window->winGetSize( &size.x, &size.y );
@@ -2177,8 +2194,8 @@ void PushButtonImageDrawThree(GameWindow *window, Int alpha )
 static void drawTypeText( GameWindow *window, DisplayString *str)
 {
 	TextData *tData = (TextData *)window->winGetUserData();
-	Int textColor = window->winGetEnabledTextColor();
-	Int textDropColor = window->winGetEnabledTextBorderColor();
+	Color textColor = window->winGetEnabledTextColor();
+	Color textDropColor = window->winGetEnabledTextBorderColor();
 	Int textWidth, textHeight, wordWrap;
 	DisplayString *text = tData->text;
 	ICoord2D origin, size, textPos;

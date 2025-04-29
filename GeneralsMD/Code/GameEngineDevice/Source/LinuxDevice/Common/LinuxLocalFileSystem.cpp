@@ -110,10 +110,12 @@ void getFileList([[maybe_unused]] const AsciiString& searchName, FilenameList & 
 
 void LinuxLocalFileSystem::getFileListInDirectory(const AsciiString&, const AsciiString& originalDirectory, const AsciiString& searchName, FilenameList & filenameList, Bool searchSubdirectories) const {
    const fs::path path{originalDirectory.str()};
-   if (searchSubdirectories) {
-      getFileList(searchName, filenameList, fs::recursive_directory_iterator{path});
-   } else {
-      getFileList(searchName, filenameList, fs::directory_iterator{path});
+   if (fs::exists(path)) {
+      if (searchSubdirectories) {
+         getFileList(searchName, filenameList, fs::recursive_directory_iterator{path});
+      } else {
+         getFileList(searchName, filenameList, fs::directory_iterator{path});
+      }
    }
 }
 

@@ -43,7 +43,7 @@
 // #include "Common/ThingTemplate.h"
 // #include "Common/Xfer.h"
 // #include "Common/GameLOD.h"
-// #include "GameClient/Anim2D.h"
+#include "GameClient/Anim2D.h"
 // #include "GameClient/CampaignManager.h"
 // #include "GameClient/ChallengeGenerals.h"
 // #include "GameClient/CommandXlat.h"
@@ -58,7 +58,7 @@
 // #include "GameClient/GlobalLanguage.h"
 // #include "GameClient/GraphDraw.h"
 // #include "GameClient/GUICommandTranslator.h"
-// #include "GameClient/HeaderTemplate.h"
+#include "GameClient/HeaderTemplate.h"
 // #include "GameClient/HintSpy.h"
 // #include "GameClient/HotKey.h"
 #include "GameClient/IMEManager.h"
@@ -93,6 +93,8 @@
 
 /// The GameClient singleton instance
 GameClient *TheGameClient = NULL;
+
+extern SDL_Renderer* renderer; // FIXME: Remove this once the InGameUI is sorted!
 
 //-------------------------------------------------------------------------------------------------
 GameClient::GameClient()
@@ -184,9 +186,9 @@ GameClient::~GameClient()
 	// delete TheIMEManager;
 	// TheIMEManager = NULL;
 
-	// // delete window manager
-	// delete TheWindowManager;
-	// TheWindowManager = NULL;
+	// delete window manager
+	delete TheWindowManager;
+	TheWindowManager = NULL;
 
 	// // delete the font library
 	// TheFontLibrary->reset();
@@ -208,8 +210,8 @@ GameClient::~GameClient()
 	delete TheDisplay;
 	TheDisplay = NULL;
 
-	// delete TheHeaderTemplateManager;
-	// TheHeaderTemplateManager = NULL;
+	delete TheHeaderTemplateManager;
+	TheHeaderTemplateManager = NULL;
 	
 	delete TheLanguageFilter;
 	TheLanguageFilter = NULL;
@@ -223,11 +225,11 @@ GameClient::~GameClient()
 	m_numTranslators = 0;
 	m_commandTranslator = NULL;
 
-	// delete TheAnim2DCollection;
-	// TheAnim2DCollection = NULL;	
+	delete TheAnim2DCollection;
+	TheAnim2DCollection = NULL;
 
-	// delete TheMappedImageCollection;
-	// TheMappedImageCollection = NULL;	
+	delete TheMappedImageCollection;
+	TheMappedImageCollection = NULL;
 	
 	delete TheKeyboard;
 	TheKeyboard = NULL;
@@ -275,14 +277,14 @@ void GameClient::init( void )
 	TheKeyboard->init();
 	TheKeyboard->setName("TheKeyboard");
 
-// 	// allocate and load image collection for the GUI and just load the 256x256 ones for now
-// 	TheMappedImageCollection = MSGNEW("GameClientSubsystem") ImageCollection;
-// 	TheMappedImageCollection->load( 512 );
+	// allocate and load image collection for the GUI and just load the 256x256 ones for now
+	TheMappedImageCollection = MSGNEW("GameClientSubsystem") ImageCollection;
+	TheMappedImageCollection->load( 512 );
 
-// 	// now that we have all the images loaded ... load any animation definitions from those images
-// 	TheAnim2DCollection = MSGNEW("GameClientSubsystem") Anim2DCollection;
-// 	TheAnim2DCollection->init();
-//  	TheAnim2DCollection->setName("TheAnim2DCollection");
+	// now that we have all the images loaded ... load any animation definitions from those images
+	TheAnim2DCollection = MSGNEW("GameClientSubsystem") Anim2DCollection;
+	TheAnim2DCollection->init();
+ 	TheAnim2DCollection->setName("TheAnim2DCollection");
 
 	// register message translators
 	if( TheMessageStream )
@@ -334,21 +336,21 @@ void GameClient::init( void )
  		TheDisplay->setName("TheDisplay");
 	}
 	
-// 	TheHeaderTemplateManager = MSGNEW("GameClientSubsystem") HeaderTemplateManager;
-// 	if(TheHeaderTemplateManager){
-// 		TheHeaderTemplateManager->init();
-// 	}
+	TheHeaderTemplateManager = MSGNEW("GameClientSubsystem") HeaderTemplateManager;
+	if(TheHeaderTemplateManager){
+		TheHeaderTemplateManager->init();
+	}
 
-	// // create the window manager
-	// TheWindowManager = createWindowManager();
-// 	if( TheWindowManager )
-// 	{
+	// create the window manager
+	TheWindowManager = createWindowManager();
+	if( TheWindowManager )
+	{
 
-// 		TheWindowManager->init();
-//  		TheWindowManager->setName("TheWindowManager");
-// //		TheWindowManager->initTestGUI();
+		TheWindowManager->init();
+ 		TheWindowManager->setName("TheWindowManager");
+		TheWindowManager->initTestGUI();
 
-// 	}  // end if
+	}  // end if
 
 // 	// create the IME manager
 // 	TheIMEManager = CreateIMEManagerInterface();
@@ -621,7 +623,7 @@ void GameClient::update( void )
 //       TheInGameUI->setCameraTrackingDrawable( FALSE );
 //   }
 
-	if(TheGlobalData->m_data.m_playIntro || TheGlobalData->m_data.m_afterIntro)
+	if (TheGlobalData->m_data.m_playIntro || TheGlobalData->m_data.m_afterIntro)
 	{
 		// redraw all views, update the GUI
 		{
@@ -630,17 +632,22 @@ void GameClient::update( void )
 		{
 			TheDisplay->UPDATE();
 		}
-		// return;
+
+		// update the video player
+		{
+			TheVideoPlayer->UPDATE();
+		}
+		return;
 	}
 
-// 	// update the window system itself
-// 	{
-// 		TheWindowManager->UPDATE();
-// 	}
-
-	// update the video player
+	// update the window system itself
 	{
-		TheVideoPlayer->UPDATE();
+		TheWindowManager->UPDATE();
+		// FIXME: Temporary fudge.  Should add the InGameUI, which does the repainting.
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+		TheWindowManager->winRepaint();
+		SDL_RenderPresent(renderer);
 	}
 
 // 	Bool freezeTime = TheTacticalView->isTimeFrozen() && !TheTacticalView->isCameraMovementFinished();

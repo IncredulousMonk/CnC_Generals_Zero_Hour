@@ -32,6 +32,8 @@ public:
    LinuxDisplay();
    virtual ~LinuxDisplay();
 
+   virtual void init();  ///< initialize or re-initialize the sytsem
+
    virtual void doSmartAssetPurgeAndPreload(const char* usageFileName);
 #if defined(_DEBUG) || defined(_INTERNAL)
    virtual void dumpAssetUsage(const char* mapname);
@@ -48,17 +50,17 @@ public:
    virtual void createLightPulse(const Coord3D* pos, const RGBColor* color, Real innerRadius, Real outerRadius, 
       UnsignedInt increaseFrameTime, UnsignedInt decayFrameTime);
    /// draw a line on the display in screen coordinates
-   virtual void drawLine(Int startX, Int startY, Int endX, Int endY, Real lineWidth, UnsignedInt lineColor);
+   virtual void drawLine(Int startX, Int startY, Int endX, Int endY, Real lineWidth, Color lineColor);
    /// draw a line on the display in screen coordinates
-   virtual void drawLine(Int startX, Int startY, Int endX, Int endY, Real lineWidth, UnsignedInt lineColor1, UnsignedInt lineColor2);
+   virtual void drawLine(Int startX, Int startY, Int endX, Int endY, Real lineWidth, Color lineColor1, Color lineColor2);
    /// draw a rect border on the display in pixel coordinates with the specified color
-   virtual void drawOpenRect(Int startX, Int startY, Int width, Int height, Real lineWidth, UnsignedInt lineColor);
+   virtual void drawOpenRect(Int startX, Int startY, Int width, Int height, Real lineWidth, Color lineColor);
    /// draw a filled rect on the display in pixel coords with the specified color
-   virtual void drawFillRect(Int startX, Int startY, Int width, Int height, UnsignedInt color);
+   virtual void drawFillRect(Int startX, Int startY, Int width, Int height, Color color);
    /// Draw a percentage of a rectangle, much like a clock (0 to x%)
-   virtual void drawRectClock(Int startX, Int startY, Int width, Int height, Int percent, UnsignedInt color);
+   virtual void drawRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color);
    /// Draw's the remaining percentage of a rectangle (x% to 100)
-   virtual void drawRemainingRectClock(Int startX, Int startY, Int width, Int height, Int percent, UnsignedInt color);
+   virtual void drawRemainingRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color);
    /// draw an image fit within the screen coordinates
    virtual void drawImage(const Image *image, Int startX, Int startY,
       Int endX, Int endY, Color color = 0xFFFFFFFF, DrawImageMode mode=DRAW_IMAGE_ALPHA);

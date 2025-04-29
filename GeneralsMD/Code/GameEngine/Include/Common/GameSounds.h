@@ -92,11 +92,11 @@ class SoundManager : public SubsystemInterface
 		
 
 	protected:
-		UnsignedInt m_num2DSamples;
-		UnsignedInt m_num3DSamples;
+		UnsignedInt m_num2DSamples {};
+		UnsignedInt m_num3DSamples {};
 
-		UnsignedInt m_numPlaying2DSamples;
-		UnsignedInt m_numPlaying3DSamples;
+		UnsignedInt m_numPlaying2DSamples {};
+		UnsignedInt m_numPlaying3DSamples {};
 };
 
 #endif // __COMMON_GAMESOUNDS_H_

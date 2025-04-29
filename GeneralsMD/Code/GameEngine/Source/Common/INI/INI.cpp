@@ -50,7 +50,7 @@
 // #include "GameClient/Color.h"
 // #include "GameClient/FXList.h"
 // #include "GameClient/GameText.h"
-// #include "GameClient/Image.h"
+#include "GameClient/Image.h"
 // #include "GameClient/ParticleSys.h"
 // #include "GameLogic/Armor.h"
 // #include "GameLogic/ExperienceTracker.h"
@@ -88,7 +88,7 @@ static const BlockParse theTypeTable[] =
 {
 	// FIXME: Uncomment these as they are added.
 // 	{ "AIData",							INI::parseAIDataDefinition },
-// 	{ "Animation",					INI::parseAnim2DDefinition },
+	{ "Animation",					INI::parseAnim2DDefinition },
 // 	{ "Armor",							INI::parseArmorDefinition },
 // 	{ "AudioEvent",					INI::parseAudioEventDefinition },
 // 	{ "AudioSettings",			INI::parseAudioSettingsDefinition },
@@ -102,7 +102,7 @@ static const BlockParse theTypeTable[] =
 // 	{ "ControlBarResizer",	INI::parseControlBarResizerDefinition },
 // 	{ "CrateData",					INI::parseCrateTemplateDefinition },
 // 	{ "Credits",						INI::parseCredits},
-// 	{ "WindowTransition",		INI::parseWindowTransitions},
+	{ "WindowTransition",		INI::parseWindowTransitions},
 // 	{ "DamageFX",						INI::parseDamageFXDefinition },
 // 	{ "DialogEvent",				INI::parseDialogDefinition },
 // 	{ "DrawGroupInfo",		INI::parseDrawGroupNumberDefinition },
@@ -114,7 +114,7 @@ static const BlockParse theTypeTable[] =
 // 	{ "Language",						INI::parseLanguageDefinition },
 // 	{ "MapCache",						INI::parseMapCacheDefinition },
 // 	{ "MapData",						INI::parseMapDataDefinition },
-// 	{ "MappedImage",				INI::parseMappedImageDefinition },
+	{ "MappedImage",				INI::parseMappedImageDefinition },
 // 	{ "MiscAudio",					INI::parseMiscAudio},
 	{ "Mouse",							INI::parseMouseDefinition },
 	{ "MouseCursor",				INI::parseMouseCursorDefinition },
@@ -141,7 +141,7 @@ static const BlockParse theTypeTable[] =
 	{ "Weather",	INI::parseWeatherDefinition},
 // 	{ "Weapon",							INI::parseWeaponTemplateDefinition },
 // 	{ "WebpageURL",					INI::parseWebpageURLDefinition },
-// 	{ "HeaderTemplate",			INI::parseHeaderTemplateDefinition },
+	{ "HeaderTemplate",			INI::parseHeaderTemplateDefinition },
 // 	{ "StaticGameLOD",			INI::parseStaticGameLODDefinition },
 // 	{ "DynamicGameLOD",			INI::parseDynamicGameLODDefinition },
 // 	{ "LODPreset",					INI::parseLODPreset },
@@ -228,7 +228,7 @@ void INI::loadDirectory( AsciiString dirName, Bool, INILoadType loadType, Xfer *
 	try
 	{
 		FilenameList filenameList;
-		dirName.concat('\\');
+		dirName.concat('/');
 		TheFileSystem->getFileListInDirectory(dirName, "*.ini", filenameList, TRUE);
 		// Load the INI files in the dir now, in a sorted order.  This keeps things the same between machines
 		// in a network game.
@@ -844,16 +844,13 @@ void INI::parseAndTranslateLabel( INI* ini, void * /*instance*/, void *store, co
 //-------------------------------------------------------------------------------------------------
 void INI::parseMappedImage( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseMappedImage not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// if( TheMappedImageCollection )
-	// {
-	// 	typedef const Image* ConstImagePtr;
-	// 	*(ConstImagePtr*)store = TheMappedImageCollection->findImageByName( AsciiString( token ) );
-	// }
+	if( TheMappedImageCollection )
+	{
+		typedef const Image* ConstImagePtr;
+		*(ConstImagePtr*)store = TheMappedImageCollection->findImageByName( AsciiString( token ) );
+	}
 	
 	//KM: If we are in the worldbuilder, we want to parse commandbuttons for informational purposes,
 	//but we don't care about the images -- because we never access them. In RTS/GUIEdit, they always

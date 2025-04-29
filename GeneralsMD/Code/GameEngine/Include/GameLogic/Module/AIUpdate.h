@@ -206,6 +206,10 @@ public:
   AIUpdateModuleData();
 	virtual ~AIUpdateModuleData();
 
+	// No copies allowed!
+	AIUpdateModuleData(const AIUpdateModuleData&) = delete;
+	AIUpdateModuleData& operator=(const AIUpdateModuleData&) = delete;
+
 	virtual Bool isAiModuleData() const { return true; }
 
 	const LocomotorTemplateVector* findLocomotorTemplateVector(LocomotorSetType t) const;
@@ -300,6 +304,10 @@ public:
 	AIUpdateInterface( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	AIUpdateInterface(const AIUpdateInterface&) = delete;
+	AIUpdateInterface& operator=(const AIUpdateInterface&) = delete;
+
 	virtual AIUpdateInterface* getAIUpdateInterface() { return this; }
 
 	// Disabled conditions to process (AI will still process held status)
@@ -334,7 +342,7 @@ public:
 
 	// this is present solely for some transports to override, so that they can land before 
 	// allowing people to exit...
-	virtual AIFreeToExitType getAiFreeToExit(const Object* exiter) const { return FREE_TO_EXIT; }
+	virtual AIFreeToExitType getAiFreeToExit(const Object* /*exiter*/) const { return FREE_TO_EXIT; }
 	
 	// this is present solely to allow some special-case things to override, like landed choppers.
 	virtual Bool isAllowedToAdjustDestination() const { return true; }
@@ -357,16 +365,16 @@ public:
 	virtual void aiDoCommand(const AICommandParms* parms);
 	
 	virtual const Coord3D *getGuardLocation( void ) const { return &m_locationToGuard;	}
-	virtual const ObjectID getGuardObject( void ) const { return m_objectToGuard; }
+	virtual ObjectID getGuardObject( void ) const { return m_objectToGuard; }
 	virtual const PolygonTrigger *getAreaToGuard( void ) const { return m_areaToGuard; }
 	virtual GuardTargetType getGuardTargetType() const { return m_guardTargetType[1]; }
 	virtual void clearGuardTargetType() { m_guardTargetType[1] = m_guardTargetType[0]; m_guardTargetType[0] = GUARDTARGET_NONE; }
 	virtual GuardMode getGuardMode() const { return m_guardMode; }
 
-	virtual Object* construct( const ThingTemplate *what, 
-														 const Coord3D *pos, Real angle, 
-														 Player *owningPlayer,
-														 Bool isRebuild ) { return NULL; }///< construct a building
+	virtual Object* construct( const ThingTemplate * /*what*/, 
+														 const Coord3D * /*pos*/, Real /*angle*/, 
+														 Player * /*owningPlayer*/,
+														 Bool /*isRebuild*/ ) { return NULL; }///< construct a building
 
 
 	void ignoreObstacle( const Object *obj );			///< tell the pathfinder to ignore the given object as an obstacle
@@ -384,12 +392,12 @@ public:
 		true target pos. This is primarily for the Aurora Bomber, which uses this technique to make itself "unhittable"
 		when in Supersonic Attack Mode -- things still target it, they just aim "behind" it!
 	*/
-	virtual Bool getSneakyTargetingOffset(Coord3D* offset) const { return false; }
+	virtual Bool getSneakyTargetingOffset(Coord3D* /*offset*/) const { return false; }
 
 	/**
 		Exists solely to be overridden by JetAIUpdate...
 	*/
-	virtual void addTargeter(ObjectID id, Bool add) { return; }
+	virtual void addTargeter(ObjectID /*id*/, Bool /*add*/) { return; }
 	virtual Bool isTemporarilyPreventingAimSuccess() const { return false; }
 
 	 
@@ -578,7 +586,7 @@ public:
 	ObjectID getCrateID(void) const { return m_crateCreated; }
 	Object* checkForCrateToPickup();
 
-	void setIgnoreCollisionTime(Int frames) { m_ignoreCollisionsUntil = TheGameLogic->getFrame() + frames; }
+	void setIgnoreCollisionTime(UnsignedInt frames) { m_ignoreCollisionsUntil = TheGameLogic->getFrame() + frames; }
 
 	void setQueueForPathTime(Int frames);
 

@@ -161,7 +161,7 @@ void ArchiveFile::getFileListInDirectory(const DetailedArchivedDirectoryInfo *di
 		const DetailedArchivedDirectoryInfo *tempDirInfo = &(diriter->second);
 		AsciiString tempdirname;
 		tempdirname = currentDirectory;
-		if ((tempdirname.getLength() > 0) && (!tempdirname.endsWith("\\"))) {
+		if ((tempdirname.getLength() > 0) && (!tempdirname.endsWith("\\")) && (!tempdirname.endsWith("/"))) {
 			tempdirname.concat('\\');
 		}
 		tempdirname.concat(tempDirInfo->m_directoryName);
@@ -174,7 +174,7 @@ void ArchiveFile::getFileListInDirectory(const DetailedArchivedDirectoryInfo *di
 		if (SearchStringMatches(fileiter->second.m_filename, searchName)) {
 			AsciiString tempfilename;
 			tempfilename = currentDirectory;
-			if ((tempfilename.getLength() > 0) && (!tempfilename.endsWith("\\"))) {
+			if ((tempfilename.getLength() > 0) && (!tempfilename.endsWith("\\")) && (!tempfilename.endsWith("/"))) {
 				tempfilename.concat('\\');
 			}
 			tempfilename.concat(fileiter->second.m_filename);

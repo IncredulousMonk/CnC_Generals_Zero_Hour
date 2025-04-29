@@ -39,6 +39,8 @@
 class SpecialPowerUpdateInterface
 {
 public:
+	virtual ~SpecialPowerUpdateInterface();
+
 	virtual Bool doesSpecialPowerUpdatePassScienceTest() const = 0;
 	virtual ScienceType getExtraRequiredScience() const = 0; //Does this object have more than one special power module with the same spTemplate?
 

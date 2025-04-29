@@ -57,7 +57,7 @@ enum Anim2DMode: int
 
 };
 #ifdef DEFINE_ANIM_2D_MODE_NAMES
-static char *Anim2DModeNames[] = 
+static const char *Anim2DModeNames[] = 
 {
 	"NONE",
 	"ONCE",
@@ -75,7 +75,7 @@ static char *Anim2DModeNames[] =
 // ------------------------------------------------------------------------------------------------
 class Anim2DTemplate : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Anim2DTemplate, "Anim2DTemplate")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Anim2DTemplate, "Anim2DTemplate")
 public:
 
 	Anim2DTemplate( AsciiString name );
@@ -85,16 +85,16 @@ public:
 	Anim2DTemplate(const Anim2DTemplate&) = delete;
 	Anim2DTemplate& operator=(const Anim2DTemplate&) = delete;
 
-	AsciiString getName( void ) const { return m_name; }
+	AsciiString getName( void ) const { return m_data.m_name; }
 	const Image *getFrame( UnsignedShort frameNumber ) const;
-	UnsignedShort getNumFrames( void ) const { return m_numFrames; }
-	UnsignedShort getNumFramesBetweenUpdates( void ) const { return m_framesBetweenUpdates; }
-	Anim2DMode getAnimMode( void ) const { return m_animMode; }
-	Bool isRandomizedStartFrame( void ) const { return m_randomizeStartFrame; }
+	UnsignedShort getNumFrames( void ) const { return m_data.m_numFrames; }
+	UnsignedShort getNumFramesBetweenUpdates( void ) const { return m_data.m_framesBetweenUpdates; }
+	Anim2DMode getAnimMode( void ) const { return m_data.m_animMode; }
+	Bool isRandomizedStartFrame( void ) const { return m_data.m_randomizeStartFrame; }
 
 	// list access for use by the Anim2DCollection only
-	void friend_setNextTemplate( Anim2DTemplate *animTemplate ) { m_nextTemplate = animTemplate; }
-	Anim2DTemplate *friend_getNextTemplate( void ) const { return m_nextTemplate; };
+	void friend_setNextTemplate( Anim2DTemplate *animTemplate ) { m_data.m_nextTemplate = animTemplate; }
+	Anim2DTemplate *friend_getNextTemplate( void ) const { return m_data.m_nextTemplate; };
 	
 	// INI methods
 	const FieldParse *getFieldParse( void ) const { return s_anim2DFieldParseTable; }
@@ -109,14 +109,22 @@ protected:
 
 protected:
 	enum { NUM_FRAMES_INVALID = 0 };			///< initialization value for num frames
+	friend class INI;
 
-	Anim2DTemplate*	m_nextTemplate;				///< next animation in collections animation list
-	AsciiString			m_name;										///< name of this 2D animation
-	const Image**		m_images;											///< array of image pointers that make up this animation
-	UnsignedShort		m_numFrames;						///< total number of frames in this animation
-	UnsignedShort		m_framesBetweenUpdates;	///< frames between frame updates
-	Anim2DMode			m_animMode;								///< the animation mode
-	Bool						m_randomizeStartFrame;						///< randomize animation instance start frames
+	// MG: Cannot apply offsetof to Anim2DTemplate, so had to move data into an embedded struct.
+	struct Data
+	{
+		Anim2DTemplate*	m_nextTemplate {};			///< next animation in collections animation list
+		AsciiString		m_name {};					///< name of this 2D animation
+		const Image**	m_images {};				///< array of image pointers that make up this animation
+		UnsignedShort	m_numFrames {};				///< total number of frames in this animation
+		UnsignedShort	m_framesBetweenUpdates {};	///< frames between frame updates
+		Anim2DMode		m_animMode {};				///< the animation mode
+		Bool			m_randomizeStartFrame {};	///< randomize animation instance start frames
+		Anim2DTemplate* m_obj {};					///< pointer to the parent object
+	};
+
+	Data m_data {};
 
 protected:
 	static const FieldParse s_anim2DFieldParseTable[];		///< the parse table for INI definition
@@ -127,8 +135,8 @@ protected:
 // ------------------------------------------------------------------------------------------------
 enum Anim2DStatus: int
 {
-	ANIM_2D_STATUS_NONE			= 0x00,
-	ANIM_2D_STATUS_FROZEN		= 0x01,
+	ANIM_2D_STATUS_NONE		= 0x00,
+	ANIM_2D_STATUS_FROZEN	= 0x01,
 	ANIM_2D_STATUS_REVERSED = 0x02,  // used for ping pong direction tracking
 	ANIM_2D_STATUS_COMPLETE = 0x04,	 // set when uni-directional things reach their last frame
 };
@@ -183,18 +191,18 @@ protected:
 
 	void tryNextFrame( void );						///< we've just drawn ... try to update our frame if necessary
 
-	UnsignedShort m_currentFrame;					///< current frame of our animation
-	UnsignedInt m_lastUpdateFrame;				///< last frame we updated on
-	Anim2DTemplate *m_template;						///< pointer back to the template that defines this animation
-	UnsignedByte m_status;								///< status bits (see Anim2DStatus)
-	UnsignedShort m_minFrame;							///< min animation frame used inclusively.
-	UnsignedShort m_maxFrame;							///< max animation frame used inclusively.
-	UnsignedInt m_framesBetweenUpdates;		///< duration between each frame.
-	Real m_alpha;
+	UnsignedShort m_currentFrame {};					///< current frame of our animation
+	UnsignedInt m_lastUpdateFrame {};				///< last frame we updated on
+	Anim2DTemplate *m_template {};						///< pointer back to the template that defines this animation
+	UnsignedByte m_status {};								///< status bits (see Anim2DStatus)
+	UnsignedShort m_minFrame {};							///< min animation frame used inclusively.
+	UnsignedShort m_maxFrame {};							///< max animation frame used inclusively.
+	UnsignedInt m_framesBetweenUpdates {};		///< duration between each frame.
+	Real m_alpha {};
 
-	Anim2DCollection *m_collectionSystem;	///< system collection (if any) we're registered with
-	Anim2D *m_collectionSystemNext;				///< system instance tracking list
-	Anim2D *m_collectionSystemPrev;				///< system instance tracking list
+	Anim2DCollection *m_collectionSystem {};	///< system collection (if any) we're registered with
+	Anim2D *m_collectionSystemNext {};				///< system instance tracking list
+	Anim2D *m_collectionSystemPrev {};				///< system instance tracking list
 
 };
 
@@ -227,8 +235,8 @@ public:
 
 protected:
 
-	Anim2DTemplate *m_templateList;				///< list of available animation templates
-	Anim2D *m_instanceList;								///< list of all the anim 2D instance we're tracking
+	Anim2DTemplate *m_templateList {};				///< list of available animation templates
+	Anim2D *m_instanceList {};								///< list of all the anim 2D instance we're tracking
 
 };
 

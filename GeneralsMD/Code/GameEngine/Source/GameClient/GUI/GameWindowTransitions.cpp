@@ -56,7 +56,7 @@
 //-----------------------------------------------------------------------------
 // USER INCLUDES //////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-#include "Gamelogic/GameLogic.h"
+// #include "GameLogic/GameLogic.h"
 #include "GameClient/GameWindowTransitions.h"
 #include "GameClient/GameWindow.h"
 #include "GameClient/GameWindowManager.h"
@@ -67,10 +67,10 @@ GameWindowTransitionsHandler *TheTransitionHandler = NULL;
 const FieldParse GameWindowTransitionsHandler::m_gameWindowTransitionsFieldParseTable[] = 
 {
 
-	{ "Window",		GameWindowTransitionsHandler::parseWindow,	NULL, NULL	},
-	{ "FireOnce",	INI::parseBool,															NULL, offsetof( TransitionGroup, m_fireOnce) 	},
+	{ "Window",		GameWindowTransitionsHandler::parseWindow,	NULL, 0	},
+	{ "FireOnce",	INI::parseBool,								NULL, offsetof( TransitionGroup::Data, m_fireOnce) 	},
 	
-	{ NULL,										NULL,													NULL, 0 }  // keep this last
+	{ NULL,			NULL,										NULL, 0 }  // keep this last
 
 };
 
@@ -97,7 +97,7 @@ void INI::parseWindowTransitions( INI* ini )
 	DEBUG_ASSERTCRASH( g, ("parseWindowTransitions: Unable to allocate group '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( g, TheTransitionHandler->getFieldParse() );
+	ini->initFromINI( &g->m_data, TheTransitionHandler->getFieldParse() );
 
 
 }
@@ -199,7 +199,7 @@ Bool TransitionWindow::isFinished( void )
 	return TRUE;
 }
 
-void TransitionWindow::reverse( Int totalFrames )
+void TransitionWindow::reverse( Int /*totalFrames*/ )
 {
 	//m_currentFrameDelay = totalFrames - (m_transition->getFrameLength() + m_frameDelay);
 	if(m_transition)
@@ -232,7 +232,8 @@ Int TransitionWindow::getTotalFrames( void )
 TransitionGroup::TransitionGroup( void )
 {
 	m_currentFrame = 0;
-	m_fireOnce = FALSE;
+	m_data.m_fireOnce = FALSE;
+	m_data.m_obj = this;
 }
 
 TransitionGroup::~TransitionGroup( void )
@@ -560,17 +561,17 @@ TransitionGroup *GameWindowTransitionsHandler::findGroup( AsciiString groupName 
 	return NULL;
 }
 
-void GameWindowTransitionsHandler::parseWindow( INI* ini, void *instance, void *store, const void *userData )
+void GameWindowTransitionsHandler::parseWindow( INI* ini, void *instance, void */*store*/, const void */*userData*/ )
 {
 	static const FieldParse myFieldParse[] = 
 		{
-			{ "WinName",				INI::parseAsciiString,		NULL,									offsetof( TransitionWindow, m_winName ) },
-      { "Style",					INI::parseLookupList,			TransitionStyleNames,	offsetof( TransitionWindow, m_style ) },
-			{ "FrameDelay",			INI::parseInt,						NULL,									offsetof( TransitionWindow, m_frameDelay ) },
-			{ NULL,							NULL,											NULL, 0 }  // keep this last
+			{ "WinName",		INI::parseAsciiString,	NULL,					offsetof( TransitionWindow, m_winName ) },
+			{ "Style",			INI::parseLookupList,	TransitionStyleNames,	offsetof( TransitionWindow, m_style ) },
+			{ "FrameDelay",		INI::parseInt,			NULL,					offsetof( TransitionWindow, m_frameDelay ) },
+			{ NULL,				NULL,					NULL, 0 }  // keep this last
 		};
 	TransitionWindow *transWin = NEW TransitionWindow;
 	ini->initFromINI(transWin, myFieldParse);
-	((TransitionGroup*)instance)->addWindow(transWin);
+	((TransitionGroup::Data*)instance)->m_obj->addWindow(transWin);
 }
 

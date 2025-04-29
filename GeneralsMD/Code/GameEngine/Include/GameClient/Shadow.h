@@ -38,7 +38,7 @@
 //
 
 // shadow bit flags, keep this in sync with TheShadowNames
-enum ShadowType
+enum ShadowType: int
 {
 	SHADOW_NONE											=	0x00000000, 
 	SHADOW_DECAL										=	0x00000001,		//shadow decal applied via modulate blend
@@ -73,7 +73,7 @@ class Shadow
 {
 
 public:
-		
+
 		struct	ShadowTypeInfo
 		{	
 				char	m_ShadowName[64];	//when set, overrides the default model shadow (used mostly for Decals).
@@ -86,7 +86,8 @@ public:
 				Real	m_offsetY;			//world shift along y axis
 		};
 
-		Shadow(void) : m_diffuse(0xffffffff), m_color(0xffffffff), m_opacity (0x000000ff), m_localAngle(0.0f) {}
+		Shadow(void) : m_opacity (0x000000ff), m_color(0xffffffff), m_diffuse(0xffffffff), m_localAngle(0.0f) {}
+		virtual ~Shadow();
 
 		///<if this is set, then no render will occur, even if enableShadowRender() is enabled. Used by Shroud.
 		void enableShadowInvisible(Bool isEnabled);	
@@ -122,18 +123,18 @@ public:
 
 protected:
 
-		Bool m_isEnabled;	/// toggle to turn rendering of this shadow on/off.
-		Bool m_isInvisibleEnabled;	/// if set, overrides and causes no rendering.
-		UnsignedInt m_opacity;		///< value between 0 (transparent) and 255 (opaque)
-		UnsignedInt m_color;		///< color in ARGB format. (Alpha is ignored).
-		ShadowType m_type;		/// type of projection
-		Int		m_diffuse;		/// diffuse color used to tint/fade shadow.
-		Real	m_x,m_y,m_z;	/// world position of shadow center when not bound to robj/drawable.
-		Real	m_oowDecalSizeX;		/// 1/(world space extent of texture in x direction)
-		Real	m_oowDecalSizeY;		/// 1/(world space extent of texture in y direction)
-		Real	m_decalSizeX;		/// 1/(world space extent of texture in x direction)
-		Real	m_decalSizeY;		/// 1/(world space extent of texture in y direction)
-		Real	m_localAngle;		/// yaw or rotation around z-axis of shadow image when not bound to robj/drawable.
+		Bool m_isEnabled {};	/// toggle to turn rendering of this shadow on/off.
+		Bool m_isInvisibleEnabled {};	/// if set, overrides and causes no rendering.
+		UnsignedInt m_opacity {};		///< value between 0 (transparent) and 255 (opaque)
+		Color m_color {};		///< color in ARGB format. (Alpha is ignored).
+		ShadowType m_type {};		/// type of projection
+		Color	m_diffuse {};		/// diffuse color used to tint/fade shadow.
+		Real	m_x {},m_y {},m_z {};	/// world position of shadow center when not bound to robj/drawable.
+		Real	m_oowDecalSizeX {};		/// 1/(world space extent of texture in x direction)
+		Real	m_oowDecalSizeY {};		/// 1/(world space extent of texture in y direction)
+		Real	m_decalSizeX {};		/// 1/(world space extent of texture in x direction)
+		Real	m_decalSizeY {};		/// 1/(world space extent of texture in y direction)
+		Real	m_localAngle {};		/// yaw or rotation around z-axis of shadow image when not bound to robj/drawable.
 };
 
 
@@ -153,11 +154,12 @@ inline void Shadow::enableShadowInvisible(Bool isEnabled)
 ///@todo: Pull these out so casting, etc. is only done for visible decals.
 inline void Shadow::setOpacity(Int value)
 {
-	m_opacity=value;
+	UnsignedInt uvalue = static_cast<UnsignedInt>(value);
+	m_opacity = uvalue;
 
 	if (m_type & SHADOW_ALPHA_DECAL)
 	{
-		m_diffuse = (m_color & 0x00ffffff) + (value << 24);
+		m_diffuse = (m_color & 0x00ffffff) + (uvalue << 24);
 //		m_diffuse = m_color | (value << 24);ML changed
 	}
 	else
@@ -165,9 +167,9 @@ inline void Shadow::setOpacity(Int value)
 		if (m_type & SHADOW_ADDITIVE_DECAL)
 		{
 			Real fvalue=(Real)m_opacity/255.0f;
-			m_diffuse=REAL_TO_INT(((Real)(m_color & 0xff) * fvalue))
-					|REAL_TO_INT(((Real)((m_color >> 8) & 0xff) * fvalue))
-					|REAL_TO_INT(((Real)((m_color >> 16) & 0xff) * fvalue));
+			m_diffuse=REAL_TO_UNSIGNEDINT(((Real)(m_color & 0xff) * fvalue))
+					|REAL_TO_UNSIGNEDINT(((Real)((m_color >> 8) & 0xff) * fvalue))
+					|REAL_TO_UNSIGNEDINT(((Real)((m_color >> 16) & 0xff) * fvalue));
 		}
 	}
 }
@@ -185,9 +187,9 @@ inline void Shadow::setColor(Color value)
 		if (m_type & SHADOW_ADDITIVE_DECAL)
 		{
 			Real fvalue=(Real)m_opacity/255.0f;
-			m_diffuse=REAL_TO_INT(((Real)(m_color & 0xff) * fvalue))
-					|REAL_TO_INT(((Real)((m_color >> 8) & 0xff) * fvalue))
-					|REAL_TO_INT(((Real)((m_color >> 16) & 0xff) * fvalue));
+			m_diffuse=REAL_TO_UNSIGNEDINT(((Real)(m_color & 0xff) * fvalue))
+					|REAL_TO_UNSIGNEDINT(((Real)((m_color >> 8) & 0xff) * fvalue))
+					|REAL_TO_UNSIGNEDINT(((Real)((m_color >> 16) & 0xff) * fvalue));
 		}
 	}
 }

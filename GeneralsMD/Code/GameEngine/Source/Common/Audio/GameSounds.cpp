@@ -44,16 +44,16 @@
 //----------------------------------------------------------------------------
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Lib/Basetype.h"
+#include "Lib/BaseType.h"
 #include "Common/GameSounds.h"
 
 #include "Common/AudioEventInfo.h"
 #include "Common/AudioEventRTS.h"
 #include "Common/AudioRequest.h"
-#include "Common/Player.h"
-#include "Common/PlayerList.h"
+// #include "Common/Player.h"
+// #include "Common/PlayerList.h"
 
-#include "GameLogic/PartitionManager.h"
+// #include "GameLogic/PartitionManager.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef _INTERNAL
@@ -112,19 +112,19 @@ void SoundManager::regainFocus( void )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SoundManager::setListenerPosition( const Coord3D *position )
+void SoundManager::setListenerPosition( const Coord3D * /*position*/ )
 {
 
 }
 
 //-------------------------------------------------------------------------------------------------
-void SoundManager::setViewRadius( Real viewRadius )
+void SoundManager::setViewRadius( Real /*viewRadius*/ )
 {
 
 }
 
 //-------------------------------------------------------------------------------------------------
-void SoundManager::setCameraAudibleDistance( Real audibleDistance )
+void SoundManager::setCameraAudibleDistance( Real /*audibleDistance*/ )
 {
 
 }
@@ -187,17 +187,17 @@ void SoundManager::notifyOf3DSampleCompletion( void )
 //-------------------------------------------------------------------------------------------------
 Int SoundManager::getAvailableSamples( void )
 {
-	return (m_num2DSamples - m_numPlaying2DSamples);
+	return static_cast<Int>(m_num2DSamples - m_numPlaying2DSamples);
 }
 
 //-------------------------------------------------------------------------------------------------
 Int SoundManager::getAvailable3DSamples( void )
 {
-	return (m_num3DSamples - m_numPlaying3DSamples);
+	return static_cast<Int>(m_num3DSamples - m_numPlaying3DSamples);
 }
 
 //-------------------------------------------------------------------------------------------------
-AsciiString SoundManager::getFilenameForPlayFromAudioEvent( const AudioEventRTS *eventToGetFrom )
+AsciiString SoundManager::getFilenameForPlayFromAudioEvent( const AudioEventRTS * /*eventToGetFrom*/ )
 {
 	return AsciiString::TheEmptyString;
 }
@@ -231,16 +231,17 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 #endif
 				return false;
 			}
-			
-			Int localPlayerNdx = ThePlayerList->getLocalPlayer()->getPlayerIndex();
-			if( (event->getAudioEventInfo()->m_type & ST_SHROUDED) && 
-					 ThePartitionManager->getShroudStatusForPlayer(localPlayerNdx, pos) != CELLSHROUD_CLEAR ) 
-			{
-#ifdef INTENSIVE_AUDIO_DEBUG
-				DEBUG_LOG(("- culled due to shroud.\n"));
-#endif
-				return false;
-			}
+
+// FIXME: ThePlayerList
+// 			Int localPlayerNdx = ThePlayerList->getLocalPlayer()->getPlayerIndex();
+// 			if( (event->getAudioEventInfo()->m_type & ST_SHROUDED) && 
+// 					 ThePartitionManager->getShroudStatusForPlayer(localPlayerNdx, pos) != CELLSHROUD_CLEAR ) 
+// 			{
+// #ifdef INTENSIVE_AUDIO_DEBUG
+// 				DEBUG_LOG(("- culled due to shroud.\n"));
+// #endif
+// 				return false;
+// 			}
 		} 
 	}
 

@@ -31,7 +31,7 @@
 #ifndef _AI_STATE_MACHINE_H_
 #define _AI_STATE_MACHINE_H_
 
-#include "Lib/Basetype.h"
+#include "Lib/BaseType.h"
 
 #include "Common/AudioEventRTS.h"
 #include "Common/GameMemory.h"
@@ -140,6 +140,10 @@ public:
 	 * used by this machine.
 	 */
 	AIStateMachine( Object *owner, AsciiString name );
+
+	// No copies allowed!
+	AIStateMachine(const AIStateMachine&) = delete;
+	AIStateMachine& operator=(const AIStateMachine&) = delete;
 
 	virtual void clear();
 	virtual StateReturnType resetToDefaultState();
@@ -281,7 +285,7 @@ protected:
 	void forceRepath()
 	{
 		m_pathGoalPosition.x = m_pathGoalPosition.y = m_pathGoalPosition.z = -100.0f;
-		m_pathTimestamp = -MIN_REPATH_TIME;
+		m_pathTimestamp = 0; // -MIN_REPATH_TIME;   MG: This makes no sense!
 	}
 
 private:
@@ -296,18 +300,18 @@ protected:
 private:
 	enum { MIN_REPATH_TIME = 10 };										///< minimum # of frames must elapse before re-pathing
 protected:
-	Coord3D							m_goalPosition;											///< the goal position to move to
-	PathfindLayerEnum		m_goalLayer;										///< The layer we are moving towards.
-	Coord3D				m_pathGoalPosition;									///< the position our current path leads to
+	Coord3D							m_goalPosition {};											///< the goal position to move to
+	PathfindLayerEnum		m_goalLayer {};										///< The layer we are moving towards.
+	Coord3D				m_pathGoalPosition {};									///< the position our current path leads to
 private:
-	AudioHandle		m_ambientPlayingHandle;							///< Audio handle for the looping sound that we may play.
-	UnsignedInt		m_pathTimestamp;										///< time of last pathfind
-	UnsignedInt		m_blockedRepathTimestamp;						///< time of last blocked pathfind
-	Bool					m_adjustDestinations;								///< Adjust destinations to avoid stacking units on top of each other.  Normally true, but 
+	AudioHandle		m_ambientPlayingHandle {};							///< Audio handle for the looping sound that we may play.
+	UnsignedInt		m_pathTimestamp {};										///< time of last pathfind
+	UnsignedInt		m_blockedRepathTimestamp {};						///< time of last blocked pathfind
+	Bool					m_adjustDestinations {};								///< Adjust destinations to avoid stacking units on top of each other.  Normally true, but 
 																										//   occasionally false for things like car bombs.
 protected:
-	Bool					m_waitingForPath;										///< If we are waiting for a path.
-	Bool					m_tryOneMoreRepath;									///< If true, after we complete movement do another compute path.
+	Bool					m_waitingForPath {};										///< If we are waiting for a path.
+	Bool					m_tryOneMoreRepath {};									///< If true, after we complete movement do another compute path.
 };
 EMPTY_DTOR(AIInternalMoveToState)
 
@@ -346,12 +350,12 @@ class AIBusyState : public State
 public:
 	AIBusyState( StateMachine *machine ) : State( machine, "AIBusyState" ) { }
 	virtual StateReturnType onEnter() { return STATE_CONTINUE; }
-	virtual void onExit( StateExitType status ) { }
+	virtual void onExit( StateExitType /*status*/ ) { }
 	virtual StateReturnType update() { return STATE_CONTINUE; }
 	virtual Bool isBusy(void) const { return true; }
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 
@@ -415,8 +419,8 @@ public:
 	virtual StateReturnType update();
 protected:
 	virtual Bool computePath();												///< compute the path
-	Int m_okToRepathTimes; 
-	Bool m_checkForPath;
+	Int m_okToRepathTimes {};
+	Bool m_checkForPath {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -480,13 +484,13 @@ private:
 
 	StateReturnType updateInternal( void );
 
-	Coord3D				m_prevVictimPos;									///< Where we think our victim is
-	UnsignedInt		m_approachTimestamp;							///< When we last computed an approach goal
-	Bool					m_follow;													///< If true, follow object until it dies
-	Bool					m_isAttackingObject;							///< If false, attacking position
-	Bool					m_stopIfInRange;									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
-	Bool					m_isInitialApproach;							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
-	Bool					m_isForceAttacking;
+	Coord3D				m_prevVictimPos {};									///< Where we think our victim is
+	UnsignedInt		m_approachTimestamp {};							///< When we last computed an approach goal
+	Bool					m_follow {};													///< If true, follow object until it dies
+	Bool					m_isAttackingObject {};							///< If false, attacking position
+	Bool					m_stopIfInRange {};									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
+	Bool					m_isInitialApproach {};							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
+	Bool					m_isForceAttacking {};
 };
 EMPTY_DTOR(AIAttackApproachTargetState)
 
@@ -500,12 +504,12 @@ class AIAttackPursueTargetState : public AIInternalMoveToState
 public:
 	AIAttackPursueTargetState( StateMachine *machine, Bool follow, Bool attackingObject, Bool forceAttacking ) : 
 		AIInternalMoveToState( machine, "AIAttackPursueTargetState" ), 
+		m_approachTimestamp(0),
 		m_follow(follow),
 		m_isAttackingObject(attackingObject),
+		m_stopIfInRange(false),
 		m_isInitialApproach(true),
-		m_isForceAttacking(forceAttacking),
-		m_approachTimestamp(0),
-		m_stopIfInRange(false)
+		m_isForceAttacking(forceAttacking)
 	{ 
 		// we're setting m_isInitialApproach to true in the constructor because we want the first pass 
 		// through this state to allow a unit to attack incidental targets (if it is turreted)
@@ -529,13 +533,13 @@ private:
 
 	StateReturnType updateInternal( void );
 
-	Coord3D				m_prevVictimPos;									///< Where we think our victim is
-	UnsignedInt		m_approachTimestamp;							///< When we last computed an approach goal
-	Bool					m_follow;													///< If true, follow object until it dies
-	Bool					m_isAttackingObject;							///< If false, attacking position
-	Bool					m_stopIfInRange;									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
-	Bool					m_isInitialApproach;							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
-	Bool					m_isForceAttacking;
+	Coord3D				m_prevVictimPos {};									///< Where we think our victim is
+	UnsignedInt		m_approachTimestamp {};							///< When we last computed an approach goal
+	Bool					m_follow {};													///< If true, follow object until it dies
+	Bool					m_isAttackingObject {};							///< If false, attacking position
+	Bool					m_stopIfInRange {};									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
+	Bool					m_isInitialApproach {};							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
+	Bool					m_isForceAttacking {};
 };
 EMPTY_DTOR(AIAttackPursueTargetState)
 
@@ -560,7 +564,7 @@ protected:
 	virtual Bool computePath();												///< compute the path
 
 private:
-	Int			m_delayCounter;
+	Int			m_delayCounter {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -579,6 +583,10 @@ EMPTY_DTOR(AIPickUpCrateState)
 public:
 	AIAttackMoveToState( StateMachine *machine );
 	//virtual ~AIAttackMoveToState();
+
+	// No copies allowed!
+	AIAttackMoveToState(const AIAttackMoveToState&) = delete;
+	AIAttackMoveToState& operator=(const AIAttackMoveToState&) = delete;
 
 	virtual Bool isAttack() const { return m_attackMoveMachine ? m_attackMoveMachine->isInAttackState() : FALSE; }
 	virtual StateReturnType onEnter();
@@ -610,17 +618,21 @@ class AIFollowWaypointPathState : public AIInternalMoveToState
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIFollowWaypointPathState, "AIFollowWaypointPathState")		
 public:
-	AIFollowWaypointPathState( StateMachine *machine, Bool asGroup ) : m_isFollowWaypointPathState(true), 
-		m_moveAsGroup(asGroup), AIInternalMoveToState( machine, "AIFollowWaypointPathState" ) 
+	AIFollowWaypointPathState( StateMachine *machine, Bool asGroup ) : 
+		AIInternalMoveToState( machine, "AIFollowWaypointPathState" ), m_moveAsGroup(asGroup), m_isFollowWaypointPathState(true)
 	{
 		m_angle = 0.0f;
 	}
 	AIFollowWaypointPathState( StateMachine *machine, Bool asGroup, Bool isFollow) : 
-		m_isFollowWaypointPathState(isFollow), m_moveAsGroup(asGroup), AIInternalMoveToState( machine, 
-																"AIFollowWaypointPathState" ) 
+		AIInternalMoveToState( machine, "AIFollowWaypointPathState" ), m_moveAsGroup(asGroup), m_isFollowWaypointPathState(isFollow)
 	{
 		m_angle = 0.0f;
 	}
+
+	// No copies allowed!
+	AIFollowWaypointPathState(const AIFollowWaypointPathState&) = delete;
+	AIFollowWaypointPathState& operator=(const AIFollowWaypointPathState&) = delete;
+
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
 	virtual StateReturnType update();
@@ -632,14 +644,14 @@ protected:
 	virtual void loadPostProcess();
 
 protected:
-	Coord2D m_groupOffset;
-	Real		m_angle;
-	Int  m_framesSleeping;
-	const Waypoint *m_currentWaypoint;
-	const Waypoint *m_priorWaypoint;
-	Bool m_appendGoalPosition;
+	Coord2D m_groupOffset {};
+	Real		m_angle {};
+	Int  m_framesSleeping {};
+	const Waypoint *m_currentWaypoint {};
+	const Waypoint *m_priorWaypoint {};
+	Bool m_appendGoalPosition {};
 
-	const Bool m_moveAsGroup;
+	const Bool m_moveAsGroup {};
 	// this is necessary because we derive from FollowWaypointPathState, but we do not want to incur the 
 	// expense of checking RTTI to determine whether we are actually a FollowWaypointPathState or not
 	const Bool m_isFollowWaypointPathState;	// derived classes should set this false.
@@ -660,9 +672,16 @@ class AIFollowWaypointPathExactState : public AIInternalMoveToState
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIFollowWaypointPathExactState, "AIFollowWaypointPathExactState")		
 public:
-	AIFollowWaypointPathExactState( StateMachine *machine, Bool asGroup ) : m_moveAsGroup(asGroup), 
-		m_lastWaypoint(NULL),
-		AIInternalMoveToState( machine, "AIFollowWaypointPathExactState" ) { }
+	AIFollowWaypointPathExactState( StateMachine *machine, Bool asGroup ) 
+		: AIInternalMoveToState( machine, "AIFollowWaypointPathExactState" ) 
+		, m_lastWaypoint(NULL)
+		, m_moveAsGroup(asGroup)
+		{ }
+
+	// No copies allowed!
+	AIFollowWaypointPathExactState(const AIFollowWaypointPathExactState&) = delete;
+	AIFollowWaypointPathExactState& operator=(const AIFollowWaypointPathExactState&) = delete;
+
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
 	virtual StateReturnType update();
@@ -674,8 +693,8 @@ protected:
 	virtual void loadPostProcess();
 
 protected:
-	const Waypoint *m_lastWaypoint;
-	const Bool m_moveAsGroup;
+	const Waypoint *m_lastWaypoint {};
+	const Bool m_moveAsGroup {};
 };
 EMPTY_DTOR(AIFollowWaypointPathExactState)
 
@@ -689,6 +708,10 @@ class AIAttackFollowWaypointPathState : public AIFollowWaypointPathState
 public:
 	AIAttackFollowWaypointPathState( StateMachine *machine, Bool asGroup );
 	//virtual ~AIAttackFollowWaypointPathState();
+
+	// No copies allowed!
+	AIAttackFollowWaypointPathState(const AIAttackFollowWaypointPathState&) = delete;
+	AIAttackFollowWaypointPathState& operator=(const AIAttackFollowWaypointPathState&) = delete;
 	
 	virtual Bool isAttack() const { return m_attackFollowMachine ? m_attackFollowMachine->isInAttackState() : FALSE; }
 
@@ -736,8 +759,8 @@ protected:
 	virtual void loadPostProcess();
 
 protected:
-	Int		m_waitFrames;
-	Int		m_timer;
+	Int		m_waitFrames {};
+	Int		m_timer {};
 };
 EMPTY_DTOR(AIWanderState)
 
@@ -767,9 +790,9 @@ protected:
 
 protected:
 	void computeWanderGoal();
-	Coord3D m_origin;									///< The point we're wandering around.	
-	Int		m_waitFrames;
-	Int		m_timer;
+	Coord3D m_origin {};									///< The point we're wandering around.	
+	Int		m_waitFrames {};
+	Int		m_timer {};
 };
 EMPTY_DTOR(AIWanderInPlaceState)
 
@@ -797,8 +820,8 @@ protected:
 	virtual void loadPostProcess();
 
 protected:
-	Int		m_waitFrames;
-	Int		m_timer;
+	Int		m_waitFrames {};
+	Int		m_timer {};
 };
 EMPTY_DTOR(AIPanicState)
 
@@ -811,12 +834,13 @@ class AIFollowPathState : public AIInternalMoveToState
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIFollowPathState, "AIFollowPathState")		
 public:
-	AIFollowPathState( StateMachine *machine, AsciiString name = "AIFollowPathState" ) : 
-		m_adjustFinal(true), 
-		m_adjustFinalOverride(false),
-		m_index(0),
-		m_retryCount(10),
-		AIInternalMoveToState( machine, name ) { }
+	AIFollowPathState( StateMachine *machine, AsciiString name = "AIFollowPathState" )
+		: AIInternalMoveToState( machine, name )
+		, m_index(0)
+		, m_adjustFinal(true)
+		, m_adjustFinalOverride(false)
+		, m_retryCount(10)
+		{ }
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
 	virtual StateReturnType update();
@@ -834,10 +858,10 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	Int m_index;																		///< current path index	
-	Bool m_adjustFinal;
-	Bool m_adjustFinalOverride;
-	Int m_retryCount;
+	Int m_index {};																		///< current path index	
+	Bool m_adjustFinal {};
+	Bool m_adjustFinalOverride {};
+	Int m_retryCount {};
 };
 EMPTY_DTOR(AIFollowPathState)
 
@@ -863,7 +887,7 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	Coord3D m_origin;													///< current position - set as goal on exit in case we follow with MoveToAndDelete.	
+	Coord3D m_origin {};													///< current position - set as goal on exit in case we follow with MoveToAndDelete.	
 };
 EMPTY_DTOR(AIMoveAndEvacuateState)
 
@@ -889,7 +913,7 @@ protected:
 	virtual void loadPostProcess();
 
 protected:
-	Bool m_appendGoalPosition;
+	Bool m_appendGoalPosition {};
 };
 EMPTY_DTOR(AIMoveAndDeleteState)
 
@@ -902,8 +926,8 @@ public:
 		State( machine, "AIAttackAimAtTargetState" ),
 		m_isAttackingObject(attackingObject),
 		m_canTurnInPlace(false),
-		m_isForceAttacking(forceAttacking),
-		m_setLocomotor(false)
+		m_setLocomotor(false),
+		m_isForceAttacking(forceAttacking)
 	{ 
 	}
 	virtual Bool isAttack() const { return TRUE; }
@@ -916,10 +940,10 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess();
 private:
-	const Bool m_isAttackingObject;
-	Bool m_canTurnInPlace;
-	Bool m_setLocomotor;
-	Bool m_isForceAttacking;
+	const Bool m_isAttackingObject {};
+	Bool m_canTurnInPlace {};
+	Bool m_setLocomotor {};
+	Bool m_isForceAttacking {};
 };
 EMPTY_DTOR(AIAttackAimAtTargetState)
 
@@ -932,7 +956,7 @@ public:
 	virtual StateReturnType update();
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };
@@ -942,6 +966,7 @@ EMPTY_DTOR(AIWaitState)
 class NotifyWeaponFiredInterface	// an ABC
 {
 public:
+	virtual ~NotifyWeaponFiredInterface();
 	virtual void notifyFired() = 0;
 	virtual void notifyNewVictimChosen(Object* victim) = 0;
 	virtual Bool isWeaponSlotOkToFire(WeaponSlotType wslot) const = 0;
@@ -959,13 +984,18 @@ public:
 		m_att(att) 
 	{ 
 	}
+
+	// No copies allowed!
+	AIAttackFireWeaponState(const AIAttackFireWeaponState&) = delete;
+	AIAttackFireWeaponState& operator=(const AIAttackFireWeaponState&) = delete;
+
 	virtual Bool isAttack() const { return TRUE; }
 	virtual StateReturnType update();
 	virtual void onExit( StateExitType status );
 	virtual StateReturnType onEnter();
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 private:
@@ -977,6 +1007,7 @@ EMPTY_DTOR(AIAttackFireWeaponState)
 class AttackExitConditionsInterface
 {
 public:
+	virtual ~AttackExitConditionsInterface();
 	virtual Bool shouldExit(const StateMachine* machine) const = 0;
 };
 
@@ -989,6 +1020,10 @@ public:
 	AIAttackState( StateMachine *machine, Bool follow, Bool attackingObject, Bool forceAttacking, AttackExitConditionsInterface* attackParameters);
 	//~AIAttackState();
 
+	// No copies allowed!
+	AIAttackState(const AIAttackState&) = delete;
+	AIAttackState& operator=(const AIAttackState&) = delete;
+
 	virtual Bool isAttack() const { return TRUE; }
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
@@ -997,7 +1032,7 @@ public:
 	virtual void notifyFired() { /* nothing */ }
 	virtual void notifyNewVictimChosen(Object* victim);
 	virtual const Coord3D* getOriginalVictimPos() const { return &m_originalVictimPos; }
-	virtual Bool isWeaponSlotOkToFire(WeaponSlotType wslot) const { return true; }
+	virtual Bool isWeaponSlotOkToFire(WeaponSlotType /*wslot*/) const { return true; }
 	virtual Bool isAttackingObject() const { return m_isAttackingObject; } 
 	virtual Bool isForceAttacking() const { return m_isForceAttacking; }
 #ifdef STATE_MACHINE_DEBUG
@@ -1029,9 +1064,13 @@ class AIAttackSquadState : public State
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIAttackSquadState, "AIAttackSquadState")		
 public:
-	AIAttackSquadState( StateMachine *machine, AttackExitConditionsInterface *attackParameters = NULL) : 
+	AIAttackSquadState( StateMachine *machine, AttackExitConditionsInterface * /*attackParameters = NULL*/) : 
 			State( machine , "AIAttackSquadState") {	}
 	//~AIAttackSquadState();
+
+	// No copies allowed!
+	AIAttackSquadState(const AIAttackSquadState&) = delete;
+	AIAttackSquadState& operator=(const AIAttackSquadState&) = delete;
 
 	virtual Bool isAttack() const { return m_attackSquadMachine ? m_attackSquadMachine->isInAttackState() : FALSE; }
 	virtual StateReturnType onEnter( void );
@@ -1050,7 +1089,7 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	StateMachine *m_attackSquadMachine;						///< state sub-machine for attack behavior
+	StateMachine *m_attackSquadMachine {};						///< state sub-machine for attack behavior
 };
 
 //-----------------------------------------------------------------------------------------------------------
@@ -1064,7 +1103,7 @@ public:
 	virtual void onExit( StateExitType status );
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };
@@ -1077,6 +1116,11 @@ class AIDockState : public State
 public:
 	AIDockState( StateMachine *machine ) : State( machine, "AIDockState" ), m_dockMachine(NULL), m_usingPrecisionMovement(FALSE) { }
 	//~AIDockState();
+
+	// No copies allowed!
+	AIDockState(const AIDockState&) = delete;
+	AIDockState& operator=(const AIDockState&) = delete;
+
 	virtual Bool isAttack() const { return m_dockMachine ? m_dockMachine->isInAttackState() : FALSE; }
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
@@ -1103,7 +1147,7 @@ class AIEnterState : public AIInternalMoveToState
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIEnterState, "AIEnterState")		
 protected:
-	ObjectID m_entryToClear;
+	ObjectID m_entryToClear {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -1122,7 +1166,7 @@ class AIExitState : public State
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIExitState, "AIExitState")		
 protected:
-	ObjectID m_entryToClear;
+	ObjectID m_entryToClear {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -1141,7 +1185,7 @@ class AIExitInstantlyState : public State
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIExitInstantlyState, "AIExitInstantlyState")		
 protected:
-	ObjectID m_entryToClear;
+	ObjectID m_entryToClear {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -1169,6 +1213,11 @@ public:
 		m_guardMachine = NULL;
 	}
 	//~AIGuardState();
+
+	// No copies allowed!
+	AIGuardState(const AIGuardState&) = delete;
+	AIGuardState& operator=(const AIGuardState&) = delete;
+
 	virtual Bool isAttack() const;
 	virtual Bool isGuardIdle() const;
 	virtual StateReturnType onEnter();
@@ -1184,7 +1233,7 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	AIGuardMachine *m_guardMachine;					///< state sub-machine for guard behavior
+	AIGuardMachine *m_guardMachine {};					///< state sub-machine for guard behavior
 };
 
 //-----------------------------------------------------------------------------------------------------------
@@ -1197,6 +1246,11 @@ class AIGuardRetaliateState : public State
 public:
 	AIGuardRetaliateState( StateMachine *machine ) : State( machine, "AIGuardRetaliateState" ), m_guardRetaliateMachine(NULL) {}
 	//~AIGuardRetaliateState();
+
+	// No copies allowed!
+	AIGuardRetaliateState(const AIGuardRetaliateState&) = delete;
+	AIGuardRetaliateState& operator=(const AIGuardRetaliateState&) = delete;
+
 	virtual Bool isAttack() const;
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
@@ -1227,6 +1281,11 @@ public:
 		m_guardMachine = NULL;
 	}
 	//~AIGuardState();
+
+	// No copies allowed!
+	AITunnelNetworkGuardState(const AITunnelNetworkGuardState&) = delete;
+	AITunnelNetworkGuardState& operator=(const AITunnelNetworkGuardState&) = delete;
+
 	virtual Bool isAttack() const;
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
@@ -1257,6 +1316,11 @@ public:
 		m_nextEnemyScanTime = 0;
 	}
 	//~AIHuntState();
+
+	// No copies allowed!
+	AIHuntState(const AIHuntState&) = delete;
+	AIHuntState& operator=(const AIHuntState&) = delete;
+
 	virtual Bool isAttack() const;
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
@@ -1272,8 +1336,8 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	StateMachine* m_huntMachine;					///< state sub-machine for hunt behavior
-	UnsignedInt m_nextEnemyScanTime;			///< time of last enemy scan
+	StateMachine* m_huntMachine {};					///< state sub-machine for hunt behavior
+	UnsignedInt m_nextEnemyScanTime {};			///< time of last enemy scan
 	enum { ENEMY_SCAN_RATE = LOGICFRAMES_PER_SECOND };
 };
 
@@ -1288,6 +1352,11 @@ public:
 	AIAttackAreaState( StateMachine *machine ) : State( machine, "AIAttackAreaState" ), m_attackMachine(NULL), 
 		m_nextEnemyScanTime(0) { }
 	//~AIAttackAreaState();
+
+	// No copies allowed!
+	AIAttackAreaState(const AIAttackAreaState&) = delete;
+	AIAttackAreaState& operator=(const AIAttackAreaState&) = delete;
+
 	virtual Bool isAttack() const { return m_attackMachine ? m_attackMachine->isInAttackState() : FALSE; }
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
@@ -1303,8 +1372,8 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	StateMachine *m_attackMachine;					///< state sub-machine for attack behavior
-	UnsignedInt m_nextEnemyScanTime;			///< time of last enemy scan
+	StateMachine *m_attackMachine {};					///< state sub-machine for attack behavior
+	UnsignedInt m_nextEnemyScanTime {};			///< time of last enemy scan
 	enum { ENEMY_SCAN_RATE = LOGICFRAMES_PER_SECOND };
 };
 
@@ -1315,7 +1384,7 @@ class AIFaceState : public State
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIFaceState, "AIFaceState")		
 public:
-	AIFaceState( StateMachine *machine, Bool obj ) : State( machine, "AIFaceState" ), m_canTurnInPlace(false), m_obj(obj) { }
+	AIFaceState( StateMachine *machine, Bool obj ) : State( machine, "AIFaceState" ), m_obj(obj), m_canTurnInPlace(false) { }
 	virtual StateReturnType onEnter();
 	virtual void onExit( StateExitType status );
 	virtual StateReturnType update();

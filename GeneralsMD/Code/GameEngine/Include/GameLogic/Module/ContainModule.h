@@ -80,7 +80,8 @@ typedef void (*ContainIterateFunc)( Object *obj, void *userData );		///< callbac
 class ContainModuleInterface
 {
 public:
-	
+	virtual ~ContainModuleInterface();
+
 	// we have a two basic container types that it is convenient to query and use
 	virtual OpenContain *asOpenContain() = 0;
 
@@ -201,7 +202,7 @@ public:
 	virtual Bool getContainerPipsToShow(Int& numTotal, Int& numFull)
 	{
 		numTotal = getContainMax();
-		numFull = getContainCount() + getExtraSlotsInUse();
+		numFull = static_cast<Int>(getContainCount()) + getExtraSlotsInUse();
 // srj sez: this makes the pips display in the same manner as the inventory control bar...
 //		numTotal = getContainMax() - getExtraSlotsInUse();
 //		numFull = getContainCount();

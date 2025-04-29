@@ -57,8 +57,8 @@ class Object;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-enum { MACHINE_DONE_STATE_ID = 999998, INVALID_STATE_ID = 999999 };
-typedef UnsignedInt StateID;									///< used to denote individual states
+enum StateID: UnsignedInt { MACHINE_DONE_STATE_ID = 999998, INVALID_STATE_ID = 999999 };
+// typedef UnsignedInt StateID;									///< used to denote individual states
 typedef Bool (*StateTransFuncPtr)( State *state, void* userData );
 
 /**
@@ -149,8 +149,12 @@ public:
 	// already defined by MPO.
 	//virtual ~State() { }
 
+	// No copies allowed!
+	State(const State&) = delete;
+	State& operator=(const State&) = delete;
+
 	virtual StateReturnType onEnter() { return STATE_CONTINUE; }	///< executed once when entering state
-	virtual void onExit( StateExitType status ) { }											///< executed once when leaving state
+	virtual void onExit( StateExitType /*status*/ ) { }											///< executed once when leaving state
 	virtual StateReturnType update() = 0;	///< implements this state's behavior, decides when to change state
 
 	virtual Bool isIdle() const { return false; }
@@ -249,6 +253,10 @@ public:
 	 */
 	StateMachine( Object *owner, AsciiString name );
 	// virtual destructor defined by MemoryPool
+
+	// No copies allowed!
+	StateMachine(const StateMachine&) = delete;
+	StateMachine& operator=(const StateMachine&) = delete;
 
 	virtual StateReturnType updateStateMachine();				///< run one step of the machine
 
@@ -408,7 +416,7 @@ public:
 	virtual StateReturnType update() { return STATE_SUCCESS; }
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 
@@ -428,7 +436,7 @@ public:
 	virtual StateReturnType update() { return STATE_FAILURE; }
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };
@@ -448,7 +456,7 @@ public:
 	virtual StateReturnType update() { return STATE_CONTINUE; }
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };
@@ -468,7 +476,7 @@ public:
 	virtual StateReturnType update() { return STATE_SLEEP_FOREVER; }
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer */*xfer*/ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };

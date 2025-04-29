@@ -89,16 +89,22 @@ public:
 		MusicTrack(const MusicTrack&) = delete;
 		MusicTrack& operator=(const MusicTrack&) = delete;
 
-		const FieldParse *getFieldParse( void ) const { return m_musicTrackFieldParseTable; }
-			
-		Int					index;									///< Track index
-		AsciiString name;										///< Logical name of track
-		AsciiString filename;								///< Filename with extension of music track
-		Real				volume;									///< Mixing level for this track
-		Bool				ambient;								///< Game info about this track(public)
+		const FieldParse *getFieldParse( void ) const { printf("!!! MusicTrack.getFieldParse is a problem !!!\n"); return m_musicTrackFieldParseTable; }
 
-		MusicTrack *next;
-		MusicTrack *prev;
+		// MG: Cannot apply offsetof to MusicTrack, so had to move data into an embedded struct.
+		struct Data
+		{
+			Int			index;		///< Track index
+			AsciiString	name;		///< Logical name of track
+			AsciiString	filename;	///< Filename with extension of music track
+			Real		volume;		///< Mixing level for this track
+			Bool		ambient;	///< Game info about this track(public)
+	
+			MusicTrack *next;
+			MusicTrack *prev;
+		};
+
+		Data m_data {};
 
 	static const FieldParse m_musicTrackFieldParseTable[];		///< the parse table for INI definition
 

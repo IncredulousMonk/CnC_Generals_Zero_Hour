@@ -148,7 +148,7 @@ public:
 	
 	inline Int getScreenCount(void) { return m_screenCount; }			///< Return the current number of screens
 
-	void registerWithAnimateManager( GameWindow *win, AnimTypes animType, Bool needsToFinish, UnsignedInt delayMS = 0);
+	void registerWithAnimateManager( GameWindow *win, AnimTypes animType, Bool needsToFinish, Millis delayMS = Millis{0});
 	Bool isAnimFinished( void );
 	void reverseAnimatewindow( void );
 	Bool isAnimReversed( void );

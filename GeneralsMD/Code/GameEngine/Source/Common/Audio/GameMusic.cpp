@@ -79,10 +79,10 @@
 const FieldParse MusicTrack::m_musicTrackFieldParseTable[] = 
 {
 
-	{ "Filename",								INI::parseAsciiString,							NULL, offsetof( MusicTrack, filename ) },
-	{ "Volume",									INI::parsePercentToReal,						NULL, offsetof( MusicTrack, volume ) },
-	{ "Ambient",								INI::parseBool,											NULL, offsetof( MusicTrack, ambient ) },
-	{ NULL,											NULL,																NULL, 0 },
+	{ "Filename",	INI::parseAsciiString,		NULL, offsetof( MusicTrack::Data, filename ) },
+	{ "Volume",		INI::parsePercentToReal,	NULL, offsetof( MusicTrack::Data, volume ) },
+	{ "Ambient",	INI::parseBool,				NULL, offsetof( MusicTrack::Data, ambient ) },
+	{ NULL,			NULL,						NULL, 0 },
 };
 
 

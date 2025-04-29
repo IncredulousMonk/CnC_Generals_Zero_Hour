@@ -47,15 +47,15 @@
 #include "Common/FileSystem.h"
 #include "Common/GameSounds.h"
 #include "Common/GlobalData.h"
-#include "Common/Player.h"
+// #include "Common/Player.h"
 #include "Common/Registry.h"
 
-#include "GameLogic/GameLogic.h"	// For getObjectByID
+// #include "GameLogic/GameLogic.h"	// For getObjectByID
 #include "GameLogic/LogicRandomValue.h"
-#include "GameLogic/Object.h"
+// #include "GameLogic/Object.h"
 
-#include "GameClient/Drawable.h"	// For getPosition
-#include "GameClient/GameClient.h"	// For getDrawableByID
+// #include "GameClient/Drawable.h"	// For getPosition
+// #include "GameClient/GameClient.h"	// For getDrawableByID
 
 #ifdef _INTERNAL
 //#pragma optimize("", off)
@@ -736,28 +736,29 @@ const Coord3D *AudioEventRTS::getCurrentPosition( void )
 	} 
 	else if (m_ownerType == OT_Object) 
 	{
-		Object *obj = TheGameLogic->findObjectByID(m_objectID);
-		if (obj)
-		{
-			m_positionOfAudio.set( obj->getPosition() );
-		}
-		else
-		{
-			m_ownerType = OT_Dead;
-		}
+		// FIXME: TheGameLogic
+		// Object *obj = TheGameLogic->findObjectByID(m_objectID);
+		// if (obj)
+		// {
+		// 	m_positionOfAudio.set( obj->getPosition() );
+		// }
+		// else
+		// {
+		// 	m_ownerType = OT_Dead;
+		// }
 		return &m_positionOfAudio;
 	} 
 	else if (m_ownerType == OT_Drawable) 
 	{
-		Drawable *draw = TheGameClient->findDrawableByID(m_drawableID);
-		if( draw )
-		{
-			m_positionOfAudio.set( draw->getPosition() );
-		}
-		else
-		{
-			m_ownerType = OT_Dead;
-		}
+		// Drawable *draw = TheGameClient->findDrawableByID(m_drawableID);
+		// if( draw )
+		// {
+		// 	m_positionOfAudio.set( draw->getPosition() );
+		// }
+		// else
+		// {
+		// 	m_ownerType = OT_Dead;
+		// }
 		return &m_positionOfAudio;
 	}
 	else if( m_ownerType == OT_Dead )
@@ -784,7 +785,8 @@ AsciiString AudioEventRTS::generateFilenamePrefix( AudioType audioTypeToPlay, Bo
 	retStr.concat("\\");
 
 	if (localized) {
-		retStr.concat(GetRegistryLanguage());
+		// retStr.concat(GetRegistryLanguage());
+		retStr.concat("English");
 		retStr.concat("\\");
 	}
 
@@ -829,18 +831,19 @@ void AudioEventRTS::adjustForLocalization(AsciiString &strToAdjust)
 Int AudioEventRTS::getPlayerIndex( void ) const
 {
 	if (m_ownerType == OT_Object) {
-		Object *obj = TheGameLogic->findObjectByID(m_objectID);
-		if (obj) {
-			return obj->getControllingPlayer()->getPlayerIndex();
-		}
+		// FIXME: TheGameLogic
+		// Object *obj = TheGameLogic->findObjectByID(m_objectID);
+		// if (obj) {
+		// 	return obj->getControllingPlayer()->getPlayerIndex();
+		// }
 	} else if (m_ownerType == OT_Drawable) {
-		Drawable *draw = TheGameClient->findDrawableByID(m_drawableID);
-		if (draw) {
-			Object *obj = draw->getObject();
-			if (obj) {
-				return obj->getControllingPlayer()->getPlayerIndex();
-			}
-		}
+		// Drawable *draw = TheGameClient->findDrawableByID(m_drawableID);
+		// if (draw) {
+		// 	Object *obj = draw->getObject();
+		// 	if (obj) {
+		// 		return obj->getControllingPlayer()->getPlayerIndex();
+		// 	}
+		// }
 	}
 
 	return m_playerIndex;

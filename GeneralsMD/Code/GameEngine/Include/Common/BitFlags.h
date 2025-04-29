@@ -286,21 +286,21 @@ public:
 
   const char* getBitNameIfSet(Int i) const
   {
-    return test(i) ? s_bitNameList[i] : NULL;
+    return test(static_cast<UnsignedInt>(i)) ? s_bitNameList[i] : NULL;
   }
 
   Bool setBitByName(const char* token) 
   {
     Int i = getSingleBitFromName(token);
-		if (i >= 0)
-		{
-      set(i);
-			return true; 
-		}
-		else
-		{
+	if (i >= 0)
+	{
+		set(static_cast<UnsignedInt>(i));
+		return true; 
+	}
+	else
+	{
 	    return false;
-		}
+	}
   }
 
 	void parse(INI* ini, AsciiString* str);

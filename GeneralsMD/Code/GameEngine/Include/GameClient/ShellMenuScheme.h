@@ -71,10 +71,10 @@ public:
 	ShellMenuSchemeLine( void );
 	~ShellMenuSchemeLine( void );	
 	
-	ICoord2D m_startPos;
-	ICoord2D m_endPos;
-	Int m_width;
-	Color m_color;
+	ICoord2D m_startPos {};
+	ICoord2D m_endPos {};
+	Int m_width {};
+	Color m_color {};
 
 };
 
@@ -88,10 +88,10 @@ public:
 	ShellMenuSchemeImage(const ShellMenuSchemeImage&) = delete;
 	ShellMenuSchemeImage& operator=(const ShellMenuSchemeImage&) = delete;
 
-	AsciiString m_name;						///< Name of the image
-	ICoord2D m_position;					///< the position we'll draw it at
-	ICoord2D m_size;							///< the size of the image needed when we draw it
-	Image *m_image;								///< the actual pointer to the mapped image
+	AsciiString m_name {};						///< Name of the image
+	ICoord2D m_position {};					///< the position we'll draw it at
+	ICoord2D m_size {};							///< the size of the image needed when we draw it
+	Image *m_image {};								///< the actual pointer to the mapped image
 };
 
 class ShellMenuScheme
@@ -105,19 +105,15 @@ public:
 	void addLine( ShellMenuSchemeLine* schemeLine );
 	
 
-	AsciiString m_name;
+	AsciiString m_name {};
 
 	typedef std::list< ShellMenuSchemeImage* > ShellMenuSchemeImageList;
 	typedef ShellMenuSchemeImageList::iterator ShellMenuSchemeImageListIt;
-	ShellMenuSchemeImageList m_imageList;
+	ShellMenuSchemeImageList m_imageList {};
 	
 	typedef std::list< ShellMenuSchemeLine* > ShellMenuSchemeLineList;
 	typedef ShellMenuSchemeLineList::iterator ShellMenuSchemeLineListIt;
-	ShellMenuSchemeLineList m_lineList;
-
-
-	
-
+	ShellMenuSchemeLineList m_lineList {};
 };
 
 class ShellMenuSchemeManager
@@ -148,9 +144,8 @@ public:
 private:
 	typedef std::list< ShellMenuScheme* > ShellMenuSchemeList;			///< list of Shell Menu schemes
 	typedef ShellMenuSchemeList::iterator ShellMenuSchemeListIt;
-	ShellMenuSchemeList m_schemeList;
-	ShellMenuScheme *m_currentScheme;
-
+	ShellMenuSchemeList m_schemeList {};
+	ShellMenuScheme *m_currentScheme {};
 };
 
 

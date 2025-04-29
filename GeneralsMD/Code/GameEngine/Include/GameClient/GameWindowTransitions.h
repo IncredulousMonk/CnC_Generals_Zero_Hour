@@ -133,11 +133,11 @@ public:
 	Int getFrameLength( void ){ return m_frameLength;	}
 protected:
 	
-	Int m_frameLength;	// how many frames does this thing take.
-	Bool m_isFinished;  // when we finish we set this
-	Bool m_isForward;
-	Bool m_isReversed;  // when we reverse we set this
-	GameWindow *m_win;
+	Int m_frameLength {};	// how many frames does this thing take.
+	Bool m_isFinished {};  // when we finish we set this
+	Bool m_isForward {};
+	Bool m_isReversed {};  // when we reverse we set this
+	GameWindow *m_win {};
 };
 
 //-----------------------------------------------------------------------------
@@ -155,7 +155,7 @@ public:
 	virtual void skip( void );
 	
 protected:
-	enum{
+	enum: int{
 	TEXTONFRAMETRANSITION_START = 0,
 	TEXTONFRAMETRANSITION_END	 = 1		// Max text type we'll allow.
 	};
@@ -177,7 +177,7 @@ public:
 	virtual void skip( void );
 	
 protected:
-	enum{
+	enum: int{
 	REVERSESOUNDTRANSITION_START = 0,
 	REVERSESOUNDTRANSITION_FIRESOUND = 1,
 	REVERSESOUNDTRANSITION_END	 = 2		// Max text type we'll allow.
@@ -200,14 +200,14 @@ public:
 	virtual void skip( void );
 	
 protected:
-	enum{
+	enum: int{
 	FULLFADETRANSITION_START = 0,
 	FULLFADETRANSITION_END	 = 10		// Max text type we'll allow.
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Real m_percent;
-	Int m_drawState;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Real m_percent {};
+	Int m_drawState {};
 	
 };
 //-----------------------------------------------------------------------------
@@ -229,18 +229,18 @@ public:
 	virtual void skip( void );
 	
 protected:
-	enum{
+	enum: int{
 	CONTROLBARARROWTRANSITION_START = 0,
 	CONTROLBARARROWTRANSITION_BEGIN_FADE = 16,
 	CONTROLBARARROWTRANSITION_END	 = 22		// Max text type we'll allow.
 	};
-	ICoord2D m_pos;
-	ICoord2D m_incrementPos;
-	ICoord2D m_size;
-	Real m_percent;
-	Real m_fadePercent;
-	Int m_drawState;
-	const Image* m_arrowImage;
+	ICoord2D m_pos {};
+	ICoord2D m_incrementPos {};
+	ICoord2D m_size {};
+	Real m_percent {};
+	Real m_fadePercent {};
+	Int m_drawState {};
+	const Image* m_arrowImage {};
 	
 };
 //-----------------------------------------------------------------------------
@@ -258,14 +258,14 @@ public:
 	virtual void skip( void );
 	
 protected:
-	enum{
+	enum: int{
 	SCREENFADETRANSITION_START = 0,
 	SCREENFADETRANSITION_END	 = 30		// Max text type we'll allow.
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Real m_percent;
-	Int m_drawState;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Real m_percent {};
+	Int m_drawState {};
 	
 };
 //-----------------------------------------------------------------------------
@@ -283,23 +283,23 @@ public:
 	virtual void skip( void );
 	
 protected:
-	enum{
+	enum: int{
 	COUNTUPTRANSITION_START = 0,
 	COUNTUPTRANSITION_END	 = 30		// Max text type we'll allow.
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	UnicodeString m_fullText;
-	UnicodeString m_partialText;
-	Int m_intValue;
-	Int m_currentValue;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	UnicodeString m_fullText {};
+	UnicodeString m_partialText {};
+	Int m_intValue {};
+	Int m_currentValue {};
 	enum{
 		COUNT_ONES = 1,
 		COUNT_100S = 100,
 		COUNT_1000S = 1000
 	};
-	Int m_countState;
+	Int m_countState {};
 };
 
 //-----------------------------------------------------------------------------
@@ -321,16 +321,16 @@ public:
 	virtual void skip( void );
 	
 protected:
-	enum{
+	enum: int{
 	TEXTTYPETRANSITION_START = 0,
 	TEXTTYPETRANSITION_END	 = 30		// Max text type we'll allow.
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	UnicodeString m_fullText;
-	UnicodeString m_partialText;
-	DisplayString *m_dStr;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	UnicodeString m_fullText {};
+	UnicodeString m_partialText {};
+	DisplayString *m_dStr {};
 };
 
 //-----------------------------------------------------------------------------
@@ -356,14 +356,14 @@ protected:
 	MAINMENUSCALEUPTRANSITION_START = 0,
 	MAINMENUSCALEUPTRANSITION_END = 5
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	ICoord2D m_growPos;
-	ICoord2D m_growSize;
-	ICoord2D m_incrementPos;
-	ICoord2D m_incrementSize;
-	GameWindow *m_growWin;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	ICoord2D m_growPos {};
+	ICoord2D m_growSize {};
+	ICoord2D m_incrementPos {};
+	ICoord2D m_incrementSize {};
+	GameWindow *m_growWin {};
 };
 
 
@@ -390,13 +390,13 @@ protected:
 	MAINMENUMEDIUMSCALEUPTRANSITION_START = 0,
 	MAINMENUMEDIUMSCALEUPTRANSITION_END = 3
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	ICoord2D m_growPos;
-	ICoord2D m_growSize;
-	ICoord2D m_incrementSize;
-	GameWindow *m_growWin;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	ICoord2D m_growPos {};
+	ICoord2D m_growSize {};
+	ICoord2D m_incrementSize {};
+	GameWindow *m_growWin {};
 };
 
 //-----------------------------------------------------------------------------
@@ -427,13 +427,13 @@ protected:
 	MAINMENUSMALLSCALEDOWNTRANSITION_5 = 5,
 	MAINMENUSMALLSCALEDOWNTRANSITION_END 
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	ICoord2D m_growPos;
-	ICoord2D m_growSize;
-	ICoord2D m_incrementSize;
-	GameWindow *m_growWin;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	ICoord2D m_growPos {};
+	ICoord2D m_growSize {};
+	ICoord2D m_incrementSize {};
+	GameWindow *m_growWin {};
 };
 
 //-----------------------------------------------------------------------------
@@ -474,11 +474,11 @@ protected:
 //	SCALEUPTRANSITION_19 = 19,
 	SCALEUPTRANSITION_END 
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	ICoord2D m_centerPos;
-	ICoord2D m_incrementSize;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	ICoord2D m_centerPos {};
+	ICoord2D m_incrementSize {};
 };
 
 //-----------------------------------------------------------------------------
@@ -506,11 +506,11 @@ protected:
 
 	SCORESCALEUPTRANSITION_END 
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	ICoord2D m_centerPos;
-	ICoord2D m_incrementSize;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	ICoord2D m_centerPos {};
+	ICoord2D m_incrementSize {};
 };
 
 //-----------------------------------------------------------------------------
@@ -543,9 +543,9 @@ protected:
 	FADETRANSITION_FADE_IN_9 = 9,
 	FADETRANSITION_END 
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
 };
 
 
@@ -576,9 +576,9 @@ protected:
 	FLASHTRANSITION_FADE_TO_BACKGROUND_4 = 7,
 	FLASHTRANSITION_END 
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
 };
 
 //-----------------------------------------------------------------------------
@@ -618,10 +618,10 @@ protected:
 	BUTTONFLASHTRANSITION_END, // this is the end of the sequence, we need some special defines... well put them below here
 	BUTTONFLASHTRANSITION_SHOW_BACKGROUND
 	};
-	ICoord2D m_pos;
-	ICoord2D m_size;
-	Int m_drawState;
-	Image *m_gradient;
+	ICoord2D m_pos {};
+	ICoord2D m_size {};
+	Int m_drawState {};
+	Image *m_gradient {};
 };
 
 //-----------------------------------------------------------------------------
@@ -644,15 +644,15 @@ public:
 		void draw( void );
 
 // INI parsed vars
-	AsciiString m_winName;
-	Int m_frameDelay;					// what frame number we start on
-	Int m_style;							// the style we'll be using
+	AsciiString m_winName {};
+	Int m_frameDelay {};					// what frame number we start on
+	Int m_style {};							// the style we'll be using
 
 // standard vars
-	NameKeyType	m_winID;
-	GameWindow *m_win;
-	Transition *m_transition; // each window is allowed one trasition
-	Int m_currentFrameDelay;	// this will change based on if we're going forward or backwards
+	NameKeyType	m_winID {};
+	GameWindow *m_win {};
+	Transition *m_transition {}; // each window is allowed one trasition
+	Int m_currentFrameDelay {};	// this will change based on if we're going forward or backwards
 };
 
 //-----------------------------------------------------------------------------
@@ -673,14 +673,22 @@ public:
 	void setName( AsciiString name){ m_name = name;	}
 	void addWindow( TransitionWindow *transWin );
 	Bool isReversed( void );
-	Bool isFireOnce( void ) { return m_fireOnce; }
-	Bool m_fireOnce;
+	Bool isFireOnce( void ) { return m_data.m_fireOnce; }
+
+	// MG: Cannot apply offsetof to TransitionGroup, so had to move data into an embedded struct.
+	struct Data
+	{
+		Bool m_fireOnce {};
+		TransitionGroup* m_obj {};
+	};
+
+	Data m_data {};
 private:
 	typedef std::list<TransitionWindow *> TransitionWindowList;
-	TransitionWindowList m_transitionWindowList;
-	Int m_directionMultiplier;
-	Int m_currentFrame; ///< maintain how long we've spent on this transition;
-	AsciiString m_name;
+	TransitionWindowList m_transitionWindowList {};
+	Int m_directionMultiplier {};
+	Int m_currentFrame {}; ///< maintain how long we've spent on this transition;
+	AsciiString m_name {};
 };
 
 //-----------------------------------------------------------------------------
@@ -711,11 +719,11 @@ public:
 private:
 	TransitionGroup *findGroup( AsciiString groupName );
 	typedef std::list<TransitionGroup *> TransitionGroupList;
-	TransitionGroupList m_transitionGroupList;
-	TransitionGroup *m_currentGroup;
-	TransitionGroup *m_pendingGroup;
-	TransitionGroup *m_drawGroup;
-	TransitionGroup *m_secondaryDrawGroup; // needed to draw the last frame of the previvous draw group once more.
+	TransitionGroupList m_transitionGroupList {};
+	TransitionGroup *m_currentGroup {};
+	TransitionGroup *m_pendingGroup {};
+	TransitionGroup *m_drawGroup {};
+	TransitionGroup *m_secondaryDrawGroup {}; // needed to draw the last frame of the previvous draw group once more.
 };
 
 void PushButtonImageDrawThree(GameWindow *window, Int alpha );

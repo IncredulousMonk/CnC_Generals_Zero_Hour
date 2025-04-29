@@ -106,7 +106,7 @@ public:
 	AnimateWindow(const AnimateWindow&) = delete;
 	AnimateWindow& operator=(const AnimateWindow&) = delete;
 	
-	void setAnimData( ICoord2D startPos, ICoord2D endPos, ICoord2D curPos, ICoord2D restPos, Coord2D vel, UnsignedInt startTime, UnsignedInt endTime);
+	void setAnimData( ICoord2D startPos, ICoord2D endPos, ICoord2D curPos, ICoord2D restPos, Coord2D vel, TimePoint startTime, TimePoint endTime);
 
 	ICoord2D		getStartPos( void );							///< Get the Start Position 2D coord
 	ICoord2D		getCurPos( void );								///< Get the Current Position 2D coord
@@ -114,10 +114,10 @@ public:
 	ICoord2D		getRestPos( void );								///< Get the Rest Position 2D coord
 	GameWindow *getGameWindow( void );						///< Get the GameWindow that will be animating
 	AnimTypes		getAnimType( void );							///< Get the Animation type
-	UnsignedInt	getDelay( void );									///< Get the Time Delay
+	Millis	getDelay( void );									///< Get the Time Delay
 	Coord2D			getVel( void );										///< Get the Velocity Position 2D coord
-	UnsignedInt getStartTime( void );							///< Get the start time of the time-based anim
-	UnsignedInt getEndTime( void );								///< Get the end time of the time-based anim
+	TimePoint getStartTime( void );							///< Get the start time of the time-based anim
+	TimePoint getEndTime( void );								///< Get the end time of the time-based anim
 
 	void	setStartPos( ICoord2D starPos);					///< Set the Start Position 2D coord
 	void	setCurPos( ICoord2D curPos);						///< Set the Current Position 2D coord
@@ -125,10 +125,10 @@ public:
 	void	setRestPos( ICoord2D restPos);					///< Set the Rest Position 2D coord
 	void	setGameWindow( GameWindow *win);				///< Set the GameWindow that will be animating
 	void	setAnimType( AnimTypes animType);				///< Set the Animation type
-	void	setDelay( UnsignedInt delay);						///< Set the Time Delay
+	void	setDelay( Millis delay);						///< Set the Time Delay
 	void	setVel( Coord2D vel);										///< Set the Velocity Position 2D coord
-	void	setStartTime( UnsignedInt t);						///< Set the start time of the time-based anim
-	void	setEndTime( UnsignedInt t);							///< Set the end time of the time-based anim
+	void	setStartTime( TimePoint t);						///< Set the start time of the time-based anim
+	void	setEndTime( TimePoint t);							///< Set the end time of the time-based anim
 
 	void setFinished(Bool finished);							///< Set if the animation has finished
 	Bool isFinished( void );											///< Return if the animation has finished or not.
@@ -136,19 +136,19 @@ public:
 	Bool needsToFinish( void );										///< set if the animation has finished
 
 private:
-	UnsignedInt m_delay;													///< Holds the delay time in which the animation will start (in milliseconds)
-	ICoord2D m_startPos;													///< Holds the starting position of the animation 
+	Millis m_delay {};													///< Holds the delay time in which the animation will start (in milliseconds)
+	ICoord2D m_startPos {};													///< Holds the starting position of the animation 
 																								///<(usuall is also the end position of the animation when the animation is reversed)
-	ICoord2D m_endPos;														///< Holds the target End Position (usually is the same as the rest position)
-	ICoord2D m_curPos;														///< It's Current Position
-	ICoord2D m_restPos;														///< When the Manager Resets, It sets the window's position to this position
-	GameWindow *m_win;														///< the window that this animation is happening on
-	Coord2D m_vel;																///< the Velocity of the animation
-	UnsignedInt m_startTime;											///< time we started the time-based anim
-	UnsignedInt m_endTime;												///< time we should end the time-based anim
-	AnimTypes m_animType;													///< The type of animation that will happen
-	Bool m_needsToFinish;													///< Flag to tell the manager if we need to finish before it's done with it's animation
-	Bool m_isFinished;														///< We're finished
+	ICoord2D m_endPos {};														///< Holds the target End Position (usually is the same as the rest position)
+	ICoord2D m_curPos {};														///< It's Current Position
+	ICoord2D m_restPos {};														///< When the Manager Resets, It sets the window's position to this position
+	GameWindow *m_win {};														///< the window that this animation is happening on
+	Coord2D m_vel {};																///< the Velocity of the animation
+	TimePoint m_startTime {};											///< time we started the time-based anim
+	TimePoint m_endTime {};												///< time we should end the time-based anim
+	AnimTypes m_animType {};													///< The type of animation that will happen
+	Bool m_needsToFinish {};													///< Flag to tell the manager if we need to finish before it's done with it's animation
+	Bool m_isFinished {};														///< We're finished
 };
 
 
@@ -173,25 +173,25 @@ public:
 	virtual void update( void );		
 	//===============================================================================================
 
-	void registerGameWindow(GameWindow *win, AnimTypes animType, Bool needsToFinish, UnsignedInt ms = 0, UnsignedInt delayMs = 0);			// Registers a new window to animate.
+	void registerGameWindow(GameWindow *win, AnimTypes animType, Bool needsToFinish, Millis ms = Millis{0}, Millis delayMs = Millis{0});			// Registers a new window to animate.
 	Bool isFinished( void );										///< Are all the animations that need to be finished, finished?
 	void reverseAnimateWindow( void );					///< tell each animation type to setup the windows to run in reverse
 	void resetToRestPosition( void );						///< Reset all windows to their rest position
 	Bool isReversed( void );										///< Returns whether or not we're in our reversed state.
 	Bool isEmpty( void );
 private:
-	AnimateWindowList	m_winList;								///< A list of AnimationWindows that we don't care if their finished animating
-	AnimateWindowList m_winMustFinishList;			///< A list of AnimationWindows that we do care about
-	Bool m_needsUpdate;													///< If we're done animating all our monitored windows, then this will be false
-	Bool m_reverse;															///< Are we in a reverse state?
-	ProcessAnimateWindowSlideFromRight *m_slideFromRight;			///< Holds the process in which the windows slide from the right
-	ProcessAnimateWindowSlideFromRightFast *m_slideFromRightFast;
-	ProcessAnimateWindowSlideFromTop *m_slideFromTop;					///< Holds the process in which the windows slide from the Top
-	ProcessAnimateWindowSlideFromLeft *m_slideFromLeft;				///< Holds the process in which the windows slide from the Left
-	ProcessAnimateWindowSlideFromBottom *m_slideFromBottom;		///< Holds the process in which the windows slide from the Bottom
-	ProcessAnimateWindowSpiral *m_spiral;											///< Holds the process in which the windows Spiral onto the screen
-	ProcessAnimateWindowSlideFromBottomTimed *m_slideFromBottomTimed;		///< Holds the process in which the windows slide from the Bottom in a time-based fashion
-	ProcessAnimateWindowSlideFromTopFast *m_slideFromTopFast;			///< holds the process in wich the windows slide from the top,fast
+	AnimateWindowList	m_winList {};								///< A list of AnimationWindows that we don't care if their finished animating
+	AnimateWindowList m_winMustFinishList {};			///< A list of AnimationWindows that we do care about
+	Bool m_needsUpdate {};													///< If we're done animating all our monitored windows, then this will be false
+	Bool m_reverse {};															///< Are we in a reverse state?
+	ProcessAnimateWindowSlideFromRight *m_slideFromRight {};			///< Holds the process in which the windows slide from the right
+	ProcessAnimateWindowSlideFromRightFast *m_slideFromRightFast {};
+	ProcessAnimateWindowSlideFromTop *m_slideFromTop {};					///< Holds the process in which the windows slide from the Top
+	ProcessAnimateWindowSlideFromLeft *m_slideFromLeft {};				///< Holds the process in which the windows slide from the Left
+	ProcessAnimateWindowSlideFromBottom *m_slideFromBottom {};		///< Holds the process in which the windows slide from the Bottom
+	ProcessAnimateWindowSpiral *m_spiral {};											///< Holds the process in which the windows Spiral onto the screen
+	ProcessAnimateWindowSlideFromBottomTimed *m_slideFromBottomTimed {};		///< Holds the process in which the windows slide from the Bottom in a time-based fashion
+	ProcessAnimateWindowSlideFromTopFast *m_slideFromTopFast {};			///< holds the process in wich the windows slide from the top,fast
 	ProcessAnimateWindow *getProcessAnimate( AnimTypes animType);		///< returns the process for the kind of animation we need.
 	
 };
@@ -205,10 +205,10 @@ private:
 	inline ICoord2D			AnimateWindow::getRestPos( void )		{ return m_restPos; };
 	inline GameWindow  *AnimateWindow::getGameWindow( void ){ return m_win; };
 	inline AnimTypes		AnimateWindow::getAnimType( void )	{ return m_animType; };
-	inline UnsignedInt	AnimateWindow::getDelay( void )			{ return m_delay; };
+	inline Millis	AnimateWindow::getDelay( void )			{ return m_delay; };
 	inline Coord2D			AnimateWindow::getVel( void )				{ return m_vel; };
-	inline UnsignedInt	AnimateWindow::getStartTime( void )	{ return m_startTime; };
-	inline UnsignedInt	AnimateWindow::getEndTime( void )		{ return m_endTime; };
+	inline TimePoint	AnimateWindow::getStartTime( void )	{ return m_startTime; };
+	inline TimePoint	AnimateWindow::getEndTime( void )		{ return m_endTime; };
 
 	inline void	AnimateWindow::setStartPos( ICoord2D startPos)		{ m_startPos = startPos; };
 	inline void	AnimateWindow::setCurPos( ICoord2D curPos)				{ m_curPos = curPos; };
@@ -216,10 +216,10 @@ private:
 	inline void	AnimateWindow::setRestPos( ICoord2D restPos)			{ m_restPos = restPos; };
 	inline void	AnimateWindow::setGameWindow( GameWindow *win)		{ m_win = win; };
 	inline void	AnimateWindow::setAnimType( AnimTypes animType)		{ m_animType = animType; };
-	inline void	AnimateWindow::setDelay( UnsignedInt delay)				{ m_delay = delay; };
+	inline void	AnimateWindow::setDelay( Millis delay)				{ m_delay = delay; };
 	inline void	AnimateWindow::setVel( Coord2D vel)								{ m_vel = vel; };
-	inline void	AnimateWindow::setStartTime( UnsignedInt t )			{ m_startTime = t; }
-	inline void	AnimateWindow::setEndTime( UnsignedInt t )				{ m_endTime = t; }
+	inline void	AnimateWindow::setStartTime( TimePoint t )			{ m_startTime = t; }
+	inline void	AnimateWindow::setEndTime( TimePoint t )				{ m_endTime = t; }
 
 	inline void	AnimateWindow::setFinished( Bool finished)				{ m_isFinished = finished; };
 	inline Bool	AnimateWindow::isFinished( void )									{ return m_isFinished; };

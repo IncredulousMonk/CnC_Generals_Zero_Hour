@@ -66,7 +66,7 @@
 //-----------------------------------------------------------------------------
 AnimateWindow::AnimateWindow( void )
 {
-	m_delay = 0;
+	m_delay = Millis{0};
 	m_startPos.x = m_startPos.y = 0;
 	m_endPos.x = m_endPos.y = 0;
 	m_curPos.x = m_curPos.y = 0;
@@ -77,8 +77,8 @@ AnimateWindow::AnimateWindow( void )
 	m_vel.x = m_vel.y = 0.0f;
 	m_needsToFinish = FALSE;
 	m_isFinished = FALSE;
-	m_endTime = 0;
-	m_startTime = 0;
+	m_endTime = TimePoint::min();
+	m_startTime = TimePoint::min();
 }
 AnimateWindow::~AnimateWindow( void )
 {
@@ -87,8 +87,8 @@ AnimateWindow::~AnimateWindow( void )
 
 void AnimateWindow::setAnimData( 	ICoord2D startPos, ICoord2D endPos, 
 																	ICoord2D curPos, ICoord2D restPos,
-																	Coord2D vel, UnsignedInt startTime,
-																	UnsignedInt endTime )
+																	Coord2D vel, TimePoint startTime,
+																	TimePoint endTime )
 
 {
 	m_startPos = startPos;
@@ -241,7 +241,7 @@ void AnimateWindowManager::update( void )
 }
 
 
-void AnimateWindowManager::registerGameWindow(GameWindow *win, AnimTypes animType, Bool needsToFinish, UnsignedInt ms, UnsignedInt delayMs)
+void AnimateWindowManager::registerGameWindow(GameWindow *win, AnimTypes animType, Bool needsToFinish, Millis ms, Millis delayMs)
 {
 	if(!win)
 	{	
@@ -326,7 +326,7 @@ void AnimateWindowManager::reverseAnimateWindow( void )
 	m_needsUpdate = TRUE;
 	ProcessAnimateWindow *processAnim = NULL;
 	
-	UnsignedInt maxDelay = 0;
+	Millis maxDelay = Millis{0};
 	AnimateWindowList::iterator it = m_winMustFinishList.begin();
 	while (it != m_winMustFinishList.end())
 	{

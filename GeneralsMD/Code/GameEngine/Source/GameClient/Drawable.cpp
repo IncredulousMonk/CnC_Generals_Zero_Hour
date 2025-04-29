@@ -235,7 +235,7 @@ static DrawableIconType drawableIconNameToIndex( const char *iconName )
 	DEBUG_ASSERTCRASH( iconName != NULL, ("drawableIconNameToIndex - Illegal name\n") );
 
 	for( Int i = ICON_FIRST; i < MAX_ICONS; ++i )
-		if( stricmp( TheDrawableIconNames[ i ], iconName ) == 0 )
+		if( strcasecmp( TheDrawableIconNames[ i ], iconName ) == 0 )
 			return (DrawableIconType)i;
 
 	return ICON_INVALID;
@@ -463,7 +463,7 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 	for (modIdx = 0; modIdx < drawMI.getCount(); ++modIdx)
 	{
 		const ModuleData* newModData = drawMI.getNthData(modIdx);
-		if (TheGlobalData->m_useDrawModuleLOD && 
+		if (TheGlobalData->m_data.m_useDrawModuleLOD && 
 				newModData->getMinimumRequiredGameLOD() > TheGameLODManager->getStaticLODLevel())
 			continue;
 		*m++ = TheModuleFactory->newModule(this, drawMI.getNthName(modIdx), newModData, MODULETYPE_DRAW);
@@ -482,7 +482,7 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 
 	/// @todo srj -- this is evil, we shouldn't look at the module name directly!
 			if (thingTemplate->isKindOf(KINDOF_SHRUBBERY) && 
-					!TheGlobalData->m_useTreeSway &&
+					!TheGlobalData->m_data.m_useTreeSway &&
 					cuMI.getNthName(modIdx).compareNoCase("SwayClientUpdate") == 0)
 				continue;
 
@@ -967,7 +967,7 @@ void Drawable::colorFlash( const RGBColor* color, UnsignedInt decayFrames, Unsig
 	else
 	{
 		RGBColor white;
-		white.setFromInt(0xffffffff);
+		white.setFromInt(0x00ffffff);
 		m_colorTintEnvelope->play( &white );
 	}
 
@@ -1090,7 +1090,7 @@ void Drawable::fadeIn( UnsignedInt frames )		///< decloak object
 
 
 //-------------------------------------------------------------------------------------------------
-const Real Drawable::getScale (void) const 
+Real Drawable::getScale (void) const 
 { 
 	return m_instanceScale; 
 //	return getTemplate()->getAssetScale(); 
@@ -1119,7 +1119,7 @@ void Drawable::reactToBodyDamageStateChange(BodyDamageType newState)
   // When loading map, ambient sound starting is handled by onLevelStart(), so that we can
   // correctly react to customizations
   if ( !TheGameLogic->isLoadingMap() )
- 	  startAmbientSound(newState, TheGlobalData->m_timeOfDay);
+ 	  startAmbientSound(newState, TheGlobalData->m_data.m_timeOfDay);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1243,7 +1243,7 @@ void Drawable::updateDrawable( void )
 		if (m_flashCount > 0  && (TheGameClient->getFrame() % DRAWABLE_FRAMES_PER_FLASH) == 0)
 		{
 			RGBColor tmp;
-			tmp.setFromInt(m_flashColor);
+			tmp.setFromColor(m_flashColor);
 			colorFlash(&tmp);
 			m_flashCount--;
 		}
@@ -1371,12 +1371,12 @@ void Drawable::flashAsSelected( const RGBColor *color ) ///< drawable takes care
 		if (obj)
 		{
 			RGBColor tempColor; 
-			if (TheGlobalData->m_selectionFlashHouseColor)
-				tempColor.setFromInt(obj->getIndicatorColor());
+			if (TheGlobalData->m_data.m_selectionFlashHouseColor)
+				tempColor.setFromColor(obj->getIndicatorColor());
 			else
-				tempColor.setFromInt(0xffffffff);//white
+				tempColor.setFromInt(0x00ffffff);//white
 
-			Real saturation = TheGlobalData->m_selectionFlashSaturationFactor;
+			Real saturation = TheGlobalData->m_data.m_selectionFlashSaturationFactor;
 			saturateRGB( tempColor, saturation );
 			m_selectionFlashEnvelope->play( &tempColor, 0, 4 );
 
@@ -1389,7 +1389,7 @@ void Drawable::applyPhysicsXform(Matrix3D* mtx)
 {
 	const Object *obj = getObject();
 
-	if( !obj ||	obj->isDisabledByType( DISABLED_HELD ) || !TheGlobalData->m_showClientPhysics )
+	if( !obj ||	obj->isDisabledByType( DISABLED_HELD ) || !TheGlobalData->m_data.m_showClientPhysics )
 	{
 		return;
 	}
@@ -1443,6 +1443,9 @@ Bool Drawable::calcPhysicsXform(PhysicsXformInfo& info)
 				case LOCO_THRUST:	
 					calcPhysicsXformThrust(locomotor, info);
 					hasPhysicsXform = true;
+					break;
+				default:
+					DEBUG_LOG(("Drawable::calcPhysicsXform with unexpected appearance: %d\n", locomotor->getAppearance()));
 					break;
 			}
 		}
@@ -2531,7 +2534,7 @@ const AudioEventRTS& Drawable::getAmbientSoundByDamage(BodyDamageType dt)
 void Drawable::validatePos() const
 {
 	const Coord3D* ourPos = getPosition();
-	if (_isnan(ourPos->x) || _isnan(ourPos->y) || _isnan(ourPos->z))
+	if (isnan(ourPos->x) || isnan(ourPos->y) || isnan(ourPos->z))
 	{
 		DEBUG_CRASH(("Drawable/Object position NAN! '%s'\n", getTemplate()->getName().str()));
 	}
@@ -2564,7 +2567,7 @@ void Drawable::setStealthLook(StealthLookType look)
 			case STEALTHLOOK_VISIBLE_FRIENDLY:
 			case STEALTHLOOK_VISIBLE_FRIENDLY_DETECTED:
 			{
-				Real opacity = TheGlobalData->m_stealthFriendlyOpacity;
+				Real opacity = TheGlobalData->m_data.m_stealthFriendlyOpacity;
 
 				Object *obj = getObject();
 				if( obj )
@@ -2841,7 +2844,7 @@ void Drawable::setEmoticon( const AsciiString &name, Int duration )
 		if( getIconInfo()->m_icon[ ICON_EMOTICON ] == NULL )
 		{
 			getIconInfo()->m_icon[ ICON_EMOTICON ] = newInstance(Anim2D)( animTemplate, TheAnim2DCollection );
-			getIconInfo()->m_keepTillFrame[ ICON_EMOTICON ] = duration >= 0 ? TheGameLogic->getFrame() + duration : FOREVER;
+			getIconInfo()->m_keepTillFrame[ ICON_EMOTICON ] = duration >= 0 ? TheGameLogic->getFrame() + static_cast<UnsignedInt>(duration) : FOREVER;
 		}
 	}
 }
@@ -2857,8 +2860,8 @@ void Drawable::drawEmoticon( const IRegion2D *healthBarRegion )
 			//Draw the emoticon.
 			Int barWidth = healthBarRegion->hi.x - healthBarRegion->lo.x;
 			//Int barHeight = healthBarRegion.hi.y - healthBarRegion.lo.y;
-			Int frameWidth = getIconInfo()->m_icon[ ICON_EMOTICON ]->getCurrentFrameWidth();
-			Int frameHeight = getIconInfo()->m_icon[ ICON_EMOTICON ]->getCurrentFrameHeight();
+			Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_EMOTICON ]->getCurrentFrameWidth());
+			Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_EMOTICON ]->getCurrentFrameHeight());
 
 #ifdef SCALE_ICONS_WITH_ZOOM_ML
 			// adjust the width to be a % of the health bar region size
@@ -2887,7 +2890,7 @@ void Drawable::drawAmmo( const IRegion2D *healthBarRegion )
 	const Object *obj = getObject();			
 
 	if (!(
-				TheGlobalData->m_showObjectHealth && 
+				TheGlobalData->m_data.m_showObjectHealth && 
 				(isSelected() || (TheInGameUI && (TheInGameUI->getMousedOverDrawableID() == getID()))) &&
 				obj->getControllingPlayer() == ThePlayerList->getLocalPlayer()
 			))
@@ -2916,9 +2919,9 @@ void Drawable::drawAmmo( const IRegion2D *healthBarRegion )
 
 	ICoord2D screenCenter;
 	Coord3D pos = *obj->getPosition();
-	pos.x += TheGlobalData->m_ammoPipWorldOffset.x;
-	pos.y += TheGlobalData->m_ammoPipWorldOffset.y;
-	pos.z += TheGlobalData->m_ammoPipWorldOffset.z + obj->getGeometryInfo().getMaxHeightAbovePosition();
+	pos.x += TheGlobalData->m_data.m_ammoPipWorldOffset.x;
+	pos.y += TheGlobalData->m_data.m_ammoPipWorldOffset.y;
+	pos.z += TheGlobalData->m_data.m_ammoPipWorldOffset.z + obj->getGeometryInfo().getMaxHeightAbovePosition();
 	if( !TheTacticalView->worldToScreen( &pos, &screenCenter ) )
 		return;
 
@@ -2926,7 +2929,7 @@ void Drawable::drawAmmo( const IRegion2D *healthBarRegion )
 	//Int posx = screenCenter.x + REAL_TO_INT(TheGlobalData->m_ammoPipScreenOffset.x*bounding) - totalWidth;
 	//**CHANGING CODE: Left justify with health bar min
 	Int posx = healthBarRegion->lo.x;
-	Int posy = screenCenter.y + REAL_TO_INT(TheGlobalData->m_ammoPipScreenOffset.y*bounding);
+	Int posy = screenCenter.y + REAL_TO_INT(TheGlobalData->m_data.m_ammoPipScreenOffset.y*bounding);
 	for (Int i = 0; i < numTotal; ++i)
 	{
 		TheDisplay->drawImage(i < numFull ? s_fullAmmo : s_emptyAmmo, posx, posy + 1, posx + boxWidth, posy + 1 + boxHeight);
@@ -2945,7 +2948,7 @@ void Drawable::drawContained( const IRegion2D *healthBarRegion )
 		return;
 
 	if (!(
-				TheGlobalData->m_showObjectHealth && 
+				TheGlobalData->m_data.m_showObjectHealth && 
 				(isSelected() || (TheInGameUI && (TheInGameUI->getMousedOverDrawableID() == getID()))) &&
 				obj->getControllingPlayer() == ThePlayerList->getLocalPlayer()
 			))
@@ -2983,9 +2986,9 @@ void Drawable::drawContained( const IRegion2D *healthBarRegion )
 
 	ICoord2D screenCenter;
 	Coord3D pos = *obj->getPosition();
-	pos.x += TheGlobalData->m_containerPipWorldOffset.x;
-	pos.y += TheGlobalData->m_containerPipWorldOffset.y;
-	pos.z += TheGlobalData->m_containerPipWorldOffset.z + obj->getGeometryInfo().getMaxHeightAbovePosition();
+	pos.x += TheGlobalData->m_data.m_containerPipWorldOffset.x;
+	pos.y += TheGlobalData->m_data.m_containerPipWorldOffset.y;
+	pos.z += TheGlobalData->m_data.m_containerPipWorldOffset.z + obj->getGeometryInfo().getMaxHeightAbovePosition();
 	if( !TheTacticalView->worldToScreen( &pos, &screenCenter ) )
 		return;
 
@@ -2994,7 +2997,7 @@ void Drawable::drawContained( const IRegion2D *healthBarRegion )
 	//Int posx = screenCenter.x + REAL_TO_INT(TheGlobalData->m_containerPipScreenOffset.x*bounding) - totalWidth;
 	//**CHANGING CODE: Left justify with health bar min
 	Int posx = healthBarRegion->lo.x;
-	Int posy = screenCenter.y + REAL_TO_INT(TheGlobalData->m_containerPipScreenOffset.y*bounding);
+	Int posy = screenCenter.y + REAL_TO_INT(TheGlobalData->m_data.m_containerPipScreenOffset.y*bounding);
 
 	for (Int i = 0; i < numTotal; ++i)
 	{
@@ -3029,8 +3032,8 @@ void Drawable::drawBattlePlans( const IRegion2D *healthBarRegion )
 				getIconInfo()->m_icon[ ICON_BATTLEPLAN_BOMBARD ] = newInstance(Anim2D)( s_animationTemplates[ ICON_BATTLEPLAN_BOMBARD ], TheAnim2DCollection );
 			}
 			//Int barHeight = healthBarRegion.hi.y - healthBarRegion.lo.y;
-			Int frameWidth = getIconInfo()->m_icon[ ICON_BATTLEPLAN_BOMBARD ]->getCurrentFrameWidth();
-			Int frameHeight = getIconInfo()->m_icon[ ICON_BATTLEPLAN_BOMBARD ]->getCurrentFrameHeight();
+			Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_BATTLEPLAN_BOMBARD ]->getCurrentFrameWidth());
+			Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_BATTLEPLAN_BOMBARD ]->getCurrentFrameHeight());
 			
 #ifdef SCALE_ICONS_WITH_ZOOM_ML
 			// adjust the width to be a % of the health bar region size
@@ -3057,8 +3060,8 @@ void Drawable::drawBattlePlans( const IRegion2D *healthBarRegion )
 				getIconInfo()->m_icon[ ICON_BATTLEPLAN_HOLDTHELINE ] = newInstance(Anim2D)( s_animationTemplates[ ICON_BATTLEPLAN_HOLDTHELINE ], TheAnim2DCollection );
 			}
 			// draw the icon
-			Int frameWidth = getIconInfo()->m_icon[ ICON_BATTLEPLAN_HOLDTHELINE ]->getCurrentFrameWidth();
-			Int frameHeight = getIconInfo()->m_icon[ ICON_BATTLEPLAN_HOLDTHELINE ]->getCurrentFrameHeight();
+			Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_BATTLEPLAN_HOLDTHELINE ]->getCurrentFrameWidth());
+			Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_BATTLEPLAN_HOLDTHELINE ]->getCurrentFrameHeight());
 			
 #ifdef SCALE_ICONS_WITH_ZOOM_ML
 			// adjust the width to be a % of the health bar region size
@@ -3085,8 +3088,8 @@ void Drawable::drawBattlePlans( const IRegion2D *healthBarRegion )
 				getIconInfo()->m_icon[ ICON_BATTLEPLAN_SEARCHANDDESTROY ] = newInstance(Anim2D)( s_animationTemplates[ ICON_BATTLEPLAN_SEARCHANDDESTROY ], TheAnim2DCollection );
 			}
 			// draw the icon
-			Int frameWidth = getIconInfo()->m_icon[ ICON_BATTLEPLAN_SEARCHANDDESTROY ]->getCurrentFrameWidth();
-			Int frameHeight = getIconInfo()->m_icon[ ICON_BATTLEPLAN_SEARCHANDDESTROY ]->getCurrentFrameHeight();
+			Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_BATTLEPLAN_SEARCHANDDESTROY ]->getCurrentFrameWidth());
+			Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_BATTLEPLAN_SEARCHANDDESTROY ]->getCurrentFrameHeight());
 
 #ifdef SCALE_ICONS_WITH_ZOOM_ML
 			// adjust the width to be a % of the health bar region size
@@ -3259,7 +3262,7 @@ void Drawable::drawHealing(const IRegion2D* healthBarRegion)
 	}
 
 	// based on our own kind of we have certain icons to display at a size scale
-	Real scale;
+	[[maybe_unused]] Real scale;
 	DrawableIconType typeIndex;
 	if( isKindOf( KINDOF_STRUCTURE ) )
 	{
@@ -3299,8 +3302,8 @@ void Drawable::drawHealing(const IRegion2D* healthBarRegion)
 				//
 				Int barWidth = healthBarRegion->hi.x - healthBarRegion->lo.x;
 
-				Int frameWidth = getIconInfo()->m_icon[ typeIndex ]->getCurrentFrameWidth();
-				Int frameHeight = getIconInfo()->m_icon[ typeIndex ]->getCurrentFrameHeight();
+				Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ typeIndex ]->getCurrentFrameWidth());
+				Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ typeIndex ]->getCurrentFrameHeight());
 
 #ifdef SCALE_ICONS_WITH_ZOOM_ML
 				// adjust the width to be a % of the health bar region size
@@ -3481,8 +3484,8 @@ void Drawable::drawBombed(const IRegion2D* healthBarRegion)
 				Int barWidth = healthBarRegion->hi.x - healthBarRegion->lo.x;
 				Int barHeight = healthBarRegion->hi.y - healthBarRegion->lo.y;
 
-				Int frameWidth = getIconInfo()->m_icon[ ICON_CARBOMB ]->getCurrentFrameWidth();
-				Int frameHeight = getIconInfo()->m_icon[ ICON_CARBOMB ]->getCurrentFrameHeight();
+				Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_CARBOMB ]->getCurrentFrameWidth());
+				Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_CARBOMB ]->getCurrentFrameHeight());
 
 				// adjust the width to be a % of the health bar region size
 				Int size = REAL_TO_INT( barWidth * 0.5f );
@@ -3558,8 +3561,8 @@ void Drawable::drawBombed(const IRegion2D* healthBarRegion)
 						Int barWidth = healthBarRegion->hi.x - healthBarRegion->lo.x;
 						Int barHeight = healthBarRegion->hi.y - healthBarRegion->lo.y;
 
-						Int frameWidth = getIconInfo()->m_icon[ ICON_BOMB_TIMED ]->getCurrentFrameWidth();
-						Int frameHeight = getIconInfo()->m_icon[ ICON_BOMB_TIMED ]->getCurrentFrameHeight();
+						Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_BOMB_TIMED ]->getCurrentFrameWidth());
+						Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_BOMB_TIMED ]->getCurrentFrameHeight());
 
 						// adjust the width to be a % of the health bar region size
 						Int size = REAL_TO_INT( barWidth * 0.65f );
@@ -3597,8 +3600,8 @@ void Drawable::drawBombed(const IRegion2D* healthBarRegion)
 						Int barWidth = healthBarRegion->hi.x - healthBarRegion->lo.x;
 						Int barHeight = healthBarRegion->hi.y - healthBarRegion->lo.y;
 
-						Int frameWidth = getIconInfo()->m_icon[ ICON_BOMB_REMOTE ]->getCurrentFrameWidth();
-						Int frameHeight = getIconInfo()->m_icon[ ICON_BOMB_REMOTE ]->getCurrentFrameHeight();
+						Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_BOMB_REMOTE ]->getCurrentFrameWidth());
+						Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_BOMB_REMOTE ]->getCurrentFrameHeight());
 
 
 						// adjust the width to be a % of the health bar region size
@@ -3663,8 +3666,8 @@ void Drawable::drawDisabled(const IRegion2D* healthBarRegion)
 		{
 			Int barHeight = healthBarRegion->hi.y - healthBarRegion->lo.y;
 
-			Int frameWidth = getIconInfo()->m_icon[ ICON_DISABLED ]->getCurrentFrameWidth();
-			Int frameHeight = getIconInfo()->m_icon[ ICON_DISABLED ]->getCurrentFrameHeight();
+			Int frameWidth = static_cast<Int>(getIconInfo()->m_icon[ ICON_DISABLED ]->getCurrentFrameWidth());
+			Int frameHeight = static_cast<Int>(getIconInfo()->m_icon[ ICON_DISABLED ]->getCurrentFrameHeight());
 
 #ifdef SCALE_ICONS_WITH_ZOOM_ML
 			// adjust the width to be a % of the health bar region size
@@ -3855,7 +3858,7 @@ void Drawable::drawHealthBar(const IRegion2D* healthBarRegion)
 	// only draw health for selected drawbles and drawables that have been moused over
 	// by the cursor
 	//
-	if( TheGlobalData->m_showObjectHealth && 
+	if( TheGlobalData->m_data.m_showObjectHealth && 
 			(isSelected() || (TheInGameUI && (TheInGameUI->getMousedOverDrawableID() == getID()))) )
 	{
 		Object *obj = getObject();
@@ -4164,7 +4167,7 @@ void Drawable::friend_bindToObject( Object *obj ) ///< bind this drawable to an 
 	m_object = obj; 
 	if (getObject())
 	{
-		if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+		if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 			setIndicatorColor(getObject()->getNightIndicatorColor());
 		else
 			setIndicatorColor(getObject()->getIndicatorColor());
@@ -4194,7 +4197,7 @@ void Drawable::changedTeam()
 	Object *object = getObject();
 	if( object )
 	{
-		if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+		if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 			setIndicatorColor( object->getNightIndicatorColor() );
 		else
 			setIndicatorColor( object->getIndicatorColor() );
@@ -4562,7 +4565,7 @@ void Drawable::startAmbientSound( Bool onlyIfPermanent )
 	{
 		bodyCondition = obj->getBodyModule()->getDamageState();
 	}
-	startAmbientSound( bodyCondition, TheGlobalData->m_timeOfDay, onlyIfPermanent );
+	startAmbientSound( bodyCondition, TheGlobalData->m_data.m_timeOfDay, onlyIfPermanent );
 }
 
 //-------------------------------------------------------------------------------------------------

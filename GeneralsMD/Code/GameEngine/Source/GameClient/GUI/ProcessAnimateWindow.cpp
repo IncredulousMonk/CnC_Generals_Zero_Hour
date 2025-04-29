@@ -88,15 +88,15 @@ ProcessAnimateWindowSlideFromRight::ProcessAnimateWindowSlideFromRight( void )
 ProcessAnimateWindowSlideFromRight::~ProcessAnimateWindowSlideFromRight( void ) { }
 
 //-----------------------------------------------------------------------------
-void ProcessAnimateWindowSlideFromRight::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSlideFromRight::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	if(!animWin)
 	{
 		DEBUG_ASSERTCRASH( animWin, ("animWin was passed into initAnimateWindow as a NULL Pointer... bad bad bad!"));
 		return;
 	}
-	if(animWin->getDelay() > 0)
-		animWin->setStartTime(timeGetTime() + (maxDelay - animWin->getDelay()));
+	if(animWin->getDelay() > Millis{0})
+		animWin->setStartTime(std::chrono::steady_clock::now() + (maxDelay - animWin->getDelay()));
 	Coord2D vel = animWin->getVel();
 	vel.x *= -1;
 	vel.y *= -1;
@@ -134,7 +134,7 @@ void ProcessAnimateWindowSlideFromRight::initAnimateWindow( AnimateWindow *animW
 	endPos.y = restPos.y;
 
 	//set the initial positions for the window. In this case, off the Right of the screen
-	Int travelDistance = TheDisplay->getWidth();// / 4 * 3;
+	Int travelDistance = static_cast<Int>(TheDisplay->getWidth());// / 4 * 3;
 	startPos.x = curPos.x = restPos.x + travelDistance;
 	startPos.y = curPos.y = restPos.y;
 
@@ -146,7 +146,7 @@ void ProcessAnimateWindowSlideFromRight::initAnimateWindow( AnimateWindow *animW
 	vel.y = 0.0f;
 
 
-	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, timeGetTime() + animWin->getDelay(), 0);
+	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, std::chrono::steady_clock::now() + animWin->getDelay(), TimePoint::min());
 }
 
 
@@ -165,7 +165,7 @@ Bool ProcessAnimateWindowSlideFromRight::updateAnimateWindow( AnimateWindow *ani
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 	// it's set that the window is passed in as it's current position being it's rest position
 	// so save off the rest position
@@ -213,7 +213,7 @@ Bool ProcessAnimateWindowSlideFromRight::reverseAnimateWindow( AnimateWindow *an
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -272,15 +272,15 @@ ProcessAnimateWindowSlideFromLeft::ProcessAnimateWindowSlideFromLeft( void )
 
 ProcessAnimateWindowSlideFromLeft::~ProcessAnimateWindowSlideFromLeft( void ) { }
 
-void ProcessAnimateWindowSlideFromLeft::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSlideFromLeft::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	if(!animWin)
 	{
 		DEBUG_ASSERTCRASH( animWin, ("animWin was passed into initAnimateWindow as a NULL Pointer... bad bad bad!"));
 		return;
 	}
-	if(animWin->getDelay() > 0)
-		animWin->setStartTime(timeGetTime() + (maxDelay - animWin->getDelay()));
+	if(animWin->getDelay() > Millis{0})
+		animWin->setStartTime(std::chrono::steady_clock::now() + (maxDelay - animWin->getDelay()));
 	Coord2D vel = animWin->getVel();
 	vel.x *= -1;
 	vel.y *= -1;
@@ -315,7 +315,7 @@ void ProcessAnimateWindowSlideFromLeft::initAnimateWindow( AnimateWindow *animWi
 	endPos.y = restPos.y;
 
 	//set the initial positions for the window. In this case, off the Left of the screen
-	Int travelDistance = TheDisplay->getWidth();// / 4 * 3;
+	Int travelDistance = static_cast<Int>(TheDisplay->getWidth());// / 4 * 3;
 	startPos.x = curPos.x = restPos.x - travelDistance;
 	startPos.y = curPos.y = restPos.y;
 
@@ -325,7 +325,7 @@ void ProcessAnimateWindowSlideFromLeft::initAnimateWindow( AnimateWindow *animWi
 	//Now initialize the velocities
 	vel = m_maxVel;
 
-	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, timeGetTime() + animWin->getDelay(), 0);
+	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, std::chrono::steady_clock::now() + animWin->getDelay(), TimePoint::min());
 }
 
 Bool ProcessAnimateWindowSlideFromLeft::updateAnimateWindow( AnimateWindow *animWin )
@@ -342,7 +342,7 @@ Bool ProcessAnimateWindowSlideFromLeft::updateAnimateWindow( AnimateWindow *anim
 		return TRUE;
 	
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -391,7 +391,7 @@ Bool ProcessAnimateWindowSlideFromLeft::reverseAnimateWindow( AnimateWindow *ani
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -450,15 +450,15 @@ ProcessAnimateWindowSlideFromTop::ProcessAnimateWindowSlideFromTop( void )
 
 ProcessAnimateWindowSlideFromTop::~ProcessAnimateWindowSlideFromTop( void ) { }
 
-void ProcessAnimateWindowSlideFromTop::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSlideFromTop::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	if(!animWin)
 	{
 		DEBUG_ASSERTCRASH( animWin, ("animWin was passed into initAnimateWindow as a NULL Pointer... bad bad bad!"));
 		return;
 	}
-	if(animWin->getDelay() > 0)
-		animWin->setStartTime(timeGetTime() + (maxDelay - animWin->getDelay()));
+	if(animWin->getDelay() > Millis{0})
+		animWin->setStartTime(std::chrono::steady_clock::now() + (maxDelay - animWin->getDelay()));
 	Coord2D vel = animWin->getVel();
 	vel.x *= -1;
 	vel.y *= -1;
@@ -493,7 +493,7 @@ void ProcessAnimateWindowSlideFromTop::initAnimateWindow( AnimateWindow *animWin
 	endPos.y = restPos.y;
 
 	//set the initial positions for the window. In this case, off the Top of the screen
-	Int travelDistance = TheDisplay->getWidth();// / 4 * 3;
+	Int travelDistance = static_cast<Int>(TheDisplay->getWidth());// / 4 * 3;
 	startPos.x = curPos.x = restPos.x ;
 	startPos.y = curPos.y = restPos.y - travelDistance;
 
@@ -503,7 +503,7 @@ void ProcessAnimateWindowSlideFromTop::initAnimateWindow( AnimateWindow *animWin
 	//Now initialize the velocities
 	vel = m_maxVel;
 
-	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, timeGetTime() + animWin->getDelay(), 0);
+	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, std::chrono::steady_clock::now() + animWin->getDelay(), TimePoint::min());
 }
 
 Bool ProcessAnimateWindowSlideFromTop::updateAnimateWindow( AnimateWindow *animWin )
@@ -520,7 +520,7 @@ Bool ProcessAnimateWindowSlideFromTop::updateAnimateWindow( AnimateWindow *animW
 		return TRUE;
 	
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -570,7 +570,7 @@ Bool ProcessAnimateWindowSlideFromTop::reverseAnimateWindow( AnimateWindow *anim
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -629,15 +629,15 @@ ProcessAnimateWindowSlideFromBottom::ProcessAnimateWindowSlideFromBottom( void )
 
 ProcessAnimateWindowSlideFromBottom::~ProcessAnimateWindowSlideFromBottom( void ) { }
 
-void ProcessAnimateWindowSlideFromBottom::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSlideFromBottom::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	if(!animWin)
 	{
 		DEBUG_ASSERTCRASH( animWin, ("animWin was passed into initAnimateWindow as a NULL Pointer... bad bad bad!"));
 		return;
 	}
-	if(animWin->getDelay() > 0)
-		animWin->setStartTime(timeGetTime() + (maxDelay - animWin->getDelay()));
+	if(animWin->getDelay() > Millis{0})
+		animWin->setStartTime(std::chrono::steady_clock::now() + (maxDelay - animWin->getDelay()));
 	Coord2D vel = animWin->getVel();
 	vel.x *= -1;
 	vel.y *= -1;
@@ -673,7 +673,7 @@ void ProcessAnimateWindowSlideFromBottom::initAnimateWindow( AnimateWindow *anim
 	endPos.y = restPos.y;
 
 	//set the initial positions for the window. In this case, off the Bottom of the screen
-	Int travelDistance = TheDisplay->getWidth();// / 4 * 3;
+	Int travelDistance = static_cast<Int>(TheDisplay->getWidth());// / 4 * 3;
 	startPos.x = curPos.x = restPos.x;
 	startPos.y = curPos.y = restPos.y + travelDistance;
 
@@ -683,7 +683,7 @@ void ProcessAnimateWindowSlideFromBottom::initAnimateWindow( AnimateWindow *anim
 	//Now initialize the velocities
 	vel = m_maxVel;
 
-	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, timeGetTime() + animWin->getDelay(), 0);
+	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, std::chrono::steady_clock::now() + animWin->getDelay(), TimePoint::min());
 }
 
 Bool ProcessAnimateWindowSlideFromBottom::updateAnimateWindow( AnimateWindow *animWin )
@@ -700,7 +700,7 @@ Bool ProcessAnimateWindowSlideFromBottom::updateAnimateWindow( AnimateWindow *an
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -750,7 +750,7 @@ Bool ProcessAnimateWindowSlideFromBottom::reverseAnimateWindow( AnimateWindow *a
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -799,12 +799,12 @@ Bool ProcessAnimateWindowSlideFromBottom::reverseAnimateWindow( AnimateWindow *a
 
 ProcessAnimateWindowSlideFromBottomTimed::ProcessAnimateWindowSlideFromBottomTimed( void )
 {
-	m_maxDuration = 1000;
+	m_maxDuration = Millis{1000};
 }
 
 ProcessAnimateWindowSlideFromBottomTimed::~ProcessAnimateWindowSlideFromBottomTimed( void ) { }
 
-void ProcessAnimateWindowSlideFromBottomTimed::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSlideFromBottomTimed::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	ICoord2D restPos = {0,0};
 	ICoord2D startPos = {0,0};
@@ -831,14 +831,14 @@ void ProcessAnimateWindowSlideFromBottomTimed::initReverseAnimateWindow( Animate
 	curPos.y = startPos.y = restPos.y;
 
 	//set the initial positions for the window. In this case, off the Bottom of the screen
-	Int travelDistance = TheDisplay->getWidth();// / 4 * 3;
+	Int travelDistance = static_cast<Int>(TheDisplay->getWidth());// / 4 * 3;
 	endPos.x = curPos.x = restPos.x;
 	endPos.y = restPos.y + travelDistance;
 
 	//set the window's position to the new start positions.
 	win->winSetPosition(startPos.x, startPos.y);
 
-	UnsignedInt now = timeGetTime();
+	TimePoint now = std::chrono::steady_clock::now();
 
 	DEBUG_LOG(("initReverseAnimateWindow at %d (%d->%d)\n", now, now, now + m_maxDuration));
 	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, now, now + m_maxDuration);
@@ -872,15 +872,15 @@ void ProcessAnimateWindowSlideFromBottomTimed::initAnimateWindow( AnimateWindow 
 	endPos.y = restPos.y;
 
 	//set the initial positions for the window. In this case, off the Bottom of the screen
-	Int travelDistance = TheDisplay->getWidth();// / 4 * 3;
+	Int travelDistance = static_cast<Int>(TheDisplay->getWidth());// / 4 * 3;
 	startPos.x = curPos.x = restPos.x;
 	startPos.y = curPos.y = restPos.y + travelDistance;
 
 	//set the window's position to the new start positions.
 	win->winSetPosition(startPos.x, startPos.y);
 
-	UnsignedInt now = timeGetTime();
-	UnsignedInt delay = animWin->getDelay();
+	TimePoint now = std::chrono::steady_clock::now();
+	Millis delay = animWin->getDelay();
 
 	DEBUG_LOG(("initAnimateWindow at %d (%d->%d)\n", now, now + delay, now + m_maxDuration + delay));
 	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, now + delay, now + m_maxDuration + delay);
@@ -900,7 +900,7 @@ Bool ProcessAnimateWindowSlideFromBottomTimed::updateAnimateWindow( AnimateWindo
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -916,14 +916,14 @@ Bool ProcessAnimateWindowSlideFromBottomTimed::updateAnimateWindow( AnimateWindo
 	ICoord2D curPos = animWin->getCurPos();
 	ICoord2D endPos = animWin->getEndPos();
 
-	UnsignedInt now = timeGetTime();
-	UnsignedInt startTime = animWin->getStartTime();
-	UnsignedInt endTime = animWin->getEndTime();
+	TimePoint now = std::chrono::steady_clock::now();
+	TimePoint startTime = animWin->getStartTime();
+	TimePoint endTime = animWin->getEndTime();
 
 	if (now < startTime)
 		return FALSE;
 
-	Real percentDone = 1.0f - (Real)(endTime - now) / (Real)(m_maxDuration);
+	double percentDone = 1.0 - (endTime - now).count() / (m_maxDuration.count());
 	if (now >= endTime)
 	{
 		curPos.y = endPos.y;
@@ -954,7 +954,7 @@ Bool ProcessAnimateWindowSlideFromBottomTimed::reverseAnimateWindow( AnimateWind
 
 ProcessAnimateWindowSpiral::ProcessAnimateWindowSpiral( void )
 {
-	m_maxR = TheDisplay->getWidth() / 2;
+	m_maxR = static_cast<Int>(TheDisplay->getWidth()) / 2;
 	m_deltaTheta = .33f;	
 }
 
@@ -962,15 +962,15 @@ ProcessAnimateWindowSpiral::ProcessAnimateWindowSpiral( void )
 ProcessAnimateWindowSpiral::~ProcessAnimateWindowSpiral( void ) { }
 
 //-----------------------------------------------------------------------------
-void ProcessAnimateWindowSpiral::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSpiral::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	if(!animWin)
 	{
 		DEBUG_ASSERTCRASH( animWin, ("animWin was passed into initAnimateWindow as a NULL Pointer... bad bad bad!"));
 		return;
 	}
-	if(animWin->getDelay() > 0)
-		animWin->setStartTime(timeGetTime() + (maxDelay - animWin->getDelay()));
+	if(animWin->getDelay() > Millis{0})
+		animWin->setStartTime(std::chrono::steady_clock::now() + (maxDelay - animWin->getDelay()));
 	Coord2D vel = animWin->getVel();
 	vel.x = 0;
 	vel.y = 0;
@@ -1016,7 +1016,7 @@ void ProcessAnimateWindowSpiral::initAnimateWindow( AnimateWindow *animWin )
 	//set the window's position to the new start positions.
 	win->winSetPosition(startPos.x, startPos.y);
 
-	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, timeGetTime() + animWin->getDelay(), 0);
+	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, std::chrono::steady_clock::now() + animWin->getDelay(), TimePoint::min());
 }
 
 //-----------------------------------------------------------------------------
@@ -1034,7 +1034,7 @@ Bool ProcessAnimateWindowSpiral::updateAnimateWindow( AnimateWindow *animWin )
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -1058,7 +1058,7 @@ Bool ProcessAnimateWindowSpiral::updateAnimateWindow( AnimateWindow *animWin )
 	
 	ICoord2D size;
 	win->winGetSize(&size.x, &size.y);
-	Int m_max = min(size.x/2, size.y/2);
+	Int m_max = std::min(size.x/2, size.y/2);
 
 	if(vel.y < m_max)
 	{
@@ -1143,15 +1143,15 @@ ProcessAnimateWindowSlideFromTopFast::ProcessAnimateWindowSlideFromTopFast( void
 
 ProcessAnimateWindowSlideFromTopFast::~ProcessAnimateWindowSlideFromTopFast( void ) { }
 
-void ProcessAnimateWindowSlideFromTopFast::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSlideFromTopFast::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	if(!animWin)
 	{
 		DEBUG_ASSERTCRASH( animWin, ("animWin was passed into initAnimateWindow as a NULL Pointer... bad bad bad!"));
 		return;
 	}
-	if(animWin->getDelay() > 0)
-		animWin->setStartTime(timeGetTime() + (maxDelay - animWin->getDelay()));
+	if(animWin->getDelay() > Millis{0})
+		animWin->setStartTime(std::chrono::steady_clock::now() + (maxDelay - animWin->getDelay()));
 	Coord2D vel = animWin->getVel();
 	vel.x *= -1;
 	vel.y *= -1;
@@ -1199,7 +1199,7 @@ void ProcessAnimateWindowSlideFromTopFast::initAnimateWindow( AnimateWindow *ani
 	//Now initialize the velocities
 	vel = m_maxVel;
 
-	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, timeGetTime() + animWin->getDelay(), 0);
+	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, std::chrono::steady_clock::now() + animWin->getDelay(), TimePoint::min());
 }
 
 Bool ProcessAnimateWindowSlideFromTopFast::updateAnimateWindow( AnimateWindow *animWin )
@@ -1216,7 +1216,7 @@ Bool ProcessAnimateWindowSlideFromTopFast::updateAnimateWindow( AnimateWindow *a
 		return TRUE;
 	
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -1266,7 +1266,7 @@ Bool ProcessAnimateWindowSlideFromTopFast::reverseAnimateWindow( AnimateWindow *
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position
@@ -1328,15 +1328,15 @@ ProcessAnimateWindowSlideFromRightFast::ProcessAnimateWindowSlideFromRightFast( 
 ProcessAnimateWindowSlideFromRightFast::~ProcessAnimateWindowSlideFromRightFast( void ) { }
 
 //-----------------------------------------------------------------------------
-void ProcessAnimateWindowSlideFromRightFast::initReverseAnimateWindow( AnimateWindow *animWin, UnsignedInt maxDelay )
+void ProcessAnimateWindowSlideFromRightFast::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
 {
 	if(!animWin)
 	{
 		DEBUG_ASSERTCRASH( animWin, ("animWin was passed into initAnimateWindow as a NULL Pointer... bad bad bad!"));
 		return;
 	}
-	if(animWin->getDelay() > 0)
-		animWin->setStartTime(timeGetTime() + (maxDelay - animWin->getDelay()));
+	if(animWin->getDelay() > Millis{0})
+		animWin->setStartTime(std::chrono::steady_clock::now() + (maxDelay - animWin->getDelay()));
 	Coord2D vel = animWin->getVel();
 	vel.x *= -1;
 	vel.y *= -1;
@@ -1393,7 +1393,7 @@ void ProcessAnimateWindowSlideFromRightFast::initAnimateWindow( AnimateWindow *a
 	endPos.y = restPos.y;
 
 	//set the initial positions for the window. In this case, off the Right of the screen
-	Int travelDistance = TheDisplay->getWidth() - restPos.x + size.x ;// / 4 * 3;
+	Int travelDistance = static_cast<Int>(TheDisplay->getWidth()) - restPos.x + size.x ;// / 4 * 3;
 	startPos.x = curPos.x = restPos.x + travelDistance;
 	startPos.y = curPos.y = restPos.y;
 
@@ -1405,7 +1405,7 @@ void ProcessAnimateWindowSlideFromRightFast::initAnimateWindow( AnimateWindow *a
 	vel.y = 0.0f;
 
 
-	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, timeGetTime() + animWin->getDelay(), 0);
+	animWin->setAnimData(startPos, endPos, curPos, restPos, vel, std::chrono::steady_clock::now() + animWin->getDelay(), TimePoint::min());
 }
 
 
@@ -1424,7 +1424,7 @@ Bool ProcessAnimateWindowSlideFromRightFast::updateAnimateWindow( AnimateWindow 
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 	// it's set that the window is passed in as it's current position being it's rest position
 	// so save off the rest position
@@ -1472,7 +1472,7 @@ Bool ProcessAnimateWindowSlideFromRightFast::reverseAnimateWindow( AnimateWindow
 		return TRUE;
 
 	// if the window hasn't started animating...return that we're not finished
-	if(timeGetTime() < animWin->getStartTime())
+	if(std::chrono::steady_clock::now() < animWin->getStartTime())
 		return FALSE;
 
 	// it's set that the window is passed in as it's current position being it's rest position

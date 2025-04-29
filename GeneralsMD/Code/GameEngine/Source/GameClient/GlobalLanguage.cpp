@@ -60,7 +60,7 @@
 //-----------------------------------------------------------------------------
 // DEFINES ////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-GlobalLanguage *TheGlobalLanguageData = NULL;				///< The global language singalton
+GlobalLanguage *TheGlobalLanguageData = NULL;				///< The global language singleton
 
 static const FieldParse TheGlobalLanguageDataFieldParseTable[] = 
 {
@@ -118,6 +118,7 @@ GlobalLanguage::GlobalLanguage()
 	m_ini.m_useHardWrap = FALSE;
 	m_ini.m_resolutionFontSizeAdjustment = 0.7f;
 	m_ini.m_militaryCaptionDelayMS = 750;
+	m_ini.m_obj = this;
 	//End Add
 }
 
@@ -184,7 +185,8 @@ void GlobalLanguage::parseFontDesc(INI *ini, void */*instance*/, void *store, co
 
 void GlobalLanguage::parseFontFileName( INI *ini, void * instance, void * /*store*/, const void* /*userData*/ )
 {
-	GlobalLanguage *monkey = (GlobalLanguage *)instance;
+	GlobalLanguage::IniData* data = (GlobalLanguage::IniData*) instance;
+	GlobalLanguage* monkey = data->m_obj;
 	AsciiString asciiString = ini->getNextAsciiString();
 	monkey->m_localFonts.push_front(asciiString);
 }

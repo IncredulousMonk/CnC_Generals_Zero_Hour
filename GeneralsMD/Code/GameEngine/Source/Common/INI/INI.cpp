@@ -105,7 +105,7 @@ static const BlockParse theTypeTable[] =
 	{ "WindowTransition",		INI::parseWindowTransitions},
 // 	{ "DamageFX",						INI::parseDamageFXDefinition },
 // 	{ "DialogEvent",				INI::parseDialogDefinition },
-// 	{ "DrawGroupInfo",		INI::parseDrawGroupNumberDefinition },
+	{ "DrawGroupInfo",		INI::parseDrawGroupNumberDefinition },
 // 	{ "EvaEvent",						INI::parseEvaEvent },
 // 	{ "FXList",							INI::parseFXListDefinition },
 	{ "GameData",						INI::parseGameDataDefinition },

@@ -126,8 +126,11 @@ void AsciiString::ensureUniqueBufferOfSize(int numCharsNeeded, Bool preserveData
 			m_data->m_numCharsAllocated >= numCharsNeeded)
 	{
 		// no buffer manhandling is needed (it's already large enough, and unique to us)
-		if (strToCopy)
-			strcpy(m_data->peek(), strToCopy);
+		if (strToCopy) {
+			// MG: Uh oh... "Like memcpy, [strcpy] has undefined results if the strings overlap", which happens when using nextToken().
+			// strcpy(m_data->peek(), strToCopy);
+			memmove(m_data->peek(), strToCopy, strlen(strToCopy) + 1);
+		}
 		if (strToCat)
 			strcat(m_data->peek(), strToCat);
 		return;

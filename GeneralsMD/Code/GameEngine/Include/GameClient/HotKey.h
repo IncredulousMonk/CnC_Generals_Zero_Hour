@@ -78,6 +78,11 @@ class HotKey
 {
 public:
 	HotKey( void );
+
+	// No copies allowed!
+	HotKey(const HotKey&) = delete;
+	HotKey& operator=(const HotKey&) = default;
+
 	GameWindow *m_win;
 	AsciiString m_key;	
 	// we may need a checkmark system.

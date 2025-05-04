@@ -76,7 +76,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #if defined(_DEBUG) || defined(_INTERNAL)	//debug hack to view object under mouse stats
-extern ICoord2D TheMousePos;
+// extern ICoord2D TheMousePos;
 #endif
 
 // rawMouseToWindowMessage ====================================================
@@ -146,6 +146,9 @@ static GameWindowMessage rawMouseToWindowMessage( const GameMessage *msg )
 				gwm = GWM_WHEEL_DOWN;
 			break;
 
+		default:
+			break;
+
 	}  // end switch
 
 	return gwm;
@@ -176,28 +179,29 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 	Bool forceKeepMessage = FALSE;
 	WinInputReturnCode returnCode = WIN_INPUT_NOT_USED;
 
-	if (TheTacticalView && TheTacticalView->isMouseLocked())
-	{
-		//Kris: Aug 15, 2003
-		//Added the scrolling check that will not return KEEP_MESSAGE if we happen
-		//to in scrolling mode (via keyboard or mouse) and left click in the controlbar.
-		//Without this code, the left click goes through the interface ignoring buttons and blockage
-		//and ends up issuing orders right through the controlbar!
-		if( TheInGameUI->isScrolling() )
-		{
-			if( msg->getType() != GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_UP &&
-					msg->getType() != GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_DOWN )
-			{
-				//We're scrolling, but unless we're clicking the left button, get out.
-				return KEEP_MESSAGE;
-			}
-			//Pass through and handle button clicks or getting input blocked!
-		}
-		else
-		{
-			return KEEP_MESSAGE;
-		}
-	}
+	// FIXME: TheTacticalView
+	// if (TheTacticalView && TheTacticalView->isMouseLocked())
+	// {
+	// 	//Kris: Aug 15, 2003
+	// 	//Added the scrolling check that will not return KEEP_MESSAGE if we happen
+	// 	//to in scrolling mode (via keyboard or mouse) and left click in the controlbar.
+	// 	//Without this code, the left click goes through the interface ignoring buttons and blockage
+	// 	//and ends up issuing orders right through the controlbar!
+	// 	if( TheInGameUI->isScrolling() )
+	// 	{
+	// 		if( msg->getType() != GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_UP &&
+	// 				msg->getType() != GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_DOWN )
+	// 		{
+	// 			//We're scrolling, but unless we're clicking the left button, get out.
+	// 			return KEEP_MESSAGE;
+	// 		}
+	// 		//Pass through and handle button clicks or getting input blocked!
+	// 	}
+	// 	else
+	// 	{
+	// 		return KEEP_MESSAGE;
+	// 	}
+	// }
 
 	switch( msg->getType() )
 	{
@@ -217,12 +221,14 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 		// ------------------------------------------------------------------------
 		case GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_UP:
 		{
-			if( TheInGameUI && TheInGameUI->isPlacementAnchored() )
-			{
-				//If we release the button outside
-				forceKeepMessage = TRUE;
-			}
+			// FIXME: TheInGameUI
+			// if( TheInGameUI && TheInGameUI->isPlacementAnchored() )
+			// {
+			// 	//If we release the button outside
+			// 	forceKeepMessage = TRUE;
+			// }
 			//FALL THROUGH INTENTIONALLY!
+			[[fallthrough]];
 		}
 		case GameMessage::MSG_RAW_MOUSE_POSITION:
 		case GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_DOWN:
@@ -237,8 +243,8 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 			// all window events have the position of the mouse as arg 0
 			ICoord2D mousePos = msg->getArgument( 0 )->pixel;
 #if defined(_DEBUG) || defined(_INTERNAL)	//debug hack to view object under mouse stats
-			TheMousePos.x = mousePos.x;
-			TheMousePos.y = mousePos.y;
+			// TheMousePos.x = mousePos.x;
+			// TheMousePos.y = mousePos.y;
 #endif
 
 			// process the mouse event position
@@ -249,8 +255,9 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 			if( TheShell && TheShell->isShellActive() )
 				returnCode = WIN_INPUT_USED;
 			
-			if ( TheInGameUI && TheInGameUI->getInputEnabled() == FALSE )
-				returnCode = WIN_INPUT_USED;
+			// FIXME: TheInGameUI
+			// if ( TheInGameUI && TheInGameUI->getInputEnabled() == FALSE )
+			// 	returnCode = WIN_INPUT_USED;
 
 			break;
 
@@ -275,8 +282,9 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 			if( TheShell && TheShell->isShellActive() )
 				returnCode = WIN_INPUT_USED;
 
-			if ( TheInGameUI && TheInGameUI->getInputEnabled() == FALSE )
-				returnCode = WIN_INPUT_USED;
+			// FIXME: TheInGameUI
+			// if ( TheInGameUI && TheInGameUI->getInputEnabled() == FALSE )
+			// 	returnCode = WIN_INPUT_USED;
 
 			break;
 
@@ -300,8 +308,9 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 			if( TheShell && TheShell->isShellActive() )
 				returnCode = WIN_INPUT_USED;
 
-			if ( TheInGameUI && TheInGameUI->getInputEnabled() == FALSE )
-				returnCode = WIN_INPUT_USED;
+			// FIXME: TheInGameUI
+			// if ( TheInGameUI && TheInGameUI->getInputEnabled() == FALSE )
+			// 	returnCode = WIN_INPUT_USED;
 
 			break;
 
@@ -325,7 +334,7 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 				&& (key == KEY_ESC) 
 				&& (BitTest( state, KEY_STATE_UP ))
 				&& TheDisplay->isMoviePlaying()
-				&& TheGlobalData->m_allowExitOutOfMovies == TRUE )
+				&& TheGlobalData->m_data.m_allowExitOutOfMovies == TRUE )
 			{
 				TheDisplay->stopMovie();
 				returnCode = WIN_INPUT_USED;
@@ -333,8 +342,9 @@ GameMessageDisposition WindowTranslator::translateGameMessage(const GameMessage 
 
 			if(returnCode != WIN_INPUT_USED 
 				&& (key == KEY_ESC) 
-				&& (BitTest( state, KEY_STATE_UP ))
-				&& (TheInGameUI && (TheInGameUI->getInputEnabled() == FALSE)) )
+				&& (BitTest( state, KEY_STATE_UP )) )
+				// FIXME: TheInGameUI
+				// && (TheInGameUI && (TheInGameUI->getInputEnabled() == FALSE)) )
 			{
 				returnCode = WIN_INPUT_USED;
 			}

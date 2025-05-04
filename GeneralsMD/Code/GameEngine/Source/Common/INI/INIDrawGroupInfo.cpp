@@ -63,19 +63,18 @@ void parsePercentToReal( INI* ini, void * /*instance*/, void *store, const void*
 
 const FieldParse DrawGroupInfo::s_fieldParseTable[] = 
 {
-	{ "UsePlayerColor",												INI::parseBool,						NULL, offsetof( DrawGroupInfo, m_usePlayerColor) },
-	{ "ColorForText",													INI::parseColorInt,				NULL, offsetof( DrawGroupInfo, m_colorForText ) },
-	{ "ColorForTextDropShadow",								INI::parseColorInt,				NULL, offsetof( DrawGroupInfo, m_colorForTextDropShadow ) },
-	
-	{ "FontName",															INI::parseQuotedAsciiString,		NULL, offsetof( DrawGroupInfo, m_fontName ) },
-	{ "FontSize",															INI::parseInt,						NULL, offsetof( DrawGroupInfo, m_fontSize ) },
-	{ "FontIsBold",														INI::parseBool,						NULL, offsetof( DrawGroupInfo, m_fontIsBold ) },
-	{ "DropShadowOffsetX",										INI::parseInt,						NULL, offsetof( DrawGroupInfo, m_dropShadowOffsetX) },
-	{ "DropShadowOffsetY",										INI::parseInt,						NULL, offsetof( DrawGroupInfo, m_dropShadowOffsetY) },
-	{ "DrawPositionXPixel",			  						parseInt,									(void*)0, 0 },
-	{ "DrawPositionXPercent",			  					parsePercentToReal,				(void*)0, 0 },
-	{ "DrawPositionYPixel",			  						parseInt,									(void*)1, 0 },
-	{ "DrawPositionYPercent",			  					parsePercentToReal,				(void*)1, 0 },
+	{ "UsePlayerColor",				INI::parseBool,					NULL, offsetof( DrawGroupInfo, m_usePlayerColor) },
+	{ "ColorForText",				INI::parseColorInt,				NULL, offsetof( DrawGroupInfo, m_colorForText ) },
+	{ "ColorForTextDropShadow",		INI::parseColorInt,				NULL, offsetof( DrawGroupInfo, m_colorForTextDropShadow ) },
+	{ "FontName",					INI::parseQuotedAsciiString,	NULL, offsetof( DrawGroupInfo, m_fontName ) },
+	{ "FontSize",					INI::parseInt,					NULL, offsetof( DrawGroupInfo, m_fontSize ) },
+	{ "FontIsBold",					INI::parseBool,					NULL, offsetof( DrawGroupInfo, m_fontIsBold ) },
+	{ "DropShadowOffsetX",			INI::parseInt,					NULL, offsetof( DrawGroupInfo, m_dropShadowOffsetX) },
+	{ "DropShadowOffsetY",			INI::parseInt,					NULL, offsetof( DrawGroupInfo, m_dropShadowOffsetY) },
+	{ "DrawPositionXPixel",			parseInt,						(void*)0, 0 },
+	{ "DrawPositionXPercent",		parsePercentToReal,				(void*)0, 0 },
+	{ "DrawPositionYPixel",			parseInt,						(void*)1, 0 },
+	{ "DrawPositionYPercent",		parsePercentToReal,				(void*)1, 0 },
 	
 	{ 0, 0, 0, 0 }
 };
@@ -83,6 +82,7 @@ const FieldParse DrawGroupInfo::s_fieldParseTable[] =
 /*static */ void INI::parseDrawGroupNumberDefinition(INI* ini)
 {
 	if (!TheDrawGroupInfo) {
+		DEBUG_LOG(("INI::parseDrawGroupNumberDefinition: TheDrawGroupInfo is NULL\n"));
 		throw INI_UNKNOWN_ERROR;
 	}
 

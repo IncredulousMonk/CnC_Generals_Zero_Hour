@@ -52,10 +52,10 @@
 #include "GameClient/Display.h"
 #include "GameClient/DisplayStringManager.h"
 // #include "GameClient/Drawable.h"
-// #include "GameClient/DrawGroupInfo.h"
+#include "GameClient/DrawGroupInfo.h"
 // #include "GameClient/Eva.h"
 #include "GameClient/GameWindowManager.h"
-// #include "GameClient/GlobalLanguage.h"
+#include "GameClient/GlobalLanguage.h"
 // #include "GameClient/GraphDraw.h"
 // #include "GameClient/GUICommandTranslator.h"
 #include "GameClient/HeaderTemplate.h"
@@ -77,7 +77,7 @@
 // #include "GameClient/TerrainVisual.h"
 // #include "GameClient/View.h"
 #include "GameClient/VideoPlayer.h"
-// #include "GameClient/WindowXlat.h"
+#include "GameClient/WindowXlat.h"
 // #include "GameLogic/FPUControl.h"
 // #include "GameLogic/GameLogic.h"
 // #include "GameLogic/GhostObject.h"
@@ -117,7 +117,7 @@ GameClient::GameClient()
 	// m_drawableList = NULL;
 	
 	// m_nextDrawableID = (DrawableID)1;
-	// TheDrawGroupInfo = new DrawGroupInfo;
+	TheDrawGroupInfo = new DrawGroupInfo;
 }
 
 //std::vector<std::string>	preloadTextureNamesGlobalHack;
@@ -131,11 +131,11 @@ GameClient::~GameClient()
 	TheGraphDraw = NULL;
 #endif
 
-	// if (TheDrawGroupInfo) 
-	// {
-	// 	delete TheDrawGroupInfo;
-	// 	TheDrawGroupInfo = NULL;
-	// }
+	if (TheDrawGroupInfo) 
+	{
+		delete TheDrawGroupInfo;
+		TheDrawGroupInfo = NULL;
+	}
 
 	// // clear any drawable TOC we might have
 	// m_drawableTOC.clear();
@@ -190,10 +190,10 @@ GameClient::~GameClient()
 	delete TheWindowManager;
 	TheWindowManager = NULL;
 
-	// // delete the font library
-	// TheFontLibrary->reset();
-	// delete TheFontLibrary;
-	// TheFontLibrary = NULL;
+	// delete the font library
+	TheFontLibrary->reset();
+	delete TheFontLibrary;
+	TheFontLibrary = NULL;
 
 	delete TheMouse;
 	TheMouse = NULL;
@@ -253,17 +253,17 @@ void GameClient::init( void )
 
 	setFrameRate(MSEC_PER_LOGICFRAME_REAL);		// from GameCommon.h... tell W3D what our expected framerate is
 
-// 	INI ini;
-// 	// Load the DrawGroupInfo here, before the Display Manager is loaded.
-// 	ini.load("Data\\INI\\DrawGroupInfo.ini", INI_LOAD_OVERWRITE, NULL);
+	INI ini;
+	// Load the DrawGroupInfo here, before the Display Manager is loaded.
+	ini.load("Data\\INI\\DrawGroupInfo.ini", INI_LOAD_OVERWRITE, NULL);
 	
-// 	// Override the ini values with localized versions:
-// 	if (TheGlobalLanguageData && TheGlobalLanguageData->m_drawGroupInfoFont.name.isNotEmpty())
-// 	{
-// 		TheDrawGroupInfo->m_fontName = TheGlobalLanguageData->m_drawGroupInfoFont.name;
-// 		TheDrawGroupInfo->m_fontSize = TheGlobalLanguageData->m_drawGroupInfoFont.size;
-// 		TheDrawGroupInfo->m_fontIsBold = TheGlobalLanguageData->m_drawGroupInfoFont.bold;
-// 	}
+	// Override the ini values with localized versions:
+	if (TheGlobalLanguageData && TheGlobalLanguageData->m_ini.m_drawGroupInfoFont.name.isNotEmpty())
+	{
+		TheDrawGroupInfo->m_fontName = TheGlobalLanguageData->m_ini.m_drawGroupInfoFont.name;
+		TheDrawGroupInfo->m_fontSize = TheGlobalLanguageData->m_ini.m_drawGroupInfoFont.size;
+		TheDrawGroupInfo->m_fontIsBold = TheGlobalLanguageData->m_ini.m_drawGroupInfoFont.bold;
+	}
 
 	// create the display string factory
 	TheDisplayStringManager = createDisplayStringManager();
@@ -296,7 +296,7 @@ void GameClient::init( void )
 		//
 
 		// // since we only allocate one of each, don't bother pooling 'em
-		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") WindowTranslator,     10 );
+		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") WindowTranslator,     10 );
 		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") MetaEventTranslator,	20 );
 		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") HotKeyTranslator,	25 );
 		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") PlaceEventTranslator,	30 );
@@ -318,10 +318,10 @@ void GameClient::init( void )
 
 	}  
 
-// 	// create the font library
-// 	TheFontLibrary = createFontLibrary();
-// 	if( TheFontLibrary )
-// 		TheFontLibrary->init();
+	// create the font library
+	TheFontLibrary = createFontLibrary();
+	if( TheFontLibrary )
+		TheFontLibrary->init();
 
 	// create the mouse
 	TheMouse = createMouse();
@@ -399,7 +399,7 @@ void GameClient::init( void )
 //  		TheRayEffects->setName("TheRayEffects");
 // 	}
 
-// 	TheMouse->init();	//finish initializing the mouse.
+	TheMouse->init();	//finish initializing the mouse.
 
 // 	// set the limits of the mouse now that we've created the display and such
 // 	if( TheMouse )
@@ -523,7 +523,7 @@ void GameClient::update( void )
 	if (TheGlobalData->m_data.m_playIntro && !TheDisplay->isMoviePlaying())
 	{
 		// if(TheGameLODManager && TheGameLODManager->didMemPass())
-			TheDisplay->playLogoMovie("EALogoMovie", 5000, 3000);
+			// TheDisplay->playLogoMovie("EALogoMovie", 5000, 3000);
 		// else
 			// TheDisplay->playLogoMovie("EALogoMovie640", 5000, 3000);
 		TheWritableGlobalData->m_data.m_playIntro = FALSE;
@@ -753,10 +753,10 @@ void GameClient::update( void )
 // 		TheTerrainVisual->UPDATE();
 // 	}
 
-// 	// update display
-// 	{
-// 		TheDisplay->UPDATE();
-// 	}
+	// update display
+	{
+		TheDisplay->UPDATE();
+	}
 
 // 	{
 // 		USE_PERF_TIMER(GameClient_draw)
@@ -767,10 +767,10 @@ void GameClient::update( void )
 // 		TheDisplay->DRAW();
 // 	}
 
-// 	{
-// 		// let display string factory handle its update
-// 		TheDisplayStringManager->update();
-// 	}
+	{
+		// let display string factory handle its update
+		TheDisplayStringManager->update();
+	}
 
 // 	{
 // 		// update the shell
@@ -781,6 +781,10 @@ void GameClient::update( void )
 // 		// update the in game UI 
 // 		TheInGameUI->UPDATE();
 // 	}
+
+	// FIXME: Remove once TheGameLogic is implemented, because it controls frame count.
+	m_frame++;
+
 }  // end update
 
 /** -----------------------------------------------------------------------------------------------

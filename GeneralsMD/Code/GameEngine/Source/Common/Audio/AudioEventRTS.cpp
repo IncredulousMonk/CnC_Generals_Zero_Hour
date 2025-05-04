@@ -324,52 +324,52 @@ void AudioEventRTS::generateFilename( void )
 		return;
 	}
 	
-	m_filenameToLoad = generateFilenamePrefix(m_eventInfo->m_soundType, false);
+	m_filenameToLoad = generateFilenamePrefix(m_eventInfo->m_data.m_soundType, false);
 	
 	Int which = 0;
 
-	if (m_eventInfo->m_soundType == AT_Music || m_eventInfo->m_soundType == AT_Streaming) {
-		m_filenameToLoad.concat(m_eventInfo->m_filename);
+	if (m_eventInfo->m_data.m_soundType == AT_Music || m_eventInfo->m_data.m_soundType == AT_Streaming) {
+		m_filenameToLoad.concat(m_eventInfo->m_data.m_filename);
 		adjustForLocalization(m_filenameToLoad);
 		return;
 	} else {
-		if (m_eventInfo->m_sounds.size() == 0) {
+		if (m_eventInfo->m_data.m_sounds.size() == 0) {
 			m_filenameToLoad = AsciiString::TheEmptyString;
 			return;
 		}
 
 
 		
-		if (BitTest(m_eventInfo->m_control, AC_RANDOM)) 
+		if (BitTest(m_eventInfo->m_data.m_control, AC_RANDOM)) 
 		{ 
 			if (m_isLogicalAudio) 
 			{
-				which = GameLogicRandomValue(0, m_eventInfo->m_sounds.size() - 1);
+				which = GameLogicRandomValue(0, m_eventInfo->m_data.m_sounds.size() - 1);
 			} 
 			else 
 			{
-				which = GameAudioRandomValue(0, m_eventInfo->m_sounds.size() - 1);
+				which = GameAudioRandomValue(0, m_eventInfo->m_data.m_sounds.size() - 1);
 			}
 
-			if (which == m_playingAudioIndex && m_eventInfo->m_sounds.size() > 2)
-				which = ( which + 1 ) % static_cast<Int>(m_eventInfo->m_sounds.size());
+			if (which == m_playingAudioIndex && m_eventInfo->m_data.m_sounds.size() > 2)
+				which = ( which + 1 ) % static_cast<Int>(m_eventInfo->m_data.m_sounds.size());
 
 			m_playingAudioIndex = which;//caching random choice to compare next call
 
 		}
 		else
-			which = (++m_playingAudioIndex) % static_cast<Int>(m_eventInfo->m_sounds.size());
+			which = (++m_playingAudioIndex) % static_cast<Int>(m_eventInfo->m_data.m_sounds.size());
  
 
 	}
 	
-	m_filenameToLoad.concat(m_eventInfo->m_sounds[static_cast<size_t>(which)]);
-	m_filenameToLoad.concat(generateFilenameExtension(m_eventInfo->m_soundType));
+	m_filenameToLoad.concat(m_eventInfo->m_data.m_sounds[static_cast<size_t>(which)]);
+	m_filenameToLoad.concat(generateFilenameExtension(m_eventInfo->m_data.m_soundType));
 	adjustForLocalization(m_filenameToLoad);
 
 	// Note: Also generate Delay when generating a filename, cause 
 	// we want delay to apply between every loop of a sound.
-	m_delay = GameAudioRandomValueReal(m_eventInfo->m_delayMin, m_eventInfo->m_delayMax);
+	m_delay = GameAudioRandomValueReal(m_eventInfo->m_data.m_delayMin, m_eventInfo->m_data.m_delayMax);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -381,14 +381,14 @@ AsciiString AudioEventRTS::getFilename( void )
 //-------------------------------------------------------------------------------------------------
 void AudioEventRTS::generatePlayInfo( void )
 {
-	m_pitchShift = GameAudioRandomValueReal(m_eventInfo->m_pitchShiftMin, m_eventInfo->m_pitchShiftMax);
-	m_volumeShift = GameAudioRandomValueReal(1.0f + m_eventInfo->m_volumeShift, 1.0f);	// volume shifts are between 0 and 1
-	m_loopCount = m_eventInfo->m_loopCount;
+	m_pitchShift = GameAudioRandomValueReal(m_eventInfo->m_data.m_pitchShiftMin, m_eventInfo->m_data.m_pitchShiftMax);
+	m_volumeShift = GameAudioRandomValueReal(1.0f + m_eventInfo->m_data.m_volumeShift, 1.0f);	// volume shifts are between 0 and 1
+	m_loopCount = m_eventInfo->m_data.m_loopCount;
 	
 	m_portionToPlayNext = PP_Attack;
-	Int attackSize = m_eventInfo->m_attackSounds.size();
+	Int attackSize = m_eventInfo->m_data.m_attackSounds.size();
 	if (attackSize > 0) {
-		m_attackName = generateFilenamePrefix(m_eventInfo->m_soundType, false);
+		m_attackName = generateFilenamePrefix(m_eventInfo->m_data.m_soundType, false);
 		// needs to be logic because it needs to be the same on all systems.
 		Int attackToPlay;
 		if (m_isLogicalAudio) {
@@ -397,16 +397,16 @@ void AudioEventRTS::generatePlayInfo( void )
 			attackToPlay = GameAudioRandomValue(0, attackSize - 1);
 		}
 		
-		m_attackName.concat(m_eventInfo->m_attackSounds[static_cast<size_t>(attackToPlay)]);
-		m_attackName.concat(generateFilenameExtension(m_eventInfo->m_soundType));
+		m_attackName.concat(m_eventInfo->m_data.m_attackSounds[static_cast<size_t>(attackToPlay)]);
+		m_attackName.concat(generateFilenameExtension(m_eventInfo->m_data.m_soundType));
 		adjustForLocalization(m_attackName);
 	} else {
 		m_portionToPlayNext = PP_Sound;
 	}
 
-	Int decaySize = m_eventInfo->m_decaySounds.size();
+	Int decaySize = m_eventInfo->m_data.m_decaySounds.size();
 	if (decaySize > 0) {
-		m_decayName = generateFilenamePrefix(m_eventInfo->m_soundType, false);
+		m_decayName = generateFilenamePrefix(m_eventInfo->m_data.m_soundType, false);
 		// needs to be logic because it needs to be the same on all systems.
 		Int decayToPlay;
 		if (m_isLogicalAudio) {
@@ -415,8 +415,8 @@ void AudioEventRTS::generatePlayInfo( void )
 			decayToPlay = GameAudioRandomValue(0, decaySize - 1);
 		}
 		
-		m_decayName.concat(m_eventInfo->m_decaySounds[static_cast<size_t>(decayToPlay)]);
-		m_decayName.concat(generateFilenameExtension(m_eventInfo->m_soundType));
+		m_decayName.concat(m_eventInfo->m_data.m_decaySounds[static_cast<size_t>(decayToPlay)]);
+		m_decayName.concat(generateFilenameExtension(m_eventInfo->m_data.m_soundType));
 		adjustForLocalization(m_decayName);
 	}
 
@@ -474,9 +474,9 @@ void AudioEventRTS::advanceNextPlayPortion( void )
 			m_portionToPlayNext = PP_Sound;
 			break;
 		case PP_Sound:
-			if (m_eventInfo && BitTest(m_eventInfo->m_control, AC_ALL)) 
+			if (m_eventInfo && BitTest(m_eventInfo->m_data.m_control, AC_ALL)) 
 			{
-				if (m_allCount == static_cast<Int>(m_eventInfo->m_sounds.size())) {
+				if (m_allCount == static_cast<Int>(m_eventInfo->m_data.m_sounds.size())) {
 					m_portionToPlayNext = PP_Decay;
 				}
 
@@ -529,7 +529,7 @@ void AudioEventRTS::setAudioEventInfo( const AudioEventInfo *eventInfo ) const
 const AudioEventInfo *AudioEventRTS::getAudioEventInfo( void ) const
 {
 	if (m_eventInfo) {
-		if (m_eventInfo->m_audioName == m_eventName) {
+		if (m_eventInfo->m_data.m_audioName == m_eventName) {
 			return m_eventInfo;
 		} else {
 			m_eventInfo = NULL;
@@ -673,7 +673,7 @@ Bool AudioEventRTS::isPositionalAudio( void ) const
 {
 	if( m_eventInfo ) 
 	{
-		if( !BitTest( m_eventInfo->m_type, ST_WORLD ) ) 
+		if( !BitTest( m_eventInfo->m_data.m_type, ST_WORLD ) ) 
 		{
 			return FALSE;
 		}
@@ -713,7 +713,7 @@ Real AudioEventRTS::getVolume( void ) const
 {
 	if (m_volume == -1.0f) {
 		if (m_eventInfo) {
-			return m_eventInfo->m_volume;
+			return m_eventInfo->m_data.m_volume;
 		}
 		return 0.5;
 	}
@@ -815,7 +815,7 @@ void AudioEventRTS::adjustForLocalization(AsciiString &strToAdjust)
 
 	// try the localized version first so that we're guarenteed to get it
 	// even if the generic data directory holds a version of the file
-	AsciiString localizedFilePath = generateFilenamePrefix(m_eventInfo->m_soundType, TRUE);
+	AsciiString localizedFilePath = generateFilenamePrefix(m_eventInfo->m_data.m_soundType, TRUE);
 	AsciiString filename = str;
 	localizedFilePath.concat(filename);
 

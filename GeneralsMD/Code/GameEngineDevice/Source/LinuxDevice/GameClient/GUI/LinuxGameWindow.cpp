@@ -477,8 +477,8 @@ void LinuxGameWindow::winDrawBorder( void )
 void LinuxGameWindow::winSetFont( GameFont *font )
 {
 
-   // // extending functionality
-   // GameWindow::winSetFont( font );
+   // extending functionality
+   GameWindow::winSetFont( font );
 
    // // assign font to text renderer
    // m_textRenderer.Set_Font( static_cast<FontCharsClass *>(font->fontData) );
@@ -494,8 +494,8 @@ void LinuxGameWindow::winSetFont( GameFont *font )
 Int LinuxGameWindow::winSetText( UnicodeString newText )
 {
 
-   // // extending functionality
-   // GameWindow::winSetText( newText );
+   // extending functionality
+   GameWindow::winSetText( newText );
 
    // // rebuild the sentence in our text renderer
    // m_textRenderer.Build_Sentence( m_instData.getText().str(),NULL, NULL );

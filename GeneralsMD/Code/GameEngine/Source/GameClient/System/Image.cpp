@@ -232,16 +232,16 @@ const Image *ImageCollection::findImageByName( const AsciiString& name )
 //-------------------------------------------------------------------------------------------------
 void ImageCollection::load( Int textureSize )
 {
-	char buffer[ PATH_MAX ];
+	char buffer[ PATH_MAX ] {};
 	INI ini;
 	// first load in the user created mapped image files if we have them.
 	AsciiString userDataPath;	
 	if(TheGlobalData)
 	{
-		userDataPath.format("%sINI\\MappedImages\\*.ini",TheGlobalData->getPath_UserData().str());
+		userDataPath.format("%sINI/MappedImages/*.ini",TheGlobalData->getPath_UserData().str());
 		if (TheLocalFileSystem->doesFileExist(userDataPath.str()))
 		{
-			userDataPath.format("%sINI\\MappedImages",TheGlobalData->getPath_UserData().str());
+			userDataPath.format("%sINI/MappedImages",TheGlobalData->getPath_UserData().str());
 			ini.loadDirectory(userDataPath, TRUE, INI_LOAD_OVERWRITE, NULL );
 		}
 	}

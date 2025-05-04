@@ -87,8 +87,11 @@ void UnicodeString::ensureUniqueBufferOfSize(int numCharsNeeded, Bool preserveDa
 			m_data->m_numCharsAllocated >= numCharsNeeded)
 	{
 		// no buffer manhandling is needed (it's already large enough, and unique to us)
-		if (strToCopy)
-			wcscpy(m_data->peek(), strToCopy);
+		if (strToCopy) {
+			// MG: Uh oh... "Like wmemcpy, [wcscpy] has undefined results if the strings overlap", which happens when using nextToken().
+			// wcscpy(m_data->peek(), strToCopy);
+			wmemmove(m_data->peek(), strToCopy, wcslen(strToCopy) + 1);
+		}
 		if (strToCat)
 			wcscat(m_data->peek(), strToCat);
 		return;

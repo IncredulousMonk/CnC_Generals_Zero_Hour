@@ -198,10 +198,10 @@ void ArchiveFile::attachFile(File *file)
 
 const ArchivedFileInfo * ArchiveFile::getArchivedFileInfo(const AsciiString& filename) const
 {
-	AsciiString path;
+	AsciiString path {};
 	path = filename;
 	path.toLower();
-	AsciiString token;
+	AsciiString token {};
 
 	const DetailedArchivedDirectoryInfo *dirInfo = &m_rootDirectory;
 

@@ -255,7 +255,7 @@ public:
 	Int winBringToTop( void );  ///< bring this window to the top of the win list
 	Int winEnable( Bool enable );  /**< enable/disable a window, a disbled
 																 window can be seen but accepts no input */
-  Bool winGetEnabled( void ); ///< Is window enabled?
+	Bool winGetEnabled( void ); ///< Is window enabled?
 	Int winHide( Bool hide );  ///< hide/unhide a window
 	Bool winIsHidden( void );  ///< is this window hidden/
 	UnsignedInt winSetStatus( UnsignedInt status );  ///< set status bits
@@ -301,8 +301,8 @@ public:
 	void winGetDrawOffset( Int *x, Int *y );  ///< get draw offset
 	void winSetHiliteState( Bool state );  ///< set hilite state
 	void winSetTooltip( UnicodeString tip );  ///< set tooltip text
-  Int  getTooltipDelay() { return m_instData.m_tooltipDelay; } ///< get tooltip delay
-  void setTooltipDelay(Int delay) { m_instData.m_tooltipDelay = delay; } ///< set tooltip delay
+	Int  getTooltipDelay() { return m_instData.m_tooltipDelay; } ///< get tooltip delay
+	void setTooltipDelay(Int delay) { m_instData.m_tooltipDelay = delay; } ///< set tooltip delay
 
 	//-----------------------------------------------------------------------------
 	// text methods

@@ -10,7 +10,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 
 - Displays a window with the splash screen.
 - Plays the logo movie.
-- Some progress with the window manager's test GUI.
+- Some progress with the window manager's test GUI (buttons work, button text is displayed).
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -23,12 +23,14 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheGlobalLanguageData
   - TheMessageStream
   - TheGameClient (partial)
+    - TheDrawGroupInfo
     - TheDisplayStringManager
     - TheDisplay
     - TheKeyboard
     - TheMouse
     - TheMappedImageCollection
     - TheAnim2DCollection
+    - TheFontLibrary
     - TheHeaderTemplateManager
     - TheWindowManager
     - TheVideoPlayer
@@ -41,7 +43,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 
 ## Dependencies
 
-I'm using SDL3 for the window management, so you'll have to install that.
+I'm using SDL3 and SDL_ttf 3, so you'll have to install those libraries.
 
 I'm using FFmpeg to replace Bink, so I installed libavformat-dev, libswscale-dev, and libavdevice-dev.
 

@@ -66,7 +66,7 @@ UnsignedByte SdlMouse::getMouseEvent(MouseIO *result)
 }  // end getMouseEvent
 
 //-------------------------------------------------------------------------------------------------
-/** Translate a win32 mouse event to our own event info */
+/** Translate a SDL mouse event to our own event info */
 //-------------------------------------------------------------------------------------------------
 void SdlMouse::translateEvent(const SDL_Event& event, MouseIO *result)
 {
@@ -188,7 +188,7 @@ void SdlMouse::init()
    Mouse::init();
 
    //
-   // when we receive messages from a Windows message procedure, the mouse
+   // when we receive messages from SDL, the mouse
    // moves report the current cursor position and not deltas, our mouse
    // needs to process those positions as absolute and not relative
    //

@@ -176,7 +176,7 @@ WindowMsgHandledType PassMessagesToParentSystem( GameWindow *window, UnsignedInt
 	
 	return MSG_IGNORED;
 
-}  // end PassSelectedButtonsToParentSystem
+}  // end PassMessagesToParentSystem
 
 
 //-------------------------------------------------------------------------------------------------
@@ -1856,7 +1856,7 @@ GameWindow *GameWindowManager::gogoGadgetPushButton( GameWindow *parent,
 	if( BitTest( instData->getStyle(), GWS_PUSH_BUTTON ) == FALSE )
 	{
 
-		DEBUG_LOG(( "Cann't create button gadget, instance data not button type\n" ));
+		DEBUG_LOG(( "Can't create button gadget, instance data not button type\n" ));
 		assert( 0 );
 		return NULL;
 
@@ -3588,7 +3588,7 @@ void GameWindowManager::assignDefaultGadgetLook( GameWindow *gadget,
 }  // end assignDefaultGadgetLook
 
 //-------------------------------------------------------------------------------------------------
-/** Given a text label, retreive the real localized text associated
+/** Given a text label, retrieve the real localized text associated
 	* with that label */
 //-------------------------------------------------------------------------------------------------
 UnicodeString GameWindowManager::winTextLabelToText( AsciiString label )
@@ -3726,7 +3726,8 @@ static WindowMsgHandledType testGrab( GameWindow *window, UnsignedInt msg,
 	switch( msg )
 	{
 
-		case GWM_LEFT_DOWN:  return MSG_HANDLED;  // use it
+		case GWM_LEFT_DOWN:
+			return MSG_HANDLED;  // use it
 
 	}
 
@@ -3758,37 +3759,28 @@ Bool GameWindowManager::initTestGUI( void )
 	// window->winSetInputFunc( testGrab );
 	window->winSetEnabledColor( 0, TheWindowManager->winMakeColor( 128, 128, 128, 255 ) );
 	window->winSetEnabledBorderColor( 0 , TheWindowManager->winMakeColor( 0, 0, 0, 255 ) );
-	return TRUE;
 
 	// make a push button
 	instData.init();
 	BitSet( instData.m_style, GWS_PUSH_BUTTON | GWS_MOUSE_TRACK );
 	instData.m_textLabelString = "What Up?";
-	window = TheWindowManager->gogoGadgetPushButton( NULL, 
-																									 WIN_STATUS_ENABLED | WIN_STATUS_IMAGE, 
-																									 200, 100, 
-																									 100, 30, 
-																									 &instData, NULL, TRUE );
+	window = TheWindowManager->gogoGadgetPushButton( NULL, WIN_STATUS_ENABLED | WIN_STATUS_IMAGE, 
+		200, 100, 100, 30, &instData, NULL, TRUE );
 
 	// make a push button
 	instData.init();
 	BitSet( instData.m_style, GWS_PUSH_BUTTON | GWS_MOUSE_TRACK );
 	instData.m_textLabelString = "Enabled";
-	window = TheWindowManager->gogoGadgetPushButton( NULL, 
-																									 WIN_STATUS_ENABLED, 
-																									 330, 100, 
-																									 100, 30, 
-																									 &instData, NULL, TRUE );
+	window = TheWindowManager->gogoGadgetPushButton( NULL, WIN_STATUS_ENABLED, 
+		330, 100, 100, 30, &instData, NULL, TRUE );
 
 	// make a push button
 	instData.init();
 	BitSet( instData.m_style, GWS_PUSH_BUTTON | GWS_MOUSE_TRACK );
 	instData.m_textLabelString = "Disabled";
-	window = TheWindowManager->gogoGadgetPushButton( NULL, 
-																									 0, 
-																									 450, 100, 
-																									 100, 30, 
-																									 &instData, NULL, TRUE );
+	window = TheWindowManager->gogoGadgetPushButton( NULL, 0, 
+		450, 100, 100, 30, &instData, NULL, TRUE );
+	return TRUE;
 
 	// make a check box
 	instData.init();

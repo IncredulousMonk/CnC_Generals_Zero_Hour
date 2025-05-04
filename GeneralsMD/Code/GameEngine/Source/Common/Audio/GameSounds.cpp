@@ -217,14 +217,14 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 	// if so, kill them and start our sound
 	// if not, we're done. Can't play dude.
 	
-	if( event->isPositionalAudio() && !BitTest( event->getAudioEventInfo()->m_type, ST_GLOBAL) && event->getAudioEventInfo()->m_priority != AP_CRITICAL ) 
+	if( event->isPositionalAudio() && !BitTest( event->getAudioEventInfo()->m_data.m_type, ST_GLOBAL) && event->getAudioEventInfo()->m_data.m_priority != AP_CRITICAL ) 
 	{
 		Coord3D distance = *TheAudio->getListenerPosition();
 		const Coord3D *pos = event->getCurrentPosition();
 		if (pos) 
 		{
 			distance.sub(pos);
-			if (distance.length() >= event->getAudioEventInfo()->m_maxDistance) 
+			if (distance.length() >= event->getAudioEventInfo()->m_data.m_maxDistance) 
 			{
 #ifdef INTENSIVE_AUDIO_DEBUG
 				DEBUG_LOG(("- culled due to distance (%.2f).\n", distance.length()));
@@ -321,7 +321,7 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 //-------------------------------------------------------------------------------------------------
 Bool SoundManager::violatesVoice( AudioEventRTS *event )
 {
-	if (event->getAudioEventInfo()->m_type & ST_VOICE) {
+	if (event->getAudioEventInfo()->m_data.m_type & ST_VOICE) {
 		return (event->getObjectID() && TheAudio->isObjectPlayingVoice(event->getObjectID()));
 	}
 	return false;
@@ -330,5 +330,5 @@ Bool SoundManager::violatesVoice( AudioEventRTS *event )
 //-------------------------------------------------------------------------------------------------
 Bool SoundManager::isInterrupting( AudioEventRTS *event )
 {
-	return event->getAudioEventInfo()->m_control & AC_INTERRUPT;
+	return event->getAudioEventInfo()->m_data.m_control & AC_INTERRUPT;
 }

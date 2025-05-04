@@ -178,7 +178,7 @@ void FontLibrary::reset( void )
 //-------------------------------------------------------------------------------------------------
 GameFont *FontLibrary::getFont( AsciiString name, Int pointSize, Bool bold )
 {
-	GameFont *font;
+	GameFont *font {};
 
 	// search for font in list
 	for( font = m_fontList; font; font = font->next )
@@ -213,7 +213,7 @@ GameFont *FontLibrary::getFont( AsciiString name, Int pointSize, Bool bold )
 	if( loadFontData( font ) == FALSE )
 	{
 
-		DEBUG_CRASH(( "getFont: Unable to load font data pointer '%s'\n", name ));
+		DEBUG_CRASH(( "FontLibrary::getFont: Unable to load font data pointer '%s'\n", name.str() ));
 		font->deleteInstance();
 		return NULL;
 

@@ -43,7 +43,7 @@
 #include "GameClient/InGameUI.h"
 #include "GameClient/Keyboard.h"
 #include "GameClient/Mouse.h"
-// #include "GameClient/GlobalLanguage.h"
+#include "GameClient/GlobalLanguage.h"
 
 // #include "GameLogic/ScriptEngine.h"
 
@@ -158,7 +158,7 @@ void Mouse::updateMouseData( )
 
 		busy = TRUE;
 
-		// Get latest mouse events from DirectX
+		// Get latest platform mouse events
 		do
 		{
 			do
@@ -609,21 +609,20 @@ void Mouse::mouseNotifyResolutionChange( void )
 
 	m_tooltipDisplayString = TheDisplayStringManager->newDisplayString();
 
-	// FIXME: Uncomment once TheGlobalLanguageData is implemented.
-	// if (TheGlobalLanguageData && TheGlobalLanguageData->m_tooltipFontName.name.isNotEmpty())
-	// {
-	// 	m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
-	// 		TheGlobalLanguageData->m_tooltipFontName.name,
-	// 		TheGlobalLanguageData->adjustFontSize(TheGlobalLanguageData->m_tooltipFontName.size),
-	// 		TheGlobalLanguageData->m_tooltipFontName.bold) );
-	// }
-	// else
-	// {
-	// 	m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
-	// 		m_data.m_tooltipFontName,
-	// 		TheGlobalLanguageData->adjustFontSize(m_data.m_tooltipFontSize),
-	// 		m_data.m_tooltipFontIsBold ) );
-	// }
+	if (TheGlobalLanguageData && TheGlobalLanguageData->m_ini.m_tooltipFontName.name.isNotEmpty())
+	{
+		m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
+			TheGlobalLanguageData->m_ini.m_tooltipFontName.name,
+			TheGlobalLanguageData->adjustFontSize(TheGlobalLanguageData->m_ini.m_tooltipFontName.size),
+			TheGlobalLanguageData->m_ini.m_tooltipFontName.bold) );
+	}
+	else
+	{
+		m_tooltipDisplayString->setFont( TheFontLibrary->getFont(
+			m_data.m_tooltipFontName,
+			TheGlobalLanguageData->adjustFontSize(m_data.m_tooltipFontSize),
+			m_data.m_tooltipFontIsBold ) );
+	}
 
 	m_tooltipDisplayString->setWordWrap(120);
 
@@ -667,7 +666,7 @@ void Mouse::update( void )
 void Mouse::createStreamMessages( void )
 {
 
-	// santiy
+	// sanity
 	if( TheMessageStream == NULL )
 		return;  // no place to put messages
 
@@ -943,7 +942,7 @@ void Mouse::setPosition( Int x, Int y )
 }  // end setPosition
 
 //-------------------------------------------------------------------------------------------------
-/** This default implementation of SetMouseLimits will just set the limiting	
+/** This default implementation of SetMouseLimits will just set the limiting
 	* rectangle to be the width and height of the game display with the
 	* origin in the upper left at (0,0).  However, if the game is running
 	* in a windowed mode then these limits should reflect the SCREEN

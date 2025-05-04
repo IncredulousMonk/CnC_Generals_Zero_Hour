@@ -27,7 +27,7 @@
 
 #include "GameClient/GameWindowManager.h"
 #include "LinuxDevice/GameClient/LinuxGameWindow.h"
-// #include "W3DDevice/GameClient/W3DGadget.h"
+#include "LinuxDevice/GameClient/LinuxGadget.h"
 
 //-------------------------------------------------------------------------------------------------
 /** W3D implementation of the game window manager which controls all windows
@@ -76,8 +76,8 @@ protected:
 // INLINE //////////////////////////////////////////////////////////////////////////////////////////
 inline GameWindow *LinuxGameWindowManager::allocateNewWindow() { return newInstance(LinuxGameWindow); }
 inline GameWinDrawFunc LinuxGameWindowManager::getDefaultDraw() { return LinuxGameWinDefaultDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonImageDrawFunc() { return W3DGadgetPushButtonImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonDrawFunc() { return W3DGadgetPushButtonDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonImageDrawFunc() { return LinuxGadgetPushButtonImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonDrawFunc() { return LinuxGadgetPushButtonDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxImageDrawFunc() { return W3DGadgetCheckBoxImageDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxDrawFunc() { return W3DGadgetCheckBoxDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonImageDrawFunc() { return W3DGadgetRadioButtonImageDraw; }
@@ -99,8 +99,6 @@ inline GameWinDrawFunc LinuxGameWindowManager::getDefaultDraw() { return LinuxGa
 // inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryImageDrawFunc() { return W3DGadgetTextEntryImageDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryDrawFunc() { return W3DGadgetTextEntryDraw; }
 
-inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonImageDrawFunc() { printf("Creating NULL W3DGadgetPushButtonImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonDrawFunc() { printf("Creating NULL W3DGadgetPushButtonDraw!\n"); return nullptr; }
 inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxImageDrawFunc() { printf("Creating NULL W3DGadgetCheckBoxImageDraw!\n"); return nullptr; }
 inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxDrawFunc() { printf("Creating NULL W3DGadgetCheckBoxDraw!\n"); return nullptr; }
 inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonImageDrawFunc() { printf("Creating NULL W3DGadgetRadioButtonImageDraw!\n"); return nullptr; }

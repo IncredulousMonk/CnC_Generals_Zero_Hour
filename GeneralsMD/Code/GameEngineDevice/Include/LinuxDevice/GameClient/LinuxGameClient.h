@@ -27,6 +27,8 @@
 
 #include "GameClient/GameClient.h"
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
+#include "LinuxDevice/GameClient/LinuxDisplayStringManager.h"
+#include "LinuxDevice/GameClient/LinuxGameFont.h"
 #include "LinuxDevice/GameClient/LinuxGameWindowManager.h"
 #include "LinuxDevice/FFmpeg/FFmpegVideoPlayer.h"
 
@@ -55,24 +57,24 @@ protected:
    virtual Display *createGameDisplay(void) { return NEW LinuxDisplay; }
 
    /// factory for creating TheInGameUI
-   virtual InGameUI *createInGameUI(void) { printf("Creating NULL InGameUI!\n"); return nullptr; }	
+   virtual InGameUI *createInGameUI(void) { printf("!!! Creating NULL InGameUI !!!\n"); return nullptr; }	
 
    /// factory for creating the window manager
    virtual GameWindowManager *createWindowManager(void) { return NEW LinuxGameWindowManager; }
 
    /// factory for creating the font library
-   virtual FontLibrary *createFontLibrary(void) { printf("Creating NULL FontLibrary!\n"); return nullptr; }
+   virtual FontLibrary *createFontLibrary(void) { return NEW LinuxFontLibrary; }
 
    /// Manager for display strings
-   virtual DisplayStringManager *createDisplayStringManager(void) { printf("Creating NULL DisplayStringManager!\n"); return nullptr; }
+   virtual DisplayStringManager *createDisplayStringManager(void) { return NEW LinuxDisplayStringManager; }
 
    virtual VideoPlayerInterface *createVideoPlayer(void) { return NEW FFmpegVideoPlayer; }
 
    /// factory for creating the TerrainVisual
-   virtual TerrainVisual *createTerrainVisual(void) { printf("Creating NULL TerrainVisual!\n"); return nullptr; }
+   virtual TerrainVisual *createTerrainVisual(void) { printf("!!! Creating NULL TerrainVisual !!!\n"); return nullptr; }
 
    /// factory for creating the snow manager
-   virtual SnowManager *createSnowManager(void) { printf("Creating NULL SnowManager!\n"); return nullptr; }
+   virtual SnowManager *createSnowManager(void) { printf("!!! Creating NULL SnowManager !!!\n"); return nullptr; }
 
    virtual void setFrameRate(Real msecsPerFrame) { (void) msecsPerFrame; }
 };

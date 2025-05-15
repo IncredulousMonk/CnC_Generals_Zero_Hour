@@ -120,6 +120,10 @@ public:
 	CampaignManager( void );
 	~CampaignManager( void );
 
+	// No copies allowed!
+	CampaignManager(const CampaignManager&) = delete;
+	CampaignManager& operator=(const CampaignManager&) = delete;
+
 	// snapshot methods
 	virtual void crc( Xfer *xfer ) { }
 	virtual void xfer( Xfer *xfer );

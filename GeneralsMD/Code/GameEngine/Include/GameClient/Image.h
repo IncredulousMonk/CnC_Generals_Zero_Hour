@@ -86,6 +86,8 @@ public:
 	void setTextureWidth( Int width );						///< set width of texture page this image is on
 	void setTextureHeight( Int height );					///< set height of texture page this image is on
 	const ICoord2D *getTextureSize( void ) const;							///< return the texture size defined
+	void setImageOrigin( ICoord2D *origin );					///< set image x and y
+	const ICoord2D *getImageOrigin( void ) const;								///< get origin
 	void setImageSize( ICoord2D *size );					///< set image width and height
 	const ICoord2D *getImageSize( void ) const;								///< get size
 	Int getImageWidth( void ) const;										///< get width
@@ -114,9 +116,11 @@ friend class INI;
 		AsciiString m_filename {};		///< texture filename this image is in
 		ICoord2D m_textureSize {};		///< size of the texture this image is a part of
 		Region2D m_UVCoords {};			///< texture UV coords for image
+		ICoord2D m_imageOrigin {};			///< image x,y in pixels, not UV
 		ICoord2D m_imageSize {};			///< dimensions of image
 		void *m_rawTextureData {};		///< raw texture data
 		UnsignedInt m_status {};			///< status bits from ImageStatus
+		Image* m_obj {};					///< pointer to the parent object
 	};
 
 	Data m_data {};
@@ -142,19 +146,29 @@ public:
 
 	void load( Int textureSize );												 ///< load images
 		
+	Bool imageExists( const AsciiString& name );					 ///< image with name exists
 	const Image *findImageByName( const AsciiString& name );					 ///< find image based on name
 	
-  /// adds the given image to the collection, transfers ownership to this object
-  void addImage(Image *image);
+	/// adds the given image to the collection, transfers ownership to this object
+	void addImage(Image *image);
 
-  /// enumerates the list of existing images
-  Image *Enum(unsigned index)
-  {
-    for (std::map<unsigned,Image *>::iterator i=m_imageMap.begin();i!=m_imageMap.end();++i)
-      if (!index--)
-        return i->second;
-    return NULL;
-  }
+	/// enumerates the list of existing images
+	Image *Enum(unsigned index)
+	{
+	for (std::map<unsigned,Image *>::iterator i=m_imageMap.begin();i!=m_imageMap.end();++i)
+		if (!index--)
+		return i->second;
+	return NULL;
+	}
+
+	/// iterates the list of existing images
+	void iterate(const auto& iterationFun)
+	{
+		for (std::map<unsigned,Image *>::iterator i = m_imageMap.begin(); i != m_imageMap.end(); ++i)
+		{
+			iterationFun(i->second);
+		}
+	}
 
 protected:
   std::map<unsigned,Image *> m_imageMap{};  ///< maps named keys to images
@@ -169,6 +183,8 @@ inline void Image::setUV( Region2D *uv ) { if( uv ) m_data.m_UVCoords = *uv; }
 inline const Region2D *Image::getUV( void ) const { return &m_data.m_UVCoords; }
 inline void Image::setTextureWidth( Int width ) { m_data.m_textureSize.x = width; }
 inline void Image::setTextureHeight( Int height ) { m_data.m_textureSize.y = height; }
+inline void Image::setImageOrigin( ICoord2D *origin ) { m_data.m_imageOrigin = *origin; }
+inline const ICoord2D *Image::getImageOrigin( void ) const { return &m_data.m_imageOrigin; }
 inline void Image::setImageSize( ICoord2D *size ) { m_data.m_imageSize = *size; }
 inline const ICoord2D *Image::getImageSize( void ) const { return &m_data.m_imageSize; }
 inline const ICoord2D *Image::getTextureSize( void ) const { return &m_data.m_textureSize; }

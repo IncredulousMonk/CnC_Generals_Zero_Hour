@@ -21,16 +21,29 @@
 ///////////////////////////////////////////////////////
 
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
-#include <SDL3/SDL.h>
+#include "GameClient/Image.h"
+#include "Common/FileSystem.h"
+#include "LinuxDevice/Common/SdlFileStream.h"
+#include <SDL3_image/SDL_image.h>
 
-extern SDL_Renderer* renderer; // FIXME: How to handle this?
+// DEFINES ////////////////////////////////////////////////////////////////////
+#define LOCALISED_TGA_PATH "Data/English/Art/Textures/"
 
+// EXTERNALS //////////////////////////////////////////////////////////////////////////////////////
+extern SDL_Renderer* renderer;
+
+//-------------------------------------------------------------------------------------------------
 LinuxDisplay::LinuxDisplay()
 {
 }
 
 LinuxDisplay::~LinuxDisplay()
 {
+   for (const auto& [key, value] : m_textureCache) {
+      if (value.loaded) {
+         SDL_DestroyTexture(value.texture);
+      }
+   }
 }
 
 // LinuxDisplay::init =========================================================
@@ -42,6 +55,29 @@ void LinuxDisplay::init()
    Display::init();
 
    // FIXME: Asset manager gets created here.
+
+   auto storeTexturePath {
+      [this](Image* image) {
+         Texture texture {};
+         AsciiString filename {LOCALISED_TGA_PATH};
+         filename.concat(image->getFilename());
+         if (TheFileSystem->doesFileExist(filename.str())) {
+            texture.path = filename;
+         } else {
+            filename.set(TGA_DIR_PATH);
+            filename.concat(image->getFilename());
+            if (TheFileSystem->doesFileExist(filename.str())) {
+               texture.path = filename;
+            } else {
+               // Where are they?
+               texture.path = AsciiString::TheEmptyString;
+            }
+         }
+         m_textureCache[image->getFilename()] = texture;
+      }
+   };
+
+   TheMappedImageCollection->iterate(storeTexturePath);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -106,7 +142,14 @@ void LinuxDisplay::createLightPulse(const Coord3D *pos, const RGBColor *color,
 void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY, 
    Real lineWidth, Color lineColor )
 {
-   DEBUG_CRASH(("LinuxDisplay::drawLine not yet implemented."));
+   DEBUG_ASSERTCRASH(lineWidth == 1.0f, ("LinuxDisplay::drawLine: One pixel lines only\n"));
+   UnsignedByte r {};
+   UnsignedByte g {};
+   UnsignedByte b {};
+   UnsignedByte a {};
+   GameGetColorComponents(lineColor, &r, &g, &b, &a);
+   SDL_SetRenderDrawColor(renderer, r, g, b, a);
+   SDL_RenderLine(renderer, startX, startY, endX, endY);
 }  // end drawLine
 
 // LinuxDisplay::drawLine =====================================================
@@ -115,7 +158,7 @@ void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY,
 void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY, 
    Real lineWidth, Color lineColor1,Color lineColor2)
 {
-   DEBUG_CRASH(("LinuxDisplay::drawLine not yet implemented."));
+   DEBUG_CRASH(("LinuxDisplay::drawLine two colours not yet implemented."));
 }  // end drawLine
 
 // LinuxDisplay::drawOpenRect =================================================
@@ -178,7 +221,37 @@ void LinuxDisplay::drawRemainingRectClock(Int startX, Int startY, Int width, Int
 //=============================================================================
 void LinuxDisplay::drawImage( const Image *image, Int startX, Int startY, Int endX, Int endY, Color color, DrawImageMode mode)
 {
-   DEBUG_CRASH(("LinuxDisplay::drawImage not yet implemented."));
+   if (!image) {
+      return;
+   }
+   // DEBUG_LOG(("LinuxDisplay::drawImage: %s\n", image->getFilename().str()));
+   if (!m_textureCache.contains(image->getFilename())) {
+      DEBUG_CRASH(("LinuxDisplay::drawImage: Texture not found for image called '%s'\n", image->getFilename().str()));
+   }
+   Texture tex {m_textureCache[image->getFilename()]};
+   if (!tex.loaded) {
+      DEBUG_LOG(("Loading texture %s (%s)\n", image->getFilename().str(), tex.path.str()));
+      File* textureFile {TheFileSystem->openFile(tex.path.str())};
+      SdlFileStream fileStream {textureFile};
+      SDL_IOStream* sdlStream {SDL_OpenIO(fileStream.interface(), &fileStream)};
+      DEBUG_ASSERTCRASH(sdlStream, (("SDL stream is NULL\n")));
+      tex.texture = IMG_LoadTextureTyped_IO(renderer, sdlStream, true, "TGA");
+      DEBUG_ASSERTCRASH(tex.texture, ("Texture is NULL: %s\n", SDL_GetError()));
+      tex.loaded = TRUE;
+      m_textureCache[image->getFilename()] = tex;
+   }
+
+   SDL_FRect src {};
+   src.x = image->getImageOrigin()->x;
+   src.y = image->getImageOrigin()->y;
+   src.w = image->getImageSize()->x;
+   src.h = image->getImageSize()->y;
+   SDL_FRect dest {};
+   dest.x = startX;
+   dest.y = startY;
+   dest.w = endX - startX;
+   dest.h = endY - startY;
+   SDL_RenderTexture(renderer, tex.texture, &src, &dest);
 }  // end drawImage
 
 //============================================================================

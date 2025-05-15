@@ -192,8 +192,13 @@ namespace rts
 	{
 		size_t operator()(AsciiString ast) const
 		{ 
-			std::hash<const char *> tmp;
-			return tmp((const char *) ast.str());
+			// MG: This is wrong!
+			// "There is no specialization for C strings. std::hash<const char*> produces a hash of the value of the pointer (the memory address), 
+			// it does not examine the contents of any character array."
+			// std::hash<const char *> tmp;
+			// return tmp((const char *) ast.str());
+			std::hash<std::string> tmp;
+			return tmp(std::string(ast.str()));
 		}
 	};
 

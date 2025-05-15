@@ -44,8 +44,8 @@ Display *TheDisplay = NULL;
 Display::Display()
 {
 	m_viewList = NULL;
-	m_width = 0;
-	m_height = 0;
+	m_width = 800;
+	m_height = 600;
 	m_bitDepth = 0;
 	m_windowed = FALSE;
 	m_videoBuffer = NULL;
@@ -143,7 +143,7 @@ void Display::draw( void )
 }
 
 /** Sets screen resolution/mode*/
-Bool Display::setDisplayMode( UnsignedInt xres, UnsignedInt yres, UnsignedInt, Bool )
+Bool Display::setDisplayMode( UnsignedInt xres, UnsignedInt yres, UnsignedInt /*bitdepth*/, Bool /*windowed*/ )
 {
 	// FIXME: Uncomment when TheTacticalView is implemented.
 	// //Get old values

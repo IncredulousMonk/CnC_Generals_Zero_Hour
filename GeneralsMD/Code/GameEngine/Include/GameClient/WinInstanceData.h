@@ -106,8 +106,8 @@ public:
 	WinInstanceData( void );  ///< constructor automatically runs init()
 	virtual ~WinInstanceData( void );
 
-	WinInstanceData(const WinInstanceData&);
-	WinInstanceData& operator=(const WinInstanceData&);
+	WinInstanceData(const WinInstanceData&) = default;
+	WinInstanceData& operator=(const WinInstanceData&) = default;
 
 	void init( void );  ///< initialize default values if desired
 
@@ -179,9 +179,6 @@ public:
 // NOTE if you add data to this make sure you update winSetInstanceData()
 
 protected:
-
-private:
-	void copyData(const WinInstanceData& source);
 
 };
 

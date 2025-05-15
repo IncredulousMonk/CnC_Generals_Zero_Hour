@@ -1,8 +1,8 @@
-CXXFLAGS = -std=c++2a -O2 -Wall -Weffc++ -Wextra -Wsign-conversion -Werror -pedantic-errors
+CXXFLAGS = -std=c++23 -O2 -Wall -Weffc++ -Wextra -Wsign-conversion -Werror -pedantic-errors
 LDPATHS = -LGameEngineDevice/Lib -LGameEngine/Lib
 LDFLAGS = -lavutil -lavcodec -lswscale -lswresample
 CXXFLAGS += $(shell pkg-config sdl3 --cflags)
-LDFLAGS += $(shell pkg-config sdl3 --libs) $(shell pkg-config sdl3-ttf --libs)
+LDFLAGS += $(shell pkg-config sdl3 --libs) $(shell pkg-config sdl3-ttf --libs) $(shell pkg-config sdl3-image --libs)
 INCS = -I. -ILibraries/Include -ILibraries/Source/WWVegas -ILibraries/Source/WWVegas/WWLib -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
 PROG = ../Run/rts
 ENGINE_DEVICE_LIB = GameEngineDevice/Lib/GameEngineDevice.a
@@ -11,7 +11,6 @@ GEDO = GameEngineDevice/Obj
 GEDSLDC = GameEngineDevice/Source/LinuxDevice/Common
 GEDSLDF = GameEngineDevice/Source/LinuxDevice/FFmpeg
 GEDSLD = GameEngineDevice/Source/LinuxDevice
-GEDSWD = GameEngineDevice/Source/W3DDevice
 GEO = GameEngine/Obj
 GES = GameEngine/Source
 CUR_DIR := $(shell pwd)
@@ -30,10 +29,14 @@ $(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB)
 # ===== GameEngineDevice =====
 
 ENGINE_DEVICE_OBJS = $(GEDO)/SdlAudioManager.o \
-$(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o \
+$(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o $(GEDO)/SdlFileStream.o \
+$(GEDO)/LinuxFunctionLexicon.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
 $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxGameClient.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
-$(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o $(GEDO)/LinuxPushButton.o $(GEDO)/W3DMOTD.o 
+$(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
+$(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
+   $(GEDO)/LinuxTextEntry.o $(GEDO)/LinuxVerticalSlider.o \
+$(GEDO)/LinuxControlBar.o $(GEDO)/LinuxMainMenu.o $(GEDO)/LinuxMOTD.o 
 
 $(ENGINE_DEVICE_LIB): $(ENGINE_DEVICE_OBJS)
 	ar rcs $(ENGINE_DEVICE_LIB)  $(ENGINE_DEVICE_OBJS)
@@ -57,6 +60,13 @@ $(GEDO)/LinuxLocalFile.o: $(GEDSLDC)/LinuxLocalFile.cpp
 
 $(GEDO)/LinuxLocalFileSystem.o: $(GEDSLDC)/LinuxLocalFileSystem.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxLocalFileSystem.o $(GEDSLDC)/LinuxLocalFileSystem.cpp
+
+$(GEDO)/SdlFileStream.o: $(GEDSLDC)/SdlFileStream.cpp GameEngineDevice/Include/LinuxDevice/Common/SdlFileStream.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/SdlFileStream.o $(GEDSLDC)/SdlFileStream.cpp
+
+# --- GameEngineDevice/Source/LinuxDevice/Common/System ---
+$(GEDO)/LinuxFunctionLexicon.o: $(GEDSLD)/Common/System/LinuxFunctionLexicon.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxFunctionLexicon.o $(GEDSLD)/Common/System/LinuxFunctionLexicon.cpp
 
 # --- GameEngineDevice/Source/LinuxDevice/FFmpeg ---
 $(GEDO)/FFmpegVideoPlayer.o: $(GEDSLDF)/FFmpegVideoPlayer.cpp GameEngineDevice/Include/LinuxDevice/FFmpeg/FFmpegVideoPlayer.h GameEngineDevice/Include/LinuxDevice/FFmpeg/FFmpegVideo.h
@@ -107,17 +117,48 @@ $(GEDO)/LinuxGameWindowManager.o: $(GEDSLD)/GameClient/GUI/LinuxGameWindowManage
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameWindowManager.o $(GEDSLD)/GameClient/GUI/LinuxGameWindowManager.cpp
 
 # --- GameEngineDevice/Source/LinuxDevice/GameClient/GUI/Gadget ---
+$(GEDO)/LinuxCheckBox.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxCheckBox.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxCheckBox.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxCheckBox.cpp
+
+$(GEDO)/LinuxHorizontalSlider.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxHorizontalSlider.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxHorizontalSlider.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxHorizontalSlider.cpp
+
+$(GEDO)/LinuxListBox.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxListBox.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxListBox.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxListBox.cpp
+
+$(GEDO)/LinuxProgressBar.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxProgressBar.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxProgressBar.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxProgressBar.cpp
+
 $(GEDO)/LinuxPushButton.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxPushButton.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxPushButton.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxPushButton.cpp
 
-# --- GameEngineDevice/Source/W3DDevice/GameClient/GUI/GUICallbacks ---
-$(GEDO)/W3DMOTD.o: $(GEDSWD)/GameClient/GUI/GUICallbacks/W3DMOTD.cpp
-	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/W3DMOTD.o $(GEDSWD)/GameClient/GUI/GUICallbacks/W3DMOTD.cpp
+$(GEDO)/LinuxRadioButton.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxRadioButton.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxRadioButton.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxRadioButton.cpp
+
+$(GEDO)/LinuxStaticText.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxStaticText.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxStaticText.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxStaticText.cpp
+
+$(GEDO)/LinuxTextEntry.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxTextEntry.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxTextEntry.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxTextEntry.cpp
+
+$(GEDO)/LinuxVerticalSlider.o: $(GEDSLD)/GameClient/GUI/Gadget/LinuxVerticalSlider.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGadget.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxVerticalSlider.o $(GEDSLD)/GameClient/GUI/Gadget/LinuxVerticalSlider.cpp
+
+# --- GameEngineDevice/Source/LinuxDevice/GameClient/GUI/GUICallbacks ---
+$(GEDO)/LinuxControlBar.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxControlBar.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxControlBar.o $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxControlBar.cpp
+
+$(GEDO)/LinuxMainMenu.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMainMenu.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxMainMenu.o $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMainMenu.cpp
+
+$(GEDO)/LinuxMOTD.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMOTD.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxMOTD.o $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMOTD.cpp
 
 
 # ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
+ENGINE_OBJS = $(GEO)/CommandLine.o $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o \
+   $(GEO)/UserPreferences.o $(GEO)/Version.o \
 $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
 $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o $(GEO)/GameMemory.o \
@@ -129,7 +170,7 @@ $(GEO)/AnimateWindowManager.o $(GEO)/GameFont.o $(GEO)/GameWindow.o $(GEO)/GameW
 $(GEO)/GadgetCheckBox.o $(GEO)/GadgetComboBox.o $(GEO)/GadgetHorizontalSlider.o $(GEO)/GadgetListBox.o $(GEO)/GadgetProgressBar.o $(GEO)/GadgetPushButton.o $(GEO)/GadgetRadioButton.o \
    $(GEO)/GadgetStaticText.o $(GEO)/GadgetTabControl.o $(GEO)/GadgetTextEntry.o $(GEO)/GadgetVerticalSlider.o \
 $(GEO)/ExtendedMessageBox.o $(GEO)/MessageBox.o \
-$(GEO)/OptionsMenu.o \
+$(GEO)/MainMenu.o $(GEO)/OptionsMenu.o \
 $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
 $(GEO)/Anim2D.o $(GEO)/Image.o
@@ -138,6 +179,9 @@ $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
 
 # --- GameEngine/Source/Common ---
+$(GEO)/CommandLine.o: $(GES)/Common/CommandLine.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CommandLine.o $(GES)/Common/CommandLine.cpp
+
 $(GEO)/GameEngine.o: $(GES)/Common/GameEngine.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameEngine.o $(GES)/Common/GameEngine.cpp
 
@@ -396,6 +440,9 @@ $(GEO)/MessageBox.o: $(GES)/GameClient/GUI/GUICallbacks/MessageBox.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MessageBox.o $(GES)/GameClient/GUI/GUICallbacks/MessageBox.cpp
 
 # --- GameEngine/Source/GameClient/GUI/GUICallbacks/Menus ---
+$(GEO)/MainMenu.o: $(GES)/GameClient/GUI/GUICallbacks/Menus/MainMenu.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MainMenu.o $(GES)/GameClient/GUI/GUICallbacks/Menus/MainMenu.cpp
+
 $(GEO)/OptionsMenu.o: $(GES)/GameClient/GUI/GUICallbacks/Menus/OptionsMenu.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/OptionsMenu.o $(GES)/GameClient/GUI/GUICallbacks/Menus/OptionsMenu.cpp
 

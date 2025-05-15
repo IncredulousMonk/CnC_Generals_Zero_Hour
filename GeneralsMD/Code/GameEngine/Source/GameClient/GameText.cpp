@@ -167,8 +167,9 @@ class GameTextManager : public GameTextInterface
 		Char						m_buffer[MAX_UITEXT_LENGTH];
 		Char						m_buffer2[MAX_UITEXT_LENGTH];
 		Char						m_buffer3[MAX_UITEXT_LENGTH];
-		WideChar				m_tbuffer[MAX_UITEXT_LENGTH*2];
-		
+		char16_t				m_buffer16[MAX_UITEXT_LENGTH];
+		WideChar				m_tbuffer[MAX_UITEXT_LENGTH];
+
 		StringInfo			*m_stringInfo;
 		StringLookUp		*m_stringLUT;
 		Bool						m_initialized;
@@ -262,7 +263,7 @@ GameTextManager::GameTextManager()
 #endif
 	m_mapStringInfo(NULL),
 	m_mapStringLUT(NULL),
-	m_failed(L"***FATAL*** String Manager failed to initilaize properly")
+	m_failed(L"***FATAL*** String Manager failed to initialize properly")
 {
 	// Added By Sadullah Nader
 	// Initializations missing and needed
@@ -972,23 +973,26 @@ Bool GameTextManager::parseCSF( const Char *filename )
 
 			if ( len )
 			{
-				file->read ( m_tbuffer, len*sizeof(WideChar) );
+				file->read ( m_buffer16, len * sizeof(char16_t) );
 			}
 
 			if ( num == 0 )
 			{
 				// only use the first string found
+				m_buffer16[len] = 0;
 				m_tbuffer[len] = 0;
 				
 				{
-					WideChar *ptr;
+					// Strings in file are UCS-2, but wchar_t is 32 bits on Linux.
+					char16_t* ptr16 {m_buffer16};
+					WideChar* ptr32 {m_tbuffer};
 				
-					ptr = m_tbuffer;
-				
-					while ( *ptr )
+					while (*ptr16)
 					{
-						*ptr = ~*ptr;
-						ptr++;
+						char16_t n = ~*ptr16;
+						*ptr32 = n;
+						++ptr16;
+						++ptr32;
 					}
 				}
 				
@@ -1272,7 +1276,7 @@ quit:
 
 UnicodeString GameTextManager::fetch( const Char *label, Bool *exists )
 {
-	DEBUG_ASSERTCRASH ( m_initialized, ("String Manager has not been m_initialized") );
+	DEBUG_ASSERTCRASH ( m_initialized, ("GameTextManager has not been m_initialized") );
 
 	if( m_stringInfo == NULL )
 	{
@@ -1324,7 +1328,7 @@ UnicodeString GameTextManager::fetch( const Char *label, Bool *exists )
 		m_noStringList = noString;
 		return noString->text;
 	}
-	if( exists )	
+	if( exists )
 		*exists = TRUE;
 	return lookUp->info->text;
 }

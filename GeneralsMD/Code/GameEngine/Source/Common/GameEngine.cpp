@@ -57,7 +57,7 @@
 // #include "Common/GameStateMap.h"
 // #include "Common/Science.h"
 #include "Common/FunctionLexicon.h"
-// #include "Common/CommandLine.h"
+#include "Common/CommandLine.h"
 // #include "Common/DamageFX.h"
 // #include "Common/MultiplayerSettings.h"
 // #include "Common/Recorder.h"
@@ -266,8 +266,6 @@ void GameEngine::setFramesPerSecondLimit( Int fps )
 void GameEngine::init( void ) {} /// @todo: I changed this to take argc & argv so we can parse those after the GDF is loaded.  We need to rethink this immediately as it is a nasty hack
 void GameEngine::init( int argc, char *argv[] )
 {
-	(void) argc; // FIXME: Remove!
-	(void) argv;
 	try {
 		//create an INI object to use for loading stuff
 		INI ini {};
@@ -392,11 +390,11 @@ void GameEngine::init( int argc, char *argv[] )
 
 	#if defined(_DEBUG) || defined(_INTERNAL)
 		// If we're in Debug or Internal, load the Debug info as well.
-		// ini.load( AsciiString( "Data\\INI\\GameDataDebug.ini" ), INI_LOAD_OVERWRITE, NULL );
+		ini.load( AsciiString( "Data\\INI\\GameDataDebug.ini" ), INI_LOAD_OVERWRITE, NULL );
 	#endif
 		
-		// // special-case: parse command-line parameters after loading global data
-		// parseCommandLine(argc, argv);
+		// special-case: parse command-line parameters after loading global data
+		parseCommandLine(argc, argv);
 
 		// // doesn't require resets so just create a single instance here.
 		// TheGameLODManager = MSGNEW("GameEngineSubsystem") GameLODManager;
@@ -461,7 +459,7 @@ void GameEngine::init( int argc, char *argv[] )
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 
 
-		// initSubsystem(TheFunctionLexicon,"TheFunctionLexicon", createFunctionLexicon(), NULL);
+		initSubsystem(TheFunctionLexicon,"TheFunctionLexicon", createFunctionLexicon(), NULL);
 		// initSubsystem(TheModuleFactory,"TheModuleFactory", createModuleFactory(), NULL);
 		initSubsystem(TheMessageStream,"TheMessageStream", createMessageStream(), NULL);
 		// initSubsystem(TheSidesList,"TheSidesList", MSGNEW("GameEngineSubsystem") SidesList(), NULL);

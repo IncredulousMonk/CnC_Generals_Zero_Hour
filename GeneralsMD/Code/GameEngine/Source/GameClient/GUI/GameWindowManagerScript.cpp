@@ -794,6 +794,7 @@ static Bool parseDrawCallback( char *token, WinInstanceData *instData,
 	theDrawString = c;
 	NameKeyType key = TheNameKeyGenerator->nameToKey( theDrawString );
 	drawFunc = TheFunctionLexicon->gameWinDrawFunc( key );
+DEBUG_ASSERTLOG(drawFunc || theDrawString.compareNoCase("[None]") == 0, ("gameWinDrawFunc %s is NULL!\n", theDrawString.str()));
 
 	return TRUE;
 
@@ -1330,10 +1331,11 @@ static Bool parseDrawData( char *token, WinInstanceData *instData,
 		first = FALSE;
 	
 		c = strtok( NULL, seps );  // value
-		if( strcmp( c, "NoImage" ) )
+		if( strcmp( c, "NoImage" ) ) {
 			drawData->image = TheMappedImageCollection->findImageByName( AsciiString( c ) );
-		else
+		} else {
 			drawData->image = NULL;
+		}
 		// COLOR: R G B A
 		c = strtok( NULL, seps );  // label
 		c = strtok( NULL, seps );  // value
@@ -2028,7 +2030,6 @@ static GameWindow *createWindow( char *type,
   // If this is a regular window just create it
   if( !strcmp( type, "USER" ) ) 
 	{
-
     window = TheWindowManager->winCreate( parent, 
 																					status, x, y, 
 																					width, height, 
@@ -2512,6 +2513,8 @@ Bool parseInit( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo
 	// translate string to function address
 	info->initNameString = c;
 	info->init = TheFunctionLexicon->winLayoutInitFunc( TheNameKeyGenerator->nameToKey( info->initNameString ) );
+// DEBUG_ASSERTCRASH(info->init, ("winLayoutInitFunc %s is NULL!\n", info->initNameString.str()));
+DEBUG_ASSERTCRASH(info->init || info->initNameString.compareNoCase("[None]") == 0, ("winLayoutInitFunc %s is NULL!\n", info->initNameString.str()));
 
 	return TRUE;  // success
 

@@ -78,47 +78,31 @@ inline GameWindow *LinuxGameWindowManager::allocateNewWindow() { return newInsta
 inline GameWinDrawFunc LinuxGameWindowManager::getDefaultDraw() { return LinuxGameWinDefaultDraw; }
 inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonImageDrawFunc() { return LinuxGadgetPushButtonImageDraw; }
 inline GameWinDrawFunc LinuxGameWindowManager::getPushButtonDrawFunc() { return LinuxGadgetPushButtonDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxImageDrawFunc() { return W3DGadgetCheckBoxImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxDrawFunc() { return W3DGadgetCheckBoxDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonImageDrawFunc() { return W3DGadgetRadioButtonImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonDrawFunc() { return W3DGadgetRadioButtonDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxImageDrawFunc() { return LinuxGadgetCheckBoxImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxDrawFunc() { return LinuxGadgetCheckBoxDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonImageDrawFunc() { return LinuxGadgetRadioButtonImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonDrawFunc() { return LinuxGadgetRadioButtonDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getTabControlImageDrawFunc() { return W3DGadgetTabControlImageDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getTabControlDrawFunc() { return W3DGadgetTabControlDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getListBoxImageDrawFunc() { return W3DGadgetListBoxImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getListBoxDrawFunc() { return W3DGadgetListBoxDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getListBoxImageDrawFunc() { return LinuxGadgetListBoxImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getListBoxDrawFunc() { return LinuxGadgetListBoxDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getComboBoxImageDrawFunc() { return W3DGadgetComboBoxImageDraw; }
 // inline GameWinDrawFunc LinuxGameWindowManager::getComboBoxDrawFunc() { return W3DGadgetComboBoxDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getHorizontalSliderImageDrawFunc() { return W3DGadgetHorizontalSliderImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getHorizontalSliderDrawFunc() { return W3DGadgetHorizontalSliderDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getVerticalSliderImageDrawFunc() { return W3DGadgetVerticalSliderImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getVerticalSliderDrawFunc() { return W3DGadgetVerticalSliderDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getProgressBarImageDrawFunc() { return W3DGadgetProgressBarImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getProgressBarDrawFunc() { return W3DGadgetProgressBarDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getStaticTextImageDrawFunc() { return W3DGadgetStaticTextImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getStaticTextDrawFunc() { return W3DGadgetStaticTextDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryImageDrawFunc() { return W3DGadgetTextEntryImageDraw; }
-// inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryDrawFunc() { return W3DGadgetTextEntryDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getHorizontalSliderImageDrawFunc() { return LinuxGadgetHorizontalSliderImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getHorizontalSliderDrawFunc() { return LinuxGadgetHorizontalSliderDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getVerticalSliderImageDrawFunc() { return LinuxGadgetVerticalSliderImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getVerticalSliderDrawFunc() { return LinuxGadgetVerticalSliderDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getProgressBarImageDrawFunc() { return LinuxGadgetProgressBarImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getProgressBarDrawFunc() { return LinuxGadgetProgressBarDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getStaticTextImageDrawFunc() { return LinuxGadgetStaticTextImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getStaticTextDrawFunc() { return LinuxGadgetStaticTextDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryImageDrawFunc() { return LinuxGadgetTextEntryImageDraw; }
+inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryDrawFunc() { return LinuxGadgetTextEntryDraw; }
 
-inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxImageDrawFunc() { printf("Creating NULL W3DGadgetCheckBoxImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getCheckBoxDrawFunc() { printf("Creating NULL W3DGadgetCheckBoxDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonImageDrawFunc() { printf("Creating NULL W3DGadgetRadioButtonImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getRadioButtonDrawFunc() { printf("Creating NULL W3DGadgetRadioButtonDraw!\n"); return nullptr; }
 inline GameWinDrawFunc LinuxGameWindowManager::getTabControlImageDrawFunc() { printf("Creating NULL W3DGadgetTabControlImageDraw!\n"); return nullptr; }
 inline GameWinDrawFunc LinuxGameWindowManager::getTabControlDrawFunc() { printf("Creating NULL W3DGadgetTabControlDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getListBoxImageDrawFunc() { printf("Creating NULL W3DGadgetListBoxImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getListBoxDrawFunc() { printf("Creating NULL W3DGadgetListBoxDraw!\n"); return nullptr; }
 inline GameWinDrawFunc LinuxGameWindowManager::getComboBoxImageDrawFunc() { printf("Creating NULL W3DGadgetComboBoxImageDraw!\n"); return nullptr; }
 inline GameWinDrawFunc LinuxGameWindowManager::getComboBoxDrawFunc() { printf("Creating NULL W3DGadgetComboBoxDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getHorizontalSliderImageDrawFunc() { printf("Creating NULL W3DGadgetHorizontalSliderImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getHorizontalSliderDrawFunc() { printf("Creating NULL W3DGadgetHorizontalSliderDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getVerticalSliderImageDrawFunc() { printf("Creating NULL W3DGadgetVerticalSliderImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getVerticalSliderDrawFunc() { printf("Creating NULL W3DGadgetVerticalSliderDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getProgressBarImageDrawFunc() { printf("Creating NULL W3DGadgetProgressBarImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getProgressBarDrawFunc() { printf("Creating NULL W3DGadgetProgressBarDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getStaticTextImageDrawFunc() { printf("Creating NULL W3DGadgetStaticTextImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getStaticTextDrawFunc() { printf("Creating NULL W3DGadgetStaticTextDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryImageDrawFunc() { printf("Creating NULL W3DGadgetTextEntryImageDraw!\n"); return nullptr; }
-inline GameWinDrawFunc LinuxGameWindowManager::getTextEntryDrawFunc() { printf("Creating NULL W3DGadgetTextEntryDraw!\n"); return nullptr; }
 
 #endif // __LINUXGAMEWINDOWMANAGER_H_
 

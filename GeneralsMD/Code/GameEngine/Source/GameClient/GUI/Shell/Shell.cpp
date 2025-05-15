@@ -462,7 +462,7 @@ void Shell::showShell( Bool runInit )
 	//	}
 	
 
-	if (!TheGlobalData->m_data.m_shellMapOn && m_screenCount == 0)
+	if (/*!TheGlobalData->m_data.m_shellMapOn &&*/ m_screenCount == 0)
   {
 #ifdef _PROFILE
     Profile::StopRange("init");
@@ -473,6 +473,7 @@ void Shell::showShell( Bool runInit )
 	m_isShellActive = TRUE;
 }  // end showShell
 
+//-------------------------------------------------------------------------------------------------
 void Shell::showShellMap(Bool useShellMap )
 {
 	(void) useShellMap;
@@ -501,19 +502,19 @@ void Shell::showShellMap(Bool useShellMap )
 	// 	if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
 	// 		TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
 
-	// 	// if the shell is active,we need a background
-	// 	if(!m_isShellActive)
-	// 		return;
-	// 	if(!m_background)
-	// 		m_background = TheWindowManager->winCreateLayout("Menus/BlankWindow.wnd");
+		// if the shell is active,we need a background
+		if(!m_isShellActive)
+			return;
+		if(!m_background)
+			m_background = TheWindowManager->winCreateLayout("Menus/BlankWindow.wnd");
 		
-	// 	DEBUG_ASSERTCRASH(m_background,("We Couldn't Load Menus/BlankWindow.wnd"));
-	// 	m_background->getFirstWindow()->winSetStatus(WIN_STATUS_IMAGE);
-	// 	m_background->hide(FALSE);
-	// 	if (top())
-	// 		top()->bringForward();
-	// 	m_shellMapOn = FALSE;
-	// 	m_clearBackground = FALSE;
+		DEBUG_ASSERTCRASH(m_background,("We Couldn't Load Menus/BlankWindow.wnd"));
+		m_background->getFirstWindow()->winSetStatus(WIN_STATUS_IMAGE);
+		m_background->hide(FALSE);
+		if (top())
+			top()->bringForward();
+		m_shellMapOn = FALSE;
+		m_clearBackground = FALSE;
 	// }
 }
 

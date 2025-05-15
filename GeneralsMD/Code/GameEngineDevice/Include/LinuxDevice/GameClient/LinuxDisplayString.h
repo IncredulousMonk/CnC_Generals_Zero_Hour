@@ -71,14 +71,11 @@ public:
 
 protected:
 
-   void checkForChangedTextData();  /**< called when we need to update our render sentence and update extents */
    void usingResources(UnsignedInt frame);  /**< call this whenever display resources are in use */
    void computeExtents();  ///< compute text width and height
 
    ILinuxTextRenderer* m_renderer {};
    TTF_Text* m_text {};
-   Bool m_textChanged {};  ///< when contents of string change this is TRUE
-   Bool m_fontChanged {};  ///< when font has chagned this is TRUE
    UnicodeString m_hotkey {};		///< holds the current hotkey marker.
    Bool m_useHotKey {};
    ICoord2D m_hotKeyPos {};
@@ -90,6 +87,9 @@ protected:
    IRegion2D m_clipRegion {}; ///< the clipping region for text
    UnsignedInt m_lastResourceFrame {};  ///< last frame resources were used on
 
+private:
+
+   void createText();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -8,9 +8,11 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 
 ## Progress so far
 
+**I've added some progress screenshots to the wiki page.**
+
 - Displays a window with the splash screen.
 - Plays the logo movie.
-- Some progress with the window manager's test GUI (buttons work, button text is displayed).
+- Displays the main menu.
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -21,6 +23,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheWritableGlobalData
   - TheGameText
   - TheGlobalLanguageData
+  - TheFunctionLexicon
   - TheMessageStream
   - TheGameClient (partial)
     - TheDrawGroupInfo
@@ -35,15 +38,19 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheWindowManager
     - TheVideoPlayer
     - TheLanguageFilter
+    - TheIMEManager
+    - TheShell
 
 ## Still to do
 
+- The main-menu screen needs tweaking. The transparency is a bit off. The exit dialog shows transparency problems too.
+- Most of the main-menu buttons don't work yet. The Options menu is likely to be my next task.
 - Everything else.
 
 
 ## Dependencies
 
-I'm using SDL3 and SDL_ttf 3, so you'll have to install those libraries.
+I'm using SDL3, SDL_ttf 3 (fonts), and SDL_image 3 (loading .tga images), so you'll have to install those libraries.
 
 I'm using FFmpeg to replace Bink, so I installed libavformat-dev, libswscale-dev, and libavdevice-dev.
 
@@ -67,7 +74,7 @@ If you get an error message that says:
 
 then you forgot to create the symlink mentioned above.
 
-Click on the close button in the splash screen window to exit the "game".
+Use the Exit button in the main menu to exit the game.
 
 <!---
 ## What I've learned so far

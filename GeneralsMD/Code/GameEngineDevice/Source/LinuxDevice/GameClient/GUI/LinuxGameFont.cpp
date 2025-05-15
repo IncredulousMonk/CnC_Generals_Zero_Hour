@@ -77,6 +77,8 @@ Bool LinuxFontLibrary::loadFontData(GameFont *font)
    TTF_Font* fontData;
    if ((UnsignedInt)font->pointSize > 100) { //sanity check the size - anything over 100 is probably wrong. -MW
       fontData = NULL;
+   } else if (font->nameString.compare("Generals") == 0) {
+      fontData = TTF_OpenFont("/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf", font->pointSize == 15 ? 18 : font->pointSize);
    } else {
       if (font->bold) {
          fontData = TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf", font->pointSize);
@@ -93,6 +95,7 @@ Bool LinuxFontLibrary::loadFontData(GameFont *font)
    }  // end if
 
    // assign font data
+   TTF_SetFontHinting(fontData, TTF_HINTING_LIGHT_SUBPIXEL);
    font->fontData = fontData;
    font->height = TTF_GetFontHeight(fontData);
 

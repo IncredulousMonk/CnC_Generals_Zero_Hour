@@ -45,8 +45,6 @@
 
 // PRIVATE PROTOTYPES /////////////////////////////////////////////////////////
 
-// PRIVATE FUNCTIONS //////////////////////////////////////////////////////////
-
 ///////////////////////////////////////////////////////////////////////////////
 // PUBLIC FUNCTIONS ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,14 +55,12 @@
 LinuxDisplayString::LinuxDisplayString()
 {
    
-   m_textChanged = FALSE;
    m_textPos.x = 0;
    m_textPos.y = 0;
    m_currTextColor = 0;
    m_currDropColor = 0;
    m_size.x = 0;
    m_size.y = 0;
-   m_fontChanged = FALSE;
    m_clipRegion.lo.x = 0;
    m_clipRegion.lo.y = 0;
    m_clipRegion.hi.x = 0;
@@ -111,15 +107,7 @@ void LinuxDisplayString::notifyTextChanged()
    // 	}
    // }
 
-   //
-   // set a flag so that if it comes that we need to render this string
-   // we know we must first build the sentence
-   //
-   m_textChanged = TRUE;
-
-   // // reset data for our text renderer
-   // m_textRenderer.Reset();
-   // m_textRendererHotKey.Reset();
+   createText();
 
 }  // end notifyTextChanged
 
@@ -144,21 +132,6 @@ void LinuxDisplayString::draw(Int x, Int y, Color color, Color dropColor, Int xD
       return;  // nothing to draw
    }
    
-   // if our font or text has changed we need to build a new text
-   if (m_fontChanged || m_textChanged) {
-      if (m_text) {
-         TTF_DestroyText(m_text);
-      }
-      m_text = m_renderer->createText(m_textString, *m_font);
-
-      // get our new text extents
-      computeExtents();
-
-      m_fontChanged = FALSE;
-      m_textChanged = FALSE;
-
-   }  // end if
-
    // // if our font or text has changed we need to build a new sentence
    // if( m_fontChanged || m_textChanged )
    // {
@@ -249,9 +222,14 @@ void LinuxDisplayString::getSize(Int *width, Int *height)
 
 Int LinuxDisplayString::getWidth(Int charPos)
 {
-   DEBUG_LOG(("LinuxDisplayString::getWidth not yet implemented!\n"));
+   if (charPos >= 0) {
+      DEBUG_LOG(("LinuxDisplayString::getWidth (%d) not yet implemented!\n", charPos));
+   }
+
+   return m_size.x;
+
    // FontCharsClass *	font;
-   Int width = 0;
+   // Int width = 0;
    // Int count = 0;
 
    // font = m_textRenderer.Peek_Font();
@@ -271,7 +249,7 @@ Int LinuxDisplayString::getWidth(Int charPos)
    // 	}
    // }
 
-   return width;
+   // return width;
 }
 
 // LinuxDisplayString::setFont ================================================
@@ -292,8 +270,7 @@ void LinuxDisplayString::setFont(GameFont *font) {
    // extending functionality
    DisplayString::setFont( font );
 
-   // set flag telling us the font has changed since last render
-   m_fontChanged = TRUE;
+   createText();
 
 }  // end setFont
 
@@ -302,7 +279,7 @@ void LinuxDisplayString::setFont(GameFont *font) {
 //=============================================================================
 void LinuxDisplayString::setClipRegion( IRegion2D *region )
 {
-   DEBUG_LOG(("LinuxDisplayString::setClipRegion not yet implemented!\n"));
+   // FIXME: LinuxDisplayString::setClipRegion
 
    // extend functionality
    DisplayString::setClipRegion( region );
@@ -359,7 +336,9 @@ void LinuxDisplayString::setWordWrap(Int wordWrap)
 //=============================================================================
 void LinuxDisplayString::setUseHotkey(Bool useHotkey, Color hotKeyColor)
 {
-   DEBUG_LOG(("LinuxDisplayString::setUseHotkey not yet implemented!\n"));
+   if (useHotkey) {
+      DEBUG_LOG(("LinuxDisplayString::setUseHotkey not yet implemented!\n"));
+   }
    // m_useHotKey = useHotkey;
    // m_hotKeyColor = hotKeyColor;
    // m_textRenderer.Set_Hot_Key_Parse(useHotkey);
@@ -378,3 +357,21 @@ void LinuxDisplayString::setWordWrapCentered(Bool isCentered)
    //  if( m_textRenderer.Set_Word_Wrap_Centered(isCentered) )
    // 	notifyTextChanged();
 }// void setWordWrap( Int wordWrap )
+
+///////////////////////////////////////////////////////////////////////////////
+// PRIVATE FUNCTIONS //////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+//=============================================================================
+void LinuxDisplayString::createText()
+{
+   if (m_text) {
+      TTF_DestroyText(m_text);
+   }
+   if (getTextLength() > 0 && m_font) {
+      m_text = m_renderer->createText(m_textString, *m_font);
+
+      // get our new text extents
+      computeExtents();
+   }
+}

@@ -274,7 +274,6 @@ void LinuxGameWinDefaultDraw( GameWindow *window, WinInstanceData *instData )
 
       if( image )
       {
-         printf("Image name: %s\n", image->getName().str());
          ICoord2D start, end;
 
          start.x = origin.x + instData->m_imageOffset.x;

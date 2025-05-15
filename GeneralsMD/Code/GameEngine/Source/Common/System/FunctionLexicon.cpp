@@ -95,7 +95,7 @@ static FunctionLexicon::TableEntry gameWinSystemTable[] =
 	{ NAMEKEY_INVALID, "ExtendedMessageBoxSystem",			reinterpret_cast<void*>(ExtendedMessageBoxSystem) },
 
 	// { NAMEKEY_INVALID, "MOTDSystem",						reinterpret_cast<void*>(MOTDSystem) },
-	// { NAMEKEY_INVALID, "MainMenuSystem",					reinterpret_cast<void*>(MainMenuSystem) },
+	{ NAMEKEY_INVALID, "MainMenuSystem",					reinterpret_cast<void*>(MainMenuSystem) },
 	// { NAMEKEY_INVALID, "OptionsMenuSystem",					reinterpret_cast<void*>(OptionsMenuSystem) },
 	// { NAMEKEY_INVALID, "SinglePlayerMenuSystem",			reinterpret_cast<void*>(SinglePlayerMenuSystem) },
 	// { NAMEKEY_INVALID, "QuitMenuSystem",					reinterpret_cast<void*>(QuitMenuSystem) },
@@ -172,7 +172,7 @@ static FunctionLexicon::TableEntry gameWinInputTable[] =
 	{ NAMEKEY_INVALID, "GadgetStaticTextInput",				reinterpret_cast<void*>(GadgetStaticTextInput) },
 	{ NAMEKEY_INVALID, "GadgetTextEntryInput",				reinterpret_cast<void*>(GadgetTextEntryInput) },
 
-	// { NAMEKEY_INVALID, "MainMenuInput",						reinterpret_cast<void*>(MainMenuInput) },
+	{ NAMEKEY_INVALID, "MainMenuInput",						reinterpret_cast<void*>(MainMenuInput) },
 	// { NAMEKEY_INVALID, "MapSelectMenuInput",				reinterpret_cast<void*>(MapSelectMenuInput) },
 	// { NAMEKEY_INVALID, "OptionsMenuInput",					reinterpret_cast<void*>(OptionsMenuInput) },
 	// { NAMEKEY_INVALID, "SinglePlayerMenuInput",				reinterpret_cast<void*>(SinglePlayerMenuInput) },
@@ -240,7 +240,7 @@ static FunctionLexicon::TableEntry gameWinTooltipTable[] =
 static FunctionLexicon::TableEntry winLayoutInitTable[] = 
 {
 
-	// { NAMEKEY_INVALID, "MainMenuInit",					reinterpret_cast<void*>(MainMenuInit) },
+	{ NAMEKEY_INVALID, "MainMenuInit",					reinterpret_cast<void*>(MainMenuInit) },
 	// { NAMEKEY_INVALID, "OptionsMenuInit",				reinterpret_cast<void*>(OptionsMenuInit) },
 	// { NAMEKEY_INVALID, "SaveLoadMenuInit",				reinterpret_cast<void*>(SaveLoadMenuInit) },
 	// { NAMEKEY_INVALID, "SaveLoadMenuFullScreenInit",	reinterpret_cast<void*>(SaveLoadMenuFullScreenInit) },
@@ -292,7 +292,7 @@ static FunctionLexicon::TableEntry winLayoutInitTable[] =
 static FunctionLexicon::TableEntry winLayoutUpdateTable[] = 
 {
 
-	// { NAMEKEY_INVALID, "MainMenuUpdate",					reinterpret_cast<void*>(MainMenuUpdate) },
+	{ NAMEKEY_INVALID, "MainMenuUpdate",					reinterpret_cast<void*>(MainMenuUpdate) },
 	// { NAMEKEY_INVALID, "OptionsMenuUpdate",					reinterpret_cast<void*>(OptionsMenuUpdate) },
 	// { NAMEKEY_INVALID, "SinglePlayerMenuUpdate",			reinterpret_cast<void*>(SinglePlayerMenuUpdate) },
 	// { NAMEKEY_INVALID, "MapSelectMenuUpdate",				reinterpret_cast<void*>(MapSelectMenuUpdate) },
@@ -333,7 +333,7 @@ static FunctionLexicon::TableEntry winLayoutUpdateTable[] =
 static FunctionLexicon::TableEntry winLayoutShutdownTable[] = 
 {
 
-	// { NAMEKEY_INVALID, "MainMenuShutdown",					reinterpret_cast<void*>(MainMenuShutdown) },
+	{ NAMEKEY_INVALID, "MainMenuShutdown",					reinterpret_cast<void*>(MainMenuShutdown) },
 	// { NAMEKEY_INVALID, "OptionsMenuShutdown",				reinterpret_cast<void*>(OptionsMenuShutdown) },
 	// { NAMEKEY_INVALID, "SaveLoadMenuShutdown",				reinterpret_cast<void*>(SaveLoadMenuShutdown) },
 	// { NAMEKEY_INVALID, "PopupCommunicatorShutdown",			reinterpret_cast<void*>(PopupCommunicatorShutdown) },
@@ -445,7 +445,7 @@ void *FunctionLexicon::findFunction( NameKeyType key, TableIndex index )
 	if( key == NAMEKEY_INVALID )
 		return NULL;
 
-	// search ALL tables for function if the index paramater allows if
+	// search ALL tables for function if the index parameter allows if
 	if( index == TABLE_ANY )
 	{
 
@@ -684,7 +684,7 @@ GameWinDrawFunc FunctionLexicon::gameWinDrawFunc( NameKeyType key, TableIndex in
 { 
 	if ( index == TABLE_ANY )
 	{
-		// first search the device depended table then the device independent table
+		// first search the device dependent table then the device independent table
 		GameWinDrawFunc func;
 
 		func = (GameWinDrawFunc)findFunction( key, TABLE_GAME_WIN_DEVICEDRAW ); 
@@ -702,7 +702,7 @@ WindowLayoutInitFunc FunctionLexicon::winLayoutInitFunc( NameKeyType key, TableI
 {
 	if ( index == TABLE_ANY )
 	{
-		// first search the device depended table then the device independent table
+		// first search the device dependent table then the device independent table
 		WindowLayoutInitFunc func;
 
 		func = (WindowLayoutInitFunc)findFunction( key, TABLE_WIN_LAYOUT_DEVICEINIT ); 

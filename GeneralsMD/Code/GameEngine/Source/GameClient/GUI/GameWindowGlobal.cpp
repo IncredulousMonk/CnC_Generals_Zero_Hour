@@ -229,10 +229,9 @@ GameFont *GameWindowManager::winFindFont( AsciiString fontName,
 																					Bool bold )
 {
 
-	// FIXME: TheFontLibrary
-	// assert( TheFontLibrary );
-	// if( TheFontLibrary )
-	// 	return TheFontLibrary->getFont( fontName, pointSize, bold );
+	assert( TheFontLibrary );
+	if( TheFontLibrary )
+		return TheFontLibrary->getFont( fontName, pointSize, bold );
 
 	return NULL;
 

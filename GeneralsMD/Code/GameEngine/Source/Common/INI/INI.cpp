@@ -132,7 +132,7 @@ static const BlockParse theTypeTable[] =
 // 	{ "Science",						INI::parseScienceDefinition },
 // 	{ "Rank",								INI::parseRankDefinition },
 // 	{ "SpecialPower",				INI::parseSpecialPowerDefinition },
-// 	{ "ShellMenuScheme",		INI::parseShellMenuSchemeDefinition },
+	{ "ShellMenuScheme",		INI::parseShellMenuSchemeDefinition },
 // 	{ "Terrain",						INI::parseTerrainDefinition },
 // 	{ "Upgrade",						INI::parseUpgradeDefinition },
 	{ "Video",							INI::parseVideoDefinition },

@@ -119,6 +119,8 @@ DisplayString *LinuxDisplayStringManager::newDisplayString()
 
    }  // end if
 
+   dynamic_cast<LinuxDisplayString*>(newString)->m_renderer = this;
+
    // assign a default font
    if (TheGlobalLanguageData && TheGlobalLanguageData->m_ini.m_defaultDisplayStringFont.name.isNotEmpty()) {
       newString->setFont(TheFontLibrary->getFont(
@@ -128,8 +130,6 @@ DisplayString *LinuxDisplayStringManager::newDisplayString()
    } else {
       newString->setFont( TheFontLibrary->getFont( AsciiString("Times New Roman"), 12, FALSE ) );
    }
-
-   dynamic_cast<LinuxDisplayString*>(newString)->m_renderer = this;
 
    // link string to list
    link( newString );
@@ -170,56 +170,56 @@ void LinuxDisplayStringManager::update()
    DisplayStringManager::update();
 
    // FIXME: Remove all of the "free resources" code if we don't end up using textures.
-   LinuxDisplayString *string = static_cast<LinuxDisplayString *>(m_stringList);
+   // LinuxDisplayString *string = static_cast<LinuxDisplayString *>(m_stringList);
 
-   // if the m_currentCheckpoint is valid, use it for the starting point for the search
-   if (m_currentCheckpoint) {
-      string = static_cast<LinuxDisplayString *>(m_currentCheckpoint);
-   }
+   // // if the m_currentCheckpoint is valid, use it for the starting point for the search
+   // if (m_currentCheckpoint) {
+   //    string = static_cast<LinuxDisplayString *>(m_currentCheckpoint);
+   // }
 
-   UnsignedInt currFrame = TheGameClient->getFrame();
-   const UnsignedInt LinuxCleanupTime = 60;  /** any string not rendered after
-                                                               this many frames will have its
-                                                               render resources freed */
+   // UnsignedInt currFrame = TheGameClient->getFrame();
+   // const UnsignedInt LinuxCleanupTime = 60;  /** any string not rendered after
+   //                                                             this many frames will have its
+   //                                                             render resources freed */
 
-   int numStrings = 10;
-   // looping through all the strings eats up a lot of ambient time. Instead, 
-   // loop through 10 (arbitrarily chosen) or till the end is hit.
-   while ( numStrings-- && string)
-   {
+   // int numStrings = 10;
+   // // looping through all the strings eats up a lot of ambient time. Instead, 
+   // // loop through 10 (arbitrarily chosen) or till the end is hit.
+   // while ( numStrings-- && string)
+   // {
 
-      //
-      // has this string "expired" in terms of using resources, a string
-      // with a resource frame of zero isn't using any resources at all
-      //
-      if( string->m_lastResourceFrame != 0 &&
-            currFrame - string->m_lastResourceFrame > LinuxCleanupTime )
-      {
+   //    //
+   //    // has this string "expired" in terms of using resources, a string
+   //    // with a resource frame of zero isn't using any resources at all
+   //    //
+   //    if( string->m_lastResourceFrame != 0 &&
+   //          currFrame - string->m_lastResourceFrame > LinuxCleanupTime )
+   //    {
 
-         // // free the resources
-         // string->m_textRenderer.Reset();
-         // string->m_textRendererHotKey.Reset();
-         //
-         // mark data in the string as changed so that if it needs to
-         // be drawn again it will know to reconstruct the render data
-         //
-         string->m_textChanged = TRUE;
+   //       // // free the resources
+   //       // string->m_textRenderer.Reset();
+   //       // string->m_textRendererHotKey.Reset();
+   //       //
+   //       // mark data in the string as changed so that if it needs to
+   //       // be drawn again it will know to reconstruct the render data
+   //       //
+   //       string->m_textChanged = TRUE;
 
-         //
-         // set the last resource frame to zero, this allows us to ignore it
-         // in future cleanup passes of this update routine
-         //
-         string->m_lastResourceFrame = 0;
+   //       //
+   //       // set the last resource frame to zero, this allows us to ignore it
+   //       // in future cleanup passes of this update routine
+   //       //
+   //       string->m_lastResourceFrame = 0;
          
-      }  // end if
+   //    }  // end if
 
-      // move to next string
-      string = static_cast<LinuxDisplayString *>(string->next());
+   //    // move to next string
+   //    string = static_cast<LinuxDisplayString *>(string->next());
 
-   }  // end while
+   // }  // end while
    
-   // reset the starting point for our next search
-   m_currentCheckpoint = string;
+   // // reset the starting point for our next search
+   // m_currentCheckpoint = string;
 }  // end update
 
 //-------------------------------------------------------------------------------------------------

@@ -70,7 +70,8 @@ void Image::parseImageCoords( INI* ini, void *instance, void * /*store*/, const 
 	Int bottom = INI::scanInt(ini->getNextSubToken("Bottom"));
 
 	// get the image we're storing in
-	Image *theImage = (Image *)instance;
+	Image::Data* data = (Image::Data*) instance;
+	Image* theImage = data->m_obj;
 
 	//
 	// store the UV coords based on what we've read in and the texture size
@@ -99,6 +100,12 @@ void Image::parseImageCoords( INI* ini, void *instance, void * /*store*/, const 
 	// store the uv coords
 	theImage->setUV( &uvCoords );
 
+	// store the image origin
+	ICoord2D imageOrigin;
+	imageOrigin.x = left;
+	imageOrigin.y = top;
+	theImage->setImageOrigin( &imageOrigin );
+
 	// compute the image size based on the coords we read and store
 	ICoord2D imageSize;
 	imageSize.x = right - left;
@@ -123,7 +130,8 @@ void Image::parseImageStatus( INI* ini, void *instance, void *store, const void*
 	UnsignedInt *theStatusBits = (UnsignedInt *)store;
 	if( BitTest( *theStatusBits, IMAGE_STATUS_ROTATED_90_CLOCKWISE ) )
 	{
-		Image *theImage = (Image *)instance;
+		Image::Data* data = (Image::Data*) instance;
+		Image* theImage = data->m_obj;
 		ICoord2D imageSize;
 
 		imageSize.x = theImage->getImageHeight();  // note it's height not width
@@ -155,6 +163,7 @@ Image::Image( void )
 	m_data.m_imageSize.y = 0;
 	m_data.m_rawTextureData = NULL;
 	m_data.m_status = IMAGE_STATUS_NONE;
+	m_data.m_obj = this;
 
 }  // end Image
 
@@ -218,11 +227,22 @@ void ImageCollection::addImage( Image *image )
 }  // end newImage
 
 //-------------------------------------------------------------------------------------------------
+/** Does an image with this name exist? */
+//-------------------------------------------------------------------------------------------------
+Bool ImageCollection::imageExists( const AsciiString& name )
+{
+	return m_imageMap.contains(TheNameKeyGenerator->nameToLowercaseKey(name));
+}  // end findImageByName
+
+//-------------------------------------------------------------------------------------------------
 /** Find an image given the image name */
 //-------------------------------------------------------------------------------------------------
 const Image *ImageCollection::findImageByName( const AsciiString& name )
 {
   std::map<unsigned,Image *>::iterator i=m_imageMap.find(TheNameKeyGenerator->nameToLowercaseKey(name));
+  if (i == m_imageMap.end()) {
+	DEBUG_LOG(("Image does not exist: %s\n", name.str()));
+  }
   return i==m_imageMap.end()?NULL:i->second;
 }  // end findImageByName
 

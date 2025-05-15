@@ -58,16 +58,16 @@ void INI::parseMappedImageDefinition( INI* ini )
 		//We don't need it if we're in the builder... which doesn't have this.
 		return;
 	}
-	Image *image = const_cast<Image*>(TheMappedImageCollection->findImageByName( name ));
-	if (image) {
-		DEBUG_ASSERTLOG(!image->getRawTextureData(), ("We are trying to parse over an existing image that contains a non-null rawTextureData, you should fix that (%s)\n", name.str()));
-	}
 
-	if( image == NULL )
-	{
+	Image* image;
+	Bool found = TheMappedImageCollection->imageExists(name);
+	if (found) {
+		image = const_cast<Image*>(TheMappedImageCollection->findImageByName( name ));
+		DEBUG_ASSERTLOG(!image->getRawTextureData(), ("We are trying to parse over an existing image that contains a non-null rawTextureData, you should fix that (%s)\n", name.str()));
+	} else {
 
 		// image not found, create a new one
-  	image = newInstance(Image);
+		image = newInstance(Image);
 		image->setName( name );
 		TheMappedImageCollection->addImage(image);
 		DEBUG_ASSERTCRASH( image, ("parseMappedImage: unable to allocate image for '%s'\n", name.str()) );

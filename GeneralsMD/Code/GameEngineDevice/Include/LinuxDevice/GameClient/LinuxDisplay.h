@@ -26,6 +26,15 @@
 #define __LINUX_DISPLAY_H
 
 #include "GameClient/Display.h"
+#include <SDL3/SDL.h>
+
+struct Texture {
+   AsciiString path {};
+   SDL_Texture* texture {};
+   Bool loaded {};
+};
+
+using TextureCache = std::unordered_map<AsciiString, Texture, rts::hash<AsciiString>, rts::equal_to<AsciiString>>;
 
 class LinuxDisplay: public Display {
 public:
@@ -84,6 +93,7 @@ public:
 protected:
    IRegion2D m_clipRegion {}; ///< the clipping region for images
    Bool m_isClippedEnabled {};
+   TextureCache m_textureCache {};
 };
 
 #endif // __LINUX_DISPLAY_H

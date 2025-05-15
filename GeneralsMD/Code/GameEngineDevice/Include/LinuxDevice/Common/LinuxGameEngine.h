@@ -39,7 +39,7 @@
 // #include "W3DDevice/GameLogic/W3DGameLogic.h"
 #include "LinuxDevice/GameClient/LinuxGameClient.h"
 // #include "W3DDevice/GameClient/W3DWebBrowser.h"
-// #include "W3DDevice/Common/W3DFunctionLexicon.h"
+#include "LinuxDevice/Common/LinuxFunctionLexicon.h"
 // #include "W3DDevice/Common/W3DRadar.h"
 // #include "W3DDevice/Common/W3DFunctionLexicon.h"
 // #include "W3DDevice/Common/W3DThingFactory.h"
@@ -90,8 +90,7 @@ inline GameClient* LinuxGameEngine::createGameClient( void ) { return NEW LinuxG
 inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { printf("Creating NULL ModuleFactory!\n"); return nullptr; }
 // inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { return NEW W3DThingFactory; }
 inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { printf("Creating NULL ThingFactory!\n"); return nullptr; }
-// inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { return NEW W3DFunctionLexicon; }
-inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { printf("Creating NULL FunctionLexicon!\n"); return nullptr; }
+inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { return NEW LinuxFunctionLexicon; }
 inline LocalFileSystem* LinuxGameEngine::createLocalFileSystem( void ) { return NEW LinuxLocalFileSystem; }
 inline ArchiveFileSystem* LinuxGameEngine::createArchiveFileSystem( void ) { return NEW LinuxBIGFileSystem; }
 // inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return NEW W3DParticleSystemManager; }

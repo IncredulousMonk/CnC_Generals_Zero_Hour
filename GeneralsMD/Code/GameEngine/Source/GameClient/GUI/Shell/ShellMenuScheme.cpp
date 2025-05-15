@@ -280,10 +280,11 @@ ShellMenuScheme *ShellMenuSchemeManager::newShellMenuScheme(AsciiString name)
 
 void ShellMenuSchemeManager::init( void )
 {
-	INI ini;
-	// Read from INI all the ControlBarSchemes
-	ini.load( AsciiString( "Data\\INI\\Default\\ShellMenuScheme.ini" ), INI_LOAD_OVERWRITE, NULL );
-	ini.load( AsciiString( "Data\\INI\\ShellMenuScheme.ini" ), INI_LOAD_OVERWRITE, NULL );
+	// INI has been loaded by the TheShell already.
+	// INI ini;
+	// // Read from INI all the ControlBarSchemes
+	// ini.load( AsciiString( "Data\\INI\\Default\\ShellMenuScheme.ini" ), INI_LOAD_OVERWRITE, NULL );
+	// ini.load( AsciiString( "Data\\INI\\ShellMenuScheme.ini" ), INI_LOAD_OVERWRITE, NULL );
 
 }
 

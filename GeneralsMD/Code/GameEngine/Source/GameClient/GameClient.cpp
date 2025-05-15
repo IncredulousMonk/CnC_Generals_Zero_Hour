@@ -179,12 +179,12 @@ GameClient::~GameClient()
 	// delete TheChallengeGenerals;
 	// TheChallengeGenerals = NULL;
 
-	// // delete the shell
-	// delete TheShell;
-	// TheShell = NULL;
+	// delete the shell
+	delete TheShell;
+	TheShell = NULL;
 
-	// delete TheIMEManager;
-	// TheIMEManager = NULL;
+	delete TheIMEManager;
+	TheIMEManager = NULL;
 
 	// delete window manager
 	delete TheWindowManager;
@@ -348,24 +348,24 @@ void GameClient::init( void )
 
 		TheWindowManager->init();
  		TheWindowManager->setName("TheWindowManager");
-		TheWindowManager->initTestGUI();
+		// TheWindowManager->initTestGUI();
 
 	}  // end if
 
-// 	// create the IME manager
-// 	TheIMEManager = CreateIMEManagerInterface();
-// 	if ( TheIMEManager )
-// 	{
-// 		TheIMEManager->init();
-//  		TheIMEManager->setName("TheIMEManager");
-// 	}
+	// create the IME manager
+	TheIMEManager = CreateIMEManagerInterface();
+	if ( TheIMEManager )
+	{
+		TheIMEManager->init();
+ 		TheIMEManager->setName("TheIMEManager");
+	}
 
-	// // create the shell
-	// TheShell = MSGNEW("GameClientSubsystem") Shell;
-	// if( TheShell ) {
-	// 	TheShell->init();
- 	// 	TheShell->setName("TheShell");
-	// }
+	// create the shell
+	TheShell = MSGNEW("GameClientSubsystem") Shell;
+	if( TheShell ) {
+		TheShell->init();
+ 		TheShell->setName("TheShell");
+	}
 
 // 	// instantiate the in-game user interface
 // 	TheInGameUI = createInGameUI();
@@ -432,7 +432,7 @@ void GameClient::init( void )
 // 	TheEva->init();
 //  	TheEva->setName("TheEva");
 
-// 	TheDisplayStringManager->postProcessLoad();
+	TheDisplayStringManager->postProcessLoad();
 
 // 	TheSnowManager = createSnowManager();
 // 	if (TheSnowManager)
@@ -528,7 +528,7 @@ void GameClient::update( void )
 			// TheDisplay->playLogoMovie("EALogoMovie640", 5000, 3000);
 		TheWritableGlobalData->m_data.m_playIntro = FALSE;
 		TheWritableGlobalData->m_data.m_afterIntro = TRUE;
-		// playSizzle = TRUE;
+		playSizzle = TRUE;
 	}
 
 	//Initial Game Codition.  We must show the movie first and then we can display the shell	
@@ -578,8 +578,8 @@ void GameClient::update( void )
 				
 // 			}
 
-// 			TheShell->showShellMap(TRUE);
-// 			TheShell->showShell();
+			TheShell->showShellMap(TRUE);
+			TheShell->showShell();
 			TheWritableGlobalData->m_data.m_afterIntro = FALSE;
 		}
 	}
@@ -772,10 +772,10 @@ void GameClient::update( void )
 		TheDisplayStringManager->update();
 	}
 
-// 	{
-// 		// update the shell
-// 		TheShell->UPDATE();
-// 	}
+	{
+		// update the shell
+		TheShell->UPDATE();
+	}
 
 // 	{
 // 		// update the in game UI 

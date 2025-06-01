@@ -13,6 +13,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - Displays a window with the splash screen.
 - Plays the logo movie.
 - Displays the main menu.
+- The credits menu works (including the music!)
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -23,6 +24,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheWritableGlobalData
   - TheGameText
   - TheGlobalLanguageData
+  - TheAudio
   - TheFunctionLexicon
   - TheMessageStream
   - TheGameClient (partial)
@@ -45,12 +47,13 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 
 - The main-menu screen needs tweaking. The transparency is a bit off. The exit dialog shows transparency problems too.
 - Most of the main-menu buttons don't work yet. The Options menu is likely to be my next task.
+- 2D sound works, music works, but I don't have an SDL library for 3D (positional) sound. I may have to look at OpenAL.
 - Everything else.
 
 
 ## Dependencies
 
-I'm using SDL3, SDL_ttf 3 (fonts), and SDL_image 3 (loading .tga images), so you'll have to install those libraries.
+I'm using SDL3, SDL_ttf 3 (fonts), SDL_image 3 (loading .tga images), and SDL_sound (decoding .mp3 files), so you'll have to install those libraries.
 
 I'm using FFmpeg to replace Bink, so I installed libavformat-dev, libswscale-dev, and libavdevice-dev.
 

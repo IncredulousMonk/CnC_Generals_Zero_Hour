@@ -29,9 +29,11 @@
 #include <SDL3/SDL.h>
 
 /// @brief Adapts the File class to match the SDL_IOStreamInterface interface.
+///
+/// If the constructor is called without an argument then setFile must be called!
 class SdlFileStream {
 public:
-   SdlFileStream(File* file);
+   SdlFileStream(File* file = nullptr);
    ~SdlFileStream() {};
 
    // No copies allowed!
@@ -44,9 +46,10 @@ public:
    bool close();
 
    SDL_IOStreamInterface* interface() { return &m_interface; }
+   void setFile(File* file) { m_file = file; }
 private:
    SDL_IOStreamInterface m_interface {};
-   File* m_file;
+   File* m_file {};
 };
 
 #endif // __SDL_FILE_STREAM_H

@@ -38,7 +38,7 @@
 #define DEFAULT_WORLD_HEIGHT	64
 
 /// A unique, generic "identifier" used to access Objects.
-enum ObjectID: int
+enum ObjectID: UnsignedInt
 {
 	INVALID_ID = 0,
 	FORCE_OBJECTID_TO_LONG_SIZE = 0x7ffffff

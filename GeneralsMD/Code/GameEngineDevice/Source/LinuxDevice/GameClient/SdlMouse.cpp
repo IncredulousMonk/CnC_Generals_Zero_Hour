@@ -263,7 +263,7 @@ void SdlMouse::initCursorResources(void)
 //-------------------------------------------------------------------------------------------------
 void SdlMouse::setCursor(MouseCursor cursor)
 {
-   DEBUG_LOG(("SdlMouse::setCursor not fully implemented yet\n"));
+   DEBUG_LOG(("SdlMouse::setCursor(%d) not fully implemented yet\n", cursor));
 
    // extend
    Mouse::setCursor(cursor);

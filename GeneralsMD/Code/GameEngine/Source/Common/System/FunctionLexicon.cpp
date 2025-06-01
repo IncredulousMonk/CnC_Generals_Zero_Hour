@@ -101,7 +101,7 @@ static FunctionLexicon::TableEntry gameWinSystemTable[] =
 	// { NAMEKEY_INVALID, "QuitMenuSystem",					reinterpret_cast<void*>(QuitMenuSystem) },
 	// { NAMEKEY_INVALID, "MapSelectMenuSystem",				reinterpret_cast<void*>(MapSelectMenuSystem) },
 	// { NAMEKEY_INVALID, "ReplayMenuSystem",					reinterpret_cast<void*>(ReplayMenuSystem) },
-	// { NAMEKEY_INVALID, "CreditsMenuSystem",					reinterpret_cast<void*>(CreditsMenuSystem) },
+	{ NAMEKEY_INVALID, "CreditsMenuSystem",					reinterpret_cast<void*>(CreditsMenuSystem) },
 	// { NAMEKEY_INVALID, "LanLobbyMenuSystem",				reinterpret_cast<void*>(LanLobbyMenuSystem) },
 	// { NAMEKEY_INVALID, "LanGameOptionsMenuSystem",			reinterpret_cast<void*>(LanGameOptionsMenuSystem) },
 	// { NAMEKEY_INVALID, "LanMapSelectMenuSystem",			reinterpret_cast<void*>(LanMapSelectMenuSystem) },
@@ -174,11 +174,11 @@ static FunctionLexicon::TableEntry gameWinInputTable[] =
 
 	{ NAMEKEY_INVALID, "MainMenuInput",						reinterpret_cast<void*>(MainMenuInput) },
 	// { NAMEKEY_INVALID, "MapSelectMenuInput",				reinterpret_cast<void*>(MapSelectMenuInput) },
-	// { NAMEKEY_INVALID, "OptionsMenuInput",					reinterpret_cast<void*>(OptionsMenuInput) },
+	{ NAMEKEY_INVALID, "OptionsMenuInput",					reinterpret_cast<void*>(OptionsMenuInput) },
 	// { NAMEKEY_INVALID, "SinglePlayerMenuInput",				reinterpret_cast<void*>(SinglePlayerMenuInput) },
 	// { NAMEKEY_INVALID, "LanLobbyMenuInput",					reinterpret_cast<void*>(LanLobbyMenuInput) },
 	// { NAMEKEY_INVALID, "ReplayMenuInput",					reinterpret_cast<void*>(ReplayMenuInput) },
-	// { NAMEKEY_INVALID, "CreditsMenuInput",					reinterpret_cast<void*>(CreditsMenuInput) },
+	{ NAMEKEY_INVALID, "CreditsMenuInput",					reinterpret_cast<void*>(CreditsMenuInput) },
 	// { NAMEKEY_INVALID, "KeyboardOptionsMenuInput",			reinterpret_cast<void*>(KeyboardOptionsMenuInput) },
 	// { NAMEKEY_INVALID, "PopupCommunicatorInput",			reinterpret_cast<void*>(PopupCommunicatorInput) },
 	// { NAMEKEY_INVALID, "LanGameOptionsMenuInput",			reinterpret_cast<void*>(LanGameOptionsMenuInput) },
@@ -241,7 +241,7 @@ static FunctionLexicon::TableEntry winLayoutInitTable[] =
 {
 
 	{ NAMEKEY_INVALID, "MainMenuInit",					reinterpret_cast<void*>(MainMenuInit) },
-	// { NAMEKEY_INVALID, "OptionsMenuInit",				reinterpret_cast<void*>(OptionsMenuInit) },
+	{ NAMEKEY_INVALID, "OptionsMenuInit",				reinterpret_cast<void*>(OptionsMenuInit) },
 	// { NAMEKEY_INVALID, "SaveLoadMenuInit",				reinterpret_cast<void*>(SaveLoadMenuInit) },
 	// { NAMEKEY_INVALID, "SaveLoadMenuFullScreenInit",	reinterpret_cast<void*>(SaveLoadMenuFullScreenInit) },
 
@@ -251,7 +251,7 @@ static FunctionLexicon::TableEntry winLayoutInitTable[] =
 	// { NAMEKEY_INVALID, "MapSelectMenuInit",				reinterpret_cast<void*>(MapSelectMenuInit) },
 	// { NAMEKEY_INVALID, "LanLobbyMenuInit",				reinterpret_cast<void*>(LanLobbyMenuInit) },
 	// { NAMEKEY_INVALID, "ReplayMenuInit",				reinterpret_cast<void*>(ReplayMenuInit) },
-	// { NAMEKEY_INVALID, "CreditsMenuInit",				reinterpret_cast<void*>(CreditsMenuInit) },
+	{ NAMEKEY_INVALID, "CreditsMenuInit",				reinterpret_cast<void*>(CreditsMenuInit) },
 	// { NAMEKEY_INVALID, "LanGameOptionsMenuInit",		reinterpret_cast<void*>(LanGameOptionsMenuInit) },
 	// { NAMEKEY_INVALID, "LanMapSelectMenuInit",			reinterpret_cast<void*>(LanMapSelectMenuInit) },
 	// { NAMEKEY_INVALID, "SkirmishGameOptionsMenuInit",	reinterpret_cast<void*>(SkirmishGameOptionsMenuInit) },
@@ -293,14 +293,14 @@ static FunctionLexicon::TableEntry winLayoutUpdateTable[] =
 {
 
 	{ NAMEKEY_INVALID, "MainMenuUpdate",					reinterpret_cast<void*>(MainMenuUpdate) },
-	// { NAMEKEY_INVALID, "OptionsMenuUpdate",					reinterpret_cast<void*>(OptionsMenuUpdate) },
+	{ NAMEKEY_INVALID, "OptionsMenuUpdate",					reinterpret_cast<void*>(OptionsMenuUpdate) },
 	// { NAMEKEY_INVALID, "SinglePlayerMenuUpdate",			reinterpret_cast<void*>(SinglePlayerMenuUpdate) },
 	// { NAMEKEY_INVALID, "MapSelectMenuUpdate",				reinterpret_cast<void*>(MapSelectMenuUpdate) },
 	// { NAMEKEY_INVALID, "LanLobbyMenuUpdate",				reinterpret_cast<void*>(LanLobbyMenuUpdate) },
 	// { NAMEKEY_INVALID, "ReplayMenuUpdate",					reinterpret_cast<void*>(ReplayMenuUpdate) },
 	// { NAMEKEY_INVALID, "SaveLoadMenuUpdate",				reinterpret_cast<void*>(SaveLoadMenuUpdate) },
 
-	// { NAMEKEY_INVALID, "CreditsMenuUpdate",					reinterpret_cast<void*>(CreditsMenuUpdate) },
+	{ NAMEKEY_INVALID, "CreditsMenuUpdate",					reinterpret_cast<void*>(CreditsMenuUpdate) },
 	// { NAMEKEY_INVALID, "LanGameOptionsMenuUpdate",			reinterpret_cast<void*>(LanGameOptionsMenuUpdate) },
 	// { NAMEKEY_INVALID, "LanMapSelectMenuUpdate",			reinterpret_cast<void*>(LanMapSelectMenuUpdate) },
 	// { NAMEKEY_INVALID, "SkirmishGameOptionsMenuUpdate",		reinterpret_cast<void*>(SkirmishGameOptionsMenuUpdate) },
@@ -334,7 +334,7 @@ static FunctionLexicon::TableEntry winLayoutShutdownTable[] =
 {
 
 	{ NAMEKEY_INVALID, "MainMenuShutdown",					reinterpret_cast<void*>(MainMenuShutdown) },
-	// { NAMEKEY_INVALID, "OptionsMenuShutdown",				reinterpret_cast<void*>(OptionsMenuShutdown) },
+	{ NAMEKEY_INVALID, "OptionsMenuShutdown",				reinterpret_cast<void*>(OptionsMenuShutdown) },
 	// { NAMEKEY_INVALID, "SaveLoadMenuShutdown",				reinterpret_cast<void*>(SaveLoadMenuShutdown) },
 	// { NAMEKEY_INVALID, "PopupCommunicatorShutdown",			reinterpret_cast<void*>(PopupCommunicatorShutdown) },
 	// { NAMEKEY_INVALID, "KeyboardOptionsMenuShutdown",		reinterpret_cast<void*>(KeyboardOptionsMenuShutdown) },
@@ -342,7 +342,7 @@ static FunctionLexicon::TableEntry winLayoutShutdownTable[] =
 	// { NAMEKEY_INVALID, "MapSelectMenuShutdown",				reinterpret_cast<void*>(MapSelectMenuShutdown) },
 	// { NAMEKEY_INVALID, "LanLobbyMenuShutdown",				reinterpret_cast<void*>(LanLobbyMenuShutdown) },
 	// { NAMEKEY_INVALID, "ReplayMenuShutdown",				reinterpret_cast<void*>(ReplayMenuShutdown) },
-	// { NAMEKEY_INVALID, "CreditsMenuShutdown",				reinterpret_cast<void*>(CreditsMenuShutdown) },
+	{ NAMEKEY_INVALID, "CreditsMenuShutdown",				reinterpret_cast<void*>(CreditsMenuShutdown) },
 	// { NAMEKEY_INVALID, "LanGameOptionsMenuShutdown",		reinterpret_cast<void*>(LanGameOptionsMenuShutdown) },
 	// { NAMEKEY_INVALID, "LanMapSelectMenuShutdown",			reinterpret_cast<void*>(LanMapSelectMenuShutdown) },
 	// { NAMEKEY_INVALID, "SkirmishGameOptionsMenuShutdown",	reinterpret_cast<void*>(SkirmishGameOptionsMenuShutdown) },

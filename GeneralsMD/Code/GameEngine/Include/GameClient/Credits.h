@@ -56,6 +56,7 @@
 // USER INCLUDES //////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 #include "GameClient/FontDesc.h"
+#include "Common/INI.h"
 
 //-----------------------------------------------------------------------------
 // FORWARD REFERENCES /////////////////////////////////////////////////////////
@@ -64,7 +65,7 @@ class DisplayString;
 //-----------------------------------------------------------------------------
 // TYPE DEFINES ///////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-enum
+enum : Int
 {
 CREDIT_STYLE_TITLE = 0,
 CREDIT_STYLE_POSITION, 
@@ -74,7 +75,7 @@ CREDIT_STYLE_BLANK,			///< Keep this second to last
 MAX_CREDIT_STYLES				///< Keep this last
 };
 
-enum{ CREDIT_SPACE_OFFSET = 2 };
+enum : Int { CREDIT_SPACE_OFFSET = 2 };
 
 static const LookupListRec CreditStyleNames[] = 
 {
@@ -93,19 +94,23 @@ public:
 	CreditsLine();
 	~CreditsLine();
 
+	// No copies allowed!
+	CreditsLine(const CreditsLine&) = delete;
+	CreditsLine& operator=(const CreditsLine&) = delete;
+
 // parsing variables
-	Int m_style;
-	UnicodeString m_text;
-	UnicodeString m_secondText;
-	Bool m_useSecond;
-	Bool m_done;
+	Int m_style {};
+	UnicodeString m_text {};
+	UnicodeString m_secondText {};
+	Bool m_useSecond {};
+	Bool m_done {};
 
 // drawing variables
-	DisplayString *m_displayString;
-	DisplayString *m_secondDisplayString;
-	ICoord2D m_pos;
-	Int m_height;
-	Int m_color;
+	DisplayString *m_displayString {};
+	DisplayString *m_secondDisplayString {};
+	ICoord2D m_pos {};
+	Int m_height {};
+	Color m_color {};
 };
 
 class CreditsManager: public SubsystemInterface
@@ -128,30 +133,38 @@ public:
 	Bool isFinished( void ) { return m_isFinished;	}
 	void addBlank( void );
 	void addText( AsciiString text );
+
+	// MG: Cannot apply offsetof to CreditsManager, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int m_scrollRate {}; // in pixels
+		Int m_scrollRatePerFrames {};
+		Bool m_scrollDown {};	// if TRUE text will come from the top to the bottom if False, it will go from the bottom up
+
+		Color m_titleColor {};
+		Color m_positionColor {};
+		Color m_normalColor {};
+		
+		Int m_currentStyle {};
+
+		CreditsManager* m_obj;
+	};
+
+	IniData m_ini {};
 private:
 
 	UnicodeString getUnicodeString(AsciiString str);
 
 	typedef std::list<CreditsLine *> CreditsLineList;
-	CreditsLineList m_creditLineList;
-	CreditsLineList::iterator m_creditLineListIt;
+	CreditsLineList m_creditLineList {};
+	CreditsLineList::iterator m_creditLineListIt {};
 
-	CreditsLineList m_displayedCreditLineList;
+	CreditsLineList m_displayedCreditLineList {};
 
-	Int m_scrollRate; // in pixels
-	Int m_scrollRatePerFrames;
-	Bool m_scrollDown;	// if TRUE text will come from the top to the bottom if False, it will go from the bottom up
+	Bool m_isFinished {};
 
-	Color			m_titleColor;
-	Color			m_positionColor;
-	Color			m_normalColor;
-	
-	Int m_currentStyle;
-
-	Bool m_isFinished;
-
-	Int m_framesSinceStarted;
-	Int m_normalFontHeight;
+	Int m_framesSinceStarted {};
+	Int m_normalFontHeight {};
 };
 
 

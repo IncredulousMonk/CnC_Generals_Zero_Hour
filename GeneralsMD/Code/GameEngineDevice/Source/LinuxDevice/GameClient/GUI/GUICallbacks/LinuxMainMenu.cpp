@@ -34,7 +34,7 @@
 // #include "GameLogic/GameLogic.h"
 #include "GameClient/Shell.h"
 #include "GameClient/ShellMenuScheme.h"
-// #include "GameClient/Credits.h"
+#include "GameClient/Credits.h"
 
 #include "GameClient/Gadget.h"
 #include "GameClient/GameWindowGlobal.h"
@@ -877,6 +877,5 @@ void LinuxMainMenuInit( WindowLayout *layout, void *userData )
 
 void LinuxCreditsMenuDraw( GameWindow *window, WinInstanceData *instData )
 {
-   DEBUG_CRASH(("LinuxCreditsMenuDraw not yet implemented!"));
-   // TheCredits->draw();
+   TheCredits->draw();
 }

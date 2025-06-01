@@ -174,10 +174,9 @@ void Display::setWidth( UnsignedInt width )
 	// set the new width
 	m_width = width;
 
-	// FIXME: Uncomment when TheMouse is implemented.
-	// // set the new mouse limits
-	// if( TheMouse )
-	// 	TheMouse->setMouseLimits();
+	// set the new mouse limits
+	if( TheMouse )
+		TheMouse->setMouseLimits();
 
 }  // end setWidth
 
@@ -190,10 +189,9 @@ void Display::setHeight( UnsignedInt height )
 	// se the new height
 	m_height = height;
 
-	// FIXME: Uncomment when TheMouse is implemented.
-	// // set the new mouse limits
-	// if( TheMouse )
-	// 	TheMouse->setMouseLimits();
+	// set the new mouse limits
+	if( TheMouse )
+		TheMouse->setMouseLimits();
 
 }  // end setHeight
 

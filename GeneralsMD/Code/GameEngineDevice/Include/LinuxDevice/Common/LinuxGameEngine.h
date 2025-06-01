@@ -102,6 +102,6 @@ inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { printf("Creati
 inline Radar* LinuxGameEngine::createRadar( void ) { printf("Creating NULL Radar!\n"); return nullptr; }
 // inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { return NEW CComObject<W3DWebBrowser>; }
 inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { printf("Creating NULL WebBrowser!\n"); return nullptr; }
-inline AudioManager* LinuxGameEngine::createAudioManager( void ) { printf("Creating NULL AudioManager!\n"); return nullptr; /*NEW SdlAudioManager;*/ }
+inline AudioManager* LinuxGameEngine::createAudioManager( void ) { return NEW SdlAudioManager; }
 
 #endif  // end __LINUXGAMEENGINE_H_

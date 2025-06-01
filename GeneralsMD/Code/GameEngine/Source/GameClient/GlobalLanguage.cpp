@@ -137,9 +137,10 @@ GlobalLanguage::~GlobalLanguage()
 void GlobalLanguage::init( void ) 
 {
 
-	// INI ini;
-	// AsciiString fname;
+	INI ini;
+	AsciiString fname;
 	// fname.format("Data\\%s\\Language.ini", GetRegistryLanguage().str());
+	fname.format("Data\\%s\\Language.ini", "English");
 
 	// OSVERSIONINFO	osvi;
 	// osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
@@ -154,7 +155,7 @@ void GlobalLanguage::init( void )
 	// }
 
 
-	// ini.load( fname, INI_LOAD_OVERWRITE, NULL );
+	ini.load( fname, INI_LOAD_OVERWRITE, NULL );
 	// StringListIt it = m_localFonts.begin();
 	// while( it != m_localFonts.end())
 	// {

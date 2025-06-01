@@ -37,7 +37,8 @@
 #include "Common/DamageFX.h"
 #include "Common/File.h"
 #include "Common/FileSystem.h"
-// #include "Common/GameAudio.h"
+#include "Common/GameAudio.h"
+#include "Common/AudioEventRTS.h"
 #include "Common/Science.h"
 // #include "Common/SpecialPower.h"
 // #include "Common/ThingFactory.h"
@@ -90,8 +91,8 @@ static const BlockParse theTypeTable[] =
 // 	{ "AIData",							INI::parseAIDataDefinition },
 	{ "Animation",					INI::parseAnim2DDefinition },
 // 	{ "Armor",							INI::parseArmorDefinition },
-// 	{ "AudioEvent",					INI::parseAudioEventDefinition },
-// 	{ "AudioSettings",			INI::parseAudioSettingsDefinition },
+	{ "AudioEvent",					INI::parseAudioEventDefinition },
+	{ "AudioSettings",			INI::parseAudioSettingsDefinition },
 // 	{ "Bridge",							INI::parseTerrainBridgeDefinition },
 // 	{ "Campaign",						INI::parseCampaignDefinition },
 //  	{ "ChallengeGenerals",				INI::parseChallengeModeDefinition },
@@ -101,28 +102,28 @@ static const BlockParse theTypeTable[] =
 // 	{ "ControlBarScheme",		INI::parseControlBarSchemeDefinition },
 // 	{ "ControlBarResizer",	INI::parseControlBarResizerDefinition },
 // 	{ "CrateData",					INI::parseCrateTemplateDefinition },
-// 	{ "Credits",						INI::parseCredits},
+	{ "Credits",						INI::parseCredits},
 	{ "WindowTransition",		INI::parseWindowTransitions},
 // 	{ "DamageFX",						INI::parseDamageFXDefinition },
-// 	{ "DialogEvent",				INI::parseDialogDefinition },
+	{ "DialogEvent",				INI::parseDialogDefinition },
 	{ "DrawGroupInfo",		INI::parseDrawGroupNumberDefinition },
 // 	{ "EvaEvent",						INI::parseEvaEvent },
 // 	{ "FXList",							INI::parseFXListDefinition },
 	{ "GameData",						INI::parseGameDataDefinition },
 // 	{ "InGameUI",						INI::parseInGameUIDefinition },
 // 	{ "Locomotor",					INI::parseLocomotorTemplateDefinition },
-// 	{ "Language",						INI::parseLanguageDefinition },
+	{ "Language",						INI::parseLanguageDefinition },
 // 	{ "MapCache",						INI::parseMapCacheDefinition },
 // 	{ "MapData",						INI::parseMapDataDefinition },
 	{ "MappedImage",				INI::parseMappedImageDefinition },
-// 	{ "MiscAudio",					INI::parseMiscAudio},
+	{ "MiscAudio",					INI::parseMiscAudio},
 	{ "Mouse",							INI::parseMouseDefinition },
 	{ "MouseCursor",				INI::parseMouseCursorDefinition },
 // 	{ "MultiplayerColor",		INI::parseMultiplayerColorDefinition },
 //   { "MultiplayerStartingMoneyChoice",		INI::parseMultiplayerStartingMoneyChoiceDefinition },
 // 	{ "OnlineChatColors",		INI::parseOnlineChatColorDefinition },
 // 	{ "MultiplayerSettings",INI::parseMultiplayerSettingsDefinition },
-// 	{ "MusicTrack",					INI::parseMusicTrackDefinition },
+	{ "MusicTrack",					INI::parseMusicTrackDefinition },
 // 	{ "Object",							INI::parseObjectDefinition },
 // 	{ "ObjectCreationList",	INI::parseObjectCreationListDefinition },
 // 	{ "ObjectReskin",				INI::parseObjectReskinDefinition },
@@ -1190,21 +1191,18 @@ void INI::parseDynamicAudioEventRTS( INI *ini, void * /*instance*/, void *store,
 //-------------------------------------------------------------------------------------------------
 /** Parse an audio event and assign to the 'AudioEventRTS*' at store */
 //-------------------------------------------------------------------------------------------------
-void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* )
+void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void * /*store*/, const void* userData)
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseAudioEventRTS not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// AudioEventRTS *theSound = (AudioEventRTS*)store;
+	AudioEventRTS *theSound = (AudioEventRTS*)userData;
 	
-	// // translate the string into a sound
-	// if (strcasecmp(token, "NoSound") != 0) {
-	// 	theSound->setEventName(AsciiString(token));
-	// }
+	// translate the string into a sound
+	if (strcasecmp(token, "NoSound") != 0) {
+		theSound->setEventName(AsciiString(token));
+	}
 
-	// TheAudio->getInfoForAudioEvent(theSound);
+	TheAudio->getInfoForAudioEvent(theSound);
 }
 
 //-------------------------------------------------------------------------------------------------

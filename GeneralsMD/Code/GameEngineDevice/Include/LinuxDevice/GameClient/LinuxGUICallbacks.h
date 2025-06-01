@@ -39,7 +39,7 @@ class WinInstanceData;
 // extern void LinuxMainMenuDraw( GameWindow *window, WinInstanceData *instData );
 // extern void LinuxMainMenuFourDraw( GameWindow *window, WinInstanceData *instData );
 // extern void LinuxMetalBarMenuDraw( GameWindow *window, WinInstanceData *instData );
-// extern void LinuxCreditsMenuDraw( GameWindow *window, WinInstanceData *instData );
+extern void LinuxCreditsMenuDraw( GameWindow *window, WinInstanceData *instData );
 extern void LinuxClockDraw( GameWindow *window, WinInstanceData *instData );
 // extern void LinuxMainMenuMapBorder( GameWindow *window, WinInstanceData *instData );
 // extern void LinuxMainMenuButtonDropShadowDraw( GameWindow *window, WinInstanceData *instData );

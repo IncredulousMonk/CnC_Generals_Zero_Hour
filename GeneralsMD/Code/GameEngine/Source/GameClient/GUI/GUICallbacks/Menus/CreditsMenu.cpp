@@ -82,7 +82,7 @@ static GameWindow *parentMainMenu = NULL;
 //-------------------------------------------------------------------------------------------------
 /** Initialize the single player menu */
 //-------------------------------------------------------------------------------------------------
-void CreditsMenuInit( WindowLayout *layout, void *userData )
+void CreditsMenuInit( WindowLayout *layout, void * /*userData*/ )
 {
 	TheShell->showShellMap(FALSE);
 	if(TheCredits)
@@ -102,7 +102,6 @@ void CreditsMenuInit( WindowLayout *layout, void *userData )
 	TheWindowManager->winSetFocus( parentMainMenu );
 
 
-
 	TheAudio->removeAudioEvent( AHSV_StopTheMusicFade );
 	AudioEventRTS event( AsciiString( "Credits" ) );
 	event.setShouldFade( TRUE );
@@ -114,7 +113,7 @@ void CreditsMenuInit( WindowLayout *layout, void *userData )
 //-------------------------------------------------------------------------------------------------
 /** single player menu shutdown method */
 //-------------------------------------------------------------------------------------------------
-void CreditsMenuShutdown( WindowLayout *layout, void *userData )
+void CreditsMenuShutdown( WindowLayout *layout, void * /*userData*/ )
 {
 	TheCredits->reset();
 	delete TheCredits;
@@ -134,7 +133,7 @@ void CreditsMenuShutdown( WindowLayout *layout, void *userData )
 //-------------------------------------------------------------------------------------------------
 /** single player menu update method */
 //-------------------------------------------------------------------------------------------------
-void CreditsMenuUpdate( WindowLayout *layout, void *userData )
+void CreditsMenuUpdate( WindowLayout * /*layout*/, void * /*userData*/ )
 {
 
 	if(TheCredits)
@@ -152,8 +151,7 @@ void CreditsMenuUpdate( WindowLayout *layout, void *userData )
 //-------------------------------------------------------------------------------------------------
 /** Replay menu input callback */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType CreditsMenuInput( GameWindow *window, UnsignedInt msg,
-																						WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType CreditsMenuInput( GameWindow * /*window*/, UnsignedInt msg, WindowMsgData mData1, WindowMsgData mData2 )
 {
 
 	switch( msg ) 
@@ -201,8 +199,7 @@ WindowMsgHandledType CreditsMenuInput( GameWindow *window, UnsignedInt msg,
 //-------------------------------------------------------------------------------------------------
 /** single player menu window system callback */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType CreditsMenuSystem( GameWindow *window, UnsignedInt msg, 
-														 WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType CreditsMenuSystem( GameWindow * /*window*/, UnsignedInt msg, WindowMsgData mData1, WindowMsgData mData2 )
 {
 	
 	switch( msg ) 

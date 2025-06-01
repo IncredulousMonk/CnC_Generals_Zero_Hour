@@ -65,7 +65,7 @@ class STLSpecialAlloc;
 // FORWARD DECLARATIONS
 class Object;
 enum NameKeyType: int;
-enum ObjectID: int;
+enum ObjectID: UnsignedInt;
 enum DrawableID: int;
 
 #include <algorithm>

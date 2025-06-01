@@ -29,14 +29,14 @@
 // #include "PreRTS.h"	// This must go first in EVERY cpp file in the GameEngine
 
 // #include "Common/ActionManager.h"
-// #include "Common/AudioAffect.h"
+#include "Common/AudioAffect.h"
 // #include "Common/BuildAssistant.h"
 // #include "Common/CRCDebug.h"
 // #include "Common/Radar.h"
 // #include "Common/PlayerTemplate.h"
 // #include "Common/Team.h"
 // #include "Common/PlayerList.h"
-// #include "Common/GameAudio.h"
+#include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
 #include "Common/INI.h"
 #include "Common/INIException.h"
@@ -447,7 +447,7 @@ void GameEngine::init( int argc, char *argv[] )
   startTime64 = endTime64;//Reset the clock ////////////////////////////////////////////////////////
 	DEBUG_LOG(("%s", Buf));////////////////////////////////////////////////////////////////////////////
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
-		// initSubsystem(TheAudio,"TheAudio", createAudioManager(), NULL);
+		initSubsystem(TheAudio,"TheAudio", createAudioManager(), NULL);
 		// if (!TheAudio->isMusicAlreadyLoaded())
 		// 	setQuitting(TRUE);
 
@@ -570,15 +570,15 @@ void GameEngine::init( int argc, char *argv[] )
 		// TheWritableGlobalData->m_iniCRC = xferCRC.getCRC();
 		// DEBUG_LOG(("INI CRC is 0x%8.8X\n", TheGlobalData->m_iniCRC));
 
-		// TheSubsystemList->postProcessLoadAll();
+		TheSubsystemList->postProcessLoadAll();
 
-		// setFramesPerSecondLimit(TheGlobalData->m_framesPerSecondLimit);
+		setFramesPerSecondLimit(TheGlobalData->m_data.m_framesPerSecondLimit);
 
-		// TheAudio->setOn(TheGlobalData->m_audioOn && TheGlobalData->m_musicOn, AudioAffect_Music);
-		// TheAudio->setOn(TheGlobalData->m_audioOn && TheGlobalData->m_soundsOn, AudioAffect_Sound);
-		// TheAudio->setOn(TheGlobalData->m_audioOn && TheGlobalData->m_sounds3DOn, AudioAffect_Sound3D);
-		// TheAudio->setOn(TheGlobalData->m_audioOn && TheGlobalData->m_speechOn, AudioAffect_Speech);
-			
+		TheAudio->setOn(TheGlobalData->m_data.m_audioOn && TheGlobalData->m_data.m_musicOn, AudioAffect_Music);
+		TheAudio->setOn(TheGlobalData->m_data.m_audioOn && TheGlobalData->m_data.m_soundsOn, AudioAffect_Sound);
+		TheAudio->setOn(TheGlobalData->m_data.m_audioOn && TheGlobalData->m_data.m_sounds3DOn, AudioAffect_Sound3D);
+		TheAudio->setOn(TheGlobalData->m_data.m_audioOn && TheGlobalData->m_data.m_speechOn, AudioAffect_Speech);
+
 		// // We're not in a network game yet, so set the network singleton to NULL.
 		// TheNetwork = NULL;
 
@@ -715,7 +715,7 @@ void GameEngine::init( int argc, char *argv[] )
 	// initDisabledMasks();
 	// initDamageTypeFlags();
 
-	// TheSubsystemList->resetAll();
+	TheSubsystemList->resetAll();
 	// HideControlBar();
 }  // end init
 
@@ -734,7 +734,7 @@ void GameEngine::reset( void )
 	// if (TheGameLogic->isInMultiplayerGame())
 	// 	deleteNetwork = true;
 
-	// TheSubsystemList->resetAll();
+	TheSubsystemList->resetAll();
 
 	// if (deleteNetwork)
 	// {
@@ -773,7 +773,7 @@ void GameEngine::update( void )
 
 	// 		/// @todo Move audio init, update, etc, into GameClient update
 			
-	// 		TheAudio->UPDATE();
+			TheAudio->UPDATE();
 			TheGameClient->UPDATE();
 			TheMessageStream->propagateMessages();
 

@@ -93,7 +93,7 @@ enum
 	The return value from addAudioEvent can be saved in case the sound needs to loop and/or be 
 	terminated at some point. 
 	
-	To reomve a playing sound, the call TheAudio->removeAudioEvent(...) is used. This will search 
+	To remove a playing sound, the call TheAudio->removeAudioEvent(...) is used. This will search 
 	the list of currently playing audio for the specified handle, and kill the attached sound. It 
 	will play a decay sound, if one is specified.
 
@@ -199,8 +199,8 @@ class AudioManager : public SubsystemInterface
 		virtual void closeDevice( void ) = 0;
 		virtual void *getDevice( void ) = 0;
 
-		// Debice Dependent notification functions
-		virtual void notifyOfAudioCompletion( UnsignedInt audioCompleted, UnsignedInt flags ) = 0;
+		// Device Dependent notification functions
+		virtual void notifyOfAudioCompletion( uintptr_t audioCompleted, UnsignedInt flags ) = 0;
 
 		// Device Dependent enumerate providers functions. It is okay for there to be only 1 provider (Miles provides a maximum of 64.
 		virtual UnsignedInt getProviderCount( void ) const = 0;

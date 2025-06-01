@@ -25,7 +25,7 @@
 #include "Common/ArchiveFile.h"
 #include "Common/ArchiveFileSystem.h"
 #include "Common/File.h"
-// #include "Common/GameAudio.h"
+#include "Common/GameAudio.h"
 #include "Common/GameMemory.h"
 #include "Common/LocalFileSystem.h"
 #include "LinuxDevice/Common/LinuxBIGFile.h"
@@ -189,8 +189,7 @@ void LinuxBIGFileSystem::closeArchiveFile(const Char *filename) {
 
    if (strcasecmp(filename, MUSIC_BIG) == 0) {
       // Stop the current audio
-      // FIXME: Fix this after adding the audio subsystem!
-      // TheAudio->stopAudio(AudioAffect_Music);
+      TheAudio->stopAudio(AudioAffect_Music);
 
       // No need to turn off other audio, as the lookups will just fail.
    }

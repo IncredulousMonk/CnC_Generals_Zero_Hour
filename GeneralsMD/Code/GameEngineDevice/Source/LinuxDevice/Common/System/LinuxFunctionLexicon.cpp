@@ -67,7 +67,7 @@ static FunctionLexicon::TableEntry gameWinDrawTable [] =
    // { NAMEKEY_INVALID, "W3DMainMenuDraw",                  reinterpret_cast<void*>(LinuxMainMenuDraw) },
    // { NAMEKEY_INVALID, "W3DMainMenuFourDraw",              reinterpret_cast<void*>(LinuxMainMenuFourDraw) },
    // { NAMEKEY_INVALID, "W3DMetalBarMenuDraw",              reinterpret_cast<void*>(LinuxMetalBarMenuDraw) },
-   // { NAMEKEY_INVALID, "W3DCreditsMenuDraw",               reinterpret_cast<void*>(LinuxCreditsMenuDraw) },
+   { NAMEKEY_INVALID, "W3DCreditsMenuDraw",               reinterpret_cast<void*>(LinuxCreditsMenuDraw) },
    { NAMEKEY_INVALID, "W3DClockDraw",                     reinterpret_cast<void*>(LinuxClockDraw) },
    // { NAMEKEY_INVALID, "W3DMainMenuMapBorder",             reinterpret_cast<void*>(LinuxMainMenuMapBorder) },
    // { NAMEKEY_INVALID, "W3DMainMenuButtonDropShadowDraw",  reinterpret_cast<void*>(LinuxMainMenuButtonDropShadowDraw) },

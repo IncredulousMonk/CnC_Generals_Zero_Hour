@@ -29,21 +29,22 @@
 #include "Common/AudioSettings.h"
 #include "Common/AsciiString.h"
 #include "Common/AudioEventInfo.h"
+#include "Common/AudioEventRTS.h"
 #include "Common/FileSystem.h"
 #include "Common/GameCommon.h"
 #include "Common/GameSounds.h"
-#include "Common/CRCDebug.h"
+// #include "Common/CRCDebug.h"
 #include "Common/GlobalData.h"
 #include "Common/ScopedMutex.h"
 
-#include "GameClient/DebugDisplay.h"
-#include "GameClient/Drawable.h"
+// #include "GameClient/DebugDisplay.h"
+// #include "GameClient/Drawable.h"
 #include "GameClient/GameClient.h"
 #include "GameClient/VideoPlayer.h"
-#include "GameClient/View.h"
+// #include "GameClient/View.h"
 
-#include "GameLogic/GameLogic.h"
-#include "GameLogic/TerrainLogic.h"
+// #include "GameLogic/GameLogic.h"
+// #include "GameLogic/TerrainLogic.h"
 
 #include "Common/File.h"
 
@@ -53,19 +54,12 @@
 #endif
 
 enum { INFINITE_LOOP_COUNT = 1000000 };
+#define STREAMING_BUFFER_SIZE 65536
+#define STREAMING_BUFFER_LOW 32768
 
 // Callback functions useful for Miles ////////////////////////////////////////////////////////////
 #define AILCALLBACK
-typedef UnsignedInt U32;
-typedef Int S32;
-// static void AILCALLBACK setSampleCompleted( HSAMPLE sampleCompleted );
 // static void AILCALLBACK set3DSampleCompleted( H3DSAMPLE sample3DCompleted );
-// static void AILCALLBACK setStreamCompleted( HSTREAM streamCompleted );
-
-// static U32 AILCALLBACK streamingFileOpen(char const *fileName, U32 *file_handle);
-// static void AILCALLBACK streamingFileClose(U32 fileHandle);
-// static S32 AILCALLBACK streamingFileSeek(U32 fileHandle, S32 offset, U32 type);
-// static U32 AILCALLBACK streamingFileRead(U32 fileHandle, void *buffer, U32 bytes);
 
 //-------------------------------------------------------------------------------------------------
 SdlAudioManager::SdlAudioManager() :
@@ -83,12 +77,16 @@ SdlAudioManager::SdlAudioManager() :
    m_numStreams(0)
 {
    m_audioCache = NEW AudioFileCache;
+      if (!Sound_Init()) {
+      DEBUG_LOG(("Couldn't initialise SDL_sound: %s\n", Sound_GetError()));
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 SdlAudioManager::~SdlAudioManager()
 {
    DEBUG_ASSERTCRASH(m_binkHandle == NULL, ("Leaked a Bink handle. Chuybregts"));
+   Sound_Quit();
    releaseHandleForBink();
    closeDevice();
    delete m_audioCache;
@@ -101,14 +99,13 @@ SdlAudioManager::~SdlAudioManager()
 #if defined(_DEBUG) || defined(_INTERNAL)
 AudioHandle SdlAudioManager::addAudioEvent( const AudioEventRTS *eventToAdd )
 {
-   // if (TheGlobalData->m_data.m_preloadReport) {
-   //    if (!eventToAdd->getEventName().isEmpty()) {
-   //       m_allEventsLoaded.insert(eventToAdd->getEventName());
-   //    }
-   // }
+   if (TheGlobalData->m_data.m_preloadReport) {
+      if (!eventToAdd->getEventName().isEmpty()) {
+         m_allEventsLoaded.insert(eventToAdd->getEventName());
+      }
+   }
 
-   // return AudioManager::addAudioEvent(eventToAdd);
-   return 0;
+   return AudioManager::addAudioEvent(eventToAdd);
 }
 #endif
 
@@ -116,6 +113,7 @@ AudioHandle SdlAudioManager::addAudioEvent( const AudioEventRTS *eventToAdd )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::audioDebugDisplay(DebugDisplayInterface *dd, void *, FILE *fp )
 {
+   DEBUG_LOG(("### SdlAudioManager::audioDebugDisplay\n"));
    // std::list<PlayingAudio *>::iterator it;
 
    // Coord3D lookPos;
@@ -425,16 +423,13 @@ void SdlAudioManager::init()
 
    // We should now know how many samples we want to load
    openDevice();
-   // m_audioCache->setMaxSize(getAudioSettings()->m_maxCacheSize);
-
-   // // Now, set the file callbacks to load the streams from Biggie files
-   // AIL_set_file_callbacks(streamingFileOpen, streamingFileClose, streamingFileSeek, streamingFileRead);
+   m_audioCache->setMaxSize(getAudioSettings()->m_maxCacheSize);
 }
 
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::postProcessLoad()
 {
-   // AudioManager::postProcessLoad();
+   AudioManager::postProcessLoad();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -445,12 +440,12 @@ void SdlAudioManager::reset()
 //    m_allEventsLoaded.clear();
 // #endif
 
-//    AudioManager::reset();
-//    stopAllAudioImmediately();
-//   removeAllAudioRequests();
-//   // This must come after stopAllAudioImmediately() and removeAllAudioRequests(), to ensure that
-//   // sounds pointing to the temporary AudioEventInfo handles are deleted before their info is deleted
-//   removeLevelSpecificAudioEventInfos();
+   AudioManager::reset();
+   stopAllAudioImmediately();
+   removeAllAudioRequests();
+   // This must come after stopAllAudioImmediately() and removeAllAudioRequests(), to ensure that
+   // sounds pointing to the temporary AudioEventInfo handles are deleted before their info is deleted
+   removeLevelSpecificAudioEventInfos();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -458,35 +453,34 @@ void SdlAudioManager::update()
 {
    AudioManager::update();
    // setDeviceListenerPosition();
-   // processRequestList();
-   // processPlayingList();
-   // processFadingList();
-   // processStoppedList();	
+   processRequestList();
+   processPlayingList();
+   processFadingList();
+   processStoppedList();
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::stopAudio( AudioAffect which )
+void SdlAudioManager::stopAudio(AudioAffect which)
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::stopAudio: 0x%x\n", which));
+#endif
    // All we really need to do is:
-   // 1) Remove the EOS callback.
-   // 2) Stop the sample, (so that when we later unload it, bad stuff doesn't happen)
-   // 3) Set the status to stopped, so that when we next process the playing list, we will 
+   // 1) Set the status to stopped, so that when we next process the playing list, we will 
    //    correctly clean up the sample.
 
 
-   // std::list<PlayingAudio *>::iterator it;
+   std::list<PlayingAudio *>::iterator it;
 
-   // PlayingAudio *playing = NULL;
-   // if (BitTest(which, AudioAffect_Sound)) {
-   //    for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
-   //       playing = *it;
-   //       if (playing) {
-   //          AIL_register_EOS_callback(playing->m_sample, NULL);
-   //          AIL_stop_sample(playing->m_sample);
-   //          playing->m_status = PS_Stopped;
-   //       }
-   //    }
-   // }
+   PlayingAudio *playing = NULL;
+   if (BitTest(which, AudioAffect_Sound)) {
+      for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
+         playing = *it;
+         if (playing) {
+            playing->m_status = PS_Stopped;
+         }
+      }
+   }
 
    // if (BitTest(which, AudioAffect_Sound3D)) {
    //    for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it) {
@@ -499,30 +493,29 @@ void SdlAudioManager::stopAudio( AudioAffect which )
    //    }
    // }
 
-   // if (BitTest(which, AudioAffect_Speech | AudioAffect_Music)) {
-   //    for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //       playing = *it;
-   //       if (playing) {
-   //          if (playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music) {
-   //             if (!BitTest(which, AudioAffect_Music)) {
-   //                continue;
-   //             }
-   //          } else {
-   //             if (!BitTest(which, AudioAffect_Speech)) {
-   //                continue;
-   //             }
-   //          }
-   //          AIL_register_stream_callback(playing->m_stream, NULL);
-   //          AIL_pause_stream(playing->m_stream, 1);
-   //          playing->m_status = PS_Stopped;
-   //       }
-   //    }
-   // }
+   if (BitTest(which, AudioAffect_Speech | AudioAffect_Music)) {
+      for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+         playing = *it;
+         if (playing) {
+            if (playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+               if (!BitTest(which, AudioAffect_Music)) {
+                  continue;
+               }
+            } else {
+               if (!BitTest(which, AudioAffect_Speech)) {
+                  continue;
+               }
+            }
+            playing->m_status = PS_Stopped;
+         }
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::pauseAudio( AudioAffect which )
 {
+   DEBUG_LOG(("### SdlAudioManager::pauseAudio\n"));
    // std::list<PlayingAudio *>::iterator it;
 
    // PlayingAudio *playing = NULL;
@@ -584,6 +577,7 @@ void SdlAudioManager::pauseAudio( AudioAffect which )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::resumeAudio( AudioAffect which )
 {
+   DEBUG_LOG(("### SdlAudioManager::resumeAudio\n"));
    // std::list<PlayingAudio *>::iterator it;
 
    // PlayingAudio *playing = NULL;
@@ -625,105 +619,100 @@ void SdlAudioManager::resumeAudio( AudioAffect which )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::pauseAmbient( Bool shouldPause )
+void SdlAudioManager::pauseAmbient(Bool shouldPause)
 {
+   DEBUG_LOG(("### SdlAudioManager::pauseAmbient\n"));
 
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::playAudioEvent( AudioEventRTS *event )
+void SdlAudioManager::playAudioEvent(AudioEventRTS* event)
 {
-// #ifdef INTENSIVE_AUDIO_DEBUG
-//    DEBUG_LOG(("MILES (%d) - Processing play request: %d (%s)", TheGameLogic->getFrame(), event->getPlayingHandle(), event->getEventName().str()));
-// #endif
-//    const AudioEventInfo *info = event->getAudioEventInfo();
-//    if (!info) {
-//       return;
-//    }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   // FIXME: TheGameLogic
+   // DEBUG_LOG(("MILES (%d) - Processing play request: %d (%s)\n", TheGameLogic->getFrame(), event->getPlayingHandle(), event->getEventName().str()));
+   DEBUG_LOG(("SdlAudioManager (%d) - Processing play request: %d (%s = %s)\n", -1, event->getPlayingHandle(), event->getEventName().str(), event->getFilename().str()));
+#endif
+   const AudioEventInfo *info = event->getAudioEventInfo();
+   if (!info) {
+      return;
+   }
 
-//    std::list<PlayingAudio *>::iterator it;
-//    PlayingAudio *playing = NULL;
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio* playing {NULL};
 
-//    AudioHandle handleToKill = event->getHandleToKill();
+   AudioHandle handleToKill {event->getHandleToKill()};
 
-//    AsciiString fileToPlay = event->getFilename();
-//    PlayingAudio *audio = allocatePlayingAudio();
-//    switch(info->m_soundType)
-//    {
-//       case AT_Music:
-//       case AT_Streaming:
-//       {
-//       #ifdef INTENSIVE_AUDIO_DEBUG
-//          DEBUG_LOG(("- Stream\n"));
-//       #endif
-         
-//          if ((info->m_soundType == AT_Streaming) && event->getUninterruptable()) {
-//             stopAllSpeech();
-//          }
+   AsciiString fileToPlay {event->getFilename()};
+   PlayingAudio* audio {allocatePlayingAudio()};
+   switch(info->m_data.m_soundType)
+   {
+      case AT_Music:
+      case AT_Streaming:
+      {
+      #ifdef INTENSIVE_AUDIO_DEBUG
+         DEBUG_LOG(("- Stream (Music? %s)\n", info->m_data.m_soundType == AT_Music ? "Yes" : "No"));
+      #endif
 
-//          Real curVolume = 1.0;
-//          if (info->m_soundType == AT_Music) {
-//             curVolume = m_musicVolume;
-//          } else {
-//             curVolume = m_speechVolume;
-//          }
-//          curVolume *= event->getVolume();
+         if ((info->m_data.m_soundType == AT_Streaming) && event->getUninterruptable()) {
+            stopAllSpeech();
+         }
 
-//          Bool foundSoundToReplace = false;
-//          if (handleToKill) {
-//             for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-//                playing = (*it);
-//                if (!playing) {
-//                   continue;
-//                }
+         Real curVolume = 1.0;
+         if (info->m_data.m_soundType == AT_Music) {
+            curVolume = m_musicVolume;
+         } else {
+            curVolume = m_speechVolume;
+         }
+         curVolume *= event->getVolume();
 
-//                if (playing->m_audioEventRTS && playing->m_audioEventRTS->getPlayingHandle() == handleToKill) 
-//                {
-//                   //Release this streaming channel immediately because we are going to play another sound in it's place.
-//                   releasePlayingAudio(playing);
-//                   m_playingStreams.erase(it);
-//                   foundSoundToReplace = true;
-//                   break;
-//                }
-//             }
-//          }
+         Bool foundSoundToReplace = false;
+         if (handleToKill) {
+            for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+               playing = (*it);
+               if (!playing) {
+                  continue;
+               }
 
-//          HSTREAM stream;
-//          if (!handleToKill || foundSoundToReplace) {
-//             stream = AIL_open_stream(m_digitalHandle, fileToPlay.str(), 0);
-//          } else {
-//             stream = NULL;
-//          }
+               if (playing->m_audioEventRTS && playing->m_audioEventRTS->getPlayingHandle() == handleToKill) 
+               {
+                  //Release this streaming channel immediately because we are going to play another sound in it's place.
+                  releasePlayingAudio(playing);
+                  m_playingStreams.erase(it);
+                  foundSoundToReplace = true;
+                  break;
+               }
+            }
+         }
 
-//          // Put this on here, so that the audio event RTS will be cleaned up regardless.
-//          audio->m_audioEventRTS = event; 
-//          audio->m_stream = stream;
-//          audio->m_type = PAT_Stream;
+         // Put this on here, so that the audio event RTS will be cleaned up regardless.
+         audio->m_audioEventRTS = event; 
+         audio->m_stream = nullptr;
+         audio->m_type = PAT_Stream;
 
-//          if (stream) {
-//             if ((info->m_soundType == AT_Streaming) && event->getUninterruptable()) {
-//                setDisallowSpeech(TRUE);
-//              }
-//             AIL_set_stream_volume_pan(stream, curVolume, 0.5f);
-//             playStream(event, stream);
-//             m_playingStreams.push_back(audio);
-//             audio = NULL;
-//          }
-//          break;
-//       }
+         if (!handleToKill || foundSoundToReplace) {
+            if ((info->m_data.m_soundType == AT_Streaming) && event->getUninterruptable()) {
+               setDisallowSpeech(TRUE);
+             }
+            playStream(event, audio, curVolume);
+            m_playingStreams.push_back(audio);
+            audio = NULL;
+         }
+         break;
+      }
 
-//       case AT_SoundEffect:
-//       {
-//       #ifdef INTENSIVE_AUDIO_DEBUG
-//          DEBUG_LOG(("- Sound"));
-//       #endif
+      case AT_SoundEffect:
+      {
+      #ifdef INTENSIVE_AUDIO_DEBUG
+         DEBUG_LOG(("- Sound"));
+      #endif
 
-         
-//          if (event->isPositionalAudio()) {
-//             // Sounds that are non-global are positional 3-D sounds. Deal with them accordingly
-//          #ifdef INTENSIVE_AUDIO_DEBUG
-//             DEBUG_LOG((" Positional"));
-//          #endif
+
+         if (event->isPositionalAudio()) {
+            // Sounds that are non-global are positional 3-D sounds. Deal with them accordingly
+         #ifdef INTENSIVE_AUDIO_DEBUG
+            DEBUG_LOG((" Positional\n"));
+         #endif
 //             Bool foundSoundToReplace = false;
 //             if (handleToKill) 
 //             {
@@ -790,180 +779,180 @@ void SdlAudioManager::playAudioEvent( AudioEventRTS *event )
 //                   DEBUG_LOG((" Playing.\n"));
 //                #endif
 //             }
-//          } 
-//          else 
-//          {
-//             // UI sounds are always 2-D. All other sounds should be Positional
-//             // Unit acknowledgement, etc, falls into the UI category of sound.
-//             Bool foundSoundToReplace = false;
-//             if (handleToKill) {
-//                for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
-//                   playing = (*it);
-//                   if (!playing) {
-//                      continue;
-//                   }
+         } 
+         else 
+         {
+            // UI sounds are always 2-D. All other sounds should be Positional
+            // Unit acknowledgement, etc, falls into the UI category of sound.
+         #ifdef INTENSIVE_AUDIO_DEBUG
+            DEBUG_LOG((" 2D\n"));
+         #endif
+            Bool foundSoundToReplace = false;
+            if (handleToKill) {
+               for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
+                  playing = (*it);
+                  if (!playing) {
+                     continue;
+                  }
 
-//                   if (playing->m_audioEventRTS && playing->m_audioEventRTS->getPlayingHandle() == handleToKill) 
-//                   {
-//                      //Release this 2D sound channel immediately because we are going to play another sound in it's place.
-//                      releasePlayingAudio(playing);
-//                      m_playingSounds.erase(it);
-//                      foundSoundToReplace = true;
-//                      break;
-//                   }
-//                }
-//             }
+                  if (playing->m_audioEventRTS && playing->m_audioEventRTS->getPlayingHandle() == handleToKill) 
+                  {
+                     //Release this 2D sound channel immediately because we are going to play another sound in it's place.
+                  #ifdef INTENSIVE_AUDIO_DEBUG
+                     DEBUG_LOG(("- Replacing audio for handle %d\n", playing->m_sample));
+                  #endif
+                     releasePlayingAudio(playing);
+                     m_playingSounds.erase(it);
+                     foundSoundToReplace = true;
+                     break;
+                  }
+               }
+            }
 
-//             HSAMPLE sample;
-//             if( !handleToKill || foundSoundToReplace ) 
-//             {
-//                sample = getFirst2DSample(event);
-//                if( !sample )
-//                {
-//                   //If we don't have an available sample, kill the lowest priority assuming we have one that is lower
-//                   //than the sound we are trying to add. One possibility for strangeness is when an interrupt sound
-//                   //that wants to kill a handle to replace it, it's possible that another request already killed it,
-//                   //in which case we need to attempt to find another sound to kill.
-//                   if( killLowestPrioritySoundImmediately( event ) )
-//                   {
-//                      sample = getFirst2DSample( event );
-//                   }
-//                }
-//                } 
-//             else 
-//             {
-//                sample = NULL;
-//             }
+            HSAMPLE sample {0};
+            if (!handleToKill || foundSoundToReplace) {
+               sample = getFirst2DSample(event);
+               if (sample == 0) {
+                  //If we don't have an available sample, kill the lowest priority assuming we have one that is lower
+                  //than the sound we are trying to add. One possibility for strangeness is when an interrupt sound
+                  //that wants to kill a handle to replace it, it's possible that another request already killed it,
+                  //in which case we need to attempt to find another sound to kill.
+                  if (killLowestPrioritySoundImmediately(event)) {
+                     sample = getFirst2DSample(event);
+                  }
+               }
+            }
 
-//             // Push it onto the list of playing things
-//             audio->m_audioEventRTS = event; 
-//             audio->m_sample = sample;
-//             audio->m_file = NULL;
-//             audio->m_type = PAT_Sample;
-//             m_playingSounds.push_back(audio);
+            // Push it onto the list of playing things
+            audio->m_audioEventRTS = event; 
+            audio->m_sample = sample;
+            audio->m_audioBuf = NULL;
+            audio->m_type = PAT_Sample;
+            m_playingSounds.push_back(audio);
 
-//             if (sample) {
-//                audio->m_file = playSample(event, sample);
-//                m_sound->notifyOf2DSampleStart();
-//             }
+            if (sample) {
+               playSample(event, audio); // Will set audio->m_audioBuf
+               m_sound->notifyOf2DSampleStart();
+            }
 
-//             if (!audio->m_file) {
-//                #ifdef INTENSIVE_AUDIO_DEBUG
-//                   DEBUG_LOG((" Killed (no handles available)\n"));
-//                #endif
-//                m_playingSounds.pop_back();
-//             } else {
-//                audio = NULL;
-//             }
+            if (!audio->m_audioBuf) {
+               #ifdef INTENSIVE_AUDIO_DEBUG
+                  DEBUG_LOG((" - Sound killed (no handles available)\n"));
+               #endif
+               m_playingSounds.pop_back();
+            } else {
+               audio = NULL;
+            }
 
-//             #ifdef INTENSIVE_AUDIO_DEBUG
-//                DEBUG_LOG((" Playing.\n"));
-//             #endif
-//          }
-//          break;
-//       }
-//    }
+            #ifdef INTENSIVE_AUDIO_DEBUG
+               DEBUG_LOG((" - Sound is playing (handle = %d).\n", sample));
+            #endif
+         }
+         break;
+      }
+   }
 
-//    // If we were able to successfully play audio, then we set it to NULL above. (And it will be freed
-//    // later. However, if audio is non-NULL at this point, then it must be freed.
-//    if (audio) {
-//       releasePlayingAudio(audio);
-//    }
+   // If we were able to successfully play audio, then we set it to NULL above. (And it will be freed
+   // later. However, if audio is non-NULL at this point, then it must be freed.
+   if (audio) {
+      releasePlayingAudio(audio);
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::stopAudioEvent( AudioHandle handle )
+void SdlAudioManager::stopAudioEvent(AudioHandle handle)
 {
-// #ifdef INTENSIVE_AUDIO_DEBUG
-//    DEBUG_LOG(("MILES (%d) - Processing stop request: %d\n", TheGameLogic->getFrame(), handle));
-// #endif
+#ifdef INTENSIVE_AUDIO_DEBUG
+   // FIXME: TheGameLogic
+   // DEBUG_LOG(("MILES (%d) - Processing stop request: %d\n", TheGameLogic->getFrame(), handle));
+   DEBUG_LOG(("SdlAudioManager (%d) - Processing stop request: %d\n", -1, handle));
+#endif
 
-//    std::list<PlayingAudio *>::iterator it;
-//    if ( handle == AHSV_StopTheMusic || handle == AHSV_StopTheMusicFade ) {
-//       // for music, just find the currently playing music stream and kill it.
-//       for ( it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it ) {
-//          PlayingAudio *audio = (*it);
-//          if (!audio) {
-//             continue;
-//          }
+   std::list<PlayingAudio *>::iterator it;
+   if (handle == AHSV_StopTheMusic || handle == AHSV_StopTheMusicFade) {
+      // for music, just find the currently playing music stream and kill it.
+      for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+         PlayingAudio *audio = (*it);
+         if (!audio) {
+            continue;
+         }
 
-//          if( audio->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music ) 
-//          {
-//             if( handle == AHSV_StopTheMusicFade ) 
-//             {
-//                m_fadingAudio.push_back(audio);
-//             } 
-//             else 
-//             {
-//                //m_stoppedAudio.push_back(audio);
-//                releasePlayingAudio( audio );
-//             }
-//             m_playingStreams.erase(it);
-//             break;
-//          }
-//       }
-//    }
+         if (audio->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+            if (handle == AHSV_StopTheMusicFade) {
+               m_fadingAudio.push_back(audio);
+            } else {
+               //m_stoppedAudio.push_back(audio);
+               releasePlayingAudio(audio);
+            }
+            m_playingStreams.erase(it);
+            break;
+         }
+      }
+   }
 
-//    for ( it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it ) {
-//       PlayingAudio *audio = (*it);
-//       if (!audio) {
-//          continue;
-//       }
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+      PlayingAudio *audio = (*it);
+      if (!audio) {
+         continue;
+      }
 
-//       if (audio->m_audioEventRTS->getPlayingHandle() == handle) {
-//          // found it
-//          audio->m_requestStop = true;
-//          notifyOfAudioCompletion((UnsignedInt)(audio->m_stream), PAT_Stream);
-//          break;
-//       }
-//    }
+      if (audio->m_audioEventRTS->getPlayingHandle() == handle) {
+         // found it
+         audio->m_requestStop = true;
+         notifyOfAudioCompletion((uintptr_t)(audio->m_stream), PAT_Stream);
+         break;
+      }
+   }
 
-//    for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
-//       PlayingAudio *audio = (*it);
-//       if (!audio) {
-//          continue;
-//       }
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
+      PlayingAudio *audio = (*it);
+      if (!audio) {
+         continue;
+      }
 
-//       if (audio->m_audioEventRTS->getPlayingHandle() == handle) {
-//          audio->m_requestStop = true;
-//          break;
-//       }
-//    }
+      if (audio->m_audioEventRTS->getPlayingHandle() == handle) {
+         audio->m_requestStop = true;
+         break;
+      }
+   }
 
-//    for ( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) {
-//       PlayingAudio *audio = (*it);
-//       if (!audio) {
-//          continue;
-//       }
+   for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it) {
+      PlayingAudio *audio = (*it);
+      if (!audio) {
+         continue;
+      }
 
-//       if (audio->m_audioEventRTS->getPlayingHandle() == handle) {
-//       #ifdef INTENSIVE_AUDIO_DEBUG
-//          DEBUG_LOG((" (%s)\n", audio->m_audioEventRTS->getEventName()));
-//       #endif
-//          audio->m_requestStop = true;
-//          break;
-//       }
-//    }
+      if (audio->m_audioEventRTS->getPlayingHandle() == handle) {
+      #ifdef INTENSIVE_AUDIO_DEBUG
+         DEBUG_LOG((" (%s)\n", audio->m_audioEventRTS->getEventName()));
+      #endif
+         audio->m_requestStop = true;
+         break;
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::killAudioEventImmediately( AudioHandle audioEvent )
+void SdlAudioManager::killAudioEventImmediately(AudioHandle audioEvent)
 {
-   // //First look for it in the request list.
-   // std::list<AudioRequest*>::iterator ait;
-   // for( ait = m_audioRequests.begin(); ait != m_audioRequests.end(); ait++ ) 
-   // {
-   //    AudioRequest *req = (*ait);
-   //    if( req && req->m_request == AR_Play && req->m_handleToInteractOn == audioEvent ) 
-   //    {
-   //       req->deleteInstance();
-   //       ait = m_audioRequests.erase(ait);
-   //       return;
-   //    }
-   // }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::killAudioEventImmediately: %d\n", audioEvent));
+#endif
+   //First look for it in the request list.
+   std::list<AudioRequest*>::iterator ait;
+   for( ait = m_audioRequests.begin(); ait != m_audioRequests.end(); ait++ ) 
+   {
+      AudioRequest *req = (*ait);
+      if( req && req->m_request == AR_Play && req->m_handleToInteractOn == audioEvent ) 
+      {
+         req->deleteInstance();
+         ait = m_audioRequests.erase(ait);
+         return;
+      }
+   }
 
-   // //Look for matching 3D sound to kill
-   // std::list<PlayingAudio *>::iterator it;
+   //Look for matching 3D sound to kill
+   std::list<PlayingAudio *>::iterator it;
    // for( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); it++ ) 
    // {
    //    PlayingAudio *audio = (*it);
@@ -980,228 +969,239 @@ void SdlAudioManager::killAudioEventImmediately( AudioHandle audioEvent )
    //    }
    // }
 
-   // //Look for matching 2D sound to kill
-   // for( it = m_playingSounds.begin(); it != m_playingSounds.end(); it++ ) 
-   // {
-   //    PlayingAudio *audio = (*it);
-   //    if( !audio )
-   //    {
-   //       continue;
-   //    }
+   //Look for matching 2D sound to kill
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end(); it++) {
+      PlayingAudio *audio = (*it);
+      if(!audio) {
+         continue;
+      }
 
-   //    if( audio->m_audioEventRTS->getPlayingHandle() == audioEvent ) 
-   //    {
-   //       releasePlayingAudio( audio );
-   //       m_playingSounds.erase( it );
-   //       return;
-   //    }
-   // }
+      if (audio->m_audioEventRTS->getPlayingHandle() == audioEvent) {
+         releasePlayingAudio( audio );
+         m_playingSounds.erase( it );
+         return;
+      }
+   }
 
-   // //Look for matching steaming sound to kill
-   // for( it = m_playingStreams.begin(); it != m_playingStreams.end(); it++ ) 
-   // {
-   //    PlayingAudio *audio = (*it);
-   //    if( !audio )
-   //    {
-   //       continue;
-   //    }
+   //Look for matching steaming sound to kill
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); it++) {
+      PlayingAudio *audio = (*it);
+      if(!audio) {
+         continue;
+      }
 
-   //    if( audio->m_audioEventRTS->getPlayingHandle() == audioEvent ) 
-   //    {
-   //       releasePlayingAudio( audio );
-   //       m_playingStreams.erase( it );
-   //       return;
-   //    }
-   // }
-
+      if (audio->m_audioEventRTS->getPlayingHandle() == audioEvent) {
+         releasePlayingAudio( audio );
+         m_playingStreams.erase( it );
+         return;
+      }
+   }
 }
 
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::pauseAudioEvent( AudioHandle handle )
+void SdlAudioManager::pauseAudioEvent(AudioHandle handle)
 {
+   DEBUG_LOG(("### SdlAudioManager::pauseAudioEvent\n"));
    // pause audio
 }
 
 //-------------------------------------------------------------------------------------------------
-void *SdlAudioManager::loadFileForRead( AudioEventRTS *eventToLoadFrom )
+OpenAudioFile* SdlAudioManager::loadFileForRead(AudioEventRTS* eventToLoadFrom)
 {
    return m_audioCache->openFile(eventToLoadFrom);
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::closeFile( void *fileRead )
+void SdlAudioManager::releaseBuffer(UnsignedByte* buffer)
 {
-   m_audioCache->closeFile(fileRead);
+   m_audioCache->releaseBuffer(buffer);
 }
 
 
 //-------------------------------------------------------------------------------------------------
 PlayingAudio *SdlAudioManager::allocatePlayingAudio( void )
 {
-   PlayingAudio *aud = NEW PlayingAudio;	// poolify
+   PlayingAudio *aud = NEW PlayingAudio;  // poolify
    aud->m_status = PS_Playing;
    return aud;
 }
 
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::releaseMilesHandles( PlayingAudio *release )
+void SdlAudioManager::releaseHandle(PlayingAudio* release)
 {
-   // switch (release->m_type)
-   // {
-   //    case PAT_Sample:
-   //    {
-   //       if (release->m_sample) {
-   //          AIL_register_EOS_callback(release->m_sample, NULL);
-   //          AIL_stop_sample(release->m_sample);
-   //          m_availableSamples.push_back(release->m_sample);
-   //       }
-   //       break;
-   //    }
-   //    case PAT_3DSample:
-   //    {
-   //       if (release->m_3DSample) {
-   //          AIL_register_3D_EOS_callback(release->m_3DSample, NULL);
-   //          AIL_stop_3D_sample(release->m_3DSample);
-   //          m_available3DSamples.push_back(release->m_3DSample);
-   //       }
-   //       break;
-   //    }
-   //    case PAT_Stream:
-   //    {
-   //       if (release->m_stream) {
-   //          AIL_register_stream_callback(release->m_stream, NULL);
-   //          AIL_close_stream(release->m_stream);
-   //       }
-   //       break;
-   //    }
-   // }
-   // release->m_type = PAT_INVALID;
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::releaseHandle: 2D = %d, 3D = ?, Stream = 0x%lx ", release->m_sample, reinterpret_cast<intptr_t>(release->m_stream)));
+#endif
+   switch (release->m_type)
+   {
+      case PAT_Sample:
+      {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("(type = 2D)\n"));
+#endif
+         if (release->m_sample) {
+            // FIXME: Stop the audio for this stream.
+            // AIL_stop_sample(release->m_sample);
+            SDL_DestroyAudioStream(release->m_sdlStream);
+            m_availableSamples.push_back(release->m_sample);
+         }
+         break;
+      }
+      case PAT_3DSample:
+      {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("(type = 3D)\n"));
+#endif
+         // if (release->m_3DSample) {
+         //    AIL_register_3D_EOS_callback(release->m_3DSample, NULL);
+         //    AIL_stop_3D_sample(release->m_3DSample);
+         //    m_available3DSamples.push_back(release->m_3DSample);
+         // }
+         break;
+      }
+      case PAT_Stream:
+      {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("(type = Stream)\n"));
+#endif
+         if (release->m_stream) {
+            Sound_FreeSample(release->m_stream);
+         }
+         break;
+      }
+      default:
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("(type = Unknown?!)\n"));
+#endif
+         break;
+   }
+   release->m_type = PAT_INVALID;
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::releasePlayingAudio( PlayingAudio *release )
+void SdlAudioManager::releasePlayingAudio(PlayingAudio* release)
 {
-   // if (release->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_SoundEffect) {
-   //    if (release->m_type == PAT_Sample) {
-   //       if (release->m_sample) {
-   //          m_sound->notifyOf2DSampleCompletion();
-   //       }
-   //    } else {
-   //       if (release->m_3DSample) {
-   //          m_sound->notifyOf3DSampleCompletion();
-   //       }
-   //    }
-   // }
-   // releaseMilesHandles(release);	// forces stop of this audio
-   // closeFile( release->m_file );
-   // if (release->m_cleanupAudioEventRTS) {
-   //    releaseAudioEventRTS(release->m_audioEventRTS);
-   // }
-   // delete release;
-   // release = NULL;
+   if (release->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_SoundEffect) {
+      if (release->m_type == PAT_Sample) {
+         if (release->m_sample) {
+            m_sound->notifyOf2DSampleCompletion();
+         }
+      } else {
+         if (release->m_3DSample) {
+            m_sound->notifyOf3DSampleCompletion();
+         }
+      }
+   }
+   releaseHandle(release); // forces stop of this audio
+   releaseBuffer(release->m_audioBuf);
+   if (release->m_cleanupAudioEventRTS) {
+      releaseAudioEventRTS(release->m_audioEventRTS);
+   }
+   delete release;
+   release = NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::stopAllAudioImmediately( void )
+void SdlAudioManager::stopAllAudioImmediately()
 {
-//    std::list<PlayingAudio *>::iterator it;
-//    PlayingAudio *playing;
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
 
-//    for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ) {
-//       playing = *it;
-//       if (!playing) {
-//          continue;
-//       }
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ) {
+      playing = *it;
+      if (!playing) {
+         continue;
+      }
 
-//       releasePlayingAudio(playing);
-//       it = m_playingSounds.erase(it);
-//    }
+      releasePlayingAudio(playing);
+      it = m_playingSounds.erase(it);
+   }
 
-//    for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ) {
-//       playing = *it;
-//       if (!playing) {
-//          continue;
-//       }
+   for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ) {
+      playing = *it;
+      if (!playing) {
+         continue;
+      }
 
-//       releasePlayingAudio(playing);
-//       it = m_playing3DSounds.erase(it);
-//    }
+      releasePlayingAudio(playing);
+      it = m_playing3DSounds.erase(it);
+   }
 
-//    for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ) {
-//       playing = (*it);
-//       if (!playing) {
-//          continue;
-//       }
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ) {
+      playing = (*it);
+      if (!playing) {
+         continue;
+      }
 
-//       releasePlayingAudio(playing);
-//       it = m_playingStreams.erase(it);
-//    }
+      releasePlayingAudio(playing);
+      it = m_playingStreams.erase(it);
+   }
 
-//   for (it = m_fadingAudio.begin(); it != m_fadingAudio.end(); ) {
-//     playing = (*it);
-//     if (!playing) {
-//       continue;
-//     }
+  for (it = m_fadingAudio.begin(); it != m_fadingAudio.end(); ) {
+    playing = (*it);
+    if (!playing) {
+      continue;
+    }
     
-//     releasePlayingAudio(playing);
-//     it = m_fadingAudio.erase(it);
-//   }
+    releasePlayingAudio(playing);
+    it = m_fadingAudio.erase(it);
+  }
   
-//    std::list<HAUDIO>::iterator hit;
-//    for (hit = m_audioForcePlayed.begin(); hit != m_audioForcePlayed.end(); ++hit) {
-//       if (*hit) {
-//          AIL_quick_unload(*hit);
-//       }
-//    }
+   // std::list<HAUDIO>::iterator hit;
+   // for (hit = m_audioForcePlayed.begin(); hit != m_audioForcePlayed.end(); ++hit) {
+   //    if (*hit) {
+   //       AIL_quick_unload(*hit);
+   //    }
+   // }
 
-//    m_audioForcePlayed.clear();
+   m_audioForcePlayed.clear();
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::freeAllMilesHandles( void )
+void SdlAudioManager::freeAllHandles()
 {
-   // // First, we need to ensure that we don't have any sample handles open. To that end, we must stop
-   // // all of our currently playing audio.
-   // stopAllAudioImmediately();
+   // First, we need to ensure that we don't have any sample handles open. To that end, we must stop
+   // all of our currently playing audio.
+   stopAllAudioImmediately();
 
-   // // Walks through the available 2-D and 3-D handles and releases them
-   // std::list<HSAMPLE>::iterator it;
-   // for ( it = m_availableSamples.begin(); it != m_availableSamples.end(); /* empty */ ) {
-   //    HSAMPLE sample = *it;
-   //    AIL_release_sample_handle(sample);
-   //    it = m_availableSamples.erase(it);
-   // }
-   // m_num2DSamples = 0;
+   // Walks through the available 2-D and 3-D handles and releases them
+   std::list<HSAMPLE>::iterator it;
+   for ( it = m_availableSamples.begin(); it != m_availableSamples.end(); /* empty */ ) {
+      it = m_availableSamples.erase(it);
+   }
+   m_num2DSamples = 0;
    
-   // std::list<H3DSAMPLE>::iterator it3D;
-   // for ( it3D = m_available3DSamples.begin(); it3D != m_available3DSamples.end(); /* empty */ ) {
-   //    H3DSAMPLE sample3D = *it3D;
-   //    AIL_release_3D_sample_handle(sample3D);
-   //    it3D = m_available3DSamples.erase(it3D);
-   // }
-   // m_num3DSamples = 0;
-   // m_numStreams = 0;
+   std::list<H3DSAMPLE>::iterator it3D;
+   for ( it3D = m_available3DSamples.begin(); it3D != m_available3DSamples.end(); /* empty */ ) {
+      // FIXME: Maybe need to release_sample_handle
+      // H3DSAMPLE sample3D = *it3D;
+      // AIL_release_3D_sample_handle(sample3D);
+      it3D = m_available3DSamples.erase(it3D);
+   }
+   m_num3DSamples = 0;
+   m_numStreams = 0;
 }
 
 //-------------------------------------------------------------------------------------------------
-HSAMPLE SdlAudioManager::getFirst2DSample( AudioEventRTS *event )
+HSAMPLE SdlAudioManager::getFirst2DSample(AudioEventRTS* event)
 {
-   // if (m_availableSamples.begin() != m_availableSamples.end()) {
-   //    HSAMPLE retSample = *m_availableSamples.begin();
-   //    m_availableSamples.erase(m_availableSamples.begin());
-   //    return (retSample);
-   // }
+   if (m_availableSamples.begin() != m_availableSamples.end()) {
+      HSAMPLE retSample = *m_availableSamples.begin();
+      m_availableSamples.erase(m_availableSamples.begin());
+      return (retSample);
+   }
 
    // Find the first sample of lower priority than my augmented priority that is interruptable and take its handle
 
-   return NULL;
+   return 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 H3DSAMPLE SdlAudioManager::getFirst3DSample( AudioEventRTS *event )
 {
+   DEBUG_LOG(("### SdlAudioManager::getFirst3DSample\n"));
    // if (m_available3DSamples.begin() != m_available3DSamples.end()) {
    //    H3DSAMPLE retSample = *m_available3DSamples.begin();
    //    m_available3DSamples.erase(m_available3DSamples.begin());
@@ -1213,81 +1213,98 @@ H3DSAMPLE SdlAudioManager::getFirst3DSample( AudioEventRTS *event )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::adjustPlayingVolume( PlayingAudio *audio )
+void SdlAudioManager::adjustPlayingVolume(PlayingAudio *audio)
 {
-   // Real desiredVolume = audio->m_audioEventRTS->getVolume() * audio->m_audioEventRTS->getVolumeShift();
-   // Real pan;
-   // if (audio->m_type == PAT_Sample) {
-   //    AIL_sample_volume_pan(audio->m_sample, NULL, &pan);
-   //    AIL_set_sample_volume_pan(audio->m_sample, m_soundVolume * desiredVolume, pan);
-
-   // } else if (audio->m_type == PAT_3DSample) { 
-   //    AIL_set_3D_sample_volume(audio->m_3DSample, m_sound3DVolume * desiredVolume);
-
-   // } else if (audio->m_type == PAT_Stream) {
-   //    AIL_stream_volume_pan(audio->m_stream, NULL, &pan);
-   //    if (audio->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music ) {
-   //       AIL_set_stream_volume_pan(audio->m_stream, m_musicVolume * desiredVolume, pan);
-         
-   //    } else {
-   //       AIL_set_stream_volume_pan(audio->m_stream, m_speechVolume * desiredVolume, pan);
-         
-   //    }
-   // }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::adjustPlayingVolume\n"));
+#endif
+   Real desiredVolume = audio->m_audioEventRTS->getVolume() * audio->m_audioEventRTS->getVolumeShift();
+   if (audio->m_type == PAT_Sample) {
+      if (!SDL_SetAudioStreamGain(audio->m_sdlStream, m_soundVolume * desiredVolume)) {
+         DEBUG_CRASH(("SdlAudioManager::adjustPlayingVolume: couldn't set audio stream volume: %s\n", SDL_GetError()));
+      }
+   } else if (audio->m_type == PAT_3DSample) { 
+      if (!SDL_SetAudioStreamGain(audio->m_sdlStream, m_sound3DVolume * desiredVolume)) {
+         DEBUG_CRASH(("SdlAudioManager::adjustPlayingVolume: couldn't set audio stream volume: %s\n", SDL_GetError()));
+      }
+   } else if (audio->m_type == PAT_Stream) {
+      if (audio->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music ) {
+         if (!SDL_SetAudioStreamGain(audio->m_sdlStream, m_musicVolume * desiredVolume)) {
+            DEBUG_CRASH(("SdlAudioManager::adjustPlayingVolume: couldn't set audio stream volume: %s\n", SDL_GetError()));
+         }
+      } else {
+         if (!SDL_SetAudioStreamGain(audio->m_sdlStream, m_speechVolume * desiredVolume)) {
+            DEBUG_CRASH(("SdlAudioManager::adjustPlayingVolume: couldn't set audio stream volume: %s\n", SDL_GetError()));
+         }
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::stopAllSpeech( void )
+void SdlAudioManager::stopAllSpeech()
 {
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ) {
-   //    playing = (*it);
-   //    if (!playing) {
-   //       continue;
-   //    }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::stopAllSpeech\n"));
+#endif
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ) {
+      playing = (*it);
+      if (!playing) {
+         continue;
+      }
 
-   //    if (playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Streaming) {
-   //       releasePlayingAudio(playing);
-   //       it = m_playingStreams.erase(it);
-   //    } else {
-   //       ++it;
-   //    }
-   // }
-
+      if (playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Streaming) {
+         releasePlayingAudio(playing);
+         it = m_playingStreams.erase(it);
+      } else {
+         ++it;
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::initFilters( HSAMPLE sample, const AudioEventRTS *event )
+void SdlAudioManager::initFilters(PlayingAudio* playing, const AudioEventRTS* event)
 {
-   // // set the sample volume
-   // Real volume = event->getVolume() * event->getVolumeShift() * m_soundVolume;
-   // AIL_set_sample_volume_pan(sample, volume, 0.5f);
+   Real volume = event->getVolume() * event->getVolumeShift() * m_soundVolume;
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::initFilters: volume = %.2f (event volume = %.2f, event volume shift = %.2f, global volume = %.2f), pitch shift = %.2f, delay = %.2f\n",
+      volume, event->getVolume(), event->getVolumeShift(), m_soundVolume, event->getPitchShift(), event->getDelay()));
+#endif
 
-   // // pitch shift
-   // Real pitchShift = event->getPitchShift();
-   // if (pitchShift == 0.0f) {
-   //    DEBUG_CRASH(("Invalid Pitch shift in sound: '%s'", event->getEventName().str()) );
-   // } else {
-   //    AIL_set_sample_playback_rate(sample, REAL_TO_INT(AIL_sample_playback_rate(sample) * pitchShift));
-   // }
+   // set the sample volume
+   if (!SDL_SetAudioStreamGain(playing->m_sdlStream, volume)) {
+      DEBUG_CRASH(("SdlAudioManager::initFilters: couldn't set audio stream volume: %s\n", SDL_GetError()));
+   }
 
-   // // set up delay filter, if applicable
-   // if (event->getDelay() > 0.0f) {
-   //    Real value;
-   //    value = event->getDelay();
-   //    AIL_set_sample_processor(sample, DP_FILTER, m_delayFilter);
-   //    AIL_set_filter_sample_preference(sample, "Mono Delay Time", &value);
+   // pitch shift
+   Real pitchShift = event->getPitchShift();
+   if (pitchShift == 0.0f) {
+      DEBUG_CRASH(("Invalid Pitch shift in sound: '%s'", event->getEventName().str()) );
+   } else {
+      if (!SDL_SetAudioStreamFrequencyRatio(playing->m_sdlStream, pitchShift)) {
+         DEBUG_CRASH(("SdlAudioManager::initFilters: couldn't set audio stream pitch: %s\n", SDL_GetError()));
+      }
+   }
 
-   //    value = 0.0;
-   //    AIL_set_filter_sample_preference(sample, "Mono Delay", &value);
-   //    AIL_set_filter_sample_preference(sample, "Mono Delay Mix", &value);		
-   // }
+   // set up delay filter, if applicable
+   if (event->getDelay() > 0.0f) {
+      DEBUG_LOG(("### SdlAudioManager::initFilters: sample delay not yet implemented\n"));
+      // Real value;
+      // value = event->getDelay();
+      // AIL_set_sample_processor(sample, DP_FILTER, m_delayFilter);
+      // AIL_set_filter_sample_preference(sample, "Mono Delay Time", &value);
+
+      // value = 0.0;
+      // AIL_set_filter_sample_preference(sample, "Mono Delay", &value);
+      // AIL_set_filter_sample_preference(sample, "Mono Delay Mix", &value);		
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::initFilters3D( H3DSAMPLE sample, const AudioEventRTS *event, const Coord3D *pos )
 {
+   DEBUG_LOG(("### SdlAudioManager::initFilters3D\n"));
    // // set the sample volume
    // Real volume = event->getVolume() * event->getVolumeShift() * m_sound3DVolume;
    // AIL_set_3D_sample_volume(sample, volume);
@@ -1307,65 +1324,75 @@ void SdlAudioManager::initFilters3D( H3DSAMPLE sample, const AudioEventRTS *even
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::nextMusicTrack( void )
+void SdlAudioManager::nextMusicTrack()
 {
-   // AsciiString trackName;
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music) {
-   //       trackName = playing->m_audioEventRTS->getEventName();
-   //    }
-   // }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::nextMusicTrack\n"));
+#endif
+   AsciiString trackName;
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+         trackName = playing->m_audioEventRTS->getEventName();
+      }
+   }
 
-   // // Stop currently playing music
-   // TheAudio->removeAudioEvent(AHSV_StopTheMusic);
+   // Stop currently playing music
+   TheAudio->removeAudioEvent(AHSV_StopTheMusic);
 
-   // trackName = nextTrackName(trackName);
-   // AudioEventRTS newTrack(trackName);
-   // TheAudio->addAudioEvent(&newTrack);
+   trackName = nextTrackName(trackName);
+   AudioEventRTS newTrack(trackName);
+   TheAudio->addAudioEvent(&newTrack);
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::prevMusicTrack( void )
+void SdlAudioManager::prevMusicTrack()
 {
-   // AsciiString trackName;
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music) {
-   //       trackName = playing->m_audioEventRTS->getEventName();
-   //    }
-   // }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::prevMusicTrack\n"));
+#endif
+   AsciiString trackName;
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+         trackName = playing->m_audioEventRTS->getEventName();
+      }
+   }
 
-   // // Stop currently playing music 
-   // TheAudio->removeAudioEvent(AHSV_StopTheMusic);
+   // Stop currently playing music 
+   TheAudio->removeAudioEvent(AHSV_StopTheMusic);
 
-   // trackName = prevTrackName(trackName);
-   // AudioEventRTS newTrack(trackName);
-   // TheAudio->addAudioEvent(&newTrack);
+   trackName = prevTrackName(trackName);
+   AudioEventRTS newTrack(trackName);
+   TheAudio->addAudioEvent(&newTrack);
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::isMusicPlaying( void ) const
+Bool SdlAudioManager::isMusicPlaying() const
 {
-   // std::list<PlayingAudio *>::const_iterator it;
-   // PlayingAudio *playing;
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music) {
-   //       return TRUE;
-   //    }
-   // }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::isMusicPlaying\n"));
+#endif
+   std::list<PlayingAudio *>::const_iterator it;
+   PlayingAudio *playing;
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+         return TRUE;
+      }
+   }
 
    return FALSE;
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::hasMusicTrackCompleted( const AsciiString& trackName, Int numberOfTimes ) const
+Bool SdlAudioManager::hasMusicTrackCompleted(const AsciiString& trackName, Int numberOfTimes) const
 {
+   DEBUG_LOG(("### SdlAudioManager::hasMusicTrackCompleted\n"));
    // std::list<PlayingAudio *>::const_iterator it;
    // PlayingAudio *playing;
    // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
@@ -1383,32 +1410,35 @@ Bool SdlAudioManager::hasMusicTrackCompleted( const AsciiString& trackName, Int 
 }
 
 //-------------------------------------------------------------------------------------------------
-AsciiString SdlAudioManager::getMusicTrackName( void ) const
+AsciiString SdlAudioManager::getMusicTrackName() const
 {
-   // // First check the requests. If there's one there, then report that as the currently playing track.
-   // std::list<AudioRequest *>::const_iterator ait;
-   // for (ait = m_audioRequests.begin(); ait != m_audioRequests.end(); ++ait) {
-   //    if ((*ait)->m_request != AR_Play) {
-   //       continue;
-   //    }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::getMusicTrackName\n"));
+#endif
+   // First check the requests. If there's one there, then report that as the currently playing track.
+   std::list<AudioRequest *>::const_iterator ait;
+   for (ait = m_audioRequests.begin(); ait != m_audioRequests.end(); ++ait) {
+      if ((*ait)->m_request != AR_Play) {
+         continue;
+      }
 
-   //    if (!(*ait)->m_usePendingEvent) {
-   //       continue;
-   //    }
+      if (!(*ait)->m_usePendingEvent) {
+         continue;
+      }
 
-   //    if ((*ait)->m_pendingEvent->getAudioEventInfo()->m_soundType == AT_Music) {
-   //       return (*ait)->m_pendingEvent->getEventName();
-   //    }
-   // }
+      if ((*ait)->m_pendingEvent->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+         return (*ait)->m_pendingEvent->getEventName();
+      }
+   }
 
-   // std::list<PlayingAudio *>::const_iterator it;
-   // PlayingAudio *playing;
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music) {
-   //       return playing->m_audioEventRTS->getEventName();
-   //    }
-   // }
+   std::list<PlayingAudio *>::const_iterator it;
+   PlayingAudio *playing;
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+         return playing->m_audioEventRTS->getEventName();
+      }
+   }
 
    return AsciiString::TheEmptyString;
 }
@@ -1419,102 +1449,118 @@ void SdlAudioManager::openDevice( void )
    if (!TheGlobalData->m_data.m_audioOn) {
       return;
    }
-   
-   // Int retval = 0;
 
-   // // AIL_quick_startup should be replaced later with a call to actually pick which device to use, etc
-   // const AudioSettings *audioSettings = getAudioSettings();
-   // m_selectedSpeakerType = TheAudio->translateSpeakerTypeToUnsignedInt(m_prefSpeaker);
+   const AudioSettings* audioSettings {getAudioSettings()};
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("Preferred 3D sound provider: %s\n", m_pref3DProvider.str()));
+   DEBUG_LOG(("Preferred speaker type: %s\n", m_prefSpeaker.str()));
+   DEBUG_LOG(("Preferred audio format: %d channel, %d bit, %d Hz\n",
+      audioSettings->m_outputChannels, audioSettings->m_outputBits, audioSettings->m_outputRate));
+#endif
 
-   // FIXME: Fill in the spec.
-   // SDL_AudioSpec spec {};
-   m_device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-   // retval = AIL_quick_startup(audioSettings->m_useDigital, audioSettings->m_useMidi, audioSettings->m_outputRate, audioSettings->m_outputBits, audioSettings->m_outputChannels);
+   m_selectedSpeakerType = TheAudio->translateSpeakerTypeToUnsignedInt(m_prefSpeaker);
 
-   // // Quick handles tells us where to store the various devices. For now, we're only interested in the digital handle.
-   // AIL_quick_handles(&m_digitalHandle, NULL, NULL);
-   
-   // if (retval) {
-   //    buildProviderList();
-   // } else {
-   //    // if we couldn't initialize any devices, turn sound off (fail silently)
-   //    setOn( false, AudioAffect_All );
-   // }
+   SDL_AudioFormat format {audioSettings->m_outputBits == 32 ? SDL_AUDIO_S32 : SDL_AUDIO_S16};
+   SDL_AudioSpec spec {};
+   spec.format = format;
+   spec.channels = audioSettings->m_outputChannels;
+   spec.freq = audioSettings->m_outputRate;
+   m_device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
 
-   // selectProvider(TheAudio->getProviderIndex(m_pref3DProvider));
+#ifdef INTENSIVE_AUDIO_DEBUG
+   if (SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL)) {
+      int bits {16};
+      if (spec.format == SDL_AUDIO_S32) {
+         bits = 32;
+      } else if (spec.format == SDL_AUDIO_U8 || spec.format == SDL_AUDIO_S8) {
+         bits = 8;
+      }
+      DEBUG_LOG(("Actual audio format: %d channel, %d bit, %d Hz\n", spec.channels, bits, spec.freq));
+   }
+#endif
 
-   // // Now that we're all done, update the cached variables so that everything is in sync.
-   // TheAudio->refreshCachedVariables();
+   if (m_device) {
+      buildProviderList();
+   } else {
+      // if we couldn't initialize any devices, turn sound off (fail silently)
+      setOn(false, AudioAffect_All);
+   }
 
-   // if (!isValidProvider()) {
-   //    return;
-   // }
+   selectProvider(TheAudio->getProviderIndex(m_pref3DProvider));
 
-   // initDelayFilter();
+   // Now that we're all done, update the cached variables so that everything is in sync.
+   TheAudio->refreshCachedVariables();
+
+   if (!isValidProvider()) {
+      return;
+   }
+
+   initDelayFilter();
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::closeDevice( void )
+void SdlAudioManager::closeDevice()
 {
-   // freeAllMilesHandles();
-   // unselectProvider();
+   freeAllHandles();
+   unselectProvider();
    SDL_CloseAudioDevice(m_device);
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::isCurrentlyPlaying( AudioHandle handle )
+Bool SdlAudioManager::isCurrentlyPlaying(AudioHandle handle)
 {
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
+   DEBUG_LOG(("### SdlAudioManager::isCurrentlyPlaying\n"));
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
 
-   // for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getPlayingHandle() == handle) {
-   //       return true;
-   //    }
-   // }
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getPlayingHandle() == handle) {
+         return true;
+      }
+   }
 
-   // for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getPlayingHandle() == handle) {
-   //       return true;
-   //    }
-   // }
+   for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getPlayingHandle() == handle) {
+         return true;
+      }
+   }
 
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getPlayingHandle() == handle) {
-   //       return true;
-   //    }
-   // }
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getPlayingHandle() == handle) {
+         return true;
+      }
+   }
 
-   // // if something is requested, it is also considered playing
-   // std::list<AudioRequest *>::iterator ait;
-   // AudioRequest *req = NULL;
-   // for (ait = m_audioRequests.begin(); ait != m_audioRequests.end(); ++ait) {
-   //    req = *ait;
-   //    if (req && req->m_usePendingEvent && req->m_pendingEvent->getPlayingHandle() == handle) {
-   //       return true;
-   //    }
-   // }
+   // if something is requested, it is also considered playing
+   std::list<AudioRequest *>::iterator ait;
+   AudioRequest *req = NULL;
+   for (ait = m_audioRequests.begin(); ait != m_audioRequests.end(); ++ait) {
+      req = *ait;
+      if (req && req->m_usePendingEvent && req->m_pendingEvent->getPlayingHandle() == handle) {
+         return true;
+      }
+   }
 
    return false;
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::notifyOfAudioCompletion( UnsignedInt audioCompleted, UnsignedInt flags )
+void SdlAudioManager::notifyOfAudioCompletion(uintptr_t audioCompleted, UnsignedInt flags)
 {
-   // PlayingAudio *playing = findPlayingAudioFrom(audioCompleted, flags);
-   // if (!playing) {
-   //    DEBUG_CRASH(("Audio has completed playing, but we can't seem to find it. - jkmcd"));
-   //    return;
-   // }
+   PlayingAudio *playing = findPlayingAudioFrom(audioCompleted, flags);
+   if (!playing) {
+      DEBUG_CRASH(("Audio has completed playing, but we can't seem to find it. - jkmcd"));
+      return;
+   }
    
-   // if (getDisallowSpeech() && playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Streaming) {
-   //    setDisallowSpeech(FALSE);
-   // }
+   if (getDisallowSpeech() && playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Streaming) {
+      setDisallowSpeech(FALSE);
+   }
 
-   // if (playing->m_audioEventRTS->getAudioEventInfo()->m_control & AC_LOOP) {
+   // if (playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_control & AC_LOOP) {
    //    if (playing->m_audioEventRTS->getNextPlayPortion() == PP_Attack) {
    //       playing->m_audioEventRTS->setNextPlayPortion(PP_Sound);
    //    }
@@ -1552,32 +1598,41 @@ void SdlAudioManager::notifyOfAudioCompletion( UnsignedInt audioCompleted, Unsig
    //    } 
    // }
 
-   // if (playing->m_type == PAT_Stream) {
-   //    if (playing->m_audioEventRTS->getAudioEventInfo()->m_soundType == AT_Music) {
-   //       playStream(playing->m_audioEventRTS, playing->m_stream);
-         
-   //       return;
-   //    }
-   // }
+   if (playing->m_type == PAT_Stream) {
+      if (playing->m_audioEventRTS->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+      #ifdef INTENSIVE_AUDIO_DEBUG
+         DEBUG_LOG(("Restarting music: %s\n", playing->m_audioEventRTS->getFilename().str()));
+      #endif
+         // Loop playback from start
+         if (!Sound_Rewind(playing->m_stream)) {
+            DEBUG_LOG(("SdlAudioManager::notifyOfAudioCompletion: Unable to rewind stream: %s\n", Sound_GetError()));
+         }
+         playing->m_streamEof = false;
+         UnsignedInt bytesDecoded {Sound_Decode(playing->m_stream)};
+         SDL_PutAudioStreamData(playing->m_sdlStream, playing->m_stream->buffer, static_cast<int>(bytesDecoded));
 
-   // playing->m_status = PS_Stopped;	// it will be cleaned up on the next frame update
+         return;
+      }
+   }
+
+   playing->m_status = PS_Stopped;  // it will be cleaned up on the next frame update
 }
 
 //-------------------------------------------------------------------------------------------------
-PlayingAudio *SdlAudioManager::findPlayingAudioFrom( UnsignedInt audioCompleted, UnsignedInt flags )
+PlayingAudio *SdlAudioManager::findPlayingAudioFrom(uintptr_t audioCompleted, UnsignedInt flags)
 {
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
 
-   // if (flags == PAT_Sample) {
-   //    HSAMPLE sample = (HSAMPLE) audioCompleted;
-   //    for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
-   //       playing = *it;
-   //       if (playing && playing->m_sample == sample) {
-   //          return playing;
-   //       }
-   //    }
-   // }
+   if (flags == PAT_Sample) {
+      HSAMPLE sample = (HSAMPLE) audioCompleted;
+      for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
+         playing = *it;
+         if (playing && playing->m_sample == sample) {
+            return playing;
+         }
+      }
+   }
 
    // if (flags == PAT_3DSample) {
    //    H3DSAMPLE sample3D = (H3DSAMPLE) audioCompleted;
@@ -1589,15 +1644,15 @@ PlayingAudio *SdlAudioManager::findPlayingAudioFrom( UnsignedInt audioCompleted,
    //    }
    // }
 
-   // if (flags == PAT_Stream) {
-   //    HSTREAM stream = (HSTREAM) audioCompleted;
-   //    for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //       playing = *it;
-   //       if (playing && playing->m_stream == stream) {
-   //          return playing;
-   //       }
-   //    }
-   // }
+   if (flags == PAT_Stream) {
+      HSTREAM stream = (HSTREAM) audioCompleted;
+      for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+         playing = *it;
+         if (playing && playing->m_stream == stream) {
+            return playing;
+         }
+      }
+   }
 
    return NULL;
 }
@@ -1606,12 +1661,18 @@ PlayingAudio *SdlAudioManager::findPlayingAudioFrom( UnsignedInt audioCompleted,
 //-------------------------------------------------------------------------------------------------
 UnsignedInt SdlAudioManager::getProviderCount( void ) const
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::getProviderCount\n"));
+#endif
    return m_providerCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 AsciiString SdlAudioManager::getProviderName( UnsignedInt providerNum ) const
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::getProviderName\n"));
+#endif
    if (isOn(AudioAffect_Sound3D) && providerNum < m_providerCount) {
       return m_provider3D[providerNum].name;
    }
@@ -1622,6 +1683,9 @@ AsciiString SdlAudioManager::getProviderName( UnsignedInt providerNum ) const
 //-------------------------------------------------------------------------------------------------
 UnsignedInt SdlAudioManager::getProviderIndex( AsciiString providerName ) const
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::getProviderIndex\n"));
+#endif
    for (UnsignedInt i = 0; i < m_providerCount; ++i) {
       if (providerName == m_provider3D[i].name) {
          return i;
@@ -1634,10 +1698,14 @@ UnsignedInt SdlAudioManager::getProviderIndex( AsciiString providerName ) const
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::selectProvider( UnsignedInt providerNdx )
 {
-   // if (!isOn(AudioAffect_Sound3D)) 
-   // {
-   //    return;
-   // }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::selectProvider\n"));
+#endif
+   if (!isOn(AudioAffect_Sound3D))
+   {
+      DEBUG_LOG(("### SdlAudioManager::selectProvider: 3D audio is OFF\n"));
+      return;
+   }
 
    // if (providerNdx == m_selectedProvider) 
    // {
@@ -1646,7 +1714,7 @@ void SdlAudioManager::selectProvider( UnsignedInt providerNdx )
 
    // if (isValidProvider()) 
    // {
-   //    freeAllMilesHandles();
+   //    freeAllHandles();
    //    unselectProvider();
    // }
 
@@ -1720,11 +1788,11 @@ void SdlAudioManager::selectProvider( UnsignedInt providerNdx )
    // if ( success )
    // {
    //    m_selectedProvider = providerNdx;
-   
-   //    initSamplePools();
-      
-   //    createListener();
-   //    setSpeakerType(m_selectedSpeakerType);
+
+      initSamplePools();
+
+      createListener();
+      // setSpeakerType(m_selectedSpeakerType);
    //    if (TheVideoPlayer) 
    //    {
    //       TheVideoPlayer->notifyVideoPlayerOfNewProvider(TRUE);
@@ -1735,6 +1803,9 @@ void SdlAudioManager::selectProvider( UnsignedInt providerNdx )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::unselectProvider( void )
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::unselectProvider\n"));
+#endif
    // if (!(isOn(AudioAffect_Sound3D) && isValidProvider())) {
    //    return;
    // }
@@ -1754,12 +1825,18 @@ void SdlAudioManager::unselectProvider( void )
 //-------------------------------------------------------------------------------------------------
 UnsignedInt SdlAudioManager::getSelectedProvider( void ) const
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::getSelectedProvider\n"));
+#endif
    return m_selectedProvider;
 }
 
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::setSpeakerType( UnsignedInt speakerType )
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::setSpeakerType\n"));
+#endif
    // if (!isValidProvider()) {
    //    return;
    // }
@@ -1769,8 +1846,11 @@ void SdlAudioManager::setSpeakerType( UnsignedInt speakerType )
 }
 
 //-------------------------------------------------------------------------------------------------
-UnsignedInt SdlAudioManager::getSpeakerType( void )
+UnsignedInt SdlAudioManager::getSpeakerType()
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::getSpeakerType\n"));
+#endif
    if (!isValidProvider()) {
       return 0;
    }
@@ -1779,103 +1859,103 @@ UnsignedInt SdlAudioManager::getSpeakerType( void )
 }
 
 //-------------------------------------------------------------------------------------------------
-UnsignedInt SdlAudioManager::getNum2DSamples( void ) const
+UnsignedInt SdlAudioManager::getNum2DSamples() const
 {
    return m_num2DSamples;
 }
 
 //-------------------------------------------------------------------------------------------------
-UnsignedInt SdlAudioManager::getNum3DSamples( void ) const
+UnsignedInt SdlAudioManager::getNum3DSamples() const
 {
    return m_num3DSamples;
 }
 
 //-------------------------------------------------------------------------------------------------
-UnsignedInt SdlAudioManager::getNumStreams( void ) const
+UnsignedInt SdlAudioManager::getNumStreams() const
 {
    return m_numStreams;
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::doesViolateLimit( AudioEventRTS *event ) const
+Bool SdlAudioManager::doesViolateLimit(AudioEventRTS* event) const
 {
-   // Int limit = event->getAudioEventInfo()->m_limit;
-   // if (limit == 0) {
-   //    return false;
-   // }
+   Int limit = event->getAudioEventInfo()->m_data.m_limit;
+   if (limit == 0) {
+      return false;
+   }
 
-   // Int totalCount = 0;
-   // Int totalRequestCount = 0;
+   Int totalCount = 0;
+   Int totalRequestCount = 0;
 
-   // std::list<PlayingAudio *>::const_iterator it;
-   // if (!event->isPositionalAudio()) {
-   //    // 2-D
-   //    for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
-   //       if ((*it)->m_audioEventRTS->getEventName() == event->getEventName()) {
-   //          if (totalCount == 0) {
-   //             // This is the oldest audio of this type playing.
-   //             event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
-   //          }
-   //          ++totalCount;
-   //       }
-   //    }
-   // } else {
-   //    // 3-D
-   //    for ( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) {
-   //       if ((*it)->m_audioEventRTS->getEventName() == event->getEventName()) {
-   //          if (totalCount == 0) {
-   //             // This is the oldest audio of this type playing.
-   //             event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
-   //          }
-   //          ++totalCount;
-   //       }
-   //    }
-   // }
+   std::list<PlayingAudio *>::const_iterator it;
+   if (!event->isPositionalAudio()) {
+      // 2-D
+      for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
+         if ((*it)->m_audioEventRTS->getEventName() == event->getEventName()) {
+            if (totalCount == 0) {
+               // This is the oldest audio of this type playing.
+               event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
+            }
+            ++totalCount;
+         }
+      }
+   } else {
+      // 3-D
+      for ( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) {
+         if ((*it)->m_audioEventRTS->getEventName() == event->getEventName()) {
+            if (totalCount == 0) {
+               // This is the oldest audio of this type playing.
+               event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
+            }
+            ++totalCount;
+         }
+      }
+   }
    
-   // // Also check the request list in case we've requested to play this sound.
-   // std::list<AudioRequest*>::const_iterator arIt;
-   // for (arIt = m_audioRequests.begin(); arIt != m_audioRequests.end(); ++arIt) {
-   //    AudioRequest *req = (*arIt);
-   //    if (req == NULL) {
-   //       continue;
-   //    }
-   //    if( req->m_usePendingEvent ) 
-   //    {
-   //       if( req->m_pendingEvent->getEventName() == event->getEventName() ) 
-   //       {
-   //          totalRequestCount++;
-   //          totalCount++;
-   //       }
-   //    }
-   // }
+   // Also check the request list in case we've requested to play this sound.
+   std::list<AudioRequest*>::const_iterator arIt;
+   for (arIt = m_audioRequests.begin(); arIt != m_audioRequests.end(); ++arIt) {
+      AudioRequest *req = (*arIt);
+      if (req == NULL) {
+         continue;
+      }
+      if( req->m_usePendingEvent ) 
+      {
+         if( req->m_pendingEvent->getEventName() == event->getEventName() ) 
+         {
+            totalRequestCount++;
+            totalCount++;
+         }
+      }
+   }
 
-   // //If our event is an interrupting type, then normally we would always add it. The exception is when we have requested
-   // //multiple sounds in the same frame and those requests violate the limit. Because we don't have any "old" sounds to
-   // //remove in the case of an interrupt, we need to catch it early and prevent the sound from being added if we already
-   // //reached the limit
-   // if( event->getAudioEventInfo()->m_control & AC_INTERRUPT )
-   // {
-   //    if( totalRequestCount < limit )
-   //    {
-   //       Int totalPlayingCount = totalCount - totalRequestCount;
-   //       if( totalRequestCount + totalPlayingCount < limit )
-   //       {
-   //          //We aren't exceeding the actual limit, then clear the kill handle.
-   //          event->setHandleToKill(0);
-   //          return false;
-   //       }
+   //If our event is an interrupting type, then normally we would always add it. The exception is when we have requested
+   //multiple sounds in the same frame and those requests violate the limit. Because we don't have any "old" sounds to
+   //remove in the case of an interrupt, we need to catch it early and prevent the sound from being added if we already
+   //reached the limit
+   if( event->getAudioEventInfo()->m_data.m_control & AC_INTERRUPT )
+   {
+      if( totalRequestCount < limit )
+      {
+         Int totalPlayingCount = totalCount - totalRequestCount;
+         if( totalRequestCount + totalPlayingCount < limit )
+         {
+            //We aren't exceeding the actual limit, then clear the kill handle.
+            event->setHandleToKill(0);
+            return false;
+         }
 
-   //       //We are exceeding the limit - the kill handle will kill the
-   //       //oldest playing sound to enforce the actual limit.
-   //       return false;
-   //    }
-   // }
+         //We are exceeding the limit - the kill handle will kill the
+         //oldest playing sound to enforce the actual limit.
+         return false;
+      }
+   }
 
-   // if( totalCount < limit ) 
-   // {
-   //    event->setHandleToKill(0);
-   //    return false;
-   // }
+   if( totalCount < limit ) 
+   {
+      event->setHandleToKill(0);
+      return false;
+   }
 
    return true;
 }
@@ -1883,14 +1963,15 @@ Bool SdlAudioManager::doesViolateLimit( AudioEventRTS *event ) const
 //-------------------------------------------------------------------------------------------------
 Bool SdlAudioManager::isPlayingAlready( AudioEventRTS *event ) const
 {
-   // std::list<PlayingAudio *>::const_iterator it;
-   // if (!event->isPositionalAudio()) {
-   //    // 2-D
-   //    for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
-   //       if ((*it)->m_audioEventRTS->getEventName() == event->getEventName()) {
-   //          return true;
-   //       }
-   //    }
+   DEBUG_LOG(("### SdlAudioManager::isPlayingAlready\n"));
+   std::list<PlayingAudio *>::const_iterator it;
+   if (!event->isPositionalAudio()) {
+      // 2-D
+      for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
+         if ((*it)->m_audioEventRTS->getEventName() == event->getEventName()) {
+            return true;
+         }
+      }
    // } else {
    //    // 3-D
    //    for ( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) {
@@ -1898,25 +1979,26 @@ Bool SdlAudioManager::isPlayingAlready( AudioEventRTS *event ) const
    //          return true;
    //       }
    //    }
-   // }
+   }
 
    return false;
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::isObjectPlayingVoice( UnsignedInt objID ) const
+Bool SdlAudioManager::isObjectPlayingVoice(UnsignedInt objID) const
 {
-   // if (objID == 0) {
-   //    return false;
-   // }
+   DEBUG_LOG(("### SdlAudioManager::isObjectPlayingVoice\n"));
+   if (objID == 0) {
+      return false;
+   }
 
-   // std::list<PlayingAudio *>::const_iterator it;
-   //    // 2-D
-   // for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
-   //    if ((*it)->m_audioEventRTS->getObjectID() == objID && (*it)->m_audioEventRTS->getAudioEventInfo()->m_type & ST_VOICE) {
-   //       return true;
-   //    }
-   // }
+   std::list<PlayingAudio *>::const_iterator it;
+      // 2-D
+   for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
+      if ((*it)->m_audioEventRTS->getObjectID() == objID && (*it)->m_audioEventRTS->getAudioEventInfo()->m_data.m_type & ST_VOICE) {
+         return true;
+      }
+   }
 
    // // 3-D
    // for ( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) {
@@ -1929,19 +2011,20 @@ Bool SdlAudioManager::isObjectPlayingVoice( UnsignedInt objID ) const
 }
 
 //-------------------------------------------------------------------------------------------------
-AudioEventRTS* SdlAudioManager::findLowestPrioritySound( AudioEventRTS *event )
+AudioEventRTS* SdlAudioManager::findLowestPrioritySound(AudioEventRTS *event)
 {
-   // AudioPriority priority = event->getAudioEventInfo()->m_priority;
-   // if( priority == AP_LOWEST )
-   // {
-   //    //If the event we pass in is the lowest priority, don't bother checking because
-   //    //there is nothing lower priority than lowest.
-   //    return NULL;
-   // }
-   // AudioEventRTS *lowestPriorityEvent = NULL;
-   // AudioPriority lowestPriority;
+   DEBUG_LOG(("### SdlAudioManager::findLowestPrioritySound\n"));
+   AudioPriority priority = event->getAudioEventInfo()->m_data.m_priority;
+   if( priority == AP_LOWEST )
+   {
+      //If the event we pass in is the lowest priority, don't bother checking because
+      //there is nothing lower priority than lowest.
+      return NULL;
+   }
+   AudioEventRTS *lowestPriorityEvent = NULL;
+   AudioPriority lowestPriority;
 
-   // std::list<PlayingAudio *>::const_iterator it;
+   std::list<PlayingAudio *>::const_iterator it;
    // if( event->isPositionalAudio() ) 
    // {
    //    //3D
@@ -1965,72 +2048,77 @@ AudioEventRTS* SdlAudioManager::findLowestPrioritySound( AudioEventRTS *event )
    // } 
    // else 
    // {
-   //    //2D
-   //    for( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) 
-   //    {
-   //       AudioEventRTS *itEvent = (*it)->m_audioEventRTS;
-   //       AudioPriority itPriority = itEvent->getAudioEventInfo()->m_priority;
-   //       if( itPriority < priority ) 
-   //       {
-   //          if( !lowestPriorityEvent || lowestPriority > itPriority )
-   //          {
-   //             lowestPriorityEvent = itEvent;
-   //             lowestPriority = itPriority;
-   //             if( lowestPriority == AP_LOWEST )
-   //             {
-   //                return lowestPriorityEvent;
-   //             }
-   //          }
-   //       }
-   //    }
+      //2D
+      for( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) 
+      {
+         AudioEventRTS *itEvent = (*it)->m_audioEventRTS;
+         AudioPriority itPriority = itEvent->getAudioEventInfo()->m_data.m_priority;
+         if( itPriority < priority ) 
+         {
+            if( !lowestPriorityEvent || lowestPriority > itPriority )
+            {
+               lowestPriorityEvent = itEvent;
+               lowestPriority = itPriority;
+               if( lowestPriority == AP_LOWEST )
+               {
+                  return lowestPriorityEvent;
+               }
+            }
+         }
+      }
    // }
-   // return lowestPriorityEvent;
-   return nullptr;
+   return lowestPriorityEvent;
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool SdlAudioManager::isPlayingLowerPriority( AudioEventRTS *event ) const
 {
-   // //We don't actually want to do anything to this CONST function. Remember, we're
-   // //just checking to see if there is a lower priority sound.
-   // AudioPriority priority = event->getAudioEventInfo()->m_priority;
-   // if( priority == AP_LOWEST )
-   // {
-   //    //If the event we pass in is the lowest priority, don't bother checking because
-   //    //there is nothing lower priority than lowest.
-   //    return false;
-   // }
-   // std::list<PlayingAudio *>::const_iterator it;
-   // if (!event->isPositionalAudio()) {
-   //    // 2-D
-   //    for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
-   //       if ((*it)->m_audioEventRTS->getAudioEventInfo()->m_priority < priority) {
-   //          //event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
-   //          return true;
-   //       }
-   //    }
-   // } else {
-   //    // 3-D
-   //    for ( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) {
-   //       if ((*it)->m_audioEventRTS->getAudioEventInfo()->m_priority < priority) {
-   //          //event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
-   //          return true;
-   //       }
-   //    }
-   // }
+   DEBUG_LOG(("### SdlAudioManager::isPlayingLowerPriority? "));
+   //We don't actually want to do anything to this CONST function. Remember, we're
+   //just checking to see if there is a lower priority sound.
+   AudioPriority priority = event->getAudioEventInfo()->m_data.m_priority;
+   if( priority == AP_LOWEST )
+   {
+      //If the event we pass in is the lowest priority, don't bother checking because
+      //there is nothing lower priority than lowest.
+      DEBUG_LOG(("No (can't go lower)\n"));
+      return false;
+   }
+   std::list<PlayingAudio *>::const_iterator it;
+   if (!event->isPositionalAudio()) {
+      // 2-D
+      for ( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) {
+         if ((*it)->m_audioEventRTS->getAudioEventInfo()->m_data.m_priority < priority) {
+            //event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
+            DEBUG_LOG(("Yes (2D)\n"));
+            return true;
+         }
+      }
+   } else {
+      // 3-D
+      for ( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) {
+         if ((*it)->m_audioEventRTS->getAudioEventInfo()->m_data.m_priority < priority) {
+            //event->setHandleToKill((*it)->m_audioEventRTS->getPlayingHandle());
+            DEBUG_LOG(("Yes (3D)\n"));
+            return true;
+         }
+      }
+   }
 
+   DEBUG_LOG(("No\n"));
    return false;
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool SdlAudioManager::killLowestPrioritySoundImmediately( AudioEventRTS *event )
 {
-   // //Actually, we want to kill the LOWEST PRIORITY SOUND, not the first "lower" priority
-   // //sound we find, because it could easily be 
-   // AudioEventRTS *lowestPriorityEvent = findLowestPrioritySound( event );
-   // if( lowestPriorityEvent )
-   // {
-   //    std::list<PlayingAudio *>::iterator it;
+   DEBUG_LOG(("### SdlAudioManager::killLowestPrioritySoundImmediately\n"));
+   //Actually, we want to kill the LOWEST PRIORITY SOUND, not the first "lower" priority
+   //sound we find, because it could easily be 
+   AudioEventRTS *lowestPriorityEvent = findLowestPrioritySound( event );
+   if( lowestPriorityEvent )
+   {
+      std::list<PlayingAudio *>::iterator it;
    //    if( event->isPositionalAudio() )
    //    {
    //       for( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it ) 
@@ -2052,24 +2140,24 @@ Bool SdlAudioManager::killLowestPrioritySoundImmediately( AudioEventRTS *event )
    //    }
    //    else
    //    {
-   //       for( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) 
-   //       {
-   //          PlayingAudio *playing = (*it);
-   //          if( !playing ) 
-   //          {
-   //             continue;
-   //          }
+         for( it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it ) 
+         {
+            PlayingAudio *playing = (*it);
+            if( !playing ) 
+            {
+               continue;
+            }
 
-   //          if( playing->m_audioEventRTS && playing->m_audioEventRTS == lowestPriorityEvent ) 
-   //          {
-   //             //Release this 3D sound channel immediately because we are going to play another sound in it's place.
-   //             releasePlayingAudio( playing );
-   //             m_playing3DSounds.erase( it );
-   //             return TRUE;
-   //          }
-   //       }
+            if( playing->m_audioEventRTS && playing->m_audioEventRTS == lowestPriorityEvent ) 
+            {
+               //Release this 3D sound channel immediately because we are going to play another sound in it's place.
+               releasePlayingAudio( playing );
+               m_playing3DSounds.erase( it );
+               return TRUE;
+            }
+         }
    //    }
-   // }
+   }
    return FALSE;
 }
 
@@ -2077,20 +2165,22 @@ Bool SdlAudioManager::killLowestPrioritySoundImmediately( AudioEventRTS *event )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::adjustVolumeOfPlayingAudio(AsciiString eventName, Real newVolume)
 {
+   DEBUG_LOG(("### SdlAudioManager::adjustVolumeOfPlayingAudio\n"));
    // Real pan;
-   // std::list<PlayingAudio *>::iterator it;
+   std::list<PlayingAudio *>::iterator it;
 
-   // PlayingAudio *playing = NULL;
-   // for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getEventName() == eventName) {
-   //       // Adjust it
-   //       playing->m_audioEventRTS->setVolume(newVolume);
-   //       Real desiredVolume = playing->m_audioEventRTS->getVolume() * playing->m_audioEventRTS->getVolumeShift();
-   //       AIL_sample_volume_pan(playing->m_sample, NULL, &pan);
-   //       AIL_set_sample_volume_pan(playing->m_sample, desiredVolume, pan);
-   //    }
-   // }
+   PlayingAudio *playing = NULL;
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getEventName() == eventName) {
+         // Adjust it
+         playing->m_audioEventRTS->setVolume(newVolume);
+         Real desiredVolume = playing->m_audioEventRTS->getVolume() * playing->m_audioEventRTS->getVolumeShift();
+         if (!SDL_SetAudioStreamGain(playing->m_sdlStream, desiredVolume)) {
+            DEBUG_CRASH(("SdlAudioManager::adjustVolumeOfPlayingAudio: couldn't set audio stream volume: %s\n", SDL_GetError()));
+         }
+      }
+   }
 
    // for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ++it) {
    //    playing = *it;
@@ -2102,38 +2192,36 @@ void SdlAudioManager::adjustVolumeOfPlayingAudio(AsciiString eventName, Real new
    //    }
    // }
 
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
-   //    playing = *it;
-   //    if (playing && playing->m_audioEventRTS->getEventName() == eventName) {
-   //       // Adjust it
-   //       playing->m_audioEventRTS->setVolume(newVolume);
-   //       Real desiredVolume = playing->m_audioEventRTS->getVolume() * playing->m_audioEventRTS->getVolumeShift();
-   //       AIL_stream_volume_pan(playing->m_stream, NULL, &pan);
-   //       AIL_set_stream_volume_pan(playing->m_stream, desiredVolume, pan);
-   //    }
-   // }
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ++it) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getEventName() == eventName) {
+         // Adjust it
+         playing->m_audioEventRTS->setVolume(newVolume);
+         Real desiredVolume = playing->m_audioEventRTS->getVolume() * playing->m_audioEventRTS->getVolumeShift();
+         if (!SDL_SetAudioStreamGain(playing->m_sdlStream, desiredVolume)) {
+            DEBUG_CRASH(("SdlAudioManager::adjustVolumeOfPlayingAudio: couldn't set audio stream volume: %s\n", SDL_GetError()));
+         }
+      }
+   }
 }
 
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::removePlayingAudio( AsciiString eventName )
+void SdlAudioManager::removePlayingAudio(AsciiString eventName)
 {
-   // std::list<PlayingAudio *>::iterator it;
+   DEBUG_LOG(("### SdlAudioManager::removePlayingAudio\n"));
+   std::list<PlayingAudio *>::iterator it;
 
-   // PlayingAudio *playing = NULL;
-   // for( it = m_playingSounds.begin(); it != m_playingSounds.end(); ) 
-   // {
-   //    playing = *it;
-   //    if( playing && playing->m_audioEventRTS->getEventName() == eventName ) 
-   //    {
-   //       releasePlayingAudio( playing );
-   //       it = m_playingSounds.erase(it);
-   //    }
-   //    else
-   //    {
-   //       it++;
-   //    }
-   // }
+   PlayingAudio *playing = NULL;
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end();) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getEventName() == eventName) {
+         releasePlayingAudio(playing);
+         it = m_playingSounds.erase(it);
+      } else {
+         it++;
+      }
+   }
 
    // for( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ) 
    // {
@@ -2149,40 +2237,33 @@ void SdlAudioManager::removePlayingAudio( AsciiString eventName )
    //    }
    // }
 
-   // for( it = m_playingStreams.begin(); it != m_playingStreams.end(); ) 
-   // {
-   //    playing = *it;
-   //    if( playing && playing->m_audioEventRTS->getEventName() == eventName ) 
-   //    {
-   //       releasePlayingAudio( playing );
-   //       it = m_playingStreams.erase(it);
-   //    }
-   //    else
-   //    {
-   //       it++;
-   //    }
-   // }
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end();) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getEventName() == eventName) {
+         releasePlayingAudio( playing );
+         it = m_playingStreams.erase(it);
+      } else {
+         it++;
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::removeAllDisabledAudio()
 {
-   // std::list<PlayingAudio *>::iterator it;
+   DEBUG_LOG(("### SdlAudioManager::removeAllDisabledAudio\n"));
+   std::list<PlayingAudio *>::iterator it;
 
-   // PlayingAudio *playing = NULL;
-   // for( it = m_playingSounds.begin(); it != m_playingSounds.end(); ) 
-   // {
-   //    playing = *it;
-   //    if( playing && playing->m_audioEventRTS->getVolume() == 0.0f ) 
-   //    {
-   //       releasePlayingAudio( playing );
-   //       it = m_playingSounds.erase(it);
-   //    }
-   //    else
-   //    {
-   //       it++;
-   //    }
-   // }
+   PlayingAudio *playing = NULL;
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end();) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getVolume() == 0.0f) {
+         releasePlayingAudio(playing);
+         it = m_playingSounds.erase(it);
+      } else {
+         it++;
+      }
+   }
 
    // for( it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ) 
    // {
@@ -2198,77 +2279,80 @@ void SdlAudioManager::removeAllDisabledAudio()
    //    }
    // }
 
-   // for( it = m_playingStreams.begin(); it != m_playingStreams.end(); ) 
-   // {
-   //    playing = *it;
-   //    if( playing && playing->m_audioEventRTS->getVolume() == 0.0f ) 
-   //    {
-   //       releasePlayingAudio( playing );
-   //       it = m_playingStreams.erase(it);
-   //    }
-   //    else
-   //    {
-   //       it++;
-   //    }
-   // }
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end();) {
+      playing = *it;
+      if (playing && playing->m_audioEventRTS->getVolume() == 0.0f) {
+         releasePlayingAudio(playing);
+         it = m_playingStreams.erase(it);
+      } else {
+         it++;
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::processRequestList( void )
+void SdlAudioManager::processRequestList()
 {
-   // std::list<AudioRequest*>::iterator it;
-   // for (it = m_audioRequests.begin(); it != m_audioRequests.end(); /* empty */) {
-   //    AudioRequest *req = (*it);
-   //    if (req == NULL) {
-   //       continue;
-   //    }
+   std::list<AudioRequest*>::iterator it;
+   for (it = m_audioRequests.begin(); it != m_audioRequests.end(); /* empty */) {
+      AudioRequest *req = (*it);
+      if (req == NULL) {
+         continue;
+      }
 
-   //    if (!shouldProcessRequestThisFrame(req)) {
-   //       adjustRequest(req);
-   //       ++it;
-   //       continue;
-   //    }
+      if (!shouldProcessRequestThisFrame(req)) {
+         adjustRequest(req);
+         ++it;
+         continue;
+      }
 
-   //    if (!req->m_requiresCheckForSample || checkForSample(req)) {
-   //       processRequest(req);
-   //    }
-   //    req->deleteInstance();
-   //    it = m_audioRequests.erase(it);
-   // }
+      if (!req->m_requiresCheckForSample || checkForSample(req)) {
+         processRequest(req);
+      }
+      req->deleteInstance();
+      it = m_audioRequests.erase(it);
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::processPlayingList( void )
+void SdlAudioManager::processPlayingList()
 {
-   // // There are two types of processing we have to do here. 
-   // // 1. Move the item to the stopped list if it has become stopped.
-   // // 2. Update the position of the audio if it is positional
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
+   // There are two types of processing we have to do here:
+   // 1. Release the audio if it has become stopped.
+   // 2. Update the position of the audio if it is positional
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
 
-   // for (it = m_playingSounds.begin(); it != m_playingSounds.end(); /* empty */) {
-   //    playing = (*it);
-   //    if (!playing) 
-   //    {
-   //       it = m_playingSounds.erase(it);
-   //       continue;
-   //    }
+   for (it = m_playingSounds.begin(); it != m_playingSounds.end(); /* empty */) {
+      playing = (*it);
+      if (!playing) 
+      {
+         DEBUG_LOG(("!!! SdlAudioManager::processPlayingList: removing NULL playing list entry.  Should this ever happen?\n"));
+         it = m_playingSounds.erase(it);
+         continue;
+      }
 
-   //    if (playing->m_status == PS_Stopped) 
-   //    {
-   //       //m_stoppedAudio.push_back(playing);
-   //       releasePlayingAudio( playing );
-   //       it = m_playingSounds.erase(it);
-   //    } 
-   //    else 
-   //    {
-   //       if (m_volumeHasChanged) 
-   //       {
-   //          adjustPlayingVolume(playing);
-   //       }
-   //       ++it;
-   //    }
-   // }
+      int bytesAvailable {SDL_GetAudioStreamAvailable(playing->m_sdlStream)};
+      DEBUG_ASSERTCRASH(bytesAvailable >= 0, ("SdlAudioManager::processPlayingList: couldn't get audio stream queue length: %s\n", SDL_GetError()));
+      if (bytesAvailable == 0) {
+         TheAudio->notifyOfAudioCompletion((uintptr_t) playing->m_sample, PAT_Sample);
+      }
+
+      if (playing->m_status == PS_Stopped)
+      {
+         //m_stoppedAudio.push_back(playing);
+         releasePlayingAudio(playing);
+         it = m_playingSounds.erase(it);
+      } 
+      else 
+      {
+         if (m_volumeHasChanged)
+         {
+            adjustPlayingVolume(playing);
+         }
+         ++it;
+      }
+   }
 
    // for (it = m_playing3DSounds.begin(); it != m_playing3DSounds.end(); ) 
    // {
@@ -2337,34 +2421,52 @@ void SdlAudioManager::processPlayingList( void )
    //    }
    // }
 
-   // for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ) {
-   //    playing = (*it);
-   //    if (!playing) 
-   //    {
-   //       it = m_playingStreams.erase(it);
-   //       continue;
-   //    }
+   for (it = m_playingStreams.begin(); it != m_playingStreams.end(); ) {
+      playing = (*it);
+      if (!playing) 
+      {
+         it = m_playingStreams.erase(it);
+         continue;
+      }
 
-   //    if (playing->m_status == PS_Stopped) 
-   //    {
-   //       //m_stoppedAudio.push_back(playing);			
-   //       releasePlayingAudio( playing );
-   //       it = m_playingStreams.erase(it);
-   //    } 
-   //    else 
-   //    {
-   //       if (m_volumeHasChanged) 
-   //       {
-   //          adjustPlayingVolume(playing);
-   //       }
+      int bytesQueued {SDL_GetAudioStreamQueued(playing->m_sdlStream)};
+      DEBUG_ASSERTCRASH(bytesQueued >= 0, ("SdlAudioManager::processPlayingList: couldn't get audio stream queue length: %s\n", SDL_GetError()));
+      if (bytesQueued < STREAMING_BUFFER_LOW && !playing->m_streamEof) {
+         UnsignedInt bytesDecoded {Sound_Decode(playing->m_stream)};
+         if (bytesDecoded > 0) {
+            SDL_PutAudioStreamData(playing->m_sdlStream, playing->m_stream->buffer, static_cast<int>(bytesDecoded));
+         }
+         if ((playing->m_stream->flags & SOUND_SAMPLEFLAG_EOF) || (playing->m_stream->flags & SOUND_SAMPLEFLAG_ERROR)) {
+            playing->m_streamEof = true;
+         }
+      }
 
-   //       ++it;
-   //    }
-   // }
+      int bytesAvailable {SDL_GetAudioStreamAvailable(playing->m_sdlStream)};
+      DEBUG_ASSERTCRASH(bytesAvailable >= 0, ("SdlAudioManager::processPlayingList: couldn't get audio stream available bytes: %s\n", SDL_GetError()));
+      if (bytesAvailable == 0) {
+         TheAudio->notifyOfAudioCompletion((uintptr_t) playing->m_stream, PAT_Stream);
+      }
 
-   // if (m_volumeHasChanged) {
-   //    m_volumeHasChanged = false;
-   // }
+      if (playing->m_status == PS_Stopped)
+      {
+         //m_stoppedAudio.push_back(playing);
+         releasePlayingAudio(playing);
+         it = m_playingStreams.erase(it);
+      } 
+      else 
+      {
+         if (m_volumeHasChanged)
+         {
+            adjustPlayingVolume(playing);
+         }
+
+         ++it;
+      }
+   }
+
+   if (m_volumeHasChanged) {
+      m_volumeHasChanged = false;
+   }
 }
 
 //Patch for a rare bug (only on about 5% of in-studio machines suffer, and not all the time) .
@@ -2379,6 +2481,7 @@ void SdlAudioManager::processPlayingList( void )
 
 Bool SdlAudioManager::has3DSensitiveStreamsPlaying( void ) const
 {
+   DEBUG_LOG(("### SdlAudioManager::has3DSensitiveStreamsPlaying\n"));
 //   if ( m_playingStreams.empty() )
 //     return FALSE;
 
@@ -2398,122 +2501,132 @@ Bool SdlAudioManager::has3DSensitiveStreamsPlaying( void ) const
 //     {
 //       return TRUE;
 //     }
-//   }	
-  
+//   }
+
   return FALSE; 
 
 }
 
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::processFadingList( void )
+void SdlAudioManager::processFadingList()
 {
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
 
-   // for (it = m_fadingAudio.begin(); it != m_fadingAudio.end(); /* emtpy */) {
-   //    playing = *it;
-   //    if (!playing) {
-   //       continue;
-   //    }
+   for (it = m_fadingAudio.begin(); it != m_fadingAudio.end(); /* empty */) {
+      playing = *it;
+      if (!playing) {
+         continue;
+      }
       
-   //    if (playing->m_framesFaded >= getAudioSettings()->m_fadeAudioFrames) {
-   //       playing->m_status = PS_Stopped;
-   //       playing->m_requestStop = true;
-   //       //m_stoppedAudio.push_back(playing);
-   //       releasePlayingAudio( playing );
-   //       it = m_fadingAudio.erase(it);
-   //       continue;
-   //    }
+      if (playing->m_framesFaded >= getAudioSettings()->m_fadeAudioFrames) {
+         playing->m_status = PS_Stopped;
+         playing->m_requestStop = true;
+         //m_stoppedAudio.push_back(playing);
+         releasePlayingAudio(playing);
+         it = m_fadingAudio.erase(it);
+         continue;
+      }
 
-   //    ++playing->m_framesFaded;
-   //    Real volume = getEffectiveVolume(playing->m_audioEventRTS);
-   //    volume *= (1.0f - 1.0f * playing->m_framesFaded / getAudioSettings()->m_fadeAudioFrames);
+      ++playing->m_framesFaded;
+      Real volume = getEffectiveVolume(playing->m_audioEventRTS);
+      volume *= (1.0f - 1.0f * playing->m_framesFaded / getAudioSettings()->m_fadeAudioFrames);
 
-   //    switch(playing->m_type)
-   //    {
-   //       case PAT_Sample:
-   //       {
-   //          AIL_set_sample_volume_pan(playing->m_sample, volume, 0.5f);
-   //          break;
-   //       }
+      switch(playing->m_type)
+      {
+         case PAT_Sample:
+         {
+            if (!SDL_SetAudioStreamGain(playing->m_sdlStream, volume)) {
+               DEBUG_CRASH(("SdlAudioManager::processFadingList: couldn't set audio stream volume: %s\n", SDL_GetError()));
+            }
+            break;
+         }
 
-   //       case PAT_3DSample:
-   //       {
-   //          AIL_set_3D_sample_volume(playing->m_3DSample, volume);
-   //          break;
-   //       }
-         
-   //       case PAT_Stream:
-   //       {
-   //          AIL_set_stream_volume_pan(playing->m_stream, volume, 0.5f);
-   //          break;
-   //       }
-         
-   //    }
+         case PAT_3DSample:
+         {
+            // AIL_set_3D_sample_volume(playing->m_3DSample, volume);
+            break;
+         }
+
+         case PAT_Stream:
+         {
+            if (!SDL_SetAudioStreamGain(playing->m_sdlStream, volume)) {
+               DEBUG_CRASH(("SdlAudioManager::processFadingList: couldn't set audio stream volume: %s\n", SDL_GetError()));
+            }
+            break;
+         }
+
+         case PAT_INVALID:
+         {
+            break;
+         }
+
+      }
       
-   //    ++it;
-   // }
+      ++it;
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::processStoppedList( void )
 {
-   // std::list<PlayingAudio *>::iterator it;
-   // PlayingAudio *playing;
+   //FIXME: I don't think that the stopped audio list is ever used.
+   std::list<PlayingAudio *>::iterator it;
+   PlayingAudio *playing;
 
-   // for (it = m_stoppedAudio.begin(); it != m_stoppedAudio.end(); /* emtpy */) {
-   //    playing = *it;
-   //    if (playing) {
-   //       releasePlayingAudio(playing);
-   //    }
-   //    it = m_stoppedAudio.erase(it);
-   // }
+   for (it = m_stoppedAudio.begin(); it != m_stoppedAudio.end(); /* empty */) {
+      playing = *it;
+      if (playing) {
+         releasePlayingAudio(playing);
+      }
+      it = m_stoppedAudio.erase(it);
+   }
 }
 
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::shouldProcessRequestThisFrame( AudioRequest *req ) const
+Bool SdlAudioManager::shouldProcessRequestThisFrame(AudioRequest* req) const
 {
-   // if (!req->m_usePendingEvent) {
-   //    return true;
-   // }
+   if (!req->m_usePendingEvent) {
+      return true;
+   }
 
-   // if (req->m_pendingEvent->getDelay() < MSEC_PER_LOGICFRAME_REAL) {
-   //    return true;
-   // }
+   if (req->m_pendingEvent->getDelay() < MSEC_PER_LOGICFRAME_REAL) {
+      return true;
+   }
 
    return false;
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::adjustRequest( AudioRequest *req )
+void SdlAudioManager::adjustRequest(AudioRequest* req)
 {
-   // if (!req->m_usePendingEvent) {
-   //    return;
-   // }
+   DEBUG_LOG(("### SdlAudioManager::adjustRequest\n"));
+   if (!req->m_usePendingEvent) {
+      return;
+   }
 
-   // req->m_pendingEvent->decrementDelay(MSEC_PER_LOGICFRAME_REAL);
-   // req->m_requiresCheckForSample = true;
+   req->m_pendingEvent->decrementDelay(MSEC_PER_LOGICFRAME_REAL);
+   req->m_requiresCheckForSample = true;
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::checkForSample( AudioRequest *req )
+Bool SdlAudioManager::checkForSample(AudioRequest* req)
 {
-//    if (!req->m_usePendingEvent) {
-//       return true;
-//    }
+   DEBUG_LOG(("### SdlAudioManager::checkForSample\n"));
+   if (!req->m_usePendingEvent) {
+      return true;
+   }
 
-//   if ( req->m_pendingEvent->getAudioEventInfo() == NULL )
-//   {
-//     // Fill in event info
-//     getInfoForAudioEvent( req->m_pendingEvent );
-//   }
+  if (req->m_pendingEvent->getAudioEventInfo() == NULL) {
+      // Fill in event info
+      getInfoForAudioEvent(req->m_pendingEvent);
+  }
   
-//    if (req->m_pendingEvent->getAudioEventInfo()->m_type != AT_SoundEffect) 
-//   {
-//       return true;
-//    }
+   if (req->m_pendingEvent->getAudioEventInfo()->m_data.m_type != AT_SoundEffect) {
+      return true;
+   }
 
    return m_sound->canPlayNow(req->m_pendingEvent);
 }
@@ -2521,6 +2634,7 @@ Bool SdlAudioManager::checkForSample( AudioRequest *req )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::setHardwareAccelerated(Bool accel)
 {
+   DEBUG_LOG(("### SdlAudioManager::setHardwareAccelerated\n"));
    // // Extends
    // Bool retEarly = (accel == m_hardwareAccel);
    // AudioManager::setHardwareAccelerated(accel);
@@ -2548,6 +2662,7 @@ void SdlAudioManager::setHardwareAccelerated(Bool accel)
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::setSpeakerSurround(Bool surround)
 {
+   DEBUG_LOG(("### SdlAudioManager::setSpeakerSurround\n"));
    // // Extends
    // Bool retEarly = (surround == m_surroundSpeakers);
    // AudioManager::setSpeakerSurround(surround);
@@ -2567,8 +2682,9 @@ void SdlAudioManager::setSpeakerSurround(Bool surround)
 }
 
 //-------------------------------------------------------------------------------------------------
-Real SdlAudioManager::getFileLengthMS( AsciiString strToLoad ) const
+Real SdlAudioManager::getFileLengthMS(AsciiString strToLoad) const
 {
+   DEBUG_LOG(("### SdlAudioManager::getFileLengthMS\n"));
    // if (strToLoad.isEmpty()) {
    //    return 0.0f;
    // }
@@ -2589,8 +2705,9 @@ Real SdlAudioManager::getFileLengthMS( AsciiString strToLoad ) const
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::closeAnySamplesUsingFile( const void *fileToClose )
+void SdlAudioManager::closeAnySamplesUsingFile(const void *fileToClose)
 {
+   DEBUG_LOG(("### SdlAudioManager::closeAnySamplesUsingFile\n"));
    // std::list<PlayingAudio *>::iterator it;
    // PlayingAudio *playing;
    
@@ -2624,8 +2741,9 @@ void SdlAudioManager::closeAnySamplesUsingFile( const void *fileToClose )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::setDeviceListenerPosition( void )
+void SdlAudioManager::setDeviceListenerPosition()
 {
+   DEBUG_LOG(("### SdlAudioManager::setDeviceListenerPosition\n"));
    // if (m_listener) {
    //    AIL_set_3D_orientation(m_listener, m_listenerOrientation.x, m_listenerOrientation.y, m_listenerOrientation.z, 0, 0, -1);
 
@@ -2637,8 +2755,9 @@ void SdlAudioManager::setDeviceListenerPosition( void )
 }
 
 //-------------------------------------------------------------------------------------------------
-const Coord3D *SdlAudioManager::getCurrentPositionFromEvent( AudioEventRTS *event )
+const Coord3D *SdlAudioManager::getCurrentPositionFromEvent(AudioEventRTS *event)
 {
+   DEBUG_LOG(("### SdlAudioManager::getCurrentPositionFromEvent\n"));
    // if (!event->isPositionalAudio()) {
    //    return NULL;
    // }
@@ -2648,8 +2767,9 @@ const Coord3D *SdlAudioManager::getCurrentPositionFromEvent( AudioEventRTS *even
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::isOnScreen( const Coord3D *pos ) const
+Bool SdlAudioManager::isOnScreen(const Coord3D *pos) const
 {
+   DEBUG_LOG(("### SdlAudioManager::isOnScreen\n"));
    // static ICoord2D dummy;
    // // WorldToScreen will return True if the point is onscreen and false if it is offscreen.
    // return TheTacticalView->worldToScreen(pos, &dummy);
@@ -2660,59 +2780,59 @@ Bool SdlAudioManager::isOnScreen( const Coord3D *pos ) const
 Real SdlAudioManager::getEffectiveVolume(AudioEventRTS *event) const
 {
    Real volume = 1.0f;
-   // volume *= (event->getVolume() * event->getVolumeShift());
-   // if (event->getAudioEventInfo()->m_soundType == AT_Music) 
-   // {
-   //    volume *= m_musicVolume;
-   // } 
-   // else if (event->getAudioEventInfo()->m_soundType == AT_Streaming) 
-   // {
-   //    volume *= m_speechVolume;
-   // } 
-   // else 
-   // {
-   //    if (event->isPositionalAudio()) 
-   //    {
-   //       volume *= m_sound3DVolume;
-   //       Coord3D distance = m_listenerPosition;
-   //       const Coord3D *pos = event->getCurrentPosition();
-   //       if (pos) 
-   //       {
-   //          distance.sub(pos);
-   //          Real objMinDistance;
-   //          Real objMaxDistance;
+   volume *= (event->getVolume() * event->getVolumeShift());
+   if (event->getAudioEventInfo()->m_data.m_soundType == AT_Music) 
+   {
+      volume *= m_musicVolume;
+   } 
+   else if (event->getAudioEventInfo()->m_data.m_soundType == AT_Streaming) 
+   {
+      volume *= m_speechVolume;
+   } 
+   else 
+   {
+      if (event->isPositionalAudio()) 
+      {
+         volume *= m_sound3DVolume;
+         Coord3D distance = m_listenerPosition;
+         const Coord3D *pos = event->getCurrentPosition();
+         if (pos) 
+         {
+            distance.sub(pos);
+            Real objMinDistance;
+            Real objMaxDistance;
 
-   //          if (event->getAudioEventInfo()->m_type & ST_GLOBAL) 
-   //          {
-   //             objMinDistance = TheAudio->getAudioSettings()->m_globalMinRange;
-   //             objMaxDistance = TheAudio->getAudioSettings()->m_globalMaxRange;
-   //          } 
-   //          else 
-   //          {
-   //             objMinDistance = event->getAudioEventInfo()->m_minDistance;
-   //             objMaxDistance = event->getAudioEventInfo()->m_maxDistance;
-   //          }
+            if (event->getAudioEventInfo()->m_data.m_type & ST_GLOBAL) 
+            {
+               objMinDistance = TheAudio->getAudioSettings()->m_globalMinRange;
+               objMaxDistance = TheAudio->getAudioSettings()->m_globalMaxRange;
+            } 
+            else 
+            {
+               objMinDistance = event->getAudioEventInfo()->m_data.m_minDistance;
+               objMaxDistance = event->getAudioEventInfo()->m_data.m_maxDistance;
+            }
 
-   //          Real objDistance = distance.length();
-   //          if( objDistance > objMinDistance ) 
-   //          {
-   //             volume *= 1 / (objDistance / objMinDistance);
-   //          }
-   //          if( objDistance >= objMaxDistance ) 
-   //          {
-   //             volume = 0.0f;
-   //          }
-   //          //else if( objDistance > objMinDistance )
-   //          //{
-   //          //	volume *= 1.0f - (objDistance - objMinDistance) / (objMaxDistance - objMinDistance);
-   //          //}
-   //       }
-   //    } 
-   //    else 
-   //    {
-   //       volume *= m_soundVolume;
-   //    }
-   // }
+            Real objDistance = distance.length();
+            if( objDistance > objMinDistance ) 
+            {
+               volume *= 1 / (objDistance / objMinDistance);
+            }
+            if( objDistance >= objMaxDistance ) 
+            {
+               volume = 0.0f;
+            }
+            //else if( objDistance > objMinDistance )
+            //{
+            //	volume *= 1.0f - (objDistance - objMinDistance) / (objMaxDistance - objMinDistance);
+            //}
+         }
+      } 
+      else 
+      {
+         volume *= m_soundVolume;
+      }
+   }
 
    return volume;
 }
@@ -2720,6 +2840,7 @@ Real SdlAudioManager::getEffectiveVolume(AudioEventRTS *event) const
 //-------------------------------------------------------------------------------------------------
 Bool SdlAudioManager::startNextLoop( PlayingAudio *looping )
 {
+   DEBUG_LOG(("### SdlAudioManager::startNextLoop\n"));
    // closeFile(looping->m_file);
    // looping->m_file = NULL;
 
@@ -2758,46 +2879,83 @@ Bool SdlAudioManager::startNextLoop( PlayingAudio *looping )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::playStream( AudioEventRTS *event, HSTREAM stream )
+void SdlAudioManager::playStream(AudioEventRTS *event, PlayingAudio* audio, Real volume)
 {
-   // // Force it to the beginning
-   // if (event->getAudioEventInfo()->m_soundType == AT_Music) {
-   //    AIL_set_stream_loop_count(stream, INFINITE_LOOP_COUNT);
-   // }
+   AsciiString fileName{audio->m_audioEventRTS->getFilename()};
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("SdlAudioManager::playStream: %s with volume set to %.2f\n", fileName.str(), volume));
+#endif
+   File *file = TheFileSystem->openFile(fileName.str());
+   if (!file) {
+      DEBUG_ASSERTLOG(fileName.isEmpty(), ("Missing Audio File: '%s'\n", fileName.str()));
+      return;
+   }
 
-   // AIL_register_stream_callback(stream, setStreamCompleted);
-   // AIL_start_stream(stream);
-   // if (event->getAudioEventInfo()->m_soundType == AT_Music) {
-   //    // Need to stop/fade out the old music here.
-   // }
+   audio->m_streamFileStream = NEW SdlFileStream;
+   audio->m_streamFileStream->setFile(file);
+   SDL_IOStream* ioStream {SDL_OpenIO(audio->m_streamFileStream->interface(), audio->m_streamFileStream)};
+   DEBUG_ASSERTCRASH(ioStream, (("SdlAudioManager::playStream: SDL stream is NULL\n")));
+   audio->m_stream = Sound_NewSample(ioStream, "mp3", NULL, STREAMING_BUFFER_SIZE);
+   DEBUG_ASSERTCRASH(audio->m_stream, ("SdlAudioManager::playSample: couldn't decode MP3 stream: %s\n", Sound_GetError()));
+
+   SDL_AudioSpec spec {static_cast<SDL_AudioFormat>(audio->m_stream->actual.format),
+      static_cast<int>(audio->m_stream->actual.channels), static_cast<int>(audio->m_stream->actual.rate)};
+#ifdef INTENSIVE_AUDIO_DEBUG
+   int bits {16};
+   if (audio->m_stream->actual.format == SDL_AUDIO_S32) {
+      bits = 32;
+   } else if (audio->m_stream->actual.format == SDL_AUDIO_U8 || audio->m_stream->actual.format == SDL_AUDIO_S8) {
+      bits = 8;
+   }
+   DEBUG_LOG(("Streaming file format: %d channel, %d bit, %d Hz\n", spec.channels, bits, spec.freq));
+#endif
+
+   audio->m_sdlStream = SDL_CreateAudioStream(&spec, NULL);
+   if (!audio->m_sdlStream) {
+      DEBUG_CRASH(("SdlAudioManager::playStream: couldn't create audio stream: %s\n", SDL_GetError()));
+   } else if (!SDL_BindAudioStream(m_device, audio->m_sdlStream)) {
+      DEBUG_CRASH(("SdlAudioManager::playStream: couldn't bind audio stream: %s\n", SDL_GetError()));
+   } else {
+      UnsignedInt bytesDecoded {Sound_Decode(audio->m_stream)};
+      // Start playback
+      SDL_PutAudioStreamData(audio->m_sdlStream, audio->m_stream->buffer, static_cast<int>(bytesDecoded));
+
+      if (!SDL_SetAudioStreamGain(audio->m_sdlStream, volume)) {
+         DEBUG_CRASH(("SdlAudioManager::playStream: couldn't set audio stream volume: %s\n", SDL_GetError()));
+      }
+   }
+
+   if (event->getAudioEventInfo()->m_data.m_soundType == AT_Music) {
+      // Need to stop/fade out the old music here.
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void *SdlAudioManager::playSample( AudioEventRTS *event, HSAMPLE sample )
+void SdlAudioManager::playSample(AudioEventRTS *event, PlayingAudio* audio)
 {
-   // AIL_init_sample(sample);
-
-   // // Prep any sort of filtering, etc, here
-   // AIL_register_EOS_callback(sample, setSampleCompleted);
-   // initFilters(sample, event);
-
-   // // Load the file in
-   // void *fileBuffer = NULL;
-   // fileBuffer = loadFileForRead(event);
-   // if (fileBuffer) {
-   //    AIL_set_sample_file(sample, fileBuffer, 0);
-
-   //    // Start playback
-   //    AIL_start_sample(sample);
-   // }
-
-   // return fileBuffer;
-   return nullptr;
+   // Load the file in
+   OpenAudioFile* openAudio {loadFileForRead(event)};
+   audio->m_audioBuf = openAudio->m_audioBuf;
+   audio->m_audioLen = openAudio->m_audioLen;
+   if (audio->m_audioBuf) {
+      audio->m_sdlStream = SDL_CreateAudioStream(&openAudio->m_audioSpec, NULL);
+      if (!audio->m_sdlStream) {
+         DEBUG_CRASH(("SdlAudioManager::playSample: couldn't create audio stream: %s\n", SDL_GetError()));
+      } else if (!SDL_BindAudioStream(m_device, audio->m_sdlStream)) {
+         DEBUG_CRASH(("SdlAudioManager::playSample: couldn't bind audio stream: %s\n", SDL_GetError()));
+      } else {
+         // Prep any sort of filtering, etc, here
+         initFilters(audio, event);
+         // Start playback
+         SDL_PutAudioStreamData(audio->m_sdlStream, audio->m_audioBuf, static_cast<int>(audio->m_audioLen));
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 void *SdlAudioManager::playSample3D( AudioEventRTS *event, H3DSAMPLE sample3D )
 {
+   DEBUG_LOG(("### SdlAudioManager::playSample3D\n"));
    // const Coord3D *pos = getCurrentPositionFromEvent(event);
    // if (pos) {
    //    // Load the file in
@@ -2834,6 +2992,9 @@ void *SdlAudioManager::playSample3D( AudioEventRTS *event, H3DSAMPLE sample3D )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::buildProviderList( void )
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::buildProviderList\n"));
+#endif
    // HPROENUM next = HPROENUM_FIRST;
 
    //  char *name;
@@ -2849,6 +3010,9 @@ void SdlAudioManager::buildProviderList( void )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::createListener( void )
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::createListener\n"));
+#endif
    // if (!(isOn(AudioAffect_Sound3D) && isValidProvider())) {
    //    return;
    // }
@@ -2858,8 +3022,9 @@ void SdlAudioManager::createListener( void )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::initDelayFilter( void )
+void SdlAudioManager::initDelayFilter()
 {
+   DEBUG_LOG(("### SdlAudioManager::initDelayFilter\n"));
    // if (m_delayFilter != NULL) {
    //    return;
    // }
@@ -2877,29 +3042,31 @@ void SdlAudioManager::initDelayFilter( void )
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SdlAudioManager::isValidProvider( void )
+Bool SdlAudioManager::isValidProvider()
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::isValidProvider\n"));
+#endif
    return (m_selectedProvider < m_providerCount);
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::initSamplePools( void )
+void SdlAudioManager::initSamplePools()
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::initSamplePools\n"));
+#endif
    // if (!(isOn(AudioAffect_Sound3D) && isValidProvider())) {
    //    return;
    // }
 
-   // int i = 0;
-   // for (i = 0; i < getAudioSettings()->m_sampleCount2D; ++i) {
-   //    HSAMPLE sample = AIL_allocate_sample_handle(m_digitalHandle);
-   //    DEBUG_ASSERTCRASH(sample, ("Couldn't get %d 2D samples\n", i + 1));
-   //    if (sample) {
-   //       AIL_init_sample(sample);
-   //       AIL_set_sample_user_data(sample, 0, i + 1);
-   //       m_availableSamples.push_back(sample);
-   //       ++m_num2DSamples;
-   //    }
-   // }
+   // Let's just assume that we can have as many SDL_AudioStreams as we want.
+   UnsignedInt sampleCount2D {0};
+   for (int i = 0; i < getAudioSettings()->m_sampleCount2D; ++i) {
+      HSAMPLE sample = ++sampleCount2D;
+      m_availableSamples.push_back(sample);
+      ++m_num2DSamples;
+   }
 
    // for (i = 0; i < getAudioSettings()->m_sampleCount3D; ++i) {
    //    H3DSAMPLE sample = AIL_allocate_3D_sample_handle(m_provider3D[m_selectedProvider].id);
@@ -2911,36 +3078,39 @@ void SdlAudioManager::initSamplePools( void )
    //    }
    // }
 
-   // // Streams are basically free, so we can just allocate the appropriate number
-   // m_numStreams = getAudioSettings()->m_streamCount;
+   // Streams are basically free, so we can just allocate the appropriate number
+   m_numStreams = static_cast<UnsignedInt>(getAudioSettings()->m_streamCount);
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::processRequest( AudioRequest *req )
+void SdlAudioManager::processRequest(AudioRequest* req)
 {
-   // switch (req->m_request)
-   // {
-   //    case AR_Play:
-   //    {
-   //       playAudioEvent(req->m_pendingEvent);
-   //       break;
-   //    }
-   //    case AR_Pause:
-   //    {
-   //       pauseAudioEvent(req->m_handleToInteractOn);
-   //       break;
-   //    }
-   //    case AR_Stop:
-   //    {
-   //       stopAudioEvent(req->m_handleToInteractOn);
-   //       break;
-   //    }
-   // }
+   switch (req->m_request)
+   {
+      case AR_Play:
+      {
+         playAudioEvent(req->m_pendingEvent);
+         break;
+      }
+      case AR_Pause:
+      {
+         pauseAudioEvent(req->m_handleToInteractOn);
+         break;
+      }
+      case AR_Stop:
+      {
+         stopAudioEvent(req->m_handleToInteractOn);
+         break;
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void *SdlAudioManager::getHandleForBink( void )
+void *SdlAudioManager::getHandleForBink()
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::getHandleForBink\n"));
+#endif
    // if (m_binkHandle == NULL) {
    //    PlayingAudio *aud = allocatePlayingAudio();
    //    aud->m_audioEventRTS = NEW AudioEventRTS("BinkHandle");	// poolify
@@ -2963,8 +3133,11 @@ void *SdlAudioManager::getHandleForBink( void )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SdlAudioManager::releaseHandleForBink( void )
+void SdlAudioManager::releaseHandleForBink()
 {
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("### SdlAudioManager::releaseHandleForBink\n"));
+#endif
    // if (m_binkHandle) {
    //    releasePlayingAudio(m_binkHandle);
    //    m_binkHandle = NULL;
@@ -2974,6 +3147,7 @@ void SdlAudioManager::releaseHandleForBink( void )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::friend_forcePlayAudioEventRTS(const AudioEventRTS* eventToPlay)
 {
+   DEBUG_LOG(("### SdlAudioManager::friend_forcePlayAudioEventRTS\n"));
    // if (!eventToPlay->getAudioEventInfo()) {
    //    getInfoForAudioEvent(eventToPlay);
    //    if (!eventToPlay->getAudioEventInfo()) {
@@ -3024,52 +3198,9 @@ void SdlAudioManager::friend_forcePlayAudioEventRTS(const AudioEventRTS* eventTo
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-// void AILCALLBACK setSampleCompleted( HSAMPLE sampleCompleted )
-// {
-//    TheAudio->notifyOfAudioCompletion((UnsignedInt) sampleCompleted, PAT_Sample);
-// }
-
-//-------------------------------------------------------------------------------------------------
 // void AILCALLBACK set3DSampleCompleted( H3DSAMPLE sample3DCompleted )
 // {
 //    TheAudio->notifyOfAudioCompletion((UnsignedInt) sample3DCompleted, PAT_3DSample);
-// }
-
-//-------------------------------------------------------------------------------------------------
-// void AILCALLBACK setStreamCompleted( HSTREAM streamCompleted )
-// {
-//    TheAudio->notifyOfAudioCompletion((UnsignedInt) streamCompleted, PAT_Stream);
-// }
-
-//-------------------------------------------------------------------------------------------------
-// U32 AILCALLBACK streamingFileOpen(char const *fileName, U32 *file_handle)
-// {
-// #if defined(_DEBUG) || defined(_INTERNAL)
-//    if (sizeof(U32) != sizeof(File*)) {
-//       RELEASE_CRASH(("streamingFileOpen - This function requires work in order to compile on non 32-bit platforms.\n"));
-//    }
-// #endif
-
-//    (*file_handle) = (U32) TheFileSystem->openFile(fileName, File::READ | File::STREAMING);
-//    return ((*file_handle) != 0);
-// }
-
-//-------------------------------------------------------------------------------------------------
-// void AILCALLBACK streamingFileClose(U32 fileHandle)
-// {
-//    ((File*) fileHandle)->close();
-// }
-
-//-------------------------------------------------------------------------------------------------
-// S32 AILCALLBACK streamingFileSeek(U32 fileHandle, S32 offset, U32 type)
-// {
-//    return ((File*) fileHandle)->seek(offset, (File::seekMode) type);
-// }
-
-//-------------------------------------------------------------------------------------------------
-// U32 AILCALLBACK streamingFileRead(U32 file_handle, void *buffer, U32 bytes)
-// {
-//    return ((File*) file_handle)->read(buffer, bytes);
 // }
 
 //-------------------------------------------------------------------------------------------------
@@ -3083,223 +3214,207 @@ AudioFileCache::AudioFileCache()
 //-------------------------------------------------------------------------------------------------
 AudioFileCache::~AudioFileCache()
 {
-   // {
-   //    ScopedMutex mut(m_mutex);
+   {
+      ScopedMutex mut(m_mutex);
 
-   //    // Free all the samples that are open.
-   //    OpenFilesHashIt it;
-   //    for ( it = m_openFiles.begin(); it != m_openFiles.end(); ++it ) {
-   //       if (it->second.m_openCount > 0) {
-   //          DEBUG_CRASH(("Sample '%s' is still playing, and we're trying to quit.\n", it->second.m_eventInfo->m_audioName.str()));
-   //       }
+      // Free all the samples that are open.
+      OpenFilesHashIt it;
+      for (it = m_openFiles.begin(); it != m_openFiles.end(); ++it) {
+         if (it->second.m_openCount > 0) {
+            DEBUG_CRASH(("Sample '%s' is still playing (open count = %u), and we're trying to quit.\n", it->second.m_eventInfo->m_data.m_audioName.str(), it->second.m_openCount));
+         }
 
-   //       releaseOpenAudioFile(&it->second);
-   //       // Don't erase it from the map, cause it makes this whole process way more complicated, and 
-   //       // we're about to go away anyways.
-   //    }
-   // }
+         releaseOpenAudioFile(&it->second);
+         // Don't erase it from the map, cause it makes this whole process way more complicated, and 
+         // we're about to go away anyways.
+      }
+   }
 
    SDL_DestroyMutex(m_mutex);
 }
 
 //-------------------------------------------------------------------------------------------------
-void *AudioFileCache::openFile( AudioEventRTS *eventToOpenFrom )
+OpenAudioFile* AudioFileCache::openFile(AudioEventRTS* eventToOpenFrom)
 {
-   // // Protect the entire openFile function
-   // ScopedMutex mut(m_mutex);
+   // Protect the entire openFile function
+   ScopedMutex mut(m_mutex);
 
-   // AsciiString strToFind;
-   // switch (eventToOpenFrom->getNextPlayPortion())
-   // {
-   //    case PP_Attack:
-   //       strToFind = eventToOpenFrom->getAttackFilename();
-   //       break;
-   //    case PP_Sound:
-   //       strToFind = eventToOpenFrom->getFilename();
-   //       break;
-   //    case PP_Decay:
-   //       strToFind = eventToOpenFrom->getDecayFilename();
-   //       break;
-   //    case PP_Done:
-   //       return NULL;
-   // }
+   AsciiString strToFind;
+   switch (eventToOpenFrom->getNextPlayPortion())
+   {
+      case PP_Attack:
+         strToFind = eventToOpenFrom->getAttackFilename();
+         break;
+      case PP_Sound:
+         strToFind = eventToOpenFrom->getFilename();
+         break;
+      case PP_Decay:
+         strToFind = eventToOpenFrom->getDecayFilename();
+         break;
+      case PP_Done:
+         return NULL;
+   }
 
-   // OpenFilesHash::iterator it;
-   // it = m_openFiles.find(strToFind);
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("AudioFileCache::openFile: %s ", strToFind.str()));
+#endif
 
-   // if (it != m_openFiles.end()) {
-   //    ++it->second.m_openCount;
-   //    return it->second.m_file;
-   // }
+   OpenFilesHash::iterator it;
+   it = m_openFiles.find(strToFind);
 
-   // // Couldn't find the file, so actually open it.
-   // File *file = TheFileSystem->openFile(strToFind.str());
-   // if (!file) {
-   //    DEBUG_ASSERTLOG(strToFind.isEmpty(), ("Missing Audio File: '%s'\n", strToFind.str()));
-   //    return NULL;
-   // }
+   if (it != m_openFiles.end()) {
+#ifdef INTENSIVE_AUDIO_DEBUG
+      DEBUG_LOG(("(cached)\n"));
+#endif
+      ++it->second.m_openCount;
+      return &it->second;
+   }
 
-   // UnsignedInt fileSize = file->size();
-   // char* buffer = file->readEntireAndClose();
+   // Couldn't find the file, so actually open it.
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("(loaded from disk)\n"));
+#endif
+   File *file = TheFileSystem->openFile(strToFind.str());
+   if (!file) {
+      DEBUG_ASSERTLOG(strToFind.isEmpty(), ("Missing Audio File: '%s'\n", strToFind.str()));
+      return NULL;
+   }
 
-   // OpenAudioFile openedAudioFile;
-   // openedAudioFile.m_eventInfo = eventToOpenFrom->getAudioEventInfo();
+   OpenAudioFile openedAudioFile {};
+   openedAudioFile.m_eventInfo = eventToOpenFrom->getAudioEventInfo();
+   openedAudioFile.m_openCount = 1;
+   SdlFileStream fileStream {file};
+   SDL_IOStream* sdlStream {SDL_OpenIO(fileStream.interface(), &fileStream)};
+   DEBUG_ASSERTCRASH(sdlStream, (("AudioFileCache::openFile: SDL stream is NULL\n")));
+   if (!SDL_LoadWAV_IO(sdlStream, true, &openedAudioFile.m_audioSpec, &openedAudioFile.m_audioBuf, &openedAudioFile.m_audioLen)) {
+      DEBUG_CRASH(("AudioFileCache::openFile: could not load sound file: %s\n", SDL_GetError()));
+   }
 
-   // AILSOUNDINFO soundInfo;
-   // AIL_WAV_info(buffer, &soundInfo);
+   if (eventToOpenFrom->isPositionalAudio()) {
+      if (openedAudioFile.m_audioSpec.channels > 1) {
+         DEBUG_CRASH(("Requested Positional Play of audio '%s', but it is in stereo.", strToFind.str()));
+         SDL_free(openedAudioFile.m_audioBuf);
+         return NULL;
+      }
+   }
 
-   // if (eventToOpenFrom->isPositionalAudio()) {
-   //    if (soundInfo.channels > 1) {
-   //       DEBUG_CRASH(("Requested Positional Play of audio '%s', but it is in stereo.", strToFind.str()));
-   //       delete [] buffer;
-   //       return NULL;
-   //    }
-   // }
-   
-   // if (soundInfo.format == WAVE_FORMAT_IMA_ADPCM) {
-   //    void *decompressFileBuffer;
-   //    U32 newFileSize;
-   //    AIL_decompress_ADPCM(&soundInfo, &decompressFileBuffer, &newFileSize);
-   //    fileSize = newFileSize;
-   //    openedAudioFile.m_compressed = TRUE;
-   //    delete [] buffer;
-   //    openedAudioFile.m_file = decompressFileBuffer;
-   //    openedAudioFile.m_soundInfo = soundInfo;
-   //    openedAudioFile.m_openCount = 1;
-   // } else if (soundInfo.format == WAVE_FORMAT_PCM) {
-   //    openedAudioFile.m_compressed = FALSE;
-   //    openedAudioFile.m_file = buffer;
-   //    openedAudioFile.m_soundInfo = soundInfo;
-   //    openedAudioFile.m_openCount = 1;
-   // } else {
-   //    DEBUG_CRASH(("Unexpected compression type in '%s'\n", strToFind.str()));
-   //    // prevent leaks
-   //    delete [] buffer;
-   //    return NULL;
-   // }
+   m_currentlyUsedSize += openedAudioFile.m_audioLen;
+   if (m_currentlyUsedSize > m_maxSize) {
+      // We need to free some samples, or we're not going to be able to play this sound.
+      if (!freeEnoughSpaceForSample(openedAudioFile)) {
+         m_currentlyUsedSize -= openedAudioFile.m_audioLen;
+         SDL_free(openedAudioFile.m_audioBuf);
+         return NULL;
+      }
+   }
 
-   // openedAudioFile.m_fileSize = fileSize;
-   // m_currentlyUsedSize += openedAudioFile.m_fileSize;
-   // if (m_currentlyUsedSize > m_maxSize) {
-   //    // We need to free some samples, or we're not going to be able to play this sound.
-   //    if (!freeEnoughSpaceForSample(openedAudioFile)) {
-   //       m_currentlyUsedSize -= openedAudioFile.m_fileSize;
-   //       releaseOpenAudioFile(&openedAudioFile);
-   //       return NULL;
-   //    }
-   // }
-
-   // m_openFiles[strToFind] = openedAudioFile;
-   // return openedAudioFile.m_file;
-   return nullptr;
+   m_openFiles[strToFind] = openedAudioFile;
+   return &m_openFiles[strToFind];
 }
 
 //-------------------------------------------------------------------------------------------------
-void AudioFileCache::closeFile( void *fileToClose )
+void AudioFileCache::releaseBuffer(UnsignedByte* buffer)
 {
-   // if (!fileToClose) {
-   //    return;
-   // }
+   if (!buffer) {
+      return;
+   }
 
-   // // Protect the entire closeFile function
-   // ScopedMutex mut(m_mutex);
+   // Protect the entire closeFile function
+   ScopedMutex mut(m_mutex);
 
-   // OpenFilesHash::iterator it;
-   // for ( it = m_openFiles.begin(); it != m_openFiles.end(); ++it ) {
-   //    if ( it->second.m_file == fileToClose ) {
-   //       --it->second.m_openCount;
-   //       return;
-   //    }
-   // }
+   OpenFilesHash::iterator it;
+   for (it = m_openFiles.begin(); it != m_openFiles.end(); ++it) {
+      if (it->second.m_audioBuf == buffer) {
+         --it->second.m_openCount;
+         return;
+      }
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
-void AudioFileCache::setMaxSize( UnsignedInt size )
+void AudioFileCache::setMaxSize(UnsignedInt size)
 {
-   // // Protect the function, in case we're trying to use this value elsewhere.
-   // ScopedMutex mut(m_mutex);
+   // Protect the function, in case we're trying to use this value elsewhere.
+   ScopedMutex mut(m_mutex);
 
-   // m_maxSize = size;
+   m_maxSize = size;
 }
 
 //-------------------------------------------------------------------------------------------------
-void AudioFileCache::releaseOpenAudioFile( OpenAudioFile *fileToRelease )
+void AudioFileCache::releaseOpenAudioFile(OpenAudioFile* fileToRelease)
 {
-   // if (fileToRelease->m_openCount > 0) {
-   //    // This thing needs to be terminated IMMEDIATELY.
-   //    TheAudio->closeAnySamplesUsingFile(fileToRelease->m_file);
-   // }
+#ifdef INTENSIVE_AUDIO_DEBUG
+   DEBUG_LOG(("AudioFileCache::releaseOpenAudioFile: %s\n", fileToRelease->m_eventInfo->m_data.m_audioName.str()));
+#endif
+   if (fileToRelease->m_openCount > 0) {
+      // This thing needs to be terminated IMMEDIATELY.
+      TheAudio->closeAnySamplesUsingFile(fileToRelease->m_audioBuf);
+   }
 
-   // if (fileToRelease->m_file) {
-   //    if (fileToRelease->m_compressed) {
-   //       // Files read in via AIL_decompress_ADPCM must be freed with AIL_mem_free_lock. 
-   //       AIL_mem_free_lock(fileToRelease->m_file);
-   //    } else { 
-   //       // Otherwise, we read it, we own it, blow it away.
-   //       delete [] fileToRelease->m_file;
-   //    }
-   //    fileToRelease->m_file = NULL;
-   //    fileToRelease->m_eventInfo = NULL;
-   // }
+   if (fileToRelease->m_audioBuf) {
+      SDL_free(fileToRelease->m_audioBuf);
+      fileToRelease->m_audioBuf = NULL;
+      fileToRelease->m_eventInfo = NULL;
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool AudioFileCache::freeEnoughSpaceForSample(const OpenAudioFile& sampleThatNeedsSpace)
 {
-   
-   // Int spaceRequired = m_currentlyUsedSize - m_maxSize;
-   // Int runningTotal = 0;
+   DEBUG_ASSERTCRASH(m_currentlyUsedSize >= m_maxSize, ("AudioFileCache::freeEnoughSpaceForSample: Don't need to free space\n"));
+   UnsignedInt spaceRequired {m_currentlyUsedSize - m_maxSize};
+   UnsignedInt runningTotal {0};
 
-   // std::list<AsciiString> filesToClose;
-   // // First, search for any samples that have ref counts of 0. They are low-hanging fruit, and 
-   // // should be considered immediately.
-   // OpenFilesHashIt it;
-   // for (it = m_openFiles.begin(); it != m_openFiles.end(); ++it) {
-   //    if (it->second.m_openCount == 0) {
-   //       // This is said low-hanging fruit.
-   //       filesToClose.push_back(it->first);
+   std::list<AsciiString> filesToClose;
+   // First, search for any samples that have ref counts of 0. They are low-hanging fruit, and 
+   // should be considered immediately.
+   OpenFilesHashIt it;
+   for (it = m_openFiles.begin(); it != m_openFiles.end(); ++it) {
+      if (it->second.m_openCount == 0) {
+         // This is said low-hanging fruit.
+         filesToClose.push_back(it->first);
 
-   //       runningTotal += it->second.m_fileSize;
+         runningTotal += it->second.m_audioLen;
 
-   //       if (runningTotal >= spaceRequired) {
-   //          break;
-   //       }
-   //    }
-   // }
+         if (runningTotal >= spaceRequired) {
+            break;
+         }
+      }
+   }
 
-   // // If we don't have enough space yet, then search through the events who have a count of 1 or more
-   // // and who are lower priority than this sound.
-   // // Mical said that at this point, sounds shouldn't care if other sounds are interruptable or not.
-   // // Kill any files of lower priority necessary to clear our the buffer.
-   // if (runningTotal < spaceRequired) {
-   //    for (it = m_openFiles.begin(); it != m_openFiles.end(); ++it) {
-   //       if (it->second.m_openCount > 0) {
-   //          if (it->second.m_eventInfo->m_priority < sampleThatNeedsSpace.m_eventInfo->m_priority) {
-   //             filesToClose.push_back(it->first);
-   //             runningTotal += it->second.m_fileSize;
+   // If we don't have enough space yet, then search through the events who have a count of 1 or more
+   // and who are lower priority than this sound.
+   // Mical said that at this point, sounds shouldn't care if other sounds are interruptable or not.
+   // Kill any files of lower priority necessary to clear out the buffer.
+   if (runningTotal < spaceRequired) {
+      for (it = m_openFiles.begin(); it != m_openFiles.end(); ++it) {
+         if (it->second.m_openCount > 0) {
+            if (it->second.m_eventInfo->m_data.m_priority < sampleThatNeedsSpace.m_eventInfo->m_data.m_priority) {
+               filesToClose.push_back(it->first);
+               runningTotal += it->second.m_audioLen;
             
-   //             if (runningTotal >= spaceRequired) {
-   //                break;
-   //             }
-   //          }
-   //       }
-   //    }
-   // }
+               if (runningTotal >= spaceRequired) {
+                  break;
+               }
+            }
+         }
+      }
+   }
 
-   // // We weren't able to find enough sounds to truncate. Therefore, this sound is not going to play.
-   // if (runningTotal < spaceRequired) {
-   //    return FALSE;
-   // }
+   // We weren't able to find enough sounds to truncate. Therefore, this sound is not going to play.
+   if (runningTotal < spaceRequired) {
+      return FALSE;
+   }
 
-   // std::list<AsciiString>::iterator ait;
-   // for (ait = filesToClose.begin(); ait != filesToClose.end(); ++ait) {
-   //    OpenFilesHashIt itToErase = m_openFiles.find(*ait);
-   //    if (itToErase != m_openFiles.end()) {
-   //       releaseOpenAudioFile(&itToErase->second);
-   //       m_currentlyUsedSize -= itToErase->second.m_fileSize;
-   //       m_openFiles.erase(itToErase);
-   //    }
-   // }
+   std::list<AsciiString>::iterator ait;
+   for (ait = filesToClose.begin(); ait != filesToClose.end(); ++ait) {
+      OpenFilesHashIt itToErase = m_openFiles.find(*ait);
+      if (itToErase != m_openFiles.end()) {
+         releaseOpenAudioFile(&itToErase->second);
+         m_currentlyUsedSize -= itToErase->second.m_audioLen;
+         m_openFiles.erase(itToErase);
+      }
+   }
 
    return TRUE;
 }
@@ -3309,6 +3424,7 @@ Bool AudioFileCache::freeEnoughSpaceForSample(const OpenAudioFile& sampleThatNee
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::dumpAllAssetsUsed()
 {
+   DEBUG_LOG(("### SdlAudioManager::dumpAllAssetsUsed\n"));
    // if (!TheGlobalData->m_data.m_preloadReport) {
    //    return;
    // }
@@ -3369,144 +3485,3 @@ void SdlAudioManager::dumpAllAssetsUsed()
    // logfile = NULL;
 }
 #endif
-
-#if 0
-/* multiple-streams.c ... */
-
-/*
- * This example code loads two .wav files, puts them an audio streams and
- * binds them for playback, repeating both sounds on loop. This shows several
- * streams mixing into a single playback device.
- *
- * This code is public domain. Feel free to use it for any purpose!
- */
-
- #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
- #include <SDL3/SDL.h>
- #include <SDL3/SDL_main.h>
- 
- /* We will use this renderer to draw into this window every frame. */
- static SDL_Window *window = NULL;
- static SDL_Renderer *renderer = NULL;
- static SDL_AudioDeviceID audio_device = 0;
- 
- /* things that are playing sound (the audiostream itself, plus the original data, so we can refill to loop. */
- typedef struct Sound {
-     Uint8 *wav_data;
-     Uint32 wav_data_len;
-     SDL_AudioStream *stream;
- } Sound;
- 
- static Sound sounds[2];
- 
- static bool init_sound(const char *fname, Sound *sound)
- {
-     bool retval = false;
-     SDL_AudioSpec spec;
-     char *wav_path = NULL;
- 
-     /* Load the .wav files from wherever the app is being run from. */
-     SDL_asprintf(&wav_path, "%s%s", SDL_GetBasePath(), fname);  /* allocate a string of the full file path */
-     if (!SDL_LoadWAV(wav_path, &spec, &sound->wav_data, &sound->wav_data_len)) {
-         SDL_Log("Couldn't load .wav file: %s", SDL_GetError());
-         return false;
-     }
- 
-     /* Create an audio stream. Set the source format to the wav's format (what
-        we'll input), leave the dest format NULL here (it'll change to what the
-        device wants once we bind it). */
-     sound->stream = SDL_CreateAudioStream(&spec, NULL);
-     if (!sound->stream) {
-         SDL_Log("Couldn't create audio stream: %s", SDL_GetError());
-     } else if (!SDL_BindAudioStream(audio_device, sound->stream)) {  /* once bound, it'll start playing when there is data available! */
-         SDL_Log("Failed to bind '%s' stream to device: %s", fname, SDL_GetError());
-     } else {
-         retval = true;  /* success! */
-     }
- 
-     SDL_free(wav_path);  /* done with this string. */
-     return retval;
- }
- 
- 
- /* This function runs once at startup. */
- SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
- {
- 
-     SDL_SetAppMetadata("Example Audio Multiple Streams", "1.0", "com.example.audio-multiple-streams");
- 
-     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
-         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
-         return SDL_APP_FAILURE;
-     }
- 
-     if (!SDL_CreateWindowAndRenderer("examples/audio/multiple-streams", 640, 480, 0, &window, &renderer)) {
-         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
-         return SDL_APP_FAILURE;
-     }
- 
-     /* open the default audio device in whatever format it prefers; our audio streams will adjust to it. */
-     audio_device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-     if (audio_device == 0) {
-         SDL_Log("Couldn't open audio device: %s", SDL_GetError());
-         return SDL_APP_FAILURE;
-     }
- 
-     if (!init_sound("sample.wav", &sounds[0])) {
-         return SDL_APP_FAILURE;
-     } else if (!init_sound("sword.wav", &sounds[1])) {
-         return SDL_APP_FAILURE;
-     }
- 
-     return SDL_APP_CONTINUE;  /* carry on with the program! */
- }
- 
- /* This function runs when a new event (mouse input, keypresses, etc) occurs. */
- SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
- {
-     if (event->type == SDL_EVENT_QUIT) {
-         return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */
-     }
-     return SDL_APP_CONTINUE;  /* carry on with the program! */
- }
- 
- /* This function runs once per frame, and is the heart of the program. */
- SDL_AppResult SDL_AppIterate(void *appstate)
- {
-     int i;
- 
-     for (i = 0; i < SDL_arraysize(sounds); i++) {
-         /* If less than a full copy of the audio is queued for playback, put another copy in there.
-            This is overkill, but easy when lots of RAM is cheap. One could be more careful and
-            queue less at a time, as long as the stream doesn't run dry.  */
-         if (SDL_GetAudioStreamQueued(sounds[i].stream) < ((int) sounds[i].wav_data_len)) {
-             SDL_PutAudioStreamData(sounds[i].stream, sounds[i].wav_data, (int) sounds[i].wav_data_len);
-         }
-     }
- 
-     /* just blank the screen. */
-     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-     SDL_RenderClear(renderer);
-     SDL_RenderPresent(renderer);
- 
-     return SDL_APP_CONTINUE;  /* carry on with the program! */
- }
- 
- /* This function runs once at shutdown. */
- void SDL_AppQuit(void *appstate, SDL_AppResult result)
- {
-     int i;
- 
-     SDL_CloseAudioDevice(audio_device);
- 
-     for (i = 0; i < SDL_arraysize(sounds); i++) {
-         if (sounds[i].stream) {
-             SDL_DestroyAudioStream(sounds[i].stream);
-         }
-         SDL_free(sounds[i].wav_data);
-     }
- 
-     /* SDL will clean up the window/renderer for us. */
- }
- 
- #endif

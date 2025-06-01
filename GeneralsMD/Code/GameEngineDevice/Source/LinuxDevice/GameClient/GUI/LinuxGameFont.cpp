@@ -86,6 +86,7 @@ Bool LinuxFontLibrary::loadFontData(GameFont *font)
          fontData = TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf", font->pointSize);
       }
    }
+   // FIXME: Credits fonts: Requests Arial 16 point Bold and Arial 22 point, but screen sizes are about double that.
 
    if( fontData == NULL )
    {

@@ -233,7 +233,7 @@ void AudioManager::init()
 	// do the miscellaneous sound files last so that we find the audioeventrts associated with the events.
 	ini.load( AsciiString( "Data\\INI\\MiscAudio.ini" ), INI_LOAD_OVERWRITE, NULL);
 	
-	// determine if one of the music tracks exists. Since their now BIGd, one implies all.
+	// determine if one of the music tracks exists. Since they're now BIGd, one implies all.
 	// If they don't exist, then attempt to load them from the CD. 
 // 	if (!isMusicAlreadyLoaded()) 
 // 	{
@@ -419,7 +419,9 @@ AudioHandle AudioManager::addAudioEvent(const AudioEventRTS *eventToAdd)
 	}
 
 #ifdef INTENSIVE_AUDIO_DEBUG
-	DEBUG_LOG(("AUDIO (%d): Received addAudioEvent('%s')", TheGameLogic->getFrame(), eventToAdd->getEventName().str()));
+	// FIXME: TheGameLogic
+	// DEBUG_LOG(("AUDIO (%d): Received addAudioEvent('%s')\n", TheGameLogic->getFrame(), eventToAdd->getEventName().str()));
+	DEBUG_LOG(("AUDIO (%d): Received addAudioEvent('%s')\n", -1, eventToAdd->getEventName().str()));
 #endif
 	if (!eventToAdd->getAudioEventInfo()) {
 		getInfoForAudioEvent(eventToAdd);
@@ -1088,7 +1090,7 @@ Bool AudioManager::shouldPlayLocally(const AudioEventRTS *audioEvent)
 //-------------------------------------------------------------------------------------------------
 AudioHandle AudioManager::allocateNewHandle( void )
 {
-	// note, intenionally a post increment rather than a pre increment.
+	// note, intentionally a post increment rather than a pre increment.
 	return theAudioHandlePool++;
 }
 
@@ -1170,4 +1172,3 @@ void parseSpeakerType( INI *ini, void *instance, void *store, const void* userDa
 
 	(*(UnsignedInt*)store) = TheAudio->translateSpeakerTypeToUnsignedInt(str);
 }
-

@@ -280,7 +280,7 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 			return true;
 		}
 #ifdef INTENSIVE_AUDIO_DEBUG
-		DEBUG_LOG(("- %d samples playing, %d samples available", m_numPlaying3DSamples, m_num3DSamples));
+		DEBUG_LOG(("- 3D: %d samples playing, %d samples available\n", m_numPlaying3DSamples, m_num3DSamples));
 #endif
 	} 
 	else 
@@ -290,6 +290,9 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 		{
 			return true;
 		}
+#ifdef INTENSIVE_AUDIO_DEBUG
+		DEBUG_LOG(("- 2D: %d samples playing, %d samples available\n", m_numPlaying2DSamples, m_num2DSamples));
+#endif
 	}
 
 	if (TheAudio->isPlayingLowerPriority(event)) 
@@ -313,7 +316,7 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 		}
 	}
 #ifdef INTENSIVE_AUDIO_DEBUG
-	DEBUG_LOG(("culled due to unavailable channels"));
+	DEBUG_LOG(("culled due to unavailable channels\n"));
 #endif
 	return false;
 }

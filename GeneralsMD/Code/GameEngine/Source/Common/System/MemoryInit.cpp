@@ -167,6 +167,7 @@ static PoolSizeRec sizes[] =
 	{ "AssistedTargetingUpdate", 32, 32 },
 	{ "AudioEventInfo", 4096, 64 },
 	{ "AudioRequest", 256, 8 },
+	{ "PlayingAudio", 32, 8 },
 	{ "AutoHealBehavior", 1024, 256 },
 	{ "WeaponBonusUpdate", 16, 16 },
 	{ "GrantStealthBehavior", 4096, 32 },
@@ -189,7 +190,7 @@ static PoolSizeRec sizes[] =
 	{ "DeliverPayloadAIUpdate", 32, 32 },
 	{ "DeletionUpdate", 128, 32 },
 	{ "SmartBombTargetHomingUpdate", 8, 8 },
-  { "DynamicAudioEventInfo", 16, 256 }, // Note: some levels have none, some have lots. Since all are allocated at level load time, we can set this low for the levels with none.
+	{ "DynamicAudioEventInfo", 16, 256 }, // Note: some levels have none, some have lots. Since all are allocated at level load time, we can set this low for the levels with none.
 	{ "HackInternetStateMachine", 32, 32 },
 	{ "HackInternetAIUpdate", 32, 32 },
 	{ "MissileAIUpdate", 512, 32 },

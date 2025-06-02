@@ -609,7 +609,8 @@ private: \
 		DEBUG_ASSERTCRASH(The##ARGCLASS##Pool->getAllocationSize() >= sizeof(ARGCLASS), ("Pool \"%s\" is too small for this class (currently %d, need %d)\n", ARGPOOLNAME, The##ARGCLASS##Pool->getAllocationSize(), sizeof(ARGCLASS))); \
 		DEBUG_ASSERTCRASH(The##ARGCLASS##Pool->getAllocationSize() <= sizeof(ARGCLASS)+MEMORY_POOL_OBJECT_ALLOCATION_SLOP, ("Pool \"%s\" is too large for this class (currently %d, need %d)\n", ARGPOOLNAME, The##ARGCLASS##Pool->getAllocationSize(), sizeof(ARGCLASS))); \
 		return The##ARGCLASS##Pool; \
-	} 
+	} \
+public: /* include this line at the end to reset visibility to 'public' */
 
 // ----------------------------------------------------------------------------
 #define GCMP_CREATE(ARGCLASS, ARGPOOLNAME, ARGINITIAL, ARGOVERFLOW) \
@@ -628,8 +629,8 @@ private: \
 		DEBUG_ASSERTCRASH(The##ARGCLASS##Pool->getAllocationSize() >= sizeof(ARGCLASS), ("Pool \"%s\" is too small for this class (currently %d, need %d)\n", ARGPOOLNAME, The##ARGCLASS##Pool->getAllocationSize(), sizeof(ARGCLASS))); \
 		DEBUG_ASSERTCRASH(The##ARGCLASS##Pool->getAllocationSize() <= sizeof(ARGCLASS)+MEMORY_POOL_OBJECT_ALLOCATION_SLOP, ("Pool \"%s\" is too large for this class (currently %d, need %d)\n", ARGPOOLNAME, The##ARGCLASS##Pool->getAllocationSize(), sizeof(ARGCLASS))); \
 		return The##ARGCLASS##Pool; \
-	} 
-	
+	}
+
 // ----------------------------------------------------------------------------
 #define MEMORY_POOL_GLUE_WITHOUT_GCMP(ARGCLASS) \
 public: \
@@ -682,7 +683,7 @@ private: \
 	{ \
 		return ARGCLASS::getClassMemoryPool(); \
 	} \
-public: /* include this line at the end to reset visibility to 'public' */ 
+public: /* include this line at the end to reset visibility to 'public' */
 
 // ----------------------------------------------------------------------------
 #define MEMORY_POOL_GLUE(ARGCLASS, ARGPOOLNAME) \

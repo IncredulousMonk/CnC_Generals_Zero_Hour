@@ -20,6 +20,7 @@
 // Matthew Gill, April 2025
 //////////////////////////////////////////////////
 
+#include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 #include "Lib/BaseType.h"
 #include "LinuxDevice/Audio/SdlAudioManager.h"
 
@@ -1022,7 +1023,7 @@ void SdlAudioManager::releaseBuffer(UnsignedByte* buffer)
 //-------------------------------------------------------------------------------------------------
 PlayingAudio *SdlAudioManager::allocatePlayingAudio( void )
 {
-   PlayingAudio *aud = NEW PlayingAudio;  // poolify
+   PlayingAudio *aud = newInstance(PlayingAudio);
    aud->m_status = PS_Playing;
    return aud;
 }
@@ -1099,7 +1100,7 @@ void SdlAudioManager::releasePlayingAudio(PlayingAudio* release)
    if (release->m_cleanupAudioEventRTS) {
       releaseAudioEventRTS(release->m_audioEventRTS);
    }
-   delete release;
+   release->deleteInstance();
    release = NULL;
 }
 

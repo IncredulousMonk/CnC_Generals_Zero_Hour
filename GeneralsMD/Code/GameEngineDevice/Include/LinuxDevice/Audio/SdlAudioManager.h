@@ -63,8 +63,11 @@ enum PlayingWhich
    PW_INVALID
 };
 
-struct PlayingAudio
+struct PlayingAudio: public MemoryPoolObject
 {
+   MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(PlayingAudio, "PlayingAudio")
+
+public:
    HSAMPLE m_sample {};
    H3DSAMPLE m_3DSample {};
    HSTREAM m_stream {};
@@ -97,17 +100,17 @@ struct PlayingAudio
       m_framesFaded(0)
    { }
 
-   ~PlayingAudio()
-   {
-      if (m_streamFileStream) {
-         delete m_streamFileStream;
-      }
-   }
-
    // No copies allowed!
    PlayingAudio(const PlayingAudio&) = delete;
    PlayingAudio& operator=(const PlayingAudio&) = delete;
 };
+
+inline PlayingAudio::~PlayingAudio()
+{
+   if (m_streamFileStream) {
+      delete m_streamFileStream;
+   }
+}
 
 struct ProviderInfo
 {

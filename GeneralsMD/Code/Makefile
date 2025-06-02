@@ -161,6 +161,7 @@ ENGINE_OBJS = $(GEO)/CommandLine.o $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/
    $(GEO)/UserPreferences.o $(GEO)/Version.o \
 $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
 $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
+$(GEO)/Science.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o $(GEO)/GameMemory.o \
    $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o \
 $(GEO)/Color.o $(GEO)/Credits.o $(GEO)/Display.o $(GEO)/DisplayString.o $(GEO)/DisplayStringManager.o $(GEO)/DrawGroupInfo.o $(GEO)/GameClient.o $(GEO)/GameClientDispatch.o $(GEO)/GameText.o \
@@ -259,6 +260,9 @@ $(GEO)/INIWater.o: $(GES)/Common/INI/INIWater.cpp
 # --- GameEngine/Source/Common/RTS ---
 #$(GEO)/PlayerList.o: $(GES)/Common/RTS/PlayerList.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PlayerList.o $(GES)/Common/RTS/PlayerList.cpp
+
+$(GEO)/Science.o: $(GES)/Common/RTS/Science.cpp GameEngine/Include/Common/Science.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Science.o $(GES)/Common/RTS/Science.cpp
 
 # --- GameEngine/Source/Common/System ---
 $(GEO)/ArchiveFile.o: $(GES)/Common/System/ArchiveFile.cpp

@@ -30,7 +30,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/INI.h"
-#include "Common/Player.h"
+// #include "Common/Player.h"
 #include "Common/Science.h"
 
 ScienceStore* TheScienceStore = NULL;
@@ -116,7 +116,7 @@ std::vector<AsciiString> ScienceStore::friend_getScienceNames() const
 	for (ScienceInfoVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
 	{
 		const ScienceInfo* si = (const ScienceInfo*)(*it)->getFinalOverride();
-		NameKeyType nk = (NameKeyType)(si->m_science);
+		NameKeyType nk = (NameKeyType)(si->m_ini.m_science);
 		v.push_back(TheNameKeyGenerator->keyToName(nk));
 	}
 	return v;
@@ -125,16 +125,16 @@ std::vector<AsciiString> ScienceStore::friend_getScienceNames() const
 //-----------------------------------------------------------------------------
 void ScienceInfo::addRootSciences(ScienceVec& v) const
 {
-	if (m_prereqSciences.empty())
+	if (m_ini.m_prereqSciences.empty())
 	{
 		// we're a root. add ourselves.
-		if (std::find(v.begin(), v.end(), m_science) == v.end())
-			v.push_back(m_science);
+		if (std::find(v.begin(), v.end(), m_ini.m_science) == v.end())
+			v.push_back(m_ini.m_science);
 	}
 	else
 	{
 		// we're not a root. add the roots of all our prereqs.
-		for (ScienceVec::const_iterator it = m_prereqSciences.begin(); it != m_prereqSciences.end(); ++it)
+		for (ScienceVec::const_iterator it = m_ini.m_prereqSciences.begin(); it != m_ini.m_prereqSciences.end(); ++it)
 		{
 			const ScienceInfo* si = TheScienceStore->findScienceInfo(*it);
 			if (si)
@@ -150,7 +150,7 @@ const ScienceInfo* ScienceStore::findScienceInfo(ScienceType st) const
 	for (ScienceInfoVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
 	{
 		const ScienceInfo* si = (const ScienceInfo*)(*it)->getFinalOverride();
-		if (si->m_science == st)
+		if (si->m_ini.m_science == st)
 		{
 			return si;
 		}
@@ -170,11 +170,11 @@ const ScienceInfo* ScienceStore::findScienceInfo(ScienceType st) const
 
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "PrerequisiteSciences", INI::parseScienceVector, NULL, offsetof( ScienceInfo, m_prereqSciences ) },
-			{ "SciencePurchasePointCost", INI::parseInt, NULL, offsetof( ScienceInfo, m_sciencePurchasePointCost ) },
-			{ "IsGrantable", INI::parseBool, NULL, offsetof( ScienceInfo, m_grantable ) },
-			{ "DisplayName", INI::parseAndTranslateLabel, NULL, offsetof( ScienceInfo, m_name) },
-			{ "Description", INI::parseAndTranslateLabel, NULL, offsetof( ScienceInfo, m_description) },
+			{ "PrerequisiteSciences", INI::parseScienceVector, NULL, offsetof( ScienceInfo::IniData, m_prereqSciences ) },
+			{ "SciencePurchasePointCost", INI::parseInt, NULL, offsetof( ScienceInfo::IniData, m_sciencePurchasePointCost ) },
+			{ "IsGrantable", INI::parseBool, NULL, offsetof( ScienceInfo::IniData, m_grantable ) },
+			{ "DisplayName", INI::parseAndTranslateLabel, NULL, offsetof( ScienceInfo::IniData, m_name) },
+			{ "Description", INI::parseAndTranslateLabel, NULL, offsetof( ScienceInfo::IniData, m_description) },
 			{ 0, 0, 0, 0 }
 		};
 
@@ -184,7 +184,7 @@ const ScienceInfo* ScienceStore::findScienceInfo(ScienceType st) const
 		for (ScienceInfoVec::iterator it = TheScienceStore->m_sciences.begin(); it != TheScienceStore->m_sciences.end(); ++it)
 		{
 			// note that we don't use getFinalOverride here. this is correct and as-desired.
-			if ((*it)->m_science == st)
+			if ((*it)->m_ini.m_science == st)
 			{
 				info = *it;
 				break;
@@ -227,9 +227,9 @@ const ScienceInfo* ScienceStore::findScienceInfo(ScienceType st) const
 			TheScienceStore->m_sciences.push_back(info);
 		}
 
-		ini->initFromINI(info, myFieldParse);
-		info->m_science = st;
-		info->addRootSciences(info->m_rootSciences);
+		ini->initFromINI(&info->m_ini, myFieldParse);
+		info->m_ini.m_science = st;
+		info->addRootSciences(info->m_ini.m_rootSciences);
 	}
 }
 
@@ -239,7 +239,7 @@ Int ScienceStore::getSciencePurchaseCost(ScienceType st) const
 	const ScienceInfo* si = findScienceInfo(st);
 	if (si)
 	{
-		return si->m_sciencePurchasePointCost;
+		return si->m_ini.m_sciencePurchasePointCost;
 	}
 	else
 	{
@@ -253,7 +253,7 @@ Bool ScienceStore::isScienceGrantable(ScienceType st) const
 	const ScienceInfo* si = findScienceInfo(st);
 	if (si)
 	{
-		return si->m_grantable;
+		return si->m_ini.m_grantable;
 	}
 	else
 	{
@@ -267,8 +267,8 @@ Bool ScienceStore::getNameAndDescription(ScienceType st, UnicodeString& name, Un
 	const ScienceInfo* si = findScienceInfo(st);
 	if (si)
 	{
-		name = si->m_name;
-		description = si->m_description;
+		name = si->m_ini.m_name;
+		description = si->m_ini.m_description;
 		return true;
 	}
 	else
@@ -280,43 +280,51 @@ Bool ScienceStore::getNameAndDescription(ScienceType st, UnicodeString& name, Un
 //-----------------------------------------------------------------------------
 Bool ScienceStore::playerHasPrereqsForScience(const Player* player, ScienceType st) const
 {
-	const ScienceInfo* si = findScienceInfo(st);
-	if (si)
-	{
-		for (ScienceVec::const_iterator it2 = si->m_prereqSciences.begin(); it2 != si->m_prereqSciences.end(); ++it2)
-		{
-			if (!player->hasScience(*it2))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	else
-	{
+	(void) player;
+	(void) st;
+	DEBUG_CRASH(("ScienceStore::playerHasPrereqsForScience not yet implemented"));
+	// FIXME: Player
+	// const ScienceInfo* si = findScienceInfo(st);
+	// if (si)
+	// {
+	// 	for (ScienceVec::const_iterator it2 = si->m_ini.m_prereqSciences.begin(); it2 != si->m_ini.m_prereqSciences.end(); ++it2)
+	// 	{
+	// 		if (!player->hasScience(*it2))
+	// 		{
+	// 			return false;
+	// 		}
+	// 	}
+	// 	return true;
+	// }
+	// else
+	// {
 		return false;
-	}
+	// }
 }
 
 //-----------------------------------------------------------------------------
 Bool ScienceStore::playerHasRootPrereqsForScience(const Player* player, ScienceType st) const
 {
-	const ScienceInfo* si = findScienceInfo(st);
-	if (si)
-	{
-		for (ScienceVec::const_iterator it2 = si->m_rootSciences.begin(); it2 != si->m_rootSciences.end(); ++it2)
-		{
-			if (!player->hasScience(*it2))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	else
-	{
+	(void) player;
+	(void) st;
+	DEBUG_CRASH(("ScienceStore::playerHasRootPrereqsForScience not yet implemented"));
+	// FIXME: Player
+	// const ScienceInfo* si = findScienceInfo(st);
+	// if (si)
+	// {
+	// 	for (ScienceVec::const_iterator it2 = si->m_ini.m_rootSciences.begin(); it2 != si->m_ini.m_rootSciences.end(); ++it2)
+	// 	{
+	// 		if (!player->hasScience(*it2))
+	// 		{
+	// 			return false;
+	// 		}
+	// 	}
+	// 	return true;
+	// }
+	// else
+	// {
 		return false;
-	}
+	// }
 }
 
 //-----------------------------------------------------------------------------
@@ -324,32 +332,37 @@ Bool ScienceStore::playerHasRootPrereqsForScience(const Player* player, ScienceT
 	but currently lacks prereqs or points for. (either might be an empty list) */
 void ScienceStore::getPurchasableSciences(const Player* player, ScienceVec& purchasable, ScienceVec& potentiallyPurchasable) const
 {
-	purchasable.clear();
-	potentiallyPurchasable.clear();
-	for (ScienceInfoVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
-	{
-		const ScienceInfo* si = (const ScienceInfo*)(*it)->getFinalOverride();
+	(void) player;
+	(void) purchasable;
+	(void) potentiallyPurchasable;
+	DEBUG_CRASH(("ScienceStore::getPurchasableSciences not yet implemented"));
+	// FIXME: Player
+	// purchasable.clear();
+	// potentiallyPurchasable.clear();
+	// for (ScienceInfoVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
+	// {
+	// 	const ScienceInfo* si = (const ScienceInfo*)(*it)->getFinalOverride();
 		
-		if (si->m_sciencePurchasePointCost == 0)
-		{
-			// 0 means "cannot be purchased"
-			continue;
-		}
+	// 	if (si->m_ini.m_sciencePurchasePointCost == 0)
+	// 	{
+	// 		// 0 means "cannot be purchased"
+	// 		continue;
+	// 	}
 
-		if (player->hasScience(si->m_science))
-		{
-			continue;
-		}
+	// 	if (player->hasScience(si->m_ini.m_science))
+	// 	{
+	// 		continue;
+	// 	}
 
-		if (playerHasPrereqsForScience(player, si->m_science))
-		{
-			purchasable.push_back(si->m_science);
-		}
-		else if (playerHasRootPrereqsForScience(player, si->m_science))
-		{
-			potentiallyPurchasable.push_back(si->m_science);
-		}
-	}
+	// 	if (playerHasPrereqsForScience(player, si->m_ini.m_science))
+	// 	{
+	// 		purchasable.push_back(si->m_ini.m_science);
+	// 	}
+	// 	else if (playerHasRootPrereqsForScience(player, si->m_ini.m_science))
+	// 	{
+	// 		potentiallyPurchasable.push_back(si->m_ini.m_science);
+	// 	}
+	// }
 }
 
 //-----------------------------------------------------------------------------

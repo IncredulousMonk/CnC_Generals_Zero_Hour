@@ -56,18 +56,21 @@ class ScienceInfo : public Overridable
 	friend class ScienceStore;
 
 private:
-	ScienceType						m_science {};
-	UnicodeString					m_name {};
-	UnicodeString					m_description {};
-	ScienceVec						m_rootSciences {};			// this is calced at runtime, NOT read from INI
-	ScienceVec						m_prereqSciences {};
-	Int										m_sciencePurchasePointCost {};
-	Bool									m_grantable {};
+	// MG: Cannot apply offsetof to ScienceInfo, so had to move data into an embedded struct.
+	struct IniData
+	{
+		ScienceType		m_science {SCIENCE_INVALID};
+		UnicodeString	m_name {};
+		UnicodeString	m_description {};
+		ScienceVec		m_rootSciences {};			// this is calced at runtime, NOT read from INI
+		ScienceVec		m_prereqSciences {};
+		Int				m_sciencePurchasePointCost {0};	// 0 means "cannot be purchased"
+		Bool			m_grantable {true};
+	};
 
-	ScienceInfo() :
-		m_science(SCIENCE_INVALID),
-		m_sciencePurchasePointCost(0),	// 0 means "cannot be purchased"
-		m_grantable(true)
+	IniData m_ini {};
+
+	ScienceInfo()
 	{
 	}
 
@@ -130,7 +133,7 @@ private:
 	const ScienceInfo* findScienceInfo(ScienceType st) const;
 
 	typedef std::vector<ScienceInfo*> ScienceInfoVec;
-	ScienceInfoVec m_sciences;
+	ScienceInfoVec m_sciences {};
 };
 
 extern ScienceStore* TheScienceStore;

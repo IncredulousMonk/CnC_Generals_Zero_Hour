@@ -50,7 +50,7 @@
 // #include "GameClient/Anim2D.h"
 // #include "GameClient/Color.h"
 // #include "GameClient/FXList.h"
-// #include "GameClient/GameText.h"
+#include "GameClient/GameText.h"
 #include "GameClient/Image.h"
 // #include "GameClient/ParticleSys.h"
 // #include "GameLogic/Armor.h"
@@ -130,7 +130,7 @@ static const BlockParse theTypeTable[] =
 // 	{ "ParticleSystem",			INI::parseParticleSystemDefinition },
 // 	{ "PlayerTemplate",			INI::parsePlayerTemplateDefinition },
 // 	{ "Road",								INI::parseTerrainRoadDefinition },
-// 	{ "Science",						INI::parseScienceDefinition },
+	{ "Science",						INI::parseScienceDefinition },
 // 	{ "Rank",								INI::parseRankDefinition },
 // 	{ "SpecialPower",				INI::parseSpecialPowerDefinition },
 	{ "ShellMenuScheme",		INI::parseShellMenuSchemeDefinition },
@@ -709,20 +709,17 @@ void INI::parseAsciiStringVectorAppend( INI* ini, void * /*instance*/, void *sto
 //-------------------------------------------------------------------------------------------------
 /* static */void INI::parseScienceVector( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseScienceVector not yet implemented"));
-	// ScienceVec* asv = (ScienceVec*)store;
-	// asv->clear();
-	// for (const char *token = ini->getNextTokenOrNull(); token != NULL; token = ini->getNextTokenOrNull())
-	// {
-	// 	if (strcasecmp(token, "None") == 0)
-	// 	{
-	// 		asv->clear();
-	// 		return;
-	// 	}
-	// 	asv->push_back(INI::scanScience( token ));
-	// }
+	ScienceVec* asv = (ScienceVec*)store;
+	asv->clear();
+	for (const char *token = ini->getNextTokenOrNull(); token != NULL; token = ini->getNextTokenOrNull())
+	{
+		if (strcasecmp(token, "None") == 0)
+		{
+			asv->clear();
+			return;
+		}
+		asv->push_back(INI::scanScience( token ));
+	}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -823,19 +820,16 @@ AsciiString INI::getNextAsciiString()
 //-------------------------------------------------------------------------------------------------
 void INI::parseAndTranslateLabel( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseAndTranslateLabel not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// // translate
-	// UnicodeString translated = TheGameText->fetch( token );
-	// if( translated.isEmpty() )
-	// 	throw INI_INVALID_DATA;
+	// translate
+	UnicodeString translated = TheGameText->fetch( token );
+	if( translated.isEmpty() )
+		throw INI_INVALID_DATA;
 
-	// // save the translated text
-	// UnicodeString *theString = (UnicodeString *)store;
-	// theString->set( translated.str() );
+	// save the translated text
+	UnicodeString *theString = (UnicodeString *)store;
+	theString->set( translated.str() );
 
 }  // end parseAndTranslateLabel
 
@@ -1633,10 +1627,7 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 //-------------------------------------------------------------------------------------------------
 /*static*/ ScienceType INI::scanScience(const char* token)
 {
-	(void) token;
-	DEBUG_CRASH(("scanScience not yet implemented"));
-	return SCIENCE_INVALID;
-	// return TheScienceStore->friend_lookupScience( token );
+	return TheScienceStore->friend_lookupScience( token );
 }
 
 //-------------------------------------------------------------------------------------------------

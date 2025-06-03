@@ -157,11 +157,12 @@ $(GEDO)/LinuxMOTD.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMOTD.cpp
 
 # ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/CommandLine.o $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o \
-   $(GEO)/UserPreferences.o $(GEO)/Version.o \
+ENGINE_OBJS = $(GEO)/CommandLine.o $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/MultiplayerSettings.o $(GEO)/NameKeyGenerator.o \
+   $(GEO)/RandomValue.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
 $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
-$(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
-$(GEO)/Science.o \
+$(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o $(GEO)/INIMultiplayer.o \
+   $(GEO)/INIVideo.o $(GEO)/INIWater.o \
+$(GEO)/Money.o $(GEO)/Science.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o $(GEO)/GameMemory.o \
    $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o \
 $(GEO)/Color.o $(GEO)/Credits.o $(GEO)/Display.o $(GEO)/DisplayString.o $(GEO)/DisplayStringManager.o $(GEO)/DrawGroupInfo.o $(GEO)/GameClient.o $(GEO)/GameClientDispatch.o $(GEO)/GameText.o \
@@ -174,7 +175,8 @@ $(GEO)/ExtendedMessageBox.o $(GEO)/MessageBox.o \
 $(GEO)/CreditsMenu.o $(GEO)/MainMenu.o $(GEO)/OptionsMenu.o \
 $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
-$(GEO)/Anim2D.o $(GEO)/Image.o
+$(GEO)/Anim2D.o $(GEO)/Image.o \
+$(GEO)/Chat.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
@@ -200,6 +202,9 @@ $(GEO)/Language.o: $(GES)/Common/Language.cpp GameEngine/Include/Common/Language
 
 $(GEO)/MessageStream.o: $(GES)/Common/MessageStream.cpp GameEngine/Include/Common/MessageStream.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MessageStream.o $(GES)/Common/MessageStream.cpp
+
+$(GEO)/MultiplayerSettings.o: $(GES)/Common/MultiplayerSettings.cpp GameEngine/Include/Common/MultiplayerSettings.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MultiplayerSettings.o $(GES)/Common/MultiplayerSettings.cpp
 
 $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/NameKeyGenerator.o $(GES)/Common/NameKeyGenerator.cpp
@@ -251,6 +256,9 @@ $(GEO)/INIMappedImage.o: $(GES)/Common/INI/INIMappedImage.cpp
 $(GEO)/INIMiscAudio.o: $(GES)/Common/INI/INIMiscAudio.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIMiscAudio.o $(GES)/Common/INI/INIMiscAudio.cpp
 
+$(GEO)/INIMultiplayer.o: $(GES)/Common/INI/INIMultiplayer.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIMultiplayer.o $(GES)/Common/INI/INIMultiplayer.cpp
+
 $(GEO)/INIVideo.o: $(GES)/Common/INI/INIVideo.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIVideo.o $(GES)/Common/INI/INIVideo.cpp
 
@@ -258,6 +266,9 @@ $(GEO)/INIWater.o: $(GES)/Common/INI/INIWater.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIWater.o $(GES)/Common/INI/INIWater.cpp
 
 # --- GameEngine/Source/Common/RTS ---
+$(GEO)/Money.o: $(GES)/Common/RTS/Money.cpp GameEngine/Include/Common/Money.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Money.o $(GES)/Common/RTS/Money.cpp
+
 #$(GEO)/PlayerList.o: $(GES)/Common/RTS/PlayerList.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PlayerList.o $(GES)/Common/RTS/PlayerList.cpp
 
@@ -483,6 +494,10 @@ $(GEO)/Anim2D.o: $(GES)/GameClient/System/Anim2D.cpp
 
 $(GEO)/Image.o: $(GES)/GameClient/System/Image.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Image.o $(GES)/GameClient/System/Image.cpp
+
+# --- GameEngine/Source/GameNetwork/GameSpy ---
+$(GEO)/Chat.o: $(GES)/GameNetwork/GameSpy/Chat.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Chat.o $(GES)/GameNetwork/GameSpy/Chat.cpp
 
 
 run: $(PROG)

@@ -34,14 +34,46 @@
 #include "GameClient/GadgetListBox.h"
 #include "GameClient/LanguageFilter.h"
 #include "GameClient/GameWindowManager.h"
-#include "GameNetwork/GameSpy/PeerDefsImplementation.h"
-#include "GameNetwork/GameSpy/PeerThread.h"
+// #include "GameNetwork/GameSpy/PeerDefsImplementation.h"
+// #include "GameNetwork/GameSpy/PeerThread.h"
 #include "GameClient/InGameUI.h"
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
+
+// FIXME: Enum copied from PeerDefs.h
+enum GameSpyColors {
+	GSCOLOR_DEFAULT = 0,
+	GSCOLOR_CURRENTROOM,
+	GSCOLOR_ROOM,
+	GSCOLOR_GAME,
+	GSCOLOR_GAME_FULL,
+	GSCOLOR_GAME_CRCMISMATCH,
+	GSCOLOR_PLAYER_NORMAL,
+	GSCOLOR_PLAYER_OWNER,
+	GSCOLOR_PLAYER_BUDDY,
+	GSCOLOR_PLAYER_SELF,
+	GSCOLOR_PLAYER_IGNORED,
+	GSCOLOR_CHAT_NORMAL,
+	GSCOLOR_CHAT_EMOTE,
+	GSCOLOR_CHAT_OWNER,
+	GSCOLOR_CHAT_OWNER_EMOTE,
+	GSCOLOR_CHAT_PRIVATE,
+	GSCOLOR_CHAT_PRIVATE_EMOTE,
+	GSCOLOR_CHAT_PRIVATE_OWNER,
+	GSCOLOR_CHAT_PRIVATE_OWNER_EMOTE,
+	GSCOLOR_CHAT_BUDDY,
+	GSCOLOR_CHAT_SELF,
+	GSCOLOR_ACCEPT_TRUE,
+	GSCOLOR_ACCEPT_FALSE,
+	GSCOLOR_MAP_SELECTED,
+	GSCOLOR_MAP_UNSELECTED,
+	GSCOLOR_MOTD,
+	GSCOLOR_MOTD_HEADING,
+	GSCOLOR_MAX
+};
 
 #define OFFSET(x) (sizeof(Int) * (x))
 static const FieldParse GameSpyColorFieldParse[] = 
@@ -79,13 +111,6 @@ static const FieldParse GameSpyColorFieldParse[] =
 
 };
 
-void INI::parseOnlineChatColorDefinition( INI* ini )
-{
-	// parse the ini definition
-	ini->initFromINI( GameSpyColor, GameSpyColorFieldParse );
-}
-
-
 Color GameSpyColor[GSCOLOR_MAX] =
 {
 	GameMakeColor(255,255,255,255),	// GSCOLOR_DEFAULT
@@ -117,6 +142,15 @@ Color GameSpyColor[GSCOLOR_MAX] =
 	GameMakeColor(255,255,  0,255),	// GSCOLOR_MOTD_HEADING,
 };
 
+void INI::parseOnlineChatColorDefinition( INI* ini )
+{
+	// parse the ini definition
+	ini->initFromINI( GameSpyColor, GameSpyColorFieldParse );
+}
+
+
+// FIXME: Figure out what to do about GameSpy stuff.
+#if 0
 Bool GameSpyInfo::sendChat( UnicodeString message, Bool isAction, GameWindow *playerListbox )
 {
 	static UnicodeString s_prevMsg = UnicodeString::TheEmptyString;  //stop spam before it happens
@@ -345,4 +379,4 @@ void GameSpyInfo::unregisterTextWindow( GameWindow *win )
 {
 	m_textWindows.erase(win);
 }
-
+#endif

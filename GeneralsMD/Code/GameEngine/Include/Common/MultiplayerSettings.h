@@ -57,14 +57,14 @@ public:
 	void setColor( RGBColor rgb );
 	void setNightColor( RGBColor rgb );
 
-	MultiplayerColorDefinition * operator =(const MultiplayerColorDefinition& other);
+	MultiplayerColorDefinition& operator =(const MultiplayerColorDefinition& other);
 
 private:
-	AsciiString m_tooltipName;	///< tooltip name for color combo box (AsciiString to pass to TheGameText->fetch())
-	RGBColor m_rgbValue;						///< RGB color value
-	Color m_color;
-	RGBColor m_rgbValueNight;						///< RGB color value
-	Color m_colorNight;
+	AsciiString m_tooltipName {};	///< tooltip name for color combo box (AsciiString to pass to TheGameText->fetch())
+	RGBColor m_rgbValue {};			///< RGB color value
+	Color m_color {};
+	RGBColor m_rgbValueNight {};	///< RGB color value
+	Color m_colorNight {};
 };
 
 typedef std::map<Int, MultiplayerColorDefinition> MultiplayerColorList;
@@ -95,12 +95,12 @@ public:
 	MultiplayerColorDefinition * findMultiplayerColorDefinitionByName(AsciiString name);
 	MultiplayerColorDefinition * newMultiplayerColorDefinition(AsciiString name);
 
-	inline Int getStartCountdownTimerSeconds( void ) { return m_startCountdownTimerSeconds; }
-	inline Int getMaxBeaconsPerPlayer( void ) { return m_maxBeaconsPerPlayer; }
-	inline Bool isShroudInMultiplayer( void ) { return m_isShroudInMultiplayer; }
-	inline Bool showRandomPlayerTemplate( void ) { return m_showRandomPlayerTemplate; }
-	inline Bool showRandomStartPos( void ) { return m_showRandomStartPos; }
-	inline Bool showRandomColor( void ) { return m_showRandomColor; }
+	inline Int getStartCountdownTimerSeconds( void ) { return m_ini.m_startCountdownTimerSeconds; }
+	inline Int getMaxBeaconsPerPlayer( void ) { return m_ini.m_maxBeaconsPerPlayer; }
+	inline Bool isShroudInMultiplayer( void ) { return m_ini.m_isShroudInMultiplayer; }
+	inline Bool showRandomPlayerTemplate( void ) { return m_ini.m_showRandomPlayerTemplate; }
+	inline Bool showRandomStartPos( void ) { return m_ini.m_showRandomStartPos; }
+	inline Bool showRandomColor( void ) { return m_ini.m_showRandomColor; }
 
 	inline Int getNumColors( void ) 
 	{
@@ -121,24 +121,32 @@ public:
   const MultiplayerStartingMoneyList & getStartingMoneyList() const { return m_startingMoneyList; }
 
   void addStartingMoneyChoice( const Money & money, Bool isDefault );
-    
-private:
-	Int m_initialCreditsMin;
-	Int m_initialCreditsMax;
-	Int m_startCountdownTimerSeconds;
-	Int m_maxBeaconsPerPlayer;
-	Bool m_isShroudInMultiplayer;
-	Bool m_showRandomPlayerTemplate;
-	Bool m_showRandomStartPos;
-	Bool m_showRandomColor;
 
-	MultiplayerColorList m_colorList;
-	Int m_numColors;
-	MultiplayerColorDefinition m_observerColor;
-	MultiplayerColorDefinition m_randomColor;
-  MultiplayerStartingMoneyList      m_startingMoneyList;
-  Money                             m_defaultStartingMoney;
-  Bool                              m_gotDefaultStartingMoney;
+private:
+	// MG: Cannot apply offsetof to MultiplayerSettings, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int m_startCountdownTimerSeconds {};
+		Int m_maxBeaconsPerPlayer {};
+		Bool m_isShroudInMultiplayer {};
+		Bool m_showRandomPlayerTemplate {};
+		Bool m_showRandomStartPos {};
+		Bool m_showRandomColor {};
+	};
+
+	IniData m_ini {};
+	friend class INI;
+
+	Int m_initialCreditsMin {};
+	Int m_initialCreditsMax {};
+
+	MultiplayerColorList m_colorList {};
+	Int m_numColors {};
+	MultiplayerColorDefinition m_observerColor {};
+	MultiplayerColorDefinition m_randomColor {};
+	MultiplayerStartingMoneyList      m_startingMoneyList {};
+	Money                             m_defaultStartingMoney {};
+	Bool                              m_gotDefaultStartingMoney {};
 };
 
 // singleton

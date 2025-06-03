@@ -437,7 +437,22 @@ struct RGBColor
             ((Int)(blue * 255.0) << 0);
     }
 
+    inline UnsignedInt getAsUnsignedInt() const
+    {
+        return
+            ((UnsignedInt)(red * 255.0) << 16) |
+            ((UnsignedInt)(green * 255.0) << 8) |
+            ((UnsignedInt)(blue * 255.0) << 0);
+    }
+
     inline void setFromInt(Int c)
+    {
+        red = ((c >> 16) & 0xff) / 255.0f;
+        green = ((c >>  8) & 0xff) / 255.0f;
+        blue = ((c >>  0) & 0xff) / 255.0f;
+    }
+
+    inline void setFromUnsignedInt(UnsignedInt c)
     {
         red = ((c >> 16) & 0xff) / 255.0f;
         green = ((c >>  8) & 0xff) / 255.0f;

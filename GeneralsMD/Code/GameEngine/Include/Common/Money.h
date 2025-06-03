@@ -98,6 +98,7 @@ protected:
 
 private:
 
+	friend class INI;
 	UnsignedInt m_money;	///< amount of money
 	Int m_playerIndex;	///< what is my player index?
 };

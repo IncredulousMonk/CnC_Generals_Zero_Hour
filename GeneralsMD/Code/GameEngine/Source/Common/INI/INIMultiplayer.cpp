@@ -53,7 +53,7 @@ void INI::parseMultiplayerSettingsDefinition( INI* ini )
 	}  // end else
 
 	// parse the ini definition
-	ini->initFromINI( TheMultiplayerSettings, TheMultiplayerSettings->getFieldParse() );
+	ini->initFromINI( &TheMultiplayerSettings->m_ini, TheMultiplayerSettings->getFieldParse() );
 }
 
 void INI::parseMultiplayerColorDefinition( INI* ini )
@@ -82,13 +82,13 @@ namespace
 {
   struct MultiplayerStartingMoneySettings
   {
-    Money money;
+    UnsignedInt value;
     Bool  isDefault;
   };
   
   const FieldParse startingMoneyFieldParseTable[] = 
   {
-    { "Value",			  Money::parseMoneyAmount,	NULL,	offsetof( MultiplayerStartingMoneySettings, money ) },
+    { "Value",			  INI::parseUnsignedInt,	NULL,	offsetof( MultiplayerStartingMoneySettings, value ) },
     { "Default",	   	INI::parseBool,         	NULL,	offsetof( MultiplayerStartingMoneySettings, isDefault ) },
     { NULL,	NULL,	NULL,	0 }  // keep this last
   };
@@ -104,6 +104,7 @@ void INI::parseMultiplayerStartingMoneyChoiceDefinition( INI* ini )
   settings.isDefault = false;
   
   ini->initFromINI( &settings, startingMoneyFieldParseTable );
-  
-  TheMultiplayerSettings->addStartingMoneyChoice( settings.money, settings.isDefault );
+  Money money {};
+  money.m_money = settings.value;
+  TheMultiplayerSettings->addStartingMoneyChoice( money, settings.isDefault );
 }

@@ -45,11 +45,11 @@ UnsignedInt TerrainRoadCollection::m_idCounter = 0;
 const FieldParse TerrainRoadType::m_terrainRoadFieldParseTable[] = 
 {
 
-	{ "Texture",						INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_texture ) },
-	{ "RoadWidth",					INI::parseReal,								NULL, offsetof( TerrainRoadType, m_roadWidth ) },
-	{ "RoadWidthInTexture",	INI::parseReal,								NULL, offsetof( TerrainRoadType, m_roadWidthInTexture ) },
+	{ "Texture",			INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_texture ) },
+	{ "RoadWidth",			INI::parseReal,			NULL, offsetof( TerrainRoadType::IniData, m_roadWidth ) },
+	{ "RoadWidthInTexture",	INI::parseReal,			NULL, offsetof( TerrainRoadType::IniData, m_roadWidthInTexture ) },
 
-	{ NULL,									NULL,													NULL, 0 },
+	{ NULL,					NULL,					NULL, 0 },
 
 };
 
@@ -58,35 +58,35 @@ const FieldParse TerrainRoadType::m_terrainRoadFieldParseTable[] =
 const FieldParse TerrainRoadType::m_terrainBridgeFieldParseTable[] = 
 {
 
-	{ "BridgeScale",									INI::parseReal,								NULL, offsetof( TerrainRoadType, m_bridgeScale ) },
-	{ "ScaffoldObjectName",						INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_scaffoldObjectName ) },
-	{ "ScaffoldSupportObjectName",		INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_scaffoldSupportObjectName ) },
-	{ "RadarColor",										INI::parseRGBColor,						NULL, offsetof( TerrainRoadType, m_radarColor ) },
+	{ "BridgeScale",					INI::parseReal,			NULL, offsetof( TerrainRoadType::IniData, m_bridgeScale ) },
+	{ "ScaffoldObjectName",				INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_scaffoldObjectName ) },
+	{ "ScaffoldSupportObjectName",		INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_scaffoldSupportObjectName ) },
+	{ "RadarColor",						INI::parseRGBColor,		NULL, offsetof( TerrainRoadType::IniData, m_radarColor ) },
 
-	{ "TransitionEffectsHeight",			INI::parseReal,								NULL, offsetof( TerrainRoadType, m_transitionEffectsHeight ) },
-	{ "NumFXPerType",									INI::parseInt,								NULL,	offsetof( TerrainRoadType, m_numFXPerType ) },
+	{ "TransitionEffectsHeight",		INI::parseReal,			NULL, offsetof( TerrainRoadType::IniData, m_transitionEffectsHeight ) },
+	{ "NumFXPerType",					INI::parseInt,			NULL, offsetof( TerrainRoadType::IniData, m_numFXPerType ) },
 
-	{ "BridgeModelName",							INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_bridgeModelName ) },
-	{ "Texture",											INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_texture ) },
-	{ "BridgeModelNameDamaged",				INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_bridgeModelNameDamaged ) },
-	{ "TextureDamaged",								INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_textureDamaged ) },
-	{ "BridgeModelNameReallyDamaged",	INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_bridgeModelNameReallyDamaged ) },
-	{ "TextureReallyDamaged",					INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_textureReallyDamaged ) },
-	{ "BridgeModelNameBroken",				INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_bridgeModelNameBroken ) },
-	{ "TextureBroken",								INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_textureBroken ) },
+	{ "BridgeModelName",				INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_bridgeModelName ) },
+	{ "Texture",						INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_texture ) },
+	{ "BridgeModelNameDamaged",			INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_bridgeModelNameDamaged ) },
+	{ "TextureDamaged",					INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_textureDamaged ) },
+	{ "BridgeModelNameReallyDamaged",	INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_bridgeModelNameReallyDamaged ) },
+	{ "TextureReallyDamaged",			INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_textureReallyDamaged ) },
+	{ "BridgeModelNameBroken",			INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_bridgeModelNameBroken ) },
+	{ "TextureBroken",					INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_textureBroken ) },
 
-	{ "TowerObjectNameFromLeft",			INI::parseAsciiString,				NULL,	offsetof( TerrainRoadType, m_towerObjectName[ BRIDGE_TOWER_FROM_LEFT ] ) },
-	{ "TowerObjectNameFromRight",			INI::parseAsciiString,				NULL,	offsetof( TerrainRoadType, m_towerObjectName[ BRIDGE_TOWER_FROM_RIGHT ] ) },
-	{ "TowerObjectNameToLeft",				INI::parseAsciiString,				NULL,	offsetof( TerrainRoadType, m_towerObjectName[ BRIDGE_TOWER_TO_LEFT ] ) },
-	{ "TowerObjectNameToRight",				INI::parseAsciiString,				NULL,	offsetof( TerrainRoadType, m_towerObjectName[ BRIDGE_TOWER_TO_RIGHT ] ) },
+	{ "TowerObjectNameFromLeft",		INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_towerObjectName[ BRIDGE_TOWER_FROM_LEFT ] ) },
+	{ "TowerObjectNameFromRight",		INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_towerObjectName[ BRIDGE_TOWER_FROM_RIGHT ] ) },
+	{ "TowerObjectNameToLeft",			INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_towerObjectName[ BRIDGE_TOWER_TO_LEFT ] ) },
+	{ "TowerObjectNameToRight",			INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_towerObjectName[ BRIDGE_TOWER_TO_RIGHT ] ) },
 
-	{ "DamagedToSound",								INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_damageToSoundString[ BODY_DAMAGED ] ) },
-	{ "RepairedToSound",							INI::parseAsciiString,				NULL, offsetof( TerrainRoadType, m_repairedToSoundString[ BODY_DAMAGED ] ) },
-	{ "TransitionToOCL",							parseTransitionToOCL,					NULL,	NULL },
-	{ "TransitionToFX",								parseTransitionToFX,					NULL, NULL },
+	{ "DamagedToSound",					INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_damageToSoundString[ BODY_DAMAGED ] ) },
+	{ "RepairedToSound",				INI::parseAsciiString,	NULL, offsetof( TerrainRoadType::IniData, m_repairedToSoundString[ BODY_DAMAGED ] ) },
+	{ "TransitionToOCL",				parseTransitionToOCL,	NULL, 0 },
+	{ "TransitionToFX",					parseTransitionToFX,	NULL, 0 },
 
 
-	{ NULL,									NULL,													NULL, 0 },
+	{ NULL,								NULL,					NULL, 0 },
 
 };
 
@@ -94,10 +94,7 @@ const FieldParse TerrainRoadType::m_terrainBridgeFieldParseTable[] =
 /** In the form of 
 	* Label = Transition:<Damage|Repair> ToState:<BODYTYPE> EffectNum:<INT> OCL:<OCL NAME> */
 // ------------------------------------------------------------------------------------------------
-/*static*/ void TerrainRoadType::parseTransitionToOCL( INI *ini, 
-																											 void *instance, 
-																											 void *store, 
-																											 const void *userData )
+/*static*/ void TerrainRoadType::parseTransitionToOCL(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
 	const char *token;
 	TerrainRoadType *theInstance = (TerrainRoadType *)instance;
@@ -105,9 +102,9 @@ const FieldParse TerrainRoadType::m_terrainBridgeFieldParseTable[] =
 	// which transition is this
 	Bool damageTransition;
 	token = ini->getNextSubToken( "Transition" );
-	if( stricmp( token, "Damage" ) == 0 )
+	if( strcasecmp( token, "Damage" ) == 0 )
 		damageTransition = TRUE;
-	else if( stricmp( token, "Repair" ) == 0 )
+	else if( strcasecmp( token, "Repair" ) == 0 )
 		damageTransition = FALSE;
 	else
 	{
@@ -150,10 +147,7 @@ const FieldParse TerrainRoadType::m_terrainBridgeFieldParseTable[] =
 /** In the form of
 	* Label = Transition:<Damage|Repair> ToState:<BODYTYPE> EffectNum:<INT> FX:<FXLIST NAME> */
 // ------------------------------------------------------------------------------------------------
-/*static*/ void TerrainRoadType::parseTransitionToFX( INI *ini, 
-																											void *instance, 
-																											void *store, 
-																											const void *userData )
+/*static*/ void TerrainRoadType::parseTransitionToFX(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
 	const char *token;
 	TerrainRoadType *theInstance = (TerrainRoadType *)instance;
@@ -161,9 +155,9 @@ const FieldParse TerrainRoadType::m_terrainBridgeFieldParseTable[] =
 	// which transition is this
 	Bool damageTransition;
 	token = ini->getNextSubToken( "Transition" );
-	if( stricmp( token, "Damage" ) == 0 )
+	if( strcasecmp( token, "Damage" ) == 0 )
 		damageTransition = TRUE;
-	else if( stricmp( token, "Repair" ) == 0 )
+	else if( strcasecmp( token, "Repair" ) == 0 )
 		damageTransition = FALSE;
 	else
 	{
@@ -210,14 +204,14 @@ TerrainRoadType::TerrainRoadType( void )
 	m_isBridge = FALSE;
 	m_id = 0;
 	m_next = NULL;
-	m_roadWidth = 0.0f;
-	m_roadWidthInTexture = 0.0f;
-	m_bridgeScale = 1.0f;
-	m_radarColor.red = 0.0f;
-	m_radarColor.green = 0.0f;
-	m_radarColor.blue = 0.0f;
-	m_transitionEffectsHeight = 0.0f;
-	m_numFXPerType = 0;
+	m_ini.m_roadWidth = 0.0f;
+	m_ini.m_roadWidthInTexture = 0.0f;
+	m_ini.m_bridgeScale = 1.0f;
+	m_ini.m_radarColor.red = 0.0f;
+	m_ini.m_radarColor.green = 0.0f;
+	m_ini.m_radarColor.blue = 0.0f;
+	m_ini.m_transitionEffectsHeight = 0.0f;
+	m_ini.m_numFXPerType = 0;
 
 }  // end TerrainRoadType
 

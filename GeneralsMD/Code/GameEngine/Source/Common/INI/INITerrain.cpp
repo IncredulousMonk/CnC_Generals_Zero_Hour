@@ -54,7 +54,7 @@ void INI::parseTerrainDefinition( INI* ini )
 	DEBUG_ASSERTCRASH( terrainType, ("Unable to allocate terrain type '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( terrainType, terrainType->getFieldParse() );
+	ini->initFromINI( &terrainType->m_ini, terrainType->getFieldParse() );
 
 }  // end parseTerrain
 

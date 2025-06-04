@@ -65,10 +65,6 @@ void INI::parseTerrainBridgeDefinition( INI* ini )
 	DEBUG_ASSERTCRASH( bridge, ("Unable to allcoate bridge '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( bridge, bridge->getBridgeFieldParse() );
+	ini->initFromINI( &bridge->m_ini, bridge->getBridgeFieldParse() );
 
 }  // end parseTerrainBridge
-
-
-
-

@@ -42,12 +42,12 @@ TerrainTypeCollection *TheTerrainTypes = NULL;
 const FieldParse TerrainType::m_terrainTypeFieldParseTable[] = 
 {
 
-	{ "Texture",		INI::parseAsciiString,			NULL,		offsetof( TerrainType, m_texture ) },
-	{ "BlendEdges", INI::parseBool,							NULL,		offsetof( TerrainType, m_blendEdgeTexture ) },
-	{ "Class",			INI::parseIndexList,				terrainTypeNames, offsetof( TerrainType, m_class ) },
-	{ "RestrictConstruction", INI::parseBool,		NULL,		offsetof( TerrainType, m_restrictConstruction ) },
+	{ "Texture",				INI::parseAsciiString,		NULL,				offsetof( TerrainType::IniData, m_texture ) },
+	{ "BlendEdges", 			INI::parseBool,				NULL,				offsetof( TerrainType::IniData, m_blendEdgeTexture ) },
+	{ "Class",					INI::parseIndexList,		terrainTypeNames,	offsetof( TerrainType::IniData, m_class ) },
+	{ "RestrictConstruction",	INI::parseBool,				NULL,				offsetof( TerrainType::IniData, m_restrictConstruction ) },
 
-	{ NULL,					NULL,												NULL,		0 },
+	{ NULL,					NULL,							NULL,				0 },
 
 };
 
@@ -57,11 +57,11 @@ TerrainType::TerrainType( void )
 {
 
 	m_name.clear();
-	m_texture.clear();
-	m_blendEdgeTexture = FALSE;
-	m_class = TERRAIN_NONE;
-	m_restrictConstruction = FALSE;
-	m_next = NULL;
+	m_ini.m_texture.clear();
+	m_ini.m_blendEdgeTexture = FALSE;
+	m_ini.m_class = TERRAIN_NONE;
+	m_ini.m_restrictConstruction = FALSE;
+	m_ini.m_next = NULL;
 
 }  // end TerrainType
 
@@ -158,7 +158,7 @@ TerrainType *TerrainTypeCollection::newTerrain( AsciiString name )
 	// tie to list
 	terrain->friend_setNext( m_terrainList );
 	m_terrainList = terrain;
-			
+
 	// return the new terrain
 	return terrain;
 

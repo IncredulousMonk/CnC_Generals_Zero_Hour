@@ -158,10 +158,10 @@ $(GEDO)/LinuxMOTD.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMOTD.cpp
 # ===== GameEngine =====
 
 ENGINE_OBJS = $(GEO)/CommandLine.o $(GEO)/GameEngine.o $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/MultiplayerSettings.o $(GEO)/NameKeyGenerator.o \
-   $(GEO)/RandomValue.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
+   $(GEO)/RandomValue.o $(GEO)/TerrainTypes.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
 $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
 $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o $(GEO)/INIMultiplayer.o \
-   $(GEO)/INIVideo.o $(GEO)/INIWater.o \
+   $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
 $(GEO)/Money.o $(GEO)/Science.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o $(GEO)/GameMemory.o \
    $(GEO)/GameType.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/UnicodeString.o \
@@ -176,6 +176,7 @@ $(GEO)/CreditsMenu.o $(GEO)/MainMenu.o $(GEO)/OptionsMenu.o \
 $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
 $(GEO)/Anim2D.o $(GEO)/Image.o \
+$(GEO)/TerrainRoads.o \
 $(GEO)/Chat.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
@@ -211,6 +212,9 @@ $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 
 $(GEO)/RandomValue.o: $(GES)/Common/RandomValue.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RandomValue.o $(GES)/Common/RandomValue.cpp
+
+$(GEO)/TerrainTypes.o: $(GES)/Common/TerrainTypes.cpp GameEngine/Include/Common/TerrainTypes.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainTypes.o $(GES)/Common/TerrainTypes.cpp
 
 $(GEO)/UserPreferences.o: $(GES)/Common/UserPreferences.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UserPreferences.o $(GES)/Common/UserPreferences.cpp
@@ -258,6 +262,15 @@ $(GEO)/INIMiscAudio.o: $(GES)/Common/INI/INIMiscAudio.cpp
 
 $(GEO)/INIMultiplayer.o: $(GES)/Common/INI/INIMultiplayer.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIMultiplayer.o $(GES)/Common/INI/INIMultiplayer.cpp
+
+$(GEO)/INITerrain.o: $(GES)/Common/INI/INITerrain.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INITerrain.o $(GES)/Common/INI/INITerrain.cpp
+
+$(GEO)/INITerrainBridge.o: $(GES)/Common/INI/INITerrainBridge.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INITerrainBridge.o $(GES)/Common/INI/INITerrainBridge.cpp
+
+$(GEO)/INITerrainRoad.o: $(GES)/Common/INI/INITerrainRoad.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INITerrainRoad.o $(GES)/Common/INI/INITerrainRoad.cpp
 
 $(GEO)/INIVideo.o: $(GES)/Common/INI/INIVideo.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIVideo.o $(GES)/Common/INI/INIVideo.cpp
@@ -494,6 +507,10 @@ $(GEO)/Anim2D.o: $(GES)/GameClient/System/Anim2D.cpp
 
 $(GEO)/Image.o: $(GES)/GameClient/System/Image.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Image.o $(GES)/GameClient/System/Image.cpp
+
+# --- GameEngine/Source/GameClient/Terrain ---
+$(GEO)/TerrainRoads.o: $(GES)/GameClient/Terrain/TerrainRoads.cpp GameEngine/Include/GameClient/TerrainRoads.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainRoads.o $(GES)/GameClient/Terrain/TerrainRoads.cpp
 
 # --- GameEngine/Source/GameNetwork/GameSpy ---
 $(GEO)/Chat.o: $(GES)/GameNetwork/GameSpy/Chat.cpp

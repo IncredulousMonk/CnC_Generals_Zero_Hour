@@ -65,10 +65,6 @@ void INI::parseTerrainRoadDefinition( INI* ini )
 	DEBUG_ASSERTCRASH( road, ("Unable to allocate road '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( road, road->getRoadFieldParse() );
+	ini->initFromINI( &road->m_ini, road->getRoadFieldParse() );
 
 }  // end parseTerrainRoad
-
-
-
-

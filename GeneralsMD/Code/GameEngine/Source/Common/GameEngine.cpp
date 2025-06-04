@@ -62,7 +62,7 @@
 #include "Common/MultiplayerSettings.h"
 // #include "Common/Recorder.h"
 // #include "Common/SpecialPower.h"
-// #include "Common/TerrainTypes.h"
+#include "Common/TerrainTypes.h"
 // #include "Common/Upgrade.h"
 // #include "Common/UserPreferences.h"
 // #include "Common/Xfer.h"
@@ -94,7 +94,7 @@
 // #include "GameClient/ParticleSys.h"
 #include "GameClient/Water.h"
 #include "GameClient/Snow.h" // MG: Only needed to delete TheWeatherSetting
-// #include "GameClient/TerrainRoads.h"
+#include "GameClient/TerrainRoads.h"
 // #include "GameClient/MetaEvent.h"
 // #include "GameClient/MapUtil.h"
 // #include "GameClient/GameWindowManager.h"
@@ -437,8 +437,8 @@ void GameEngine::init( int argc, char *argv[] )
 
 		initSubsystem(TheScienceStore,"TheScienceStore", MSGNEW("GameEngineSubsystem") ScienceStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Science.ini", "Data\\INI\\Science.ini");
 		initSubsystem(TheMultiplayerSettings,"TheMultiplayerSettings", MSGNEW("GameEngineSubsystem") MultiplayerSettings(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Multiplayer.ini", "Data\\INI\\Multiplayer.ini");
-		// initSubsystem(TheTerrainTypes,"TheTerrainTypes", MSGNEW("GameEngineSubsystem") TerrainTypeCollection(), &xferCRC, "Data\\INI\\Default\\Terrain.ini", "Data\\INI\\Terrain.ini");
-		// initSubsystem(TheTerrainRoads,"TheTerrainRoads", MSGNEW("GameEngineSubsystem") TerrainRoadCollection(), &xferCRC, "Data\\INI\\Default\\Roads.ini", "Data\\INI\\Roads.ini");
+		initSubsystem(TheTerrainTypes,"TheTerrainTypes", MSGNEW("GameEngineSubsystem") TerrainTypeCollection(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Terrain.ini", "Data\\INI\\Terrain.ini");
+		initSubsystem(TheTerrainRoads,"TheTerrainRoads", MSGNEW("GameEngineSubsystem") TerrainRoadCollection(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Roads.ini", "Data\\INI\\Roads.ini");
 		initSubsystem(TheGlobalLanguageData,"TheGlobalLanguageData",MSGNEW("GameEngineSubsystem") GlobalLanguage, NULL); // must be before the game text
 		// initSubsystem(TheCDManager,"TheCDManager", CreateCDManager(), NULL);
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////

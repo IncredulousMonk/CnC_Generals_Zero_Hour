@@ -143,13 +143,13 @@ static const BlockParse theTypeTable[] =
 // 	{ "Weapon",							INI::parseWeaponTemplateDefinition },
 // 	{ "WebpageURL",						INI::parseWebpageURLDefinition },
 	{ "HeaderTemplate",					INI::parseHeaderTemplateDefinition },
-// 	{ "StaticGameLOD",					INI::parseStaticGameLODDefinition },
-// 	{ "DynamicGameLOD",					INI::parseDynamicGameLODDefinition },
-// 	{ "LODPreset",						INI::parseLODPreset },
-// 	{	"BenchProfile",					INI::parseBenchProfile },
-// 	{	"ReallyLowMHz",					parseReallyLowMHz },
-// 	{	"ScriptAction",					ScriptEngine::parseScriptAction },
-// 	{	"ScriptCondition",				ScriptEngine::parseScriptCondition },
+	{ "StaticGameLOD",					INI::parseStaticGameLODDefinition },
+	{ "DynamicGameLOD",					INI::parseDynamicGameLODDefinition },
+	{ "LODPreset",						INI::parseLODPreset },
+	{ "BenchProfile",					INI::parseBenchProfile },
+	{ "ReallyLowMHz",					parseReallyLowMHz },
+// 	{ "ScriptAction",					ScriptEngine::parseScriptAction },
+// 	{ "ScriptCondition",				ScriptEngine::parseScriptCondition },
 	
 	{ NULL,									NULL },		// keep this last!
 };

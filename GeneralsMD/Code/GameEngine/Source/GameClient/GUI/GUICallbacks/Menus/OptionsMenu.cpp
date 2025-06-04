@@ -37,7 +37,7 @@
 #include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
 #include "Common/UserPreferences.h"
-// #include "Common/GameLOD.h"
+#include "Common/GameLOD.h"
 // #include "Common/Registry.h"
 // #include "Common/Version.h"
 
@@ -411,22 +411,20 @@ Bool OptionPreferences::useCameraInReplays(void)
 
 Int OptionPreferences::getIdealStaticGameDetail(void)
 {
-	// PreferenceMap::const_iterator it = m_preferences.find("IdealStaticGameLOD");
-	// if (it == m_preferences.end())
-	// 	return STATIC_GAME_LOD_UNKNOWN;
+	PreferenceMap::const_iterator it = m_preferences.find("IdealStaticGameLOD");
+	if (it == m_preferences.end())
+		return STATIC_GAME_LOD_UNKNOWN;
 
-	// return TheGameLODManager->getStaticGameLODIndex(it->second);
-	return 0; // FIXME: TheGameLODManager
+	return TheGameLODManager->getStaticGameLODIndex(it->second);
 }
 
 Int OptionPreferences::getStaticGameDetail(void)
 {
-	// PreferenceMap::const_iterator it = m_preferences.find("StaticGameLOD");
-	// if (it == m_preferences.end())
-	// 	return TheGameLODManager->getStaticLODLevel();
+	PreferenceMap::const_iterator it = m_preferences.find("StaticGameLOD");
+	if (it == m_preferences.end())
+		return TheGameLODManager->getStaticLODLevel();
 
-	// return TheGameLODManager->getStaticGameLODIndex(it->second);
-	return 0; // FIXME: TheGameLODManager
+	return TheGameLODManager->getStaticGameLODIndex(it->second);
 }
 
 Bool OptionPreferences::getSendDelay(void)
@@ -1051,30 +1049,29 @@ static void saveOptions( void )
 
 	//-------------------------------------------------------------------------------------------------
 	// LOD
-	// FIXME: TheGameLODManager
-	// Bool levelChanged=FALSE;
-	// GadgetComboBoxGetSelectedPos( comboBoxDetail, &index );
-	// //The levels stored by the LOD Manager are inverted compared to GUI so find correct one:
-	// switch (index) {
-	// case HIGHDETAIL:
-	// 	levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_HIGH);
-	// 	break;
-	// case MEDIUMDETAIL:
-	// 	levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_MEDIUM);
-	// 	break;
-	// case LOWDETAIL:
-	// 	levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_LOW);
-	// 	break;
-	// case CUSTOMDETAIL:
-	// 	levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_CUSTOM);
-	// 	break;
-	// default:
-	// 	DEBUG_ASSERTCRASH(FALSE,("LOD passed in was %d, %d is not a supported LOD",index,index));
-	// 	break;
-	// }
+	Bool levelChanged=FALSE;
+	GadgetComboBoxGetSelectedPos( comboBoxDetail, &index );
+	//The levels stored by the LOD Manager are inverted compared to GUI so find correct one:
+	switch (index) {
+	case HIGHDETAIL:
+		levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_HIGH);
+		break;
+	case MEDIUMDETAIL:
+		levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_MEDIUM);
+		break;
+	case LOWDETAIL:
+		levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_LOW);
+		break;
+	case CUSTOMDETAIL:
+		levelChanged=TheGameLODManager->setStaticLODLevel(STATIC_GAME_LOD_CUSTOM);
+		break;
+	default:
+		DEBUG_ASSERTCRASH(FALSE,("LOD passed in was %d, %d is not a supported LOD",index,index));
+		break;
+	}
 
-	// if (levelChanged)
-	//         (*pref)["StaticGameLOD"] = TheGameLODManager->getStaticGameLODLevelName(TheGameLODManager->getStaticLODLevel());
+	if (levelChanged)
+	        (*pref)["StaticGameLOD"] = TheGameLODManager->getStaticGameLODLevelName(TheGameLODManager->getStaticLODLevel());
 
 	//-------------------------------------------------------------------------------------------------
 	// Resolution
@@ -1321,24 +1318,23 @@ static void acceptAdvancedOptions()
 static void cancelAdvancedOptions()
 {
 	//restore the detail selection back to initial state
-	// FIXME: TheGameLODManager
-	// switch (TheGameLODManager->getStaticLODLevel())
-	// {
-	// case STATIC_GAME_LOD_LOW:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, LOWDETAIL);
-	// 	break;
-	// case STATIC_GAME_LOD_MEDIUM:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, MEDIUMDETAIL);
-	// 	break;
-	// case STATIC_GAME_LOD_HIGH:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, HIGHDETAIL);
-	// 	break;
-	// case STATIC_GAME_LOD_CUSTOM:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, CUSTOMDETAIL);
-	// 	break;
-	// default:
-	// 	DEBUG_ASSERTCRASH(FALSE,("Tried to set comboBoxDetail to a value of %d ", TheGameLODManager->getStaticLODLevel()) );
-	// };
+	switch (TheGameLODManager->getStaticLODLevel())
+	{
+	case STATIC_GAME_LOD_LOW:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, LOWDETAIL);
+		break;
+	case STATIC_GAME_LOD_MEDIUM:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, MEDIUMDETAIL);
+		break;
+	case STATIC_GAME_LOD_HIGH:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, HIGHDETAIL);
+		break;
+	case STATIC_GAME_LOD_CUSTOM:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, CUSTOMDETAIL);
+		break;
+	default:
+		DEBUG_ASSERTCRASH(FALSE,("Tried to set comboBoxDetail to a value of %d ", TheGameLODManager->getStaticLODLevel()) );
+	};
 
 	WinAdvancedDisplay->winHide(TRUE);
 }
@@ -1657,32 +1653,31 @@ void OptionsMenuInit( WindowLayout *layout, void *userData )
 	// GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Low"), color);
 	// GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Custom"), color);
 
-	// FIXME: TheGameLODManager
 	//Check if level was never set and default to setting most suitable for system.
-	// if (TheGameLODManager->getStaticLODLevel() == STATIC_GAME_LOD_UNKNOWN)
-	// 	TheGameLODManager->setStaticLODLevel(TheGameLODManager->findStaticLODLevel());
+	if (TheGameLODManager->getStaticLODLevel() == STATIC_GAME_LOD_UNKNOWN)
+		TheGameLODManager->setStaticLODLevel(TheGameLODManager->findStaticLODLevel());
 
-	// switch (TheGameLODManager->getStaticLODLevel())
-	// {
-	// case STATIC_GAME_LOD_LOW:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, LOWDETAIL);
-	// 	break;
-	// case STATIC_GAME_LOD_MEDIUM:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, MEDIUMDETAIL);
-	// 	break;
-	// case STATIC_GAME_LOD_HIGH:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, HIGHDETAIL);
-	// 	break;
-	// case STATIC_GAME_LOD_CUSTOM:
-	// 	GadgetComboBoxSetSelectedPos(comboBoxDetail, CUSTOMDETAIL);
-	// 	break;
-	// default:
-	// 	DEBUG_ASSERTCRASH(FALSE,("Tried to set comboBoxDetail to a value of %d ", TheGameLODManager->getStaticLODLevel()) );
-	// };
+	switch (TheGameLODManager->getStaticLODLevel())
+	{
+	case STATIC_GAME_LOD_LOW:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, LOWDETAIL);
+		break;
+	case STATIC_GAME_LOD_MEDIUM:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, MEDIUMDETAIL);
+		break;
+	case STATIC_GAME_LOD_HIGH:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, HIGHDETAIL);
+		break;
+	case STATIC_GAME_LOD_CUSTOM:
+		GadgetComboBoxSetSelectedPos(comboBoxDetail, CUSTOMDETAIL);
+		break;
+	default:
+		DEBUG_ASSERTCRASH(FALSE,("Tried to set comboBoxDetail to a value of %d ", TheGameLODManager->getStaticLODLevel()) );
+	};
 
-	// Int txtFact=TheGameLODManager->getCurrentTextureReduction();
+	Int txtFact=TheGameLODManager->getCurrentTextureReduction();
 
-	// GadgetSliderSetPosition( sliderTextureResolution, 2-txtFact);
+	GadgetSliderSetPosition( sliderTextureResolution, 2-txtFact);
 
 	GadgetCheckBoxSetChecked( check3DShadows, TheGlobalData->m_data.m_useShadowVolumes);
 

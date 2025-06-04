@@ -239,8 +239,8 @@ GameEngine::~GameEngine()
 	delete TheFileSystem;
 	TheFileSystem = NULL;
 
-	// if (TheGameLODManager)
-	// 	delete TheGameLODManager;
+	if (TheGameLODManager)
+		delete TheGameLODManager;
 
 	// Drawable::killStaticImages();
 
@@ -396,9 +396,9 @@ void GameEngine::init( int argc, char *argv[] )
 		// special-case: parse command-line parameters after loading global data
 		parseCommandLine(argc, argv);
 
-		// // doesn't require resets so just create a single instance here.
-		// TheGameLODManager = MSGNEW("GameEngineSubsystem") GameLODManager;
-		// TheGameLODManager->init();
+		// doesn't require resets so just create a single instance here.
+		TheGameLODManager = MSGNEW("GameEngineSubsystem") GameLODManager;
+		TheGameLODManager->init();
 		
 		// // after parsing the command line, we may want to perform dds stuff. Do that here.
 		// if (TheGlobalData->m_shouldUpdateTGAToDDS) {
@@ -448,8 +448,8 @@ void GameEngine::init( int argc, char *argv[] )
 	DEBUG_LOG(("%s", Buf));////////////////////////////////////////////////////////////////////////////
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 		initSubsystem(TheAudio,"TheAudio", createAudioManager(), NULL);
-		// if (!TheAudio->isMusicAlreadyLoaded())
-		// 	setQuitting(TRUE);
+		if (!TheAudio->isMusicAlreadyLoaded())
+			setQuitting(TRUE);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////

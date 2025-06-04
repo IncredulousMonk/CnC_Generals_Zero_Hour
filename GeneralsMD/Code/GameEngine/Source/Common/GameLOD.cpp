@@ -50,7 +50,7 @@
 #define PROFILE_ERROR_LIMIT	0.94f	//fraction of profiled result needed to get a match.  Allows some room for error/fluctuation.
 
 //Hack to get access to a static method on the W3DDevice side. -MW
-extern Bool testMinimumRequirements(ChipsetType *videoChipType, CpuType *cpuType, Int *cpuFreq, Int *numRAM, Real *intBenchIndex, Real *floatBenchIndex, Real *memBenchIndex);
+// extern Bool testMinimumRequirements(ChipsetType *videoChipType, CpuType *cpuType, Int *cpuFreq, Int *numRAM, Real *intBenchIndex, Real *floatBenchIndex, Real *memBenchIndex);
 
 GameLODManager *TheGameLODManager=NULL;
 
@@ -286,77 +286,81 @@ void GameLODManager::init(void)
 	m_idealDetailLevel=(StaticGameLODLevel)optionPref.getIdealStaticGameDetail();
 
 	//always get this data in case we need it later.
-	testMinimumRequirements(NULL,&m_cpuType,&m_cpuFreq,&m_numRAM,NULL,NULL,NULL);
+	// testMinimumRequirements(NULL,&m_cpuType,&m_cpuFreq,&m_numRAM,NULL,NULL,NULL);
+	// Let's pretend that we have a Pentium 4 running at 3GHz with 1GB of RAM.
+	m_cpuType = P4;
+	m_cpuFreq = 3000;
+	m_numRAM = 1024*1024*1024;
 
 	if ((Real)(m_numRAM)/(Real)(256*1024*1024) >= PROFILE_ERROR_LIMIT)
 		m_memPassed=TRUE;	//check if they have at least 256 MB
 
-	if (m_idealDetailLevel == STATIC_GAME_LOD_UNKNOWN || TheGlobalData->m_forceBenchmark)
-	{
-		if (m_cpuType == XX || TheGlobalData->m_forceBenchmark)
-		{
-			//need to run the benchmark
-			testMinimumRequirements(NULL,NULL,NULL,NULL,&m_intBenchIndex,&m_floatBenchIndex,&m_memBenchIndex);
+	// if (m_idealDetailLevel == STATIC_GAME_LOD_UNKNOWN || TheGlobalData->m_data.m_forceBenchmark)
+	// {
+	// 	if (m_cpuType == XX || TheGlobalData->m_data.m_forceBenchmark)
+	// 	{
+	// 		//need to run the benchmark
+	// 		testMinimumRequirements(NULL,NULL,NULL,NULL,&m_intBenchIndex,&m_floatBenchIndex,&m_memBenchIndex);
 			
-			if (TheGlobalData->m_forceBenchmark)
-			{	//we want to see the numbers.  So dump them to a logfile.
-				FILE *fp=fopen("Benchmark.txt","w");
-				if (fp)
-				{
-					fprintf(fp,"BenchProfile = %s %d %f %f %f", CPUNames[m_cpuType], m_cpuFreq, m_intBenchIndex, m_floatBenchIndex, m_memBenchIndex);
-					fclose(fp);
-				}
-			}
+	// 		if (TheGlobalData->m_data.m_forceBenchmark)
+	// 		{	//we want to see the numbers.  So dump them to a logfile.
+	// 			FILE *fp=fopen("Benchmark.txt","w");
+	// 			if (fp)
+	// 			{
+	// 				fprintf(fp,"BenchProfile = %s %d %f %f %f", CPUNames[m_cpuType], m_cpuFreq, m_intBenchIndex, m_floatBenchIndex, m_memBenchIndex);
+	// 				fclose(fp);
+	// 			}
+	// 		}
 
-	 		m_compositeBenchIndex = m_intBenchIndex + m_floatBenchIndex;	///@todo: Need to scale these based on our apps usage of int/float/mem ops.
+	//  		m_compositeBenchIndex = m_intBenchIndex + m_floatBenchIndex;	///@todo: Need to scale these based on our apps usage of int/float/mem ops.
 
-			StaticGameLODLevel currentLevel=STATIC_GAME_LOD_LOW;
-			BenchProfile *prof=m_benchProfiles;
-			m_cpuType = P3;	//assume lowest spec.
-			m_cpuFreq = 1000;	//assume lowest spec.
-			for (Int k=0; k<m_numBenchProfiles; k++)
-			{
-				//Check if we're within 5% of the performance of this cpu profile.
-				if (m_intBenchIndex/prof->m_intBenchIndex >= PROFILE_ERROR_LIMIT && m_floatBenchIndex/prof->m_floatBenchIndex >= PROFILE_ERROR_LIMIT && m_memBenchIndex/prof->m_memBenchIndex >= PROFILE_ERROR_LIMIT)
-				{	
-					for (Int i=STATIC_GAME_LOD_HIGH; i >= STATIC_GAME_LOD_LOW; i--)
-					{
-						LODPresetInfo *preset=&m_lodPresets[i][0];	//pointer to first preset at this LOD level.
-						for (Int j=0; j<m_numLevelPresets[i]; j++)
-						{
-							if(	prof->m_cpuType == preset->m_cpuType &&	((Real)prof->m_mhz/(Real)preset->m_mhz >= PROFILE_ERROR_LIMIT))
-							{	currentLevel = (StaticGameLODLevel)i;
-								m_cpuType = prof->m_cpuType;
-								m_cpuFreq = prof->m_mhz;
-								break;
-							}
-							preset++;	//skip to next preset
-						}
-						if (currentLevel >= i)
-							break;	//we already found a higher level than the remaining presets so no need to keep searching.
-					}
-				}
-				prof++;
-			}
-		}	//finding equivalent CPU to unkown cpu.
-	}	//find data needed to determine m_idealDetailLevel
+	// 		StaticGameLODLevel currentLevel=STATIC_GAME_LOD_LOW;
+	// 		BenchProfile *prof=m_benchProfiles;
+	// 		m_cpuType = P3;	//assume lowest spec.
+	// 		m_cpuFreq = 1000;	//assume lowest spec.
+	// 		for (Int k=0; k<m_numBenchProfiles; k++)
+	// 		{
+	// 			//Check if we're within 5% of the performance of this cpu profile.
+	// 			if (m_intBenchIndex/prof->m_intBenchIndex >= PROFILE_ERROR_LIMIT && m_floatBenchIndex/prof->m_floatBenchIndex >= PROFILE_ERROR_LIMIT && m_memBenchIndex/prof->m_memBenchIndex >= PROFILE_ERROR_LIMIT)
+	// 			{	
+	// 				for (Int i=STATIC_GAME_LOD_HIGH; i >= STATIC_GAME_LOD_LOW; i--)
+	// 				{
+	// 					LODPresetInfo *preset=&m_lodPresets[i][0];	//pointer to first preset at this LOD level.
+	// 					for (Int j=0; j<m_numLevelPresets[i]; j++)
+	// 					{
+	// 						if(	prof->m_cpuType == preset->m_cpuType &&	((Real)prof->m_mhz/(Real)preset->m_mhz >= PROFILE_ERROR_LIMIT))
+	// 						{	currentLevel = (StaticGameLODLevel)i;
+	// 							m_cpuType = prof->m_cpuType;
+	// 							m_cpuFreq = prof->m_mhz;
+	// 							break;
+	// 						}
+	// 						preset++;	//skip to next preset
+	// 					}
+	// 					if (currentLevel >= i)
+	// 						break;	//we already found a higher level than the remaining presets so no need to keep searching.
+	// 				}
+	// 			}
+	// 			prof++;
+	// 		}
+	// 	}	//finding equivalent CPU to unkown cpu.
+	// }	//find data needed to determine m_idealDetailLevel
 
 	if (userSetDetail == STATIC_GAME_LOD_CUSTOM)
 	{
-		TheWritableGlobalData->m_textureReductionFactor = optionPref.getTextureReduction();
-		TheWritableGlobalData->m_useShadowVolumes = optionPref.get3DShadowsEnabled();
-		TheWritableGlobalData->m_useShadowDecals = optionPref.get2DShadowsEnabled();
-		TheWritableGlobalData->m_enableBehindBuildingMarkers = optionPref.getBuildingOcclusionEnabled();
-		TheWritableGlobalData->m_maxParticleCount = optionPref.getParticleCap();
-		TheWritableGlobalData->m_enableDynamicLOD = optionPref.getDynamicLODEnabled();
-		TheWritableGlobalData->m_useFpsLimit = optionPref.getFPSLimitEnabled();
-		TheWritableGlobalData->m_useLightMap = optionPref.getLightmapEnabled();
-		TheWritableGlobalData->m_useCloudMap = optionPref.getCloudShadowsEnabled();
-		TheWritableGlobalData->m_showSoftWaterEdge = optionPref.getSmoothWaterEnabled();
-		TheWritableGlobalData->m_useHeatEffects = optionPref.getUseHeatEffects();
-		TheWritableGlobalData->m_useDrawModuleLOD = optionPref.getExtraAnimationsDisabled();
-		TheWritableGlobalData->m_useTreeSway = !TheWritableGlobalData->m_useDrawModuleLOD;	//borrow same setting.
-		TheWritableGlobalData->m_useTrees = optionPref.getTreesEnabled();
+		TheWritableGlobalData->m_data.m_textureReductionFactor = optionPref.getTextureReduction();
+		TheWritableGlobalData->m_data.m_useShadowVolumes = optionPref.get3DShadowsEnabled();
+		TheWritableGlobalData->m_data.m_useShadowDecals = optionPref.get2DShadowsEnabled();
+		TheWritableGlobalData->m_data.m_enableBehindBuildingMarkers = optionPref.getBuildingOcclusionEnabled();
+		TheWritableGlobalData->m_data.m_maxParticleCount = optionPref.getParticleCap();
+		TheWritableGlobalData->m_data.m_enableDynamicLOD = optionPref.getDynamicLODEnabled();
+		TheWritableGlobalData->m_data.m_useFpsLimit = optionPref.getFPSLimitEnabled();
+		TheWritableGlobalData->m_data.m_useLightMap = optionPref.getLightmapEnabled();
+		TheWritableGlobalData->m_data.m_useCloudMap = optionPref.getCloudShadowsEnabled();
+		TheWritableGlobalData->m_data.m_showSoftWaterEdge = optionPref.getSmoothWaterEnabled();
+		TheWritableGlobalData->m_data.m_useHeatEffects = optionPref.getUseHeatEffects();
+		TheWritableGlobalData->m_data.m_useDrawModuleLOD = optionPref.getExtraAnimationsDisabled();
+		TheWritableGlobalData->m_data.m_useTreeSway = !TheWritableGlobalData->m_data.m_useDrawModuleLOD;	//borrow same setting.
+		TheWritableGlobalData->m_data.m_useTrees = optionPref.getTreesEnabled();
 	}
 
 	setStaticLODLevel(userSetDetail);
@@ -366,22 +370,22 @@ void GameLODManager::refreshCustomStaticLODLevel(void)
 {
 	StaticGameLODInfo *lodInfo=&m_staticGameLODInfo[STATIC_GAME_LOD_CUSTOM];
 
-	lodInfo->m_maxParticleCount=TheGlobalData->m_maxParticleCount;
-	lodInfo->m_useShadowVolumes=TheGlobalData->m_useShadowVolumes;
-	lodInfo->m_useShadowDecals=TheGlobalData->m_useShadowDecals;
-	lodInfo->m_useCloudMap=TheGlobalData->m_useCloudMap;
-	lodInfo->m_useLightMap=TheGlobalData->m_useLightMap;
-	lodInfo->m_showSoftWaterEdge=TheGlobalData->m_showSoftWaterEdge;
-	lodInfo->m_maxTankTrackEdges=TheGlobalData->m_maxTankTrackEdges;
-	lodInfo->m_maxTankTrackOpaqueEdges=TheGlobalData->m_maxTankTrackOpaqueEdges;
-	lodInfo->m_maxTankTrackFadeDelay=TheGlobalData->m_maxTankTrackFadeDelay;
-	lodInfo->m_useBuildupScaffolds=!TheGlobalData->m_useDrawModuleLOD;
-	lodInfo->m_useHeatEffects = TheGlobalData->m_useHeatEffects;
-	lodInfo->m_useTreeSway=lodInfo->m_useBuildupScaffolds;// Borrow same setting. //TheGlobalData->m_useTreeSway;
-	lodInfo->m_textureReduction=TheGlobalData->m_textureReductionFactor;
-	lodInfo->m_useFpsLimit = TheGlobalData->m_useFpsLimit;
-	lodInfo->m_enableDynamicLOD=TheGlobalData->m_enableDynamicLOD;
-	lodInfo->m_useTrees = TheGlobalData->m_useTrees;
+	lodInfo->m_maxParticleCount=TheGlobalData->m_data.m_maxParticleCount;
+	lodInfo->m_useShadowVolumes=TheGlobalData->m_data.m_useShadowVolumes;
+	lodInfo->m_useShadowDecals=TheGlobalData->m_data.m_useShadowDecals;
+	lodInfo->m_useCloudMap=TheGlobalData->m_data.m_useCloudMap;
+	lodInfo->m_useLightMap=TheGlobalData->m_data.m_useLightMap;
+	lodInfo->m_showSoftWaterEdge=TheGlobalData->m_data.m_showSoftWaterEdge;
+	lodInfo->m_maxTankTrackEdges=TheGlobalData->m_data.m_maxTankTrackEdges;
+	lodInfo->m_maxTankTrackOpaqueEdges=TheGlobalData->m_data.m_maxTankTrackOpaqueEdges;
+	lodInfo->m_maxTankTrackFadeDelay=TheGlobalData->m_data.m_maxTankTrackFadeDelay;
+	lodInfo->m_useBuildupScaffolds=!TheGlobalData->m_data.m_useDrawModuleLOD;
+	lodInfo->m_useHeatEffects = TheGlobalData->m_data.m_useHeatEffects;
+	lodInfo->m_useTreeSway=lodInfo->m_useBuildupScaffolds;// Borrow same setting. //TheGlobalData->m_data.m_useTreeSway;
+	lodInfo->m_textureReduction=TheGlobalData->m_data.m_textureReductionFactor;
+	lodInfo->m_useFpsLimit = TheGlobalData->m_data.m_useFpsLimit;
+	lodInfo->m_enableDynamicLOD=TheGlobalData->m_data.m_enableDynamicLOD;
+	lodInfo->m_useTrees = TheGlobalData->m_data.m_useTrees;
 
 }
 
@@ -451,7 +455,9 @@ StaticGameLODLevel GameLODManager::findStaticLODLevel(void)
 		m_idealDetailLevel = STATIC_GAME_LOD_LOW;
 
 		//get system configuration - only need vide chip type, got rest in ::init().
-		testMinimumRequirements(&m_videoChipType,NULL,NULL,NULL,NULL,NULL,NULL);
+		// testMinimumRequirements(&m_videoChipType,NULL,NULL,NULL,NULL,NULL,NULL);
+		// Let's pretend that we have a GEFORCE4 GPU.
+		m_videoChipType = DC_GEFORCE4;
 		if (m_videoChipType == DC_UNKNOWN)
 			m_videoChipType = DC_TNT2;	//presume it's at least TNT2 level
 
@@ -492,7 +498,7 @@ StaticGameLODLevel GameLODManager::findStaticLODLevel(void)
 /**Set all game systems to match the desired LOD level.*/
 Bool GameLODManager::setStaticLODLevel(StaticGameLODLevel level)
 {
-	if (!TheGlobalData->m_enableStaticLOD)
+	if (!TheGlobalData->m_data.m_enableStaticLOD)
 	{	m_currentStaticLOD = STATIC_GAME_LOD_CUSTOM; 
 		return FALSE;
 	}
@@ -539,14 +545,14 @@ void GameLODManager::applyStaticLODLevel(StaticGameLODLevel level)
 
 	if (TheGlobalData)
 	{
-		TheWritableGlobalData->m_maxParticleCount=lodInfo->m_maxParticleCount;
-		TheWritableGlobalData->m_useShadowVolumes=lodInfo->m_useShadowVolumes;
-		TheWritableGlobalData->m_useShadowDecals=lodInfo->m_useShadowDecals;
+		TheWritableGlobalData->m_data.m_maxParticleCount=lodInfo->m_maxParticleCount;
+		TheWritableGlobalData->m_data.m_useShadowVolumes=lodInfo->m_useShadowVolumes;
+		TheWritableGlobalData->m_data.m_useShadowDecals=lodInfo->m_useShadowDecals;
 
 		//Check if texture resolution changed.  No need to apply when current is unknown because display will do it
 		if (requestedTextureReduction != m_currentTextureReduction)
 		{
-				TheWritableGlobalData->m_textureReductionFactor = requestedTextureReduction;
+				TheWritableGlobalData->m_data.m_textureReductionFactor = requestedTextureReduction;
 				if (TheGameClient)
 					TheGameClient->adjustLOD(0);	//apply the new setting stored in globaldata
 		}
@@ -563,31 +569,33 @@ void GameLODManager::applyStaticLODLevel(StaticGameLODLevel level)
 			}
 		}
 
-		TheWritableGlobalData->m_useCloudMap=lodInfo->m_useCloudMap;
-		TheWritableGlobalData->m_useLightMap=lodInfo->m_useLightMap;
-		TheWritableGlobalData->m_showSoftWaterEdge=lodInfo->m_showSoftWaterEdge;
-		//Check if shoreline blending mode has changed
-		if (m_currentStaticLOD == STATIC_GAME_LOD_UNKNOWN || lodInfo->m_showSoftWaterEdge != prevLodInfo->m_showSoftWaterEdge)
-		{
-			if (TheTerrainVisual)
-				TheTerrainVisual->setShoreLineDetail();
-		}
+		TheWritableGlobalData->m_data.m_useCloudMap=lodInfo->m_useCloudMap;
+		TheWritableGlobalData->m_data.m_useLightMap=lodInfo->m_useLightMap;
+		TheWritableGlobalData->m_data.m_showSoftWaterEdge=lodInfo->m_showSoftWaterEdge;
+		// FIXME: TheTerrainVisual
+		// //Check if shoreline blending mode has changed
+		// if (m_currentStaticLOD == STATIC_GAME_LOD_UNKNOWN || lodInfo->m_showSoftWaterEdge != prevLodInfo->m_showSoftWaterEdge)
+		// {
+		// 	if (TheTerrainVisual)
+		// 		TheTerrainVisual->setShoreLineDetail();
+		// }
 
-		TheWritableGlobalData->m_maxTankTrackEdges=lodInfo->m_maxTankTrackEdges;
-		TheWritableGlobalData->m_maxTankTrackOpaqueEdges=lodInfo->m_maxTankTrackOpaqueEdges;
-		TheWritableGlobalData->m_maxTankTrackFadeDelay=lodInfo->m_maxTankTrackFadeDelay;
-		TheWritableGlobalData->m_useTreeSway=lodInfo->m_useTreeSway;
-		TheWritableGlobalData->m_useDrawModuleLOD=!lodInfo->m_useBuildupScaffolds;
-		TheWritableGlobalData->m_useHeatEffects=lodInfo->m_useHeatEffects;
-		TheWritableGlobalData->m_enableDynamicLOD = lodInfo->m_enableDynamicLOD;
-		TheWritableGlobalData->m_useFpsLimit = lodInfo->m_useFpsLimit;
-		TheWritableGlobalData->m_useTrees = requestedTrees;
+		TheWritableGlobalData->m_data.m_maxTankTrackEdges=lodInfo->m_maxTankTrackEdges;
+		TheWritableGlobalData->m_data.m_maxTankTrackOpaqueEdges=lodInfo->m_maxTankTrackOpaqueEdges;
+		TheWritableGlobalData->m_data.m_maxTankTrackFadeDelay=lodInfo->m_maxTankTrackFadeDelay;
+		TheWritableGlobalData->m_data.m_useTreeSway=lodInfo->m_useTreeSway;
+		TheWritableGlobalData->m_data.m_useDrawModuleLOD=!lodInfo->m_useBuildupScaffolds;
+		TheWritableGlobalData->m_data.m_useHeatEffects=lodInfo->m_useHeatEffects;
+		TheWritableGlobalData->m_data.m_enableDynamicLOD = lodInfo->m_enableDynamicLOD;
+		TheWritableGlobalData->m_data.m_useFpsLimit = lodInfo->m_useFpsLimit;
+		TheWritableGlobalData->m_data.m_useTrees = requestedTrees;
 	}
 	if (!m_memPassed || isReallyLowMHz()) {
-		TheWritableGlobalData->m_shellMapOn = false;
+		TheWritableGlobalData->m_data.m_shellMapOn = false;
 	}
-	if (TheTerrainVisual)
-		TheTerrainVisual->setTerrainTracksDetail();
+	// FIXME: TheTerrainVisual
+	// if (TheTerrainVisual)
+	// 	TheTerrainVisual->setTerrainTracksDetail();
 
 }
 

@@ -32,14 +32,14 @@
 #ifndef _GAME_LOGIC_H_
 #define _GAME_LOGIC_H_
 
-#include "Common/GameCommon.h"	// ensure we get DUMP_PERF_STATS, or not
-#include "Common/GameType.h"
+// #include "Common/GameCommon.h"	// ensure we get DUMP_PERF_STATS, or not
+// #include "Common/GameType.h"
 #include "Common/Snapshot.h"
-#include "Common/STLTypedefs.h"
-#include "Common/ObjectStatusTypes.h"
-#include "GameNetwork/NetworkDefs.h"
-#include "Common/STLTypedefs.h"
-#include "GameLogic/Module/UpdateModule.h"	// needed for DIRECT_UPDATEMODULE_ACCESS
+// #include "Common/STLTypedefs.h"
+// #include "Common/ObjectStatusTypes.h"
+// #include "GameNetwork/NetworkDefs.h"
+// #include "Common/STLTypedefs.h"
+// #include "GameLogic/Module/UpdateModule.h"	// needed for DIRECT_UPDATEMODULE_ACCESS
 
 /*
 	At one time, we distinguished between sleepy and nonsleepy
@@ -52,6 +52,7 @@
 */
 #define NO_ALLOW_NONSLEEPY_UPDATES
 
+#if 0
 // forward declarations
 class AudioEventRTS;
 class Object;
@@ -96,6 +97,7 @@ typedef void (*GameLogicFuncPtr)( Object *obj, void *userData );
 //typedef ObjectPtrHash::const_iterator ObjectPtrIter;
 
 typedef std::vector<Object*> ObjectPtrVector;
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /**
@@ -118,6 +120,7 @@ public:
 	virtual void reset( void );															///< Reset the logic system
 	virtual void update( void );														///< update the world
 
+#if 0
 #if defined(_DEBUG) || defined(_INTERNAL)
 	Int getNumberSleepyUpdates() const {return m_sleepyUpdates.size();} //For profiling, so not in Release.
 #endif
@@ -140,7 +143,9 @@ public:
 	Real getHeight( void );													///< Returns the height of the world
 
 	Bool isInGameLogicUpdate( void ) const { return m_isInUpdate; }
+#endif // if 0
 	UnsignedInt getFrame( void );										///< Returns the current simulation frame number
+#if 0
 	UnsignedInt getCRC( Int mode = CRC_CACHED, AsciiString deepCRCFileName = AsciiString::TheEmptyString );		///< Returns the CRC
 
 	void setObjectIDCounter( ObjectID nextObjID ) { m_nextObjID = nextObjID; }
@@ -258,6 +263,7 @@ public:
 
 	// this should be called only by UpdateModule, thanks.
 	void friend_awakenUpdateModule(Object* obj, UpdateModulePtr update, UnsignedInt whenToWakeUp);
+#endif // if 0
 
 protected:
 
@@ -268,6 +274,7 @@ protected:
 
 private:
 
+#if 0
 	void pushSleepyUpdate(UpdateModulePtr u);
 	UpdateModulePtr peekSleepyUpdate() const;
 	void popSleepyUpdate();
@@ -294,8 +301,10 @@ private:
 	ControlBarOverrideMap m_controlBarOverrides;
 
 	Real m_width, m_height;																	///< Dimensions of the world
-	UnsignedInt m_frame;																		///< Simulation frame number
-	
+#endif // if 0
+	UnsignedInt m_frame {};																		///< Simulation frame number
+
+#if 0
 	// CRC cache system -----------------------------------------------------------------------------
 	UnsignedInt	m_CRC;																			///< Cache of previous CRC value
 	std::map<Int, UnsignedInt> m_cachedCRCs;								///< CRCs we've seen this frame
@@ -391,15 +400,19 @@ private:
 	void xferObjectTOC( Xfer *xfer );												///< save/load object TOC for current state of map
 	void prepareLogicForObjectLoad( void );									///< prepare engine for object data from game file
 		
+#endif // if 0
 };
 
+#if 0
 // INLINE /////////////////////////////////////////////////////////////////////////////////////////
 inline void GameLogic::setWidth( Real width ) { m_width = width; }
 inline Real GameLogic::getWidth( void ) { return m_width; }
 inline void GameLogic::setHeight( Real height ) { m_height = height; }
 inline Real GameLogic::getHeight( void ) { return m_height; }
+#endif // if 0
 inline UnsignedInt GameLogic::getFrame( void ) { return m_frame; }
 
+#if 0
 inline Bool GameLogic::isInGame( void ) { return !(m_gameMode == GAME_NONE); }
 inline void GameLogic::setGameMode( Int mode ) { m_gameMode = mode; }
 inline Int  GameLogic::getGameMode( void ) { return m_gameMode; }
@@ -426,6 +439,7 @@ inline Object* GameLogic::findObjectByID( ObjectID id )
 
 	return NULL;
 }
+#endif // if 0
 
 
 
@@ -433,4 +447,3 @@ inline Object* GameLogic::findObjectByID( ObjectID id )
 extern GameLogic *TheGameLogic;
 
 #endif // _GAME_LOGIC_H_
-

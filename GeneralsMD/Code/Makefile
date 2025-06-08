@@ -36,7 +36,8 @@ $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringMa
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
 $(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
    $(GEDO)/LinuxTextEntry.o $(GEDO)/LinuxVerticalSlider.o \
-$(GEDO)/LinuxControlBar.o $(GEDO)/LinuxMainMenu.o $(GEDO)/LinuxMOTD.o 
+$(GEDO)/LinuxControlBar.o $(GEDO)/LinuxMainMenu.o $(GEDO)/LinuxMOTD.o \
+$(GEDO)/LinuxGameLogic.o
 
 $(ENGINE_DEVICE_LIB): $(ENGINE_DEVICE_OBJS)
 	ar rcs $(ENGINE_DEVICE_LIB)  $(ENGINE_DEVICE_OBJS)
@@ -154,6 +155,10 @@ $(GEDO)/LinuxMainMenu.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMainMenu.cpp
 $(GEDO)/LinuxMOTD.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMOTD.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxMOTD.o $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMOTD.cpp
 
+# --- GameEngineDevice/Source/LinuxDevice/GameLogic ---
+$(GEDO)/LinuxGameLogic.o: $(GEDSLD)/GameLogic/LinuxGameLogic.cpp GameEngineDevice/Include/LinuxDevice/GameLogic/LinuxGameLogic.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameLogic.o $(GEDSLD)/GameLogic/LinuxGameLogic.cpp
+
 
 # ===== GameEngine =====
 
@@ -177,6 +182,7 @@ $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
 $(GEO)/Anim2D.o $(GEO)/Image.o \
 $(GEO)/TerrainRoads.o \
+$(GEO)/GameLogic.o \
 $(GEO)/Chat.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
@@ -511,6 +517,10 @@ $(GEO)/Image.o: $(GES)/GameClient/System/Image.cpp
 # --- GameEngine/Source/GameClient/Terrain ---
 $(GEO)/TerrainRoads.o: $(GES)/GameClient/Terrain/TerrainRoads.cpp GameEngine/Include/GameClient/TerrainRoads.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainRoads.o $(GES)/GameClient/Terrain/TerrainRoads.cpp
+
+# --- GameEngine/Source/GameLogic/System ---
+$(GEO)/GameLogic.o: $(GES)/GameLogic/System/GameLogic.cpp GameEngine/Include/GameLogic/GameLogic.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameLogic.o $(GES)/GameLogic/System/GameLogic.cpp
 
 # --- GameEngine/Source/GameNetwork/GameSpy ---
 $(GEO)/Chat.o: $(GES)/GameNetwork/GameSpy/Chat.cpp

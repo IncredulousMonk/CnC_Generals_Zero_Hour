@@ -79,7 +79,7 @@
 // #include "GameLogic/VictoryConditions.h"
 // #include "GameLogic/ObjectCreationList.h"
 // #include "GameLogic/Weapon.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameLogic/Locomotor.h"
 // #include "GameLogic/RankInfo.h"
 // #include "GameLogic/ScriptEngine.h"
@@ -518,7 +518,7 @@ void GameEngine::init( int argc, char *argv[] )
 
 	
 		// initSubsystem(TheAI,"TheAI", MSGNEW("GameEngineSubsystem") AI(), &xferCRC,  "Data\\INI\\Default\\AIData.ini", "Data\\INI\\AIData.ini");
-		// initSubsystem(TheGameLogic,"TheGameLogic", createGameLogic(), NULL);
+		initSubsystem(TheGameLogic,"TheGameLogic", createGameLogic(), NULL);
 		// initSubsystem(TheTeamFactory,"TheTeamFactory", MSGNEW("GameEngineSubsystem") TeamFactory(), NULL);
 		// initSubsystem(TheCrateSystem,"TheCrateSystem", MSGNEW("GameEngineSubsystem") CrateSystem(), &xferCRC, "Data\\INI\\Default\\Crate.ini", "Data\\INI\\Crate.ini");
 		// initSubsystem(ThePlayerList,"ThePlayerList", MSGNEW("GameEngineSubsystem") PlayerList(), NULL);
@@ -788,7 +788,7 @@ void GameEngine::update( void )
 
 	// 	if ((TheNetwork == NULL && !TheGameLogic->isGamePaused()) || (TheNetwork && TheNetwork->isFrameDataReady()))
 	// 	{
-	// 		TheGameLogic->UPDATE();
+			TheGameLogic->UPDATE();
 	// 	}
 
 	// }	// end perfGather

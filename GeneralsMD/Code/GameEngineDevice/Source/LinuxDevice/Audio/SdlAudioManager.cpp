@@ -44,7 +44,7 @@
 #include "GameClient/VideoPlayer.h"
 // #include "GameClient/View.h"
 
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameLogic/TerrainLogic.h"
 
 #include "Common/File.h"
@@ -630,9 +630,7 @@ void SdlAudioManager::pauseAmbient(Bool shouldPause)
 void SdlAudioManager::playAudioEvent(AudioEventRTS* event)
 {
 #ifdef INTENSIVE_AUDIO_DEBUG
-   // FIXME: TheGameLogic
-   // DEBUG_LOG(("MILES (%d) - Processing play request: %d (%s)\n", TheGameLogic->getFrame(), event->getPlayingHandle(), event->getEventName().str()));
-   DEBUG_LOG(("SdlAudioManager (%d) - Processing play request: %d (%s = %s)\n", -1, event->getPlayingHandle(), event->getEventName().str(), event->getFilename().str()));
+   DEBUG_LOG(("SdlAudioManager (%d) - Processing play request: %d (%s = %s)\n", TheGameLogic->getFrame(), event->getPlayingHandle(), event->getEventName().str(), event->getFilename().str()));
 #endif
    const AudioEventInfo *info = event->getAudioEventInfo();
    if (!info) {
@@ -864,9 +862,7 @@ void SdlAudioManager::playAudioEvent(AudioEventRTS* event)
 void SdlAudioManager::stopAudioEvent(AudioHandle handle)
 {
 #ifdef INTENSIVE_AUDIO_DEBUG
-   // FIXME: TheGameLogic
-   // DEBUG_LOG(("MILES (%d) - Processing stop request: %d\n", TheGameLogic->getFrame(), handle));
-   DEBUG_LOG(("SdlAudioManager (%d) - Processing stop request: %d\n", -1, handle));
+   DEBUG_LOG(("SdlAudioManager (%d) - Processing stop request: %d\n", TheGameLogic->getFrame(), handle));
 #endif
 
    std::list<PlayingAudio *>::iterator it;

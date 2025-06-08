@@ -36,7 +36,7 @@
 #include "GameClient/Anim2D.h"
 #include "GameClient/Display.h"
 #include "GameClient/Image.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -368,25 +368,24 @@ Anim2D::~Anim2D( void )
 void Anim2D::setCurrentFrame( UnsignedShort frame )
 {
 
-	// FIXME: TheGameLogic
-	// // sanity
-	// DEBUG_ASSERTCRASH( m_template != NULL, ("Anim2D::reset - No template for animation\n") );
+	// sanity
+	DEBUG_ASSERTCRASH( m_template != NULL, ("Anim2D::reset - No template for animation\n") );
 
-	// // sanity
-	// DEBUG_ASSERTCRASH( TheGameLogic != NULL,	
-	// 									 ("Anim2D::setCurrentFrame - TheGameLogic must exist to use animation instances (%s)\n",
-	// 									  m_template->getName().str()) );
+	// sanity
+	DEBUG_ASSERTCRASH( TheGameLogic != NULL,	
+										 ("Anim2D::setCurrentFrame - TheGameLogic must exist to use animation instances (%s)\n",
+										  m_template->getName().str()) );
 
-	// // sanity
-	// DEBUG_ASSERTCRASH( frame >= 0 && frame < m_template->getNumFrames(),
-	// 									 ("Anim2D::setCurrentFrame - Illegal frame number '%d' in animation\n", 
-	// 									 frame, m_template->getName().str()) );
+	// sanity
+	DEBUG_ASSERTCRASH( frame >= 0 && frame < m_template->getNumFrames(),
+										 ("Anim2D::setCurrentFrame - Illegal frame number '%d' in animation\n", 
+										 frame, m_template->getName().str()) );
 
-	// // set the frame
-	// m_currentFrame = frame;
+	// set the frame
+	m_currentFrame = frame;
 
-	// // record the frame of this update to our current frame
-	// m_lastUpdateFrame = TheGameLogic->getFrame();
+	// record the frame of this update to our current frame
+	m_lastUpdateFrame = TheGameLogic->getFrame();
 
 }  // end setCurrentFrame
 
@@ -447,133 +446,132 @@ void Anim2D::reset( void )
 void Anim2D::tryNextFrame( void )
 {
 
-	// FIXME: TheGameLogic
-	// // sanity
-	// DEBUG_ASSERTCRASH( TheGameLogic != NULL,	
-	// 									 ("Anim2D::tryNextFrame - TheGameLogic must exist to use animation instances (%s)\n",
-	// 									  m_template->getName().str()) );
+	// sanity
+	DEBUG_ASSERTCRASH( TheGameLogic != NULL,	
+										 ("Anim2D::tryNextFrame - TheGameLogic must exist to use animation instances (%s)\n",
+										  m_template->getName().str()) );
 
-	// // how many frames have passed since our last update
-	// if( TheGameLogic->getFrame() - m_lastUpdateFrame >= m_framesBetweenUpdates )
-	// {
+	// how many frames have passed since our last update
+	if( TheGameLogic->getFrame() - m_lastUpdateFrame >= m_framesBetweenUpdates )
+	{
 
-	// 	switch( m_template->getAnimMode() )
-	// 	{
+		switch( m_template->getAnimMode() )
+		{
 
-	// 		// ------------------------------------------------------------------------------------------
-	// 		case ANIM_2D_ONCE:
-	// 		{
+			// ------------------------------------------------------------------------------------------
+			case ANIM_2D_ONCE:
+			{
 
-	// 			if( m_currentFrame < m_maxFrame )
-	// 				setCurrentFrame( m_currentFrame + 1 );
-	// 			else
-	// 				setStatus( ANIM_2D_STATUS_COMPLETE );
-	// 			break;
+				if( m_currentFrame < m_maxFrame )
+					setCurrentFrame( m_currentFrame + 1 );
+				else
+					setStatus( ANIM_2D_STATUS_COMPLETE );
+				break;
 
-	// 		}  // end once
+			}  // end once
 
-	// 		// -------------------------------------------------------------------------------------------
-	// 		case ANIM_2D_ONCE_BACKWARDS:
-	// 		{
+			// -------------------------------------------------------------------------------------------
+			case ANIM_2D_ONCE_BACKWARDS:
+			{
 
-	// 			if( m_currentFrame > m_minFrame )
-	// 				setCurrentFrame( m_currentFrame - 1 );
-	// 			else
-	// 				setStatus( ANIM_2D_STATUS_COMPLETE );
-	// 			break;
+				if( m_currentFrame > m_minFrame )
+					setCurrentFrame( m_currentFrame - 1 );
+				else
+					setStatus( ANIM_2D_STATUS_COMPLETE );
+				break;
 
-	// 		}  // end once backwards
+			}  // end once backwards
 
-	// 		// -------------------------------------------------------------------------------------------
-	// 		case ANIM_2D_LOOP:
-	// 		{
+			// -------------------------------------------------------------------------------------------
+			case ANIM_2D_LOOP:
+			{
 
-	// 			if( m_currentFrame == m_maxFrame )
-	// 				setCurrentFrame( m_minFrame );
-	// 			else
-	// 				setCurrentFrame( m_currentFrame + 1 );
-	// 			break;
+				if( m_currentFrame == m_maxFrame )
+					setCurrentFrame( m_minFrame );
+				else
+					setCurrentFrame( m_currentFrame + 1 );
+				break;
 
-	// 		}  // end loop
+			}  // end loop
 
-	// 		// -------------------------------------------------------------------------------------------
-	// 		case ANIM_2D_LOOP_BACKWARDS:
-	// 		{
+			// -------------------------------------------------------------------------------------------
+			case ANIM_2D_LOOP_BACKWARDS:
+			{
 
-	// 			if( m_currentFrame > m_minFrame )
-	// 				setCurrentFrame( m_currentFrame - 1 );
-	// 			else
-	// 				setCurrentFrame( m_maxFrame );
-	// 			break;
+				if( m_currentFrame > m_minFrame )
+					setCurrentFrame( m_currentFrame - 1 );
+				else
+					setCurrentFrame( m_maxFrame );
+				break;
 			
-	// 		}  // end loop backwards
+			}  // end loop backwards
 				
-	// 		// -------------------------------------------------------------------------------------------
-	// 		case ANIM_2D_PING_PONG:
-	// 		case ANIM_2D_PING_PONG_BACKWARDS:
-	// 		{
+			// -------------------------------------------------------------------------------------------
+			case ANIM_2D_PING_PONG:
+			case ANIM_2D_PING_PONG_BACKWARDS:
+			{
 
-	// 			if( BitTest( m_status, ANIM_2D_STATUS_REVERSED ) )
-	// 			{
-	// 				//
-	// 				// decrement frame, unless we're at frame 0 in which case we
-	// 				// increment and reverse directions
-	// 				//
-	// 				if( m_currentFrame == m_minFrame )
-	// 				{
+				if( BitTest( m_status, ANIM_2D_STATUS_REVERSED ) )
+				{
+					//
+					// decrement frame, unless we're at frame 0 in which case we
+					// increment and reverse directions
+					//
+					if( m_currentFrame == m_minFrame )
+					{
 
-	// 					setCurrentFrame( m_currentFrame + 1 );
-	// 					clearStatus( ANIM_2D_STATUS_REVERSED );
+						setCurrentFrame( m_currentFrame + 1 );
+						clearStatus( ANIM_2D_STATUS_REVERSED );
 
-	// 				}  // end if
-	// 				else
-	// 				{
+					}  // end if
+					else
+					{
 
-	// 					setCurrentFrame( m_currentFrame - 1 );
+						setCurrentFrame( m_currentFrame - 1 );
 
-	// 				}  // end else
+					}  // end else
 
-	// 			}  // end if
-	// 			else
-	// 			{
+				}  // end if
+				else
+				{
 
-	// 				//
-	// 				// increment frame, unless we're at the end in which case we decrement
-	// 				// and reverse directions
-	// 				//
-	// 				if( m_currentFrame == m_maxFrame )
-	// 				{
+					//
+					// increment frame, unless we're at the end in which case we decrement
+					// and reverse directions
+					//
+					if( m_currentFrame == m_maxFrame )
+					{
 
-	// 					setCurrentFrame( m_currentFrame - 1 );
-	// 					setStatus( ANIM_2D_STATUS_REVERSED );
+						setCurrentFrame( m_currentFrame - 1 );
+						setStatus( ANIM_2D_STATUS_REVERSED );
 
-	// 				}  // end if
-	// 				else
-	// 				{
+					}  // end if
+					else
+					{
 
-	// 					setCurrentFrame( m_currentFrame + 1 );
+						setCurrentFrame( m_currentFrame + 1 );
 
-	// 				}  // end else
+					}  // end else
 
-	// 			}  // end else
+				}  // end else
 
-	// 			break;
+				break;
 
-	// 		}  // end ping pong / ping pong backwards
+			}  // end ping pong / ping pong backwards
 
-	// 		// -------------------------------------------------------------------------------------------
-	// 		default:
-	// 		{
+			// -------------------------------------------------------------------------------------------
+			default:
+			{
 
-	// 			DEBUG_CRASH(( "Anim2D::tryNextFrame - Unknown animation mode '%d' for '%s'\n",
-	// 										m_template->getAnimMode(), m_template->getName().str() ));
-	// 			break;
+				DEBUG_CRASH(( "Anim2D::tryNextFrame - Unknown animation mode '%d' for '%s'\n",
+											m_template->getAnimMode(), m_template->getName().str() ));
+				break;
 
-	// 		}  // end default
+			}  // end default
 							
-	// 	}  // end switch
+		}  // end switch
 
-	// }  // end if
+	}  // end if
 
 }  // end tryNextFrame
 

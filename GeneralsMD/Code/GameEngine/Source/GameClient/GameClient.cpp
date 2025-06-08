@@ -79,7 +79,7 @@
 #include "GameClient/VideoPlayer.h"
 #include "GameClient/WindowXlat.h"
 // #include "GameLogic/FPUControl.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameLogic/GhostObject.h"
 // #include "GameLogic/Object.h"
 // #include "GameLogic/ScriptEngine.h"		// For TheScriptEngine - jkmcd
@@ -781,10 +781,6 @@ void GameClient::update( void )
 // 		// update the in game UI 
 // 		TheInGameUI->UPDATE();
 // 	}
-
-	// FIXME: Remove once TheGameLogic is implemented, because it controls frame count.
-	m_frame++;
-
 }  // end update
 
 /** -----------------------------------------------------------------------------------------------

@@ -29,89 +29,90 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Common/AudioAffect.h"
-#include "Common/AudioHandleSpecialValues.h"
-#include "Common/BuildAssistant.h"
-#include "Common/CopyProtection.h"
-#include "Common/CRCDebug.h"
-#include "Common/GameAudio.h"
-#include "Common/GameEngine.h"
-#include "Common/GameLOD.h"
-#include "Common/GameState.h"
-#include "Common/INI.h"
-#include "Common/LatchRestore.h"
-#include "Common/MapObject.h"
-#include "Common/MultiplayerSettings.h"
-#include "Common/PerfTimer.h"
-#include "Common/Player.h"
-#include "Common/PlayerList.h"
-#include "Common/PlayerTemplate.h"
-#include "Common/Radar.h"
-#include "Common/RandomValue.h"
-#include "Common/Recorder.h"
-#include "Common/StatsCollector.h"
-#include "Common/ThingFactory.h"
-#include "Common/Team.h"
-#include "Common/ThingTemplate.h"
-#include "GameClient/Water.h"
-#include "GameClient/Snow.h"
-#include "Common/WellKnownKeys.h"
-#include "Common/Xfer.h"
-#include "Common/XferCRC.h"
-#include "Common/XferDeepCRC.h"
-#include "Common/GameSpyMiscPreferences.h"
+// #include "Common/AudioAffect.h"
+// #include "Common/AudioHandleSpecialValues.h"
+// #include "Common/BuildAssistant.h"
+// #include "Common/CopyProtection.h"
+// #include "Common/CRCDebug.h"
+// #include "Common/GameAudio.h"
+// #include "Common/GameEngine.h"
+// #include "Common/GameLOD.h"
+// #include "Common/GameState.h"
+// #include "Common/INI.h"
+// #include "Common/LatchRestore.h"
+// #include "Common/MapObject.h"
+// #include "Common/MultiplayerSettings.h"
+// #include "Common/PerfTimer.h"
+// #include "Common/Player.h"
+// #include "Common/PlayerList.h"
+// #include "Common/PlayerTemplate.h"
+// #include "Common/Radar.h"
+// #include "Common/RandomValue.h"
+// #include "Common/Recorder.h"
+// #include "Common/StatsCollector.h"
+// #include "Common/ThingFactory.h"
+// #include "Common/Team.h"
+// #include "Common/ThingTemplate.h"
+// #include "GameClient/Water.h"
+// #include "GameClient/Snow.h"
+// #include "Common/WellKnownKeys.h"
+// #include "Common/Xfer.h"
+// #include "Common/XferCRC.h"
+// #include "Common/XferDeepCRC.h"
+// #include "Common/GameSpyMiscPreferences.h"
 
-#include "GameClient/ControlBar.h"
-#include "GameClient/Drawable.h"
+// #include "GameClient/ControlBar.h"
+// #include "GameClient/Drawable.h"
 #include "GameClient/GameClient.h"
-#include "GameClient/GameText.h"
-#include "GameClient/GUICallbacks.h"
-#include "GameClient/InGameUI.h"
-#include "GameClient/LoadScreen.h"
-#include "GameClient/MapUtil.h"
-#include "GameClient/Mouse.h"
-#include "GameClient/ParticleSys.h"
-#include "GameClient/TerrainVisual.h"
-#include "GameClient/View.h"
-#include "GameClient/ControlBar.h"
-#include "GameClient/CampaignManager.h"
-#include "GameClient/GameWindowTransitions.h"
+// #include "GameClient/GameText.h"
+// #include "GameClient/GUICallbacks.h"
+// #include "GameClient/InGameUI.h"
+// #include "GameClient/LoadScreen.h"
+// #include "GameClient/MapUtil.h"
+// #include "GameClient/Mouse.h"
+// #include "GameClient/ParticleSys.h"
+// #include "GameClient/TerrainVisual.h"
+// #include "GameClient/View.h"
+// #include "GameClient/ControlBar.h"
+// #include "GameClient/CampaignManager.h"
+// #include "GameClient/GameWindowTransitions.h"
 
-#include "GameLogic/AI.h"
-#include "GameLogic/AIPathfind.h"
-#include "GameLogic/CaveSystem.h"
-#include "GameLogic/CrateSystem.h"
-#include "GameLogic/FPUControl.h"
+// #include "GameLogic/AI.h"
+// #include "GameLogic/AIPathfind.h"
+// #include "GameLogic/CaveSystem.h"
+// #include "GameLogic/CrateSystem.h"
+// #include "GameLogic/FPUControl.h"
 #include "GameLogic/GameLogic.h"
-#include "GameLogic/Locomotor.h"
-#include "GameLogic/Object.h"
-#include "GameLogic/Module/AIUpdate.h"
-#include "GameLogic/Module/BodyModule.h"
-#include "GameLogic/Module/CreateModule.h"
-#include "GameLogic/Module/DestroyModule.h"
-#include "GameLogic/Module/OpenContain.h"
-#include "GameLogic/PartitionManager.h"
-#include "GameLogic/PolygonTrigger.h"
-#include "GameLogic/ScriptActions.h"
-#include "GameLogic/ScriptConditions.h"
-#include "GameLogic/ScriptEngine.h"
-#include "GameLogic/SidesList.h"
-#include "GameLogic/VictoryConditions.h"
-#include "GameLogic/Weapon.h"
-#include "GameLogic/GhostObject.h"
+// #include "GameLogic/Locomotor.h"
+// #include "GameLogic/Object.h"
+// #include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/BodyModule.h"
+// #include "GameLogic/Module/CreateModule.h"
+// #include "GameLogic/Module/DestroyModule.h"
+// #include "GameLogic/Module/OpenContain.h"
+// #include "GameLogic/PartitionManager.h"
+// #include "GameLogic/PolygonTrigger.h"
+// #include "GameLogic/ScriptActions.h"
+// #include "GameLogic/ScriptConditions.h"
+// #include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/SidesList.h"
+// #include "GameLogic/VictoryConditions.h"
+// #include "GameLogic/Weapon.h"
+// #include "GameLogic/GhostObject.h"
 
-#include "Common/DataChunk.h"
-#include "GameLogic/Scripts.h"
+// #include "Common/DataChunk.h"
+// #include "GameLogic/Scripts.h"
 
-#include "GameNetwork/GameSpy/BuddyThread.h"
-#include "GameNetwork/GameSpy/PeerDefs.h"
-#include "GameNetwork/GameSpy/ThreadUtils.h"
-#include "GameNetwork/LANAPICallbacks.h"
-#include "GameNetwork/NetworkInterface.h"
-#include "GameNetwork/GameSpy/PersistentStorageThread.h"
+// #include "GameNetwork/GameSpy/BuddyThread.h"
+// #include "GameNetwork/GameSpy/PeerDefs.h"
+// #include "GameNetwork/GameSpy/ThreadUtils.h"
+// #include "GameNetwork/LANAPICallbacks.h"
+// #include "GameNetwork/NetworkInterface.h"
+// #include "GameNetwork/GameSpy/PersistentStorageThread.h"
 
-#include <rts/profile.h>
+// #include <rts/profile.h>
 
+#if 0
 DECLARE_PERF_TIMER(SleepyMaintenance)
 
 #include "Common/UnitTimings.h" //Contains the DO_UNIT_TIMINGS define jba.		 
@@ -135,7 +136,7 @@ extern void externalAddTree(Coord3D location, Real scale, Real angle, AsciiStrin
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
-
+#endif // if 0
 
 
 
@@ -145,6 +146,7 @@ enum { OBJ_HASH_SIZE	= 8192 };
 /// The GameLogic singleton instance
 GameLogic *TheGameLogic = NULL;
 
+#if 0
 static void findAndSelectCommandCenter(Object *obj, void* alreadyFound);
 
 
@@ -216,12 +218,14 @@ void setFPMode( void )
 
 	_controlfp(newVal, _MCW_PC | _MCW_RC);
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** GameLogic class constructor */
 // ------------------------------------------------------------------------------------------------
 GameLogic::GameLogic( void )
 {
+#if 0
 	//Added By Sadullah Nader
 	//Initializations missing and necessary 
 	m_background = NULL;
@@ -263,8 +267,10 @@ GameLogic::GameLogic( void )
 	m_loadingMap = FALSE;
 	m_loadingSave = FALSE;
 	m_clearingGameData = FALSE;
+#endif // if 0
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Utility function to set class variables to default values. */
 // ------------------------------------------------------------------------------------------------
@@ -322,6 +328,7 @@ void GameLogic::destroyAllObjectsImmediate()
 	DEBUG_ASSERTCRASH( m_objList == NULL, ("destroyAllObjectsImmediate: Object list not cleared\n") );
 
 }  // end destroyAllObjectsImmediate
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /**GameLogic class destructor, the destruction order should mirror the
@@ -330,6 +337,7 @@ void GameLogic::destroyAllObjectsImmediate()
 GameLogic::~GameLogic()
 {
 
+#if 0
 	// clear any object TOC we might have
 	m_objectTOC.clear();
 
@@ -363,6 +371,7 @@ GameLogic::~GameLogic()
 	// delete the Script Engine
 	delete TheScriptEngine;
 	TheScriptEngine = NULL;
+#endif // if 0
 	
 	// Null out TheGameLogic
 	TheGameLogic = NULL;
@@ -374,6 +383,7 @@ GameLogic::~GameLogic()
 void GameLogic::init( void )
 {
 
+#if 0
 	setFPMode();
 
 	/// @todo Clear object and destroy lists
@@ -426,6 +436,7 @@ void GameLogic::init( void )
 	m_isInUpdate = FALSE;
 
 	m_rankPointsToAddAtGameStart = 0;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -433,6 +444,7 @@ void GameLogic::init( void )
 //-------------------------------------------------------------------------------------------------
 void GameLogic::reset( void )
 {
+#if 0
 	m_thingTemplateBuildableOverrides.clear();
 	m_controlBarOverrides.clear();
 
@@ -494,8 +506,10 @@ void GameLogic::reset( void )
 	TheWeatherSetting = (WeatherSetting*) ws->deleteOverrides();
 
 	m_rankPointsToAddAtGameStart = 0;
+#endif // if 0
 }  // end reset
 
+#if 0
 static Object * placeObjectAtPosition(Int slotNum, AsciiString objectTemplateName, Coord3D& pos, Player *pPlayer,
 																	const PlayerTemplate *pTemplate)
 {
@@ -624,7 +638,7 @@ LoadScreen *GameLogic::getLoadScreen( Bool loadingSaveGame )
 	{
 	case GAME_SHELL:
 		return NEW ShellGameLoadScreen;
-		break;                         
+		break;
 	case GAME_SINGLE_PLAYER:
 	{
 		Campaign* currentCampaign = TheCampaignManager->getCurrentCampaign();
@@ -3566,11 +3580,13 @@ extern __int64 Total_Create_Render_Obj_Time;
 extern __int64 Total_Load_3D_Assets;
 #endif
 
+#endif // if 0
 // ------------------------------------------------------------------------------------------------
 /** Update all objects in the world by invoking their update() methods. */
 // ------------------------------------------------------------------------------------------------
 void GameLogic::update( void )
 {
+#if 0
 	USE_PERF_TIMER(GameLogic_update)
 
 	LatchRestore<Bool> inUpdateLatch(m_isInUpdate, TRUE);
@@ -3613,12 +3629,14 @@ void GameLogic::update( void )
 	DEBUG_LOG(("%s", Buf));
 	#endif
 	}
+#endif // if 0
 
 	// send the current time to the GameClient
 	DEBUG_ASSERTCRASH(TheGameLogic == this, ("hmm, TheGameLogic is not right"));
 	UnsignedInt now = TheGameLogic->getFrame();
 	TheGameClient->setFrame(now);
 
+#if 0
 	// update (execute) scripts
 	{
 		TheScriptEngine->UPDATE();
@@ -3822,10 +3840,12 @@ void GameLogic::update( void )
 	// increment world time
 	if (!m_startNewGame)
 	{
+#endif // if 0
 		m_frame++;
-	}
+	// }
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Return the first object in the world list */
 // ------------------------------------------------------------------------------------------------
@@ -4469,15 +4489,17 @@ void GameLogic::getAIMetricsStatistics( UnsignedInt *numAI, UnsignedInt *numMovi
 	*overallFailedPathfinds = m_overallFailedPathfinds;
 }
 #endif
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Light CRC */
 // ------------------------------------------------------------------------------------------------
-void GameLogic::crc( Xfer *xfer )
+void GameLogic::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Given a string name, find the object TOC entry (if any) associated with it */
 // ------------------------------------------------------------------------------------------------
@@ -4673,6 +4695,7 @@ void GameLogic::prepareLogicForObjectLoad( void )
 										 getFirstObject()->getTemplate()->getName().str()) );
 
 }  // end prepareLogicForObjectLoad
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Load/Save game logic to xfer 
@@ -4687,9 +4710,10 @@ void GameLogic::prepareLogicForObjectLoad( void )
   * 10: xfer m_superweaponRestriction
 	*/	
 // ------------------------------------------------------------------------------------------------
-void GameLogic::xfer( Xfer *xfer )
+void GameLogic::xfer( Xfer * /*xfer*/ )
 {
-  
+
+#if 0
 	// version
 	const XferVersion currentVersion = 10;
 	XferVersion version = currentVersion;
@@ -5012,6 +5036,7 @@ void GameLogic::xfer( Xfer *xfer )
   {
     m_superweaponRestriction = 0;
   }
+#endif // if 0
 }  // end xfer
 
 // ------------------------------------------------------------------------------------------------
@@ -5020,6 +5045,7 @@ void GameLogic::xfer( Xfer *xfer )
 void GameLogic::loadPostProcess( void )
 {
 
+#if 0
 	//
 	// the act of loading objects can (theoretically) as a side effect create other objects, 
 	// our m_nextObjID that we maintain to give objects unique ID is also continually
@@ -5091,7 +5117,6 @@ void GameLogic::loadPostProcess( void )
 
 	// re-sort the priority queue all at once now that all modules are on it
 	remakeSleepyUpdate();
+#endif // if 0
 
 }  // end loadPostProcess
-
-

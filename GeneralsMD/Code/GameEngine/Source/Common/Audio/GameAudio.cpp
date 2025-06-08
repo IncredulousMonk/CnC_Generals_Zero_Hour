@@ -65,7 +65,7 @@
 // #include "GameClient/Drawable.h"
 // #include "GameClient/View.h"
 
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameLogic/TerrainLogic.h"
 
 #include "WWMath/matrix3d.h"
@@ -419,9 +419,7 @@ AudioHandle AudioManager::addAudioEvent(const AudioEventRTS *eventToAdd)
 	}
 
 #ifdef INTENSIVE_AUDIO_DEBUG
-	// FIXME: TheGameLogic
-	// DEBUG_LOG(("AUDIO (%d): Received addAudioEvent('%s')\n", TheGameLogic->getFrame(), eventToAdd->getEventName().str()));
-	DEBUG_LOG(("AUDIO (%d): Received addAudioEvent('%s')\n", -1, eventToAdd->getEventName().str()));
+	DEBUG_LOG(("AUDIO (%d): Received addAudioEvent('%s')\n", TheGameLogic->getFrame(), eventToAdd->getEventName().str()));
 #endif
 	if (!eventToAdd->getAudioEventInfo()) {
 		getInfoForAudioEvent(eventToAdd);

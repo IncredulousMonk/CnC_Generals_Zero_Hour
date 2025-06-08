@@ -30,18 +30,17 @@
 #define __LINUXGAMEENGINE_H_
 
 #include "Common/GameEngine.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameNetwork/NetworkInterface.h"
 #include "LinuxDevice/Audio/SdlAudioManager.h"
 #include "LinuxDevice/Common/LinuxBIGFileSystem.h"
 #include "LinuxDevice/Common/LinuxLocalFileSystem.h"
 // #include "W3DDevice/Common/W3DModuleFactory.h"
-// #include "W3DDevice/GameLogic/W3DGameLogic.h"
+#include "LinuxDevice/GameLogic/LinuxGameLogic.h"
 #include "LinuxDevice/GameClient/LinuxGameClient.h"
 // #include "W3DDevice/GameClient/W3DWebBrowser.h"
 #include "LinuxDevice/Common/LinuxFunctionLexicon.h"
 // #include "W3DDevice/Common/W3DRadar.h"
-// #include "W3DDevice/Common/W3DFunctionLexicon.h"
 // #include "W3DDevice/Common/W3DThingFactory.h"
 
 
@@ -83,8 +82,7 @@ protected:
 };  // end LinuxGameEngine
 
 // INLINE -----------------------------------------------------------------------------------------
-// inline GameLogic* LinuxGameEngine::createGameLogic( void ) { return NEW W3DGameLogic; }
-inline GameLogic* LinuxGameEngine::createGameLogic( void ) { printf("Creating NULL GameLogic!\n"); return nullptr; }
+inline GameLogic* LinuxGameEngine::createGameLogic( void ) { return NEW LinuxGameLogic; }
 inline GameClient* LinuxGameEngine::createGameClient( void ) { return NEW LinuxGameClient; }
 // inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { return NEW W3DModuleFactory; }
 inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { printf("Creating NULL ModuleFactory!\n"); return nullptr; }

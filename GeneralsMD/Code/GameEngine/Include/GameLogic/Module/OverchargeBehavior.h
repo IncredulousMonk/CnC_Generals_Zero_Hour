@@ -61,6 +61,7 @@ class OverchargeBehaviorInterface
 {
 
 public:
+	virtual ~OverchargeBehaviorInterface() {}
 
 	virtual void toggle( void ) = 0;
 	virtual void enable( Bool enable ) = 0;

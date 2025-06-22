@@ -45,6 +45,7 @@
 void INI::parseObjectDefinition( INI* ini )
 {
 	AsciiString name = ini->getNextToken();
+	DEBUG_LOG(("### Parsing object definition: %s\n", name.str()));
 	ThingFactory::parseObjectDefinition(ini, name, AsciiString::TheEmptyString);
 }
 
@@ -55,6 +56,7 @@ void INI::parseObjectReskinDefinition( INI* ini )
 {
 	AsciiString name = ini->getNextToken();
 	AsciiString reskinFrom = ini->getNextToken();
+	DEBUG_LOG(("### Parsing object reskin: %s/%s\n", name.str(), reskinFrom.str()));
 	ThingFactory::parseObjectDefinition(ini, name, reskinFrom);
 }
 

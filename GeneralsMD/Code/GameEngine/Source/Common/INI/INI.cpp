@@ -41,8 +41,8 @@
 #include "Common/AudioEventRTS.h"
 #include "Common/Science.h"
 // #include "Common/SpecialPower.h"
-// #include "Common/ThingFactory.h"
-// #include "Common/ThingTemplate.h"
+#include "Common/ThingFactory.h"
+#include "Common/ThingTemplate.h"
 // #include "Common/Upgrade.h"
 // #include "Common/Xfer.h"
 // #include "Common/XferCRC.h"
@@ -124,9 +124,9 @@ static const BlockParse theTypeTable[] =
 	{ "OnlineChatColors",				INI::parseOnlineChatColorDefinition },
 	{ "MultiplayerSettings",			INI::parseMultiplayerSettingsDefinition },
 	{ "MusicTrack",						INI::parseMusicTrackDefinition },
-// 	{ "Object",							INI::parseObjectDefinition },
+	{ "Object",							INI::parseObjectDefinition },
 // 	{ "ObjectCreationList",				INI::parseObjectCreationListDefinition },
-// 	{ "ObjectReskin",					INI::parseObjectReskinDefinition },
+	{ "ObjectReskin",					INI::parseObjectReskinDefinition },
 // 	{ "ParticleSystem",					INI::parseParticleSystemDefinition },
 // 	{ "PlayerTemplate",					INI::parsePlayerTemplateDefinition },
 	{ "Road",							INI::parseTerrainRoadDefinition },
@@ -190,7 +190,7 @@ INI::INI( void )
 {
 
 	m_file							= NULL;
-  m_readBufferNext=m_readBufferUsed=0;
+	m_readBufferNext=m_readBufferUsed=0;
 	m_filename					= "None";
 	m_loadType					= INI_LOAD_INVALID;
 	m_lineNum						= 0;
@@ -1156,34 +1156,32 @@ void INI::parseICoord2D( INI* ini, void * /*instance*/, void *store, const void*
 //-------------------------------------------------------------------------------------------------
 void INI::parseDynamicAudioEventRTS( INI *ini, void * /*instance*/, void *store, const void* )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseDynamicAudioEventRTS not yet implemented"));
-	// const char *token = ini->getNextToken();
-	// DynamicAudioEventRTS** theSound = (DynamicAudioEventRTS**)store;
+	const char *token = ini->getNextToken();
+	DynamicAudioEventRTS** theSound = (DynamicAudioEventRTS**)store;
 	
-	// // translate the string into a sound
-	// if (strcasecmp(token, "NoSound") == 0) 
-	// {
-	// 	if (*theSound)
-	// 	{
-	// 		(*theSound)->deleteInstance();
-	// 		*theSound = NULL;
-	// 	}
-	// }
-	// else
-	// {
-	// 	if (*theSound == NULL)
-	// 		*theSound = newInstance(DynamicAudioEventRTS);
-	// 	(*theSound)->m_event.setEventName(AsciiString(token));
-	// }
+	// translate the string into a sound
+	if (strcasecmp(token, "NoSound") == 0) 
+	{
+		if (*theSound)
+		{
+			(*theSound)->deleteInstance();
+			*theSound = NULL;
+		}
+	}
+	else
+	{
+		if (*theSound == NULL)
+			*theSound = newInstance(DynamicAudioEventRTS);
+		(*theSound)->m_event.setEventName(AsciiString(token));
+	}
 	
-	// if (*theSound)
-	// 	TheAudio->getInfoForAudioEvent(&(*theSound)->m_event);
+	if (*theSound)
+		TheAudio->getInfoForAudioEvent(&(*theSound)->m_event);
 }
 
 //-------------------------------------------------------------------------------------------------
 /** Parse an audio event and assign to the 'AudioEventRTS*' at store */
+/** MG: Changed to use the userData instead as a pointer to the object's member variable */
 //-------------------------------------------------------------------------------------------------
 void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void * /*store*/, const void* userData)
 {
@@ -1204,31 +1202,28 @@ void INI::parseAudioEventRTS( INI *ini, void * /*instance*/, void * /*store*/, c
 //-------------------------------------------------------------------------------------------------
 void INI::parseThingTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseThingTemplate not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// if (!TheThingFactory)
-	// {
-	// 	DEBUG_CRASH(("TheThingFactory not inited yet"));
-	// 	throw ERROR_BUG;
-	// }
+	if (!TheThingFactory)
+	{
+		DEBUG_CRASH(("TheThingFactory not inited yet"));
+		throw ERROR_BUG;
+	}
 
-	// typedef const ThingTemplate *ConstThingTemplatePtr;
-	// ConstThingTemplatePtr* theThingTemplate = (ConstThingTemplatePtr*)store;		
+	typedef const ThingTemplate *ConstThingTemplatePtr;
+	ConstThingTemplatePtr* theThingTemplate = (ConstThingTemplatePtr*)store;		
 
-	// if (strcasecmp(token, "None") == 0)
-	// {
-	// 	*theThingTemplate = NULL;
-	// }
-	// else
-	// {
-	// 	const ThingTemplate *tt = TheThingFactory->findTemplate(token);	// could be null!
-	// 	DEBUG_ASSERTCRASH(tt, ("ThingTemplate %s not found!\n",token));
-	// 	// assign it, even if null!
-	// 	*theThingTemplate = tt;
-	// }
+	if (strcasecmp(token, "None") == 0)
+	{
+		*theThingTemplate = NULL;
+	}
+	else
+	{
+		const ThingTemplate *tt = TheThingFactory->findTemplate(token);	// could be null!
+		DEBUG_ASSERTCRASH(tt, ("ThingTemplate %s not found!\n",token));
+		// assign it, even if null!
+		*theThingTemplate = tt;
+	}
 
 } 
 
@@ -1237,10 +1232,9 @@ void INI::parseThingTemplate( INI* ini, void * /*instance*/, void *store, const 
 //-------------------------------------------------------------------------------------------------
 void INI::parseArmorTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
 	(void) store;
-	DEBUG_CRASH(("parseArmorTemplate not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
+	DEBUG_LOG(("WARNING: parseArmorTemplate not yet implemented: trying to load template %s\n", token));
 
 	// typedef const ArmorTemplate *ConstArmorTemplatePtr;
 	// ConstArmorTemplatePtr* theArmorTemplate = (ConstArmorTemplatePtr*)store;		
@@ -1264,13 +1258,12 @@ void INI::parseArmorTemplate( INI* ini, void * /*instance*/, void *store, const 
 //-------------------------------------------------------------------------------------------------
 void INI::parseWeaponTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
 	(void) store;
-	DEBUG_CRASH(("parseWeaponTemplate not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
+	DEBUG_LOG(("WARNING: parseWeaponTemplate not yet implemented: trying to load template %s\n", token));
 
 	// typedef const WeaponTemplate *ConstWeaponTemplatePtr;
-	// ConstWeaponTemplatePtr* theWeaponTemplate = (ConstWeaponTemplatePtr*)store;		
+	// ConstWeaponTemplatePtr* theWeaponTemplate = (ConstWeaponTemplatePtr*)store;
 
 	// const WeaponTemplate *tt = TheWeaponStore->findWeaponTemplate(token);	// could be null!
 	// DEBUG_ASSERTCRASH(tt || strcasecmp(token, "None") == 0, ("WeaponTemplate %s not found!\n",token));
@@ -1324,10 +1317,9 @@ void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *stor
 //-------------------------------------------------------------------------------------------------
 void INI::parseDamageFX( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
 	(void) store;
-	DEBUG_CRASH(("parseDamageFX not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
+	DEBUG_LOG(("WARNING: parseDamageFX not yet implemented: trying to load template %s\n", token));
 
 	// typedef const DamageFX *ConstDamageFXPtr;
 	// ConstDamageFXPtr* theDamageFX = (ConstDamageFXPtr*)store;		
@@ -1604,6 +1596,49 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 
 	}  // end while
 
+}
+
+//-------------------------------------------------------------------------------------------------
+void INI::skipToEnd()
+{
+	Bool done {FALSE};
+
+	std::set<AsciiString> set {}; // A set of names that can start a sub-block.
+	set.insert("DefaultConditionState");
+	set.insert("ConditionState");
+	// set.insert("AliasConditionState");
+	set.insert("TransitionState");
+	set.insert("AttackAreaDecal");
+	set.insert("TargetingReticleDecal");
+	set.insert("Turret");
+	set.insert("AltTurret");
+	set.insert("GridDecalTemplate");
+
+	// read each of the data fields
+	while (!done) {
+		// read next line
+		readLine();
+
+		// check for end token
+		const char* field = strtok(m_buffer, INI::getSeps());
+		if (field) {
+			if (strcasecmp(field, m_blockEndToken) == 0) {
+				done = TRUE;
+			} else if (set.contains(field)) {
+				skipToEnd(); // Recursive skipToEnd!
+			} else {
+				DEBUG_LOG(("Skipping .ini field: %s\n", field));
+			}  // end else
+		}  // end if
+
+		// sanity check for reaching end of file with no closing end token
+		if (done == FALSE && INI::isEOF() == TRUE) {
+			done = TRUE;
+			DEBUG_ASSERTCRASH( 0, ("Error parsing block '%s', in INI file '%s'.  Missing '%s' token\n",
+												 m_curBlockStart, getFilename().str(), m_blockEndToken) );
+			throw INI_MISSING_END_TOKEN;
+		}  // end if
+	}  // end while
 }
 
 //-------------------------------------------------------------------------------------------------

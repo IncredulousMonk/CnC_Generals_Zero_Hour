@@ -82,7 +82,7 @@ void ThingFactory::freeDatabase( void )
 }  // end freeDatabase
 
 //-------------------------------------------------------------------------------------------------
-/** add the thing template passed in, into the databse */
+/** add the thing template passed in, into the database */
 //-------------------------------------------------------------------------------------------------
 void ThingFactory::addTemplate( ThingTemplate *tmplate )
 {
@@ -111,7 +111,7 @@ ThingFactory::ThingFactory()
 	m_firstTemplate = NULL;
 	m_nextTemplateID = 1;	// not zero!
 
-	m_templateHashMap.resize( TEMPLATE_HASH_SIZE );
+	m_templateHashMap.reserve( TEMPLATE_HASH_SIZE );
 }  // end ThingFactory
 
 //-------------------------------------------------------------------------------------------------
@@ -311,7 +311,7 @@ Object *ThingFactory::newObject( const ThingTemplate *tmplate, Team *team, Objec
 	if (!asv.empty())
 	{
 		Int which = GameLogicRandomValue(0, asv.size()-1);
-		const ThingTemplate* tmp = findTemplate( asv[which] );
+		const ThingTemplate* tmp = findTemplate( asv.data()[which] );
 		if (tmp != NULL)
 			tmplate = tmp;
 	}
@@ -338,7 +338,8 @@ Object *ThingFactory::newObject( const ThingTemplate *tmplate, Team *team, Objec
 	// all objects are part of the partition manager system, add it to that 
 	// system now
 	//
-	ThePartitionManager->registerObject( obj );
+	// FIXME: ThePartitionManager
+	// ThePartitionManager->registerObject( obj );
 
 	obj->initObject();
 
@@ -410,7 +411,7 @@ AsciiString TheThingTemplateBeingParsedName;
 			thingTemplate->copyFrom(reskinTmpl);
 			thingTemplate->setCopiedFromDefault();
 			thingTemplate->setReskinnedFrom(reskinTmpl);
-			ini->initFromINI( thingTemplate, thingTemplate->getReskinFieldParse() );
+			ini->initFromINI( &thingTemplate->m_ini, thingTemplate->getReskinFieldParse() );
 		}
 		else
 		{
@@ -420,7 +421,7 @@ AsciiString TheThingTemplateBeingParsedName;
 	}
 	else
 	{
-		ini->initFromINI( thingTemplate, thingTemplate->getFieldParse() );
+		ini->initFromINI( &thingTemplate->m_ini, thingTemplate->getFieldParse() );
 	}
 
 	thingTemplate->validate();

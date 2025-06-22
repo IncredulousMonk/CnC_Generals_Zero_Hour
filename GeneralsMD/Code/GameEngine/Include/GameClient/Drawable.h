@@ -40,6 +40,7 @@
 #include "WWMath/matrix3d.h"
 #include "GameClient/DrawableInfo.h"
 
+#if 0
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class PositionalSound;
 class ThingTemplate;
@@ -161,6 +162,7 @@ public:
 
 	DrawableLocoInfo();
 };
+#endif // if 0
 
 //-----------------------------------------------------------------------------
 //* TintEnvelope handles the fading of the tint color up, down stable etc...
@@ -174,6 +176,7 @@ public:
 
 	TintEnvelope(void);
 	void update(void);  ///< does all the work
+#if 0
 	void play(const RGBColor *peak, 
 						UnsignedInt atackFrames = DEF_ATTACK_FRAMES, 
 						UnsignedInt decayFrames = DEF_DECAY_FRAMES, 
@@ -183,6 +186,7 @@ public:
 	void rest(void)    { m_envState = ENVELOPE_STATE_REST; } // goes away now!
 	Bool isEffective() const { return m_affect; }
 	const Vector3* getColor() const { return &m_currentColor; }
+#endif // if 0
 
 protected:
 
@@ -193,10 +197,12 @@ protected:
 
 private:
 
+#if 0
 	void setAttackFrames(UnsignedInt frames);
 	void setDecayFrames( UnsignedInt frames); 
 	void setPeakColor( const RGBColor *peak) {m_peakColor = Vector3( peak->red, peak->green, peak->blue );};
 	void setPeakColor( Real r, Real g, Real b ) {m_peakColor.Set( r, g, b );};
+#endif // if 0
 
 	enum EnvelopeStatesEnum
 	{
@@ -287,11 +293,10 @@ const Int DRAWABLE_FRAMES_PER_FLASH = LOGICFRAMES_PER_SECOND / 2;
  * A Drawable is a graphical entity which is generally associated
  * with a GameLogic object.  Drawables are managed by TheGameClient.
  */
-class Drawable : public Thing,
-								 public Snapshot
+class Drawable : public Thing, public Snapshot
 {
 
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Drawable, "Drawable" )		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Drawable, "Drawable" )
 
 public:
 
@@ -301,8 +306,9 @@ public:
 	Drawable(const Drawable&) = delete;
 	Drawable& operator=(const Drawable&) = delete;
 
+#if 0
 	void onDestroy( void );																							///< run from GameClient::destroyDrawable
-  void onLevelStart();                                                ///< run from GameLogic::startNewGame
+	void onLevelStart();                                                ///< run from GameLogic::startNewGame
 
 	Drawable *getNextDrawable( void ) const { return m_nextDrawable; }	///< return the next drawable in the global list
 	Drawable *getPrevDrawable( void ) const { return m_prevDrawable; }  ///< return the prev drawable in the global list
@@ -317,8 +323,8 @@ public:
 	TintEnvelope *getColorTintEnvelope( void ) { return m_colorTintEnvelope; }
 	void setColorTintEnvelope( TintEnvelope &source ) { if (m_colorTintEnvelope) *m_colorTintEnvelope = source; }
 
-  
-  void imitateStealthLook( Drawable& otherDraw );
+
+	void imitateStealthLook( Drawable& otherDraw );
 
 	void setTerrainDecal(TerrainDecalType type);	///<decal that is to appear under the drawable
 	void setTerrainDecalSize(Real x, Real y);
@@ -387,8 +393,8 @@ public:
 	void setFullyObscuredByShroud(Bool fullyObscured);
 	inline Bool getFullyObscuredByShroud(void) {return m_drawableFullyObscuredByShroud;}
 
-  // Put on ice until later... M Lorenzen
-  //	inline UnsignedByte getFullyObscuredByShroudWithCheatSpy(void) {return (UnsignedByte)m_drawableFullyObscuredByShroud | 128;}//8 looks like a zero in most fonts
+	// Put on ice until later... M Lorenzen
+	//	inline UnsignedByte getFullyObscuredByShroudWithCheatSpy(void) {return (UnsignedByte)m_drawableFullyObscuredByShroud | 128;}//8 looks like a zero in most fonts
 
 	Bool getDrawsInMirror() const { return BitTest(m_status, DRAWABLE_STATUS_DRAWS_IN_MIRROR) || isKindOf(KINDOF_CAN_CAST_REFLECTIONS); }
 
@@ -423,7 +429,7 @@ public:
 	void stopAmbientSound( void );
 	void enableAmbientSound( Bool enable );
 	void setTimeOfDay( TimeOfDay tod );
-  Bool getAmbientSoundEnabledFromScript( void ) const { return m_ambientSoundEnabledFromScript; }
+	Bool getAmbientSoundEnabledFromScript( void ) const { return m_ambientSoundEnabledFromScript; }
 
 	void prependToList(Drawable **pListHead);
 	void removeFromList(Drawable **pListHead);
@@ -555,10 +561,10 @@ public:
 	Bool getShouldAnimate( Bool considerPower ) const;
 
 	// flash drawable methods ---------------------------------------------------------
-  Int getFlashCount( void ) { return m_flashCount; }
+	Int getFlashCount( void ) { return m_flashCount; }
 	void setFlashCount( Int count ) { m_flashCount = count; }
 	void setFlashColor( Color color ) { m_flashColor = color; }
-  void saturateRGB(RGBColor& color, Real factor);// not strictly for flash color, but it is the only practical use for this
+	void saturateRGB(RGBColor& color, Real factor);// not strictly for flash color, but it is the only practical use for this
 	//---------------------------------------------------------------------------------
 
 	// caption text methods -----------------------------------------------------------
@@ -571,32 +577,34 @@ public:
 	void killIcon(DrawableIconType t) { if (m_iconInfo) m_iconInfo->killIcon(t); }
 	Bool hasIconInfo() const { return m_iconInfo != NULL; }
 
-  
-  Bool getReceivesDynamicLights( void ) { return m_receivesDynamicLights; };
-  void setReceivesDynamicLights( Bool set ) { m_receivesDynamicLights = set; };
-  
-  //---------------------------------------------------------------------------------
-  // Stuff for overriding ambient sound
-  const AudioEventInfo * getBaseSoundAmbientInfo() const; //< Possible starting point if only some parameters are customized
-  void enableAmbientSoundFromScript( Bool enable );
-  const AudioEventRTS * getAmbientSound() const { return m_ambientSound == NULL ? NULL : &m_ambientSound->m_event; }
-  void setCustomSoundAmbientOff(); //< Kill the ambient sound
-  void setCustomSoundAmbientInfo( DynamicAudioEventInfo * customAmbientInfo ); //< Set ambient sound.
-  void clearCustomSoundAmbient( ) { clearCustomSoundAmbient( true ); } //< Return to using defaults
-  Bool getAmbientSoundEnabled( void ) const { return m_ambientSoundEnabled; }
-  void mangleCustomAudioName( DynamicAudioEventInfo * audioToMangle ) const;
+
+	Bool getReceivesDynamicLights( void ) { return m_receivesDynamicLights; };
+	void setReceivesDynamicLights( Bool set ) { m_receivesDynamicLights = set; };
+
+	//---------------------------------------------------------------------------------
+	// Stuff for overriding ambient sound
+	const AudioEventInfo * getBaseSoundAmbientInfo() const; //< Possible starting point if only some parameters are customized
+	void enableAmbientSoundFromScript( Bool enable );
+	const AudioEventRTS * getAmbientSound() const { return m_ambientSound == NULL ? NULL : &m_ambientSound->m_event; }
+	void setCustomSoundAmbientOff(); //< Kill the ambient sound
+	void setCustomSoundAmbientInfo( DynamicAudioEventInfo * customAmbientInfo ); //< Set ambient sound.
+	void clearCustomSoundAmbient( ) { clearCustomSoundAmbient( true ); } //< Return to using defaults
+	Bool getAmbientSoundEnabled( void ) const { return m_ambientSoundEnabled; }
+	void mangleCustomAudioName( DynamicAudioEventInfo * audioToMangle ) const;
 
 
-  Real friend_getStealthOpacity( void ) { return m_stealthOpacity; }
-  Real friend_getExplicitOpacity( void ) { return m_explicitOpacity; }
-  Real friend_getEffectiveStealthOpacity( void ) { return m_effectiveStealthOpacity; }
-  
+	Real friend_getStealthOpacity( void ) { return m_stealthOpacity; }
+	Real friend_getExplicitOpacity( void ) { return m_explicitOpacity; }
+	Real friend_getEffectiveStealthOpacity( void ) { return m_effectiveStealthOpacity; }
+#endif // if 0
+
 protected:
 
 	// snapshot methods
 	virtual void crc( Xfer *xfer );
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
+#if 0
 	void xferDrawableModules( Xfer *xfer );
 
 	void	startAmbientSound( BodyDamageType dt, TimeOfDay tod, Bool onlyIfPermanent = false );
@@ -642,8 +650,10 @@ protected:
 #ifdef _DEBUG
 	void validatePos() const;
 #endif
+#endif // if 0
 
 	virtual void reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle);
+#if 0
 	void updateHiddenStatus();
 
 private:
@@ -723,10 +733,10 @@ private:
 	Bool m_hiddenByStealth {};			///< drawable is hidden due to stealth
 	Bool m_instanceIsIdentity {};	///< If true, instance matrix can be skipped
 	Bool m_drawableFullyObscuredByShroud {};	///<drawable is hidden by shroud/fog
-  Bool m_ambientSoundEnabled {};
-  Bool m_ambientSoundEnabledFromScript {};
+	Bool m_ambientSoundEnabled {};
+	Bool m_ambientSoundEnabledFromScript {};
 
-  Bool m_receivesDynamicLights {};
+	Bool m_receivesDynamicLights {};
 
 #ifdef DIRTY_CONDITION_FLAGS
 	mutable Bool m_isModelDirty {};				///< if true, must call replaceModelConditionState() before drawing or accessing drawmodule info
@@ -784,6 +794,7 @@ private:
 	static void initStaticImages();
 	//*******************************************
 
+#endif // if 0
 };
 
 

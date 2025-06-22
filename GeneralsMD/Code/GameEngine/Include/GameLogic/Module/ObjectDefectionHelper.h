@@ -42,7 +42,13 @@
 // ------------------------------------------------------------------------------------------------
 class ObjectDefectionHelperModuleData : public ModuleData
 {
+public:
+	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+	};
 
+	IniData m_ini {};
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -55,10 +61,10 @@ class ObjectDefectionHelper : public ObjectHelper
 
 private:
 
-	UnsignedInt   m_defectionDetectionStart;				///< this is the timer, mentioned above (absolute frame, NOT counter)
-	UnsignedInt   m_defectionDetectionEnd;					///< this is the timer, mentioned above (absolute frame, NOT counter)
-	Real          m_defectionDetectionFlashPhase;   ///< keeps track of the flashing rate logarithmic curve
-	Bool					m_doDefectorFX;	///<AmericaInfPilot uses defect to become temporarily "invulnerable"
+	UnsignedInt   m_defectionDetectionStart {};				///< this is the timer, mentioned above (absolute frame, NOT counter)
+	UnsignedInt   m_defectionDetectionEnd {};					///< this is the timer, mentioned above (absolute frame, NOT counter)
+	Real          m_defectionDetectionFlashPhase {};   ///< keeps track of the flashing rate logarithmic curve
+	Bool					m_doDefectorFX {};	///<AmericaInfPilot uses defect to become temporarily "invulnerable"
 
 public:
 

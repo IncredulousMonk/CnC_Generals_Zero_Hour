@@ -46,14 +46,19 @@
 #include "win.h"
 #include <string.h>
 #include <stdarg.h>
-#include <tchar.h>
+// #include <tchar.h>
 #include "trim.h"
 #include "wwdebug.h"
 #ifdef _UNIX
 #include "osdep.h"
 #endif
 
-
+#define TCHAR wchar_t
+#define WCHAR wchar_t
+#define _tcscmp wcscmp
+#define _tcsicmp wcsicmp
+#define _tcslen wcslen
+#define _tcsclen wcslen
 
 //////////////////////////////////////////////////////////////////////
 //

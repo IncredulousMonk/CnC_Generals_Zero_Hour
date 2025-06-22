@@ -52,7 +52,7 @@
 #include "quat.h"
 #include "matrix3d.h"
 #include "matrix4.h"
-#include "wwmath.h"
+// #include "wwmath.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -438,8 +438,8 @@ no_negative:
 	}
 }
 #else
-void __cdecl Fast_Slerp(Quaternion& res, const Quaternion & p,const Quaternion & q,float alpha)
-{		
+void Fast_Slerp(Quaternion& res, const Quaternion & p,const Quaternion & q,float alpha)
+{
 	float beta;			// complementary interploation parameter
 	float theta;		// angle between p and q
 	float cos_t; 		// sine, cosine of theta
@@ -891,5 +891,3 @@ void Quaternion::Randomize(void)
 	
 	Normalize();
 }
-
-

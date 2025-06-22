@@ -32,10 +32,10 @@
 #ifndef __BODYMODULE_H_
 #define __BODYMODULE_H_
 
-// #include "Common/Module.h"
-// #include "GameLogic/Damage.h"
-// #include "GameLogic/ArmorSet.h"
-// #include "GameLogic/Module/BehaviorModule.h"
+#include "Common/Module.h"
+#include "GameLogic/Damage.h"
+#include "GameLogic/ArmorSet.h"
+#include "GameLogic/Module/BehaviorModule.h"
 
 //-------------------------------------------------------------------------------------------------
 /** OBJECT BODY MODULE base class */
@@ -72,8 +72,6 @@ static const char* TheBodyDamageTypeNames[] =
 };
 #endif
 
-// FIXME: BodyModule
-#if 0
 enum MaxHealthChangeType
 {
 	SAME_CURRENTHEALTH,
@@ -308,5 +306,4 @@ protected:
 inline BodyModule::BodyModule( Thing *thing, const ModuleData* moduleData ) : BehaviorModule( thing, moduleData ), m_damageScalar(1.0f) { }
 inline BodyModule::~BodyModule() { }
 
-#endif
 #endif

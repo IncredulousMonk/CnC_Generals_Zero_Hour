@@ -58,7 +58,7 @@ public:
 	WaterHandle( void ) { m_polygon = NULL; }
 
 	///@todo we need to formalize the water systems 
-	PolygonTrigger *m_polygon;	///< valid when water is a polygon area, NULL if water is a grid
+	PolygonTrigger *m_polygon {};	///< valid when water is a polygon area, NULL if water is a grid
 
 };
 
@@ -103,6 +103,10 @@ protected:
 public:
 	PolygonTrigger(Int initialAllocation);
 	//~PolygonTrigger(void);		///< Note that deleting the head of a list deletes all linked objects in the list.
+
+	// No copies allowed!
+	PolygonTrigger(const PolygonTrigger&) = delete;
+	PolygonTrigger& operator=(const PolygonTrigger&) = delete;
 
 public:
 	static PolygonTrigger *getFirstPolygonTrigger(void) {return ThePolygonTriggerListPtr;}

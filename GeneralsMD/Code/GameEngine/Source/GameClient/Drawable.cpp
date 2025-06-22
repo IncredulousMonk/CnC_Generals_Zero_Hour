@@ -29,54 +29,55 @@
   
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Common/AudioEventInfo.h"
-#include "Common/DynamicAudioEventInfo.h"
-#include "Common/AudioSettings.h"
-#include "Common/BitFlagsIO.h"
-#include "Common/BuildAssistant.h"
-#include "Common/ClientUpdateModule.h"
-#include "Common/DrawModule.h"
-#include "Common/GameAudio.h"
-#include "Common/GameEngine.h"
-#include "Common/GameLOD.h"
-#include "Common/GameState.h"
-#include "Common/GlobalData.h"
-#include "Common/ModuleFactory.h"
-#include "Common/PerfTimer.h"
-#include "Common/Player.h"
-#include "Common/PlayerList.h"
-#include "Common/ThingFactory.h"
-#include "Common/ThingTemplate.h"
-#include "Common/Xfer.h"
+// #include "Common/AudioEventInfo.h"
+// #include "Common/DynamicAudioEventInfo.h"
+// #include "Common/AudioSettings.h"
+// #include "Common/BitFlagsIO.h"
+// #include "Common/BuildAssistant.h"
+// #include "Common/ClientUpdateModule.h"
+// #include "Common/DrawModule.h"
+// #include "Common/GameAudio.h"
+// #include "Common/GameEngine.h"
+// #include "Common/GameLOD.h"
+// #include "Common/GameState.h"
+// #include "Common/GlobalData.h"
+// #include "Common/ModuleFactory.h"
+// #include "Common/PerfTimer.h"
+// #include "Common/Player.h"
+// #include "Common/PlayerList.h"
+// #include "Common/ThingFactory.h"
+// #include "Common/ThingTemplate.h"
+// #include "Common/Xfer.h"
 
-#include "GameLogic/ExperienceTracker.h"
-#include "GameLogic/GameLogic.h"		// for logic frame count
-#include "GameLogic/Object.h"
-#include "GameLogic/Locomotor.h"
-#include "GameLogic/Module/AIUpdate.h"
-#include "GameLogic/Module/BodyModule.h"
-#include "GameLogic/Module/ContainModule.h"
-#include "GameLogic/Module/PhysicsUpdate.h"
-#include "GameLogic/Module/StealthUpdate.h"
-#include "GameLogic/Module/StickyBombUpdate.h"
-#include "GameLogic/Module/BattlePlanUpdate.h"
-#include "GameLogic/ScriptEngine.h"
-#include "GameLogic/Weapon.h"
+// #include "GameLogic/ExperienceTracker.h"
+// #include "GameLogic/GameLogic.h"		// for logic frame count
+// #include "GameLogic/Object.h"
+// #include "GameLogic/Locomotor.h"
+// #include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/BodyModule.h"
+// #include "GameLogic/Module/ContainModule.h"
+// #include "GameLogic/Module/PhysicsUpdate.h"
+// #include "GameLogic/Module/StealthUpdate.h"
+// #include "GameLogic/Module/StickyBombUpdate.h"
+// #include "GameLogic/Module/BattlePlanUpdate.h"
+// #include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/Weapon.h"
 
-#include "GameClient/Anim2D.h"
-#include "GameClient/Display.h"
-#include "GameClient/DisplayStringManager.h"
+// #include "GameClient/Anim2D.h"
+// #include "GameClient/Display.h"
+// #include "GameClient/DisplayStringManager.h"
 #include "GameClient/Drawable.h"
-#include "GameClient/DrawGroupInfo.h"
-#include "GameClient/GameClient.h"
-#include "GameClient/GlobalLanguage.h"
-#include "GameClient/InGameUI.h"
-#include "GameClient/Image.h"
-#include "GameClient/ParticleSys.h"
-#include "GameClient/LanguageFilter.h"
-#include "GameClient/Shadow.h"
-#include "GameClient/GameText.h"
+// #include "GameClient/DrawGroupInfo.h"
+// #include "GameClient/GameClient.h"
+// #include "GameClient/GlobalLanguage.h"
+// #include "GameClient/InGameUI.h"
+// #include "GameClient/Image.h"
+// #include "GameClient/ParticleSys.h"
+// #include "GameClient/LanguageFilter.h"
+// #include "GameClient/Shadow.h"
+// #include "GameClient/GameText.h"
 
+#if 0
 //#define KRIS_BRUTAL_HACK_FOR_AIRCRAFT_CARRIER_DEBUGGING 
 #ifdef KRIS_BRUTAL_HACK_FOR_AIRCRAFT_CARRIER_DEBUGGING
 	#include "GameLogic/Module/ParkingPlaceBehavior.h"
@@ -338,6 +339,7 @@ void Drawable::saturateRGB(RGBColor& color, Real factor)
 //--- so that icons, emoticons, health bars, pips, etc, look reasonably solid and don't shimmer or tweed
 //#define CLAMP_ICON_ZOOM_FACTOR(n) (MAX(0.80f, MIN(1.00f, n)))
 #define CLAMP_ICON_ZOOM_FACTOR(n) (n)//nothing
+#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -350,6 +352,8 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 				: Thing( thingTemplate )
 {
 
+(void) statusBits;
+#if 0
 	// assign status bits before anything else can be done
 	m_status = statusBits;
 	
@@ -525,6 +529,7 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
   {
   	startAmbientSound();
   }
+#endif // if 0
 
 }  // end Drawable
 
@@ -532,6 +537,7 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 //-------------------------------------------------------------------------------------------------
 Drawable::~Drawable()
 {
+#if 0
 	Int i;
 
 	if( m_constructDisplayString )
@@ -587,8 +593,10 @@ Drawable::~Drawable()
 		m_locoInfo->deleteInstance();
 		m_locoInfo = NULL;
 	}
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Run from GameClient::destroyDrawable */
 //-------------------------------------------------------------------------------------------------
@@ -4220,16 +4228,23 @@ void Drawable::setPosition(const Coord3D *pos)
 	Thing::setPosition(pos);
 
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle)
 {
+(void) oldMtx;
+(void) oldPos;
+(void) oldAngle;
+#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		(*dm)->reactToTransformChange(oldMtx, oldPos, oldAngle);
 	}
+#endif // if 0
 } 
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::reactToGeometryChange()
 {
@@ -4777,15 +4792,17 @@ ClientUpdateModule* Drawable::findClientUpdateModule( NameKeyType key )
 	}
 	return NULL;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Drawable::crc( Xfer *xfer )
+void Drawable::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Xfer the drawable modules
 	* Version Info:
@@ -4911,6 +4928,7 @@ void Drawable::xferDrawableModules( Xfer *xfer )
 	}  // end for curModuleType
 
 }  // end xferDrawableModules
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Xfer method
@@ -4924,9 +4942,10 @@ void Drawable::xferDrawableModules( Xfer *xfer )
   * 7: Save the customize ambient sound info
 	*/
 // ------------------------------------------------------------------------------------------------
-void Drawable::xfer( Xfer *xfer )
+void Drawable::xfer( Xfer * /*xfer*/ )
 {
 
+#if 0
 	// version
 	const XferVersion currentVersion = 7;
 	XferVersion version = currentVersion;
@@ -5415,6 +5434,7 @@ void Drawable::xfer( Xfer *xfer )
       }
     }
   }
+#endif // if 0
 }  // end xfer
 
 // ------------------------------------------------------------------------------------------------
@@ -5422,7 +5442,8 @@ void Drawable::xfer( Xfer *xfer )
 // ------------------------------------------------------------------------------------------------
 void Drawable::loadPostProcess( void )
 {
-		// if we have an object, we don't need to save/load the pos, just restore it.
+#if 0
+	// if we have an object, we don't need to save/load the pos, just restore it.
 		// if we don't, we'd better save it!
 	if (m_object != NULL)
 	{
@@ -5444,9 +5465,11 @@ void Drawable::loadPostProcess( void )
 	{
 		stopAmbientSound();
 	}
+#endif // if 0
 
 }  // end loadPostProcess
 
+#if 0
 //=================================================================================================
 //=================================================================================================
 #ifdef DIRTY_CONDITION_FLAGS
@@ -5476,6 +5499,7 @@ void Drawable::loadPostProcess( void )
 		--s_modelLockCount;
 }
 #endif
+#endif // if 0
 
 //=================================================================================================
 //=================================================================================================
@@ -5490,6 +5514,7 @@ TintEnvelope::TintEnvelope(void)
 	m_affect = FALSE;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 const Real FADE_RATE_EPSILON = (0.001f);
 
@@ -5529,10 +5554,12 @@ void TintEnvelope::setDecayFrames( UnsignedInt frames )
 	m_decayRate.Set( m_peakColor );
 	m_decayRate.Scale( Vector3(recipFrames, recipFrames, recipFrames) );
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void TintEnvelope::update(void)
 {
+#if 0
 	switch ( m_envState )
 	{
 		case ( ENVELOPE_STATE_REST ) : //most likely case
@@ -5596,13 +5623,14 @@ void TintEnvelope::update(void)
 		}
 	}
 	// here we transition the color from current to peak to release, according to 
+#endif // if 0
 
 }
 
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TintEnvelope::crc( Xfer *xfer )
+void TintEnvelope::crc( Xfer* /*xfer*/ )
 {
 
 }  // end crc
@@ -5612,9 +5640,10 @@ void TintEnvelope::crc( Xfer *xfer )
 	* Version Info;
 	* 1: Initial version */
 // ------------------------------------------------------------------------------------------------
-void TintEnvelope::xfer( Xfer *xfer )
+void TintEnvelope::xfer( Xfer* /*xfer*/ )
 {
 
+#if 0
 	// version 
 	XferVersion currentVersion = 1;
 	XferVersion version = currentVersion;
@@ -5640,6 +5669,7 @@ void TintEnvelope::xfer( Xfer *xfer )
 
 	// state
 	xfer->xferByte( &m_envState );
+#endif // if 0
 
 }  // end xfer
 
@@ -5650,4 +5680,3 @@ void TintEnvelope::loadPostProcess( void )
 {
 
 }  // end loadPostProcess
-

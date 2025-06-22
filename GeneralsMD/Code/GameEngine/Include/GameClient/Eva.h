@@ -38,50 +38,50 @@ class INI;
 
 //------------------------------------------------------------------------------------ Eva Messages
 // Keep in sync with TheEvaMessageNames AND Eva::s_shouldPlayFuncs
-enum EvaMessage
+enum EvaMessage: int
 {
-  EVA_Invalid = -1,
-    
+	EVA_Invalid = -1,
+
 	EVA_FIRST = 0,
 	EVA_LowPower = EVA_FIRST,
 	EVA_InsufficientFunds,
 	EVA_SuperweaponDetected_Own_ParticleCannon,
 	EVA_SuperweaponDetected_Own_Nuke,
 	EVA_SuperweaponDetected_Own_ScudStorm,
-  EVA_SuperweaponDetected_Ally_ParticleCannon,
-  EVA_SuperweaponDetected_Ally_Nuke,
-  EVA_SuperweaponDetected_Ally_ScudStorm,
-  EVA_SuperweaponDetected_Enemy_ParticleCannon,
-  EVA_SuperweaponDetected_Enemy_Nuke,
-  EVA_SuperweaponDetected_Enemy_ScudStorm,
+	EVA_SuperweaponDetected_Ally_ParticleCannon,
+	EVA_SuperweaponDetected_Ally_Nuke,
+	EVA_SuperweaponDetected_Ally_ScudStorm,
+	EVA_SuperweaponDetected_Enemy_ParticleCannon,
+	EVA_SuperweaponDetected_Enemy_Nuke,
+	EVA_SuperweaponDetected_Enemy_ScudStorm,
 	EVA_SuperweaponLaunched_Own_ParticleCannon,
 	EVA_SuperweaponLaunched_Own_Nuke,
 	EVA_SuperweaponLaunched_Own_ScudStorm,
-  EVA_SuperweaponLaunched_Ally_ParticleCannon,
-  EVA_SuperweaponLaunched_Ally_Nuke,
-  EVA_SuperweaponLaunched_Ally_ScudStorm,
-  EVA_SuperweaponLaunched_Enemy_ParticleCannon,
-  EVA_SuperweaponLaunched_Enemy_Nuke,
-  EVA_SuperweaponLaunched_Enemy_ScudStorm,
-  EVA_SuperweaponReady_Own_ParticleCannon,
-  EVA_SuperweaponReady_Own_Nuke,
-  EVA_SuperweaponReady_Own_ScudStorm,
-  EVA_SuperweaponReady_Ally_ParticleCannon,
-  EVA_SuperweaponReady_Ally_Nuke,
-  EVA_SuperweaponReady_Ally_ScudStorm,
-  EVA_SuperweaponReady_Enemy_ParticleCannon,
-  EVA_SuperweaponReady_Enemy_Nuke,
-  EVA_SuperweaponReady_Enemy_ScudStorm,
+	EVA_SuperweaponLaunched_Ally_ParticleCannon,
+	EVA_SuperweaponLaunched_Ally_Nuke,
+	EVA_SuperweaponLaunched_Ally_ScudStorm,
+	EVA_SuperweaponLaunched_Enemy_ParticleCannon,
+	EVA_SuperweaponLaunched_Enemy_Nuke,
+	EVA_SuperweaponLaunched_Enemy_ScudStorm,
+	EVA_SuperweaponReady_Own_ParticleCannon,
+	EVA_SuperweaponReady_Own_Nuke,
+	EVA_SuperweaponReady_Own_ScudStorm,
+	EVA_SuperweaponReady_Ally_ParticleCannon,
+	EVA_SuperweaponReady_Ally_Nuke,
+	EVA_SuperweaponReady_Ally_ScudStorm,
+	EVA_SuperweaponReady_Enemy_ParticleCannon,
+	EVA_SuperweaponReady_Enemy_Nuke,
+	EVA_SuperweaponReady_Enemy_ScudStorm,
 	EVA_BuldingLost,
 	EVA_BaseUnderAttack,
 	EVA_AllyUnderAttack,
 	EVA_BeaconDetected,
-  EVA_EnemyBlackLotusDetected,
-  EVA_EnemyJarmenKellDetected,
-  EVA_EnemyColonelBurtonDetected,
-  EVA_OwnBlackLotusDetected,
-  EVA_OwnJarmenKellDetected,
-  EVA_OwnColonelBurtonDetected,
+	EVA_EnemyBlackLotusDetected,
+	EVA_EnemyJarmenKellDetected,
+	EVA_EnemyColonelBurtonDetected,
+	EVA_OwnBlackLotusDetected,
+	EVA_OwnJarmenKellDetected,
+	EVA_OwnColonelBurtonDetected,
 	EVA_UnitLost,
 	EVA_GeneralLevelUp,
 	EVA_VehicleStolen,
@@ -91,11 +91,11 @@ enum EvaMessage
 	EVA_BuildingBeingStolen,
 	EVA_BuildingSabotaged,
 	EVA_SuperweaponLaunched_Own_GPS_Scrambler,
-  EVA_SuperweaponLaunched_Ally_GPS_Scrambler,
-  EVA_SuperweaponLaunched_Enemy_GPS_Scrambler,
+	EVA_SuperweaponLaunched_Ally_GPS_Scrambler,
+	EVA_SuperweaponLaunched_Enemy_GPS_Scrambler,
 	EVA_SuperweaponLaunched_Own_Sneak_Attack,
-  EVA_SuperweaponLaunched_Ally_Sneak_Attack,
-  EVA_SuperweaponLaunched_Enemy_Sneak_Attack,
+	EVA_SuperweaponLaunched_Ally_Sneak_Attack,
+	EVA_SuperweaponLaunched_Enemy_Sneak_Attack,
 
 	EVA_COUNT,
 };
@@ -181,6 +181,10 @@ class Eva : public SubsystemInterface
 	public:
 		Eva();
 		virtual ~Eva();
+
+		// No copies allowed!
+		Eva(const Eva&) = delete;
+		Eva& operator=(const Eva&) = delete;
 
 	public:		// From SubsystemInterface
 		virtual void init();

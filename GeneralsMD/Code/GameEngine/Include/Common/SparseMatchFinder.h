@@ -76,11 +76,10 @@ private:
 	{
 		bool operator()(const BITSET& a, const BITSET& b) const
 		{
-			int i;
 			if (a.size() < b.size()) {
 				return true;
 			}
-			for (i = 0; i < a.size(); ++i) {
+			for (UnsignedInt i = 0; i < static_cast<UnsignedInt>(a.size()); ++i) {
 				bool aVal = a.test(i);
 				bool bVal = b.test(i);
 				if (aVal && bVal) continue;

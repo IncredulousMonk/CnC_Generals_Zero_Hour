@@ -48,6 +48,8 @@ class DamageModuleInterface
 
 public:
 
+	virtual ~DamageModuleInterface() {};
+
 	virtual void onDamage( DamageInfo *damageInfo ) = 0;	///< damage callback
 	virtual void onHealing( DamageInfo *damageInfo ) = 0;	///< healing callback
 	virtual void onBodyDamageStateChange( const DamageInfo* damageInfo, 
@@ -60,6 +62,13 @@ public:
 class DamageModuleData : public BehaviorModuleData
 {
 public:
+	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+	};
+
+	IniData m_ini {};
+
 //	DamageTypeFlags m_damageTypes;
 
 	DamageModuleData()

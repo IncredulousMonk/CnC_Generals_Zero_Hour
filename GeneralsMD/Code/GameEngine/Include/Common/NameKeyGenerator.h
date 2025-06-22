@@ -37,6 +37,7 @@
 #include "Common/SubsystemInterface.h"
 #include "Common/GameMemory.h"
 #include "Common/AsciiString.h"
+#include "Common/INI.h"
 
 //------------------------------------------------------------------------------------------------- 
 /**
@@ -119,7 +120,7 @@ public:
 	AsciiString keyToName(NameKeyType key);
 
   // Get a string out of the INI. Store it into a NameKeyType
-//   static void parseStringAsNameKeyType( INI *ini, void *instance, void *store, const void* userData );
+  static void parseStringAsNameKeyType( INI *ini, void *instance, void *store, const void* userData );
 
 private:
 

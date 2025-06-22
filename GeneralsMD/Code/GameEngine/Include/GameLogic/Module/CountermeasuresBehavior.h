@@ -48,55 +48,61 @@ class ParticleSystemTemplate;
 class CountermeasuresBehaviorModuleData : public UpdateModuleData
 {
 public:
-	UpgradeMuxData				m_upgradeMuxData;
-	AsciiString						m_flareTemplateName;
-	AsciiString						m_flareBoneBaseName;
-  Real									m_evasionRate;
-  UnsignedInt						m_volleySize;
-  Real									m_volleyArcAngle;
-	Real									m_volleyVelocityFactor;
-  UnsignedInt						m_framesBetweenVolleys;
-	UnsignedInt						m_numberOfVolleys;
-  UnsignedInt						m_reloadFrames;
-	UnsignedInt						m_missileDecoyFrames;
-	UnsignedInt						m_countermeasureReactionFrames;
-	Bool									m_mustReloadAtAirfield;
+	// MG: Cannot apply offsetof to CountermeasuresBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UpgradeMuxData	m_upgradeMuxData {};
+		AsciiString		m_flareTemplateName {};
+		AsciiString		m_flareBoneBaseName {};
+		Real			m_evasionRate {};
+		UnsignedInt		m_volleySize {};
+		Real			m_volleyArcAngle {};
+		Real			m_volleyVelocityFactor {};
+		UnsignedInt		m_framesBetweenVolleys {};
+		UnsignedInt		m_numberOfVolleys {};
+		UnsignedInt		m_reloadFrames {};
+		UnsignedInt		m_missileDecoyFrames {};
+		UnsignedInt		m_countermeasureReactionFrames {};
+		Bool			m_mustReloadAtAirfield {};
+	};
+
+	IniData m_ini {};
 
 	CountermeasuresBehaviorModuleData()
 	{
-    m_volleySize            = 0;
-		m_volleyArcAngle				= 0.0f;
-    m_framesBetweenVolleys  = 0;
-		m_numberOfVolleys       = 0;
-    m_reloadFrames          = 0;
-    m_evasionRate           = 0.0f;
-		m_mustReloadAtAirfield	= FALSE;
-		m_missileDecoyFrames		= 0;
-		m_volleyVelocityFactor  = 1.0f;
+		m_ini.m_volleySize            = 0;
+		m_ini.m_volleyArcAngle				= 0.0f;
+		m_ini.m_framesBetweenVolleys  = 0;
+		m_ini.m_numberOfVolleys       = 0;
+		m_ini.m_reloadFrames          = 0;
+		m_ini.m_evasionRate           = 0.0f;
+		m_ini.m_mustReloadAtAirfield	= FALSE;
+		m_ini.m_missileDecoyFrames		= 0;
+		m_ini.m_volleyVelocityFactor  = 1.0f;
 	}
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
 	{
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "FlareTemplateName",			INI::parseAsciiString,					NULL, offsetof( CountermeasuresBehaviorModuleData, m_flareTemplateName ) },
-			{ "FlareBoneBaseName",			INI::parseAsciiString,					NULL, offsetof( CountermeasuresBehaviorModuleData, m_flareBoneBaseName ) },
-			{ "VolleySize",							INI::parseUnsignedInt,					NULL, offsetof( CountermeasuresBehaviorModuleData, m_volleySize ) },
-			{ "VolleyArcAngle",					INI::parseAngleReal,						NULL, offsetof( CountermeasuresBehaviorModuleData, m_volleyArcAngle ) },
-			{ "VolleyVelocityFactor",		INI::parseReal,						NULL, offsetof( CountermeasuresBehaviorModuleData, m_volleyVelocityFactor ) },
-			{ "DelayBetweenVolleys",		INI::parseDurationUnsignedInt,  NULL, offsetof( CountermeasuresBehaviorModuleData, m_framesBetweenVolleys ) },
-			{ "NumberOfVolleys",				INI::parseUnsignedInt,					NULL, offsetof( CountermeasuresBehaviorModuleData, m_numberOfVolleys ) },
-			{ "ReloadTime",							INI::parseDurationUnsignedInt,  NULL, offsetof( CountermeasuresBehaviorModuleData, m_reloadFrames ) },
-			{ "EvasionRate",						INI::parsePercentToReal,				NULL, offsetof( CountermeasuresBehaviorModuleData, m_evasionRate ) },
-			{ "MustReloadAtAirfield",		INI::parseBool,									NULL, offsetof( CountermeasuresBehaviorModuleData, m_mustReloadAtAirfield ) },
-			{ "MissileDecoyDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( CountermeasuresBehaviorModuleData, m_missileDecoyFrames ) },
-			{ "ReactionLaunchLatency",	INI::parseDurationUnsignedInt,	NULL, offsetof( CountermeasuresBehaviorModuleData, m_countermeasureReactionFrames ) },
+			{ "FlareTemplateName",		INI::parseAsciiString,			NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_flareTemplateName ) },
+			{ "FlareBoneBaseName",		INI::parseAsciiString,			NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_flareBoneBaseName ) },
+			{ "VolleySize",				INI::parseUnsignedInt,			NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_volleySize ) },
+			{ "VolleyArcAngle",			INI::parseAngleReal,			NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_volleyArcAngle ) },
+			{ "VolleyVelocityFactor",	INI::parseReal,					NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_volleyVelocityFactor ) },
+			{ "DelayBetweenVolleys",	INI::parseDurationUnsignedInt,	NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_framesBetweenVolleys ) },
+			{ "NumberOfVolleys",		INI::parseUnsignedInt,			NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_numberOfVolleys ) },
+			{ "ReloadTime",				INI::parseDurationUnsignedInt,	NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_reloadFrames ) },
+			{ "EvasionRate",			INI::parsePercentToReal,		NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_evasionRate ) },
+			{ "MustReloadAtAirfield",	INI::parseBool,					NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_mustReloadAtAirfield ) },
+			{ "MissileDecoyDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_missileDecoyFrames ) },
+			{ "ReactionLaunchLatency",	INI::parseDurationUnsignedInt,	NULL, offsetof( CountermeasuresBehaviorModuleData::IniData, m_countermeasureReactionFrames ) },
 			{ 0, 0, 0, 0 }
 		};
 
 		UpdateModuleData::buildFieldParse(p);
 		p.add(dataFieldParse);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( CountermeasuresBehaviorModuleData, m_upgradeMuxData ));
+		p.add(UpgradeMuxData::getFieldParse(), offsetof( CountermeasuresBehaviorModuleData::IniData, m_upgradeMuxData ));
 	}
 
 };
@@ -107,6 +113,7 @@ public:
 class CountermeasuresBehaviorInterface
 {
 public:
+	virtual ~CountermeasuresBehaviorInterface() {}
 	virtual void reportMissileForCountermeasures( Object *missile ) = 0;
 	virtual ObjectID calculateCountermeasureToDivertTo( const Object& victim ) = 0;
 	virtual void reloadCountermeasures() = 0;
@@ -157,23 +164,23 @@ protected:
 
 	virtual void getUpgradeActivationMasks(UpgradeMaskType& activation, UpgradeMaskType& conflicting) const
 	{
-		getCountermeasuresBehaviorModuleData()->m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
+		getCountermeasuresBehaviorModuleData()->m_ini.m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
 	}
 
 	virtual void performUpgradeFX()
 	{
-		getCountermeasuresBehaviorModuleData()->m_upgradeMuxData.performUpgradeFX(getObject());
+		getCountermeasuresBehaviorModuleData()->m_ini.m_upgradeMuxData.performUpgradeFX(getObject());
 	}
 
 	virtual void processUpgradeRemoval()
 	{
 		// I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP.
-		getCountermeasuresBehaviorModuleData()->m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
+		getCountermeasuresBehaviorModuleData()->m_ini.m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
 	}
 
 	virtual Bool requiresAllActivationUpgrades() const
 	{
-		return getCountermeasuresBehaviorModuleData()->m_upgradeMuxData.m_requiresAllTriggers;
+		return getCountermeasuresBehaviorModuleData()->m_ini.m_upgradeMuxData.m_requiresAllTriggers;
 	}
 
 	inline Bool isUpgradeActive() const { return isAlreadyUpgraded(); }

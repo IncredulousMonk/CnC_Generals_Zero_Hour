@@ -106,7 +106,7 @@ private:
 	#endif
 
 protected:
-	UnicodeStringData* m_data;   // pointer to ref counted string data
+	UnicodeStringData* m_data {};   // pointer to ref counted string data
 
 	WideChar* peek() const;
 	void releaseBuffer();

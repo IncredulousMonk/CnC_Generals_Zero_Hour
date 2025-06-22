@@ -159,7 +159,7 @@ void UpdateModule::xfer( Xfer *xfer )
 				PHASE_NORMAL				= 2,
 				PHASE_FINAL					= 3
 		*/
-		m_nextCallFrameAndPhase &= ~3;
+		m_nextCallFrameAndPhase &= ~3u;
 		m_nextCallFrameAndPhase |= getUpdatePhase();
 	}
 
@@ -195,8 +195,3 @@ void UpdateModule::loadPostProcess( void )
 	BehaviorModule::loadPostProcess();
 
 }  // end loadPostProcess
-
-
-
-
-

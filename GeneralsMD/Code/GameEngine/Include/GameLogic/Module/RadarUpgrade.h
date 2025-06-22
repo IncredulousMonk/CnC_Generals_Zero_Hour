@@ -43,7 +43,7 @@ class Player;
 class RadarUpgradeModuleData : public UpgradeModuleData
 {
 public:
-	Bool m_isDisableProof;// Super radar, ignores radarDisabled checks
+	Bool m_isDisableProof {};// Super radar, ignores radarDisabled checks
 
 	RadarUpgradeModuleData()
 	{

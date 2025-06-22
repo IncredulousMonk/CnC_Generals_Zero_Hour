@@ -41,6 +41,7 @@
 class DestroyModuleInterface
 {
 public:
+	virtual ~DestroyModuleInterface() {}
 	virtual void onDestroy() = 0;
 };
 

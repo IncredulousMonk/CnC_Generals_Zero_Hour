@@ -49,62 +49,62 @@
 #include "Common/XferCRC.h"
 #include "Common/PerfTimer.h"
 
-#include "GameClient/Anim2D.h"
-#include "GameClient/ControlBar.h"
-#include "GameClient/Drawable.h"
-#include "GameClient/Eva.h"
-#include "GameClient/GameClient.h"
-#include "GameClient/InGameUI.h"
+// #include "GameClient/Anim2D.h"
+// #include "GameClient/ControlBar.h"
+// #include "GameClient/Drawable.h"
+// #include "GameClient/Eva.h"
+// #include "GameClient/GameClient.h"
+// #include "GameClient/InGameUI.h"
 
-#include "GameLogic/AI.h"
-#include "GameLogic/AIPathfind.h"
-#include "GameLogic/ExperienceTracker.h"
-#include "GameLogic/FiringTracker.h"
-#include "GameLogic/GameLogic.h"
-#include "GameLogic/Locomotor.h"
+// #include "GameLogic/AI.h"
+// #include "GameLogic/AIPathfind.h"
+// #include "GameLogic/ExperienceTracker.h"
+// #include "GameLogic/FiringTracker.h"
+// #include "GameLogic/GameLogic.h"
+// #include "GameLogic/Locomotor.h"
 
-#include "GameLogic/Module/AIUpdate.h"
-#include "GameLogic/Module/AutoHealBehavior.h"
-#include "GameLogic/Module/BehaviorModule.h"
-#include "GameLogic/Module/BodyModule.h"
-#include "GameLogic/Module/CollideModule.h"
-#include "GameLogic/Module/ContainModule.h"
-#include "GameLogic/Module/CountermeasuresBehavior.h"
-#include "GameLogic/Module/CreateModule.h"
-#include "GameLogic/Module/DamageModule.h"
-#include "GameLogic/Module/DeletionUpdate.h"
-#include "GameLogic/Module/DestroyModule.h"
-#include "GameLogic/Module/DieModule.h"
-#include "GameLogic/Module/DozerAIUpdate.h"
-#include "GameLogic/Module/ObjectDefectionHelper.h"
-#include "GameLogic/Module/ObjectRepulsorHelper.h"
-#include "GameLogic/Module/ObjectSMCHelper.h"
-#include "GameLogic/Module/ObjectWeaponStatusHelper.h"
-#include "GameLogic/Module/OverchargeBehavior.h"
-#include "GameLogic/Module/PhysicsUpdate.h"
-#include "GameLogic/Module/PowerPlantUpgrade.h"
-#include "GameLogic/Module/ProductionUpdate.h"
-#include "GameLogic/Module/RadarUpgrade.h"
-#include "GameLogic/Module/RebuildHoleBehavior.h"
-#include "GameLogic/Module/SpawnBehavior.h"
-#include "GameLogic/Module/SpecialPowerModule.h"
-#include "GameLogic/Module/SpecialAbilityUpdate.h"
-#include "GameLogic/Module/StatusDamageHelper.h"
-#include "GameLogic/Module/StickyBombUpdate.h"
-#include "GameLogic/Module/SubdualDamageHelper.h"
-#include "GameLogic/Module/TempWeaponBonusHelper.h"
-#include "GameLogic/Module/ToppleUpdate.h"
-#include "GameLogic/Module/UpdateModule.h"
-#include "GameLogic/Module/UpgradeModule.h"
+// #include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/AutoHealBehavior.h"
+// #include "GameLogic/Module/BehaviorModule.h"
+// #include "GameLogic/Module/BodyModule.h"
+// #include "GameLogic/Module/CollideModule.h"
+// #include "GameLogic/Module/ContainModule.h"
+// #include "GameLogic/Module/CountermeasuresBehavior.h"
+// #include "GameLogic/Module/CreateModule.h"
+// #include "GameLogic/Module/DamageModule.h"
+// #include "GameLogic/Module/DeletionUpdate.h"
+// #include "GameLogic/Module/DestroyModule.h"
+// #include "GameLogic/Module/DieModule.h"
+// #include "GameLogic/Module/DozerAIUpdate.h"
+// #include "GameLogic/Module/ObjectDefectionHelper.h"
+// #include "GameLogic/Module/ObjectRepulsorHelper.h"
+// #include "GameLogic/Module/ObjectSMCHelper.h"
+// #include "GameLogic/Module/ObjectWeaponStatusHelper.h"
+// #include "GameLogic/Module/OverchargeBehavior.h"
+// #include "GameLogic/Module/PhysicsUpdate.h"
+// #include "GameLogic/Module/PowerPlantUpgrade.h"
+// #include "GameLogic/Module/ProductionUpdate.h"
+// #include "GameLogic/Module/RadarUpgrade.h"
+// #include "GameLogic/Module/RebuildHoleBehavior.h"
+// #include "GameLogic/Module/SpawnBehavior.h"
+// #include "GameLogic/Module/SpecialPowerModule.h"
+// #include "GameLogic/Module/SpecialAbilityUpdate.h"
+// #include "GameLogic/Module/StatusDamageHelper.h"
+// #include "GameLogic/Module/StickyBombUpdate.h"
+// #include "GameLogic/Module/SubdualDamageHelper.h"
+// #include "GameLogic/Module/TempWeaponBonusHelper.h"
+// #include "GameLogic/Module/ToppleUpdate.h"
+// #include "GameLogic/Module/UpdateModule.h"
+// #include "GameLogic/Module/UpgradeModule.h"
 
 #include "GameLogic/Object.h"
-#include "GameLogic/PartitionManager.h"
-#include "GameLogic/PolygonTrigger.h"
-#include "GameLogic/ScriptEngine.h"
-#include "GameLogic/Weapon.h"
-#include "GameLogic/WeaponSet.h"
-#include "GameLogic/Module/RadarUpdate.h"
-#include "GameLogic/Module/PowerPlantUpdate.h"
+// #include "GameLogic/PartitionManager.h"
+// #include "GameLogic/PolygonTrigger.h"
+// #include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/Weapon.h"
+// #include "GameLogic/WeaponSet.h"
+// #include "GameLogic/Module/RadarUpdate.h"
+// #include "GameLogic/Module/PowerPlantUpdate.h"
 
 #include "Common/CRCDebug.h"
 #include "Common/MiscAudio.h"
@@ -155,6 +155,7 @@ extern void addIcon(const Coord3D *pos, Real width, Int numFramesDuration, RGBCo
 #ifdef DEBUG_LOGGING
 AsciiString DescribeObject(const Object *obj)
 {
+#if 0
 	if (!obj)
 		return "<No Object>";
 
@@ -176,53 +177,17 @@ AsciiString DescribeObject(const Object *obj)
 	}
 
 	return ret;
+#endif // if 0
+return AsciiString();
 }
 #endif // DEBUG_LOGGING
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatusMask, Team *team ) : 
-	Thing(tt),
-	m_indicatorColor(0),
-	m_ai(NULL),
-	m_physics(NULL),
-	m_geometryInfo(tt->getTemplateGeometryInfo()),
-	m_containedBy(NULL),
-	m_xferContainedByID(INVALID_ID),
-	m_containedByFrame(0),
-	m_behaviors(NULL),
-	m_body(NULL),
-	m_contain(NULL),
-  m_stealth(NULL),
-	m_partitionData(NULL),
-	m_radarData(NULL),
-	m_drawable(NULL),
-	m_next(NULL),
-	m_prev(NULL),
-	m_team(NULL),
-	m_experienceTracker(NULL),
-	m_firingTracker(NULL),
-	m_repulsorHelper(NULL),
-	m_statusDamageHelper(NULL),
-	m_tempWeaponBonusHelper(NULL),
-	m_subdualDamageHelper(NULL),
-	m_smcHelper(NULL),
-	m_wsHelper(NULL),
-	m_defectionHelper(NULL),
-	m_partitionLastLook(NULL),
-	m_partitionRevealAllLastLook(NULL),
-	m_partitionLastShroud(NULL),
-	m_partitionLastThreat(NULL),
-	m_partitionLastValue(NULL),
-	m_smcUntil(NEVER),
-	m_privateStatus(0),
-	m_formationID(NO_FORMATION_ID),
-	m_isReceivingDifficultyBonus(FALSE),
-	m_singleUseCommandUsed(FALSE),
-	m_scriptStatus(0),
-	m_enteredOrExitedFrame(0),
-	m_visionSpiedMask (PLAYERMASK_NONE),
-	m_numTriggerAreasActive(0)
+	Thing(tt) /*,
+	m_geometryInfo(tt->getTemplateGeometryInfo())*/
+	// FIXME: GeometryInfo
 {
 #if defined(_DEBUG) || defined(_INTERNAL)
 	m_hasDiedAlready = false;
@@ -234,8 +199,8 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatu
 	// Note that after this, the object will be using m_template, which forces the usage of the 
 	// most overridden version of tt, so this is okay.
 	tt = (const ThingTemplate *) tt->getFinalOverride();
-		
-	Int i, modIdx;
+
+	Int i; //, modIdx;
 	AsciiString modName;
 	
 	//Added By Sadullah Nader
@@ -253,18 +218,19 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatu
 		m_disabledTillFrame[ i ] = NEVER;
 	}
 
+#if 0
 	m_weaponBonusCondition = 0;
 	m_curWeaponSetFlags.clear();
+#endif // if 0
 
 	// sanity
 	if( TheGameLogic == NULL || tt == NULL )
 	{
-
 		assert( 0 );
 		return;
-
 	}  // end if
 
+#if 0
 	// Object's set of these persist for the life of the object.
 	m_partitionLastLook = newInstance(SightingInfo);
 	m_partitionLastLook->reset();
@@ -298,10 +264,12 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatu
 	m_shroudRange = 0.0f;
 	
 	m_singleUseCommandUsed = false;
+#endif // if 0
 
 	// assign unique object id
 	setID( TheGameLogic->allocateObjectID() );
 
+#if 0
 	//
 	// allocate any modules we need to, we should keep
 	// this at or near the end of the drawable construction so that we have
@@ -506,6 +474,7 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatu
 	m_soleHealingBenefactorID = INVALID_ID; ///< who is the only other object that can give me this non-stacking heal benefit?
 	m_soleHealingBenefactorExpirationFrame = 0; ///< on what frame can I accept healing (thus to switch) from a new benefactor
 
+#endif // if 0
 
 
 }  // end Object
@@ -518,6 +487,7 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatu
 //-------------------------------------------------------------------------------------------------
 void Object::initObject()
 {
+#if 0
 	// Weapons & Damage -------------------------------------------------------------------------------------------------
 	// Force the initial weapon set to be instantiated & reloaded.
 
@@ -596,6 +566,7 @@ void Object::initObject()
 	{
 		ThePlayerList->getNeutralPlayer()->getAcademyStats()->recordMine();	
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -603,6 +574,7 @@ void Object::initObject()
 Object::~Object()
 {
 
+#if 0
 	// tell the AI the building is gone
 	/// @todo Generalize the notion of objects entering and leaving the world, so we don't have to special case this
 	TheAI->pathfinder()->removeObjectFromPathfindMap( this );
@@ -687,8 +659,10 @@ Object::~Object()
 	// The script engine will remove it from the cache if necessary. The script engine needs to take
 	// a crack at this in case it is the current "This Object" pointer.
 	TheScriptEngine->notifyOfObjectDestruction(this);
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /// this object now contained in "containedBy"
 //-------------------------------------------------------------------------------------------------
@@ -707,7 +681,7 @@ void Object::onContainedBy( Object *containedBy )
 }
 
 //-------------------------------------------------------------------------------------------------
-/// this object no longer contained in "containedBy"
+/// this object no longer contained in "removedFrom"
 //-------------------------------------------------------------------------------------------------
 void Object::onRemovedFrom( Object *removedFrom )
 {
@@ -739,6 +713,7 @@ Int Object::getTransportSlotCount() const
 	}
 	return count;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Run from GameLogic::destroyObject */
@@ -746,6 +721,7 @@ Int Object::getTransportSlotCount() const
 void Object::onDestroy()
 {
 
+#if 0
 	// This is the old cleanUpContain safeguard.  Say goodbye so they don't try to look us up.
 	if( m_containedBy && m_containedBy->getContain() )
 	{
@@ -761,10 +737,12 @@ void Object::onDestroy()
 		(*b)->onDelete();
 	}
 
-	//Have to remove ourself from looking as well.  RebuildHoleWorkers definately hit here.
+	//Have to remove ourself from looking as well.  RebuildHoleWorkers definitely hit here.
 	handlePartitionCellMaintenance();
+#endif // if 0
 }  // end onDestroy
 
+#if 0
 //=============================================================================
 //=============================================================================
 void Object::setGeometryInfo(const GeometryInfo& geom) 
@@ -1592,19 +1570,23 @@ Relationship Object::getRelationship(const Object *that) const
 	return NEUTRAL;
 
 }
+#endif // if 0
 
 //=============================================================================
 // Object::getControllingPlayer
 //=============================================================================
 Player * Object::getControllingPlayer() const
 { 
+#if 0
 	const Team* myTeam = this->getTeam();	
 	if (myTeam)
 		return myTeam->getControllingPlayer(); 
+#endif // if 0
 
 	return NULL;
 }
 
+#if 0
 //=============================================================================
 void Object::setProducer(const Object* obj)
 {
@@ -1758,13 +1740,15 @@ void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real
 			getContain()->containReactToTransformChange();
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //DECLARE_PERF_TIMER(Object_reactToTransformChange)
 void Object::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle)
 {
+#if 0
 	//USE_PERF_TIMER(Object_reactToTransformChange)
-	if(_isnan(getPosition()->x) || _isnan(getPosition()->y) || _isnan(getPosition()->z)) {
+	if(isnan(getPosition()->x) || isnan(getPosition()->y) || isnan(getPosition()->z)) {
 		DEBUG_CRASH(("Object pos is nan."));
 		TheGameLogic->destroyObject(this);
 	}
@@ -1796,8 +1780,10 @@ void Object::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPo
 		else
 			m_privateStatus |= OFF_MAP;
 	}
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 ObjectShroudStatus Object::getShroudedStatus(Int playerIndex) const 
 {
@@ -2682,6 +2668,7 @@ void Object::setTriggerAreaFlagsForChangeInPosition()
 	}
 
 }
+#endif // if 0
 
 
 
@@ -2720,6 +2707,23 @@ void Object::prependToList(Object **pListHead)
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
+void Object::removeFromList(Object **pListHead)
+{
+	if (m_next)
+		m_next->m_prev = m_prev;
+
+	if (m_prev)
+		m_prev->m_next = m_next;
+	else
+		*pListHead = m_next;
+
+	m_prev = NULL;
+	m_next = NULL;
+}
+
+#if 0
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 void Object::setLayer(PathfindLayerEnum layer)
 {
 	if (layer!=m_layer) {
@@ -2746,6 +2750,8 @@ void Object::setDestinationLayer(PathfindLayerEnum layer)
 		m_destinationLayer = layer;
 	}
 }
+#endif // if 0
+
 
 // ------------------------------------------------------------------------------------------------
 /** Set unique ID */
@@ -2759,7 +2765,7 @@ void Object::setID( ObjectID id )
 	// if id hasn't changed do nothing
 	if( m_id == id )
 		return;
-			
+
 	// remove this objects previous id from the lookup table
 	TheGameLogic->removeObjectFromLookupTable( this );
 
@@ -2771,6 +2777,7 @@ void Object::setID( ObjectID id )
 
 }  // end setID
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 Real Object::calculateHeightAboveTerrain(void) const 
 {
@@ -2778,22 +2785,6 @@ Real Object::calculateHeightAboveTerrain(void) const
 	Real terrainZ = TheTerrainLogic->getLayerHeight( pos->x, pos->y, m_layer );
 	Real myZ = pos->z;
 	return myZ - terrainZ;
-}
-
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-void Object::removeFromList(Object **pListHead)
-{
-	if (m_next)
-		m_next->m_prev = m_prev;
-
-	if (m_prev)
-		m_prev->m_next = m_next;
-	else
-		*pListHead = m_next;
-
-	m_prev = NULL;
-	m_next = NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2964,13 +2955,18 @@ void Object::scoreTheKill( const Object *victim )
 		}
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 VeterancyLevel Object::getVeterancyLevel() const 
 { 
+#if 0
 	return m_experienceTracker ? m_experienceTracker->getVeterancyLevel() : LEVEL_REGULAR; 
+#endif // if 0
+return LEVEL_REGULAR; // Fudge
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::friend_bindToDrawable( Drawable *draw ) 
 { 
@@ -2992,14 +2988,14 @@ void Object::friend_bindToDrawable( Drawable *draw )
 		}
 		if (TheGlobalData)
 		{
-			if (TheGlobalData->m_forceModelsToFollowTimeOfDay)
+			if (TheGlobalData->m_data.m_forceModelsToFollowTimeOfDay)
 			{
-				set.set(MODELCONDITION_NIGHT, (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT) ? 1 : 0);
+				set.set(MODELCONDITION_NIGHT, (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT) ? 1 : 0);
 			}
 
-			if (TheGlobalData->m_forceModelsToFollowWeather)
+			if (TheGlobalData->m_data.m_forceModelsToFollowWeather)
 			{
-				set.set(MODELCONDITION_SNOW, (TheGlobalData->m_weather == WEATHER_SNOWY) ? 1 : 0);
+				set.set(MODELCONDITION_SNOW, (TheGlobalData->m_data.m_weather == WEATHER_SNOWY) ? 1 : 0);
 			}
 		}
 		m_drawable->clearAndSetModelConditionFlags(clr, set);
@@ -3049,16 +3045,18 @@ Bool Object::isMassSelectable() const
 {
 	return isSelectable() && !isKindOf(KINDOF_STRUCTURE);
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::setWeaponSetFlag(WeaponSetType wst) 
 { 
 	m_curWeaponSetFlags.set(wst); 
 	m_weaponSet.updateWeaponSet(this);
-	if (m_drawable)
-	{
-		m_drawable->setModelConditionState(TheWeaponSetTypeToModelConditionTypeMap[wst]);
-	}
+	// FIXME: Drawable
+	// if (m_drawable)
+	// {
+	// 	m_drawable->setModelConditionState(TheWeaponSetTypeToModelConditionTypeMap[wst]);
+	// }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3066,12 +3064,14 @@ void Object::clearWeaponSetFlag(WeaponSetType wst)
 { 
 	m_curWeaponSetFlags.set(wst, 0); 
 	m_weaponSet.updateWeaponSet(this);
-	if (m_drawable)
-	{
-		m_drawable->clearModelConditionState(TheWeaponSetTypeToModelConditionTypeMap[wst]);
-	}
+	// FIXME: Drawable
+	// if (m_drawable)
+	// {
+	// 	m_drawable->clearModelConditionState(TheWeaponSetTypeToModelConditionTypeMap[wst]);
+	// }
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Bool Object::hasSpecialPower( SpecialPowerType type ) const
 {
@@ -3149,9 +3149,9 @@ void Object::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel ne
 
 	if( doAnimation && TheGameLogic->getDrawIconUI() && provideFeedback )
 	{
-		if( TheAnim2DCollection && TheGlobalData->m_levelGainAnimationName.isEmpty() == FALSE )
+		if( TheAnim2DCollection && TheGlobalData->m_data.m_levelGainAnimationName.isEmpty() == FALSE )
 		{
-			Anim2DTemplate *animTemplate = TheAnim2DCollection->findTemplate( TheGlobalData->m_levelGainAnimationName );
+			Anim2DTemplate *animTemplate = TheAnim2DCollection->findTemplate( TheGlobalData->m_data.m_levelGainAnimationName );
 
 			Coord3D pos = *getPosition(); 
 			pos.add(&m_healthBoxOffset);
@@ -3159,8 +3159,8 @@ void Object::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel ne
 			TheInGameUI->addWorldAnimation( animTemplate,
 																			&pos,
 																			WORLD_ANIM_FADE_ON_EXPIRE,
-																			TheGlobalData->m_levelGainAnimationDisplayTimeInSeconds,
-																			TheGlobalData->m_levelGainAnimationZRisePerSecond);
+																			TheGlobalData->m_data.m_levelGainAnimationDisplayTimeInSeconds,
+																			TheGlobalData->m_data.m_levelGainAnimationZRisePerSecond);
 		}
 
 		AudioEventRTS soundToPlay = TheAudio->getMiscAudio()->m_unitPromoted;	
@@ -3169,6 +3169,7 @@ void Object::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel ne
 	}
 
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /**
@@ -3177,6 +3178,7 @@ void Object::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel ne
 Bool Object::isAbleToAttack() const
 {
 
+#if 0
 	//******************************************************
 	//********* AUTOMATICALLY FALSE CONDITIONS *************
 	//******************************************************
@@ -3326,11 +3328,13 @@ Bool Object::isAbleToAttack() const
 
 	if (getTemplate()->isEnterGuard())
 		return TRUE;
+#endif // if 0
 
 //Default is no
 	return false;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /**
 	* Mask/Un-Mask an object
@@ -3878,12 +3882,14 @@ void Object::onDisabledEdge(Bool becomingDisabled)
 			controller->getEnergy()->adjustPower(powerToAdjust, !becomingDisabled);
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Object CRC implemtation */
 //-------------------------------------------------------------------------------------------------
-void Object::crc( Xfer *xfer )
+void Object::crc( Xfer* /*xfer*/ )
 {
+#if 0
 	// This is evil - we cast the const Matrix3D * to a Matrix3D * because the XferCRC class must use
 	// the same interface as the XferLoad class for save game restore.  This only works because
 	// XferCRC does not modify its data.
@@ -3899,7 +3905,7 @@ void Object::crc( Xfer *xfer )
 		tmp.format("CRC of Object %d (%s), owned by player %d, ", m_id, getTemplate()->getName().str(), getControllingPlayer()->getPlayerIndex());
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 
 	xfer->xferUnsignedByte(&m_privateStatus);
 #ifdef DEBUG_CRC
@@ -3921,7 +3927,7 @@ void Object::crc( Xfer *xfer )
 		tmpXfer.close();
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 	
 
 #ifdef DEBUG_CRC
@@ -3931,15 +3937,7 @@ void Object::crc( Xfer *xfer )
 		CRCDEBUG_LOG(("CRC of Object %d (%s), owned by player %d, ", m_id, getTemplate()->getName().str(), getControllingPlayer()->getPlayerIndex()));
 		DUMPMATRIX3D(mtx);
 	}
-#endif DEBUG_CRC
-
-
-
-
-
-
-
-
+#endif // DEBUG_CRC
 
 
 
@@ -3950,7 +3948,7 @@ void Object::crc( Xfer *xfer )
 		tmp.format("m_id: %d, ", m_id);
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 	xfer->xferUser(&m_objectUpgradesCompleted,				sizeof(Int64));
 #ifdef DEBUG_CRC
 	if (doLogging)
@@ -3958,7 +3956,7 @@ void Object::crc( Xfer *xfer )
 		tmp.format("m_objectUpgradesCompleted: %I64X, ", m_objectUpgradesCompleted);
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 	if (m_experienceTracker)
 		xfer->xferSnapshot( m_experienceTracker );
 #ifdef DEBUG_CRC
@@ -3971,7 +3969,7 @@ void Object::crc( Xfer *xfer )
 		tmpXfer.close();
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 
 	Real health = getBodyModule()->getHealth();
 	xfer->xferUser(&health,														sizeof(health));
@@ -3981,7 +3979,7 @@ void Object::crc( Xfer *xfer )
 		tmp.format("health: %g/%8.8X, ", health, AS_INT(health));
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 
 	xfer->xferUnsignedInt(&m_weaponBonusCondition);
 #ifdef DEBUG_CRC
@@ -3990,7 +3988,7 @@ void Object::crc( Xfer *xfer )
 		tmp.format("m_weaponBonusCondition: %8.8X, ", m_weaponBonusCondition);
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 
 	Real scalar = getBodyModule()->getDamageScalar();
 	xfer->xferUser(&scalar,														sizeof(scalar));
@@ -4002,7 +4000,7 @@ void Object::crc( Xfer *xfer )
 
 		CRCDEBUG_LOG(("%s", logString.str()));
 	}
-#endif DEBUG_CRC
+#endif // DEBUG_CRC
 
 	for (Int i=0; i<WEAPONSLOT_COUNT; ++i)
 	{
@@ -4013,6 +4011,7 @@ void Object::crc( Xfer *xfer )
 		}
 	}
 	
+#endif // if 0
 }  // end crc
 
 //-------------------------------------------------------------------------------------------------
@@ -4029,9 +4028,9 @@ void Object::crc( Xfer *xfer )
 	* 9: Extra sighting for reveal to all with different range units
 	*/
 //-------------------------------------------------------------------------------------------------
-void Object::xfer( Xfer *xfer )
+void Object::xfer( Xfer* /*xfer*/ )
 {
-	
+#if 0
 	// version
 	const XferVersion currentVersion = 9;
 	XferVersion version = currentVersion;
@@ -4436,6 +4435,7 @@ void Object::xfer( Xfer *xfer )
 	else
 		m_isReceivingDifficultyBonus = FALSE;
 
+#endif // if 0
 }  // end xfer
 
 //-------------------------------------------------------------------------------------------------
@@ -4450,6 +4450,7 @@ void Object::loadPostProcess()
 
 }  // end loadPostProcess
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Does this object have this upgrade */
 //-------------------------------------------------------------------------------------------------
@@ -4508,12 +4509,15 @@ void Object::giveUpgrade( const UpgradeTemplate *upgradeT )
 		updateUpgradeModules();
 	}
 }  // end giveUpgrade
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Remove this upgrade from this object */
 //-------------------------------------------------------------------------------------------------
 void Object::removeUpgrade( const UpgradeTemplate *upgradeT )
 {
+(void) upgradeT;
+#if 0
 	m_objectUpgradesCompleted.clear( upgradeT->getUpgradeMask() );
 	for (BehaviorModule** module = m_behaviors; *module; ++module)
 	{
@@ -4525,8 +4529,10 @@ void Object::removeUpgrade( const UpgradeTemplate *upgradeT )
 		// in the sense of undoing the effects.  It is just resetting the upgrade so it may be run again.
 		upgrade->resetUpgrade( upgradeT->getUpgradeMask() );
 	}
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Central point for onCapture logic */
 //-------------------------------------------------------------------------------------------------
@@ -5125,17 +5131,17 @@ void Object::unshroud()
 Real Object::getVisionRange() const
 {
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_debugVisibility) 
+	if (TheGlobalData->m_data.m_debugVisibility) 
 	{
 		Vector3 pos(m_visionRange, 0, 0);
-		for (int i = 0; i < TheGlobalData->m_debugVisibilityTileCount; ++i) 
+		for (int i = 0; i < TheGlobalData->m_data.m_debugVisibilityTileCount; ++i) 
 		{
-			pos.Rotate_Z(1.0f * i / TheGlobalData->m_debugVisibilityTileCount * 2 * PI);
+			pos.Rotate_Z(1.0f * i / TheGlobalData->m_data.m_debugVisibilityTileCount * 2 * PI);
 			Coord3D coord = { pos.X + getPosition()->x, pos.Y + getPosition()->y, pos.Z + getPosition()->z };
 
-			addIcon(&coord, TheGlobalData->m_debugVisibilityTileWidth, 
-											TheGlobalData->m_debugVisibilityTileDuration, 
-											TheGlobalData->m_debugVisibilityTargettableColor);
+			addIcon(&coord, TheGlobalData->m_data.m_debugVisibilityTileWidth, 
+											TheGlobalData->m_data.m_debugVisibilityTileDuration, 
+											TheGlobalData->m_data.m_debugVisibilityTargettableColor);
 		}
 	}
 #endif
@@ -5161,17 +5167,17 @@ Real Object::getShroudClearingRange() const
 	}
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_debugVisibility) 
+	if (TheGlobalData->m_data.m_debugVisibility) 
 	{
 		Vector3 pos(shroudClearingRange, 0, 0);
-		for (int i = 0; i < TheGlobalData->m_debugVisibilityTileCount; ++i) 
+		for (int i = 0; i < TheGlobalData->m_data.m_debugVisibilityTileCount; ++i) 
 		{
-			pos.Rotate_Z(1.0f * i / TheGlobalData->m_debugVisibilityTileCount * 2 * PI);
+			pos.Rotate_Z(1.0f * i / TheGlobalData->m_data.m_debugVisibilityTileCount * 2 * PI);
 			Coord3D coord = { pos.X + getPosition()->x, pos.Y + getPosition()->y, pos.Z + getPosition()->z };
 
-			addIcon(&coord, TheGlobalData->m_debugVisibilityTileWidth, 
-											TheGlobalData->m_debugVisibilityTileDuration, 
-											TheGlobalData->m_debugVisibilityDeshroudColor);
+			addIcon(&coord, TheGlobalData->m_data.m_debugVisibilityTileWidth, 
+											TheGlobalData->m_data.m_debugVisibilityTileDuration, 
+											TheGlobalData->m_data.m_debugVisibilityDeshroudColor);
 		}
 	}
 #endif
@@ -5218,17 +5224,17 @@ void Object::setShroudClearingRange( Real newShroudClearingRange )
 Real Object::getShroudRange() const
 {
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_debugVisibility) 
+	if (TheGlobalData->m_data.m_debugVisibility) 
 	{
 		Vector3 pos(m_shroudRange, 0, 0);
-		for (int i = 0; i < TheGlobalData->m_debugVisibilityTileCount; ++i) 
+		for (int i = 0; i < TheGlobalData->m_data.m_debugVisibilityTileCount; ++i) 
 		{
-			pos.Rotate_Z(1.0f * i / TheGlobalData->m_debugVisibilityTileCount * 2 * PI);
+			pos.Rotate_Z(1.0f * i / TheGlobalData->m_data.m_debugVisibilityTileCount * 2 * PI);
 			Coord3D coord = { pos.X + getPosition()->x, pos.Y + getPosition()->y, pos.Z + getPosition()->z };
 
-			addIcon(&coord, TheGlobalData->m_debugVisibilityTileWidth, 
-											TheGlobalData->m_debugVisibilityTileDuration, 
-											TheGlobalData->m_debugVisibilityGapColor);
+			addIcon(&coord, TheGlobalData->m_data.m_debugVisibilityTileWidth, 
+											TheGlobalData->m_data.m_debugVisibilityTileDuration, 
+											TheGlobalData->m_data.m_debugVisibilityGapColor);
 		}
 	}
 #endif
@@ -6419,3 +6425,4 @@ ObjectID Object::calculateCountermeasureToDivertTo( const Object& victim )
 	}
 	return INVALID_ID;
 }
+#endif // if 0

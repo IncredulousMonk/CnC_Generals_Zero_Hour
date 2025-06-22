@@ -42,7 +42,7 @@
 // #include "Common/LatchRestore.h"
 // #include "Common/MapObject.h"
 // #include "Common/MultiplayerSettings.h"
-// #include "Common/PerfTimer.h"
+#include "Common/PerfTimer.h"
 // #include "Common/Player.h"
 // #include "Common/PlayerList.h"
 // #include "Common/PlayerTemplate.h"
@@ -52,7 +52,7 @@
 // #include "Common/StatsCollector.h"
 // #include "Common/ThingFactory.h"
 // #include "Common/Team.h"
-// #include "Common/ThingTemplate.h"
+#include "Common/ThingTemplate.h"
 // #include "GameClient/Water.h"
 // #include "GameClient/Snow.h"
 // #include "Common/WellKnownKeys.h"
@@ -84,11 +84,11 @@
 // #include "GameLogic/FPUControl.h"
 #include "GameLogic/GameLogic.h"
 // #include "GameLogic/Locomotor.h"
-// #include "GameLogic/Object.h"
+#include "GameLogic/Object.h"
 // #include "GameLogic/Module/AIUpdate.h"
 // #include "GameLogic/Module/BodyModule.h"
 // #include "GameLogic/Module/CreateModule.h"
-// #include "GameLogic/Module/DestroyModule.h"
+#include "GameLogic/Module/DestroyModule.h"
 // #include "GameLogic/Module/OpenContain.h"
 // #include "GameLogic/PartitionManager.h"
 // #include "GameLogic/PolygonTrigger.h"
@@ -112,7 +112,6 @@
 
 // #include <rts/profile.h>
 
-#if 0
 DECLARE_PERF_TIMER(SleepyMaintenance)
 
 #include "Common/UnitTimings.h" //Contains the DO_UNIT_TIMINGS define jba.		 
@@ -136,7 +135,6 @@ extern void externalAddTree(Coord3D location, Real scale, Real angle, AsciiStrin
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
-#endif // if 0
 
 
 
@@ -429,7 +427,9 @@ void GameLogic::init( void )
 
 	m_isScoringEnabled = TRUE;
 	m_showBehindBuildingMarkers = TRUE;
+#endif // if 0
 	m_drawIconUI = TRUE;
+#if 0
 	m_showDynamicLOD = TRUE;
 	m_scriptHulkMaxLifetimeOverride = -1;
 	
@@ -2794,6 +2794,7 @@ void GameLogic::eraseSleepyUpdate(Int i)
 		m_sleepyUpdates.pop_back();
 	}
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 inline Bool isLowerPriority(const UpdateModulePtr a, const UpdateModulePtr b)
@@ -2812,16 +2813,16 @@ Int GameLogic::rebalanceParentSleepyUpdate(Int i)
 {
 	USE_PERF_TIMER(SleepyMaintenance)
 
-	DEBUG_ASSERTCRASH(i >= 0 && i < m_sleepyUpdates.size(), ("bad sleepy idx"));
+	DEBUG_ASSERTCRASH(i >= 0 && i < static_cast<Int>(m_sleepyUpdates.size()), ("bad sleepy idx"));
 
 	Int parent = ((i+1)>>1)-1;
-	while (parent >= 0 && isLowerPriority(m_sleepyUpdates[parent], m_sleepyUpdates[i]))
+	while (parent >= 0 && isLowerPriority(m_sleepyUpdates.data()[parent], m_sleepyUpdates.data()[i]))
 	{
-		UpdateModulePtr a = m_sleepyUpdates[parent];
-		UpdateModulePtr b = m_sleepyUpdates[i];
+		UpdateModulePtr a = m_sleepyUpdates.data()[parent];
+		UpdateModulePtr b = m_sleepyUpdates.data()[i];
 
-		m_sleepyUpdates[i] = a;
-		m_sleepyUpdates[parent] = b;
+		m_sleepyUpdates.data()[i] = a;
+		m_sleepyUpdates.data()[parent] = b;
 
 		a->friend_setIndexInLogic(i);
 		b->friend_setIndexInLogic(parent);
@@ -2833,6 +2834,7 @@ Int GameLogic::rebalanceParentSleepyUpdate(Int i)
 	return i;
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 Int GameLogic::rebalanceChildSleepyUpdate(Int i)
 {
@@ -2940,6 +2942,7 @@ void GameLogic::remakeSleepyUpdate()
 
 	validateSleepyUpdate();
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 void GameLogic::pushSleepyUpdate(UpdateModulePtr u)
@@ -2954,6 +2957,7 @@ void GameLogic::pushSleepyUpdate(UpdateModulePtr u)
 	rebalanceParentSleepyUpdate(m_sleepyUpdates.size()-1);
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 UpdateModulePtr GameLogic::peekSleepyUpdate() const
 {
@@ -2989,6 +2993,7 @@ void GameLogic::popSleepyUpdate()
 		m_sleepyUpdates.pop_back();
 	}
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // this should be called only by UpdateModule, thanks.
@@ -2996,6 +3001,7 @@ void GameLogic::popSleepyUpdate()
 //DECLARE_PERF_TIMER(friend_awakenUpdateModule)
 void GameLogic::friend_awakenUpdateModule(Object* obj, UpdateModulePtr u, UnsignedInt whenToWakeUp)
 {
+#if 0
 	//USE_PERF_TIMER(friend_awakenUpdateModule)
 	UnsignedInt now = TheGameLogic->getFrame();
 	DEBUG_ASSERTCRASH(whenToWakeUp >= now, ("setWakeFrame frame is in the past... are you sure this is what you want?"));
@@ -3058,8 +3064,9 @@ void GameLogic::friend_awakenUpdateModule(Object* obj, UpdateModulePtr u, Unsign
 		u->friend_setNextCallFrame(whenToWakeUp);
 		return;
 	}
+#endif // if 0
 }
-
+#if 0
 
 
 
@@ -3845,7 +3852,6 @@ void GameLogic::update( void )
 	// }
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** Return the first object in the world list */
 // ------------------------------------------------------------------------------------------------
@@ -3916,7 +3922,8 @@ void GameLogic::registerObject( Object *obj )
 	UnsignedInt now = TheGameLogic->getFrame();
 	if (now == 0)
 		now = 1;
-	for (BehaviorModule** b = obj->getBehaviorModules(); *b; ++b)
+#if 0
+		for (BehaviorModule** b = obj->getBehaviorModules(); *b; ++b)
 	{
 #ifdef DIRECT_UPDATEMODULE_ACCESS
 		// evil, but necessary at this point. (srj)
@@ -3947,6 +3954,7 @@ void GameLogic::registerObject( Object *obj )
 			pushSleepyUpdate(u);
 		}
 	}
+#endif // if 0
 
 }
 
@@ -3984,7 +3992,8 @@ void GameLogic::destroyObject( Object *obj )
 	if (!obj || obj->isDestroyed())
 		return;
 
-	// run the object onDestroy event if provied
+#if 0
+		// run the object onDestroy event if provied
 	for (BehaviorModule** m = obj->getBehaviorModules(); *m; ++m)
 	{
 		DestroyModuleInterface* destroy = (*m)->getDestroy();
@@ -4003,6 +4012,7 @@ void GameLogic::destroyObject( Object *obj )
 		ai->setLocomotorGoalNone();
 		ai->destroyPath();
 	}
+#endif // if 0
 
 	// add to end of destruction list, in case something is being destroyed and trying to destroy subobjects
 	m_objectsToDestroy.push_back(obj);
@@ -4010,22 +4020,24 @@ void GameLogic::destroyObject( Object *obj )
 	// run any on destroy logic internal to the object
 	obj->onDestroy();
 
-	// remove wall pieces from the pathfinder
-	if( obj->isKindOf( KINDOF_WALK_ON_TOP_OF_WALL ) )
-		TheAI->pathfinder()->removeWallPiece( obj );
+	// FIXME: TheAI, ThePlayerList, TheControlBar
+	// // remove wall pieces from the pathfinder
+	// if( obj->isKindOf( KINDOF_WALK_ON_TOP_OF_WALL ) )
+	// 	TheAI->pathfinder()->removeWallPiece( obj );
 
-	//Clean up special power shortcut bars
-	if( obj->hasAnySpecialPower() )
-	{
-		if( ThePlayerList->getLocalPlayer() == obj->getControllingPlayer() )
-		{
-			TheControlBar->markUIDirty();
-		}
-	}
+	// //Clean up special power shortcut bars
+	// if( obj->hasAnySpecialPower() )
+	// {
+	// 	if( ThePlayerList->getLocalPlayer() == obj->getControllingPlayer() )
+	// 	{
+	// 		TheControlBar->markUIDirty();
+	// 	}
+	// }
 
 
 }  // end destroyObject
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Bool inCRCGen = FALSE;
@@ -4413,10 +4425,14 @@ void GameLogic::setBuildableStatusOverride(const ThingTemplate* tt, BuildableSta
 		m_thingTemplateBuildableOverrides[tt->getName()] = bs;
 	}
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 Bool GameLogic::findBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus& bs) const
 {
+(void) tt;
+(void) bs;
+#if 0
 	if (tt)
 	{
 		BuildableMap::const_iterator it = m_thingTemplateBuildableOverrides.find(tt->getName());
@@ -4426,9 +4442,11 @@ Bool GameLogic::findBuildableStatusOverride(const ThingTemplate* tt, BuildableSt
 			return true;
 		}
 	}
+#endif // if 0
 	return false;
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 void GameLogic::setControlBarOverride(const AsciiString& commandSetName, Int slot, ConstCommandButtonPtr commandButton)
 {

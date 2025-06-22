@@ -20,6 +20,7 @@
 // Matthew Gill, April 2025
 ///////////////////////////////////////////////////////
 
+#include "GameClient/Drawable.h"
 #include "LinuxDevice/GameClient/LinuxGameClient.h"
 #include "LinuxDevice/GameClient/SdlKeyboard.h"
 #include "LinuxDevice/GameClient/SdlMouse.h"
@@ -68,20 +69,19 @@ void LinuxGameClient::reset(void) {
    * GameLogic/Client for those purposes, or we could put the allocation pools
    * in the GameLogic and GameClient themselves */
 //-------------------------------------------------------------------------------------------------
-// Drawable *LinuxGameClient::friend_createDrawable( const ThingTemplate *tmplate,
-//                                                                         DrawableStatus statusBits )
-// {
-//    Drawable *draw = NULL;
+Drawable* LinuxGameClient::friend_createDrawable(const ThingTemplate* tmplate, DrawableStatus statusBits) {
+   Drawable *draw = NULL;
 
-//    // sanity
-//    if( tmplate == NULL )
-//       return NULL;
+   // sanity
+   if (tmplate == NULL) {
+      return NULL;
+   }
    
-//    draw = newInstance(Drawable)( tmplate, statusBits );
+   draw = newInstance(Drawable)(tmplate, statusBits);
 
-//    return draw;
+   return draw;
 
-// }
+}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------

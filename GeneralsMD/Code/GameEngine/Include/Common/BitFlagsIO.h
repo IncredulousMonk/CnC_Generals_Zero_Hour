@@ -98,7 +98,7 @@ void BitFlags<NUMBITS>::parse(INI* ini, AsciiString* str)
 				throw INI_INVALID_NAME_LIST;
 			}
 			Int bitIndex = INI::scanIndexList(token+1, s_bitNameList);	// this throws if the token is not found
-			set(bitIndex, 1);
+			set(static_cast<UnsignedInt>(bitIndex), 1);
 			foundAddOrSub = true;
 		}
 		else if (token[0] == '-')
@@ -109,7 +109,7 @@ void BitFlags<NUMBITS>::parse(INI* ini, AsciiString* str)
 				throw INI_INVALID_NAME_LIST;
 			}
 			Int bitIndex = INI::scanIndexList(token+1, s_bitNameList);	// this throws if the token is not found
-			set(bitIndex, 0);
+			set(static_cast<UnsignedInt>(bitIndex), 0);
 			foundAddOrSub = true;
 		}
 		else
@@ -124,7 +124,7 @@ void BitFlags<NUMBITS>::parse(INI* ini, AsciiString* str)
 				clear();
 
 			Int bitIndex = INI::scanIndexList(token, s_bitNameList);	// this throws if the token is not found
-			set(bitIndex, 1);
+			set(static_cast<UnsignedInt>(bitIndex), 1);
 			foundNormal = true;
 		}
 	}

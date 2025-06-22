@@ -31,6 +31,7 @@
 #ifndef _AI_H_
 #define _AI_H_
 
+#if 0
 #include "Common/Snapshot.h"
 #include "Common/SubsystemInterface.h"
 #include "Common/GameMemory.h"
@@ -333,6 +334,7 @@ enum AttitudeType: int { AI_SLEEP = -2, AI_PASSIVE=-1, AI_NORMAL=0, AI_ALERT=1, 
 enum CommandSourceType;
 
 typedef UnsignedInt CommandSourceMask;
+#endif // if 0
 
 #ifdef DEFINE_COMMANDSOURCEMASK_NAMES
 static const char *TheCommandSourceMaskNames[] = 
@@ -347,6 +349,7 @@ static const char *TheCommandSourceMaskNames[] =
 };
 #endif
 
+#if 0
 //------------------------------------------------------------------------------------------------------------
 
 enum AICommandType	// Stored in save file, do not reorder/renumber.  jba.
@@ -1044,6 +1047,7 @@ private:
 	
 	mutable VecObjectID	m_lastRequestedIDList;			///< this is used so we can return by reference, saving a copy
 };
+#endif // if 0
 
 
 #endif // _AI_H_

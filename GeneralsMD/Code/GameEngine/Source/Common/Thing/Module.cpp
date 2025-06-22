@@ -40,7 +40,7 @@
 #include "GameLogic/Object.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Module/BodyModule.h"
-#include "GameLogic/Module/CollideModule.h"
+// #include "GameLogic/Module/CollideModule.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/Module/DamageModule.h"
 #include "GameLogic/Module/DieModule.h"
@@ -79,7 +79,7 @@ Module::~Module()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Module::crc( Xfer *xfer )
+void Module::crc( Xfer* /*xfer*/ )
 {
 
 }  // end crc
@@ -238,12 +238,13 @@ void DrawableModule::loadPostProcess( void )
 //-------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------
-void UpgradeMuxData::performUpgradeFX(Object* obj) const
+void UpgradeMuxData::performUpgradeFX(Object* /*obj*/) const
 {
-	if (m_fxListUpgrade)
-	{
-		FXList::doFXObj(m_fxListUpgrade, obj);
-	}
+	// FIXME: FXList
+	// if (m_fxListUpgrade)
+	// {
+	// 	FXList::doFXObj(m_fxListUpgrade, obj);
+	// }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -275,7 +276,7 @@ Bool UpgradeMuxData::isTriggeredBy(const std::string &upgrade) const
 	for( it = m_triggerUpgradeNames.begin(); it != m_triggerUpgradeNames.end();	++it)
 	{
 		AsciiString trigger = *it;
-		if (stricmp(trigger.str(), upgrade.c_str()) == 0)
+		if (strcasecmp(trigger.str(), upgrade.c_str()) == 0)
 		{
 			return TRUE;
 		}

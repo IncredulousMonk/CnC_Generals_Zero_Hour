@@ -104,6 +104,9 @@ private:
 
 		Clump();
 	//~Clump();
+	// No copies allowed!
+	Clump(const Clump&) = delete;
+	Clump& operator=(const Clump&) = delete;
 	};
 
 	typedef Real (*ClumpCompareProc)(Clump *a, Clump *b);
@@ -124,6 +127,9 @@ private:
 public:
 	SimpleObjectIterator();
 //~SimpleObjectIterator();	// provided by MPO
+	// No copies allowed!
+	SimpleObjectIterator(const SimpleObjectIterator&) = delete;
+	SimpleObjectIterator& operator=(const SimpleObjectIterator&) = delete;
 	Object *first() { return firstWithNumeric(NULL); }
 	Object *next() { return nextWithNumeric(NULL); }
 

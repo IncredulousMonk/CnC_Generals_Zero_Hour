@@ -36,8 +36,8 @@
 #include "Common/STLTypedefs.h"
 #include "Common/Upgrade.h"
 
-#include "GameClient/Drawable.h"
-#include "GameClient/FXList.h"
+// #include "GameClient/Drawable.h"
+// #include "GameClient/FXList.h"
 
 #include "GameLogic/Module/BehaviorModule.h"
 
@@ -52,8 +52,9 @@ class Player;
 class UpgradeModuleInterface
 {
 public:
+	virtual ~UpgradeModuleInterface() {};
 
- 	virtual Bool isAlreadyUpgraded() const = 0;
+	virtual Bool isAlreadyUpgraded() const = 0;
 	virtual Bool attemptUpgrade( UpgradeMaskType keyMask ) = 0;
 	virtual Bool wouldUpgrade( UpgradeMaskType keyMask ) const = 0;
 	virtual Bool resetUpgrade( UpgradeMaskType keyMask ) = 0;
@@ -67,15 +68,16 @@ public:
 class UpgradeMuxData	// does NOT inherit from ModuleData.
 {
 public:
-	mutable std::vector<AsciiString>	m_triggerUpgradeNames;
-	mutable std::vector<AsciiString>	m_activationUpgradeNames;
-	mutable std::vector<AsciiString>	m_conflictingUpgradeNames;
-	mutable std::vector<AsciiString>	m_removalUpgradeNames;
+	mutable std::vector<AsciiString>	m_triggerUpgradeNames {};
+	mutable std::vector<AsciiString>	m_activationUpgradeNames {};
+	mutable std::vector<AsciiString>	m_conflictingUpgradeNames {};
+	mutable std::vector<AsciiString>	m_removalUpgradeNames {};
 	
-	mutable const FXList*							m_fxListUpgrade;
-	mutable UpgradeMaskType						m_activationMask;				///< Activation only supports a single name currently
-	mutable UpgradeMaskType						m_conflictingMask;			///< Conflicts support multiple listings, and they are an OR
-	mutable Bool											m_requiresAllTriggers;
+	// FIXME: FXList
+	// mutable const FXList*				m_fxListUpgrade {};
+	mutable UpgradeMaskType				m_activationMask {};				///< Activation only supports a single name currently
+	mutable UpgradeMaskType				m_conflictingMask {};			///< Conflicts support multiple listings, and they are an OR
+	mutable Bool						m_requiresAllTriggers {};
 
 	UpgradeMuxData()
 	{
@@ -84,21 +86,27 @@ public:
 		m_conflictingUpgradeNames.clear();
 		m_removalUpgradeNames.clear();
 
-		m_fxListUpgrade = NULL;
+		// FIXME: FXList
+		// m_fxListUpgrade = NULL;
 		m_activationMask.clear();
 		m_conflictingMask.clear();
 		m_requiresAllTriggers = false;
 	}
 
+	// No copies allowed!
+	UpgradeMuxData(const UpgradeMuxData&) = delete;
+	UpgradeMuxData& operator=(const UpgradeMuxData&) = delete;
+
 	static const FieldParse* getFieldParse() 
 	{
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "TriggeredBy",		INI::parseAsciiStringVector, NULL, offsetof( UpgradeMuxData, m_activationUpgradeNames ) },
-			{ "ConflictsWith",	INI::parseAsciiStringVector, NULL, offsetof( UpgradeMuxData, m_conflictingUpgradeNames ) },
-			{ "RemovesUpgrades",INI::parseAsciiStringVector, NULL, offsetof( UpgradeMuxData, m_removalUpgradeNames ) },
-			{ "FXListUpgrade",	INI::parseFXList, NULL, offsetof( UpgradeMuxData, m_fxListUpgrade ) },
-			{ "RequiresAllTriggers", INI::parseBool, NULL, offsetof( UpgradeMuxData, m_requiresAllTriggers ) },
+			{ "TriggeredBy",			INI::parseAsciiStringVector,	NULL, offsetof( UpgradeMuxData, m_activationUpgradeNames ) },
+			{ "ConflictsWith",			INI::parseAsciiStringVector,	NULL, offsetof( UpgradeMuxData, m_conflictingUpgradeNames ) },
+			{ "RemovesUpgrades",		INI::parseAsciiStringVector,	NULL, offsetof( UpgradeMuxData, m_removalUpgradeNames ) },
+			// FIXME: FXList
+			// { "FXListUpgrade",			INI::parseFXList,				NULL, offsetof( UpgradeMuxData, m_fxListUpgrade ) },
+			{ "RequiresAllTriggers",	INI::parseBool,					NULL, offsetof( UpgradeMuxData, m_requiresAllTriggers ) },
 			{ 0, 0, 0, 0 }
 		};
 		return dataFieldParse;
@@ -157,12 +165,18 @@ private:
 struct UpgradeModuleData : public BehaviorModuleData
 {
 public:
-	UpgradeMuxData				m_upgradeMuxData;
+	// MG: This has to go into an embedded struct too, to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+		UpgradeMuxData m_upgradeMuxData {};
+	};
+
+	IniData m_ini {};
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
 	{
-    ModuleData::buildFieldParse(p);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( UpgradeModuleData, m_upgradeMuxData ));
+		ModuleData::buildFieldParse(p);
+		p.add(UpgradeMuxData::getFieldParse(), offsetof( UpgradeModuleData::IniData, m_upgradeMuxData ));
 	}
 };
 
@@ -185,29 +199,29 @@ public:
 	// BehaviorModule
 	virtual UpgradeModuleInterface* getUpgrade() { return this; }
 
-	bool isTriggeredBy(const std::string & upgrade) const { return getUpgradeModuleData()->m_upgradeMuxData.isTriggeredBy(upgrade); }
+	bool isTriggeredBy(const std::string & upgrade) const { return getUpgradeModuleData()->m_ini.m_upgradeMuxData.isTriggeredBy(upgrade); }
 
 protected:
 
 	virtual void processUpgradeRemoval()
 	{
 		// I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP.
-		getUpgradeModuleData()->m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
+		getUpgradeModuleData()->m_ini.m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
 	}
 
 	virtual Bool requiresAllActivationUpgrades() const
 	{
-		return getUpgradeModuleData()->m_upgradeMuxData.m_requiresAllTriggers;
+		return getUpgradeModuleData()->m_ini.m_upgradeMuxData.m_requiresAllTriggers;
 	}
 
 	virtual void getUpgradeActivationMasks(UpgradeMaskType& activation, UpgradeMaskType& conflicting) const
 	{
-		getUpgradeModuleData()->m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
+		getUpgradeModuleData()->m_ini.m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
 	}
 
 	virtual void performUpgradeFX()
 	{
-		getUpgradeModuleData()->m_upgradeMuxData.performUpgradeFX(getObject());
+		getUpgradeModuleData()->m_ini.m_upgradeMuxData.performUpgradeFX(getObject());
 	}
 
 };

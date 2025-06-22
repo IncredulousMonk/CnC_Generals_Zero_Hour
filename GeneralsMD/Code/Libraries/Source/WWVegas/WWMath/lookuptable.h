@@ -42,7 +42,7 @@
 
 #include "always.h"
 #include "simplevec.h"
-#include "wwstring.h"
+// #include "wwstring.h"
 #include "refcount.h"
 #include "multilist.h"
 #include "wwmath.h"

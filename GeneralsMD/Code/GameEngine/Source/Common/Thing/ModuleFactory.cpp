@@ -43,6 +43,7 @@
 
 // behavior includes
 #include "GameLogic/Module/AutoHealBehavior.h"
+#if 0
 #include "GameLogic/Module/GrantStealthBehavior.h"
 #include "GameLogic/Module/NeutronBlastBehavior.h"
 #include "GameLogic/Module/BehaviorModule.h"
@@ -280,6 +281,7 @@
 #include "GameClient/Module/AnimatedParticleSysBoneClientUpdate.h"
 #include "GameClient/Module/SwayClientUpdate.h"
 #include "GameClient/Module/BeaconClientUpdate.h"
+#endif
 
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 ModuleFactory *TheModuleFactory = NULL;  ///< the module factory singleton
@@ -325,6 +327,7 @@ void ModuleFactory::init( void )
 {
 
 	// behavior modules
+#if 0
 	addModule( AutoHealBehavior );
 	addModule( GrantStealthBehavior );
 	addModule( NeutronBlastBehavior );
@@ -563,6 +566,7 @@ void ModuleFactory::init( void )
 	addModule( AnimatedParticleSysBoneClientUpdate );
 	addModule( SwayClientUpdate );
 	addModule( BeaconClientUpdate );
+#endif
 
 }  // end init
 

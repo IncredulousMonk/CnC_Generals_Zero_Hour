@@ -41,6 +41,7 @@
 class CreateModuleInterface
 {
 public:
+	virtual ~CreateModuleInterface() {}
 	virtual void onCreate() = 0;				///< This is called when you become a code Object
 	virtual void onBuildComplete() = 0;	///< This is called when you are a finished game object
 	virtual Bool shouldDoOnBuildComplete() const = 0;

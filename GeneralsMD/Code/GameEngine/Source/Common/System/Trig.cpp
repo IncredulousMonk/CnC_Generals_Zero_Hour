@@ -47,10 +47,13 @@
 #define INT_HALFPI 						6434
 #define intCos(x) intSin( INT_HALFPI - (x) )
 
+#define DEFAULT_TRIG
+
 // sinLookup and arcCosLookup were statically initialized on a mcampbell2k, a 1GHz PIII running Win2K
 // on Feb 12, 2002.  To regenerate, define REGENERATE_TRIG_TABLES, run the program, and copy the
 // resulting trig.txt file here.
 
+#ifndef DEFAULT_TRIG
 static Int sinLookup[TRIG_RES] = {
 	0x00000000, 0x00000006, 0x0000000C, 0x00000012, 0x00000019, 0x0000001F, 0x00000025, 0x0000002B,
 	0x00000032, 0x00000038, 0x0000003E, 0x00000045, 0x0000004B, 0x00000051, 0x00000057, 0x0000005E,
@@ -1633,10 +1636,10 @@ static Int intTan( Int angle )
 
 	return INT_ONE * s / c;
 }
+#endif // !DEFAULT_TRIG
 
 // These calls are somewhat less accurate than the standard library calls, but use a
 // precalculated lookup table for speed and repeatability across different machines
-#define DEFAULT_TRIG
 Real Sin(Real x)
 {
 #ifdef DEFAULT_TRIG

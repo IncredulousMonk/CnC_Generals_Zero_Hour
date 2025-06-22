@@ -137,14 +137,14 @@ struct FindPositionOptions
 		sourceToPathToDest    = NULL;
 		relationshipObject		= NULL;
 	};
-	FindPositionFlags flags;					///< flags for finding the legal position
-	Real minRadius;										///< min radius to search around
-	Real maxRadius;										///< max radius to search around
-	Real startAngle;									///< use this angle to start the search at
-	Real maxZDelta;										///< maximum delta-z we will allow
-	const Object *ignoreObject;				///< ignore this object in legal position checks
-	const Object *sourceToPathToDest;	///< object that must be able to path to the position chosen
-	const Object *relationshipObject;	///< object to use for relationship tests
+	FindPositionFlags flags {};					///< flags for finding the legal position
+	Real minRadius {};										///< min radius to search around
+	Real maxRadius {};										///< max radius to search around
+	Real startAngle {};									///< use this angle to start the search at
+	Real maxZDelta {};										///< maximum delta-z we will allow
+	const Object *ignoreObject {};				///< ignore this object in legal position checks
+	const Object *sourceToPathToDest {};	///< object that must be able to path to the position chosen
+	const Object *relationshipObject {};	///< object to use for relationship tests
 };
 
 //=====================================
@@ -201,6 +201,9 @@ public:
 	// Note, we allocate these in arrays, thus we must have a default ctor (and NOT descend from MPO)
 	CellAndObjectIntersection();
 	~CellAndObjectIntersection();
+	// No copies allowed!
+	CellAndObjectIntersection(const CellAndObjectIntersection&) = delete;
+	CellAndObjectIntersection& operator=(const CellAndObjectIntersection&) = delete;
 
 	/**
 		make 'this' refer to the specified cell and module. Normally, this
@@ -312,6 +315,9 @@ public:
 
 	// Note, we allocate these in arrays, thus we must have a default ctor (and NOT descend from MPO)
 	PartitionCell();
+	// No copies allowed!
+	PartitionCell(const PartitionCell&) = delete;
+	PartitionCell& operator=(const PartitionCell&) = delete;
 #ifdef PM_CACHE_TERRAIN_HEIGHT
 	void init(Int x, Int y, Real loZ, Real hiZ) { m_cellX = x; m_cellY = y; m_loTerrainZ = loZ; m_hiTerrainZ = hiZ; }
 #else
@@ -491,6 +497,9 @@ private:
 public:
 
 	PartitionData();
+	// No copies allowed!
+	PartitionData(const PartitionData&) = delete;
+	PartitionData& operator=(const PartitionData&) = delete;
 
 	void attachToObject( Object* object );
 	void detachFromObject( void );
@@ -516,8 +525,9 @@ public:
 	ObjectShroudStatus getShroudedStatus(Int playerIndex);
 
 	inline Int wasSeenByAnyPlayers() const	///<check if a player in the game has seen the object but is now looking at fogged version.
-	{	
-		for (Int i=0; i<MAX_PLAYER_COUNT; i++)
+	{
+		Int i {0};
+		for (i=0; i<MAX_PLAYER_COUNT; i++)
 			if (m_everSeenByPlayer[i] && m_shroudedness[i] == OBJECTSHROUD_FOGGED)
 				return i;
 		return i;
@@ -594,6 +604,7 @@ public:
 class PartitionFilter
 {
 public:
+	virtual ~PartitionFilter() {}
 	virtual Bool allow(Object *objOther) = 0;
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() = 0;
@@ -640,6 +651,10 @@ private:
 	const Player *m_player;
 public:
 	PartitionFilterSamePlayer(const Player *player) : m_player(player) { }
+	virtual ~PartitionFilterSamePlayer() {}
+	// No copies allowed!
+	PartitionFilterSamePlayer(const PartitionFilterSamePlayer&) = delete;
+	PartitionFilterSamePlayer& operator=(const PartitionFilterSamePlayer&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterSamePlayer"; }
@@ -666,6 +681,10 @@ public:
 		ALLOW_NEUTRAL					= (1<<NEUTRAL)		///< allow objects that m_obj considers neutral
 	};
 	PartitionFilterRelationship(const Object *obj, Int flags) : m_obj(obj), m_flags(flags) { }
+	virtual ~PartitionFilterRelationship() {}
+	// No copies allowed!
+	PartitionFilterRelationship(const PartitionFilterRelationship&) = delete;
+	PartitionFilterRelationship& operator=(const PartitionFilterRelationship&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterRelationship"; }
@@ -683,6 +702,10 @@ private:
 	const Team *m_team;
 public:
 	PartitionFilterAcceptOnTeam(const Team *team);
+	virtual ~PartitionFilterAcceptOnTeam() {}
+	// No copies allowed!
+	PartitionFilterAcceptOnTeam(const PartitionFilterAcceptOnTeam&) = delete;
+	PartitionFilterAcceptOnTeam& operator=(const PartitionFilterAcceptOnTeam&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterAcceptOnTeam"; }
@@ -700,6 +723,10 @@ private:
 	const Squad *m_squad;
 public:
 	PartitionFilterAcceptOnSquad(const Squad *squad);
+	virtual ~PartitionFilterAcceptOnSquad() {}
+	// No copies allowed!
+	PartitionFilterAcceptOnSquad(const PartitionFilterAcceptOnSquad&) = delete;
+	PartitionFilterAcceptOnSquad& operator=(const PartitionFilterAcceptOnSquad&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterAcceptOnSquad"; }
@@ -723,6 +750,10 @@ private:
 	const Object *m_obj;
 public:
 	PartitionFilterLineOfSight(const Object *obj);
+	virtual ~PartitionFilterLineOfSight() {}
+	// No copies allowed!
+	PartitionFilterLineOfSight(const PartitionFilterLineOfSight&) = delete;
+	PartitionFilterLineOfSight& operator=(const PartitionFilterLineOfSight&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterLineOfSight"; }
@@ -741,6 +772,10 @@ private:
 	AbleToAttackType m_attackType;
 public:
 	PartitionFilterPossibleToAttack(AbleToAttackType t, const Object *obj, CommandSourceType commandSource);
+	virtual ~PartitionFilterPossibleToAttack() {}
+	// No copies allowed!
+	PartitionFilterPossibleToAttack(const PartitionFilterPossibleToAttack&) = delete;
+	PartitionFilterPossibleToAttack& operator=(const PartitionFilterPossibleToAttack&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterPossibleToAttack"; }
@@ -759,6 +794,10 @@ private:
 
 public:
 	PartitionFilterPossibleToEnter(const Object *obj, CommandSourceType commandSource);
+	virtual ~PartitionFilterPossibleToEnter() {}
+	// No copies allowed!
+	PartitionFilterPossibleToEnter(const PartitionFilterPossibleToEnter&) = delete;
+	PartitionFilterPossibleToEnter& operator=(const PartitionFilterPossibleToEnter&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterPossibleToEnter"; }
@@ -777,6 +816,10 @@ private:
 
 public:
 	PartitionFilterPossibleToHijack(const Object *obj, CommandSourceType commandSource);
+	virtual ~PartitionFilterPossibleToHijack() {}
+	// No copies allowed!
+	PartitionFilterPossibleToHijack(const PartitionFilterPossibleToHijack&) = delete;
+	PartitionFilterPossibleToHijack& operator=(const PartitionFilterPossibleToHijack&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterPossibleToHijack"; }
@@ -842,10 +885,14 @@ public:
 class PartitionFilterStealthedAndUndetected : public PartitionFilter
 {
 private:
-	const Object *m_obj;
-	Bool m_allow;
+	const Object *m_obj {};
+	Bool m_allow {};
 public:
 	PartitionFilterStealthedAndUndetected( const Object *obj, Bool allow ) { m_obj = obj; m_allow = allow; } 
+	virtual ~PartitionFilterStealthedAndUndetected() {}
+	// No copies allowed!
+	PartitionFilterStealthedAndUndetected(const PartitionFilterStealthedAndUndetected&) = delete;
+	PartitionFilterStealthedAndUndetected& operator=(const PartitionFilterStealthedAndUndetected&) = delete;
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterStealthedAndUndetected"; }
@@ -899,6 +946,10 @@ private:
 	Object *m_obj;
 public:
 	PartitionFilterRejectBehind( Object *obj );
+	virtual ~PartitionFilterRejectBehind() {}
+	// No copies allowed!
+	PartitionFilterRejectBehind(const PartitionFilterRejectBehind&) = delete;
+	PartitionFilterRejectBehind& operator=(const PartitionFilterRejectBehind&) = delete;
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterRejectBehind"; }
@@ -931,6 +982,10 @@ private:
 	const Object *m_obj;
 public:
 	PartitionFilterSameMapStatus(const Object *obj) : m_obj(obj) { }
+	virtual ~PartitionFilterSameMapStatus() {}
+	// No copies allowed!
+	PartitionFilterSameMapStatus(const PartitionFilterSameMapStatus&) = delete;
+	PartitionFilterSameMapStatus& operator=(const PartitionFilterSameMapStatus&) = delete;
 protected:
 	virtual Bool allow(Object *objOther);
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -966,6 +1021,10 @@ private:
 	Bool m_acquireEnemies;
 public:
 	PartitionFilterRejectBuildings(const Object *o);
+	virtual ~PartitionFilterRejectBuildings() {}
+	// No copies allowed!
+	PartitionFilterRejectBuildings(const PartitionFilterRejectBuildings&) = delete;
+	PartitionFilterRejectBuildings& operator=(const PartitionFilterRejectBuildings&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -986,6 +1045,10 @@ private:
 public:
 	PartitionFilterInsignificantBuildings(Bool allowNonBuildings, Bool allowInsignificant) : 
 			m_allowNonBuildings(allowNonBuildings), m_allowInsignificant(allowInsignificant) {}
+	virtual ~PartitionFilterInsignificantBuildings() {}
+	// No copies allowed!
+	PartitionFilterInsignificantBuildings(const PartitionFilterInsignificantBuildings&) = delete;
+	PartitionFilterInsignificantBuildings& operator=(const PartitionFilterInsignificantBuildings&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1004,6 +1067,10 @@ private:
 public:
 	PartitionFilterFreeOfFog(Int toWhom) : 
 			m_comparisonIndex(toWhom){}
+	virtual ~PartitionFilterFreeOfFog() {}
+	// No copies allowed!
+	PartitionFilterFreeOfFog(const PartitionFilterFreeOfFog&) = delete;
+	PartitionFilterFreeOfFog& operator=(const PartitionFilterFreeOfFog&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1021,6 +1088,10 @@ private:
 	const Object *m_self;
 public:
 	PartitionFilterRepulsor(const Object *o) : m_self(o) { }
+	virtual ~PartitionFilterRepulsor() {}
+	// No copies allowed!
+	PartitionFilterRepulsor(const PartitionFilterRepulsor&) = delete;
+	PartitionFilterRepulsor& operator=(const PartitionFilterRepulsor&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1042,6 +1113,10 @@ private:
 
 public:
 	PartitionFilterIrregularArea(Coord3D* area, Int numPointsInArea) : m_area(area), m_numPointsInArea(numPointsInArea) {}
+	virtual ~PartitionFilterIrregularArea() {}
+	// No copies allowed!
+	PartitionFilterIrregularArea(const PartitionFilterIrregularArea&) = delete;
+	PartitionFilterIrregularArea& operator=(const PartitionFilterIrregularArea&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1062,6 +1137,10 @@ private:
 
 public:
 	PartitionFilterPolygonTrigger(const PolygonTrigger *trigger) : m_trigger(trigger) {}
+	virtual ~PartitionFilterPolygonTrigger() {}
+	// No copies allowed!
+	PartitionFilterPolygonTrigger(const PartitionFilterPolygonTrigger&) = delete;
+	PartitionFilterPolygonTrigger& operator=(const PartitionFilterPolygonTrigger&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1082,6 +1161,10 @@ private:
 
 public:
 	PartitionFilterPlayer(const Player *player, Bool match) : m_player(player), m_match(match) {}
+	virtual ~PartitionFilterPlayer() {}
+	// No copies allowed!
+	PartitionFilterPlayer(const PartitionFilterPlayer&) = delete;
+	PartitionFilterPlayer& operator=(const PartitionFilterPlayer&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1098,8 +1181,8 @@ class PartitionFilterPlayerAffiliation : public PartitionFilter
 {
 private:
 	const Player *m_player;
-	Bool  m_match;
 	UnsignedInt m_affiliation;
+	Bool  m_match;
 
 public:
 	// whichAffiliation should use AllowPlayerRelationship flags specified in PlayerList.h
@@ -1107,6 +1190,10 @@ public:
 		: m_player(player), m_affiliation(whichAffiliation), m_match(match) 
 	{
 	}
+	virtual ~PartitionFilterPlayerAffiliation() {}
+	// No copies allowed!
+	PartitionFilterPlayerAffiliation(const PartitionFilterPlayerAffiliation&) = delete;
+	PartitionFilterPlayerAffiliation& operator=(const PartitionFilterPlayerAffiliation&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1127,6 +1214,10 @@ private:
 
 public:
 	PartitionFilterThing(const ThingTemplate *thing, Bool match) : m_tThing(thing), m_match(match) {}
+	virtual ~PartitionFilterThing() {}
+	// No copies allowed!
+	PartitionFilterThing(const PartitionFilterThing&) = delete;
+	PartitionFilterThing& operator=(const PartitionFilterThing&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1141,8 +1232,8 @@ protected:
 class PartitionFilterGarrisonable : public PartitionFilter
 {
 private:
-	Player *m_player;
-	Bool  m_match;
+	Player *m_player {};
+	Bool  m_match {};
 
 public:
 	PartitionFilterGarrisonable( Bool match ) : m_match(match) 
@@ -1152,6 +1243,10 @@ public:
 		m_player = NULL;
 		//
 	}
+	virtual ~PartitionFilterGarrisonable() {}
+	// No copies allowed!
+	PartitionFilterGarrisonable(const PartitionFilterGarrisonable&) = delete;
+	PartitionFilterGarrisonable& operator=(const PartitionFilterGarrisonable&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1175,6 +1270,10 @@ public:
 			m_player(player), m_match(match), m_commandSource(commandSource) 
 	{
 	}
+	virtual ~PartitionFilterGarrisonableByPlayer() {}
+	// No copies allowed!
+	PartitionFilterGarrisonableByPlayer(const PartitionFilterGarrisonableByPlayer&) = delete;
+	PartitionFilterGarrisonableByPlayer& operator=(const PartitionFilterGarrisonableByPlayer&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1215,6 +1314,11 @@ private:
 public:
 	PartitionFilterValidCommandButtonTarget( Object *source, const CommandButton *commandButton, Bool match, CommandSourceType commandSource) : 
 		m_source(source), m_commandButton(commandButton), m_match(match), m_commandSource(commandSource) {}
+	virtual ~PartitionFilterValidCommandButtonTarget() {}
+
+	// No copies allowed!
+	PartitionFilterValidCommandButtonTarget(const PartitionFilterValidCommandButtonTarget&) = delete;
+	PartitionFilterValidCommandButtonTarget& operator=(const PartitionFilterValidCommandButtonTarget&) = delete;
 protected:
 	virtual Bool allow( Object *other );
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -1263,7 +1367,7 @@ protected:
 		This is an internal function that is used to implement the public 
 		getClosestObject and iterateObjects calls. 
 	*/
-	Object *PartitionManager::getClosestObjects(
+	Object* getClosestObjects(
 		const Object *obj, 
 		const Coord3D *pos, 
 		Real maxDist, 
@@ -1313,6 +1417,10 @@ public:
 
 	PartitionManager( void );
 	virtual ~PartitionManager( void );
+
+	// No copies allowed!
+	PartitionManager(const PartitionManager&) = delete;
+	PartitionManager& operator=(const PartitionManager&) = delete;
 
 	// --------------- inherited from Subsystem interface -------------
 	virtual void init( void );			///< initialize

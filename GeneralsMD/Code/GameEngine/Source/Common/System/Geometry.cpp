@@ -106,6 +106,9 @@ void GeometryInfo::set(GeometryType type, Bool isSmall, Real height, Real majorR
 			m_minorRadius = minorRadius;
 			m_height = height;
 			break;
+
+		default:
+			break;
 	};
 
 	calcBoundingStuff();
@@ -205,6 +208,9 @@ void GeometryInfo::setMaxHeightAbovePosition(Real z)
 		case GEOMETRY_CYLINDER:
 			m_height = z;
 			break;
+
+		default:
+			break;
 	};
 
 	calcBoundingStuff();
@@ -222,6 +228,9 @@ Real GeometryInfo::getMaxHeightAbovePosition() const
 		case GEOMETRY_BOX:
 		case GEOMETRY_CYLINDER:
 			return m_height;
+
+		default:
+			break;
 	};
 
 	return 0.0f;
@@ -239,6 +248,9 @@ Real GeometryInfo::getMaxHeightBelowPosition() const
 		case GEOMETRY_BOX:
 		case GEOMETRY_CYLINDER:
 			return 0.0f;
+
+		default:
+			break;
 	};
 
 	return 0.0f;
@@ -321,6 +333,9 @@ void GeometryInfo::get2DBounds(const Coord3D& geomCenter, Real angle, Region2D& 
 
 			break;
 		}
+
+		default:
+			break;
 	}
 }
 
@@ -350,6 +365,9 @@ void GeometryInfo::clipPointToFootprint(const Coord3D& geomCenter, Coord3D& ptTo
 			ptToClip.y = clamp(geomCenter.y - m_minorRadius, ptToClip.y, geomCenter.y + m_minorRadius);
 			break;
 		}
+
+		default:
+			break;
 	};
 }
 
@@ -376,6 +394,9 @@ Bool GeometryInfo::isPointInFootprint(const Coord3D& geomCenter, const Coord3D& 
 			return isWithin(geomCenter.x - m_majorRadius, pt.x, geomCenter.x + m_majorRadius) &&
 							isWithin(geomCenter.y - m_minorRadius, pt.y, geomCenter.y + m_minorRadius);
 		}
+
+		default:
+			break;
 	};
 	return false;
 }
@@ -417,6 +438,9 @@ void GeometryInfo::makeRandomOffsetWithinFootprint(Coord3D& pt) const
 			pt.z = 0.0f;
 			break;
 		}
+
+		default:
+			break;
 	};
 }
 
@@ -464,6 +488,9 @@ void GeometryInfo::makeRandomOffsetOnPerimeter(Coord3D& pt) const
 			pt.z = 0.0f;
 			break;
 		}
+
+		default:
+			break;
 	};
 }
 
@@ -482,6 +509,9 @@ Real GeometryInfo::getFootprintArea() const
 		{
 			return 4.0f * m_majorRadius * m_minorRadius;
 		}
+
+		default:
+			break;
 	};
 
 	DEBUG_CRASH(("should never get here"));
@@ -515,6 +545,9 @@ void GeometryInfo::calcBoundingStuff()
 			m_boundingSphereRadius = sqrt(sqr(m_majorRadius) + sqr(m_minorRadius) + sqr(m_height*0.5));
 			break;
 		}
+
+		default:
+			break;
 	};
 }
 
@@ -536,6 +569,9 @@ void GeometryInfo::tweakExtents(ExtentModType extentModType, Real extentModAmoun
 		case EXTENTMOD_TYPE:
 			m_type = (GeometryType)((m_type + ((extentModType == EXTENTMOD_TYPE)?1:0)) % GEOMETRY_NUM_TYPES);
 			break;
+
+		default:
+			break;
 	}
 	m_isSmall = false;
 	calcBoundingStuff();
@@ -555,7 +591,7 @@ AsciiString GeometryInfo::getDescriptiveString() const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void GeometryInfo::crc( Xfer *xfer )
+void GeometryInfo::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc

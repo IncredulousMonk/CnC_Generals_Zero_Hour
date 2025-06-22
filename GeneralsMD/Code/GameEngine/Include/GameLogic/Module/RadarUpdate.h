@@ -51,14 +51,20 @@ public:
 		static const FieldParse dataFieldParse[] = 
 		{
 
-			{ "RadarExtendTime", INI::parseDurationReal, NULL, offsetof( RadarUpdateModuleData, m_radarExtendTime ) },
+			{ "RadarExtendTime", INI::parseDurationReal, NULL, offsetof( RadarUpdateModuleData::IniData, m_radarExtendTime ) },
 			{ 0, 0, 0, 0 }
 		};
     p.add(dataFieldParse);
 
 	}
 
-  Real m_radarExtendTime;  ///< in frames, time it takes the radar tower to build
+	// MG: Cannot apply offsetof to RadarUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_radarExtendTime;  ///< in frames, time it takes the radar tower to build
+	};
+
+	IniData m_ini {};
 
 };
 

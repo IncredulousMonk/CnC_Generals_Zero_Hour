@@ -160,9 +160,9 @@ private:
 	// note that it is declared 'const' -- the assumption being that
 	// since ThingTemplates are shared between many, many Things, the Thing
 	// should never be able to change it.
-	OVERRIDE<ThingTemplate> m_template;	///< reference back to template database
+	OVERRIDE<ThingTemplate> m_template {};	///< reference back to template database
 #if defined(_DEBUG) || defined(_INTERNAL)
-	AsciiString m_templateName;
+	AsciiString m_templateName {};
 #endif
 	/*
 		yes, private; it's important that some of these only be modified
@@ -172,7 +172,7 @@ private:
 		(pos, angle, etc) are all simply cached values used for efficiency and convenience.
 		you should NEVER modify them directly, because that won't change anything!
 	*/
-	Matrix3D m_transform;									///< the 3D orientation and position of this Thing
+	Matrix3D m_transform {};									///< the 3D orientation and position of this Thing
 
 	enum
 	{
@@ -181,12 +181,12 @@ private:
 		VALID_ALTITUDE_SEALEVEL = 0x04
 	};
 
-	mutable Coord3D		m_cachedPos;												///< position of thing
-	mutable Real			m_cachedAngle;											///< orientation of thing
-	mutable Coord3D		m_cachedDirVector;									///< unit direction vector
-	mutable Real			m_cachedAltitudeAboveTerrain;
-	mutable Real			m_cachedAltitudeAboveTerrainOrWater;
-	mutable Int				m_cacheFlags;
+	mutable Coord3D		m_cachedPos {};												///< position of thing
+	mutable Real		m_cachedAngle {};											///< orientation of thing
+	mutable Coord3D		m_cachedDirVector {};									///< unit direction vector
+	mutable Real		m_cachedAltitudeAboveTerrain {};
+	mutable Real		m_cachedAltitudeAboveTerrainOrWater {};
+	mutable Int			m_cacheFlags {};
 
 }; 
 

@@ -43,10 +43,10 @@
 #include "GameClient/Color.h"
 
 #include "GameLogic/Damage.h" //for kill()
-#include "GameLogic/WeaponBonusConditionFlags.h"
+// #include "GameLogic/WeaponBonusConditionFlags.h"
 #include "GameLogic/WeaponSet.h"
 #include "GameLogic/WeaponSetFlags.h"
-#include "GameLogic/Module/StealthUpdate.h"
+// #include "GameLogic/Module/StealthUpdate.h"
 
 //-----------------------------------------------------------------------------
 //           Forward References
@@ -180,13 +180,16 @@ public:
 
 	void onDestroy();																							///< run during TheGameLogic::destroyObject
 
+#if 0
 	Object* getNextObject() { return m_next; }
 	const Object* getNextObject() const { return m_next; }
 
 	void updateObjValuesFromMapProperties(Dict* properties);			///< Brings in properties set in the editor.
+#endif // if 0
 
 	// ids and binding
 	ObjectID getID() const { return m_id; }												///< this object's unique ID
+#if 0
 	void friend_bindToDrawable( Drawable *draw );									///< set drawable association. for use ONLY by GameLogic!
 	Drawable* getDrawable() const { return m_drawable; }					///< drawable (if any) bound to obj
 
@@ -202,8 +205,10 @@ public:
 
 	// physical properties
 	Bool isMobile() const;																	///< returns true if object is currently able to move
+#endif // if 0
 	Bool isAbleToAttack() const;														///< returns true if object currently has some kind of attack capability
 
+#if 0
 	void maskObject( Bool mask );				///< mask/unmask object
 	
 	/** 
@@ -214,8 +219,10 @@ public:
 	Bool checkAndDetonateBoobyTrap(const Object *victim);
 
 	// cannot set velocity, since this is calculated from position every frame
+#endif // if 0
 	Bool isDestroyed() const { return m_status.test( OBJECT_STATUS_DESTROYED ); }		///< Returns TRUE if object has been destroyed
 	Bool isAirborneTarget() const { return m_status.test( OBJECT_STATUS_AIRBORNE_TARGET ); }	///< Our locomotor will control marking us as a valid target for anti air weapons or not
+#if 0
 	Bool isUsingAirborneLocomotor( void ) const;										///< returns true if the current locomotor is an airborne one
 
 	/// central place for us to put any additional capture logic
@@ -241,11 +248,13 @@ public:
 	void onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback = TRUE );	///< I just achieved this level right this moment
 	ExperienceTracker* getExperienceTracker() {return m_experienceTracker;}
 	const ExperienceTracker* getExperienceTracker() const {return m_experienceTracker;}
+#endif // if 0
 	VeterancyLevel getVeterancyLevel() const;
 
 	inline const AsciiString& getName() const { return m_name; }
 	inline void setName( const AsciiString& newName ) { m_name = newName; }
 
+#if 0
 	inline Team* getTeam() { return m_team; }
 	inline const Team *getTeam() const { return m_team; }
 
@@ -253,8 +262,10 @@ public:
 
 	void setTeam( Team* team );						///< sets the unit's team AND original team
 	void setTemporaryTeam( Team* team );	///< sets the unit's team BUT NOT its original team
+#endif // if 0
 
 	Player* getControllingPlayer() const;
+#if 0
 	Relationship getRelationship(const Object *that) const;
 
 	Color getIndicatorColor() const;
@@ -288,12 +299,14 @@ public:
 	//Objects getting constructed causing crashes either because the modules aren't created
 	//yet, and there's stuff being done inside of setTeam() that cares.
 	Bool areModulesReady() const { return m_modulesReady; }
+#endif // if 0
 
 	BehaviorModule** getBehaviorModules() const { return m_behaviors; }
 
+#if 0
 	BodyModuleInterface* getBodyModule() const { return m_body; }
 	ContainModuleInterface* getContain() const { return m_contain; }
-  StealthUpdate*          getStealth() const { return m_stealth; }
+	StealthUpdate*          getStealth() const { return m_stealth; }
 	SpawnBehaviorInterface* getSpawnBehaviorInterface() const;
 	ProjectileUpdateInterface* getProjectileUpdateInterface() const;
 
@@ -336,9 +349,11 @@ public:
 
 	CountermeasuresBehaviorInterface* getCountermeasuresBehaviorInterface();
 	const CountermeasuresBehaviorInterface* getCountermeasuresBehaviorInterface() const;
+#endif // if 0
 
 	inline ObjectStatusMaskType getStatusBits() const { return m_status; }
 	inline Bool testStatus( ObjectStatusTypes bit ) const { return m_status.test( bit ); }
+#if 0
 	void setStatus( ObjectStatusMaskType objectStatus, Bool set = true );
 	inline void clearStatus( ObjectStatusMaskType objectStatus ) { setStatus( objectStatus, false ); }
 	void updateUpgradeModules();	///< We need to go through our Upgrade Modules and see which should be activated
@@ -351,9 +366,11 @@ public:
 	//stored in W3DDrawModule. When we revert back to the original bomb truck, we call this function to 
 	//recalculate those upgraded subobjects.
 	void forceRefreshSubObjectUpgradeStatus();
+#endif // if 0
 
 	// Useful for status bits that can be set by the scripting system
 	inline Bool testScriptStatusBit(ObjectScriptStatusBit b) const { return BitTest(m_scriptStatus, b); }
+#if 0
 	void setScriptStatus( ObjectScriptStatusBit bit, Bool set = true );
 	inline void clearScriptStatus( ObjectScriptStatusBit bit ) { setScriptStatus(bit, false); }
 
@@ -379,8 +396,10 @@ public:
 //INTO A new Drawable::getHealthBox..() WHICH USES GEOM0INFO, MODEL DATA, INI DATA, ETC.
 	void getHealthBoxPosition(Coord3D& pos) const;
 	Bool getHealthBoxDimensions(Real &healthBoxHeight, Real &healthBoxWidth) const;
+#endif // if 0
 
 	inline Bool isEffectivelyDead() const { return (m_privateStatus & EFFECTIVELY_DEAD) != 0; }
+#if 0
 	void setEffectivelyDead(Bool dead);
 
 	void markSingleUseCommandUsed() { m_singleUseCommandUsed = true; }
@@ -394,26 +413,30 @@ public:
 	Bool hasUpgrade( const UpgradeTemplate *upgradeT ) const ;			///< does this object already have this upgrade
 	Bool affectedByUpgrade( const UpgradeTemplate *upgradeT ) const ; ///< can the object even "have" this upgrade, will it do something?
 	void giveUpgrade( const UpgradeTemplate *upgradeT );		///< give upgrade to this object
+#endif // if 0
 	void removeUpgrade( const UpgradeTemplate *upgradeT );	///< remove upgrade from this object
+#if 0
 
 	Bool hasCountermeasures() const;
 	void reportMissileForCountermeasures( Object *missile );
 	ObjectID calculateCountermeasureToDivertTo( const Object& victim );
 
 	void calcNaturalRallyPoint(Coord2D *pt); ///< calc the "natural" starting rally point
-  void setConstructionPercent( Real percent ) { m_constructionPercent = percent; }
+	void setConstructionPercent( Real percent ) { m_constructionPercent = percent; }
 	Real getConstructionPercent() const { return m_constructionPercent; }
 
-  void setLayer( PathfindLayerEnum layer );
+	void setLayer( PathfindLayerEnum layer );
 	PathfindLayerEnum getLayer() const { return m_layer; }
 
-  void setDestinationLayer( PathfindLayerEnum layer );
+	void setDestinationLayer( PathfindLayerEnum layer );
 	PathfindLayerEnum getDestinationLayer() const { return m_destinationLayer; }
+#endif // if 0
 
 	void prependToList(Object **pListHead);
 	void removeFromList(Object **pListHead);
 	Bool isInList(Object **pListHead) const;
 
+#if 0
 	// this is intended for use ONLY by GameLogic.
 	void friend_deleteInstance() { deleteInstance(); }
 
@@ -441,10 +464,12 @@ public:
 	void friend_setRadarData( RadarObject *rd ) { m_radarData = rd; }
 	RadarObject *friend_getRadarData() { return m_radarData; }
 	RadarPriorityType getRadarPriority() const;
+#endif // if 0
 
 	// contained-by
 	inline Object *getContainedBy() { return m_containedBy; }
 	inline const Object *getContainedBy() const { return m_containedBy; }
+#if 0
 	inline UnsignedInt getContainedByFrame() const { return m_containedByFrame; }
 	inline Bool isContained() const { return m_containedBy != NULL; }
 	void onContainedBy( Object *containedBy );
@@ -501,9 +526,9 @@ public:
 	Weapon* findWaypointFollowingCapableWeapon();
 	Bool getAmmoPipShowingInfo(Int& numTotal, Int& numFull) const;
 
-  void notifyFiringTrackerShotFired( const Weapon* weaponFired, ObjectID victimID ) ;
+	void notifyFiringTrackerShotFired( const Weapon* weaponFired, ObjectID victimID ) ;
 
-  /**
+	/**
 		Determines if the unit has any weapon that could conceivably
 		harm the victim. this does not take range, ammo, etc. into 
 		account, but immutable weapon properties, such as "can you
@@ -543,6 +568,7 @@ public:
 	void clearModelConditionFlags( const ModelConditionFlags& clr );
 	void setModelConditionFlags( const ModelConditionFlags& set );
 	void clearAndSetModelConditionFlags( const ModelConditionFlags& clr, const ModelConditionFlags& set );
+#endif // if 0
 
 	void setWeaponSetFlag(WeaponSetType wst);
 	void clearWeaponSetFlag(WeaponSetType wst);
@@ -552,6 +578,7 @@ public:
 	void releaseWeaponLock(WeaponLockType lockType){ m_weaponSet.releaseWeaponLock(lockType); }
 	Bool isCurWeaponLocked() const { return m_weaponSet.isCurWeaponLocked(); }
 
+#if 0
 	void setArmorSetFlag(ArmorSetType ast);
 	void clearArmorSetFlag(ArmorSetType ast);
 	Bool testArmorSetFlag(ArmorSetType ast) const;
@@ -564,7 +591,7 @@ public:
 	void setWeaponBonusCondition(WeaponBonusConditionType wst);
 	void clearWeaponBonusCondition(WeaponBonusConditionType wst);
 	
-  // note, the !=0 at the end is important, to convert this into a boolean type! (srj)
+	// note, the !=0 at the end is important, to convert this into a boolean type! (srj)
 	Bool testWeaponBonusCondition(WeaponBonusConditionType wst) const { return (m_weaponBonusCondition & (1 << wst)) != 0; }
 	inline WeaponBonusConditionFlags getWeaponBonusCondition() const { return m_weaponBonusCondition; }
 
@@ -642,6 +669,7 @@ protected:
 
 	void onDisabledEdge(Bool becomingDisabled);
 	// All of our cheating for radars and power go here.
+#endif // if 0
 
 
 	// snapshot methods
@@ -649,6 +677,7 @@ protected:
 	void xfer( Xfer *xfer );
 	void loadPostProcess();
 
+#if 0
 	void handleShroud();
 	void handleValueMap();
 	void handleThreatMap();
@@ -659,8 +688,10 @@ protected:
 	Module* findModule(NameKeyType key) const;
 
 	Bool didEnterOrExit() const;
+#endif // if 0
 
 	void setID( ObjectID id );
+#if 0
 	virtual Object *asObjectMeth() { return this; }
 	virtual const Object *asObjectMeth() const { return this; }
 
@@ -681,13 +712,14 @@ protected:
 
 	void addThreat();
 	void removeThreat();
+#endif // if 0
 
 	virtual void reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle);
 
 private:
 
 	// yes, private. No, really. Private. Don't expose.
-	enum ObjectPrivateStatusBits
+	enum ObjectPrivateStatusBits: UnsignedInt
 	{
 		EFFECTIVELY_DEAD		= (1 << 0),		///< Object is effectively dead
 		UNDETECTED_DEFECTOR	= (1 << 1),		///< set to true when I defect from my team; set to false when I attack anything or when time runs out
@@ -696,122 +728,128 @@ private:
 		// NOTE: Object currently only uses a Byte for this, so if you add status bits, you may need to enlarge that field.
 	};
 
-	ObjectID			m_id;												///< this object's unique ID
-	ObjectID			m_producerID;								///< object that produced us, if any
-	ObjectID			m_builderID;								///< object that is building or has built us (dozers or workers are builders)
-	Drawable*			m_drawable;									///< drawable (if any) for this object
-	AsciiString		m_name;										///< internal name
+	ObjectID				m_id {};												///< this object's unique ID
+	ObjectID				m_producerID {};								///< object that produced us, if any
+	ObjectID				m_builderID {};								///< object that is building or has built us (dozers or workers are builders)
+	Drawable*				m_drawable {};									///< drawable (if any) for this object
+	AsciiString				m_name {};										///< internal name
 
-	Object *			m_next;
-	Object *			m_prev;
-	ObjectStatusMaskType		m_status;									///< status bits (see ObjectStatusMaskType)
+	Object *				m_next {};
+	Object *				m_prev {};
+	ObjectStatusMaskType	m_status {};									///< status bits (see ObjectStatusMaskType)
 
-	GeometryInfo	m_geometryInfo;
+#if 0
+	GeometryInfo			m_geometryInfo;
+#endif // if 0
 
-	AIGroup*			m_group;								///< if non-NULL, we are part of this group of agents
+	AIGroup*				m_group {};								///< if non-NULL, we are part of this group of agents
 
 	// These will last for my lifetime.  I will reuse them and reset them.  The truly dynamic ones are in PartitionManager
-	SightingInfo		*m_partitionLastLook;								///< Where and for whom I last looked, so I can undo its effects when I stop
-	SightingInfo		*m_partitionRevealAllLastLook;			///< And a seperate look to reveal at a different range if so marked
-	Int							m_visionSpiedBy[MAX_PLAYER_COUNT];  ///< Reference count of having units spied on by players.
-	PlayerMaskType	m_visionSpiedMask;									///< For quick lookup and edge triggered maintenance
+	SightingInfo		*m_partitionLastLook {};								///< Where and for whom I last looked, so I can undo its effects when I stop
+	SightingInfo		*m_partitionRevealAllLastLook {};			///< And a seperate look to reveal at a different range if so marked
+	Int					m_visionSpiedBy[MAX_PLAYER_COUNT];  ///< Reference count of having units spied on by players.
+	PlayerMaskType		m_visionSpiedMask {PLAYERMASK_NONE};									///< For quick lookup and edge triggered maintenance
 
-	SightingInfo	*m_partitionLastShroud;	///< Where and for whom I last shrouded, so I can undo its effects when I stop
-	SightingInfo	*m_partitionLastThreat;	///< Where and for whom I last delt with threat, so I can undo its effects when I stop
-	SightingInfo	*m_partitionLastValue;	///< Where and for whom I last delt with value, so I can undo its effects when I stop
+	SightingInfo		*m_partitionLastShroud {};	///< Where and for whom I last shrouded, so I can undo its effects when I stop
+	SightingInfo		*m_partitionLastThreat {};	///< Where and for whom I last delt with threat, so I can undo its effects when I stop
+	SightingInfo		*m_partitionLastValue {};	///< Where and for whom I last delt with value, so I can undo its effects when I stop
 
-	Real					m_visionRange;										///< looking range
-	Real					m_shroudClearingRange;						///< looking range for shroud ONLY
-	Real					m_shroudRange;										///< like looking range, this is how far I shroud others' looks
+	Real				m_visionRange {};										///< looking range
+	Real				m_shroudClearingRange {};						///< looking range for shroud ONLY
+	Real				m_shroudRange {};										///< like looking range, this is how far I shroud others' looks
 
-	DisabledMaskType	m_disabledMask;
-	UnsignedInt				m_disabledTillFrame[ DISABLED_COUNT ];
+	DisabledMaskType	m_disabledMask {};
+	UnsignedInt			m_disabledTillFrame[ DISABLED_COUNT ];
 
-	UnsignedInt		m_smcUntil;
+	UnsignedInt			m_smcUntil {NEVER};
 
 	enum { NUM_SLEEP_HELPERS = 8 };
-	ObjectRepulsorHelper*					m_repulsorHelper;
-	ObjectSMCHelper*							m_smcHelper;
-	ObjectWeaponStatusHelper*			m_wsHelper;
-	ObjectDefectionHelper*				m_defectionHelper;
-	StatusDamageHelper*						m_statusDamageHelper;
-	SubdualDamageHelper*					m_subdualDamageHelper;
-	TempWeaponBonusHelper*				m_tempWeaponBonusHelper;
-	FiringTracker*								m_firingTracker;	///< Tracker is really a "helper" and is included NUM_SLEEP_HELPERS
+	ObjectRepulsorHelper*				m_repulsorHelper {};
+	ObjectSMCHelper*					m_smcHelper {};
+	ObjectWeaponStatusHelper*			m_wsHelper {};
+	ObjectDefectionHelper*				m_defectionHelper {};
+	StatusDamageHelper*					m_statusDamageHelper {};
+	SubdualDamageHelper*				m_subdualDamageHelper {};
+	TempWeaponBonusHelper*				m_tempWeaponBonusHelper {};
+	FiringTracker*						m_firingTracker {};	///< Tracker is really a "helper" and is included NUM_SLEEP_HELPERS
 
 	// modules
-	BehaviorModule**							m_behaviors;	// BehaviorModule, not BehaviorModuleInterface
+	BehaviorModule**					m_behaviors {};	// BehaviorModule, not BehaviorModuleInterface
 
 	// cache these, for convenience
-	ContainModuleInterface*				m_contain;
-	BodyModuleInterface*					m_body;
-  StealthUpdate*                m_stealth;
+	ContainModuleInterface*				m_contain {};
+	BodyModuleInterface*				m_body {};
+#if 0
+	StealthUpdate*						m_stealth {};
+#endif // if 0
 
-	AIUpdateInterface*						m_ai;	///< ai interface (if any), cached for handy access. (duplicate of entry in the module array!)
-	PhysicsBehavior*							m_physics;	///< physics interface (if any), cached for handy access. (duplicate of entry in the module array!)
+	AIUpdateInterface*					m_ai {};	///< ai interface (if any), cached for handy access. (duplicate of entry in the module array!)
+	PhysicsBehavior*					m_physics {};	///< physics interface (if any), cached for handy access. (duplicate of entry in the module array!)
 
-	PartitionData*								m_partitionData;	///< our PartitionData
-	RadarObject*									m_radarData;				///< radar data
-	ExperienceTracker*						m_experienceTracker;	///< Manages experience, gaining levels, and value when killed
+	PartitionData*						m_partitionData {};	///< our PartitionData
+	RadarObject*						m_radarData {};				///< radar data
+	ExperienceTracker*					m_experienceTracker {};	///< Manages experience, gaining levels, and value when killed
 
-	Object*												m_containedBy;					/**< an object can only be contained by at most one
+	Object*								m_containedBy {};				/**< an object can only be contained by at most one
 																	other object, this is that object (if present) */
-	ObjectID											m_xferContainedByID;	///< xfer uses IDs to store pointers and looks them up after
-	UnsignedInt										m_containedByFrame;	///< frame we were contained by m_containedBy
+	ObjectID							m_xferContainedByID {INVALID_ID};	///< xfer uses IDs to store pointers and looks them up after
+	UnsignedInt							m_containedByFrame {};	///< frame we were contained by m_containedBy
 
-	Real													m_constructionPercent;			///< for objects being built ... this is the amount completed (0.0 to 100.0)
-	UpgradeMaskType								m_objectUpgradesCompleted;	///< Bit field of upgrades locally completed.
+	Real								m_constructionPercent {};			///< for objects being built ... this is the amount completed (0.0 to 100.0)
+	UpgradeMaskType						m_objectUpgradesCompleted {};	///< Bit field of upgrades locally completed.
 
-	Team*													m_team;								///< team that is current owner of this guy
-	AsciiString										m_originalTeamName;		///< team that was the original ("birth") team of this guy
-	Color													m_indicatorColor;			///< if nonzero, use this instead of controlling player's color
+	Team*								m_team {};								///< team that is current owner of this guy
+	AsciiString							m_originalTeamName {};		///< team that was the original ("birth") team of this guy
+	Color								m_indicatorColor {};			///< if nonzero, use this instead of controlling player's color
 
-	Coord3D												m_healthBoxOffset; ///< generally zero, except for special amorphous ones like angry mob
+	Coord3D								m_healthBoxOffset {}; ///< generally zero, except for special amorphous ones like angry mob
 	
 	/// @todo srj -- convert to non-DLINK list, after it is once again possible to test the change
 	MAKE_DLINK(Object, TeamMemberList)			///< other Things that are members of the same team
 
 	// Weapons & Damage -------------------------------------------------------------------------------------------------
-	WeaponSet											m_weaponSet;
-	WeaponSetFlags								m_curWeaponSetFlags;
-	WeaponBonusConditionFlags			m_weaponBonusCondition;
-	Byte													m_lastWeaponCondition[WEAPONSLOT_COUNT];
+	WeaponSet							m_weaponSet {};
+	WeaponSetFlags						m_curWeaponSetFlags {};
+#if 0
+	WeaponBonusConditionFlags			m_weaponBonusCondition {};
+	Byte								m_lastWeaponCondition[WEAPONSLOT_COUNT] {};
 
-	SpecialPowerMaskType					m_specialPowerBits; ///< bits determining what kind of special abilities this object has access to.
+	SpecialPowerMaskType				m_specialPowerBits {}; ///< bits determining what kind of special abilities this object has access to.
+#endif // if 0
 
 	//////////////////////////////////////< for the non-stacking healers like ambulance and propaganda
-	ObjectID m_soleHealingBenefactorID; ///< who is the only other object that can give me this non-stacking heal benefit?
-	UnsignedInt m_soleHealingBenefactorExpirationFrame; ///< on what frame can I accept healing (thus to switch) from a new benefactor
+	ObjectID m_soleHealingBenefactorID {}; ///< who is the only other object that can give me this non-stacking heal benefit?
+	UnsignedInt m_soleHealingBenefactorExpirationFrame {}; ///< on what frame can I accept healing (thus to switch) from a new benefactor
 	///////////////////////////////////
 
 	// Entered & exited housekeeping.
 	enum { MAX_TRIGGER_AREA_INFOS = 5 };
-	TTriggerInfo									m_triggerInfo[MAX_TRIGGER_AREA_INFOS];
-	UnsignedInt										m_enteredOrExitedFrame;
-	ICoord3D											m_iPos;
+	TTriggerInfo								m_triggerInfo[MAX_TRIGGER_AREA_INFOS];
+	UnsignedInt									m_enteredOrExitedFrame {};
+	ICoord3D									m_iPos {};
 	
-	PathfindLayerEnum							m_layer;							// Layer object is pathing on.
-	PathfindLayerEnum							m_destinationLayer;		// Layer of current path goal.
+	PathfindLayerEnum							m_layer {};							// Layer object is pathing on.
+	PathfindLayerEnum							m_destinationLayer {};		// Layer of current path goal.
 
 	// User formations.
-	FormationID										m_formationID;
-	Coord2D												m_formationOffset;
+	FormationID									m_formationID {NO_FORMATION_ID};
+	Coord2D										m_formationOffset {};
 
-	AsciiString										m_commandSetStringOverride;///< To allow specific object to switch command sets
+	AsciiString									m_commandSetStringOverride {};///< To allow specific object to switch command sets
 	
-	UnsignedInt										m_safeOcclusionFrame;	///<flag used by occlusion renderer so it knows when objects have exited their production building.
+	UnsignedInt									m_safeOcclusionFrame {};	///<flag used by occlusion renderer so it knows when objects have exited their production building.
 
 	// --------- BYTE-SIZED THINGS GO HERE
-	Bool													m_isSelectable;
-	Bool													m_modulesReady;
+	Bool										m_isSelectable {};
+	Bool										m_modulesReady {};
 #if defined(_DEBUG) || defined(_INTERNAL)
-	Bool													m_hasDiedAlready;
+	Bool										m_hasDiedAlready {};
 #endif
-	UnsignedByte									m_scriptStatus;					///< status as set by scripting, corresponds to ORed ObjectScriptStatusBits
-	UnsignedByte									m_privateStatus;					///< status bits that are never directly accessible to outside world
-	Byte													m_numTriggerAreasActive;
-	Bool													m_singleUseCommandUsed;
-	Bool													m_isReceivingDifficultyBonus;
+	UnsignedByte								m_scriptStatus {};					///< status as set by scripting, corresponds to ORed ObjectScriptStatusBits
+	UnsignedByte								m_privateStatus {};					///< status bits that are never directly accessible to outside world
+	Byte										m_numTriggerAreasActive {};
+	Bool										m_singleUseCommandUsed {FALSE};
+	Bool										m_isReceivingDifficultyBonus {FALSE};
 
 };  // end class Object
 

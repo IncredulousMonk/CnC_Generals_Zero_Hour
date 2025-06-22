@@ -54,11 +54,11 @@
 //-------------------------------------------------------------------------------------------------
 struct AutoHealPlayerScanHelper
 {
-	KindOfMaskType m_kindOfToTest;
-	KindOfMaskType m_forbiddenKindOf;
-	Object *m_theHealer;
-	ObjectPointerList *m_objectList;	
-	Bool m_skipSelfForHealing;
+	KindOfMaskType m_kindOfToTest {};
+	KindOfMaskType m_forbiddenKindOf {};
+	Object *m_theHealer {};
+	ObjectPointerList *m_objectList {};
+	Bool m_skipSelfForHealing {};
 };
 
 static void checkForAutoHeal( Object *testObj, void *userData )
@@ -102,11 +102,11 @@ AutoHealBehavior::AutoHealBehavior( Thing *thing, const ModuleData* moduleData )
 	Object *obj = getObject();
 
 	{
-		if( d->m_radiusParticleSystemTmpl )
+		if( d->m_ini.m_radiusParticleSystemTmpl )
 		{
 			ParticleSystem *particleSystem;
 
-			particleSystem = TheParticleSystemManager->createParticleSystem( d->m_radiusParticleSystemTmpl );
+			particleSystem = TheParticleSystemManager->createParticleSystem( d->m_ini.m_radiusParticleSystemTmpl );
 			if( particleSystem )
 			{
 				particleSystem->setPosition( obj->getPosition() );
@@ -115,13 +115,13 @@ AutoHealBehavior::AutoHealBehavior( Thing *thing, const ModuleData* moduleData )
 		}
 	}
 
-	if (d->m_initiallyActive)
+	if (d->m_ini.m_initiallyActive)
 	{
 		giveSelfUpgrade();
 		// start these guys with random phasings so that we don't
 		// have all of 'em check on the same frame.
-		UnsignedInt delay = getAutoHealBehaviorModuleData()->m_healingDelay;
-		setWakeFrame(getObject(), UPDATE_SLEEP(GameLogicRandomValue(1, delay)));
+		UnsignedInt delay = getAutoHealBehaviorModuleData()->m_ini.m_healingDelay;
+		setWakeFrame(getObject(), UPDATE_SLEEP(GameLogicRandomValue(1, static_cast<Int>(delay))));
 	}
 	else
 	{
@@ -163,13 +163,13 @@ void AutoHealBehavior::onDamage( DamageInfo *damageInfo )
 		return;
 
 	const AutoHealBehaviorModuleData *d = getAutoHealBehaviorModuleData();
-	if (isUpgradeActive() && d->m_radius == 0.0f)
+	if (isUpgradeActive() && d->m_ini.m_radius == 0.0f)
 	{
 		// if this is nonzero, getting damaged resets our healing process. so go to
 		// sleep for this long.
-		if (d->m_startHealingDelay > 0)
+		if (d->m_ini.m_startHealingDelay > 0)
 		{
-			setWakeFrame(getObject(), UPDATE_SLEEP(d->m_startHealingDelay));
+			setWakeFrame(getObject(), UPDATE_SLEEP(d->m_ini.m_startHealingDelay));
 		}
 		else if( TheGameLogic->getFrame() > m_soonestHealFrame )
 		{
@@ -201,7 +201,7 @@ UpdateSleepTime AutoHealBehavior::update( void )
 
 //DEBUG_LOG(("doing auto heal %d\n",TheGameLogic->getFrame()));
 
-	if( d->m_affectsWholePlayer )
+	if( d->m_ini.m_affectsWholePlayer )
 	{
 		// Even newer system, I can ignore radius and iterate objects on the owning player.  Faster than scanning range 10,000,000
 		ObjectPointerList objectsToHeal;
@@ -209,11 +209,11 @@ UpdateSleepTime AutoHealBehavior::update( void )
 		if( owningPlayer )
 		{
 			AutoHealPlayerScanHelper helper;
-			helper.m_kindOfToTest = d->m_kindOf;
-			helper.m_forbiddenKindOf = d->m_forbiddenKindOf;
+			helper.m_kindOfToTest = d->m_ini.m_kindOf;
+			helper.m_forbiddenKindOf = d->m_ini.m_forbiddenKindOf;
 			helper.m_objectList = &objectsToHeal;
 			helper.m_theHealer = getObject();
-			helper.m_skipSelfForHealing = d->m_skipSelfForHealing;
+			helper.m_skipSelfForHealing = d->m_ini.m_skipSelfForHealing;
 
 			// Smack all objects with this function, and we will end up with a list of Objects deserving of pulseHealObject
 			owningPlayer->iterateObjects( checkForAutoHeal, &helper );
@@ -224,9 +224,9 @@ UpdateSleepTime AutoHealBehavior::update( void )
 			}
 			objectsToHeal.clear();
 		}
-		return UPDATE_SLEEP(d->m_healingDelay);
+		return UPDATE_SLEEP(d->m_ini.m_healingDelay);
 	}
-	else if( d->m_radius == 0.0f )
+	else if( d->m_ini.m_radius == 0.0f )
 	{
 		//ORIGINAL SYSTEM -- JUST HEAL SELF!
 
@@ -235,7 +235,7 @@ UpdateSleepTime AutoHealBehavior::update( void )
 		if( body->getHealth() < body->getMaxHealth() )
 		{
   		pulseHealObject( obj );
-			return UPDATE_SLEEP(d->m_healingDelay);
+			return UPDATE_SLEEP(d->m_ini.m_healingDelay);
 		}
 		else
 		{
@@ -253,7 +253,7 @@ UpdateSleepTime AutoHealBehavior::update( void )
 		PartitionFilter *filters[] = { &relationship, &filterAlive, &filterMapStatus, NULL };
 
 		// scan objects in our region
-		ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( obj->getPosition(), d->m_radius, FROM_CENTER_2D, filters );
+		ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( obj->getPosition(), d->m_ini.m_radius, FROM_CENTER_2D, filters );
 		MemoryPoolObjectHolder hold( iter );
 		for( obj = iter->first(); obj; obj = iter->next() )
 		{
@@ -261,17 +261,17 @@ UpdateSleepTime AutoHealBehavior::update( void )
 			BodyModuleInterface *body = obj->getBodyModule();
 			if( body->getHealth() < body->getMaxHealth() )
 			{
-				if( obj->isAnyKindOf( d->m_kindOf ) && !obj->isAnyKindOf( d->m_forbiddenKindOf ) )
+				if( obj->isAnyKindOf( d->m_ini.m_kindOf ) && !obj->isAnyKindOf( d->m_ini.m_forbiddenKindOf ) )
 				{
-					if( !d->m_skipSelfForHealing || obj != getObject() )
+					if( !d->m_ini.m_skipSelfForHealing || obj != getObject() )
 					{
 						pulseHealObject( obj );
 
-						if( d->m_singleBurst && TheGameLogic->getDrawIconUI() )
+						if( d->m_ini.m_singleBurst && TheGameLogic->getDrawIconUI() )
 						{
-							if( TheAnim2DCollection && TheGlobalData->m_getHealedAnimationName.isEmpty() == FALSE )
+							if( TheAnim2DCollection && TheGlobalData->m_data.m_getHealedAnimationName.isEmpty() == FALSE )
 							{
-								Anim2DTemplate *animTemplate = TheAnim2DCollection->findTemplate( TheGlobalData->m_getHealedAnimationName );
+								Anim2DTemplate *animTemplate = TheAnim2DCollection->findTemplate( TheGlobalData->m_data.m_getHealedAnimationName );
 
 								if ( animTemplate )
 								{
@@ -280,8 +280,8 @@ UpdateSleepTime AutoHealBehavior::update( void )
 																	 obj->getPosition()->y, 
 																	 obj->getPosition()->z + obj->getGeometryInfo().getMaxHeightAbovePosition() );
 									TheInGameUI->addWorldAnimation( animTemplate,	&iconPosition, WORLD_ANIM_FADE_ON_EXPIRE,
-																									TheGlobalData->m_getHealedAnimationDisplayTimeInSeconds,
-																									TheGlobalData->m_getHealedAnimationZRisePerSecond);
+																									TheGlobalData->m_data.m_getHealedAnimationDisplayTimeInSeconds,
+																									TheGlobalData->m_data.m_getHealedAnimationZRisePerSecond);
 								}
 							}
 						}
@@ -290,7 +290,7 @@ UpdateSleepTime AutoHealBehavior::update( void )
 			}
 		}  // end for obj
 
-		return UPDATE_SLEEP( d->m_singleBurst ? UPDATE_SLEEP_FOREVER : d->m_healingDelay );
+		return UPDATE_SLEEP( d->m_ini.m_singleBurst ? UPDATE_SLEEP_FOREVER : d->m_ini.m_healingDelay );
 	}
 }
  
@@ -304,22 +304,22 @@ void AutoHealBehavior::pulseHealObject( Object *obj )
 	const AutoHealBehaviorModuleData *data = getAutoHealBehaviorModuleData();
 
 	
-	if ( data->m_radius == 0.0f )
-		obj->attemptHealing(data->m_healingAmount, getObject());
+	if ( data->m_ini.m_radius == 0.0f )
+		obj->attemptHealing(data->m_ini.m_healingAmount, getObject());
 	else
-		obj->attemptHealingFromSoleBenefactor( data->m_healingAmount, getObject(), data->m_healingDelay );
+		obj->attemptHealingFromSoleBenefactor( data->m_ini.m_healingAmount, getObject(), data->m_ini.m_healingDelay );
 
 
-	if( data->m_unitHealPulseParticleSystemTmpl )
+	if( data->m_ini.m_unitHealPulseParticleSystemTmpl )
 	{
-		ParticleSystem *system = TheParticleSystemManager->createParticleSystem( data->m_unitHealPulseParticleSystemTmpl );
+		ParticleSystem *system = TheParticleSystemManager->createParticleSystem( data->m_ini.m_unitHealPulseParticleSystemTmpl );
 		if( system )
 		{
 			system->setPosition( obj->getPosition() );
 		}
 	}
 	
-	m_soonestHealFrame = TheGameLogic->getFrame() + data->m_healingDelay;// In case onDamage tries to wake us up early
+	m_soonestHealFrame = TheGameLogic->getFrame() + data->m_ini.m_healingDelay;// In case onDamage tries to wake us up early
 }
 
 // ------------------------------------------------------------------------------------------------

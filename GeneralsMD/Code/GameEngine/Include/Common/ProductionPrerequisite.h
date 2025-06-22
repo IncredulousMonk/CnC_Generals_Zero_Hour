@@ -108,16 +108,16 @@ private:
 
 	struct PrereqUnitRec 
 	{
-		const ThingTemplate*	unit;
-		Int										flags;
-		AsciiString						name;
+		const ThingTemplate*	unit {};
+		Int						flags {};
+		AsciiString				name {};
 	};
 
 	enum { MAX_PREREQ = 32 };
 	Int calcNumPrereqUnitsOwned(const Player *player, Int counts[MAX_PREREQ]) const;
 
-	std::vector<PrereqUnitRec>	m_prereqUnits;
-	ScienceVec									m_prereqSciences;
+	std::vector<PrereqUnitRec>	m_prereqUnits {};
+	ScienceVec					m_prereqSciences {};
 };
 
 //-----------------------------------------------------------------------------

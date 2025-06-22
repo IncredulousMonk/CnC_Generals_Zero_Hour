@@ -175,17 +175,17 @@ enum DeathType
 	// can come from DAMAGE_FLAME but also from DAMAGE_PARTICLE_BEAM.
 	DEATH_NORMAL		= 0,
 	DEATH_NONE			= 1,					///< this is a "special case" that can't normally cause death			
-  DEATH_CRUSHED		= 2,
-  DEATH_BURNED		= 3,
-  DEATH_EXPLODED	= 4,
-	DEATH_POISONED	= 5,
+	DEATH_CRUSHED		= 2,
+	DEATH_BURNED		= 3,
+	DEATH_EXPLODED		= 4,
+	DEATH_POISONED		= 5,
 	DEATH_TOPPLED		= 6,
 	DEATH_FLOODED		= 7,
-	DEATH_SUICIDED	= 8,
+	DEATH_SUICIDED		= 8,
 	DEATH_LASERED		= 9,
-	DEATH_DETONATED	= 10,		/**< this is the "death" that occurs when a missile/warhead/etc detonates normally,
+	DEATH_DETONATED		= 10,		/**< this is the "death" that occurs when a missile/warhead/etc detonates normally,
 														as opposed to being shot down, etc */
-	DEATH_SPLATTED	= 11,		/**< the death that results from DAMAGE_FALLING */
+	DEATH_SPLATTED		= 11,		/**< the death that results from DAMAGE_FALLING */
 	DEATH_POISONED_BETA	= 12,	
 
 	// these are the "extra" types for yet-to-be-defined stuff. Don't bother renaming or adding
@@ -370,8 +370,8 @@ class DamageInfo : public Snapshot
 
 public:
 
-	DamageInfoInput		in;					///< inputs for the damage info
-	DamageInfoOutput	out;				///< results for the damage occurrence
+	DamageInfoInput		in {};					///< inputs for the damage info
+	DamageInfoOutput	out {};				///< results for the damage occurrence
 
 protected:
 
@@ -382,4 +382,3 @@ protected:
 };
 
 #endif // __DAMAGE_H_
-

@@ -315,7 +315,9 @@ public:
 	// the special case Orthogonal inverse functions.  Also, when we implement
 	// general case, check where we were using Get_Inverse since usually it should
 	// be changed to Get_Orthogonal_Inverse...
+#if 0
 	void Get_Inverse(Matrix3D & set_inverse) const;
+#endif // if 0
 	void Get_Orthogonal_Inverse(Matrix3D & set_inverse) const;
 	
 	// used for importing SurRender matrices
@@ -346,7 +348,7 @@ public:
 	void	Re_Orthogonalize(void);
 
 	static void Lerp(const Matrix3D &A, const Matrix3D &B, float factor, Matrix3D& result);
-	
+
 #ifdef ALLOW_TEMPORARIES
 	// nothing
 #else
@@ -1809,10 +1811,12 @@ WWINLINE void	Matrix3D::Inverse_Rotate_Vector(const Matrix3D & A,const Vector3 &
 	out->Z = (A[0][2] * v->X + A[1][2] * v->Y + A[2][2] * v->Z);
 }
 
+#if 0
 class DynamicMatrix3D : public W3DMPO
 {
 	W3DMPO_GLUE(DynamicMatrix3D)
 public:
 	Matrix3D Mat;
 };
+#endif // if 0
 #endif /* MATRIX3D_H */

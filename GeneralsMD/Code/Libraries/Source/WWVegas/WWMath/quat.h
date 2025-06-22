@@ -43,7 +43,7 @@
 #define QUAT_H
 
 #include "always.h"
-#include "wwmath.h"
+// #include "wwmath.h"
 #include "matrix3.h"
 #include "vector3.h"
 #include "matrix3d.h"
@@ -57,10 +57,10 @@ public:
 
 	// X,Y,Z are the imaginary parts of the quaterion
 	// W is the real part
-	float X;
-	float Y;
-	float Z;
-	float W;
+	float X {};
+	float Y {};
+	float Z {};
+	float W {};
 
 public:
 
@@ -68,6 +68,7 @@ public:
 	WWINLINE explicit Quaternion(bool init) { if (init) { X = 0.0f; Y = 0.0f; Z = 0.0f; W = 1.0f; } }
 	WWINLINE explicit Quaternion(float a, float b, float c, float d) { X=a; Y=b; Z=c; W=d; }
 	WWINLINE explicit Quaternion(const Vector3 & axis,float angle);
+	WWINLINE Quaternion(const Quaternion&) = default;
 	WWINLINE Quaternion & operator=(const Quaternion & source);
 
 	WWINLINE void		Set(float a = 0.0, float b = 0.0, float c = 0.0, float d = 1.0) { X = a; Y = b; Z = c; W = d; }
@@ -78,8 +79,8 @@ public:
 	WWINLINE float &	operator [](int i) { return (&X)[i]; }     
 	WWINLINE const float &  operator [](int i) const { return (&X)[i]; }  
 
-	// Unary operators.  
-	// Remember that q and -q represent the same 3D rotation.  
+	// Unary operators.
+	// Remember that q and -q represent the same 3D rotation.
 	WWINLINE Quaternion operator-() const { return(Quaternion(-X,-Y,-Z,-W)); } 
 	WWINLINE Quaternion operator+() const { return *this; } 
 
@@ -193,9 +194,9 @@ Quaternion Trackball(float x0, float y0, float x1, float y1, float sphsize);
 
 // Spherical Linear interpolation of quaternions
 //Quaternion Slerp(const Quaternion & a,const Quaternion & b,float t);
-void __cdecl Slerp(Quaternion& result, const Quaternion & a,const Quaternion & b,float t);
+void Slerp(Quaternion& result, const Quaternion & a,const Quaternion & b,float t);
 // Fast slerp is innaccurate but multiple times faster
-void __cdecl Fast_Slerp(Quaternion& result, const Quaternion & a,const Quaternion & b,float t);
+void Fast_Slerp(Quaternion& result, const Quaternion & a,const Quaternion & b,float t);
 
 // Convert a rotation matrix into a quaternion
 Quaternion Build_Quaternion(const Matrix3x3 & matrix);

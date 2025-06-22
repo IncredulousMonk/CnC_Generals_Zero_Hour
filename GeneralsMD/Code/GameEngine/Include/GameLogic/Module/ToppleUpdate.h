@@ -69,6 +69,11 @@ public:
 	Bool m_reorientToppledRubble;
 
 	ToppleUpdateModuleData();
+
+	// No copies allowed!
+	ToppleUpdateModuleData(const ToppleUpdateModuleData&) = delete;
+	ToppleUpdateModuleData& operator=(const ToppleUpdateModuleData&) = delete;
+
 	static void buildFieldParse(MultiIniFieldParse& p);
 
 };

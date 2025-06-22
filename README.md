@@ -32,6 +32,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheAudio
   - TheFunctionLexicon
   - TheMessageStream
+  - TheThingFactory
   - TheGameClient (partial)
     - TheDrawGroupInfo
     - TheDisplayStringManager
@@ -92,4 +93,6 @@ My professional programming experience is in corporate systems, not games, so I 
 because, while it relies on a number of third-party libraries, it doesn't use a separate game engine.
 
 The DynamicMemoryAllocator works. If you compile in debug mode it dumps out memory pool stats, and tells you where you're leaking memory... neat! (I can't take any credit for that. It's all built in.)
+
+The module system uses multiple inheritance. I'm not a big fan of multiple inheritance, and it seems that I'm not the only one, because I found this comment in the code: "I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP."
 -->

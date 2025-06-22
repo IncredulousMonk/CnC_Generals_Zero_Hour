@@ -36,10 +36,10 @@
 // #include "Common/GameType.h"
 #include "Common/Snapshot.h"
 // #include "Common/STLTypedefs.h"
-// #include "Common/ObjectStatusTypes.h"
+#include "Common/ObjectStatusTypes.h"
 // #include "GameNetwork/NetworkDefs.h"
 // #include "Common/STLTypedefs.h"
-// #include "GameLogic/Module/UpdateModule.h"	// needed for DIRECT_UPDATEMODULE_ACCESS
+#include "GameLogic/Module/UpdateModule.h"	// needed for DIRECT_UPDATEMODULE_ACCESS
 
 /*
 	At one time, we distinguished between sleepy and nonsleepy
@@ -52,7 +52,6 @@
 */
 #define NO_ALLOW_NONSLEEPY_UPDATES
 
-#if 0
 // forward declarations
 class AudioEventRTS;
 class Object;
@@ -70,6 +69,7 @@ class CommandButton;
 enum BuildableStatus: int;
 
 
+#if 0
 typedef const CommandButton* ConstCommandButtonPtr;
 
 // What kind of game we're in.
@@ -95,9 +95,9 @@ enum
 typedef void (*GameLogicFuncPtr)( Object *obj, void *userData ); 
 //typedef std::hash_map<ObjectID, Object *, rts::hash<ObjectID>, rts::equal_to<ObjectID> > ObjectPtrHash;
 //typedef ObjectPtrHash::const_iterator ObjectPtrIter;
+#endif // if 0
 
 typedef std::vector<Object*> ObjectPtrVector;
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /**
@@ -130,12 +130,14 @@ public:
 
 	void logicMessageDispatcher( GameMessage *msg, 
 																			 void *userData );	///< Logic command list processing
+#endif // if 0
 
 	void registerObject( Object *obj );							///< Given an object, register it with the GameLogic and give it a unique ID
 
 	void addObjectToLookupTable( Object *obj );			///< add object ID to hash lookup table
 	void removeObjectFromLookupTable( Object *obj );///< remove object ID from hash lookup table
-
+	
+#if 0
 	/// @todo Change this to refer to a Region3D as an extent of the world
 	void setWidth( Real width );										///< Sets the width of the world
 	Real getWidth( void );													///< Returns the width of the world
@@ -153,10 +155,13 @@ public:
 
 	//-----------------------------------------------------------------------------------------------
 	void setBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus bs);
+#endif // if 0
 	Bool findBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus& bs) const;
 
+#if 0
 	void setControlBarOverride(const AsciiString& commandSetName, Int slot, ConstCommandButtonPtr commandButton);
 	Bool findControlBarOverride(const AsciiString& commandSetName, Int slot, ConstCommandButtonPtr& commandButton) const;
+#endif // if 0
 
 	//-----------------------------------------------------------------------------------------------
 	/// create an object given the thing template. (Only for use by ThingFactory.)
@@ -166,6 +171,7 @@ public:
  	Object *getFirstObject( void );									///< Returns the "first" object in the world. When used with the object method "getNextObject()", all objects in the world can be iterated.
 	ObjectID allocateObjectID( void );							///< Returns a new unique object id
 
+#if 0
 	// super hack
 	void startNewGame( Bool loadSaveGame );
 	void loadMapINI( AsciiString mapName );
@@ -201,10 +207,12 @@ public:
 
 	void setShowBehindBuildingMarkers(Bool b) { m_showBehindBuildingMarkers = b; }
 	Bool getShowBehindBuildingMarkers() const { return m_showBehindBuildingMarkers; }
+#endif // if 0
 
 	void setDrawIconUI(Bool b) { m_drawIconUI = b; }
 	Bool getDrawIconUI() const { return m_drawIconUI; }
 
+#if 0
 	void setShowDynamicLOD(Bool b) { m_showDynamicLOD = b; }
 	Bool getShowDynamicLOD() const { return m_showDynamicLOD; }
 
@@ -244,9 +252,11 @@ public:
 	
 	// We need to allow access to this, because on a restartGame, we need to restart with the settings we started with
 	Int getRankPointsToAddAtGameStart() const { return m_rankPointsToAddAtGameStart; }
+#endif // if 0
 
-  UnsignedShort getSuperweaponRestriction( void ) const; ///< Get any optional limits on superweapons
-  void setSuperweaponRestriction( void );
+	UnsignedShort getSuperweaponRestriction( void ) const; ///< Get any optional limits on superweapons
+#if 0
+	void setSuperweaponRestriction( void );
 
 #ifdef DUMP_PERF_STATS
 	void getAIMetricsStatistics( UnsignedInt *numAI, UnsignedInt *numMoving, UnsignedInt *numAttacking, UnsignedInt *numWaitingForPath, UnsignedInt *overallFailedPathfinds );
@@ -260,10 +270,10 @@ public:
 	// If createToSelection is TRUE, this object causes a new group to be selected.
 	void selectObject(Object *obj, Bool createNewSelection, PlayerMaskType playerMask, Bool affectClient = FALSE);
 	void deselectObject(Object *obj, PlayerMaskType playerMask, Bool affectClient = FALSE);
+#endif // if 0
 
 	// this should be called only by UpdateModule, thanks.
 	void friend_awakenUpdateModule(Object* obj, UpdateModulePtr update, UnsignedInt whenToWakeUp);
-#endif // if 0
 
 protected:
 
@@ -274,13 +284,15 @@ protected:
 
 private:
 
-#if 0
 	void pushSleepyUpdate(UpdateModulePtr u);
+#if 0
 	UpdateModulePtr peekSleepyUpdate() const;
 	void popSleepyUpdate();
 	void eraseSleepyUpdate(Int i);
 	void rebalanceSleepyUpdate(Int i);
+#endif // if 0
 	Int rebalanceParentSleepyUpdate(Int i);
+#if 0
 	Int rebalanceChildSleepyUpdate(Int i);
 	void remakeSleepyUpdate();
 	void validateSleepyUpdate() const;
@@ -324,35 +336,41 @@ private:
 
 	Bool m_isScoringEnabled;
 	Bool m_showBehindBuildingMarkers;	//used by designers to override the user setting for cinematics
-	Bool m_drawIconUI;
+#endif // if 0
+	Bool m_drawIconUI {};
+#if 0
 	Bool m_showDynamicLOD;	//used by designers to override the user setting for cinematics
 	Int m_scriptHulkMaxLifetimeOverride;	///< Scripts can change the lifetime of a hulk -- defaults to off (-1) in frames.
 
 	/// @todo remove this hack
 	Bool m_startNewGame;
 	WindowLayout *m_background;
+#endif // if 0
 
-	Object* m_objList;																			///< All of the objects in the world.
-//	ObjectPtrHash m_objHash;																///< Used for ObjectID lookups
-	ObjectPtrVector m_objVector;
-
+	Object* m_objList {};																			///< All of the objects in the world.
+	//	ObjectPtrHash m_objHash;																///< Used for ObjectID lookups
+	ObjectPtrVector m_objVector {};
+	
 	// this is a vector, but is maintained as a priority queue.
 	// never modify it directly; please use the proper access methods.
 	// (for an excellent discussion of priority queues, please see:
 	// http://dogma.net/markn/articles/pq_stl/priority.htm)
-	std::vector<UpdateModulePtr> m_sleepyUpdates;
+	std::vector<UpdateModulePtr> m_sleepyUpdates {};
 	
 #ifdef ALLOW_NONSLEEPY_UPDATES
 	// this is a plain old list, not a pq.
 	std::list<UpdateModulePtr> m_normalUpdates;
 #endif
 
-	UpdateModulePtr					 m_curUpdateModule;
+#if 0
+	UpdateModulePtr					 m_curUpdateModule {};
+#endif // if 0
 
-	ObjectPointerList m_objectsToDestroy;										///< List of things that need to be destroyed at end of frame
+	ObjectPointerList m_objectsToDestroy {};										///< List of things that need to be destroyed at end of frame
 
-	ObjectID m_nextObjID;																		///< For allocating object id's
+	ObjectID m_nextObjID {};																		///< For allocating object id's
 
+#if 0
 	void setDefaults( Bool loadSaveGame );									///< Set default values of class object
 	void processDestroyList( void );												///< Destroy all pending objects on the destroy list
 
@@ -364,8 +382,10 @@ private:
 
 	Int m_gameMode;
 	Int m_rankLevelLimit;
-  UnsignedShort m_superweaponRestriction;
+#endif // if 0
+	UnsignedShort m_superweaponRestriction {};
 
+#if 0
 	LoadScreen *getLoadScreen( Bool loadSaveGame );
 	LoadScreen *m_loadScreen;
 	Bool m_gamePaused;
@@ -422,6 +442,7 @@ inline Bool GameLogic::isInMultiplayerGame( void ) { return ((m_gameMode == GAME
 inline Bool GameLogic::isInReplayGame( void ) { return (m_gameMode == GAME_REPLAY); }
 inline Bool GameLogic::isInInternetGame( void ) { return (m_gameMode == GAME_INTERNET); }
 inline Bool GameLogic::isInShellGame( void ) { return (m_gameMode == GAME_SHELL); }
+#endif // if 0
 inline UnsignedShort GameLogic::getSuperweaponRestriction() const { return m_superweaponRestriction; }
 
 inline Object* GameLogic::findObjectByID( ObjectID id )
@@ -439,7 +460,6 @@ inline Object* GameLogic::findObjectByID( ObjectID id )
 
 	return NULL;
 }
-#endif // if 0
 
 
 

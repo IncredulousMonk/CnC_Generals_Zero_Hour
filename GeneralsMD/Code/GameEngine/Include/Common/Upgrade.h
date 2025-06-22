@@ -33,7 +33,7 @@
 #define __UPGRADE_H_
 
 // USER INCLUDES //////////////////////////////////////////////////////////////////////////////////
-// #include "Common/AudioEventRTS.h"
+#include "Common/AudioEventRTS.h"
 #include "Common/INI.h"
 #include "Common/Snapshot.h"
 #include "Common/BitFlags.h"
@@ -140,10 +140,10 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	const UpgradeTemplate *m_template;	///< template this upgrade instance is based on
-	UpgradeStatusType m_status;							///< status of upgrade
-	Upgrade *m_next;				///< next
-	Upgrade *m_prev;				///< prev
+	const UpgradeTemplate *m_template {};	///< template this upgrade instance is based on
+	UpgradeStatusType m_status {};							///< status of upgrade
+	Upgrade *m_next {};				///< next
+	Upgrade *m_prev {};				///< prev
 
 };
 
@@ -171,9 +171,8 @@ public:
 	UpgradeTemplate( void );
 	// virtual destructor defined by memory pool object
 
-	// No copies allowed!
 	UpgradeTemplate(const UpgradeTemplate&) = delete;
-	UpgradeTemplate& operator=(const UpgradeTemplate&) = delete;
+	UpgradeTemplate& operator=(const UpgradeTemplate&) = default;
 
 	Int calcTimeToBuild( Player *player ) const;			///< time in logic frames it will take this player to "build" this UpgradeTemplate
 	Int calcCostToBuild( Player *player ) const;			///< calc the cost to build this upgrade
@@ -183,13 +182,12 @@ public:
 	const AsciiString& getUpgradeName( void ) const { return m_name; }
 	void setUpgradeNameKey( NameKeyType key ) { m_nameKey = key; }
 	NameKeyType getUpgradeNameKey( void ) const { return m_nameKey; }
-	const AsciiString& getDisplayNameLabel( void ) const { return m_displayNameLabel; }
+	const AsciiString& getDisplayNameLabel( void ) const { return m_ini.m_displayNameLabel; }
 	UpgradeMaskType getUpgradeMask() const { return m_upgradeMask; }
-	UpgradeType getUpgradeType( void ) const { return m_type; }
-	// FIXME: Uncomment once audio subsystem added.
-	// const AudioEventRTS* getResearchCompleteSound() const { return &m_researchSound; }
-	// const AudioEventRTS* getUnitSpecificSound() const { return &m_unitSpecificSound; }
-	AcademyClassificationType getAcademyClassificationType() const { return m_academyClassificationType; }
+	UpgradeType getUpgradeType( void ) const { return m_ini.m_type; }
+	const AudioEventRTS* getResearchCompleteSound() const { return &m_researchSound; }
+	const AudioEventRTS* getUnitSpecificSound() const { return &m_unitSpecificSound; }
+	AcademyClassificationType getAcademyClassificationType() const { return m_ini.m_academyClassificationType; }
 
 	/// inventory pictures
 	void cacheButtonImage();
@@ -210,27 +208,36 @@ public:
 
 protected:
 
-	UpgradeType m_type;									///< upgrade type (PLAYER or OBJECT)
-	AsciiString m_name;									///< upgrade name
-	NameKeyType m_nameKey;							///< name key
-	AsciiString m_displayNameLabel;			///< String manager label for UI display name
-	Real m_buildTime;										///< database # for how long it takes to "build" this
-	Int m_cost;													///< cost for production 
-	UpgradeMaskType m_upgradeMask;			///< Unique bitmask for this upgrade template
-	// FIXME: Uncomment once audio subsystem added.
-	// AudioEventRTS	m_researchSound;			///< Sound played when upgrade researched.
-	// AudioEventRTS	m_unitSpecificSound;	///< Secondary sound played when upgrade researched.
-	AcademyClassificationType m_academyClassificationType; ///< A value used by the academy to evaluate advice based on what players do.
+	// MG: Cannot apply offsetof to UpgradeTemplate, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UpgradeType m_type;									///< upgrade type (PLAYER or OBJECT)
+		AsciiString m_displayNameLabel;			///< String manager label for UI display name
+		Real m_buildTime;										///< database # for how long it takes to "build" this
+		Int m_cost;													///< cost for production 
+		AsciiString	m_researchSoundName;
+		AsciiString	m_unitSpecificSoundName;
+		AcademyClassificationType m_academyClassificationType; ///< A value used by the academy to evaluate advice based on what players do.
+		AsciiString m_buttonImageName;			///< "Queue" images to show in the build queue
+	};
 
-	UpgradeTemplate *m_next;						///< next
-	UpgradeTemplate *m_prev;						///< prev
+	IniData m_ini {};
 
-	AsciiString m_buttonImageName;			///< "Queue" images to show in the build queue
-	const Image *m_buttonImage;
+	AsciiString m_name {};									///< upgrade name
+	NameKeyType m_nameKey {};							///< name key
+	UpgradeMaskType m_upgradeMask {};			///< Unique bitmask for this upgrade template
+	AudioEventRTS	m_researchSound {};			///< Sound played when upgrade researched.
+	AudioEventRTS	m_unitSpecificSound {};	///< Secondary sound played when upgrade researched.
+
+	UpgradeTemplate *m_next {};						///< next
+	UpgradeTemplate *m_prev {};						///< prev
+
+	const Image *m_buttonImage {};
 
 	/// INI field table
 	static const FieldParse m_upgradeFieldParseTable[];		///< the parse table
 
+	friend class UpgradeCenter;
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -272,9 +279,9 @@ protected:
 	void linkUpgrade( UpgradeTemplate *upgrade );			///< link upgrade to list
 	void unlinkUpgrade( UpgradeTemplate *upgrade );		///< remove upgrade from list
 
-	UpgradeTemplate *m_upgradeList;										///< list of all upgrades we can have
-	Int m_nextTemplateMaskBit;												///< Each instantiated UpgradeTemplate will be given a Int64 bit as an identifier
-	Bool buttonImagesCached;
+	UpgradeTemplate *m_upgradeList {};										///< list of all upgrades we can have
+	UnsignedInt m_nextTemplateMaskBit {};												///< Each instantiated UpgradeTemplate will be given a Int64 bit as an identifier
+	Bool buttonImagesCached {};
 
 };
 

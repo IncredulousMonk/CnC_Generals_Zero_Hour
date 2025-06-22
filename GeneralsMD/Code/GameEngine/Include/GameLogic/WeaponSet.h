@@ -54,7 +54,7 @@ enum DamageType;
 #include "GameLogic/WeaponSetFlags.h"
 
 #ifdef DEFINE_WEAPONSLOTTYPE_NAMES
-static char *TheWeaponSlotTypeNames[] = 
+static const char *TheWeaponSlotTypeNames[] = 
 {
 	"PRIMARY",
 	"SECONDARY",
@@ -198,15 +198,15 @@ enum CanAttackResult: int
 class WeaponSet : public Snapshot
 {
 private:
-	const WeaponTemplateSet*	m_curWeaponTemplateSet;
-	Weapon*										m_weapons[WEAPONSLOT_COUNT];
-	WeaponSlotType						m_curWeapon;
-	WeaponLockType						m_curWeaponLockedStatus;
-	UnsignedInt								m_filledWeaponSlotMask;
-	Int												m_totalAntiMask;						///< anti mask of all current weapons
-	DamageTypeFlags						m_totalDamageTypeMask;			///< damagetype mask of all current weapons
-	Bool											m_hasPitchLimit;
-	Bool											m_hasDamageWeapon;
+	const WeaponTemplateSet*	m_curWeaponTemplateSet {};
+	Weapon*						m_weapons[WEAPONSLOT_COUNT] {};
+	WeaponSlotType				m_curWeapon {};
+	WeaponLockType				m_curWeaponLockedStatus {};
+	UnsignedInt					m_filledWeaponSlotMask {};
+	Int							m_totalAntiMask {};						///< anti mask of all current weapons
+	DamageTypeFlags				m_totalDamageTypeMask {};			///< damagetype mask of all current weapons
+	Bool						m_hasPitchLimit {};
+	Bool						m_hasDamageWeapon {};
 
 	Bool isAnyWithinTargetPitch(const Object* obj, const Object* victim) const;
 

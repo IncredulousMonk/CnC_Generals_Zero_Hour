@@ -189,6 +189,7 @@ class AudioManager : public SubsystemInterface
 
 		// Really meant for internal purposes only, but cannot be protected.
 		virtual void getInfoForAudioEvent( const AudioEventRTS *eventToFindAndFill ) const;	// Note: m_eventInfo is Mutable, and so this function will overwrite it if found
+		virtual void setAudioEventNameAndInfo(AudioEventRTS* eventToFindAndFill, AsciiString eventName);
 
 		///< Return whether the current audio is playing or not. 
 		///< NOTE NOTE NOTE !!DO NOT USE THIS IN FOR GAMELOGIC PURPOSES!! NOTE NOTE NOTE

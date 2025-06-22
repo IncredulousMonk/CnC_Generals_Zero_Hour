@@ -45,7 +45,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/ProductionPrerequisite.h"
-#include "Common/Player.h"
+// #include "Common/Player.h"
 #include "Common/ThingFactory.h"
 #include "Common/ThingTemplate.h"
 #include "GameLogic/Object.h"
@@ -80,7 +80,7 @@ void ProductionPrerequisite::init()
 //=============================================================================
 void ProductionPrerequisite::resolveNames()
 {
-	for (Int i = 0; i < m_prereqUnits.size(); i++)
+	for (size_t i = 0; i < m_prereqUnits.size(); i++)
 	{
 
 		//
@@ -107,21 +107,26 @@ void ProductionPrerequisite::resolveNames()
 //-----------------------------------------------------------------------------
 Int ProductionPrerequisite::calcNumPrereqUnitsOwned(const Player *player, Int counts[MAX_PREREQ]) const
 {
-	const ThingTemplate *tmpls[MAX_PREREQ];
-	Int cnt = m_prereqUnits.size();
-	if (cnt > MAX_PREREQ)
-		cnt = MAX_PREREQ;
-	for (int i = 0; i < cnt; i++)
-		tmpls[i] = m_prereqUnits[i].unit;
-	player->countObjectsByThingTemplate(cnt, tmpls, false, counts);
-	return cnt;
+	// FIXME: Player
+	(void) player;
+	(void) counts;
+	// const ThingTemplate *tmpls[MAX_PREREQ];
+	// size_t cnt = m_prereqUnits.size();
+	// if (cnt > MAX_PREREQ)
+	// 	cnt = MAX_PREREQ;
+	// for (size_t i = 0; i < cnt; i++)
+	// 	tmpls[i] = m_prereqUnits[i].unit;
+
+	// player->countObjectsByThingTemplate(cnt, tmpls, false, counts);
+	// return cnt;
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
 Int ProductionPrerequisite::getAllPossibleBuildFacilityTemplates(const ThingTemplate* tmpls[], Int maxtmpls) const
 {
 	Int count = 0;
-	for (int i = 0; i < m_prereqUnits.size(); i++)
+	for (size_t i = 0; i < m_prereqUnits.size(); i++)
 	{
 		if (i > 0 && !(m_prereqUnits[i].flags & UNIT_OR_WITH_PREV))
 			break;
@@ -142,10 +147,10 @@ const ThingTemplate *ProductionPrerequisite::getExistingBuildFacilityTemplate( c
 		Int cnt = calcNumPrereqUnitsOwned(player, ownCount);
 		for (int i = 0; i < cnt; i++)
 		{
-			if (i > 0 && !(m_prereqUnits[i].flags & UNIT_OR_WITH_PREV))
+			if (i > 0 && !(m_prereqUnits.data()[i].flags & UNIT_OR_WITH_PREV))
 				break;
 			if (ownCount[i])
-				return m_prereqUnits[i].unit;
+				return m_prereqUnits.data()[i].unit;
 		} 
 	}
 	return NULL;
@@ -154,7 +159,7 @@ const ThingTemplate *ProductionPrerequisite::getExistingBuildFacilityTemplate( c
 //-----------------------------------------------------------------------------
 Bool ProductionPrerequisite::isSatisfied(const Player *player) const
 {
-	Int i;
+	size_t i;
 
 	if (!player)
 		return false;
@@ -162,13 +167,14 @@ Bool ProductionPrerequisite::isSatisfied(const Player *player) const
 	// gotta have all the prereq sciences.
 	for (i = 0; i < m_prereqSciences.size(); i++)
 	{
-		if (!player->hasScience(m_prereqSciences[i]))
-			return false;
+		// FIXME: Player
+		// if (!player->hasScience(m_prereqSciences[i]))
+		// 	return false;
 	}
 
 	// the player must have at least one instance of each prereq unit.
 	Int ownCount[MAX_PREREQ];
-	Int cnt = calcNumPrereqUnitsOwned(player, ownCount);
+	size_t cnt = static_cast<size_t>(calcNumPrereqUnitsOwned(player, ownCount));
 
 	// fix up the "or" cases. (start at 1!)
 	for (i = 1; i < cnt; i++)
@@ -216,7 +222,7 @@ void ProductionPrerequisite::addUnitPrereq( AsciiString unit, Bool orUnitWithPre
 void ProductionPrerequisite::addUnitPrereq( const std::vector<AsciiString>& units )
 {
 	Bool orWithPrevious = false;
-	for (int i = 0; i < units.size(); ++i)
+	for (size_t i = 0; i < units.size(); ++i)
 	{
 		addUnitPrereq(units[i], orWithPrevious);
 		orWithPrevious = true;
@@ -238,8 +244,8 @@ UnicodeString ProductionPrerequisite::getRequiresList(const Player *player) cons
 		
 	// check the prerequired units
 	Int ownCount[MAX_PREREQ];
-	Int cnt = calcNumPrereqUnitsOwned(player, ownCount);
-	Int i;
+	size_t cnt = static_cast<size_t>(calcNumPrereqUnitsOwned(player, ownCount));
+	size_t i;
 
 	Bool orRequirements[MAX_PREREQ];
 	//Added for fix below in getRequiresList
@@ -304,8 +310,9 @@ UnicodeString ProductionPrerequisite::getRequiresList(const Player *player) cons
 	// gotta have all the prereq sciences.
 	for (i = 0; i < m_prereqSciences.size(); i++)
 	{
-		if (!player->hasScience(m_prereqSciences[i]))
-			hasSciences = FALSE;
+		// FIXME: Player
+		// if (!player->hasScience(m_prereqSciences[i]))
+		// 	hasSciences = FALSE;
 	}
 
 	if (hasSciences == FALSE) {

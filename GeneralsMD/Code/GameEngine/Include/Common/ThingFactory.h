@@ -129,10 +129,10 @@ private:
 	*/
 	ThingTemplate *findTemplateInternal( const AsciiString& name, Bool check = TRUE );
 
-	ThingTemplate					*m_firstTemplate;			///< head of linked list
-	UnsignedShort					m_nextTemplateID;			///< next available ID for templates 
+	ThingTemplate					*m_firstTemplate {};			///< head of linked list
+	UnsignedShort					m_nextTemplateID {};			///< next available ID for templates 
 
-	ThingTemplateHashMap	m_templateHashMap;		///< all thing templates, for fast lookup.
+	ThingTemplateHashMap	m_templateHashMap {};		///< all thing templates, for fast lookup.
 		
 };
 

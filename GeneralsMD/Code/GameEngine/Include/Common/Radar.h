@@ -96,6 +96,10 @@ public:
 	RadarObject( void );
 	// destructor prototype defined by memory pool glue
 
+	// No copies allowed!
+	RadarObject(const RadarObject&) = delete;
+	RadarObject& operator=(const RadarObject&) = delete;
+
 	// color management
 	void setColor( Color c ) { m_color = c; }
 	inline Color getColor( void ) const { return m_color; }
@@ -126,7 +130,7 @@ protected:
 //-------------------------------------------------------------------------------------------------
 /** Radar priorities.  Keep this in sync with the priority names list below */
 //-------------------------------------------------------------------------------------------------
-enum RadarPriorityType
+enum RadarPriorityType: int
 {
 	RADAR_PRIORITY_INVALID,					// a priority that has not been set (in general it won't show up on the radar)
 	RADAR_PRIORITY_NOT_ON_RADAR,		// object specifically forbidden from being on the radar
@@ -160,6 +164,10 @@ public:
 	
 	Radar( void );
 	virtual ~Radar( void );
+
+	// No copies allowed!
+	Radar(const Radar&) = delete;
+	Radar& operator=(const Radar&) = delete;
 
 	virtual void init( void ) { }														///< subsystem initialization
 	virtual void reset( void );															///< subsystem reset

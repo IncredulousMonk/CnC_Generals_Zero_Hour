@@ -41,7 +41,7 @@
 #include "Common/INI.h"
 #include "Common/INIException.h"
 #include "Common/MessageStream.h"
-// #include "Common/ThingFactory.h"
+#include "Common/ThingFactory.h"
 // #include "Common/File.h"
 #include "Common/FileSystem.h"
 #include "Common/ArchiveFileSystem.h"
@@ -63,7 +63,7 @@
 // #include "Common/Recorder.h"
 // #include "Common/SpecialPower.h"
 #include "Common/TerrainTypes.h"
-// #include "Common/Upgrade.h"
+#include "Common/Upgrade.h"
 // #include "Common/UserPreferences.h"
 // #include "Common/Xfer.h"
 // #include "Common/XferCRC.h"
@@ -494,8 +494,8 @@ void GameEngine::init( int argc, char *argv[] )
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-		// initSubsystem(TheThingFactory,"TheThingFactory", createThingFactory(), &xferCRC, "Data\\INI\\Default\\Object.ini", NULL, "Data\\INI\\Object");
+		// FIXME: Enable the full object parsing once TheModuleFactory has been sorted out.
+		initSubsystem(TheThingFactory,"TheThingFactory", createThingFactory(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Object.ini", NULL, nullptr /*"Data\\INI\\Object"*/);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////

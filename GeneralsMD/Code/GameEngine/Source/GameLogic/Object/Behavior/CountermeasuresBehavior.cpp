@@ -90,7 +90,7 @@ static void checkForCountermeasures( Object *testObj, void *userData )
 CountermeasuresBehavior::CountermeasuresBehavior( Thing *thing, const ModuleData* moduleData ) : UpdateModule( thing, moduleData )
 {
 	const CountermeasuresBehaviorModuleData *data = getCountermeasuresBehaviorModuleData();
-	m_availableCountermeasures = data->m_numberOfVolleys * data->m_volleySize;
+	m_availableCountermeasures = data->m_ini.m_numberOfVolleys * data->m_ini.m_volleySize;
 	m_reactionFrame = 0;
 	m_activeCountermeasures = 0;
 	m_divertedMissiles = 0;
@@ -123,7 +123,7 @@ void CountermeasuresBehavior::reportMissileForCountermeasures( Object *missile )
 		//be diverted.
 		const CountermeasuresBehaviorModuleData *data = getCountermeasuresBehaviorModuleData();
 
-		if( GameLogicRandomValueReal( 0.0f, 1.0f ) < data->m_evasionRate )
+		if( GameLogicRandomValueReal( 0.0f, 1.0f ) < data->m_ini.m_evasionRate )
 		{
 			//This missile will be diverted!
 			ProjectileUpdateInterface* pui = NULL;
@@ -133,9 +133,9 @@ void CountermeasuresBehavior::reportMissileForCountermeasures( Object *missile )
 				{
 					//Make sure the missile diverts after a delay. The delay needs to be larger than
 					//the countermeasure reaction time or else the missile won't have a countermeasure to divert to!
-					DEBUG_ASSERTCRASH( data->m_countermeasureReactionFrames < data->m_missileDecoyFrames, 
+					DEBUG_ASSERTCRASH( data->m_ini.m_countermeasureReactionFrames < data->m_ini.m_missileDecoyFrames, 
 						("MissileDecoyDelay needs to be less than CountermeasureReactionTime in order to function properly.") );
-					pui->setFramesTillCountermeasureDiversionOccurs( data->m_missileDecoyFrames );
+					pui->setFramesTillCountermeasureDiversionOccurs( data->m_ini.m_missileDecoyFrames );
 					m_divertedMissiles++;
 
 					if( m_activeCountermeasures == 0 && m_reactionFrame == 0 )
@@ -143,7 +143,7 @@ void CountermeasuresBehavior::reportMissileForCountermeasures( Object *missile )
 						//We need to launch our first volley of countermeasures, but we can't do it now. If we 
 						//do, it'll look too artificial. Instead, we need to set up a timer to fake a reaction
 						//delay. 
-						m_reactionFrame = TheGameLogic->getFrame() + data->m_countermeasureReactionFrames;
+						m_reactionFrame = TheGameLogic->getFrame() + data->m_ini.m_countermeasureReactionFrames;
 					}
 					break;
 				}
@@ -249,7 +249,7 @@ UpdateSleepTime CountermeasuresBehavior::update( void )
 					//We have been shot at and now that the reaction timer has expired, fire a full volley of
 					//countermeasures.
 					launchVolley();
-					m_nextVolleyFrame = now + data->m_framesBetweenVolleys;
+					m_nextVolleyFrame = now + data->m_ini.m_framesBetweenVolleys;
 					m_reactionFrame = 0;
 				}
 			}
@@ -258,14 +258,14 @@ UpdateSleepTime CountermeasuresBehavior::update( void )
 			if( m_nextVolleyFrame == now )
 			{
 				launchVolley();
-				m_nextVolleyFrame = now + data->m_framesBetweenVolleys;
+				m_nextVolleyFrame = now + data->m_ini.m_framesBetweenVolleys;
 			}
 		}
 	}
 
 	//Handle auto-reloading (data->m_reloadFrames of zero means it's not possible to auto-reload).
 	//Aircraft that don't auto-reload require landing at an airfield for resupply.
-	if( !m_availableCountermeasures && data->m_reloadFrames )
+	if( !m_availableCountermeasures && data->m_ini.m_reloadFrames )
 	{
 		if( m_reloadFrame != 0 )
 		{
@@ -278,7 +278,7 @@ UpdateSleepTime CountermeasuresBehavior::update( void )
 		else
 		{
 			//We just started reloading, so set the frame it'll be ready.
-			m_reloadFrame = now + data->m_reloadFrames;
+			m_reloadFrame = now + data->m_ini.m_reloadFrames;
 		}
 	}
 
@@ -289,7 +289,7 @@ UpdateSleepTime CountermeasuresBehavior::update( void )
 void CountermeasuresBehavior::reloadCountermeasures()
 {
 	const CountermeasuresBehaviorModuleData *data = getCountermeasuresBehaviorModuleData();
-	m_availableCountermeasures = data->m_numberOfVolleys * data->m_volleySize;
+	m_availableCountermeasures = data->m_ini.m_numberOfVolleys * data->m_ini.m_volleySize;
 	m_reloadFrame = 0;
 }
  
@@ -299,8 +299,8 @@ void CountermeasuresBehavior::launchVolley()
 	const CountermeasuresBehaviorModuleData *data = getCountermeasuresBehaviorModuleData();
 	Object *obj = getObject();
 
-	Real volleySize = (Real)data->m_volleySize;
-	for( int i = 0; i < data->m_volleySize; i++ )
+	Real volleySize = (Real)data->m_ini.m_volleySize;
+	for( int i = 0; i < data->m_ini.m_volleySize; i++ )
 	{
 		//Each flare in a volley will calculate a different vector to fly out. We have a +/- angle to 
 		//spread out equally. With only one flare, it'll come straight out the back. Two flares will
@@ -314,7 +314,7 @@ void CountermeasuresBehavior::launchVolley()
 			ratio = currentVolley / (volleySize - 1.0f) * 2.0f - 1.0f;
 		}
 		//Now calculate the angle. Simply multiply it by the ratio!
-		Real angle = ratio * data->m_volleyArcAngle;
+		Real angle = ratio * data->m_ini.m_volleyArcAngle;
 
 		Coord3D vel;
 		PhysicsBehavior *physics = obj->getPhysics();
@@ -337,9 +337,9 @@ void CountermeasuresBehavior::launchVolley()
 		{
 			velocity = -10.0f;
 		}
-		vel.scale( velocity * data->m_volleyVelocityFactor );
+		vel.scale( velocity * data->m_ini.m_volleyVelocityFactor );
 
-		const ThingTemplate *thing = TheThingFactory->findTemplate( data->m_flareTemplateName );
+		const ThingTemplate *thing = TheThingFactory->findTemplate( data->m_ini.m_flareTemplateName );
 		if( thing )
 		{
 			Object *flare = TheThingFactory->newObject( thing, obj->getControllingPlayer()->getDefaultTeam() );

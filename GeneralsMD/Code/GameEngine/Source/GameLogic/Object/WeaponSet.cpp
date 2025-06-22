@@ -45,7 +45,7 @@
 
 #include "GameLogic/AI.h"
 #include "GameLogic/Object.h"
-#include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/Module/StealthUpdate.h"
 #include "GameLogic/Module/SpawnBehavior.h"
@@ -63,6 +63,7 @@
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+template <>
 const char* WeaponSetFlags::s_bitNameList[] = 
 {
 	"VETERAN",
@@ -124,7 +125,7 @@ Bool WeaponTemplateSet::hasAnyWeapons() const
 }
 
 //-------------------------------------------------------------------------------------------------
-void WeaponTemplateSet::parseWeapon(INI* ini, void *instance, void * /*store*/, const void* userData)
+void WeaponTemplateSet::parseWeapon(INI* ini, void *instance, void * /*store*/, const void* /*userData*/)
 {
 	WeaponTemplateSet* self = (WeaponTemplateSet*)instance;
 	WeaponSlotType wslot = (WeaponSlotType)INI::scanIndexList(ini->getNextToken(), TheWeaponSlotTypeNames);
@@ -132,7 +133,7 @@ void WeaponTemplateSet::parseWeapon(INI* ini, void *instance, void * /*store*/, 
 }
 
 //-------------------------------------------------------------------------------------------------
-void WeaponTemplateSet::parseAutoChoose(INI* ini, void *instance, void * /*store*/, const void* userData)
+void WeaponTemplateSet::parseAutoChoose(INI* ini, void *instance, void * /*store*/, const void* /*userData*/)
 {
 	WeaponTemplateSet* self = (WeaponTemplateSet*)instance;
 	WeaponSlotType wslot = (WeaponSlotType)INI::scanIndexList(ini->getNextToken(), TheWeaponSlotTypeNames);
@@ -140,7 +141,7 @@ void WeaponTemplateSet::parseAutoChoose(INI* ini, void *instance, void * /*store
 }
 
 //-------------------------------------------------------------------------------------------------
-void WeaponTemplateSet::parsePreferredAgainst(INI* ini, void *instance, void * /*store*/, const void* userData)
+void WeaponTemplateSet::parsePreferredAgainst(INI* ini, void *instance, void * /*store*/, const void* /*userData*/)
 {
 	WeaponTemplateSet* self = (WeaponTemplateSet*)instance;
 	WeaponSlotType wslot = (WeaponSlotType)INI::scanIndexList(ini->getNextToken(), TheWeaponSlotTypeNames);
@@ -201,7 +202,7 @@ WeaponSet::~WeaponSet()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void WeaponSet::crc( Xfer *xfer )
+void WeaponSet::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc
@@ -271,7 +272,8 @@ void WeaponSet::xfer( Xfer *xfer )
 					DEBUG_CRASH(("xfer backwards compatibility code - old save file??? jba."));
 					wt = m_curWeaponTemplateSet->getNth((WeaponSlotType)0);
 				}
-				m_weapons[i] = TheWeaponStore->allocateNewWeapon(wt, (WeaponSlotType)i);
+				// FIXME: TheWeaponStore
+				// m_weapons[i] = TheWeaponStore->allocateNewWeapon(wt, (WeaponSlotType)i);
 			}
 			xfer->xferSnapshot(m_weapons[i]);
 		}
@@ -298,6 +300,8 @@ void WeaponSet::loadPostProcess( void )
 //-------------------------------------------------------------------------------------------------
 void WeaponSet::updateWeaponSet(const Object* obj)
 {
+(void) obj;
+#if 0
 	const WeaponTemplateSet* set = obj->getTemplate()->findWeaponTemplateSet(obj->getWeaponSetFlags());
 	DEBUG_ASSERTCRASH(set, ("findWeaponSet should never return null"));
 	if (set && set != m_curWeaponTemplateSet)
@@ -342,6 +346,7 @@ void WeaponSet::updateWeaponSet(const Object* obj)
 		m_curWeaponTemplateSet = set;
 		//DEBUG_LOG(("WeaponSet::updateWeaponSet -- changed curweapon to %s\n",getCurWeapon()->getName().str()));
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -367,6 +372,7 @@ void WeaponSet::updateWeaponSet(const Object* obj)
 	return flags;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 static Int getVictimAntiMask(const Object* victim)
 {
@@ -412,10 +418,13 @@ static Int getVictimAntiMask(const Object* victim)
 		return WEAPON_ANTI_GROUND;
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void WeaponSet::weaponSetOnWeaponBonusChange(const Object *source)
 {
+(void) source;
+#if 0
 	for( Int i = 0; i < WEAPONSLOT_COUNT;	i++ )
 	{
 		Weapon *weapon = m_weapons[ i ];
@@ -424,11 +433,15 @@ void WeaponSet::weaponSetOnWeaponBonusChange(const Object *source)
 			weapon->onWeaponBonusChange(source);
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool WeaponSet::isAnyWithinTargetPitch(const Object* obj, const Object* victim) const
 {
+(void) obj;
+(void) victim;
+#if 0
 	if (!m_hasPitchLimit)
 		return true;
 
@@ -440,6 +453,7 @@ Bool WeaponSet::isAnyWithinTargetPitch(const Object* obj, const Object* victim) 
 			return true;
 		}
 	}
+#endif // if 0
 	return false;
 }
 
@@ -447,6 +461,12 @@ Bool WeaponSet::isAnyWithinTargetPitch(const Object* obj, const Object* victim) 
 CanAttackResult WeaponSet::getAbleToAttackSpecificObject( AbleToAttackType attackType, const Object* source, const Object* victim, CommandSourceType commandSource, WeaponSlotType specificSlot ) const
 {
 
+(void) attackType;
+(void) source;
+(void) victim;
+(void) commandSource;
+(void) specificSlot;
+#if 0
 	// basic sanity checks.
 	if (!source || 
 			!victim || 
@@ -596,6 +616,8 @@ CanAttackResult WeaponSet::getAbleToAttackSpecificObject( AbleToAttackType attac
 
 	//Check if the shot itself is valid!
 	return getAbleToUseWeaponAgainstTarget( attackType, source, victim, victim->getPosition(), commandSource, specificSlot );
+#endif // if 0
+return ATTACKRESULT_NOT_POSSIBLE;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -605,6 +627,13 @@ CanAttackResult WeaponSet::getAbleToAttackSpecificObject( AbleToAttackType attac
 CanAttackResult WeaponSet::getAbleToUseWeaponAgainstTarget( AbleToAttackType attackType, const Object *source, const Object *victim, const Coord3D *pos, CommandSourceType commandSource, WeaponSlotType specificSlot ) const
 {
 
+(void) attackType;
+(void) source;
+(void) victim;
+(void) pos;
+(void) commandSource;
+(void) specificSlot;
+#if 0
 	//First determine if we are attacking an object or the ground and get the 
 	//appropriate weapon anti mask.
 	WeaponAntiMaskType targetAntiMask;
@@ -782,11 +811,18 @@ CanAttackResult WeaponSet::getAbleToUseWeaponAgainstTarget( AbleToAttackType att
 
 	// Oh well... guess not!
 	return ATTACKRESULT_INVALID_SHOT;
+#endif // if 0
+return ATTACKRESULT_NOT_POSSIBLE;
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool WeaponSet::chooseBestWeaponForTarget(const Object* obj, const Object* victim, WeaponChoiceCriteria criteria, CommandSourceType cmdSource)
 {
+(void) obj;
+(void) victim;
+(void) criteria;
+(void) cmdSource;
+#if 0
 	/*
 		1) The first criteria is weapon fitness.  If the object has two weapons that can fire concurrently, 
 			find the set of weapons that can hit the given target.  If two weapons can hit the given target,
@@ -969,12 +1005,17 @@ Bool WeaponSet::chooseBestWeaponForTarget(const Object* obj, const Object* victi
 	//DEBUG_LOG(("WeaponSet::chooseBestWeaponForTarget -- changed curweapon to %s\n",getCurWeapon()->getName().str()));
 
 	return found;
+#endif // if 0
+return false;
 }
 
 
 //-------------------------------------------------------------------------------------------------
 void WeaponSet::reloadAllAmmo(const Object *obj, Bool now)
 {
+(void) obj;
+(void) now;
+#if 0
 	for( Int i = 0; i < WEAPONSLOT_COUNT;	i++ )
 	{
 		Weapon* weapon = m_weapons[i];
@@ -986,11 +1027,13 @@ void WeaponSet::reloadAllAmmo(const Object *obj, Bool now)
 				weapon->reloadAmmo(obj);
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool WeaponSet::isOutOfAmmo() const
 {
+#if 0
 	for( Int i = 0; i < WEAPONSLOT_COUNT;	i++ )
 	{
 		const Weapon* weapon = m_weapons[i];
@@ -1001,6 +1044,7 @@ Bool WeaponSet::isOutOfAmmo() const
 			return false;
 		}
 	}
+#endif // if 0
 	return true;
 }
 
@@ -1034,6 +1078,7 @@ Weapon* WeaponSet::findWaypointFollowingCapableWeapon()
 //-------------------------------------------------------------------------------------------------
 UnsignedInt WeaponSet::getMostPercentReadyToFireAnyWeapon() const
 {
+#if 0
 	UnsignedInt mostReady = 0;
 	for( Int i = 0; i < WEAPONSLOT_COUNT;	i++ )
 	{
@@ -1051,6 +1096,8 @@ UnsignedInt WeaponSet::getMostPercentReadyToFireAnyWeapon() const
 		}
 	}
 	return mostReady;
+#endif // if 0
+return 0;
 }
 
 //-------------------------------------------------------------------------------------------------

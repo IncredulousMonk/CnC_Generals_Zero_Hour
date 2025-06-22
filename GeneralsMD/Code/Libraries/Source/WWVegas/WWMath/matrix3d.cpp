@@ -65,7 +65,7 @@
 #include "matrix3.h"
 #include "matrix4.h"
 #include "quat.h"
-#include "D3dx8math.h"
+// #include "D3dx8math.h"
 
 // some static matrices which are sometimes useful
 const Matrix3D Matrix3D::Identity
@@ -499,6 +499,7 @@ void Matrix3D::Obj_Look_At(const Vector3 &p,const Vector3 &t,float roll)
 }
 
 
+#if 0
 /***********************************************************************************************
  * Matrix3D::Get_Inverse -- calculate the inverse of this matrix                               *
  *                                                                                             *
@@ -537,6 +538,7 @@ void Matrix3D::Get_Inverse(Matrix3D & inv) const
 	inv.Row[2][2]=mat4Inv[2][2];
 	inv.Row[2][3]=mat4Inv[2][3];
 }
+#endif // if 0
 
 /*********************************************************************************************** 
  * Matrix3D::Get_Orthogonal_Inverse -- Returns the inverse of the matrix                       *  

@@ -221,10 +221,10 @@ NameKeyType NameKeyGenerator::nameToLowercaseKey(const char* nameString)
 //------------------------------------------------------------------------------------------------- 
 // Get a string out of the INI. Store it into a NameKeyType
 //------------------------------------------------------------------------------------------------- 
-// void NameKeyGenerator::parseStringAsNameKeyType( INI *ini, void *, void *store, const void* )
-// {
-//   *(NameKeyType *)store = TheNameKeyGenerator->nameToKey( ini->getNextToken() );
-// }
+void NameKeyGenerator::parseStringAsNameKeyType( INI *ini, void *, void *store, const void* )
+{
+  *(NameKeyType *)store = TheNameKeyGenerator->nameToKey( ini->getNextToken() );
+}
 
 
 //------------------------------------------------------------------------------------------------- 

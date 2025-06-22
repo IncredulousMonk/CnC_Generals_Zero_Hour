@@ -163,7 +163,7 @@ public: \
 	static ModuleData* friend_newModuleData(INI* ini) \
 	{ \
 		clsmd* data = MSGNEW( "AllModuleData" ) clsmd; \
-		if (ini) ini->initFromINIMultiProc(data, clsmd::buildFieldParse); \
+		if (ini) ini->initFromINIMultiProc(&data->m_ini, clsmd::buildFieldParse); \
 		return data; \
 	}
 
@@ -274,7 +274,7 @@ private:
 
 	// it shouldn't be legal for subclasses to ever modify this, only to look at it;
 	// so, we'll enforce this by making it private and providing a protected access method.
-	Object *m_object;													///< the object this module is a part of
+	Object *m_object {};													///< the object this module is a part of
 
 };
 //-------------------------------------------------------------------------------------------------
@@ -321,7 +321,7 @@ private:
 
 	// it shouldn't be legal for subclasses to ever modify this, only to look at it;
 	// so, we'll enforce this by making it private and providing a protected access method.
-	Drawable *m_drawable;											///< the drawble this module is a part of
+	Drawable *m_drawable {};											///< the drawble this module is a part of
 
 };
 //-------------------------------------------------------------------------------------------------
@@ -333,4 +333,3 @@ private:
 
 
 #endif // __MODULE_H_
-

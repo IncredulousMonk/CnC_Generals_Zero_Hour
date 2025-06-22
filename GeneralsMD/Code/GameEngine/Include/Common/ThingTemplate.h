@@ -271,9 +271,8 @@ private:
 		{ 
 		}
 
-		// No copies allowed!
-		Nugget(const Nugget&) = delete;
-		Nugget& operator=(const Nugget&) = delete;
+		Nugget(const Nugget&) = default;
+		Nugget& operator=(const Nugget&) = default;
 
 	};
 	std::vector<Nugget> m_info {};
@@ -352,17 +351,16 @@ public:
 class ThingTemplate : public Overridable
 {
 
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ThingTemplate, "ThingTemplatePool" )		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ThingTemplate, "ThingTemplatePool" )
 
 public:
 
 
 	ThingTemplate();
 
-	// No copies allowed!
 	ThingTemplate(const ThingTemplate&) = delete;
-	ThingTemplate& operator=(const ThingTemplate&) = delete;
-	
+	ThingTemplate& operator=(const ThingTemplate&) = default;
+
 	// copy the guts of that into this, but preserve this' name, id, and list-links.
 	void copyFrom(const ThingTemplate* that);
 
@@ -371,7 +369,7 @@ public:
 
 #ifdef LOAD_TEST_ASSETS
 	void initForLTA(const AsciiString& name);
-	inline AsciiString getLTAName() const { return m_LTAName; }
+	inline AsciiString getLTAName() const { return m_ini.m_LTAName; }
 #endif
 
 	/** 
@@ -385,84 +383,84 @@ public:
 		the IDs would be the same for each one since every override first *COPIES* data
 		from the current/parent template data.
 	*/
-	UnsignedShort getTemplateID() const { return m_templateID; }
+	UnsignedShort getTemplateID() const { return m_ini.m_templateID; }
 
 	// note that m_override is not used here, see getTemplateID(), for it is the same reasons
-	const AsciiString& getName() const { return m_nameString; }  ///< return the name of this template
+	const AsciiString& getName() const { return m_ini.m_nameString; }  ///< return the name of this template
 
 	/// get the display color (used for the editor)	
-	Color getDisplayColor() const { return m_displayColor; }
+	Color getDisplayColor() const { return m_ini.m_displayColor; }
 
 	/// get the editor sorting 
-	EditorSortingType getEditorSorting() const { return (EditorSortingType)m_editorSorting; }
+	EditorSortingType getEditorSorting() const { return (EditorSortingType)m_ini.m_editorSorting; }
 
 	/// return true iff the template has the specified kindOf flag set.
 	inline Bool isKindOf(KindOfType t) const 
 	{ 
-		return TEST_KINDOFMASK(m_kindof, t); 
+		return TEST_KINDOFMASK(m_ini.m_kindof, t); 
 	}
 
 	/// convenience for doing multiple kindof testing at once.
 	inline Bool isKindOfMulti(const KindOfMaskType& mustBeSet, const KindOfMaskType& mustBeClear) const 
 	{ 		
-		return TEST_KINDOFMASK_MULTI(m_kindof, mustBeSet, mustBeClear);
+		return TEST_KINDOFMASK_MULTI(m_ini.m_kindof, mustBeSet, mustBeClear);
 	}
 
 	inline Bool isAnyKindOf( const KindOfMaskType& anyKindOf ) const
 	{
-		return TEST_KINDOFMASK_ANY(m_kindof, anyKindOf);
+		return TEST_KINDOFMASK_ANY(m_ini.m_kindof, anyKindOf);
 	}
 	
 	/// set the display name
-	const UnicodeString& getDisplayName() const { return m_displayName; }  ///< return display name
+	const UnicodeString& getDisplayName() const { return m_ini.m_displayName; }  ///< return display name
 
-	RadarPriorityType getDefaultRadarPriority() const { return (RadarPriorityType)m_radarPriority; }  ///< return radar priority from INI
+	RadarPriorityType getDefaultRadarPriority() const { return (RadarPriorityType)m_ini.m_radarPriority; }  ///< return radar priority from INI
 
 	// note, you should not call this directly; rather, call Object::getTransportSlotCount().
-	Int getRawTransportSlotCount() const { return m_transportSlotCount; }
+	Int getRawTransportSlotCount() const { return m_ini.m_transportSlotCount; }
 
-	Real getFenceWidth() const { return m_fenceWidth; }  // return fence width
+	Real getFenceWidth() const { return m_ini.m_fenceWidth; }  // return fence width
 
-	Real getFenceXOffset() const { return m_fenceXOffset; }  // return fence offset
+	Real getFenceXOffset() const { return m_ini.m_fenceXOffset; }  // return fence offset
 
-	Bool isBridge() const { return m_isBridge; }  // return fence offset
+	Bool isBridge() const { return m_ini.m_isBridge; }  // return fence offset
 
 	// Only Object can ask this.  Everyone else should ask the Object.  In fact, you really should ask the Object everything.
-	Real friend_calcVisionRange() const { return m_visionRange; }  ///< get vision range
-	Real friend_calcShroudClearingRange() const { return m_shroudClearingRange; }  ///< get vision range for Shroud ONLY (Design requested split)
+	Real friend_calcVisionRange() const { return m_ini.m_visionRange; }  ///< get vision range
+	Real friend_calcShroudClearingRange() const { return m_ini.m_shroudClearingRange; }  ///< get vision range for Shroud ONLY (Design requested split)
 	
 	//This one is okay to check directly... because it doesn't get effected by bonuses.
-	Real getShroudRevealToAllRange() const { return m_shroudRevealToAllRange; }
+	Real getShroudRevealToAllRange() const { return m_ini.m_shroudRevealToAllRange; }
 	
 	// This function is only for use by the AIUpdateModuleData::parseLocomotorSet function.
 	AIUpdateModuleData *friend_getAIModuleInfo(void);
 
-	ShadowType getShadowType() const { return (ShadowType)m_shadowType; }
-	Real getShadowSizeX() const { return m_shadowSizeX; }
-	Real getShadowSizeY() const { return m_shadowSizeY; }
-	Real getShadowOffsetX() const { return m_shadowOffsetX; }
-	Real getShadowOffsetY() const { return m_shadowOffsetY; }
+	ShadowType getShadowType() const { return (ShadowType)m_ini.m_shadowType; }
+	Real getShadowSizeX() const { return m_ini.m_shadowSizeX; }
+	Real getShadowSizeY() const { return m_ini.m_shadowSizeY; }
+	Real getShadowOffsetX() const { return m_ini.m_shadowOffsetX; }
+	Real getShadowOffsetY() const { return m_ini.m_shadowOffsetY; }
 
-	const AsciiString& getShadowTextureName( void ) const { return m_shadowTextureName; }
-	UnsignedInt getOcclusionDelay(void) const { return m_occlusionDelay;}
+	const AsciiString& getShadowTextureName( void ) const { return m_ini.m_shadowTextureName; }
+	UnsignedInt getOcclusionDelay(void) const { return m_ini.m_occlusionDelay;}
 	
-	const ModuleInfo& getBehaviorModuleInfo() const { return m_behaviorModuleInfo; }
-	const ModuleInfo& getDrawModuleInfo() const { return m_drawModuleInfo; }
-	const ModuleInfo& getClientUpdateModuleInfo() const { return m_clientUpdateModuleInfo; }
+	const ModuleInfo& getBehaviorModuleInfo() const { return m_ini.m_behaviorModuleInfo; }
+	const ModuleInfo& getDrawModuleInfo() const { return m_ini.m_drawModuleInfo; }
+	const ModuleInfo& getClientUpdateModuleInfo() const { return m_ini.m_clientUpdateModuleInfo; }
 
-	const Image *getSelectedPortraitImage( void ) const { return m_selectedPortraitImage; }
-	const Image *getButtonImage( void ) const { return m_buttonImage; }
+	const Image *getSelectedPortraitImage( void ) const { return m_ini.m_selectedPortraitImage; }
+	const Image *getButtonImage( void ) const { return m_ini.m_buttonImage; }
 
 	//Code renderer handles these states now.
 	//const AsciiString& getInventoryImageName( InventoryImageType type ) const { return m_inventoryImage[ type ]; }
 
 	Int getSkillPointValue(Int level) const;
 
-	Int getExperienceValue(Int level) const { return m_experienceValues[level]; }
-	Int getExperienceRequired(Int level) const {return m_experienceRequired[level]; }
-	Bool isTrainable() const{return m_isTrainable; }
-	Bool isEnterGuard() const{return m_enterGuard; }
-	Bool isHijackGuard() const{return m_hijackGuard; }
+	Int getExperienceValue(Int level) const { return m_ini.m_experienceValues[level]; }
+	Int getExperienceRequired(Int level) const {return m_ini.m_experienceRequired[level]; }
+	Bool isTrainable() const{return m_ini.m_isTrainable; }
+	Bool isEnterGuard() const{return m_ini.m_enterGuard; }
+	Bool isHijackGuard() const{return m_ini.m_hijackGuard; }
 
 	const AudioEventRTS *getVoiceSelect() const								{ return getAudio(TTAUDIO_voiceSelect); }
 	const AudioEventRTS *getVoiceGroupSelect() const					{ return getAudio(TTAUDIO_voiceGroupSelect); }
@@ -504,33 +502,33 @@ public:
 	const AudioEventRTS *getSoundPromotedHero() const					{ return getAudio(TTAUDIO_soundPromotedHero); }
 	const AudioEventRTS *getSoundFalling() const							{ return getAudio(TTAUDIO_soundFalling); }
 
-  Bool hasSoundAmbient() const                              { return hasAudio(TTAUDIO_soundAmbient); }
+	Bool hasSoundAmbient() const                              { return hasAudio(TTAUDIO_soundAmbient); }
 
-  const AudioEventRTS *getPerUnitSound(const AsciiString& soundName) const;
+	const AudioEventRTS *getPerUnitSound(const AsciiString& soundName) const;
 	const FXList* getPerUnitFX(const AsciiString& fxName) const;
 
-	UnsignedInt getThreatValue() const								{ return m_threatValue; }
-	
+	UnsignedInt getThreatValue() const								{ return m_ini.m_threatValue; }
+
   //-------------------------------------------------------------------------------------------------
   /** If this is not NAMEKEY_INVALID, it indicates that all the templates which return the same name key
     * should be counted as the same "type" when looking at getMaxSimultaneousOfType(). For instance, 
     * a Scud Storm and a Scud Storm rebuild hole will return the same value, so that the player
     * can't build another Scud Storm while waiting for the rebuild hole to start rebuilding */
   //-------------------------------------------------------------------------------------------------
-  NameKeyType getMaxSimultaneousLinkKey() const { return m_maxSimultaneousLinkKey; }
+  NameKeyType getMaxSimultaneousLinkKey() const { return m_ini.m_maxSimultaneousLinkKey; }
   UnsignedInt getMaxSimultaneousOfType() const;
 
 	void validate();
 
 // The version that does not take an Object argument is labeled friend for use by WorldBuilder.  All game requests
 // for CommandSet must use Object::getCommandSetString, as we have two different sources for dynamic answers. 
-	const AsciiString& friend_getCommandSetString() const { return m_commandSetString; }
+	const AsciiString& friend_getCommandSetString() const { return m_ini.m_commandSetString; }
 
-	const std::vector<AsciiString>& getBuildVariations() const { return m_buildVariations; }
+	const std::vector<AsciiString>& getBuildVariations() const { return m_ini.m_buildVariations; }
 
-	Real getAssetScale() const { return m_assetScale; }						///< return uniform scaling
-	Real getInstanceScaleFuzziness() const { return m_instanceScaleFuzziness; }						///< return uniform scaling
-	Real getStructureRubbleHeight() const { return (Real)m_structureRubbleHeight; }						///< return uniform scaling
+	Real getAssetScale() const { return m_ini.m_assetScale; }						///< return uniform scaling
+	Real getInstanceScaleFuzziness() const { return m_ini.m_instanceScaleFuzziness; }						///< return uniform scaling
+	Real getStructureRubbleHeight() const { return (Real)m_ini.m_structureRubbleHeight; }						///< return uniform scaling
 
 	/*
 		NOTE: if you have a Thing, don't call this function; call Thing::getGeometryInfo instead, since
@@ -543,26 +541,26 @@ public:
 	// these are intended ONLY for the private use of ThingFactory and do not use
 	// the m_override pointer, it deals only with templates at the "top" level
 	//
-	inline void friend_setTemplateName( const AsciiString& name ) { m_nameString = name; }
-	inline ThingTemplate *friend_getNextTemplate() const { return m_nextThingTemplate; }
-	inline void friend_setNextTemplate(ThingTemplate *tmplate) { m_nextThingTemplate = tmplate; }
-	inline void friend_setTemplateID(UnsignedShort id) { m_templateID = id; }
+	inline void friend_setTemplateName( const AsciiString& name ) { m_ini.m_nameString = name; }
+	inline ThingTemplate *friend_getNextTemplate() const { return m_ini.m_nextThingTemplate; }
+	inline void friend_setNextTemplate(ThingTemplate *tmplate) { m_ini.m_nextThingTemplate = tmplate; }
+	inline void friend_setTemplateID(UnsignedShort id) { m_ini.m_templateID = id; }
 
-	Int getEnergyProduction() const { return m_energyProduction; }
-	Int getEnergyBonus() const { return m_energyBonus; }
+	Int getEnergyProduction() const { return m_ini.m_energyProduction; }
+	Int getEnergyBonus() const { return m_ini.m_energyBonus; }
 
 	// these are NOT publicly available; you should call calcCostToBuild() or calcTimeToBuild() 
 	// instead, because they will take player handicaps into account.
 	// Int getBuildCost() const { return m_buildCost; }
 	
-	Int getRefundValue() const { return m_refundValue; }
+	Int getRefundValue() const { return m_ini.m_refundValue; }
 
-	BuildCompletionType getBuildCompletion() const { return (BuildCompletionType)m_buildCompletion; }
+	BuildCompletionType getBuildCompletion() const { return (BuildCompletionType)m_ini.m_buildCompletion; }
 
 	BuildableStatus getBuildable() const;
 	
-	Int getPrereqCount() const { return m_prereqInfo.size(); }
-	const ProductionPrerequisite *getNthPrereq(Int i) const { return &m_prereqInfo[static_cast<std::size_t>(i)]; }
+	Int getPrereqCount() const { return m_ini.m_prereqInfo.size(); }
+	const ProductionPrerequisite *getNthPrereq(Int i) const { return &m_ini.m_prereqInfo[static_cast<std::size_t>(i)]; }
 
 	/** 
 		return the BuildFacilityTemplate, if any. 
@@ -578,32 +576,34 @@ public:
 
 	Bool isBuildableItem(void) const;
 
+#if 0
 	/// calculate how long (in logic frames) it will take the given player to build this unit
 	Int calcTimeToBuild( const Player* player) const;
 
 	/// calculate how much money it will take the given player to build this unit
 	Int calcCostToBuild( const Player* player) const;
+#endif // if 0
 
 	/// Used only by Skirmish AI. Everyone else should call calcCostToBuild.
-	Int friend_getBuildCost() const { return m_buildCost; }
+	Int friend_getBuildCost() const { return m_ini.m_buildCost; }
 
-	const AsciiString& getDefaultOwningSide() const { return m_defaultOwningSide; }
+	const AsciiString& getDefaultOwningSide() const { return m_ini.m_defaultOwningSide; }
 
 	/// get us the table to parse the fields for thing templates
 	const FieldParse* getFieldParse() const { return s_objectFieldParseTable; }
 	const FieldParse* getReskinFieldParse() const { return s_objectReskinFieldParseTable; }
 
-	Bool isBuildFacility() const { return m_isBuildFacility; }
-	Real getPlacementViewAngle( void ) const { return m_placementViewAngle; }
+	Bool isBuildFacility() const { return m_ini.m_isBuildFacility; }
+	Real getPlacementViewAngle( void ) const { return m_ini.m_placementViewAngle; }
 
-	Real getFactoryExitWidth() const { return m_factoryExitWidth; }
-	Real getFactoryExtraBibWidth() const { return m_factoryExtraBibWidth; }
+	Real getFactoryExitWidth() const { return m_ini.m_factoryExitWidth; }
+	Real getFactoryExtraBibWidth() const { return m_ini.m_factoryExtraBibWidth; }
 
 	void setCopiedFromDefault();
 
-	void setReskinnedFrom(const ThingTemplate* tt) { DEBUG_ASSERTCRASH(m_reskinnedFrom == NULL, ("should be null")); m_reskinnedFrom = tt; }
+	void setReskinnedFrom(const ThingTemplate* tt) { DEBUG_ASSERTCRASH(m_ini.m_reskinnedFrom == NULL, ("should be null")); m_ini.m_reskinnedFrom = tt; }
 
-	Bool isPrerequisite() const { return m_isPrerequisite; }
+	Bool isPrerequisite() const { return m_ini.m_isPrerequisite; }
 
 	const WeaponTemplateSet* findWeaponTemplateSet(const WeaponSetFlags& t) const;
 	const ArmorTemplateSet* findArmorTemplateSet(const ArmorSetFlags& t) const;
@@ -614,12 +614,12 @@ public:
 
 	Bool isEquivalentTo(const ThingTemplate* tt) const;
 
-	UnsignedByte getCrushableLevel() const { return m_crushableLevel; }
-	UnsignedByte getCrusherLevel() const { return m_crusherLevel; }
+	UnsignedByte getCrushableLevel() const { return m_ini.m_crushableLevel; }
+	UnsignedByte getCrusherLevel() const { return m_ini.m_crusherLevel; }
 	
-	AsciiString getUpgradeCameoName( Int n)const{ return m_upgradeCameoUpgradeNames[n];	}
+	AsciiString getUpgradeCameoName( Int n)const{ return m_ini.m_upgradeCameoUpgradeNames[n];	}
 
-	const WeaponTemplateSetVector& getWeaponTemplateSets(void) const {return m_weaponTemplateSets;}
+	const WeaponTemplateSetVector& getWeaponTemplateSets(void) const {return m_ini.m_weaponTemplateSets;}
 
 protected:
 
@@ -627,12 +627,12 @@ protected:
 	// these are NOT publicly available; you should call calcCostToBuild() or calcTimeToBuild() 
 	// instead, because they will take player handicaps into account.
 	//
-	Int getBuildCost() const { return m_buildCost; }
-	Real getBuildTime() const { return m_buildTime; }
+	Int getBuildCost() const { return m_ini.m_buildCost; }
+	Real getBuildTime() const { return m_ini.m_buildTime; }
 	const PerUnitSoundMap* getAllPerUnitSounds( void ) const { return &m_perUnitSounds; }
 	void validateAudio();
 	const AudioEventRTS* getAudio(ThingTemplateAudioType t) const { return m_audioarray.m_audio[t] ? &m_audioarray.m_audio[t]->m_event : &s_audioEventNoSound; }
-  Bool hasAudio(ThingTemplateAudioType t) const { return m_audioarray.m_audio[t] != NULL; }
+	Bool hasAudio(ThingTemplateAudioType t) const { return m_audioarray.m_audio[t] != NULL; }
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	/** Table for parsing the object fields */
@@ -645,15 +645,27 @@ protected:
 	static void parseIntList(INI* ini, void *instance, void* store, const void* userData);
 
 	static void parsePerUnitSounds(INI* ini, void *instance, void* store, const void* userData);
+	static void parsePerUnitSoundNames(INI* ini, void *instance, void* store, const void* userData);
 	static void parsePerUnitFX(INI* ini, void *instance, void* store, const void* userData);
+
+	// FIXME: Remove this dummy parse function once AIUpdateModuleData is implemented.
+	static void parseLocomotorSet(INI* ini, void *instance, void* store, const void* userData);
+
+	// Proxy parse functions to avoid offset problems:
+	static void parseDynamicAudioEventRTS(INI* ini, void *instance, void* store, const void* userData);
+	static void parseGeometryType(INI* ini, void *instance, void* store, const void* userData);
+	static void parseGeometryMajorRadius(INI* ini, void *instance, void* store, const void* userData);
+	static void parseGeometryMinorRadius(INI* ini, void *instance, void* store, const void* userData);
+	static void parseGeometryHeight(INI* ini, void *instance, void* store, const void* userData);
+	static void parseGeometryIsSmall(INI* ini, void *instance, void* store, const void* userData);
 
 	static void parseAddModule(INI *ini, void *instance, void *store, const void *userData);
 	static void parseRemoveModule(INI *ini, void *instance, void *store, const void *userData);
 	static void parseReplaceModule(INI *ini, void *instance, void *store, const void *userData);	
 	static void parseInheritableModule(INI *ini, void *instance, void *store, const void *userData);	
-  static void OverrideableByLikeKind(INI *ini, void *instance, void *store, const void *userData);
+	static void OverrideableByLikeKind(INI *ini, void *instance, void *store, const void *userData);
 
-  static void parseMaxSimultaneous(INI *ini, void *instance, void *store, const void *userData);
+	static void parseMaxSimultaneous(INI *ini, void *instance, void *store, const void *userData);
 
 	Bool removeModuleInfo(const AsciiString& moduleToRemove, AsciiString& clearedModuleNameOut);
 
@@ -664,110 +676,119 @@ private:
 
 private:
 
-	// ---- Strings
-	UnicodeString			m_displayName {};			///< UI display for onscreen display
-	AsciiString				m_nameString {};					///< name of this thing template
-	AsciiString				m_defaultOwningSide {};	///< default owning side (owning player is inferred)
-	AsciiString				m_commandSetString {};
-	AsciiString				m_selectedPortraitImageName {};
-	AsciiString				m_buttonImageName {};
-	AsciiString				m_upgradeCameoUpgradeNames[MAX_UPGRADE_CAMEO_UPGRADES] {};	///< Use these to find the upgrade images to display on the control bar
-	AsciiString				m_shadowTextureName {};					///< name of texture to use for shadow decal
-	AsciiString				m_moduleBeingReplacedName {};		///< used only during map.ini loading... name (not tag) of Module being replaced, or empty if not inside ReplaceModule block
-	AsciiString				m_moduleBeingReplacedTag {};			///< used only during map.ini loading... tag (not name) of Module being replaced, or empty if not inside ReplaceModule block
+	// MG: Cannot apply offsetof to ThingTemplate, so had to move data into an embedded struct.
+	struct IniData
+	{
+		// ---- Strings
+		UnicodeString			m_displayName {};			///< UI display for onscreen display
+		AsciiString				m_nameString {};					///< name of this thing template
+		AsciiString				m_defaultOwningSide {};	///< default owning side (owning player is inferred)
+		AsciiString				m_commandSetString {};
+		AsciiString				m_selectedPortraitImageName {};
+		AsciiString				m_buttonImageName {};
+		AsciiString				m_upgradeCameoUpgradeNames[MAX_UPGRADE_CAMEO_UPGRADES] {};	///< Use these to find the upgrade images to display on the control bar
+		AsciiString				m_shadowTextureName {};					///< name of texture to use for shadow decal
+		AsciiString				m_moduleBeingReplacedName {};		///< used only during map.ini loading... name (not tag) of Module being replaced, or empty if not inside ReplaceModule block
+		AsciiString				m_moduleBeingReplacedTag {};			///< used only during map.ini loading... tag (not name) of Module being replaced, or empty if not inside ReplaceModule block
 #ifdef LOAD_TEST_ASSETS
-	AsciiString				m_LTAName {};
+		AsciiString				m_LTAName {};
 #endif
 
-	// ---- Misc Larger-than-int things
-	GeometryInfo			m_geometryInfo;			///< geometry information
-	KindOfMaskType		m_kindof {};					///< kindof bits
-	AudioArray				m_audioarray {};
-	ModuleInfo				m_behaviorModuleInfo {};
-	ModuleInfo				m_drawModuleInfo {};
-	ModuleInfo				m_clientUpdateModuleInfo {};
+		// ---- Misc Larger-than-int things
+		KindOfMaskType			m_kindof {};					///< kindof bits
+		ModuleInfo				m_behaviorModuleInfo {};
+		ModuleInfo				m_drawModuleInfo {};
+		ModuleInfo				m_clientUpdateModuleInfo {};
 
-	// ---- Misc Arrays-of-things
-	Int											m_skillPointValues[LEVEL_COUNT] {};
-	Int											m_experienceValues[LEVEL_COUNT] {};		///< How much I am worth at each experience level
-	Int											m_experienceRequired[LEVEL_COUNT] {};	///< How many experience points I need for each level
-	
-	//Code renderer handles these states now.
-	//AsciiString							m_inventoryImage[ INV_IMAGE_NUM_IMAGES ];  ///< portrait inventory pictures
+		// ---- Misc Arrays-of-things
+		Int						m_skillPointValues[LEVEL_COUNT] {};
+		Int						m_experienceValues[LEVEL_COUNT] {};		///< How much I am worth at each experience level
+		Int						m_experienceRequired[LEVEL_COUNT] {};	///< How many experience points I need for each level
+		
+		//Code renderer handles these states now.
+		//AsciiString							m_inventoryImage[ INV_IMAGE_NUM_IMAGES ];  ///< portrait inventory pictures
 
-	// ---- STL-sized things
-	std::vector<ProductionPrerequisite>	m_prereqInfo {};				///< the unit Prereqs for this tech
-	std::vector<AsciiString>						m_buildVariations {};	/**< if we build a unit of this type via script or ui, randomly choose one
-																														of these templates instead. (doesn't apply to MapObject-created items) */
-	WeaponTemplateSetVector							m_weaponTemplateSets {};					///< our weaponsets
-	WeaponTemplateSetFinder							m_weaponTemplateSetFinder {};		///< helper to allow us to find the best sets, quickly
-	ArmorTemplateSetVector							m_armorTemplateSets {};	///< our armorsets
-	ArmorTemplateSetFinder							m_armorTemplateSetFinder {};		///< helper to allow us to find the best sets, quickly
-	PerUnitSoundMap											m_perUnitSounds {};					///< An additional set of sounds that only apply for this template.
-	PerUnitFXMap												m_perUnitFX {};									///< An additional set of fx that only apply for this template.
+		// ---- STL-sized things
+		std::vector<ProductionPrerequisite>	m_prereqInfo {};				///< the unit Prereqs for this tech
+		std::vector<AsciiString>			m_buildVariations {};	/**< if we build a unit of this type via script or ui, randomly choose one
+																		of these templates instead. (doesn't apply to MapObject-created items) */
+		WeaponTemplateSetVector				m_weaponTemplateSets {};					///< our weaponsets
 
-	// ---- Pointer-sized things
-	ThingTemplate*				m_nextThingTemplate {};
-	const ThingTemplate*	m_reskinnedFrom {};									///< non NULL if we were generated via a reskin
-	const Image *					m_selectedPortraitImage {};		/// portrait image when selected (to display in GUI)
-	const Image	*					m_buttonImage {};			
+		// ---- Pointer-sized things
+		ThingTemplate*			m_nextThingTemplate {};
+		const ThingTemplate*	m_reskinnedFrom {};									///< non NULL if we were generated via a reskin
+		const Image *			m_selectedPortraitImage {};		/// portrait image when selected (to display in GUI)
+		const Image	*			m_buttonImage {};			
 
-	// ---- Real-sized things
-	Real					m_fenceWidth {};								///< Fence width for fence type objects.
-	Real					m_fenceXOffset {};							///< Fence X offset for fence type objects.
-	Real					m_visionRange {};								///< object "sees" this far around itself
-	Real					m_shroudClearingRange {};				///< Since So many things got added to "Seeing" functionality, we need to split this part out.
-	Real					m_shroudRevealToAllRange {};			///< When > zero, the shroud gets revealed to all players.
-	Real					m_placementViewAngle {};				///< when placing buildings this will be the angle of the building when "floating" at the mouse
-	Real					m_factoryExitWidth {};					///< when placing buildings this will be the width of the reserved exit area on the right side.
-	Real					m_factoryExtraBibWidth {};					///< when placing buildings this will be the width of the reserved exit area on the right side.
-	Real					m_buildTime {};									///< Seconds to build
-	Real					m_assetScale {};
-	Real					m_instanceScaleFuzziness {}; ///< scale randomization tolerance to init for each Drawable instance, 
-	Real					m_shadowSizeX {};				///< world-space extent of decal shadow texture
-	Real					m_shadowSizeY {};				///< world-space extent of decal shadow texture
-	Real					m_shadowOffsetX {};			///< world-space offset of decal shadow texture
-	Real					m_shadowOffsetY {};			///< world-space offset of decal shadow texture
+		// ---- Real-sized things
+		Real					m_fenceWidth {};								///< Fence width for fence type objects.
+		Real					m_fenceXOffset {};							///< Fence X offset for fence type objects.
+		Real					m_visionRange {};								///< object "sees" this far around itself
+		Real					m_shroudClearingRange {};				///< Since So many things got added to "Seeing" functionality, we need to split this part out.
+		Real					m_shroudRevealToAllRange {};			///< When > zero, the shroud gets revealed to all players.
+		Real					m_placementViewAngle {};				///< when placing buildings this will be the angle of the building when "floating" at the mouse
+		Real					m_factoryExitWidth {};					///< when placing buildings this will be the width of the reserved exit area on the right side.
+		Real					m_factoryExtraBibWidth {};					///< when placing buildings this will be the width of the reserved exit area on the right side.
+		Real					m_buildTime {};									///< Seconds to build
+		Real					m_assetScale {};
+		Real					m_instanceScaleFuzziness {}; ///< scale randomization tolerance to init for each Drawable instance, 
+		Real					m_shadowSizeX {};				///< world-space extent of decal shadow texture
+		Real					m_shadowSizeY {};				///< world-space extent of decal shadow texture
+		Real					m_shadowOffsetX {};			///< world-space offset of decal shadow texture
+		Real					m_shadowOffsetY {};			///< world-space offset of decal shadow texture
 
-	// ---- Int-sized things
-	Int						m_energyProduction {};						///< how much Energy this takes (negative values produce Energy, rather than consuming it)
-	Int						m_energyBonus {};								///< how much extra Energy this produces due to the upgrade
-	Color					m_displayColor {};								///< for the editor display color
-	UnsignedInt		m_occlusionDelay {};							///< delay after object creation before building occlusion is allowed.
-  NameKeyType   m_maxSimultaneousLinkKey {};     ///< If this is not NAMEKEY_INVALID, it indicates that all the templates which have the same name key should be counted as the same "type" when looking at getMaxSimultaneousOfType().
+		// ---- Int-sized things
+		Int						m_energyProduction {};						///< how much Energy this takes (negative values produce Energy, rather than consuming it)
+		Int						m_energyBonus {};								///< how much extra Energy this produces due to the upgrade
+		Color					m_displayColor {};								///< for the editor display color
+		UnsignedInt				m_occlusionDelay {};							///< delay after object creation before building occlusion is allowed.
+		NameKeyType				m_maxSimultaneousLinkKey {};     ///< If this is not NAMEKEY_INVALID, it indicates that all the templates which have the same name key should be counted as the same "type" when looking at getMaxSimultaneousOfType().
 
-	// ---- Short-sized things
-	UnsignedShort		m_templateID {};									///< id for net (etc.) transmission purposes
-	UnsignedShort		m_buildCost {};									///< money to build (0 == not buildable)
-	UnsignedShort		m_refundValue {};								///< custom resale value, if sold. (0 == use default)
-	UnsignedShort		m_threatValue {};								///< Threat map info
-	UnsignedShort		m_maxSimultaneousOfType {};			///< max simultaneous of this unit we can have (per player) at one time. (0 == unlimited)
+		// ---- Short-sized things
+		UnsignedShort		m_templateID {};									///< id for net (etc.) transmission purposes
+		UnsignedShort		m_buildCost {};									///< money to build (0 == not buildable)
+		UnsignedShort		m_refundValue {};								///< custom resale value, if sold. (0 == use default)
+		UnsignedShort		m_threatValue {};								///< Threat map info
+		UnsignedShort		m_maxSimultaneousOfType {};			///< max simultaneous of this unit we can have (per player) at one time. (0 == unlimited)
 
-	// ---- Bool-sized things
-  Bool          m_maxSimultaneousDeterminedBySuperweaponRestriction {}; ///< If true, override value in m_maxSimultaneousOfType with value from GameInfo::getSuperweaponRestriction()
-	Bool					m_isPrerequisite {};							///< Is this thing considered in a prerequisite for any other thing?
-	Bool					m_isBridge {};										///< True if this model is a bridge.
- 	Bool					m_isBuildFacility {};						///< is this the build facility for something? (calculated based on other template's prereqs)
-	Bool					m_isTrainable {};								///< Whether or not I can even gain experience
-	Bool          m_enterGuard {};									///< Whether or not I can enter objects when guarding
-	Bool          m_hijackGuard {};								///< Whether or not I can hijack objects when guarding
-	Bool					m_isForbidden {};								///< useful when overriding in <mapfile>.ini
-	Bool					m_armorCopiedFromDefault {};
-	Bool					m_weaponsCopiedFromDefault {};
+		// ---- Bool-sized things
+		Bool	m_maxSimultaneousDeterminedBySuperweaponRestriction {}; ///< If true, override value in m_maxSimultaneousOfType with value from GameInfo::getSuperweaponRestriction()
+		Bool	m_isPrerequisite {};							///< Is this thing considered in a prerequisite for any other thing?
+		Bool	m_isBridge {};										///< True if this model is a bridge.
+		Bool	m_isBuildFacility {};						///< is this the build facility for something? (calculated based on other template's prereqs)
+		Bool	m_isTrainable {};								///< Whether or not I can even gain experience
+		Bool	m_enterGuard {};									///< Whether or not I can enter objects when guarding
+		Bool	m_hijackGuard {};								///< Whether or not I can hijack objects when guarding
+		Bool	m_isForbidden {};								///< useful when overriding in <mapfile>.ini
+		Bool	m_armorCopiedFromDefault {};
+		Bool	m_weaponsCopiedFromDefault {};
 
-	// ---- Byte-sized things
-	Byte					m_radarPriority {};						///< does object appear on radar, and if so at what priority
-	Byte					m_transportSlotCount {};				///< how many "slots" we take in a transport (0 == not transportable)
-	Byte					m_buildable {};								///< is this thing buildable at all?
-	Byte					m_buildCompletion {};					///< how the units come into the world when build is complete
-	Byte					m_editorSorting {};						///< editor sorting type, see EditorSortingType enum
-	Byte					m_structureRubbleHeight {};
-	Byte					m_shadowType {};								///< settings which determine the type of shadow rendered
-	Byte					m_moduleParsingMode {};
-	UnsignedByte	m_crusherLevel {};							///< crusher > crushable level to actually crush
-	UnsignedByte	m_crushableLevel {};						///< Specifies the level of crushability (must be hit by a crusher greater than this to crush me).
+		// ---- Byte-sized things
+		Byte			m_radarPriority {};						///< does object appear on radar, and if so at what priority
+		Byte			m_transportSlotCount {};				///< how many "slots" we take in a transport (0 == not transportable)
+		Byte			m_buildable {};								///< is this thing buildable at all?
+		Byte			m_buildCompletion {};					///< how the units come into the world when build is complete
+		Byte			m_editorSorting {};						///< editor sorting type, see EditorSortingType enum
+		Byte			m_structureRubbleHeight {};
+		Byte			m_shadowType {};								///< settings which determine the type of shadow rendered
+		Byte			m_moduleParsingMode {};
+		UnsignedByte	m_crusherLevel {};							///< crusher > crushable level to actually crush
+		UnsignedByte	m_crushableLevel {};						///< Specifies the level of crushability (must be hit by a crusher greater than this to crush me).
 
+		ThingTemplate* m_obj {};					///< pointer to the parent object
+	};
 
+	IniData m_ini {};
+
+	AudioArray					m_audioarray {};
+	GeometryInfo				m_geometryInfo;						///< geometry information
+	WeaponTemplateSetFinder		m_weaponTemplateSetFinder {};		///< helper to allow us to find the best sets, quickly
+	ArmorTemplateSetVector		m_armorTemplateSets {};				///< our armorsets
+	ArmorTemplateSetFinder		m_armorTemplateSetFinder {};		///< helper to allow us to find the best sets, quickly
+	PerUnitSoundMap				m_perUnitSounds {};					///< An additional set of sounds that only apply for this template.
+	PerUnitFXMap				m_perUnitFX {};						///< An additional set of fx that only apply for this template.
+
+	friend class ThingFactory;
 };
 
 //-----------------------------------------------------------------------------

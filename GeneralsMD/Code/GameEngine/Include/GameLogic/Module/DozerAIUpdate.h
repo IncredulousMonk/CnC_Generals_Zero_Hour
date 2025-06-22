@@ -111,6 +111,7 @@ class DozerAIInterface
 	// who look this up by name.
 
 public:
+	virtual ~DozerAIInterface() {}
 
 	virtual void onDelete( void ) = 0;
 
@@ -205,6 +206,10 @@ public:
 
 	DozerAIUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	DozerAIUpdate(const DozerAIUpdate&) = delete;
+	DozerAIUpdate& operator=(const DozerAIUpdate&) = delete;
 
 	virtual DozerAIInterface* getDozerAIInterface() {return this;}
 	virtual const DozerAIInterface* getDozerAIInterface() const {return this;}

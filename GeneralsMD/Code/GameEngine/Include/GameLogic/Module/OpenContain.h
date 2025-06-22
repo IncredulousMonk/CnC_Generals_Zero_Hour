@@ -104,11 +104,11 @@ public:
 
 	virtual void onDie( const DamageInfo *damageInfo );  ///< the die callback
 	virtual void onDelete( void );	///< Last possible moment cleanup
-	virtual void onCapture( Player *oldOwner, Player *newOwner ){}
+	virtual void onCapture( Player * /*oldOwner*/, Player * /*newOwner*/ ){}
 
 	// CollideModuleInterface
 	virtual void onCollide( Object *other, const Coord3D *loc, const Coord3D *normal );
-	virtual Bool wouldLikeToCollideWith(const Object* other) const { return false; }
+	virtual Bool wouldLikeToCollideWith(const Object* /*other*/) const { return false; }
 	virtual Bool isCarBombCrateCollide() const { return false; }
 	virtual Bool isHijackedVehicleCrateCollide() const { return false; }
 	virtual Bool isRailroad() const { return false;}
@@ -122,25 +122,25 @@ public:
 	virtual OpenContain *asOpenContain() { return this; }  ///< treat as open container
 
 	// DamageModuleInterface
-	virtual void onDamage( DamageInfo *damageInfo ){};	///< damage callback
-	virtual void onHealing( DamageInfo *damageInfo ){};	///< healing callback
-	virtual void onBodyDamageStateChange( const DamageInfo* damageInfo, 
-																				BodyDamageType oldState, 
-																				BodyDamageType newState){};  ///< state change callback
+	virtual void onDamage( DamageInfo * /*damageInfo*/ ){};	///< damage callback
+	virtual void onHealing( DamageInfo * /*damageInfo*/ ){};	///< healing callback
+	virtual void onBodyDamageStateChange( const DamageInfo* /*damageInfo*/, 
+																				BodyDamageType /*oldState*/, 
+																				BodyDamageType /*newState*/){};  ///< state change callback
  
 
 	// our object changed position... react as appropriate.
 	virtual void containReactToTransformChange();
 
-	virtual Bool calcBestGarrisonPosition( Coord3D *sourcePos, const Coord3D *targetPos ) { return FALSE; }
-	virtual Bool attemptBestFirePointPosition( Object *source, Weapon *weapon, Object *victim ) { return FALSE; }
-	virtual Bool attemptBestFirePointPosition( Object *source, Weapon *weapon, const Coord3D *targetPos ) { return FALSE; }
+	virtual Bool calcBestGarrisonPosition( Coord3D * /*sourcePos*/, const Coord3D * /*targetPos*/ ) { return FALSE; }
+	virtual Bool attemptBestFirePointPosition( Object * /*source*/, Weapon * /*weapon*/, Object * /*victim*/ ) { return FALSE; }
+	virtual Bool attemptBestFirePointPosition( Object * /*source*/, Weapon * /*weapon*/, const Coord3D * /*targetPos*/ ) { return FALSE; }
 	
 	///< if my object gets selected, then my visible passengers should, too
 	///< this gets called from
 	virtual void clientVisibleContainedFlashAsSelected() {}; 
  
-	virtual const Player* getApparentControllingPlayer(const Player* observingPlayer) const { return NULL; }
+	virtual const Player* getApparentControllingPlayer(const Player* /*observingPlayer*/) const { return NULL; }
 	virtual void recalcApparentControllingPlayer() { }
 		
 	virtual void onContaining( Object *obj, Bool wasSelected );		///< object now contains 'obj'
@@ -159,13 +159,13 @@ public:
 	virtual void removeFromContain( Object *obj, Bool exposeStealthUnits = FALSE );	///< remove 'obj' from contain list
 	virtual void removeAllContained( Bool exposeStealthUnits = FALSE );				///< remove all objects on contain list
 	virtual void killAllContained( void );				///< kill all objects on contain list
-  virtual void harmAndForceExitAllContained( DamageInfo *info ); // apply canned damage against those containes 
+	virtual void harmAndForceExitAllContained( DamageInfo *info ); // apply canned damage against those containes 
 	virtual Bool isEnclosingContainerFor( const Object *obj ) const;	///< Does this type of Contain Visibly enclose its contents?
 	virtual Bool isPassengerAllowedToFire( ObjectID id = INVALID_ID ) const;	///< Hey, can I shoot out of this container?
 
-  virtual void setPassengerAllowedToFire( Bool permission = TRUE ) { m_passengerAllowedToFire = permission; }	///< Hey, can I shoot out of this container?
+	virtual void setPassengerAllowedToFire( Bool permission = TRUE ) { m_passengerAllowedToFire = permission; }	///< Hey, can I shoot out of this container?
 
-  virtual void setOverrideDestination( const Coord3D * ){} ///< Instead of falling peacefully towards a clear spot, I will now aim here
+	virtual void setOverrideDestination( const Coord3D * ){} ///< Instead of falling peacefully towards a clear spot, I will now aim here
 	virtual Bool isDisplayedOnControlBar() const {return FALSE;}///< Does this container display its contents on the ControlBar?
 	virtual Int getExtraSlotsInUse( void ) { return 0; }
 	virtual Bool isKickOutOnCapture(){ return TRUE; }///< By default, yes, all contain modules kick passengers out on capture
@@ -184,17 +184,17 @@ public:
 
 	// ExitInterface
 	virtual Bool isExitBusy() const {return FALSE;}	///< Contain style exiters are getting the ability to space out exits, so ask this before reserveDoor as a kind of no-commitment check.
-	virtual ExitDoorType reserveDoorForExit( const ThingTemplate* objType, Object *specificObject ) { return DOOR_1; }
+	virtual ExitDoorType reserveDoorForExit( const ThingTemplate* /*objType*/, Object * /*specificObject*/ ) { return DOOR_1; }
 	virtual void exitObjectViaDoor( Object *newObj, ExitDoorType exitDoor );
 	virtual void exitObjectInAHurry( Object *newObj );
 
 	
-	virtual void unreserveDoorForExit( ExitDoorType exitDoor ) { /*nothing*/ }
-	virtual void exitObjectByBudding( Object *newObj, Object *budHost ) { return; };
+	virtual void unreserveDoorForExit( ExitDoorType /*exitDoor*/ ) { /*nothing*/ }
+	virtual void exitObjectByBudding( Object * /*newObj*/, Object * /*budHost*/ ) { return; };
 
 	virtual void setRallyPoint( const Coord3D *pos );				///< define a "rally point" for units to move towards
 	virtual const Coord3D *getRallyPoint( void ) const;			///< define a "rally point" for units to move towards
-	virtual Bool getExitPosition(Coord3D& exitPosition ) const { return FALSE; };					///< access to the "Door" position of the production object
+	virtual Bool getExitPosition(Coord3D& /*exitPosition*/ ) const { return FALSE; };					///< access to the "Door" position of the production object
 	virtual Bool getNaturalRallyPoint( Coord3D& rallyPoint, Bool offset = TRUE ) const;			///< get the natural "rally point" for units to move towards
 
 	virtual ExitInterface* getContainExitInterface() { return this; }
@@ -206,8 +206,8 @@ public:
 	virtual Bool isRiderChangeContain() const { return FALSE; }
 	virtual Bool isSpecialZeroSlotContainer() const { return false; }
 	virtual Bool isImmuneToClearBuildingAttacks() const { return true; }
-  virtual Bool isSpecialOverlordStyleContainer() const { return false; }
-  virtual Bool isAnyRiderAttacking( void ) const;
+	virtual Bool isSpecialOverlordStyleContainer() const { return false; }
+	virtual Bool isAnyRiderAttacking( void ) const;
 
 	/**
 		this is used for containers that must do something to allow people to enter or exit...
@@ -227,10 +227,10 @@ public:
 
 	virtual void enableLoadSounds( Bool enable ) { m_loadSoundsEnabled = enable; }
 
-  Real getDamagePercentageToUnits( void );
-  virtual Object* getClosestRider ( const Coord3D *pos );
+	Real getDamagePercentageToUnits( void );
+	virtual Object* getClosestRider ( const Coord3D *pos );
 
-  virtual void setEvacDisposition( EvacDisposition disp ) {};
+	virtual void setEvacDisposition( EvacDisposition /*disp*/ ) {};
 protected:
 
 	virtual void monitorConditionChanges( void );				///< check to see if we need to update our occupant postions from a model change or anything else

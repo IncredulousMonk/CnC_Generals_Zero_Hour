@@ -119,8 +119,8 @@ protected:
 	typedef std::map< NameKeyType, ModuleTemplate, std::less<NameKeyType> > ModuleTemplateMap;
 	typedef std::vector<const ModuleData*> ModuleDataList;
 
-	ModuleTemplateMap			m_moduleTemplateMap;
-	ModuleDataList				m_moduleDataList;
+	ModuleTemplateMap			m_moduleTemplateMap {};
+	ModuleDataList				m_moduleDataList {};
 
 };  // end class ModuleFactory
 
@@ -128,4 +128,3 @@ protected:
 extern ModuleFactory *TheModuleFactory;  ///< singleton definition
 
 #endif // __MODULEFACTORY_H_
-

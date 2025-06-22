@@ -49,6 +49,7 @@ struct FieldParse;
 class SpecialPowerModuleInterface
 {
 public:
+	virtual ~SpecialPowerModuleInterface() {}
 
 	virtual Bool isModuleForPower( const SpecialPowerTemplate *specialPowerTemplate ) const = 0;
 	virtual Bool isReady( void ) const = 0;
@@ -83,8 +84,18 @@ public:
 
 	SpecialPowerModuleData();
 
+	// No copies allowed!
+	SpecialPowerModuleData(const SpecialPowerModuleData&) = delete;
+	SpecialPowerModuleData& operator=(const SpecialPowerModuleData&) = delete;
+
 	static void buildFieldParse(MultiIniFieldParse& p);
 
+	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+	};
+
+	IniData m_ini {};
 	const SpecialPowerTemplate *m_specialPowerTemplate;		///< pointer to the special power template
 	AudioEventRTS			m_initiateSound;
 	Bool							m_updateModuleStartsAttack;	///< update module determines when the special power actually starts! If true, update module is required.

@@ -65,7 +65,7 @@ class Waypoint;
 enum CommandOption: UnsignedInt;
 
 //-------------------------------------------------------------------------------------------------
-enum UpdateSleepTime 
+enum UpdateSleepTime: UnsignedInt
 { 
 	UPDATE_SLEEP_INVALID	= 0,
 	UPDATE_SLEEP_NONE			= 1,
@@ -124,6 +124,13 @@ public:
 class UpdateModuleData : public BehaviorModuleData
 {
 public:
+
+	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+	};
+
+	IniData m_ini {};
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
 	{

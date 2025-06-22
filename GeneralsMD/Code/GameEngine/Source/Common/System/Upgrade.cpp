@@ -34,7 +34,7 @@
 #include "Common/Upgrade.h"
 #include "Common/Player.h"
 #include "Common/Xfer.h"
-#include "GameClient/InGameUI.h"
+// #include "GameClient/InGameUI.h"
 #include "GameClient/Image.h"
 
 
@@ -74,7 +74,7 @@ Upgrade::~Upgrade( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Upgrade::crc( Xfer *xfer )
+void Upgrade::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc
@@ -114,15 +114,16 @@ void Upgrade::loadPostProcess( void )
 const FieldParse UpgradeTemplate::m_upgradeFieldParseTable[] = 
 {
 
-	{ "DisplayName",				INI::parseAsciiString,		NULL, offsetof( UpgradeTemplate, m_displayNameLabel ) },
-	{ "Type",								INI::parseIndexList,			TheUpgradeTypeNames, offsetof( UpgradeTemplate, m_type ) },
-	{ "BuildTime",					INI::parseReal,						NULL, offsetof( UpgradeTemplate, m_buildTime ) },
-	{ "BuildCost",					INI::parseInt,						NULL, offsetof( UpgradeTemplate, m_cost ) },
-	{ "ButtonImage",				INI::parseAsciiString,		NULL, offsetof( UpgradeTemplate, m_buttonImageName ) },
-	{ "ResearchSound",			INI::parseAudioEventRTS,	NULL, offsetof( UpgradeTemplate, m_researchSound ) }, 
-	{ "UnitSpecificSound",	INI::parseAudioEventRTS,	NULL, offsetof( UpgradeTemplate, m_unitSpecificSound ) }, 
-	{ "AcademyClassify",		INI::parseIndexList,			TheAcademyClassificationTypeNames, offsetof( UpgradeTemplate, m_academyClassificationType ) },
-	{ NULL,						NULL,												 NULL, 0 }  // keep this last
+	{ "DisplayName",		INI::parseAsciiString,		NULL, 								offsetof( UpgradeTemplate::IniData, m_displayNameLabel ) },
+	{ "Type",				INI::parseIndexList,		TheUpgradeTypeNames,				offsetof( UpgradeTemplate::IniData, m_type ) },
+	{ "BuildTime",			INI::parseReal,				NULL, 								offsetof( UpgradeTemplate::IniData, m_buildTime ) },
+	{ "BuildCost",			INI::parseInt,				NULL, 								offsetof( UpgradeTemplate::IniData, m_cost ) },
+	{ "ButtonImage",		INI::parseAsciiString,		NULL, 								offsetof( UpgradeTemplate::IniData, m_buttonImageName ) },
+	{ "ResearchSound",		INI::parseAsciiString,		NULL, 								offsetof( UpgradeTemplate::IniData, m_researchSoundName ) }, 
+	{ "UnitSpecificSound",	INI::parseAsciiString,		NULL, 								offsetof( UpgradeTemplate::IniData, m_unitSpecificSoundName ) }, 
+	// FIXME: TheAcademyClassificationTypeNames
+	// { "AcademyClassify",	INI::parseIndexList,		TheAcademyClassificationTypeNames,	offsetof( UpgradeTemplate::IniData, m_academyClassificationType ) },
+	{ NULL,					NULL,						NULL, 0 }  // keep this last
 
 };
 
@@ -132,15 +133,15 @@ UpgradeTemplate::UpgradeTemplate( void )
 {
 	//Added By Sadullah Nader
 	//Initialization(s) inserted
-	m_cost = 0;
+	m_ini.m_cost = 0;
 	//
-	m_type = UPGRADE_TYPE_PLAYER;
+	m_ini.m_type = UPGRADE_TYPE_PLAYER;
 	m_nameKey = NAMEKEY_INVALID;
-	m_buildTime = 0.0f;
+	m_ini.m_buildTime = 0.0f;
 	m_next = NULL;
 	m_prev = NULL;
 	m_buttonImage = NULL;
-	m_academyClassificationType = ACT_NONE;
+	m_ini.m_academyClassificationType = ACT_NONE;
 
 }  // end UpgradeTemplate
 
@@ -164,18 +165,18 @@ Int UpgradeTemplate::calcTimeToBuild( Player *player ) const
 #endif
 
 	///@todo modify this by power state of player
-	return m_buildTime * LOGICFRAMES_PER_SECOND;
+	return m_ini.m_buildTime * static_cast<Real>(LOGICFRAMES_PER_SECOND);
 
 }  // end calcTimeToBuild
 
 //-------------------------------------------------------------------------------------------------
 /** Calculate the cost takes this player to build this upgrade */
 //-------------------------------------------------------------------------------------------------
-Int UpgradeTemplate::calcCostToBuild( Player *player ) const
+Int UpgradeTemplate::calcCostToBuild( Player * /*player*/ ) const
 {
 
 	///@todo modify this by any player handicaps
-	return m_cost;
+	return m_ini.m_cost;
 
 }  // end calcCostToBuild
 
@@ -193,12 +194,12 @@ static AsciiString getVetUpgradeName(VeterancyLevel v)
 //-------------------------------------------------------------------------------------------------
 void UpgradeTemplate::friend_makeVeterancyUpgrade(VeterancyLevel v)
 {
-	m_type = UPGRADE_TYPE_OBJECT;	// veterancy "upgrades" are always per-object, not per-player
+	m_ini.m_type = UPGRADE_TYPE_OBJECT;	// veterancy "upgrades" are always per-object, not per-player
 	m_name = getVetUpgradeName(v);
 	m_nameKey = TheNameKeyGenerator->nameToKey( m_name );
-	m_displayNameLabel.clear();	// should never be displayed
-	m_buildTime = 0.0f;
-	m_cost = 0.0f;
+	m_ini.m_displayNameLabel.clear();	// should never be displayed
+	m_ini.m_buildTime = 0.0f;
+	m_ini.m_cost = 0.0f;
 	// leave this alone.
 	//m_upgradeMask = ???;
 }
@@ -207,11 +208,11 @@ void UpgradeTemplate::friend_makeVeterancyUpgrade(VeterancyLevel v)
 //-------------------------------------------------------------------------------------------------
 void UpgradeTemplate::cacheButtonImage()
 {
-	if( m_buttonImageName.isNotEmpty() )
+	if( m_ini.m_buttonImageName.isNotEmpty() )
 	{
-		m_buttonImage = TheMappedImageCollection->findImageByName( m_buttonImageName );
-		DEBUG_ASSERTCRASH( m_buttonImage, ("UpgradeTemplate: %s is looking for button image %s but can't find it. Skipping...", m_name.str(), m_buttonImageName.str() ) );
-		m_buttonImageName.clear();	// we're done with this, so nuke it
+		m_buttonImage = TheMappedImageCollection->findImageByName( m_ini.m_buttonImageName );
+		DEBUG_ASSERTCRASH( m_buttonImage, ("UpgradeTemplate: %s is looking for button image %s but can't find it. Skipping...", m_name.str(), m_ini.m_buttonImageName.str() ) );
+		m_ini.m_buttonImageName.clear();	// we're done with this, so nuke it
 	}
 }
 
@@ -439,12 +440,13 @@ Bool UpgradeCenter::canAffordUpgrade( Player *player, const UpgradeTemplate *upg
 
 	// money check
 	Money *money = player->getMoney();
-	if( money->countMoney() < upgradeTemplate->calcCostToBuild( player ) )
+	if( money->countMoney() < static_cast<UnsignedInt>(upgradeTemplate->calcCostToBuild( player )) )
 	{
 		//Post reason why we can't make upgrade!
 		if( displayReason )
 		{
-			TheInGameUI->message( "GUI:NotEnoughMoneyToUpgrade" );
+			// FIXME: TheInGameUI
+			// TheInGameUI->message( "GUI:NotEnoughMoneyToUpgrade" );
 		}
 		return FALSE;
 	}
@@ -476,7 +478,7 @@ void UpgradeCenter::parseUpgradeDefinition( INI *ini )
 {
 	// read the name
 	const char* c = ini->getNextToken();
-	AsciiString name = c;	
+	AsciiString name = c;
 
 	// find existing item if present
 	UpgradeTemplate* upgrade = TheUpgradeCenter->findNonConstUpgradeByKey( NAMEKEY(name) );
@@ -493,6 +495,7 @@ void UpgradeCenter::parseUpgradeDefinition( INI *ini )
 
 	// parse the ini definition
 	ini->initFromINI( upgrade, upgrade->getFieldParse() );
+	TheAudio->setAudioEventNameAndInfo(&upgrade->m_researchSound, upgrade->m_ini.m_researchSoundName);
+	TheAudio->setAudioEventNameAndInfo(&upgrade->m_unitSpecificSound, upgrade->m_ini.m_unitSpecificSoundName);
 
 }
-

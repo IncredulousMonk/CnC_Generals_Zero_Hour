@@ -41,7 +41,7 @@
 // #include "W3DDevice/GameClient/W3DWebBrowser.h"
 #include "LinuxDevice/Common/LinuxFunctionLexicon.h"
 // #include "W3DDevice/Common/W3DRadar.h"
-// #include "W3DDevice/Common/W3DThingFactory.h"
+#include "Common/ThingFactory.h"
 
 
 
@@ -86,8 +86,7 @@ inline GameLogic* LinuxGameEngine::createGameLogic( void ) { return NEW LinuxGam
 inline GameClient* LinuxGameEngine::createGameClient( void ) { return NEW LinuxGameClient; }
 // inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { return NEW W3DModuleFactory; }
 inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { printf("Creating NULL ModuleFactory!\n"); return nullptr; }
-// inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { return NEW W3DThingFactory; }
-inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { printf("Creating NULL ThingFactory!\n"); return nullptr; }
+inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { return NEW ThingFactory; }
 inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { return NEW LinuxFunctionLexicon; }
 inline LocalFileSystem* LinuxGameEngine::createLocalFileSystem( void ) { return NEW LinuxLocalFileSystem; }
 inline ArchiveFileSystem* LinuxGameEngine::createArchiveFileSystem( void ) { return NEW LinuxBIGFileSystem; }

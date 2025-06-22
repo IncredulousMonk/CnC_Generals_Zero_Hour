@@ -51,14 +51,20 @@ public:
 		static const FieldParse dataFieldParse[] = 
 		{
 
-			{ "RodsExtendTime", INI::parseDurationUnsignedInt, NULL, offsetof( PowerPlantUpdateModuleData, m_rodsExtendTime ) },
+			{ "RodsExtendTime", INI::parseDurationUnsignedInt, NULL, offsetof( PowerPlantUpdateModuleData::IniData, m_rodsExtendTime ) },
 			{ 0, 0, 0, 0 }
 		};
     p.add(dataFieldParse);
 
 	}
 
-  UnsignedInt m_rodsExtendTime;  ///< in frames, time it takes the rods to be built
+	// MG: Cannot apply offsetof to PowerPlantUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_rodsExtendTime;  ///< in frames, time it takes the rods to be built
+	};
+
+	IniData m_ini {};
 
 };
 
@@ -68,6 +74,7 @@ class PowerPlantUpdateInterface
 {
 
 public:
+	virtual ~PowerPlantUpdateInterface() {}
 
 	virtual void extendRods( Bool extend ) = 0;
 

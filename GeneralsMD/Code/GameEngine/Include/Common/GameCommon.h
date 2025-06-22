@@ -436,7 +436,7 @@ private:																\
 		DLINK_##LISTNAME(const DLINK_##LISTNAME&) = delete; \
 		DLINK_##LISTNAME& operator=(const DLINK_##LISTNAME&) = delete; \
 	};																		\
-	DLINK_##LISTNAME m_dlink_##LISTNAME;	
+	DLINK_##LISTNAME m_dlink_##LISTNAME {};	
 
 // ------------------------------------------------------------------------
 // this is the weird C++ syntax for "call pointer-to-member-function"... see C++ FAQ LITE for details.

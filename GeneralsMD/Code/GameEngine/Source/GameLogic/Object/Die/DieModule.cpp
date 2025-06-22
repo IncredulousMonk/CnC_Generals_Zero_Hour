@@ -31,7 +31,7 @@
 
 #define DEFINE_OBJECT_STATUS_NAMES
 #include "Common/Xfer.h"
-#include "GameClient/Drawable.h"
+// #include "GameClient/Drawable.h"
 #include "GameLogic/ExperienceTracker.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Module/DieModule.h"

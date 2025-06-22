@@ -47,7 +47,7 @@
 class CollideModuleInterface
 {
 public:
-	virtual ~CollideModuleInterface();
+	virtual ~CollideModuleInterface() {};
 	virtual void onCollide( Object *other, const Coord3D *loc, const Coord3D *normal ) = 0;
 	virtual Bool wouldLikeToCollideWith(const Object* other) const = 0;
 	virtual Bool isHijackedVehicleCrateCollide() const = 0;
@@ -62,6 +62,13 @@ public:
 class CollideModuleData : public BehaviorModuleData
 {
 public:
+
+	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+	};
+
+	IniData m_ini {};
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
 	{

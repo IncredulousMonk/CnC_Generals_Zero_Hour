@@ -50,36 +50,42 @@ enum CanAttackResult;
 class SpawnBehaviorModuleData : public BehaviorModuleData
 {
 public:
-	Int m_spawnNumberData;								///< How many spawn I maintain
-	Int m_spawnStartNumberData;				  	///< How many spawn I start with
-	Int m_spawnReplaceDelayData;					///< After this many frames, I can replace one
-	Int m_initialBurst;						        ///< How many should I make immediately, ignoring the delay?
-	Bool m_isOneShotData;									///< Do I just spawn once and go dormant?
-	Bool m_canReclaimOrphans;							///< Can I reclaim orphans for purposes of spawning
-	Bool m_aggregateHealth;								///< should I calc an offset for the healthbox, averaging all my spawn
-	Bool m_exitByBudding;									///< do I create each new spawn atop an existing one?
-	Bool m_spawnedRequireSpawner;					///< Spawned objects can only exist while the spawner (us) is alive and present
-	Bool m_slavesHaveFreeWill;						///< Slaves with free will don't attack when parent attacks.
-	DamageTypeFlags m_damageTypesToPropagateToSlaves;
-	std::vector<AsciiString> m_spawnTemplateNameData;
-	DieMuxData m_dieMuxData;
-	
+	// MG: Cannot apply offsetof to SpawnBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int m_spawnNumberData;								///< How many spawn I maintain
+		Int m_spawnStartNumberData;				  	///< How many spawn I start with
+		Int m_spawnReplaceDelayData;					///< After this many frames, I can replace one
+		Int m_initialBurst;						        ///< How many should I make immediately, ignoring the delay?
+		Bool m_isOneShotData;									///< Do I just spawn once and go dormant?
+		Bool m_canReclaimOrphans;							///< Can I reclaim orphans for purposes of spawning
+		Bool m_aggregateHealth;								///< should I calc an offset for the healthbox, averaging all my spawn
+		Bool m_exitByBudding;									///< do I create each new spawn atop an existing one?
+		Bool m_spawnedRequireSpawner;					///< Spawned objects can only exist while the spawner (us) is alive and present
+		Bool m_slavesHaveFreeWill;						///< Slaves with free will don't attack when parent attacks.
+		DamageTypeFlags m_damageTypesToPropagateToSlaves;
+		std::vector<AsciiString> m_spawnTemplateNameData;
+		DieMuxData m_dieMuxData;
+	};
+
+	IniData m_ini {};
+
 	SpawnBehaviorModuleData()
 	{
-		m_spawnNumberData = 0;
-		m_spawnReplaceDelayData = 0;
+		m_ini.m_spawnNumberData = 0;
+		m_ini.m_spawnReplaceDelayData = 0;
 		//Added By Sadullah Nader
 		//Initialization(s) inserted
-		m_spawnStartNumberData = 0;
+		m_ini.m_spawnStartNumberData = 0;
 		//
-		m_initialBurst = 0;
-		m_isOneShotData = FALSE;
-		m_canReclaimOrphans = FALSE;
-		m_aggregateHealth = FALSE;	
-		m_exitByBudding = FALSE;
-		m_spawnTemplateNameData.clear();
-		m_spawnedRequireSpawner = FALSE;
-		m_slavesHaveFreeWill = FALSE;
+		m_ini.m_initialBurst = 0;
+		m_ini.m_isOneShotData = FALSE;
+		m_ini.m_canReclaimOrphans = FALSE;
+		m_ini.m_aggregateHealth = FALSE;	
+		m_ini.m_exitByBudding = FALSE;
+		m_ini.m_spawnTemplateNameData.clear();
+		m_ini.m_spawnedRequireSpawner = FALSE;
+		m_ini.m_slavesHaveFreeWill = FALSE;
 	}
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
@@ -87,22 +93,22 @@ public:
     BehaviorModuleData::buildFieldParse(p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "SpawnNumber",							INI::parseInt,										NULL, offsetof( SpawnBehaviorModuleData, m_spawnNumberData ) },
-			{ "SpawnReplaceDelay",				INI::parseDurationUnsignedInt,		NULL, offsetof( SpawnBehaviorModuleData, m_spawnReplaceDelayData ) },
-			{ "OneShot",									INI::parseBool,										NULL, offsetof( SpawnBehaviorModuleData, m_isOneShotData ) },
-			{ "CanReclaimOrphans",				INI::parseBool,										NULL,	offsetof( SpawnBehaviorModuleData, m_canReclaimOrphans ) },
-			{ "AggregateHealth",  				INI::parseBool,										NULL, offsetof( SpawnBehaviorModuleData, m_aggregateHealth ) },		
-			{ "ExitByBudding",    				INI::parseBool,										NULL, offsetof( SpawnBehaviorModuleData, m_exitByBudding ) },		
-			{ "SpawnTemplateName",				INI::parseAsciiStringVectorAppend,NULL, offsetof( SpawnBehaviorModuleData, m_spawnTemplateNameData ) },
-			{ "SpawnedRequireSpawner",		INI::parseBool,										NULL,	offsetof( SpawnBehaviorModuleData, m_spawnedRequireSpawner ) },
-			{ "PropagateDamageTypesToSlavesWhenExisting",   INI::parseDamageTypeFlags, NULL, offsetof( SpawnBehaviorModuleData, m_damageTypesToPropagateToSlaves ) },
-			{ "InitialBurst",				      INI::parseInt,						        NULL, offsetof( SpawnBehaviorModuleData, m_initialBurst ) },			
-			{ "SlavesHaveFreeWill",				INI::parseBool,										NULL, offsetof( SpawnBehaviorModuleData, m_slavesHaveFreeWill ) },
+			{ "SpawnNumber",								INI::parseInt,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_spawnNumberData ) },
+			{ "SpawnReplaceDelay",							INI::parseDurationUnsignedInt,		NULL, offsetof( SpawnBehaviorModuleData::IniData, m_spawnReplaceDelayData ) },
+			{ "OneShot",									INI::parseBool,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_isOneShotData ) },
+			{ "CanReclaimOrphans",							INI::parseBool,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_canReclaimOrphans ) },
+			{ "AggregateHealth",  							INI::parseBool,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_aggregateHealth ) },		
+			{ "ExitByBudding",    							INI::parseBool,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_exitByBudding ) },		
+			{ "SpawnTemplateName",							INI::parseAsciiStringVectorAppend,	NULL, offsetof( SpawnBehaviorModuleData::IniData, m_spawnTemplateNameData ) },
+			{ "SpawnedRequireSpawner",						INI::parseBool,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_spawnedRequireSpawner ) },
+			{ "PropagateDamageTypesToSlavesWhenExisting",	INI::parseDamageTypeFlags,			NULL, offsetof( SpawnBehaviorModuleData::IniData, m_damageTypesToPropagateToSlaves ) },
+			{ "InitialBurst",								INI::parseInt,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_initialBurst ) },			
+			{ "SlavesHaveFreeWill",							INI::parseBool,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_slavesHaveFreeWill ) },
 			{ 0, 0, 0, 0 }
 			
 		};
-    p.add(dataFieldParse);
-		p.add(DieMuxData::getFieldParse(), offsetof( SpawnBehaviorModuleData, m_dieMuxData ));
+		p.add(dataFieldParse);
+		p.add(DieMuxData::getFieldParse(), offsetof( SpawnBehaviorModuleData::IniData, m_dieMuxData ));
 	}
 };
 
@@ -112,6 +118,7 @@ class SpawnBehaviorInterface
 {
 
 public:
+	virtual ~SpawnBehaviorInterface() {}
 
 	virtual Bool maySpawnSelfTaskAI( Real maxSelfTaskersRatio ) = 0;
 	virtual void onSpawnDeath( ObjectID deadSpawn, DamageInfo *damageInfo ) = 0;
@@ -146,6 +153,10 @@ public:
 	SpawnBehavior( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	SpawnBehavior(const SpawnBehavior&) = delete;
+	SpawnBehavior& operator=(const SpawnBehavior&) = delete;
+
 	// module methods
 	static Int getInterfaceMask( void ) { return (MODULEINTERFACE_UPDATE) | (MODULEINTERFACE_DIE) | (MODULEINTERFACE_DAMAGE); }
 	virtual void onDelete( void );
@@ -162,10 +173,10 @@ public:
 
 	// damage methods
 	virtual void onDamage( DamageInfo *damageInfo );
-	virtual void onHealing( DamageInfo *damageInfo ) { }
-	virtual void onBodyDamageStateChange( const DamageInfo* damageInfo, 
-																				BodyDamageType oldState, 
-																				BodyDamageType newState) { }
+	virtual void onHealing( DamageInfo * /*damageInfo*/ ) { }
+	virtual void onBodyDamageStateChange( const DamageInfo* /*damageInfo*/, 
+																				BodyDamageType /*oldState*/, 
+																				BodyDamageType /*newState*/) { }
 
 	// SpawnBehaviorInterface methods
 	virtual Bool maySpawnSelfTaskAI( Real maxSelfTaskersRatio );
@@ -182,7 +193,7 @@ public:
 	virtual void giveSlavesStealthUpgrade( Bool grantStealth );
 	virtual Bool areAllSlavesStealthed() const;
 	virtual void revealSlaves();
-	virtual Bool doSlavesHaveFreedom() const { return getSpawnBehaviorModuleData()->m_slavesHaveFreeWill; }
+	virtual Bool doSlavesHaveFreedom() const { return getSpawnBehaviorModuleData()->m_ini.m_slavesHaveFreeWill; }
 
 	// **********************************************************************************************
 	// our own methods

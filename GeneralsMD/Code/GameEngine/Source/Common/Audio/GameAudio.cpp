@@ -412,6 +412,21 @@ void AudioManager::getInfoForAudioEvent( const AudioEventRTS *eventToFindAndFill
 }
 
 //-------------------------------------------------------------------------------------------------
+void AudioManager::setAudioEventNameAndInfo(AudioEventRTS* eventToFindAndFill, AsciiString eventName)
+{
+	if (!eventToFindAndFill) {
+		return;
+	}
+
+	// translate the string into a sound
+	if (eventName.compareNoCase("NoSound") != 0) {
+		eventToFindAndFill->setEventName(eventName);
+	}
+
+	getInfoForAudioEvent(eventToFindAndFill);
+}
+
+//-------------------------------------------------------------------------------------------------
 AudioHandle AudioManager::addAudioEvent(const AudioEventRTS *eventToAdd)
 {
 	if (eventToAdd->getEventName().isEmpty() || eventToAdd->getEventName() == AsciiString("NoSound")) {

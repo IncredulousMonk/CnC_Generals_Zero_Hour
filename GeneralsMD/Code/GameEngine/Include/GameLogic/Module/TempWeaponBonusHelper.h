@@ -41,7 +41,13 @@ enum WeaponBonusConditionType;
 // ------------------------------------------------------------------------------------------------
 class TempWeaponBonusHelperModuleData : public ModuleData
 {
+public:
+	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+	};
 
+	IniData m_ini {};
 };
 
 // ------------------------------------------------------------------------------------------------

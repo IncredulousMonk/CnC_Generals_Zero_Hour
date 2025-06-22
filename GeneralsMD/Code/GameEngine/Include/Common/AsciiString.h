@@ -111,7 +111,7 @@ private:
   void freeBytes(void);
 
 protected:
-	AsciiStringData* m_data;   // pointer to ref counted string data
+	AsciiStringData* m_data {};   // pointer to ref counted string data
 
 	char* peek() const;
 	void releaseBuffer();
@@ -452,11 +452,11 @@ inline void AsciiString::set(const AsciiString& stringSrc)
 	// do not call releaseBuffer(); here, it locks the CS twice
 	// from the same thread which is illegal using fast CS's
 		if (m_data)
-	{
-		--m_data->m_refCount;
-		  if (!m_data->m_refCount)
-			  freeBytes();
-	}
+		{
+			--m_data->m_refCount;
+			if (!m_data->m_refCount)
+				freeBytes();
+		}
 
 		m_data = stringSrc.m_data;
 		if (m_data)

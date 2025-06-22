@@ -41,6 +41,7 @@
 class Bridge;
 class Object;
 class Weapon;
+class PathfindCell;
 class PathfindZoneManager;
 
 // How close is close enough when moving.
@@ -64,6 +65,10 @@ class PathNode : public MemoryPoolObject
 {
 public:
 	PathNode();
+
+	// No copies allowed!
+	PathNode(const PathNode&) = delete;
+	PathNode& operator=(const PathNode&) = delete;
 
 	Coord3D *getPosition( void ) { return &m_pos; }			///< return position of this node
 	const Coord3D *getPosition( void ) const { return &m_pos; }			///< return position of this node
@@ -148,6 +153,10 @@ class Path : public MemoryPoolObject, public Snapshot
 {
 public:
 	Path();
+
+	// No copies allowed!
+	Path(const Path&) = delete;
+	Path& operator=(const Path&) = delete;
 	
 	PathNode *getFirstNode( void ) { return m_path; }
 	PathNode *getLastNode( void ) { return m_pathTail; }
@@ -280,6 +289,10 @@ public:
 	PathfindCell(void);
 	~PathfindCell(void);
 
+	// No copies allowed!
+	PathfindCell(const PathfindCell&) = delete;
+	PathfindCell& operator=(const PathfindCell&) = delete;
+
 	Bool setTypeAsObstacle( Object *obstacle, Bool isFence, const ICoord2D &pos );				///< flag this cell as an obstacle, from the given one
 	Bool removeObstacle( Object *obstacle );				///< unflag this cell as an obstacle, from the given one
 	void setType( CellType type );	///< set the cell type
@@ -389,6 +402,10 @@ class PathfindLayer
 public:
 	PathfindLayer();
 	~PathfindLayer();
+
+	// No copies allowed!
+	PathfindLayer(const PathfindLayer&) = delete;
+	PathfindLayer& operator=(const PathfindLayer&) = delete;
 public:
 	void reset(void);
 	Bool init(Bridge *theBridge, PathfindLayerEnum layer);
@@ -456,6 +473,10 @@ public:
 	ZoneBlock();
 	~ZoneBlock();  // not virtual, please don't override without making virtual.  jba.
 
+	// No copies allowed!
+	ZoneBlock(const ZoneBlock&) = delete;
+	ZoneBlock& operator=(const ZoneBlock&) = delete;
+
 	void blockCalculateZones(	PathfindCell **map, PathfindLayer layers[], const IRegion2D &bounds);	///< Does zone calculations.  
 	zoneStorageType getEffectiveZone(LocomotorSurfaceTypeMask acceptableSurfaces, Bool crusher, zoneStorageType zone) const;
 
@@ -505,6 +526,10 @@ public:
 																// compute hierarchically between the 20x20 blocks of cells. jba.
 	PathfindZoneManager();
 	~PathfindZoneManager();
+
+	// No copies allowed!
+	PathfindZoneManager(const PathfindZoneManager&) = delete;
+	PathfindZoneManager& operator=(const PathfindZoneManager&) = delete;
 
 	void reset(void);
 
@@ -563,6 +588,8 @@ private:
  */
 class PathfindServicesInterface {
 public:
+	virtual ~PathfindServicesInterface() {}
+
 	virtual Path *findPath( Object *obj, const LocomotorSet& locomotorSet, const Coord3D *from, 
 		const Coord3D *to )=0;	///< Find a short, valid path between given locations
 	/** Find a short, valid path to a location NEAR the to location.
@@ -616,6 +643,10 @@ private:
 public:
 	Pathfinder( void );
 	~Pathfinder() ;
+
+	// No copies allowed!
+	Pathfinder(const Pathfinder&) = delete;
+	Pathfinder& operator=(const Pathfinder&) = delete;
 
 	void reset( void );														///< Reset system in preparation for new map
 

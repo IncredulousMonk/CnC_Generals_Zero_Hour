@@ -62,6 +62,7 @@ class RebuildHoleBehaviorInterface
 {
 
 public:
+	virtual ~RebuildHoleBehaviorInterface() {}
 
 	virtual void startRebuildProcess( const ThingTemplate *rebuild, ObjectID spawnerID ) = 0;
 	virtual ObjectID getSpawnerID( void ) = 0;
@@ -84,6 +85,10 @@ public:
 
 	RebuildHoleBehavior( Thing *thing, const ModuleData *moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	RebuildHoleBehavior(const RebuildHoleBehavior&) = delete;
+	RebuildHoleBehavior& operator=(const RebuildHoleBehavior&) = delete;
 
 	virtual RebuildHoleBehaviorInterface* getRebuildHoleBehaviorInterface() { return this; }
 

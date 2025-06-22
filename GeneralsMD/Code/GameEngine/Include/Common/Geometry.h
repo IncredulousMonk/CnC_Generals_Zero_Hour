@@ -57,11 +57,11 @@ enum GeometryType
 };
 
 #ifdef DEFINE_GEOMETRY_NAMES
-static const char *GeometryNames[] = 
+const char *GeometryNames[] = 
 {
-	"SPHERE",		
-	"CYLINDER",	
-	"BOX",			
+	"SPHERE",
+	"CYLINDER",
+	"BOX",
 	NULL
 };
 #endif  // end DEFINE_GEOMETRY_NAMES

@@ -47,16 +47,17 @@ class DieModuleInterface
 {
 public:
 	virtual void onDie( const DamageInfo *damageInfo ) = 0;
+	virtual ~DieModuleInterface() {}
 };
 
 //-------------------------------------------------------------------------------------------------
 class DieMuxData	// does NOT inherit from ModuleData.
 {
 public:
-	DeathTypeFlags				m_deathTypes;
-	VeterancyLevelFlags		m_veterancyLevels;
-	ObjectStatusMaskType	m_exemptStatus;						///< die module is ignored if any of these status bits are set
-	ObjectStatusMaskType	m_requiredStatus;					///< die module is ignored if any of these status bits are clear
+	DeathTypeFlags			m_deathTypes {};
+	VeterancyLevelFlags		m_veterancyLevels {};
+	ObjectStatusMaskType	m_exemptStatus {};						///< die module is ignored if any of these status bits are set
+	ObjectStatusMaskType	m_requiredStatus {};					///< die module is ignored if any of these status bits are clear
 
 	DieMuxData();
 	static const FieldParse* getFieldParse();
@@ -71,15 +72,21 @@ public:
 class DieModuleData : public BehaviorModuleData
 {
 public:
-	DieMuxData			m_dieMuxData;
+	// MG: This has to go into an embedded struct too, to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+		DieMuxData			m_dieMuxData;
+	};
+
+	IniData m_ini {};
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
 	{
 		BehaviorModuleData::buildFieldParse(p);
-		p.add(DieMuxData::getFieldParse(), offsetof( DieModuleData, m_dieMuxData ));
+		p.add(DieMuxData::getFieldParse(), offsetof( DieModuleData::IniData, m_dieMuxData ));
 	}
 
-	inline Bool isDieApplicable(const Object* obj, const DamageInfo *damageInfo) const { return m_dieMuxData.isDieApplicable(obj, damageInfo); }
+	inline Bool isDieApplicable(const Object* obj, const DamageInfo *damageInfo) const { return m_ini.m_dieMuxData.isDieApplicable(obj, damageInfo); }
 };
 
 //-------------------------------------------------------------------------------------------------

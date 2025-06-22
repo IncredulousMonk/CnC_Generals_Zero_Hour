@@ -43,12 +43,12 @@ class ThingTemplate;
 class UpgradeTemplate;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-enum ProductionID
+enum ProductionID: int
 {
 	PRODUCTIONID_INVALID = 0
 };
 
-enum ProductionType
+enum ProductionType: int
 {
 	PRODUCTION_INVALID = 0,
 	PRODUCTION_UNIT,
@@ -70,6 +70,10 @@ public:
 
 	ProductionEntry( void );
 	// virtual destructor provided by memory pool object
+
+	// No copies allowed!
+	ProductionEntry(const ProductionEntry&) = delete;
+	ProductionEntry& operator=(const ProductionEntry&) = delete;
 
 	/// query what kind of thing is being produced by this entry
 	const ThingTemplate *getProductionObject( void ) const { return m_objectToProduce; }
@@ -149,6 +153,7 @@ class ProductionUpdateInterface
 {
 
 public:
+	virtual ~ProductionUpdateInterface() {}
 
 	virtual CanMakeType canQueueCreateUnit( const ThingTemplate *unitType ) const = 0;
 	virtual CanMakeType canQueueUpgrade( const UpgradeTemplate *upgrade ) const = 0;
@@ -193,6 +198,10 @@ public:
 
 	ProductionUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by MemoryPoolObject
+
+	// No copies allowed!
+	ProductionUpdate(const ProductionUpdate&) = delete;
+	ProductionUpdate& operator=(const ProductionUpdate&) = delete;
 
 	static Int getInterfaceMask() { return UpdateModule::getInterfaceMask() | (MODULEINTERFACE_DIE); }
 

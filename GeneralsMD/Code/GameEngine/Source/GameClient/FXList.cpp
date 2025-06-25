@@ -32,23 +32,23 @@
 
 #include "GameClient/FXList.h"
 
-#include "Common/DrawModule.h"
+// #include "Common/DrawModule.h"
 #include "Common/GameAudio.h"
 #include "Common/INI.h"
-#include "Common/Player.h"
-#include "Common/PlayerList.h"
+// #include "Common/Player.h"
+// #include "Common/PlayerList.h"
 #include "Common/RandomValue.h"
 #include "Common/ThingTemplate.h"
 #include "Common/ThingFactory.h"
 
 #include "GameLogic/Object.h"
 #include "GameLogic/GameLogic.h"
-#include "GameLogic/TerrainLogic.h"
+// #include "GameLogic/TerrainLogic.h"
 #include "GameClient/Display.h"
 #include "GameClient/GameClient.h"
 #include "GameClient/Drawable.h"
-#include "GameClient/ParticleSys.h"
-#include "GameLogic/PartitionManager.h"
+// #include "GameClient/ParticleSys.h"
+// #include "GameLogic/PartitionManager.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
@@ -63,20 +63,20 @@
 FXListStore *TheFXListStore = NULL;					///< the FXList store definition
 
 //-------------------------------------------------------------------------------------------------
-static void adjustVector(Coord3D *vec, const Matrix3D* mtx)
-{
-	if (mtx)
-	{
-		Vector3 vectmp;
-		vectmp.X = vec->x;
-		vectmp.Y = vec->y;
-		vectmp.Z = vec->z;
-		vectmp = mtx->Rotate_Vector(vectmp);
-		vec->x = vectmp.X;
-		vec->y = vectmp.Y;
-		vec->z = vectmp.Z;
-	}
-}
+// static void adjustVector(Coord3D *vec, const Matrix3D* mtx)
+// {
+// 	if (mtx)
+// 	{
+// 		Vector3 vectmp;
+// 		vectmp.X = vec->x;
+// 		vectmp.Y = vec->y;
+// 		vectmp.Z = vec->z;
+// 		vectmp = mtx->Rotate_Vector(vectmp);
+// 		vec->x = vectmp.X;
+// 		vec->y = vectmp.Y;
+// 		vec->z = vectmp.Z;
+// 	}
+// }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PRIVATE CLASSES ///////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ void FXNugget::doFXObj(const Object* primary, const Object* secondary) const
 //-------------------------------------------------------------------------------------------------
 class SoundFXNugget : public FXNugget
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(SoundFXNugget, "SoundFXNugget")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(SoundFXNugget, "SoundFXNugget")
 	
 public:
 
@@ -113,6 +113,10 @@ public:
 
 	virtual void doFXObj(const Object* primary, const Object* secondary = NULL) const
 	{
+DEBUG_CRASH(("SoundFXNugget::doFXObj not yet implemented!"));
+(void) primary;
+(void) secondary;
+#if 0
 		AudioEventRTS sound(m_soundName);
 		if (primary)
 		{
@@ -121,14 +125,20 @@ public:
 		}
 
 		TheAudio->addAudioEvent(&sound);
+#endif // if 0
 	}
 
+	static void parseSoundName(INI* ini, void *instance, void *store, const void *userData)
+	{
+		SoundFXNugget* self = (SoundFXNugget*) instance;
+		INI::parseAsciiString(ini, nullptr, &self->m_soundName, nullptr);
+	}
 
 	static void parse(INI *ini, void *instance, void* /*store*/, const void* /*userData*/)
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "Name",									INI::parseAsciiString,	NULL, offsetof( SoundFXNugget, m_soundName ) },
+			{ "Name", SoundFXNugget::parseSoundName, NULL, 0 },
 			{ 0, 0, 0, 0 }
 		};
 
@@ -138,18 +148,18 @@ public:
 	}
 
 private:
-	AsciiString		m_soundName;
+	AsciiString m_soundName {};
 };  
 EMPTY_DTOR(SoundFXNugget)
 
 //-------------------------------------------------------------------------------------------------
-static Real calcDist(const Coord3D& src, const Coord3D& dst)
-{
-  Real dx = dst.x - src.x;
-  Real dy = dst.y - src.y;
-  Real dz = dst.z - src.z;
-  return sqrt(dx*dx + dy*dy + dz*dz);
-}
+// static Real calcDist(const Coord3D& src, const Coord3D& dst)
+// {
+// 	Real dx = dst.x - src.x;
+// 	Real dy = dst.y - src.y;
+// 	Real dz = dst.z - src.z;
+// 	return sqrt(dx*dx + dy*dy + dz*dz);
+// }
 
 //-------------------------------------------------------------------------------------------------
 class TracerFXNugget : public FXNugget
@@ -159,18 +169,24 @@ public:
 
 	TracerFXNugget()
 	{
-		m_tracerName.set("GenericTracer");
-    m_boneName.clear();
-    m_speed = 0.0f; // means "use passed-in speed"
-    m_decayAt = 1.0f;
-		m_length = 10.0f;
-		m_width = 1.0f;
-		m_color.red = m_color.green = m_color.blue = 1.0f;
-		m_probability = 1.0f;
+		m_ini.m_tracerName.set("GenericTracer");
+		m_ini.m_boneName.clear();
+		m_ini.m_speed = 0.0f; // means "use passed-in speed"
+		m_ini.m_decayAt = 1.0f;
+		m_ini.m_length = 10.0f;
+		m_ini.m_width = 1.0f;
+		m_ini.m_color.red = m_ini.m_color.green = m_ini.m_color.blue = 1.0f;
+		m_ini.m_probability = 1.0f;
 	}
 
 	virtual void doFXPos(const Coord3D *primary, const Matrix3D* primaryMtx, const Real primarySpeed, const Coord3D *secondary, const Real /*overrideRadius*/ ) const
 	{
+DEBUG_CRASH(("TracerFXNugget::doFXObj not yet implemented!"));
+(void) primary;
+(void) primaryMtx;
+(void) primarySpeed;
+(void) secondary;
+#if 0
 		if (m_probability <= GameClientRandomValueReal(0, 1))
 			return;
 
@@ -220,38 +236,45 @@ public:
 		{
 			DEBUG_CRASH(("You must have a primary and secondary source for this effect"));
 		}
+#endif // if 0
 	}
 
 	static void parse(INI *ini, void *instance, void* /*store*/, const void* /*userData*/)
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "TracerName",			INI::parseAsciiString,			NULL, offsetof( TracerFXNugget, m_tracerName ) },
-			{ "BoneName",				INI::parseAsciiString,			NULL, offsetof( TracerFXNugget, m_boneName ) },
-      { "Speed",          INI::parseVelocityReal,     NULL, offsetof( TracerFXNugget, m_speed ) },
-      { "DecayAt",        INI::parseReal,             NULL, offsetof( TracerFXNugget, m_decayAt ) },
-      { "Length",					INI::parseReal,             NULL, offsetof( TracerFXNugget, m_length ) },
-      { "Width",					INI::parseReal,             NULL, offsetof( TracerFXNugget, m_width ) },
-      { "Color",					INI::parseRGBColor,					NULL, offsetof( TracerFXNugget, m_color ) },
-      { "Probability",		INI::parseReal,             NULL, offsetof( TracerFXNugget, m_probability ) },
+			{ "TracerName",		INI::parseAsciiString,		NULL, offsetof( TracerFXNugget::IniData, m_tracerName ) },
+			{ "BoneName",		INI::parseAsciiString,		NULL, offsetof( TracerFXNugget::IniData, m_boneName ) },
+			{ "Speed",			INI::parseVelocityReal,		NULL, offsetof( TracerFXNugget::IniData, m_speed ) },
+			{ "DecayAt",		INI::parseReal,				NULL, offsetof( TracerFXNugget::IniData, m_decayAt ) },
+			{ "Length",			INI::parseReal,				NULL, offsetof( TracerFXNugget::IniData, m_length ) },
+			{ "Width",			INI::parseReal,				NULL, offsetof( TracerFXNugget::IniData, m_width ) },
+			{ "Color",			INI::parseRGBColor,			NULL, offsetof( TracerFXNugget::IniData, m_color ) },
+			{ "Probability",	INI::parseReal,				NULL, offsetof( TracerFXNugget::IniData, m_probability ) },
 			{ 0, 0, 0, 0 }
 		};
 
 		TracerFXNugget* nugget = newInstance( TracerFXNugget );	
-		ini->initFromINI(nugget, myFieldParse);
+		ini->initFromINI(&nugget->m_ini, myFieldParse);
 		((FXList*)instance)->addFXNugget(nugget);
 	}
 
 private:
-	AsciiString			m_tracerName;
-  AsciiString     m_boneName;
-  Real            m_speed;
-  Real            m_decayAt;
-	Real						m_length;
-	Real						m_width;
-	RGBColor				m_color;
-	Real						m_probability;
-};  
+	// MG: Cannot apply offsetof to TracerFXNugget, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString		m_tracerName;
+		AsciiString     m_boneName;
+		Real            m_speed;
+		Real            m_decayAt;
+		Real			m_length;
+		Real			m_width;
+		RGBColor		m_color;
+		Real			m_probability;
+	};
+
+	IniData m_ini {};
+};
 EMPTY_DTOR(TracerFXNugget)
 
 //-------------------------------------------------------------------------------------------------
@@ -262,26 +285,26 @@ public:
 
 	RayEffectFXNugget()
 	{
-		m_templateName.clear();
-		m_primaryOffset.x = m_primaryOffset.y = m_primaryOffset.z = 0;
-		m_secondaryOffset.x = m_secondaryOffset.y = m_secondaryOffset.z = 0;
+		m_ini.m_templateName.clear();
+		m_ini.m_primaryOffset.x = m_ini.m_primaryOffset.y = m_ini.m_primaryOffset.z = 0;
+		m_ini.m_secondaryOffset.x = m_ini.m_secondaryOffset.y = m_ini.m_secondaryOffset.z = 0;
 	}
 
 	virtual void doFXPos(const Coord3D *primary, const Matrix3D* /*primaryMtx*/, const Real /*primarySpeed*/, const Coord3D * secondary, const Real /*overrideRadius*/ ) const
 	{
-		const ThingTemplate* tmpl = TheThingFactory->findTemplate(m_templateName);
-		DEBUG_ASSERTCRASH(tmpl, ("RayEffect %s not found\n",m_templateName.str()));
+		const ThingTemplate* tmpl = TheThingFactory->findTemplate(m_ini.m_templateName);
+		DEBUG_ASSERTCRASH(tmpl, ("RayEffect %s not found\n",m_ini.m_templateName.str()));
 		if (primary && secondary && tmpl)
 		{
 			Coord3D sourcePos = *primary;
-			sourcePos.x += m_primaryOffset.x;
-			sourcePos.y += m_primaryOffset.y;
-			sourcePos.z += m_primaryOffset.z;
+			sourcePos.x += m_ini.m_primaryOffset.x;
+			sourcePos.y += m_ini.m_primaryOffset.y;
+			sourcePos.z += m_ini.m_primaryOffset.z;
 
 			Coord3D targetPos = *secondary;
-			targetPos.x += m_secondaryOffset.x;
-			targetPos.y += m_secondaryOffset.y;
-			targetPos.z += m_secondaryOffset.z;
+			targetPos.x += m_ini.m_secondaryOffset.x;
+			targetPos.y += m_ini.m_secondaryOffset.y;
+			targetPos.z += m_ini.m_secondaryOffset.z;
 
 			TheGameClient->createRayEffectByTemplate(&sourcePos, &targetPos, tmpl);
 		}
@@ -295,21 +318,27 @@ public:
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "Name",									INI::parseAsciiString,			NULL, offsetof( RayEffectFXNugget, m_templateName ) },
-			{ "PrimaryOffset",				INI::parseCoord3D,					NULL, offsetof( RayEffectFXNugget, m_primaryOffset ) },
-			{ "SecondaryOffset",			INI::parseCoord3D,					NULL, offsetof( RayEffectFXNugget, m_secondaryOffset ) },
+			{ "Name",				INI::parseAsciiString,	NULL, offsetof( RayEffectFXNugget::IniData, m_templateName ) },
+			{ "PrimaryOffset",		INI::parseCoord3D,		NULL, offsetof( RayEffectFXNugget::IniData, m_primaryOffset ) },
+			{ "SecondaryOffset",	INI::parseCoord3D,		NULL, offsetof( RayEffectFXNugget::IniData, m_secondaryOffset ) },
 			{ 0, 0, 0, 0 }
 		};
 
 		RayEffectFXNugget* nugget = newInstance( RayEffectFXNugget ); 
-		ini->initFromINI(nugget, myFieldParse);
+		ini->initFromINI(&nugget->m_ini, myFieldParse);
 		((FXList*)instance)->addFXNugget(nugget);
 	}
 
 private:
-	AsciiString			m_templateName;
-	Coord3D					m_primaryOffset;
-	Coord3D					m_secondaryOffset;
+	// MG: Cannot apply offsetof to RayEffectFXNugget, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString	m_templateName;
+		Coord3D		m_primaryOffset;
+		Coord3D		m_secondaryOffset;
+	};
+
+	IniData m_ini {};
 };  
 EMPTY_DTOR(RayEffectFXNugget)
 
@@ -319,13 +348,20 @@ class LightPulseFXNugget : public FXNugget
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(LightPulseFXNugget, "LightPulseFXNugget")		
 public:
 
-	LightPulseFXNugget() : m_radius(0), m_increaseFrames(0), m_decreaseFrames(0), m_boundingCirclePct(0)
+	LightPulseFXNugget()
 	{
-		m_color.red = m_color.green = m_color.blue = 0;
+		m_ini.m_color.red = m_ini.m_color.green = m_ini.m_color.blue = 0;
+		m_ini.m_radius = 0;
+		m_ini.m_boundingCirclePct = 0;
+		m_ini.m_increaseFrames = 0;
+		m_ini.m_decreaseFrames = 0;
 	}
 
 	virtual void doFXObj(const Object* primary, const Object* /*secondary*/) const
 	{
+DEBUG_CRASH(("LightPulseFXNugget::doFXObj not yet implemented!"));
+(void) primary;
+#if 0
 		if (primary)
 		{
 			Real radius = m_radius;
@@ -339,13 +375,14 @@ public:
 		{
 			DEBUG_CRASH(("You must have a primary source for this effect"));
 		}
+#endif // if 0
 	}
 
 	virtual void doFXPos(const Coord3D *primary, const Matrix3D* /*primaryMtx*/, const Real /*primarySpeed*/, const Coord3D * /*secondary*/, const Real /*overrideRadius*/ ) const
 	{
 		if (primary)
 		{
-			TheDisplay->createLightPulse(primary, &m_color, 1, m_radius, m_increaseFrames, m_decreaseFrames);
+			TheDisplay->createLightPulse(primary, &m_ini.m_color, 1, m_ini.m_radius, m_ini.m_increaseFrames, m_ini.m_decreaseFrames);
 		}
 		else
 		{
@@ -357,26 +394,32 @@ public:
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "Color",						INI::parseRGBColor,								NULL, offsetof( LightPulseFXNugget, m_color ) },
-			{ "Radius",						INI::parseReal,										NULL, offsetof( LightPulseFXNugget, m_radius ) },
-			{ "RadiusAsPercentOfObjectSize",		INI::parsePercentToReal,	NULL, offsetof( LightPulseFXNugget, m_boundingCirclePct ) },
-			{ "IncreaseTime",			INI::parseDurationUnsignedInt,	NULL, offsetof( LightPulseFXNugget, m_increaseFrames ) },
-			{ "DecreaseTime",			INI::parseDurationUnsignedInt,	NULL, offsetof( LightPulseFXNugget, m_decreaseFrames ) },
+			{ "Color",							INI::parseRGBColor,				NULL, offsetof( LightPulseFXNugget::IniData, m_color ) },
+			{ "Radius",							INI::parseReal,					NULL, offsetof( LightPulseFXNugget::IniData, m_radius ) },
+			{ "RadiusAsPercentOfObjectSize",	INI::parsePercentToReal,		NULL, offsetof( LightPulseFXNugget::IniData, m_boundingCirclePct ) },
+			{ "IncreaseTime",					INI::parseDurationUnsignedInt,	NULL, offsetof( LightPulseFXNugget::IniData, m_increaseFrames ) },
+			{ "DecreaseTime",					INI::parseDurationUnsignedInt,	NULL, offsetof( LightPulseFXNugget::IniData, m_decreaseFrames ) },
 			{ 0, 0, 0, 0 }
 		};
 
 		LightPulseFXNugget* nugget = newInstance( LightPulseFXNugget );	
-		ini->initFromINI(nugget, myFieldParse);
+		ini->initFromINI(&nugget->m_ini, myFieldParse);
 		((FXList*)instance)->addFXNugget(nugget);
 	}
 
 private:
-	RGBColor			m_color;
-	Real					m_radius;
-	Real					m_boundingCirclePct;
-	UnsignedInt		m_increaseFrames;
-	UnsignedInt		m_decreaseFrames;
-};  
+	// MG: Cannot apply offsetof to LightPulseFXNugget, so had to move data into an embedded struct.
+	struct IniData
+	{
+		RGBColor		m_color;
+		Real			m_radius;
+		Real			m_boundingCirclePct;
+		UnsignedInt		m_increaseFrames;
+		UnsignedInt		m_decreaseFrames;
+	};
+
+	IniData m_ini {};
+};
 EMPTY_DTOR(LightPulseFXNugget)
 
 //-------------------------------------------------------------------------------------------------
@@ -385,33 +428,38 @@ class ViewShakeFXNugget : public FXNugget
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ViewShakeFXNugget, "ViewShakeFXNugget")		
 public:
 
-	ViewShakeFXNugget() : m_shake(View::SHAKE_NORMAL)
+	ViewShakeFXNugget()
 	{
+		m_ini.m_shake = View::SHAKE_NORMAL;
 	}
 
 	virtual void doFXPos(const Coord3D *primary, const Matrix3D* /*primaryMtx*/, const Real /*primarySpeed*/, const Coord3D * /*secondary*/, const Real /*overrideRadius*/ ) const
 	{
+DEBUG_CRASH(("ViewShakeFXNugget::doFXObj not yet implemented!"));
+(void) primary;
+#if 0
 		if (primary)
 		{
 			if (TheTacticalView)
-				TheTacticalView->shake(primary, m_shake);
+				TheTacticalView->shake(primary, m_ini.m_shake);
 		}
 		else
 		{
 			DEBUG_CRASH(("You must have a primary source for this effect"));
 		}
+#endif // if 0
 	}
 
 	static void parse(INI *ini, void *instance, void* /*store*/, const void* /*userData*/)
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "Type",				parseShakeType,								NULL, offsetof( ViewShakeFXNugget, m_shake ) },
+			{ "Type",				parseShakeType,								NULL, offsetof( ViewShakeFXNugget::IniData, m_shake ) },
 			{ 0, 0, 0, 0 }
 		};
 
 		ViewShakeFXNugget* nugget = newInstance( ViewShakeFXNugget );	
-		ini->initFromINI(nugget, myFieldParse);
+		ini->initFromINI(&nugget->m_ini, myFieldParse);
 		((FXList*)instance)->addFXNugget(nugget);
 	}
 
@@ -432,7 +480,13 @@ protected:
 	}
 
 private:
-	View::CameraShakeType m_shake;
+	// MG: Cannot apply offsetof to ViewShakeFXNugget, so had to move data into an embedded struct.
+	struct IniData
+	{
+		View::CameraShakeType m_shake;
+	};
+
+	IniData m_ini {};
 
 };  
 EMPTY_DTOR(ViewShakeFXNugget)
@@ -443,20 +497,22 @@ class TerrainScorchFXNugget : public FXNugget
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TerrainScorchFXNugget, "TerrainScorchFXNugget")		
 public:
 
-	TerrainScorchFXNugget() : m_scorch(-1), m_radius(0)
+	TerrainScorchFXNugget()
 	{
+		m_ini.m_scorch = -1;
+		m_ini.m_radius = 0;
 	}
 
 	virtual void doFXPos(const Coord3D *primary, const Matrix3D* /*primaryMtx*/, const Real /*primarySpeed*/, const Coord3D * /*secondary*/, const Real /*overrideRadius*/ ) const
 	{
 		if (primary)
 		{
-			Int scorch = m_scorch;
+			Int scorch = m_ini.m_scorch;
 			if (scorch < 0)
 			{
 				scorch = GameClientRandomValue( SCORCH_1, SCORCH_4 );
 			}
-			TheGameClient->addScorch(primary, m_radius, (Scorches)scorch);
+			TheGameClient->addScorch(primary, m_ini.m_radius, (Scorches)scorch);
 		}
 		else
 		{
@@ -468,13 +524,13 @@ public:
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "Type",				parseScorchType,			NULL, offsetof( TerrainScorchFXNugget, m_scorch ) },
-			{ "Radius",			INI::parseReal,				NULL, offsetof( TerrainScorchFXNugget, m_radius ) },
+			{ "Type",			parseScorchType,			NULL, offsetof( TerrainScorchFXNugget::IniData, m_scorch ) },
+			{ "Radius",			INI::parseReal,				NULL, offsetof( TerrainScorchFXNugget::IniData, m_radius ) },
 			{ 0, 0, 0, 0 }
 		};
 
 		TerrainScorchFXNugget* nugget = newInstance( TerrainScorchFXNugget );	
-		ini->initFromINI(nugget, myFieldParse);
+		ini->initFromINI(&nugget->m_ini, myFieldParse);
 		((FXList*)instance)->addFXNugget(nugget);
 	}
 
@@ -496,8 +552,14 @@ protected:
 	}
 
 private:
-	Int		m_scorch;
-	Real	m_radius;
+	// MG: Cannot apply offsetof to DeletionUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int		m_scorch;
+		Real	m_radius;
+	};
+
+	IniData m_ini {};
 };  
 EMPTY_DTOR(TerrainScorchFXNugget)
 
@@ -509,18 +571,18 @@ public:
 
 	ParticleSystemFXNugget()
 	{
-		m_name.clear();
-		m_count = 1;
-		m_radius.setRange(0, 0, GameClientRandomVariable::CONSTANT);
-		m_height.setRange(0, 0, GameClientRandomVariable::CONSTANT);
+		m_ini.m_name.clear();
+		m_ini.m_count = 1;
+		m_ini.m_radius.setRange(0, 0, GameClientRandomVariable::CONSTANT);
+		m_ini.m_height.setRange(0, 0, GameClientRandomVariable::CONSTANT);
 		// -1 means "don't mess with it, just accept the particle-system's defaults"
-		m_delay.setRange(-1, -1, GameClientRandomVariable::CONSTANT);
-		m_offset.x = m_offset.y = m_offset.z = 0;
-		m_orientToObject = false;
-		m_attachToObject = false;
-		m_createAtGroundHeight = FALSE;
-		m_useCallersRadius = FALSE;
-		m_rotateX = m_rotateY = m_rotateZ = 0;
+		m_ini.m_delay.setRange(-1, -1, GameClientRandomVariable::CONSTANT);
+		m_ini.m_offset.x = m_ini.m_offset.y = m_ini.m_offset.z = 0;
+		m_ini.m_orientToObject = false;
+		m_ini.m_attachToObject = false;
+		m_ini.m_createAtGroundHeight = FALSE;
+		m_ini.m_useCallersRadius = FALSE;
+		m_ini.m_rotateX = m_ini.m_rotateY = m_ini.m_rotateZ = 0;
 	}
 
 	virtual void doFXPos(const Coord3D *primary, const Matrix3D* primaryMtx, const Real /*primarySpeed*/, const Coord3D * /*secondary*/, const Real overrideRadius ) const
@@ -540,7 +602,7 @@ public:
 		if (primary)
 		{
 
-			if (m_ricochet && secondary)
+			if (m_ini.m_ricochet && secondary)
 			{
 				// HERE WE MUST BUILD A MATRIX WHICH WILL ORIENT THE NEW PARTICLE SYSTEM TO FACE AWAY FROM THE SECONDARY OBJECT
 				// THE RESULT SHOULD LOOK LIKE THE DIRECTION OF THE "ATTACK" IS CARRIED THROUGH LIKE A RICOCHET
@@ -567,25 +629,25 @@ public:
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "Name",									INI::parseAsciiString,			NULL, offsetof( ParticleSystemFXNugget, m_name ) },
-			{ "Count",								INI::parseInt,							NULL, offsetof( ParticleSystemFXNugget, m_count ) },
-			{ "Offset",								INI::parseCoord3D,					NULL, offsetof( ParticleSystemFXNugget, m_offset ) },
-			{ "Radius",								INI::parseGameClientRandomVariable,		NULL, offsetof( ParticleSystemFXNugget, m_radius ) },
-			{ "Height",								INI::parseGameClientRandomVariable,		NULL, offsetof( ParticleSystemFXNugget, m_height ) },
-			{ "InitialDelay",					INI::parseGameClientRandomVariable,		NULL, offsetof( ParticleSystemFXNugget, m_delay ) },
-			{ "RotateX",							INI::parseAngleReal,				NULL, offsetof( ParticleSystemFXNugget, m_rotateX ) },
-			{ "RotateY",							INI::parseAngleReal,				NULL, offsetof( ParticleSystemFXNugget, m_rotateY ) },
-			{ "RotateZ",							INI::parseAngleReal,				NULL, offsetof( ParticleSystemFXNugget, m_rotateZ ) },
-			{ "OrientToObject",				INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget, m_orientToObject ) },
-			{ "Ricochet",				      INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget, m_ricochet ) },
-			{ "AttachToObject",				INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget, m_attachToObject ) },
-			{ "CreateAtGroundHeight",	INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget, m_createAtGroundHeight ) },
-			{ "UseCallersRadius",			INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget, m_useCallersRadius ) },
+			{ "Name",					INI::parseAsciiString,					NULL, offsetof( ParticleSystemFXNugget::IniData, m_name ) },
+			{ "Count",					INI::parseInt,							NULL, offsetof( ParticleSystemFXNugget::IniData, m_count ) },
+			{ "Offset",					INI::parseCoord3D,						NULL, offsetof( ParticleSystemFXNugget::IniData, m_offset ) },
+			{ "Radius",					INI::parseGameClientRandomVariable,		NULL, offsetof( ParticleSystemFXNugget::IniData, m_radius ) },
+			{ "Height",					INI::parseGameClientRandomVariable,		NULL, offsetof( ParticleSystemFXNugget::IniData, m_height ) },
+			{ "InitialDelay",			INI::parseGameClientRandomVariable,		NULL, offsetof( ParticleSystemFXNugget::IniData, m_delay ) },
+			{ "RotateX",				INI::parseAngleReal,					NULL, offsetof( ParticleSystemFXNugget::IniData, m_rotateX ) },
+			{ "RotateY",				INI::parseAngleReal,					NULL, offsetof( ParticleSystemFXNugget::IniData, m_rotateY ) },
+			{ "RotateZ",				INI::parseAngleReal,					NULL, offsetof( ParticleSystemFXNugget::IniData, m_rotateZ ) },
+			{ "OrientToObject",			INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget::IniData, m_orientToObject ) },
+			{ "Ricochet",				INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget::IniData, m_ricochet ) },
+			{ "AttachToObject",			INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget::IniData, m_attachToObject ) },
+			{ "CreateAtGroundHeight",	INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget::IniData, m_createAtGroundHeight ) },
+			{ "UseCallersRadius",		INI::parseBool,							NULL, offsetof( ParticleSystemFXNugget::IniData, m_useCallersRadius ) },
 			{ 0, 0, 0, 0 }
 		};
 
 		ParticleSystemFXNugget* nugget = newInstance( ParticleSystemFXNugget );	
-		ini->initFromINI(nugget, myFieldParse);
+		ini->initFromINI(&nugget->m_ini, myFieldParse);
 		((FXList*)instance)->addFXNugget(nugget);
 	}
 
@@ -593,28 +655,34 @@ protected:
 
 	void reallyDoFX(const Coord3D *primary, const Matrix3D* mtx, const Object* thingToAttachTo, Real overrideRadius ) const
 	{
-		Coord3D offset = m_offset;
+DEBUG_CRASH(("ParticleSystemFXNugget::reallyDoFX not yet implemented!"));
+(void) primary;
+(void) mtx;
+(void) thingToAttachTo;
+(void) overrideRadius;
+#if 0
+		Coord3D offset = m_ini.m_offset;
 		if (mtx)
 		{
 			adjustVector(&offset, mtx);
 		}
 
-		const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate(m_name);
-		DEBUG_ASSERTCRASH(tmp, ("ParticleSystem %s not found\n",m_name.str()));
+		const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate(m_ini.m_name);
+		DEBUG_ASSERTCRASH(tmp, ("ParticleSystem %s not found\n",m_ini.m_name.str()));
 		if (tmp)
 		{
-			for (Int i = 0; i < m_count; i++ )
+			for (Int i = 0; i < m_ini.m_count; i++ )
 			{
 				ParticleSystem *sys = TheParticleSystemManager->createParticleSystem(tmp);
 				if (sys)
 				{
 					Coord3D newPos;
-					Real radius = m_radius.getValue();
+					Real radius = m_ini.m_radius.getValue();
 					Real angle = GameClientRandomValueReal( 0.0f, 2.0f * PI );
 
 					newPos.x = primary->x + offset.x + radius * cos(angle);
 					newPos.y = primary->y + offset.y + radius * sin(angle);
-					if( m_createAtGroundHeight && TheTerrainLogic )
+					if( m_ini.m_createAtGroundHeight && TheTerrainLogic )
 					{
 						//old way:
 						//newPos.z = TheTerrainLogic->getGrsoundHeight( newPos.x, newPos.y ) + 1;// The plus one prevents scissoring with terrain
@@ -624,33 +692,33 @@ protected:
 						newPos.z = TheTerrainLogic->getLayerHeight( newPos.x, newPos.y, layer );
 					}
 					else
-						newPos.z = primary->z + offset.z + m_height.getValue();
+						newPos.z = primary->z + offset.z + m_ini.m_height.getValue();
 
 
-					if (m_orientToObject && mtx)
+					if (m_ini.m_orientToObject && mtx)
 					{
 						sys->setLocalTransform(mtx);
 					}
-					if (m_rotateX != 0.0f)
-						sys->rotateLocalTransformX(m_rotateX);
-					if (m_rotateY != 0.0f)
-						sys->rotateLocalTransformY(m_rotateY);
-					if (m_rotateZ != 0.0f)
-						sys->rotateLocalTransformZ(m_rotateZ);
+					if (m_ini.m_rotateX != 0.0f)
+						sys->rotateLocalTransformX(m_ini.m_rotateX);
+					if (m_ini.m_rotateY != 0.0f)
+						sys->rotateLocalTransformY(m_ini.m_rotateY);
+					if (m_ini.m_rotateZ != 0.0f)
+						sys->rotateLocalTransformZ(m_ini.m_rotateZ);
 
-					if (m_attachToObject && thingToAttachTo)
+					if (m_ini.m_attachToObject && thingToAttachTo)
 						sys->attachToObject(thingToAttachTo);
 					else
 						sys->setPosition( &newPos );
 
-					Real delayInMsec = m_delay.getValue();
+					Real delayInMsec = m_ini.m_delay.getValue();
 					if (delayInMsec >= 0.0f)
 					{
 						UnsignedInt delayInFrames = REAL_TO_INT_CEIL(ConvertDurationFromMsecsToFrames(delayInMsec));
 						sys->setInitialDelay(delayInFrames);
 					}
 
-					if( m_useCallersRadius  &&  overrideRadius )
+					if( m_ini.m_useCallersRadius  &&  overrideRadius )
 					{
 						ParticleSystemInfo::EmissionVolumeType type = sys->getEmisionVolumeType();
 
@@ -662,23 +730,30 @@ protected:
 				}
 			}
 		}
+#endif // if 0
 	}
 
 
 private:
-	AsciiString			m_name;
-	Int							m_count;
-	Coord3D					m_offset;
-	GameClientRandomVariable	m_radius;
-	GameClientRandomVariable	m_height;
-	GameClientRandomVariable	m_delay;
-	Real						m_rotateX, m_rotateY, m_rotateZ;
-	Bool						m_orientToObject;
-	Bool						m_attachToObject;
-	Bool						m_createAtGroundHeight;
-	Bool						m_useCallersRadius;
-	Bool						m_ricochet;
-};  
+	// MG: Cannot apply offsetof to ParticleSystemFXNugget, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString					m_name;
+		Int							m_count;
+		Coord3D						m_offset;
+		GameClientRandomVariable	m_radius;
+		GameClientRandomVariable	m_height;
+		GameClientRandomVariable	m_delay;
+		Real						m_rotateX, m_rotateY, m_rotateZ;
+		Bool						m_orientToObject;
+		Bool						m_attachToObject;
+		Bool						m_createAtGroundHeight;
+		Bool						m_useCallersRadius;
+		Bool						m_ricochet;
+	};
+
+	IniData m_ini {};
+};
 EMPTY_DTOR(ParticleSystemFXNugget)
 
 //-------------------------------------------------------------------------------------------------
@@ -689,9 +764,9 @@ public:
 
 	FXListAtBonePosFXNugget()
 	{
-		m_fx = NULL;
-    m_boneName.clear();
-    m_orientToBone = true;
+		m_ini.m_fx = NULL;
+		m_ini.m_boneName.clear();
+		m_ini.m_orientToBone = true;
 	}
 
 	virtual void doFXPos(const Coord3D *primary, const Matrix3D* primaryMtx, const Real /*primarySpeed*/, const Coord3D * /*secondary*/, const Real /*overrideRadius*/ ) const
@@ -703,10 +778,10 @@ public:
 	{
 		if (primary)
 		{
-      // first, try the unadorned name.
+			// first, try the unadorned name.
 			doFxAtBones(primary, 0);
 
-      // then, try the 01,02,03...etc names.
+			// then, try the 01,02,03...etc names.
 			doFxAtBones(primary, 1);
 		}
 		else
@@ -719,14 +794,14 @@ public:
 	{
 		static const FieldParse myFieldParse[] = 
 		{
-			{ "FX",								  	INI::parseFXList,			    NULL, offsetof( FXListAtBonePosFXNugget, m_fx ) },
-			{ "BoneName",							INI::parseAsciiString,		NULL, offsetof( FXListAtBonePosFXNugget, m_boneName ) },
-			{ "OrientToBone",					INI::parseBool,					  NULL, offsetof( FXListAtBonePosFXNugget, m_orientToBone ) },
+			{ "FX",				INI::parseFXList,			NULL, offsetof( FXListAtBonePosFXNugget::IniData, m_fx ) },
+			{ "BoneName",		INI::parseAsciiString,		NULL, offsetof( FXListAtBonePosFXNugget::IniData, m_boneName ) },
+			{ "OrientToBone",	INI::parseBool,				NULL, offsetof( FXListAtBonePosFXNugget::IniData, m_orientToBone ) },
 			{ 0, 0, 0, 0 }
 		};
 
-		FXListAtBonePosFXNugget* nugget = newInstance( FXListAtBonePosFXNugget );	
-		ini->initFromINI(nugget, myFieldParse);
+		FXListAtBonePosFXNugget* nugget = newInstance( FXListAtBonePosFXNugget );
+		ini->initFromINI(&nugget->m_ini, myFieldParse);
 		((FXList*)instance)->addFXNugget(nugget);
 	}
 
@@ -734,10 +809,14 @@ protected:
 
 	void doFxAtBones(const Object* obj, Int start) const
 	{
-    Coord3D bonePos[MAX_BONE_POINTS];
-    Matrix3D boneMtx[MAX_BONE_POINTS];
+DEBUG_CRASH(("FXListAtBonePosFXNugget::doFxAtBones not yet implemented!"));
+(void) obj;
+(void) start;
+#if 0
+		Coord3D bonePos[MAX_BONE_POINTS];
+		Matrix3D boneMtx[MAX_BONE_POINTS];
 
-    Drawable* draw = obj->getDrawable();
+		Drawable* draw = obj->getDrawable();
 		if (draw)
 		{
 			// yes, BONEPOS_CURRENT_CLIENT_ONLY -- this is client-only, so should be safe to do.
@@ -750,16 +829,24 @@ protected:
 				FXList::doFXPos(m_fx, &p, &m, 0.0f, NULL, 0.0f);
 			}
 		}
+#endif // if 0
 	}
 
 private:
 
 	enum { MAX_BONE_POINTS = 40 };
 
-	const FXList*		m_fx;
-  AsciiString     m_boneName;
-  Bool            m_orientToBone;
-};  
+	// MG: Cannot apply offsetof to FXListAtBonePosFXNugget, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const FXList*	m_fx;
+		AsciiString		m_boneName;
+		Bool			m_orientToBone;
+	};
+
+	IniData m_ini {};
+
+};
 EMPTY_DTOR(FXListAtBonePosFXNugget)
 
 //-------------------------------------------------------------------------------------------------
@@ -805,6 +892,13 @@ void FXList::clear()
 //-------------------------------------------------------------------------------------------------
 void FXList::doFXPos(const Coord3D *primary, const Matrix3D* primaryMtx, const Real primarySpeed, const Coord3D *secondary, const Real overrideRadius ) const
 {
+DEBUG_CRASH(("FXList::doFXPos not yet implemented!"));
+(void) primary;
+(void) primaryMtx;
+(void) primarySpeed;
+(void) secondary;
+(void) overrideRadius;
+#if 0
 	if (ThePartitionManager->getShroudStatusForPlayer(ThePlayerList->getLocalPlayer()->getPlayerIndex(), primary) != CELLSHROUD_CLEAR)
 		return;
 
@@ -812,13 +906,15 @@ void FXList::doFXPos(const Coord3D *primary, const Matrix3D* primaryMtx, const R
 	{
 		(*it)->doFXPos(primary, primaryMtx, primarySpeed, secondary, overrideRadius);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void FXList::doFXObj(const Object* primary, const Object* secondary) const
 {
-	if (primary && primary->getShroudedStatus(ThePlayerList->getLocalPlayer()->getPlayerIndex()) > OBJECTSHROUD_PARTIAL_CLEAR)
-		return;	//the primary object is fogged or shrouded so don't bother with the effect.
+	// FIXME: ThePlayerList
+	// if (primary && primary->getShroudedStatus(ThePlayerList->getLocalPlayer()->getPlayerIndex()) > OBJECTSHROUD_PARTIAL_CLEAR)
+	// 	return;	//the primary object is fogged or shrouded so don't bother with the effect.
 
 	for (FXNuggetList::const_iterator it = m_nuggets.begin(); it != m_nuggets.end(); ++it)
 	{
@@ -848,7 +944,7 @@ FXListStore::~FXListStore()
 //-------------------------------------------------------------------------------------------------
 const FXList *FXListStore::findFXList(const char* name) const
 {
-	if (stricmp(name, "None") == 0)
+	if (strcasecmp(name, "None") == 0)
 		return NULL;
 
   FXListMap::const_iterator it = m_fxmap.find(NAMEKEY(name));

@@ -44,13 +44,13 @@
 #include "Common/GameState.h"
 #include "Common/INI.h"
 #include "Common/PerfTimer.h"
-#include "Common/Player.h"
+// #include "Common/Player.h"
 #include "Common/ThingFactory.h"
 #include "Common/ThingTemplate.h"
 #include "Common/Xfer.h"
  
 #include "GameClient/Drawable.h"
-#include "GameClient/FXList.h"
+// #include "GameClient/FXList.h"
 #include "GameClient/InGameUI.h"
 #include "GameClient/ParticleSys.h"
 
@@ -64,13 +64,13 @@
 #include "GameLogic/Module/LaserUpdate.h"
 #include "GameLogic/Module/UpdateModule.h"
 #include "GameLogic/Module/SpecialPowerCompletionDie.h"
-#include "GameLogic/Module/AssaultTransportAIUpdate.h"
+// #include "GameLogic/Module/AssaultTransportAIUpdate.h"
 #include "GameLogic/Object.h"
-#include "GameLogic/ObjectCreationList.h"
-#include "GameLogic/PartitionManager.h"
+// #include "GameLogic/ObjectCreationList.h"
+// #include "GameLogic/PartitionManager.h"
 #include "GameLogic/Weapon.h"
 
-#include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/AssistedTargetingUpdate.h"
 #include "GameLogic/Module/ProjectileStreamUpdate.h"
 #include "GameLogic/Module/PhysicsUpdate.h"
@@ -79,11 +79,13 @@
 #define RATIONALIZE_ATTACK_RANGE
 #define ATTACK_RANGE_IS_2D
 
+#if 0
 #ifdef ATTACK_RANGE_IS_2D
 	const DistanceCalculationType ATTACK_RANGE_CALC_TYPE = FROM_BOUNDINGSPHERE_2D;
 #else
 	const DistanceCalculationType ATTACK_RANGE_CALC_TYPE = FROM_BOUNDINGSPHERE_3D;
 #endif
+#endif // if 0
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -91,8 +93,10 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#if 0
 // damage is ALWAYS 3d
 const DistanceCalculationType DAMAGE_RANGE_CALC_TYPE = FROM_BOUNDINGSPHERE_3D;
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 static void parsePerVetLevelAsciiString( INI* ini, void* /*instance*/, void * store, const void* /*userData*/ )
@@ -167,83 +171,83 @@ WeaponStore *TheWeaponStore = NULL;					///< the weapon store definition
 const FieldParse WeaponTemplate::TheWeaponTemplateFieldParseTable[] = 
 {
 
-	{ "PrimaryDamage",						INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_primaryDamage) },		
-	{ "PrimaryDamageRadius",			INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_primaryDamageRadius) },		
-	{ "SecondaryDamage",					INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_secondaryDamage) },		
-	{ "SecondaryDamageRadius",		INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_secondaryDamageRadius) },		
-	{ "ShockWaveAmount",					INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_shockWaveAmount) },		
-	{ "ShockWaveRadius",					INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_shockWaveRadius) },		
-	{ "ShockWaveTaperOff",				INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_shockWaveTaperOff) },		
-	{ "AttackRange",							INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_attackRange) },		
-	{ "MinimumAttackRange",				INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_minimumAttackRange) },		
-	{ "RequestAssistRange",				INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_requestAssistRange) },		
-	{ "AcceptableAimDelta",				INI::parseAngleReal,										NULL,							offsetof(WeaponTemplate, m_aimDelta) },		
-	{ "ScatterRadius",						INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_scatterRadius) },		
-	{ "ScatterTargetScalar",			INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_scatterTargetScalar) },		
-	{ "ScatterRadiusVsInfantry",	INI::parseReal,													NULL,							offsetof( WeaponTemplate, m_infantryInaccuracyDist ) },
-	{ "DamageType",								DamageTypeFlags::parseSingleBitFromINI,	NULL,							offsetof(WeaponTemplate, m_damageType) },		
-	{ "DamageStatusType",					ObjectStatusMaskType::parseSingleBitFromINI,	NULL,				offsetof(WeaponTemplate, m_damageStatusType) },		
-	{ "DeathType",								INI::parseIndexList,										TheDeathNames,		offsetof(WeaponTemplate, m_deathType) },		
-	{ "WeaponSpeed",							INI::parseVelocityReal,									NULL,							offsetof(WeaponTemplate, m_weaponSpeed) },		
-	{ "MinWeaponSpeed",						INI::parseVelocityReal,									NULL,							offsetof(WeaponTemplate, m_minWeaponSpeed) },		
-	{ "ScaleWeaponSpeed",					INI::parseBool,													NULL,							offsetof(WeaponTemplate, m_isScaleWeaponSpeed) },		
-	{ "WeaponRecoil",							INI::parseAngleReal,										NULL,							offsetof(WeaponTemplate, m_weaponRecoil) },		
-	{ "MinTargetPitch",						INI::parseAngleReal,										NULL,							offsetof(WeaponTemplate, m_minTargetPitch) },		
-	{ "MaxTargetPitch",						INI::parseAngleReal,										NULL,							offsetof(WeaponTemplate, m_maxTargetPitch) },		
-	{ "RadiusDamageAngle",				INI::parseAngleReal,										NULL,							offsetof(WeaponTemplate, m_radiusDamageAngle) },		
-	{ "ProjectileObject",					INI::parseAsciiString,									NULL,							offsetof(WeaponTemplate, m_projectileName) },		
-	{ "FireSound",								INI::parseAudioEventRTS,								NULL,							offsetof(WeaponTemplate, m_fireSound) },		
-	{ "FireSoundLoopTime",				INI::parseDurationUnsignedInt,					NULL,							offsetof(WeaponTemplate, m_fireSoundLoopTime) },		
-	{ "FireFX",											parseAllVetLevelsFXList,							NULL,							offsetof(WeaponTemplate, m_fireFXs) },		
-	{ "ProjectileDetonationFX",			parseAllVetLevelsFXList,							NULL,							offsetof(WeaponTemplate, m_projectileDetonateFXs) },		
-	{ "FireOCL",										parseAllVetLevelsAsciiString,					NULL,							offsetof(WeaponTemplate, m_fireOCLNames) },		
-	{ "ProjectileDetonationOCL",		parseAllVetLevelsAsciiString,					NULL,							offsetof(WeaponTemplate, m_projectileDetonationOCLNames) },		
-	{ "ProjectileExhaust",					parseAllVetLevelsPSys,								NULL,							offsetof(WeaponTemplate, m_projectileExhausts) },		
-	{ "VeterancyFireFX",										parsePerVetLevelFXList,				NULL,							offsetof(WeaponTemplate, m_fireFXs) },		
-	{ "VeterancyProjectileDetonationFX",		parsePerVetLevelFXList,				NULL,							offsetof(WeaponTemplate, m_projectileDetonateFXs) },		
-	{ "VeterancyFireOCL",										parsePerVetLevelAsciiString,	NULL,							offsetof(WeaponTemplate, m_fireOCLNames) },		
-	{ "VeterancyProjectileDetonationOCL",		parsePerVetLevelAsciiString,	NULL,							offsetof(WeaponTemplate, m_projectileDetonationOCLNames) },		
-	{ "VeterancyProjectileExhaust",					parsePerVetLevelPSys,					NULL,							offsetof(WeaponTemplate, m_projectileExhausts) },		
-	{ "ClipSize",									INI::parseInt,													NULL,							offsetof(WeaponTemplate, m_clipSize) },		
-	{ "ContinuousFireOne",				INI::parseInt,													NULL,							offsetof(WeaponTemplate, m_continuousFireOneShotsNeeded) },		
-	{ "ContinuousFireTwo",				INI::parseInt,													NULL,							offsetof(WeaponTemplate, m_continuousFireTwoShotsNeeded) },		
-	{ "ContinuousFireCoast",			INI::parseDurationUnsignedInt,					NULL,							offsetof(WeaponTemplate, m_continuousFireCoastFrames) },		
- 	{ "AutoReloadWhenIdle",				INI::parseDurationUnsignedInt,					NULL,							offsetof(WeaponTemplate, m_autoReloadWhenIdleFrames) },		
-	{ "ClipReloadTime",						INI::parseDurationUnsignedInt,					NULL,							offsetof(WeaponTemplate, m_clipReloadTime) },		
-	{ "DelayBetweenShots",				WeaponTemplate::parseShotDelay,					NULL,							0 },
-	{ "ShotsPerBarrel",						INI::parseInt,													NULL,							offsetof(WeaponTemplate, m_shotsPerBarrel) },
-	{ "DamageDealtAtSelfPosition",INI::parseBool,													NULL,							offsetof(WeaponTemplate, m_damageDealtAtSelfPosition) },		
-	{ "RadiusDamageAffects",			INI::parseBitString32,	TheWeaponAffectsMaskNames,				offsetof(WeaponTemplate, m_affectsMask) },		
-	{ "ProjectileCollidesWith",		INI::parseBitString32,	TheWeaponCollideMaskNames,				offsetof(WeaponTemplate, m_collideMask) },		
-	{ "AntiAirborneVehicle",			INI::parseBitInInt32,										(void*)WEAPON_ANTI_AIRBORNE_VEHICLE,	offsetof(WeaponTemplate, m_antiMask) },		
-	{ "AntiGround",								INI::parseBitInInt32,										(void*)WEAPON_ANTI_GROUND,						offsetof(WeaponTemplate, m_antiMask) },		
-	{ "AntiProjectile",						INI::parseBitInInt32,										(void*)WEAPON_ANTI_PROJECTILE,				offsetof(WeaponTemplate, m_antiMask) },		
-	{ "AntiSmallMissile",					INI::parseBitInInt32,										(void*)WEAPON_ANTI_SMALL_MISSILE,			offsetof(WeaponTemplate, m_antiMask) },
-	{ "AntiMine",									INI::parseBitInInt32,										(void*)WEAPON_ANTI_MINE,							offsetof(WeaponTemplate, m_antiMask) },
-	{ "AntiParachute",						INI::parseBitInInt32,										(void*)WEAPON_ANTI_PARACHUTE,					offsetof(WeaponTemplate, m_antiMask) },
-	{ "AntiAirborneInfantry",			INI::parseBitInInt32,										(void*)WEAPON_ANTI_AIRBORNE_INFANTRY, offsetof(WeaponTemplate, m_antiMask) },
-	{ "AntiBallisticMissile",			INI::parseBitInInt32,										(void*)WEAPON_ANTI_BALLISTIC_MISSILE, offsetof(WeaponTemplate, m_antiMask) },
-	{ "AutoReloadsClip",					INI::parseIndexList,										TheWeaponReloadNames,							offsetof(WeaponTemplate, m_reloadType) },		
-	{ "ProjectileStreamName",			INI::parseAsciiString,									NULL,							offsetof(WeaponTemplate, m_projectileStreamName) },
-	{ "LaserName",								INI::parseAsciiString,									NULL,							offsetof(WeaponTemplate, m_laserName) },
-	{ "LaserBoneName",						INI::parseAsciiString,									NULL,							offsetof(WeaponTemplate, m_laserBoneName) },
-	{ "WeaponBonus",							WeaponTemplate::parseWeaponBonusSet,		NULL,							0 },		
-	{ "HistoricBonusTime",				INI::parseDurationUnsignedInt,					NULL,							offsetof(WeaponTemplate, m_historicBonusTime) },		
-	{ "HistoricBonusRadius",			INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_historicBonusRadius) },		
-	{ "HistoricBonusCount",				INI::parseInt,													NULL,							offsetof(WeaponTemplate, m_historicBonusCount) },		
-	{ "HistoricBonusWeapon",			INI::parseWeaponTemplate,								NULL,							offsetof(WeaponTemplate, m_historicBonusWeapon) },		
-	{ "LeechRangeWeapon",					INI::parseBool,													NULL,							offsetof(WeaponTemplate, m_leechRangeWeapon) },
-	{ "ScatterTarget",						WeaponTemplate::parseScatterTarget,			NULL,							0 },		
-	{ "CapableOfFollowingWaypoints", INI::parseBool,											NULL,							offsetof(WeaponTemplate, m_capableOfFollowingWaypoint) },
-	{ "ShowsAmmoPips",						INI::parseBool,													NULL,							offsetof(WeaponTemplate, m_isShowsAmmoPips) },
-	{ "AllowAttackGarrisonedBldgs", INI::parseBool,												NULL,							offsetof(WeaponTemplate, m_allowAttackGarrisonedBldgs) },
-	{ "PlayFXWhenStealthed",			INI::parseBool,													NULL,							offsetof(WeaponTemplate, m_playFXWhenStealthed) },
-	{ "PreAttackDelay",						INI::parseDurationUnsignedInt,					NULL,							offsetof( WeaponTemplate, m_preAttackDelay ) },
-	{ "PreAttackType",						INI::parseIndexList,										TheWeaponPrefireNames, offsetof(WeaponTemplate, m_prefireType) },		
-	{ "ContinueAttackRange",			INI::parseReal,													NULL,							offsetof(WeaponTemplate, m_continueAttackRange) },
-	{ "SuspendFXDelay",						INI::parseDurationUnsignedInt,					NULL,							offsetof(WeaponTemplate, m_suspendFXDelay) },		
-	{ "MissileCallsOnDie",			INI::parseBool,													NULL,							offsetof(WeaponTemplate, m_dieOnDetonate) },
-	{ NULL,												NULL,																		NULL,							0 }  // keep this last
+	{ "PrimaryDamage",						INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_primaryDamage) },
+	{ "PrimaryDamageRadius",				INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_primaryDamageRadius) },
+	{ "SecondaryDamage",					INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_secondaryDamage) },
+	{ "SecondaryDamageRadius",				INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_secondaryDamageRadius) },
+	{ "ShockWaveAmount",					INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_shockWaveAmount) },
+	{ "ShockWaveRadius",					INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_shockWaveRadius) },
+	{ "ShockWaveTaperOff",					INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_shockWaveTaperOff) },
+	{ "AttackRange",						INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_attackRange) },
+	{ "MinimumAttackRange",					INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_minimumAttackRange) },
+	{ "RequestAssistRange",					INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_requestAssistRange) },
+	{ "AcceptableAimDelta",					INI::parseAngleReal,							NULL,									offsetof(WeaponTemplate::IniData, m_aimDelta) },
+	{ "ScatterRadius",						INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_scatterRadius) },
+	{ "ScatterTargetScalar",				INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_scatterTargetScalar) },
+	{ "ScatterRadiusVsInfantry",			INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_infantryInaccuracyDist ) },
+	{ "DamageType",							DamageTypeFlags::parseSingleBitFromINI,			NULL,									offsetof(WeaponTemplate::IniData, m_damageType) },
+	{ "DamageStatusType",					ObjectStatusMaskType::parseSingleBitFromINI,	NULL,									offsetof(WeaponTemplate::IniData, m_damageStatusType) },
+	{ "DeathType",							INI::parseIndexList,							TheDeathNames,							offsetof(WeaponTemplate::IniData, m_deathType) },
+	{ "WeaponSpeed",						INI::parseVelocityReal,							NULL,									offsetof(WeaponTemplate::IniData, m_weaponSpeed) },
+	{ "MinWeaponSpeed",						INI::parseVelocityReal,							NULL,									offsetof(WeaponTemplate::IniData, m_minWeaponSpeed) },
+	{ "ScaleWeaponSpeed",					INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_isScaleWeaponSpeed) },
+	{ "WeaponRecoil",						INI::parseAngleReal,							NULL,									offsetof(WeaponTemplate::IniData, m_weaponRecoil) },
+	{ "MinTargetPitch",						INI::parseAngleReal,							NULL,									offsetof(WeaponTemplate::IniData, m_minTargetPitch) },
+	{ "MaxTargetPitch",						INI::parseAngleReal,							NULL,									offsetof(WeaponTemplate::IniData, m_maxTargetPitch) },
+	{ "RadiusDamageAngle",					INI::parseAngleReal,							NULL,									offsetof(WeaponTemplate::IniData, m_radiusDamageAngle) },
+	{ "ProjectileObject",					INI::parseAsciiString,							NULL,									offsetof(WeaponTemplate::IniData, m_projectileName) },
+	{ "FireSound",							WeaponTemplate::parseAudioEventRTS,				NULL,									0 },
+	{ "FireSoundLoopTime",					INI::parseDurationUnsignedInt,					NULL,									offsetof(WeaponTemplate::IniData, m_fireSoundLoopTime) },
+	{ "FireFX",								parseAllVetLevelsFXList,						NULL,									offsetof(WeaponTemplate::IniData, m_fireFXs) },
+	{ "ProjectileDetonationFX",				parseAllVetLevelsFXList,						NULL,									offsetof(WeaponTemplate::IniData, m_projectileDetonateFXs) },
+	{ "FireOCL",							parseAllVetLevelsAsciiString,					NULL,									offsetof(WeaponTemplate::IniData, m_fireOCLNames) },
+	{ "ProjectileDetonationOCL",			parseAllVetLevelsAsciiString,					NULL,									offsetof(WeaponTemplate::IniData, m_projectileDetonationOCLNames) },
+	{ "ProjectileExhaust",					parseAllVetLevelsPSys,							NULL,									offsetof(WeaponTemplate::IniData, m_projectileExhausts) },
+	{ "VeterancyFireFX",					parsePerVetLevelFXList,							NULL,									offsetof(WeaponTemplate::IniData, m_fireFXs) },
+	{ "VeterancyProjectileDetonationFX",	parsePerVetLevelFXList,							NULL,									offsetof(WeaponTemplate::IniData, m_projectileDetonateFXs) },
+	{ "VeterancyFireOCL",					parsePerVetLevelAsciiString,					NULL,									offsetof(WeaponTemplate::IniData, m_fireOCLNames) },
+	{ "VeterancyProjectileDetonationOCL",	parsePerVetLevelAsciiString,					NULL,									offsetof(WeaponTemplate::IniData, m_projectileDetonationOCLNames) },
+	{ "VeterancyProjectileExhaust",			parsePerVetLevelPSys,							NULL,									offsetof(WeaponTemplate::IniData, m_projectileExhausts) },
+	{ "ClipSize",							INI::parseInt,									NULL,									offsetof(WeaponTemplate::IniData, m_clipSize) },
+	{ "ContinuousFireOne",					INI::parseInt,									NULL,									offsetof(WeaponTemplate::IniData, m_continuousFireOneShotsNeeded) },
+	{ "ContinuousFireTwo",					INI::parseInt,									NULL,									offsetof(WeaponTemplate::IniData, m_continuousFireTwoShotsNeeded) },
+	{ "ContinuousFireCoast",				INI::parseDurationUnsignedInt,					NULL,									offsetof(WeaponTemplate::IniData, m_continuousFireCoastFrames) },
+ 	{ "AutoReloadWhenIdle",					INI::parseDurationUnsignedInt,					NULL,									offsetof(WeaponTemplate::IniData, m_autoReloadWhenIdleFrames) },
+	{ "ClipReloadTime",						INI::parseDurationUnsignedInt,					NULL,									offsetof(WeaponTemplate::IniData, m_clipReloadTime) },
+	{ "DelayBetweenShots",					WeaponTemplate::parseShotDelay,					NULL,									0 },
+	{ "ShotsPerBarrel",						INI::parseInt,									NULL,									offsetof(WeaponTemplate::IniData, m_shotsPerBarrel) },
+	{ "DamageDealtAtSelfPosition",			INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_damageDealtAtSelfPosition) },
+	{ "RadiusDamageAffects",				INI::parseBitString32,							TheWeaponAffectsMaskNames,				offsetof(WeaponTemplate::IniData, m_affectsMask) },
+	{ "ProjectileCollidesWith",				INI::parseBitString32,							TheWeaponCollideMaskNames,				offsetof(WeaponTemplate::IniData, m_collideMask) },
+	{ "AntiAirborneVehicle",				INI::parseBitInInt32,							(void*)WEAPON_ANTI_AIRBORNE_VEHICLE,	offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AntiGround",							INI::parseBitInInt32,							(void*)WEAPON_ANTI_GROUND,				offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AntiProjectile",						INI::parseBitInInt32,							(void*)WEAPON_ANTI_PROJECTILE,			offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AntiSmallMissile",					INI::parseBitInInt32,							(void*)WEAPON_ANTI_SMALL_MISSILE,		offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AntiMine",							INI::parseBitInInt32,							(void*)WEAPON_ANTI_MINE,				offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AntiParachute",						INI::parseBitInInt32,							(void*)WEAPON_ANTI_PARACHUTE,			offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AntiAirborneInfantry",				INI::parseBitInInt32,							(void*)WEAPON_ANTI_AIRBORNE_INFANTRY,	offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AntiBallisticMissile",				INI::parseBitInInt32,							(void*)WEAPON_ANTI_BALLISTIC_MISSILE,	offsetof(WeaponTemplate::IniData, m_antiMask) },
+	{ "AutoReloadsClip",					INI::parseIndexList,							TheWeaponReloadNames,					offsetof(WeaponTemplate::IniData, m_reloadType) },
+	{ "ProjectileStreamName",				INI::parseAsciiString,							NULL,									offsetof(WeaponTemplate::IniData, m_projectileStreamName) },
+	{ "LaserName",							INI::parseAsciiString,							NULL,									offsetof(WeaponTemplate::IniData, m_laserName) },
+	{ "LaserBoneName",						INI::parseAsciiString,							NULL,									offsetof(WeaponTemplate::IniData, m_laserBoneName) },
+	{ "WeaponBonus",						WeaponTemplate::parseWeaponBonusSet,			NULL,									0 },
+	{ "HistoricBonusTime",					INI::parseDurationUnsignedInt,					NULL,									offsetof(WeaponTemplate::IniData, m_historicBonusTime) },
+	{ "HistoricBonusRadius",				INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_historicBonusRadius) },
+	{ "HistoricBonusCount",					INI::parseInt,									NULL,									offsetof(WeaponTemplate::IniData, m_historicBonusCount) },
+	{ "HistoricBonusWeapon",				INI::parseWeaponTemplate,						NULL,									offsetof(WeaponTemplate::IniData, m_historicBonusWeapon) },
+	{ "LeechRangeWeapon",					INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_leechRangeWeapon) },
+	{ "ScatterTarget",						WeaponTemplate::parseScatterTarget,				NULL,									0 },
+	{ "CapableOfFollowingWaypoints", 		INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_capableOfFollowingWaypoint) },
+	{ "ShowsAmmoPips",						INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_isShowsAmmoPips) },
+	{ "AllowAttackGarrisonedBldgs", 		INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_allowAttackGarrisonedBldgs) },
+	{ "PlayFXWhenStealthed",				INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_playFXWhenStealthed) },
+	{ "PreAttackDelay",						INI::parseDurationUnsignedInt,					NULL,									offsetof(WeaponTemplate::IniData, m_preAttackDelay ) },
+	{ "PreAttackType",						INI::parseIndexList,							TheWeaponPrefireNames, 					offsetof(WeaponTemplate::IniData, m_prefireType) },
+	{ "ContinueAttackRange",				INI::parseReal,									NULL,									offsetof(WeaponTemplate::IniData, m_continueAttackRange) },
+	{ "SuspendFXDelay",						INI::parseDurationUnsignedInt,					NULL,									offsetof(WeaponTemplate::IniData, m_suspendFXDelay) },
+	{ "MissileCallsOnDie",					INI::parseBool,									NULL,									offsetof(WeaponTemplate::IniData, m_dieOnDetonate) },
+	{ NULL,									NULL,											NULL,									0 }  // keep this last
 
 };
 
@@ -255,78 +259,80 @@ const FieldParse WeaponTemplate::TheWeaponTemplateFieldParseTable[] =
 WeaponTemplate::WeaponTemplate() : m_nextTemplate(NULL)
 {
 
-	m_name													= "NoNameWeapon";
-	m_nameKey												= NAMEKEY_INVALID;
-	m_primaryDamage									= 0.0f;
-	m_primaryDamageRadius						= 0.0f;
-	m_secondaryDamage								= 0.0f;
-	m_secondaryDamageRadius					= 0.0f;
-	m_attackRange										= 0.0f;
-	m_minimumAttackRange						= 0.0f;
-	m_requestAssistRange						= 0.0f;
-	m_aimDelta											= 0.0f;
-	m_scatterRadius									= 0.0f;
-	m_scatterTargetScalar						= 0.0f;
-	m_shockWaveAmount								= 0.0f;
-	m_shockWaveRadius								= 0.0f;
-	m_shockWaveTaperOff							= 0.0f;
-	m_damageType										= DAMAGE_EXPLOSION;
-	m_deathType											= DEATH_NORMAL;
-	m_weaponSpeed										= 999999.0f;	// effectively instant
-	m_minWeaponSpeed								= 999999.0f;	// effectively instant
-	m_isScaleWeaponSpeed						= FALSE;
-	m_weaponRecoil									= 0.0f;		// no recoil
-	m_minTargetPitch								= -PI;
-	m_maxTargetPitch								= PI;
-	m_radiusDamageAngle							= PI;	// PI each way, so full circle
-	m_projectileName.clear();					// no projectile
-	m_projectileTmpl								= NULL;
+	m_ini.m_name													= "NoNameWeapon";
+	m_ini.m_nameKey												= NAMEKEY_INVALID;
+	m_ini.m_primaryDamage									= 0.0f;
+	m_ini.m_primaryDamageRadius						= 0.0f;
+	m_ini.m_secondaryDamage								= 0.0f;
+	m_ini.m_secondaryDamageRadius					= 0.0f;
+	m_ini.m_attackRange										= 0.0f;
+	m_ini.m_minimumAttackRange						= 0.0f;
+	m_ini.m_requestAssistRange						= 0.0f;
+	m_ini.m_aimDelta											= 0.0f;
+	m_ini.m_scatterRadius									= 0.0f;
+	m_ini.m_scatterTargetScalar						= 0.0f;
+	m_ini.m_shockWaveAmount								= 0.0f;
+	m_ini.m_shockWaveRadius								= 0.0f;
+	m_ini.m_shockWaveTaperOff							= 0.0f;
+	m_ini.m_damageType										= DAMAGE_EXPLOSION;
+	m_ini.m_deathType											= DEATH_NORMAL;
+	m_ini.m_weaponSpeed										= 999999.0f;	// effectively instant
+	m_ini.m_minWeaponSpeed								= 999999.0f;	// effectively instant
+	m_ini.m_isScaleWeaponSpeed						= FALSE;
+	m_ini.m_weaponRecoil									= 0.0f;		// no recoil
+	m_ini.m_minTargetPitch								= -PI;
+	m_ini.m_maxTargetPitch								= PI;
+	m_ini.m_radiusDamageAngle							= PI;	// PI each way, so full circle
+	m_ini.m_projectileName.clear();					// no projectile
+	m_ini.m_projectileTmpl								= NULL;
 	for (Int i = LEVEL_FIRST; i <= LEVEL_LAST; ++i)
 	{
-		m_fireOCLNames[i].clear();
-		m_projectileDetonationOCLNames[i].clear();
-		m_projectileExhausts[i]					= NULL;
-		m_fireOCLs[i]										= NULL;
-		m_projectileDetonationOCLs[i]		= NULL;
-		m_fireFXs[i]										= NULL;
-		m_projectileDetonateFXs[i]			= NULL;
+		m_ini.m_fireOCLNames[i].clear();
+		m_ini.m_projectileDetonationOCLNames[i].clear();
+		m_ini.m_projectileExhausts[i]					= NULL;
+		m_ini.m_fireOCLs[i]										= NULL;
+		m_ini.m_projectileDetonationOCLs[i]		= NULL;
+		m_ini.m_fireFXs[i]										= NULL;
+		m_ini.m_projectileDetonateFXs[i]			= NULL;
 	}
-	m_damageDealtAtSelfPosition			= false;
-	m_affectsMask										= (WEAPON_AFFECTS_ALLIES | WEAPON_AFFECTS_ENEMIES | WEAPON_AFFECTS_NEUTRALS);
+	m_ini.m_damageDealtAtSelfPosition			= false;
+	m_ini.m_affectsMask										= (WEAPON_AFFECTS_ALLIES | WEAPON_AFFECTS_ENEMIES | WEAPON_AFFECTS_NEUTRALS);
 	// most projectile weapons don't want to collide with nontargeted enemies/allies or trees...
-	m_collideMask										= (WEAPON_COLLIDE_STRUCTURES);
-	m_reloadType										= AUTO_RELOAD;
-	m_prefireType										= PREFIRE_PER_SHOT;
-	m_clipSize											= 0;
-	m_continuousFireOneShotsNeeded	= INT_MAX;
-	m_continuousFireTwoShotsNeeded	= INT_MAX;
-	m_continuousFireCoastFrames			= 0;
- 	m_autoReloadWhenIdleFrames			= 0;
-	m_clipReloadTime								= 0;
-	m_minDelayBetweenShots					= 0;
-	m_maxDelayBetweenShots					= 0;
-	m_fireSoundLoopTime							= 0;
-	m_extraBonus										= NULL;
-	m_shotsPerBarrel								= 1;
-	m_antiMask											= WEAPON_ANTI_GROUND;	// but not air or projectile.
-	m_projectileStreamName.clear();
-	m_laserName.clear();
-	m_laserBoneName.clear();
-	m_historicBonusTime							= 0;
-	m_historicBonusCount						= 0;
-	m_historicBonusRadius						= 0;
-	m_historicBonusWeapon						= NULL;
-	m_leechRangeWeapon							= FALSE;
-	m_capableOfFollowingWaypoint		= FALSE;
-	m_isShowsAmmoPips								= FALSE;
-	m_allowAttackGarrisonedBldgs		= FALSE;
-	m_playFXWhenStealthed						= FALSE;
-	m_preAttackDelay								= 0;
-	m_continueAttackRange						= 0.0f;
-	m_infantryInaccuracyDist				= 0.0f;
-	m_damageStatusType							= OBJECT_STATUS_NONE;
-	m_suspendFXDelay								= 0;
-	m_dieOnDetonate						= FALSE;
+	m_ini.m_collideMask										= (WEAPON_COLLIDE_STRUCTURES);
+	m_ini.m_reloadType										= AUTO_RELOAD;
+	m_ini.m_prefireType										= PREFIRE_PER_SHOT;
+	m_ini.m_clipSize											= 0;
+	m_ini.m_continuousFireOneShotsNeeded	= INT_MAX;
+	m_ini.m_continuousFireTwoShotsNeeded	= INT_MAX;
+	m_ini.m_continuousFireCoastFrames			= 0;
+ 	m_ini.m_autoReloadWhenIdleFrames			= 0;
+	m_ini.m_clipReloadTime								= 0;
+	m_ini.m_minDelayBetweenShots					= 0;
+	m_ini.m_maxDelayBetweenShots					= 0;
+	m_ini.m_fireSoundLoopTime							= 0;
+	m_ini.m_extraBonus										= NULL;
+	m_ini.m_shotsPerBarrel								= 1;
+	m_ini.m_antiMask											= WEAPON_ANTI_GROUND;	// but not air or projectile.
+	m_ini.m_projectileStreamName.clear();
+	m_ini.m_laserName.clear();
+	m_ini.m_laserBoneName.clear();
+	m_ini.m_historicBonusTime							= 0;
+	m_ini.m_historicBonusCount						= 0;
+	m_ini.m_historicBonusRadius						= 0;
+	m_ini.m_historicBonusWeapon						= NULL;
+	m_ini.m_leechRangeWeapon							= FALSE;
+	m_ini.m_capableOfFollowingWaypoint		= FALSE;
+	m_ini.m_isShowsAmmoPips								= FALSE;
+	m_ini.m_allowAttackGarrisonedBldgs		= FALSE;
+	m_ini.m_playFXWhenStealthed						= FALSE;
+	m_ini.m_preAttackDelay								= 0;
+	m_ini.m_continueAttackRange						= 0.0f;
+	m_ini.m_infantryInaccuracyDist				= 0.0f;
+	m_ini.m_damageStatusType							= OBJECT_STATUS_NONE;
+	m_ini.m_suspendFXDelay								= 0;
+	m_ini.m_dieOnDetonate						= FALSE;
+
+	m_ini.m_obj = this;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -337,8 +343,8 @@ WeaponTemplate::~WeaponTemplate()
 	}
 
 	// delete any extra-bonus that's present
-	if (m_extraBonus)
-		m_extraBonus->deleteInstance();
+	if (m_ini.m_extraBonus)
+		m_ini.m_extraBonus->deleteInstance();
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -350,63 +356,74 @@ void WeaponTemplate::reset( void )
 //-------------------------------------------------------------------------------------------------
 /*static*/ void WeaponTemplate::parseWeaponBonusSet( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
-	WeaponTemplate* self = (WeaponTemplate*)instance;
+	WeaponTemplate::IniData* data = (WeaponTemplate::IniData*) instance;
+	WeaponTemplate* self = data->m_obj;
 
-	if (!self->m_extraBonus)
-		self->m_extraBonus = newInstance(WeaponBonusSet);
+	if (!self->m_ini.m_extraBonus)
+		self->m_ini.m_extraBonus = newInstance(WeaponBonusSet);
 
-	self->m_extraBonus->parseWeaponBonusSet(ini);
+	self->m_ini.m_extraBonus->parseWeaponBonusSet(ini);
 }
 
 //-------------------------------------------------------------------------------------------------
 /*static*/ void WeaponTemplate::parseScatterTarget( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
 	// Accept multiple listings of Coord2D's.
-	WeaponTemplate* self = (WeaponTemplate*)instance;
+	WeaponTemplate::IniData* data = (WeaponTemplate::IniData*) instance;
+	WeaponTemplate* self = data->m_obj;
 
 	Coord2D target;
 	target.x = 0;
 	target.y = 0;
 	INI::parseCoord2D( ini, NULL, &target, NULL );
 
-	self->m_scatterTargets.push_back(target);
+	self->m_ini.m_scatterTargets.push_back(target);
 }
 
 //-------------------------------------------------------------------------------------------------
 /*static*/ void WeaponTemplate::parseShotDelay( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
 	// This smart parser allows both a single number for traditional delay, and a labeled pair of numbers for a delay range
-	WeaponTemplate* self = (WeaponTemplate*)instance;
+	WeaponTemplate::IniData* data = (WeaponTemplate::IniData*) instance;
+	WeaponTemplate* self = data->m_obj;
 	static const char *MIN_LABEL = "Min";
 	static const char *MAX_LABEL = "Max";
 
 	const char* token = ini->getNextTokenOrNull(ini->getSepsColon());
 
-	if( stricmp(token, MIN_LABEL) == 0 )
+	if( strcasecmp(token, MIN_LABEL) == 0 )
 	{
 		// Two entry min/max
-		self->m_minDelayBetweenShots = INI::scanInt(ini->getNextToken(ini->getSepsColon()));
+		self->m_ini.m_minDelayBetweenShots = INI::scanInt(ini->getNextToken(ini->getSepsColon()));
 		token = ini->getNextTokenOrNull(ini->getSepsColon());
-		if( stricmp(token, MAX_LABEL) != 0 )
+		if( strcasecmp(token, MAX_LABEL) != 0 )
 		{
 			// Messed up double entry
-			self->m_maxDelayBetweenShots = self->m_minDelayBetweenShots;
+			self->m_ini.m_maxDelayBetweenShots = self->m_ini.m_minDelayBetweenShots;
 		}
 		else
-			self->m_maxDelayBetweenShots = INI::scanInt(ini->getNextToken(ini->getSepsColon()));
+			self->m_ini.m_maxDelayBetweenShots = INI::scanInt(ini->getNextToken(ini->getSepsColon()));
 	}
 	else 
 	{
 		// single entry, as in no label so the first token is just a number
-		self->m_minDelayBetweenShots = INI::scanInt(token);
-		self->m_maxDelayBetweenShots = self->m_minDelayBetweenShots;
+		self->m_ini.m_minDelayBetweenShots = INI::scanInt(token);
+		self->m_ini.m_maxDelayBetweenShots = self->m_ini.m_minDelayBetweenShots;
 	}
 
 	// No matter what we have now, we want to convert it to frames from msec. 
 	// ShotDelay used to use parseDurationUnsignedInt, and we are expanding on that.
-	self->m_minDelayBetweenShots = ceilf(ConvertDurationFromMsecsToFrames((Real)self->m_minDelayBetweenShots));
-	self->m_maxDelayBetweenShots = ceilf(ConvertDurationFromMsecsToFrames((Real)self->m_maxDelayBetweenShots));
+	self->m_ini.m_minDelayBetweenShots = ceilf(ConvertDurationFromMsecsToFrames((Real)self->m_ini.m_minDelayBetweenShots));
+	self->m_ini.m_maxDelayBetweenShots = ceilf(ConvertDurationFromMsecsToFrames((Real)self->m_ini.m_maxDelayBetweenShots));
 
+}
+
+//-------------------------------------------------------------------------------------------------
+void WeaponTemplate::parseAudioEventRTS(INI* ini, void *instance, void *store, const void *userData)
+{
+	WeaponTemplate::IniData* data = (WeaponTemplate::IniData*) instance;
+	WeaponTemplate* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_fireSound);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -417,43 +434,45 @@ void WeaponTemplate::postProcessLoad()
 		DEBUG_CRASH(("you must call this after TheThingFactory is inited"));
 		return;
 	}
-	
-	if (m_projectileName.isEmpty())
-	{
-		m_projectileTmpl = NULL;
-	}
-	else
-	{
-		m_projectileTmpl = TheThingFactory->findTemplate(m_projectileName);
-		DEBUG_ASSERTCRASH(m_projectileTmpl, ("projectile %s not found!",m_projectileName.str()));
-	}
 
-	for (Int i = LEVEL_FIRST; i <= LEVEL_LAST; ++i)
-	{
-		// And the OCL if there is one
-		if (m_fireOCLNames[i].isEmpty())
-		{
-			m_fireOCLs[i] = NULL;
-		}
-		else
-		{
-			m_fireOCLs[i] = TheObjectCreationListStore->findObjectCreationList(m_fireOCLNames[i].str() );
-			DEBUG_ASSERTCRASH(m_fireOCLs[i], ("OCL %s not found in a weapon!",m_fireOCLNames[i].str()));
-		}
-		m_fireOCLNames[i].clear();
+	// FIXME: Uncomment once we are parsing all of the things
+	// if (m_ini.m_projectileName.isEmpty())
+	// {
+	// 	m_ini.m_projectileTmpl = NULL;
+	// }
+	// else
+	// {
+	// 	m_ini.m_projectileTmpl = TheThingFactory->findTemplate(m_ini.m_projectileName);
+	// 	DEBUG_ASSERTCRASH(m_ini.m_projectileTmpl, ("projectile %s not found!",m_ini.m_projectileName.str()));
+	// }
 
-		// And the other OCL if there is one
-		if (m_projectileDetonationOCLNames[i].isEmpty() )
-		{
-			m_projectileDetonationOCLs[i] = NULL;
-		}
-		else
-		{
-			m_projectileDetonationOCLs[i] = TheObjectCreationListStore->findObjectCreationList(m_projectileDetonationOCLNames[i].str() );
-			DEBUG_ASSERTCRASH(m_projectileDetonationOCLs[i], ("OCL %s not found in a weapon!",m_projectileDetonationOCLNames[i].str()));
-		}
-		m_projectileDetonationOCLNames[i].clear();
-	}
+	// FIXME: TheObjectCreationListStore
+	// for (Int i = LEVEL_FIRST; i <= LEVEL_LAST; ++i)
+	// {
+	// 	// And the OCL if there is one
+	// 	if (m_ini.m_fireOCLNames[i].isEmpty())
+	// 	{
+	// 		m_ini.m_fireOCLs[i] = NULL;
+	// 	}
+	// 	else
+	// 	{
+	// 		m_ini.m_fireOCLs[i] = TheObjectCreationListStore->findObjectCreationList(m_ini.m_fireOCLNames[i].str() );
+	// 		DEBUG_ASSERTCRASH(m_ini.m_fireOCLs[i], ("OCL %s not found in a weapon!",m_ini.m_fireOCLNames[i].str()));
+	// 	}
+	// 	m_ini.m_fireOCLNames[i].clear();
+
+	// 	// And the other OCL if there is one
+	// 	if (m_ini.m_projectileDetonationOCLNames[i].isEmpty() )
+	// 	{
+	// 		m_ini.m_projectileDetonationOCLs[i] = NULL;
+	// 	}
+	// 	else
+	// 	{
+	// 		m_ini.m_projectileDetonationOCLs[i] = TheObjectCreationListStore->findObjectCreationList(m_ini.m_projectileDetonationOCLNames[i].str() );
+	// 		DEBUG_ASSERTCRASH(m_ini.m_projectileDetonationOCLs[i], ("OCL %s not found in a weapon!",m_ini.m_projectileDetonationOCLNames[i].str()));
+	// 	}
+	// 	m_ini.m_projectileDetonationOCLNames[i].clear();
+	// }
 
 }  // end postProcessLoad
 
@@ -464,7 +483,7 @@ Real WeaponTemplate::getAttackRange(const WeaponBonus& bonus) const
 	// Note - undersize by 1/4 of a pathfind cell, so that the goal is not teetering on the edge
 	// of firing range.  jba.
 	const Real UNDERSIZE = PATHFIND_CELL_SIZE_F*0.25f;
-	Real r = m_attackRange * bonus.getField(WeaponBonus::RANGE) - UNDERSIZE; 
+	Real r = m_ini.m_attackRange * bonus.getField(WeaponBonus::RANGE) - UNDERSIZE; 
 	if (r < 0.0f) r = 0.0f;
 	return r;
 #else
@@ -481,7 +500,7 @@ Real WeaponTemplate::getMinimumAttackRange() const
 	// Note - undersize by 1/4 of a pathfind cell, so that the goal is not teetering on the edge
 	// of firing range.  jba.
 	const Real UNDERSIZE = PATHFIND_CELL_SIZE_F*0.25f;
-	Real r = m_minimumAttackRange - UNDERSIZE; 
+	Real r = m_ini.m_minimumAttackRange - UNDERSIZE; 
 	if (r < 0.0f) r = 0.0f;
 	return r;
 #else
@@ -492,7 +511,7 @@ Real WeaponTemplate::getMinimumAttackRange() const
 //-------------------------------------------------------------------------------------------------
 Real WeaponTemplate::getUnmodifiedAttackRange() const
 {
-	return m_attackRange;
+	return m_ini.m_attackRange;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -501,10 +520,10 @@ Int WeaponTemplate::getDelayBetweenShots(const WeaponBonus& bonus) const
 	// yes, divide, not multiply; the larger the rate-of-fire bonus, the shorter
 	// we want the delay time to be.
 	Int delayToUse;
-	if( m_minDelayBetweenShots == m_maxDelayBetweenShots )
-		delayToUse = m_minDelayBetweenShots; // Random number thing doesn't like this case
+	if( m_ini.m_minDelayBetweenShots == m_ini.m_maxDelayBetweenShots )
+		delayToUse = m_ini.m_minDelayBetweenShots; // Random number thing doesn't like this case
 	else
-		delayToUse = GameLogicRandomValue( m_minDelayBetweenShots, m_maxDelayBetweenShots );
+		delayToUse = GameLogicRandomValue( m_ini.m_minDelayBetweenShots, m_ini.m_maxDelayBetweenShots );
 
 	Real bonusROF = bonus.getField(WeaponBonus::RATE_OF_FIRE);
 	//CRCDEBUG_LOG(("WeaponTemplate::getDelayBetweenShots() - min:%d max:%d val:%d, bonusROF=%g/%8.8X\n",
@@ -518,37 +537,37 @@ Int WeaponTemplate::getClipReloadTime(const WeaponBonus& bonus) const
 {
 	// yes, divide, not multiply; the larger the rate-of-fire bonus, the shorter
 	// we want the reload time to be.
-	return REAL_TO_INT_FLOOR(m_clipReloadTime / bonus.getField(WeaponBonus::RATE_OF_FIRE));	
+	return REAL_TO_INT_FLOOR(m_ini.m_clipReloadTime / bonus.getField(WeaponBonus::RATE_OF_FIRE));	
 }
 
 //-------------------------------------------------------------------------------------------------
 Int WeaponTemplate::getPreAttackDelay( const WeaponBonus& bonus ) const
 {
-	return m_preAttackDelay * bonus.getField( WeaponBonus::PRE_ATTACK ); 
+	return m_ini.m_preAttackDelay * bonus.getField( WeaponBonus::PRE_ATTACK ); 
 }
 
 //-------------------------------------------------------------------------------------------------
 Real WeaponTemplate::getPrimaryDamage(const WeaponBonus& bonus) const 
 {
-	return m_primaryDamage * bonus.getField(WeaponBonus::DAMAGE); 
+	return m_ini.m_primaryDamage * bonus.getField(WeaponBonus::DAMAGE); 
 }
 
 //-------------------------------------------------------------------------------------------------
 Real WeaponTemplate::getPrimaryDamageRadius(const WeaponBonus& bonus) const 
 {
-	return m_primaryDamageRadius * bonus.getField(WeaponBonus::RADIUS); 
+	return m_ini.m_primaryDamageRadius * bonus.getField(WeaponBonus::RADIUS); 
 }
 
 //-------------------------------------------------------------------------------------------------
 Real WeaponTemplate::getSecondaryDamage(const WeaponBonus& bonus) const 
 {
-	return m_secondaryDamage * bonus.getField(WeaponBonus::DAMAGE); 
+	return m_ini.m_secondaryDamage * bonus.getField(WeaponBonus::DAMAGE); 
 }
 
 //-------------------------------------------------------------------------------------------------
 Real WeaponTemplate::getSecondaryDamageRadius(const WeaponBonus& bonus) const 
 {
-	return m_secondaryDamageRadius * bonus.getField(WeaponBonus::RADIUS); 
+	return m_ini.m_secondaryDamageRadius * bonus.getField(WeaponBonus::RADIUS); 
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -558,7 +577,7 @@ Bool WeaponTemplate::isContactWeapon() const
 	// Note - undersize by 1/4 of a pathfind cell, so that the goal is not teetering on the edge
 	// of firing range.  jba.
 	const Real UNDERSIZE = PATHFIND_CELL_SIZE_F*0.25f; 
-	return (m_attackRange - UNDERSIZE) < PATHFIND_CELL_SIZE_F;
+	return (m_ini.m_attackRange - UNDERSIZE) < PATHFIND_CELL_SIZE_F;
 #else
 // fudge this a little to account for pathfinding roundoff & such
 	const Real ATTACK_RANGE_FUDGE = 1.05f;
@@ -574,6 +593,13 @@ Real WeaponTemplate::estimateWeaponTemplateDamage(
 	const WeaponBonus& bonus
 ) const
 {
+DEBUG_CRASH(("WeaponTemplate::estimateWeaponTemplateDamage not yet implemented!"));
+(void) sourceObj;
+(void) victimObj;
+(void) victimPos;
+(void) bonus;
+return 0.0f;
+#if 0
 	if (sourceObj == NULL || (victimObj == NULL && victimPos == NULL))
 	{
 		DEBUG_CRASH(("bad args to estimate"));
@@ -610,7 +636,7 @@ Real WeaponTemplate::estimateWeaponTemplateDamage(
 
 
 
-	if (damageType == DAMAGE_SURRENDER || m_allowAttackGarrisonedBldgs)
+	if (damageType == DAMAGE_SURRENDER || m_ini.m_allowAttackGarrisonedBldgs)
 	{
 		ContainModuleInterface* contain = victimObj->getContain();
 		if( contain && contain->getContainCount() > 0 && contain->isGarrisonable() && !contain->isImmuneToClearBuildingAttacks() )
@@ -660,6 +686,7 @@ Real WeaponTemplate::estimateWeaponTemplateDamage(
 		damageInfo.m_amount = damageAmount;
 		return victimObj->estimateDamage(damageInfo);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -670,6 +697,13 @@ Bool WeaponTemplate::shouldProjectileCollideWith(
 	ObjectID intendedVictimID	// could be INVALID_ID for a position-shot
 ) const
 {
+DEBUG_CRASH(("WeaponTemplate::shouldProjectileCollideWith not yet implemented!"));
+(void) projectileLauncher;
+(void) projectile;
+(void) thingWeCollidedWith;
+(void) intendedVictimID;
+return false;
+#if 0
  	if (!projectile || !thingWeCollidedWith)
  		return false;
  
@@ -731,7 +765,7 @@ Bool WeaponTemplate::shouldProjectileCollideWith(
 		return false;
 	}
 
-	Int requiredMask = 0;
+	UnsignedInt requiredMask = 0;
 
 	Relationship r = projectile->getRelationship(thingWeCollidedWith);
 	if (r == ALLIES) requiredMask = WEAPON_COLLIDE_ALLIES;
@@ -756,6 +790,7 @@ Bool WeaponTemplate::shouldProjectileCollideWith(
 
 	//DEBUG_LOG(("Rejecting projectile collision between %s and %s!\n",projectile->getTemplate()->getName().str(),thingWeCollidedWith->getTemplate()->getName().str()));
 	return false;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -774,11 +809,24 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 	Bool inflictDamage
 ) const
 {
-
+DEBUG_CRASH(("WeaponTemplate::fireWeaponTemplate not yet implemented!"));
+(void) sourceObj;
+(void) wslot;
+(void) specificBarrelToUse;
+(void) victimObj;
+(void) victimPos;
+(void) bonus;
+(void) isProjectileDetonation;
+(void) ignoreRanges;
+(void) firingWeapon;
+(void) projectileID;
+(void) inflictDamage;
+return 0;
+#if 0
 	//-extraLogging 
 	#if (defined(_DEBUG) || defined(_INTERNAL))
 		AsciiString targetStr;
-		if( TheGlobalData->m_extraLogging )
+		if( TheGlobalData->m_data.m_extraLogging )
 		{
 			if( victimObj )
 				targetStr.format( "%s", victimObj->getTemplate()->getName().str() );
@@ -800,7 +848,7 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 	{
 		//-extraLogging 
 		#if (defined(_DEBUG) || defined(_INTERNAL))
-			if( TheGlobalData->m_extraLogging )
+			if( TheGlobalData->m_data.m_extraLogging )
 				DEBUG_LOG( ("FAIL 1 (sourceObj %d == NULL || (victimObj %d == NULL && victimPos %d == NULL)\n", sourceObj != 0, victimObj != 0, victimPos != 0) );
 		#endif
 		//end -extraLogging 
@@ -808,7 +856,7 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 		return 0;
 	}
 
-	DEBUG_ASSERTCRASH((m_primaryDamage > 0)  ||  (victimObj == NULL), ("You can't really shoot a zero damage weapon at an Object.") );
+	DEBUG_ASSERTCRASH((m_ini.m_primaryDamage > 0)  ||  (victimObj == NULL), ("You can't really shoot a zero damage weapon at an Object.") );
 
 	ObjectID sourceID = sourceObj->getID();
 	const Coord3D* sourcePos = sourceObj->getPosition();
@@ -879,7 +927,7 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 			
 			//-extraLogging 
 			#if (defined(_DEBUG) || defined(_INTERNAL))
-				if( TheGlobalData->m_extraLogging )
+				if( TheGlobalData->m_data.m_extraLogging )
 					DEBUG_LOG( ("FAIL 2 (distSqr %.2f > attackRangeSqr %.2f)\n", distSqr, attackRangeSqr ) );
 			#endif
 			//end -extraLogging 
@@ -901,7 +949,7 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 
 			//-extraLogging 
 			#if (defined(_DEBUG) || defined(_INTERNAL))
-				if( TheGlobalData->m_extraLogging )
+				if( TheGlobalData->m_data.m_extraLogging )
 					DEBUG_LOG( ("FAIL 3 (distSqr %.2f< minAttackRangeSqr %.2f - 0.5f && !isProjectileDetonation %d)\n", distSqr, minAttackRangeSqr, isProjectileDetonation ) );
 			#endif
 			//end -extraLogging 
@@ -975,11 +1023,11 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 
 	Coord3D projectileDestination = *victimPos; //Need to copy this, as we have a pointer to their actual position
 	Real scatterRadius = 0.0f;
-	if( m_scatterRadius > 0.0f || m_infantryInaccuracyDist > 0.0f && victimObj && victimObj->isKindOf( KINDOF_INFANTRY ) )
+	if( m_ini.m_scatterRadius > 0.0f || m_ini.m_infantryInaccuracyDist > 0.0f && victimObj && victimObj->isKindOf( KINDOF_INFANTRY ) )
 	{
 		// This weapon scatters, so clear the victimObj, as we are no longer shooting it directly,
 		// and find a random point within the radius to shoot at as victimPos
-		scatterRadius = m_scatterRadius;
+		scatterRadius = m_ini.m_scatterRadius;
 
 		// if it's an object, aim at the center, not the ground part (srj)
 		PathfindLayerEnum targetLayer = LAYER_GROUND;
@@ -989,11 +1037,11 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 			{
 				victimObj->getGeometryInfo().getCenterPosition(*victimObj->getPosition(), projectileDestination);
 			}
-			if( m_infantryInaccuracyDist > 0.0f && victimObj->isKindOf( KINDOF_INFANTRY ) )
+			if( m_ini.m_infantryInaccuracyDist > 0.0f && victimObj->isKindOf( KINDOF_INFANTRY ) )
 			{
 				//If we are firing a weapon that is considered inaccurate against infantry, then add it to
 				//the scatter radius!
-				scatterRadius += m_infantryInaccuracyDist;
+				scatterRadius += m_ini.m_infantryInaccuracyDist;
 			}
 			targetLayer = victimObj->getLayer();
 		}
@@ -1068,7 +1116,7 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 
 			//-extraLogging 
 			#if (defined(_DEBUG) || defined(_INTERNAL))
-				if( TheGlobalData->m_extraLogging )
+				if( TheGlobalData->m_data.m_extraLogging )
 					DEBUG_LOG( ("EARLY 4 (delayed damage applied now)\n") );
 			#endif
 			//end -extraLogging 
@@ -1089,7 +1137,7 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 
 			//-extraLogging 
 			#if (defined(_DEBUG) || defined(_INTERNAL))
-				if( TheGlobalData->m_extraLogging )
+				if( TheGlobalData->m_data.m_extraLogging )
 					DEBUG_LOG( ("EARLY 5 (delaying damage applied until frame %d)\n", when ) );
 			#endif
 			//end -extraLogging 
@@ -1180,19 +1228,20 @@ UnsignedInt WeaponTemplate::fireWeaponTemplate
 		}
 		//-extraLogging 
 		#if (defined(_DEBUG) || defined(_INTERNAL))
-			if( TheGlobalData->m_extraLogging )
+			if( TheGlobalData->m_data.m_extraLogging )
 				DEBUG_LOG( ("DONE\n") );
 		#endif
 		//end -extraLogging 
 
 		return 0;
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void WeaponTemplate::trimOldHistoricDamage() const
 {
-	UnsignedInt expirationDate = TheGameLogic->getFrame() - TheGlobalData->m_historicDamageLimit;
+	UnsignedInt expirationDate = TheGameLogic->getFrame() - TheGlobalData->m_data.m_historicDamageLimit;
 	while (m_historicDamage.size() > 0)
 	{
 		HistoricWeaponDamageInfo& h = m_historicDamage.front();
@@ -1211,15 +1260,24 @@ void WeaponTemplate::trimOldHistoricDamage() const
 }
 
 //-------------------------------------------------------------------------------------------------
+#if 0
 static Bool is2DDistSquaredLessThan(const Coord3D& a, const Coord3D& b, Real distSqr)
 {
 	Real da = sqr(a.x - b.x) + sqr(a.y - b.y);
 	return da <= distSqr;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void WeaponTemplate::dealDamageInternal(ObjectID sourceID, ObjectID victimID, const Coord3D *pos, const WeaponBonus& bonus, Bool isProjectileDetonation) const
 {
+DEBUG_CRASH(("WeaponTemplate::dealDamageInternal not yet implemented!"));
+(void) sourceID;
+(void) victimID;
+(void) pos;
+(void) bonus;
+(void) isProjectileDetonation;
+#if 0
 	if (sourceID == 0)	// must have a source
 		return;
 
@@ -1237,12 +1295,12 @@ void WeaponTemplate::dealDamageInternal(ObjectID sourceID, ObjectID victimID, co
 
 	trimOldHistoricDamage();
 
-	if( m_historicBonusCount > 0 && m_historicBonusWeapon != this )
+	if( m_ini.m_historicBonusCount > 0 && m_ini.m_historicBonusWeapon != this )
 	{
-		Real radSqr = m_historicBonusRadius * m_historicBonusRadius;
+		Real radSqr = m_ini.m_historicBonusRadius * m_ini.m_historicBonusRadius;
 		Int count = 0;
 		UnsignedInt frameNow = TheGameLogic->getFrame();
-		UnsignedInt oldestThatWillCount = frameNow - m_historicBonusTime; // Anything before this frame is "more than two seconds ago" eg
+		UnsignedInt oldestThatWillCount = frameNow - m_ini.m_historicBonusTime; // Anything before this frame is "more than two seconds ago" eg
 		for( HistoricWeaponDamageList::const_iterator it = m_historicDamage.begin(); it != m_historicDamage.end(); ++it )
 		{
 			if( it->frame >= oldestThatWillCount && 
@@ -1254,9 +1312,9 @@ void WeaponTemplate::dealDamageInternal(ObjectID sourceID, ObjectID victimID, co
 			}
 		}
 		
-		if( count >= m_historicBonusCount - 1 )	// minus 1 since we include ourselves implicitly
+		if( count >= m_ini.m_historicBonusCount - 1 )	// minus 1 since we include ourselves implicitly
 		{
-		  TheWeaponStore->createAndFireTempWeapon(m_historicBonusWeapon, source, pos);
+		  TheWeaponStore->createAndFireTempWeapon(m_ini.m_historicBonusWeapon, source, pos);
 
 			/** @todo E3 hack! Clear the list for now to make sure we don't have multiple firestorms
 				* remove this when the branches merge back into one.  What is causing the
@@ -1434,7 +1492,7 @@ void WeaponTemplate::dealDamageInternal(ObjectID sourceID, ObjectID victimID, co
 
 			// Grab the vector between the source object causing the damage and the victim in order that we can
 			// simulate a shockwave pushing objects around
-			damageInfo.in.m_shockWaveAmount = m_shockWaveAmount;
+			damageInfo.in.m_shockWaveAmount = m_ini.m_shockWaveAmount;
 			if (damageInfo.in.m_shockWaveAmount > 0.0f)
 			{
 				// Calculate the vector of the shockwave
@@ -1450,8 +1508,8 @@ void WeaponTemplate::dealDamageInternal(ObjectID sourceID, ObjectID victimID, co
 
 				// Populate the damge information with the shockwave information
 				damageInfo.in.m_shockWaveVector = shockWaveVector;
-				damageInfo.in.m_shockWaveRadius = m_shockWaveRadius;
-				damageInfo.in.m_shockWaveTaperOff = m_shockWaveTaperOff;
+				damageInfo.in.m_shockWaveRadius = m_ini.m_shockWaveRadius;
+				damageInfo.in.m_shockWaveTaperOff = m_ini.m_shockWaveTaperOff;
 			}
 
       if (source && source->getControllingPlayer()) {
@@ -1501,6 +1559,7 @@ void WeaponTemplate::dealDamageInternal(ObjectID sourceID, ObjectID victimID, co
 	{
 		DEBUG_CRASH(("projectile weapons should never get dealDamage called directly\n"));
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1515,7 +1574,7 @@ WeaponStore::~WeaponStore()
 {
 	deleteAllDelayedDamage();
 
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 	{
 		WeaponTemplate* wt = m_weaponTemplateVector[i];
 		if (wt)
@@ -1559,7 +1618,7 @@ void WeaponStore::createAndFireTempWeapon(const WeaponTemplate* wt, const Object
 //-------------------------------------------------------------------------------------------------
 const WeaponTemplate *WeaponStore::findWeaponTemplate( AsciiString name ) const 
 { 
-	if (stricmp(name.str(), "None") == 0)
+	if (strcasecmp(name.str(), "None") == 0)
 		return NULL;
 	const WeaponTemplate * wt = findWeaponTemplatePrivate( TheNameKeyGenerator->nameToKey( name ) );
 	DEBUG_ASSERTCRASH(wt != NULL, ("Weapon %s not found!\n",name.str()));
@@ -1570,7 +1629,7 @@ const WeaponTemplate *WeaponStore::findWeaponTemplate( AsciiString name ) const
 WeaponTemplate *WeaponStore::findWeaponTemplatePrivate( NameKeyType key ) const
 {
 	// search weapon list for name
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 		if( m_weaponTemplateVector[ i ]->getNameKey() == key )
 			return m_weaponTemplateVector[i];
 
@@ -1588,8 +1647,8 @@ WeaponTemplate *WeaponStore::newWeaponTemplate(AsciiString name)
 
 	// allocate a new weapon
 	WeaponTemplate *wt = newInstance(WeaponTemplate);
-	wt->m_name = name;
-	wt->m_nameKey = TheNameKeyGenerator->nameToKey( name );
+	wt->m_ini.m_name = name;
+	wt->m_ini.m_nameKey = TheNameKeyGenerator->nameToKey( name );
 	m_weaponTemplateVector.push_back(wt);
 
 	return wt;
@@ -1618,7 +1677,7 @@ void WeaponStore::update()
 		if (curFrame >= ddi->m_delayDamageFrame)
 		{
 			// we never do projectile-detonation-damage via this code path.
-			const isProjectileDetonation = false;
+			const Bool isProjectileDetonation = false;
 			ddi->m_delayedWeapon->dealDamageInternal(ddi->m_delaySourceID, ddi->m_delayIntendedVictimID, &ddi->m_delayDamagePos, ddi->m_bonus, isProjectileDetonation);
 			ddi = m_weaponDDI.erase(ddi);
 		}
@@ -1639,7 +1698,7 @@ void WeaponStore::deleteAllDelayedDamage()
 void WeaponStore::resetWeaponTemplates( void )
 {
 
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 	{
 		WeaponTemplate* wt = m_weaponTemplateVector[i];
 		wt->reset();
@@ -1651,7 +1710,7 @@ void WeaponStore::resetWeaponTemplates( void )
 void WeaponStore::reset()
 {
 	// clean up any overriddes.
-	for (Int i = 0; i < m_weaponTemplateVector.size(); ++i)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); ++i)
 	{
 		WeaponTemplate *wt = m_weaponTemplateVector[i];
 		if (wt->isOverride()) 
@@ -1688,7 +1747,7 @@ void WeaponStore::postProcessLoad()
 		return;
 	}
 
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 	{
 		WeaponTemplate* wt = m_weaponTemplateVector[i];
 		if (wt)
@@ -1726,10 +1785,10 @@ void WeaponStore::postProcessLoad()
 	} 
 
 	// parse the ini weapon definition
-	ini->initFromINI(weapon, weapon->getFieldParse());
+	ini->initFromINI(&weapon->m_ini, weapon->getFieldParse());
 
-	if (weapon->m_projectileName.isNone())
-		weapon->m_projectileName.clear();
+	if (weapon->m_ini.m_projectileName.isNone())
+		weapon->m_ini.m_projectileName.clear();
 
 #if defined(_DEBUG) || defined(_INTERNAL)
 	if (!weapon->getFireSound().getEventName().isEmpty() && weapon->getFireSound().getEventName().compareNoCase("NoSound") != 0) 
@@ -1820,6 +1879,11 @@ Weapon::~Weapon()
 //-------------------------------------------------------------------------------------------------
 void Weapon::computeBonus(const Object *source, WeaponBonusConditionFlags extraBonusFlags, WeaponBonus& bonus) const
 {
+DEBUG_CRASH(("Weapon::computeBonus not yet implemented!"));
+(void) source;
+(void) extraBonusFlags;
+(void) bonus;
+#if 0
 	bonus.clear();
 	WeaponBonusConditionFlags flags = source->getWeaponBonusCondition();
 	//CRCDEBUG_LOG(("Weapon::computeBonus() - flags are %X for %s\n", flags, DescribeObject(source).str()));
@@ -1838,6 +1902,7 @@ void Weapon::computeBonus(const Object *source, WeaponBonusConditionFlags extraB
 	const WeaponBonusSet* extra = m_template->getExtraBonus();
 	if (extra)
 		extra->appendBonuses(flags, bonus);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1871,7 +1936,7 @@ void Weapon::setClipPercentFull(Real percent, Bool allowReduction)
 	if (m_template->getClipSize() == 0)
 		return;
 
-	Int ammo = REAL_TO_INT_FLOOR(m_template->getClipSize() * percent);
+	UnsignedInt ammo = (UnsignedInt)REAL_TO_INT_FLOOR(m_template->getClipSize() * percent);
 	if (ammo > m_ammoInClip || (allowReduction && ammo < m_ammoInClip))
 	{
 		m_ammoInClip = ammo;
@@ -1901,13 +1966,14 @@ void Weapon::rebuildScatterTargets()
 void Weapon::reloadWithBonus(const Object *sourceObj, const WeaponBonus& bonus, Bool loadInstantly)
 {
 	if (m_template->getClipSize() > 0 
-			&& m_ammoInClip == m_template->getClipSize()
+			&& m_ammoInClip == (UnsignedInt)m_template->getClipSize()
 			&& !sourceObj->isReloadTimeShared())
 		return;	// don't restart our reload delay.
 
-	m_ammoInClip = m_template->getClipSize();
-	if (m_ammoInClip <= 0)
+	if (m_template->getClipSize() <= 0)
 		m_ammoInClip = 0x7fffffff;	// 0 == unlimited (or effectively so)
+	else
+		m_ammoInClip = (UnsignedInt)m_template->getClipSize();
 
 	m_status = RELOADING_CLIP;
 	Real reloadTime = loadInstantly ? 0 : m_template->getClipReloadTime(bonus);
@@ -1937,6 +2003,7 @@ void Weapon::reloadWithBonus(const Object *sourceObj, const WeaponBonus& bonus, 
 }
 
 //-------------------------------------------------------------------------------------------------
+#if 0
 static void clipToTerrainExtent(Coord3D& approachTargetPos)
 {
 	Region3D bounds;
@@ -1954,6 +2021,7 @@ static void clipToTerrainExtent(Coord3D& approachTargetPos)
 		approachTargetPos.y = bounds.hi.y-PATHFIND_CELL_SIZE_F;
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Weapon::onWeaponBonusChange(const Object *source)
@@ -1980,7 +2048,7 @@ void Weapon::onWeaponBonusChange(const Object *source)
 	if( needUpdate )
 	{
 		m_whenLastReloadStarted = TheGameLogic->getFrame();
-		m_whenWeCanFireAgain = m_whenLastReloadStarted + newDelay;	
+		m_whenWeCanFireAgain = m_whenLastReloadStarted + (UnsignedInt)newDelay;
 		
 		if (source->isReloadTimeShared())
 		{	
@@ -2000,6 +2068,14 @@ void Weapon::onWeaponBonusChange(const Object *source)
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::computeApproachTarget(const Object *source, const Object *target, const Coord3D *pos, Real angleOffset, Coord3D& approachTargetPos) const
 {
+DEBUG_CRASH(("Weapon::computeApproachTarget not yet implemented!"));
+(void) source;
+(void) target;
+(void) pos;
+(void) angleOffset;
+(void) approachTargetPos;
+return false;
+#if 0
 	// compute unit direction vector from us to our victim
 	const Coord3D *targetPos;
 	Coord3D dir;
@@ -2124,6 +2200,7 @@ Bool Weapon::computeApproachTarget(const Object *source, const Object *target, c
 
 		return false;
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2133,7 +2210,14 @@ Bool Weapon::computeApproachTarget(const Object *source, const Object *target, c
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isSourceObjectWithGoalPositionWithinAttackRange( const Object *source, const Coord3D *goalPos, const Object *target, const Coord3D *targetPos ) const
 {
-	
+DEBUG_CRASH(("Weapon::isSourceObjectWithGoalPositionWithinAttackRange not yet implemented!"));
+(void) source;
+(void) goalPos;
+(void) target;
+(void) targetPos;
+return false;
+#if 0
+
 	Real distSqr;
 	if( target )
 		distSqr = ThePartitionManager->getGoalDistanceSquared( source, goalPos, target, ATTACK_RANGE_CALC_TYPE );
@@ -2153,11 +2237,17 @@ Bool Weapon::isSourceObjectWithGoalPositionWithinAttackRange( const Object *sour
 		return false;
 	}
 	return (distSqr <= attackRangeSqr);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isWithinAttackRange(const Object *source, const Coord3D* pos) const
 {
+DEBUG_CRASH(("Weapon::isWithinAttackRange not yet implemented!"));
+(void) source;
+(void) pos;
+return false;
+#if 0
 	Real distSqr = ThePartitionManager->getDistanceSquared( source, pos, ATTACK_RANGE_CALC_TYPE );
 	Real attackRangeSqr = sqr(getAttackRange(source));
 	Real minAttackRangeSqr = sqr(m_template->getMinimumAttackRange());
@@ -2170,11 +2260,17 @@ Bool Weapon::isWithinAttackRange(const Object *source, const Coord3D* pos) const
 		return false;
 	}
 	return (distSqr <= attackRangeSqr);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isWithinAttackRange(const Object *source, const Object *target) const
 {
+DEBUG_CRASH(("Weapon::isWithinAttackRange not yet implemented!"));
+(void) source;
+(void) target;
+return false;
+#if 0
 	Real distSqr;
 	Real attackRangeSqr = sqr(getAttackRange(source));
 
@@ -2229,11 +2325,17 @@ Bool Weapon::isWithinAttackRange(const Object *source, const Object *target) con
 		return true;
 	}
 	return false;	
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isTooClose(const Object *source, const Object *target) const
 {
+DEBUG_CRASH(("Weapon::isTooClose not yet implemented!"));
+(void) source;
+(void) target;
+return false;
+#if 0
 	Real minAttackRange = m_template->getMinimumAttackRange();
 	if (minAttackRange == 0.0f)
 		return false;
@@ -2244,11 +2346,17 @@ Bool Weapon::isTooClose(const Object *source, const Object *target) const
 		return true;
 	}
 	return false;	
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isTooClose( const Object *source, const Coord3D *pos ) const
 {
+DEBUG_CRASH(("Weapon::isTooClose not yet implemented!"));
+(void) source;
+(void) pos;
+return false;
+#if 0
 	Real minAttackRange = m_template->getMinimumAttackRange();
 	if (minAttackRange == 0.0f)
 		return false;
@@ -2259,11 +2367,19 @@ Bool Weapon::isTooClose( const Object *source, const Coord3D *pos ) const
 		return true;
 	}
 	return false;	
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isGoalPosWithinAttackRange(const Object *source, const Coord3D* goalPos, const Object *target, const Coord3D* targetPos)	const
 {
+DEBUG_CRASH(("Weapon::isTooClose not yet implemented!"));
+(void) source;
+(void) goalPos;
+(void) target;
+(void) targetPos;
+return false;
+#if 0
 	Real distSqr;
 	// Note - undersize by 1/4 of a pathfind cell, so that the goal is not teetering on the edge
 	// of firing range.  jba.
@@ -2309,6 +2425,7 @@ Bool Weapon::isGoalPosWithinAttackRange(const Object *source, const Coord3D* goa
 		return false;
 	}
 	return (distSqr <= attackRangeSqr);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2351,6 +2468,8 @@ Real Weapon::getPercentReadyToFire() const
 				return (Real)timeSoFar / (Real)totalTime;
 			}
 		}
+		default:
+			break;
 	}
 	DEBUG_CRASH(("should not get here"));
 	return 0.0f;
@@ -2375,6 +2494,12 @@ Real Weapon::getAttackRange(const Object *source) const
 //-------------------------------------------------------------------------------------------------
 Real Weapon::getAttackDistance(const Object *source, const Object *victimObj, const Coord3D* victimPos) const
 { 
+DEBUG_CRASH(("Weapon::getAttackDistance not yet implemented!"));
+(void) source;
+(void) victimObj;
+(void) victimPos;
+return 0.0;
+#if 0
 	Real range = getAttackRange(source);
 
 	if (victimObj != NULL)
@@ -2389,6 +2514,7 @@ Real Weapon::getAttackDistance(const Object *source, const Object *victimObj, co
 	}
 
 	return range;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2411,6 +2537,12 @@ Real Weapon::estimateWeaponDamage(const Object *sourceObj, const Object *victimO
 //-------------------------------------------------------------------------------------------------
 void Weapon::newProjectileFired(const Object *sourceObj, const Object *projectile, const Object *victimObj, const Coord3D *victimPos )
 {
+DEBUG_CRASH(("Weapon::newProjectileFired not yet implemented!"));
+(void) sourceObj;
+(void) projectile;
+(void) victimObj;
+(void) victimPos;
+#if 0
 	// If I have a stream, I need to tell it about this new guy
 	if( m_template->getProjectileStreamName().isEmpty() )
 		return; // nope, no streak logic to do
@@ -2436,11 +2568,17 @@ void Weapon::newProjectileFired(const Object *sourceObj, const Object *projectil
 		return;
 	}
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void Weapon::createLaser( const Object *sourceObj, const Object *victimObj, const Coord3D *victimPos )
 {
+DEBUG_CRASH(("Weapon::createLaser not yet implemented!"));
+(void) sourceObj;
+(void) victimObj;
+(void) victimPos;
+#if 0
 	const ThingTemplate* pst = TheThingFactory->findTemplate(m_template->getLaserName());
 	if( !pst )
 	{
@@ -2473,6 +2611,7 @@ void Weapon::createLaser( const Object *sourceObj, const Object *victimObj, cons
 			update->initLaser( sourceObj, victimObj, sourceObj->getPosition(), &pos, m_template->getLaserBoneName() );
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2489,6 +2628,17 @@ Bool Weapon::privateFireWeapon(
 	Bool inflictDamage
 )
 {
+DEBUG_CRASH(("Weapon::privateFireWeapon not yet implemented!"));
+(void) sourceObj;
+(void) victimObj;
+(void) victimPos;
+(void) isProjectileDetonation;
+(void) ignoreRanges;
+(void) extraBonusFlags;
+(void) projectileID;
+(void) inflictDamage;
+return false;
+#if 0
 	//CRCDEBUG_LOG(("Weapon::privateFireWeapon() for %s\n", DescribeObject(sourceObj).str()));
 	//USE_PERF_TIMER(fireWeapon)
 	if (projectileID)
@@ -2513,7 +2663,7 @@ Bool Weapon::privateFireWeapon(
 		setLeechRangeActive( TRUE );
 	}
 
-	//Special case damge type overrides requiring special handling.
+	//Special case damage type overrides requiring special handling.
 	switch( m_template->getDamageType() )
 	{
 		case DAMAGE_DEPLOY:
@@ -2581,7 +2731,10 @@ Bool Weapon::privateFireWeapon(
 			//We're using a hacker unit to hack a target. Hacking has various effects and
 			//instead of inflicting damage, we are waiting for a period of time until the hack takes effect.
 			//return FALSE;
-		}	
+		}
+
+		default:
+			break;
 	}
 
 	WeaponBonus bonus;
@@ -2694,6 +2847,7 @@ Bool Weapon::privateFireWeapon(
 	}
  
 	return reloaded;
+#endif // if 0
 }
 
 
@@ -2704,7 +2858,7 @@ void Weapon::preFireWeapon( const Object *source, const Object *victim )
 	if( delay > 0 )
 	{
 		setStatus( PRE_ATTACK );
-		setPreAttackFinishedFrame( TheGameLogic->getFrame() + delay );
+		setPreAttackFinishedFrame( TheGameLogic->getFrame() + (UnsignedInt)delay );
 		if( m_template->isLeechRangeWeapon() )
 		{
 			setLeechRangeActive( TRUE );
@@ -2752,7 +2906,7 @@ Object* Weapon::forceFireWeapon( const Object *source, const Coord3D *pos)
 	//Fire the weapon at the position. Internally, it'll store the weapon projectile ID if so created.
 	ObjectID projectileID = INVALID_ID;
 	const Bool ignoreRange = true;
-	privateFireWeapon(source, NULL, pos, false, ignoreRange, NULL, &projectileID, TRUE );
+	privateFireWeapon(source, NULL, pos, false, ignoreRange, 0, &projectileID, TRUE );
 	return TheGameLogic->findObjectByID( projectileID );
 }
 
@@ -2778,6 +2932,11 @@ WeaponStatus Weapon::getStatus() const
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isWithinTargetPitch(const Object *source, const Object *victim) const
 {
+DEBUG_CRASH(("Weapon::isWithinTargetPitch not yet implemented!"));
+(void) source;
+(void) victim;
+return false;
+#if 0
 	if (isContactWeapon() || !isPitchLimited())
 		return true;
 
@@ -2799,6 +2958,7 @@ Bool Weapon::isWithinTargetPitch(const Object *source, const Object *victim) con
 
 	//DEBUG_LOG(("pitch %f-%f is out of range\n",rad2deg(minPitch),rad2deg(maxPitch),rad2deg(m_template->getMinTargetPitch()),rad2deg(m_template->getMaxTargetPitch())));
 	return false;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2828,6 +2988,9 @@ Bool Weapon::isDamageWeapon() const
 
 		case DAMAGE_HACK:
 			return FALSE;
+
+		default:
+			break;
 	}
 	
 	//Use no bonus
@@ -2843,6 +3006,11 @@ Bool Weapon::isDamageWeapon() const
 //-------------------------------------------------------------------------------------------------
 Int Weapon::getPreAttackDelay( const Object *source, const Object *victim ) const
 {
+DEBUG_CRASH(("Weapon::getPreAttackDelay not yet implemented!"));
+(void) source;
+(void) victim;
+return 0;
+#if 0
 	// Look for a reason to return zero and have no delay.
 	WeaponPrefireType type = m_template->getPrefireType();
 	if( type == PREFIRE_PER_CLIP )
@@ -2860,6 +3028,7 @@ Int Weapon::getPreAttackDelay( const Object *source, const Object *victim ) cons
 	WeaponBonus bonus;
 	computeBonus(source, 0, bonus);
 	return m_template->getPreAttackDelay( bonus );
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2872,9 +3041,9 @@ class AssistanceRequestData
 public:
 	AssistanceRequestData();
 
-	const Object *m_requestingObject;
-	Object *m_victimObject;
-	Real m_requestDistanceSquared;
+	const Object *m_requestingObject {};
+	Object *m_victimObject {};
+	Real m_requestDistanceSquared {};
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -2886,8 +3055,12 @@ AssistanceRequestData::AssistanceRequestData()
 }
 
 //-------------------------------------------------------------------------------------------------
+#if 0
 static void makeAssistanceRequest( Object *requestOf, void *userData )
 {
+DEBUG_CRASH(("makeAssistanceRequest not yet implemented!"));
+(void) requestOf;
+(void) userData;
 	AssistanceRequestData *requestData = (AssistanceRequestData *)userData;
 
 	// Don't ask ourselves (can't believe I forgot this one)
@@ -2915,10 +3088,15 @@ static void makeAssistanceRequest( Object *requestOf, void *userData )
 
 	assistModule->assistAttack( requestData->m_requestingObject, requestData->m_victimObject );
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Weapon::processRequestAssistance( const Object *requestingObject, Object *victimObject )
 {
+DEBUG_CRASH(("Weapon::processRequestAssistance not yet implemented!"));
+(void) requestingObject;
+(void) victimObject;
+#if 0
 	// Iterate through our player's objects, and tell everyone like us within our assistance range 
 	// who is free to do so to assist us on this shot.
 	Player *ourPlayer = requestingObject->getControllingPlayer();
@@ -2931,6 +3109,7 @@ void Weapon::processRequestAssistance( const Object *requestingObject, Object *v
 	requestData.m_requestDistanceSquared = m_template->getRequestAssistRange() * m_template->getRequestAssistRange();
 
 	ourPlayer->iterateObjects( makeAssistanceRequest, &requestData );
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2942,6 +3121,13 @@ void Weapon::processRequestAssistance( const Object *requestingObject, Object *v
 	Coord3D& worldPos
 )
 {
+DEBUG_CRASH(("Weapon::calcProjectileLaunchPosition not yet implemented!"));
+(void) launcher;
+(void) wslot;
+(void) specificBarrelToUse;
+(void) worldTransform;
+(void) worldPos;
+#if 0
 	if( launcher->getContainedBy() )
 	{
 		// If we are in an enclosing container, our launch position is our actual position.  Yes, I am putting
@@ -3014,6 +3200,7 @@ void Weapon::processRequestAssistance( const Object *requestingObject, Object *v
 	worldPos.x = tmp.X;
 	worldPos.y = tmp.Y;
 	worldPos.z = tmp.Z;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3024,6 +3211,12 @@ void Weapon::processRequestAssistance( const Object *requestingObject, Object *v
 	Int specificBarrelToUse
 )
 {
+DEBUG_CRASH(("Weapon::positionProjectileForLaunch not yet implemented!"));
+(void) projectile;
+(void) launcher;
+(void) wslot;
+(void) specificBarrelToUse;
+#if 0
 	//CRCDEBUG_LOG(("Weapon::positionProjectileForLaunch() for %s from %s\n",
 		//DescribeObject(projectile).str(), DescribeObject(launcher).str()));
 
@@ -3051,12 +3244,17 @@ void Weapon::processRequestAssistance( const Object *requestingObject, Object *v
 		launcherPhys->transferVelocityTo(missilePhys);
 		missilePhys->setIgnoreCollisionsWith(launcher);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void Weapon::getFiringLineOfSightOrigin(const Object* source, Coord3D& origin) const
 {
+DEBUG_CRASH(("Weapon::getFiringLineOfSightOrigin not yet implemented!"));
+(void) source;
+(void) origin;
+#if 0
 	//GS 1-6-03
 	// Sorry, but we have to simplify this.  If we take the actual projectile launch pos, then
 	// that point can change. Take a Ranger with his gun on his shoulder.  His point is very high so 
@@ -3083,12 +3281,18 @@ void Weapon::getFiringLineOfSightOrigin(const Object* source, Coord3D& origin) c
 		origin.z += launchPos.z - source->getPosition()->z;
 	}
 */
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isClearFiringLineOfSightTerrain(const Object* source, const Object* victim) const
 {
+DEBUG_CRASH(("Weapon::isClearFiringLineOfSightTerrain not yet implemented!"));
+(void) source;
+(void) victim;
+return false;
+#if 0
 	Coord3D origin;
 	origin = *source->getPosition();
 	//CRCDEBUG_LOG(("Weapon::isClearFiringLineOfSightTerrain(Object) for %s\n", DescribeObject(source).str()));
@@ -3100,18 +3304,25 @@ Bool Weapon::isClearFiringLineOfSightTerrain(const Object* source, const Object*
 	//	victimPos.x, victimPos.y, victimPos.z,
 	//	AS_INT(victimPos.x),AS_INT(victimPos.y),AS_INT(victimPos.z)));
 	return ThePartitionManager->isClearLineOfSightTerrain(NULL, origin, NULL, victimPos);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Bool Weapon::isClearFiringLineOfSightTerrain(const Object* source, const Coord3D& victimPos) const
 {
+DEBUG_CRASH(("Weapon::isClearFiringLineOfSightTerrain not yet implemented!"));
+(void) source;
+(void) victimPos;
+return false;
+#if 0
 	Coord3D origin;
 	origin = *source->getPosition();
 	//CRCDEBUG_LOG(("Weapon::isClearFiringLineOfSightTerrain(Coord3D) for %s\n", DescribeObject(source).str()));
 	//DUMPCOORD3D(&origin);
 	getFiringLineOfSightOrigin(source, origin);
 	return ThePartitionManager->isClearLineOfSightTerrain(NULL, origin, NULL, victimPos);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3119,6 +3330,12 @@ Bool Weapon::isClearFiringLineOfSightTerrain(const Object* source, const Coord3D
 /** Determine whether if source was at goalPos whether it would have clear line of sight. */
 Bool Weapon::isClearGoalFiringLineOfSightTerrain(const Object* source, const Coord3D& goalPos, const Object* victim) const
 {
+DEBUG_CRASH(("Weapon::isClearGoalFiringLineOfSightTerrain not yet implemented!"));
+(void) source;
+(void) goalPos;
+(void) victim;
+return false;
+#if 0
 	Coord3D origin=goalPos;
 	//CRCDEBUG_LOG(("Weapon::isClearGoalFiringLineOfSightTerrain(Object) for %s\n", DescribeObject(source).str()));
 	//DUMPCOORD3D(&origin);
@@ -3126,6 +3343,7 @@ Bool Weapon::isClearGoalFiringLineOfSightTerrain(const Object* source, const Coo
 	Coord3D victimPos;
 	victim->getGeometryInfo().getCenterPosition( *victim->getPosition(), victimPos );
 	return ThePartitionManager->isClearLineOfSightTerrain(NULL, origin, NULL, victimPos);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3133,6 +3351,12 @@ Bool Weapon::isClearGoalFiringLineOfSightTerrain(const Object* source, const Coo
 /** Determine whether if source was at goalPos whether it would have clear line of sight. */
 Bool Weapon::isClearGoalFiringLineOfSightTerrain(const Object* source, const Coord3D& goalPos, const Coord3D& victimPos) const
 {
+DEBUG_CRASH(("Weapon::isClearGoalFiringLineOfSightTerrain not yet implemented!"));
+(void) source;
+(void) goalPos;
+(void) victimPos;
+return false;
+#if 0
 	Coord3D origin=goalPos;
 	//CRCDEBUG_LOG(("Weapon::isClearGoalFiringLineOfSightTerrain(Coord3D) for %s\n", DescribeObject(source).str()));
 	//DUMPCOORD3D(&origin);
@@ -3141,6 +3365,7 @@ Bool Weapon::isClearGoalFiringLineOfSightTerrain(const Object* source, const Coo
 	//	victimPos.x, victimPos.y, victimPos.z,
 	//	AS_INT(victimPos.x),AS_INT(victimPos.y),AS_INT(victimPos.z)));
 	return ThePartitionManager->isClearLineOfSightTerrain(NULL, origin, NULL, victimPos);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3160,6 +3385,8 @@ void Weapon::transferNextShotStatsFrom( const Weapon &weapon )
 // ------------------------------------------------------------------------------------------------
 void Weapon::crc( Xfer *xfer )
 {
+(void) xfer;
+#if 0
 #ifdef DEBUG_CRC
 	AsciiString logString;
 	AsciiString tmp;
@@ -3169,7 +3396,7 @@ void Weapon::crc( Xfer *xfer )
 		tmp.format("CRC of weapon %s: ", m_template->getName().str());
 		logString.concat(tmp);
 	}
-#endif DEBUG_CRC
+#endif //DEBUG_CRC
 
 	AsciiString tmplName = m_template->getName();
 	xfer->xferAsciiString(&tmplName);
@@ -3354,6 +3581,7 @@ void Weapon::crc( Xfer *xfer )
 		CRCDEBUG_LOG(("%s\n", logString.str()));
 	}
 #endif // DEBUG_CRC
+#endif // if 0
 
 }  // end crc
 

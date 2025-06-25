@@ -181,7 +181,7 @@ private:
 
 	typedef std::list< FXNugget* > FXNuggetList;
 
-	FXNuggetList m_nuggets;
+	FXNuggetList m_nuggets {};
 
 };  
 
@@ -214,7 +214,7 @@ private:
 	// use the hashing function for Ints. 
 	typedef std::unordered_map< NameKeyType, FXList, rts::hash<NameKeyType>, rts::equal_to<NameKeyType> > FXListMap;
 
-	FXListMap m_fxmap;
+	FXListMap m_fxmap {};
 
 };
 

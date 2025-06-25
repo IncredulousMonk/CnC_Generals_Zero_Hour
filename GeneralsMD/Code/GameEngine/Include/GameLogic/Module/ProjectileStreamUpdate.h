@@ -50,7 +50,7 @@ class ProjectileStreamUpdate : public UpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ProjectileStreamUpdate, "ProjectileStreamUpdate" )
-	MAKE_STANDARD_MODULE_MACRO( ProjectileStreamUpdate );
+	MAKE_STANDARD_MODULE_MACRO( ProjectileStreamUpdate )
 
 public:
 

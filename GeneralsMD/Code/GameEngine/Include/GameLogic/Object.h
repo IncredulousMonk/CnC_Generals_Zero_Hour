@@ -189,11 +189,11 @@ public:
 
 	// ids and binding
 	ObjectID getID() const { return m_id; }												///< this object's unique ID
-#if 0
 	void friend_bindToDrawable( Drawable *draw );									///< set drawable association. for use ONLY by GameLogic!
 	Drawable* getDrawable() const { return m_drawable; }					///< drawable (if any) bound to obj
 
 	ObjectID getProducerID() const { return m_producerID; }
+#if 0
 	void setProducer(const Object* obj);
 
 	ObjectID getBuilderID() const { return m_builderID; }
@@ -246,9 +246,9 @@ public:
 
 	void scoreTheKill( const Object *victim );						///< I just killed this object.  
 	void onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback = TRUE );	///< I just achieved this level right this moment
+#endif // if 0
 	ExperienceTracker* getExperienceTracker() {return m_experienceTracker;}
 	const ExperienceTracker* getExperienceTracker() const {return m_experienceTracker;}
-#endif // if 0
 	VeterancyLevel getVeterancyLevel() const;
 
 	inline const AsciiString& getName() const { return m_name; }
@@ -317,9 +317,11 @@ public:
 
 	inline AIUpdateInterface *getAI() { return m_ai; }
 	inline const AIUpdateInterface* getAI() const { return m_ai; }
+#endif // if 0
 
 	inline PhysicsBehavior* getPhysics() { return m_physics; }
 	inline const PhysicsBehavior* getPhysics() const { return m_physics; }
+#if 0
 	void topple( const Coord3D *toppleDirection, Real toppleSpeed, UnsignedInt options );
 
 	UpdateModule* findUpdateModule(NameKeyType key) const { return (UpdateModule*)findModule(key); }
@@ -507,6 +509,7 @@ public:
 	Bool hasWeaponToDealDamageType(DamageType typeToDeal) const;
 	Real getLargestWeaponRange() const;
 	UnsignedInt getMostPercentReadyToFireAnyWeapon() const;
+#endif // if 0
 
 	Weapon* getWeaponInWeaponSlot(WeaponSlotType wslot) const { return m_weaponSet.getWeaponInWeaponSlot(wslot); }
 	UnsignedInt getWeaponInWeaponSlotCommandSourceMask( WeaponSlotType wSlot ) const { return m_weaponSet.getNthCommandSourceMask( wSlot ); }
@@ -514,6 +517,7 @@ public:
 	// see if this current weapon set's weapons has shared reload times
 	Bool isReloadTimeShared() const { return m_weaponSet.isSharedReloadTime(); }
 
+#if 0
 	Weapon* getCurrentWeapon(WeaponSlotType* wslot = NULL);
 	const Weapon* getCurrentWeapon(WeaponSlotType* wslot = NULL) const;
 	void setFiringConditionForCurrentWeapon() const;

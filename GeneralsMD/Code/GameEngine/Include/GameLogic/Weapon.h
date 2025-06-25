@@ -139,14 +139,14 @@ enum WeaponCollideMaskType: UnsignedInt
 {
 	// all of these apply to *nontargeted* things that might just happen to get in the way...
 	// the target can always be collided with, regardless of flags
-	WEAPON_COLLIDE_ALLIES									= 0x0001,	
-	WEAPON_COLLIDE_ENEMIES								= 0x0002,	
-	WEAPON_COLLIDE_STRUCTURES							= 0x0004,	// this is "all structures EXCEPT for structures belonging to the projectile's controller".
-	WEAPON_COLLIDE_SHRUBBERY							= 0x0008,
-	WEAPON_COLLIDE_PROJECTILE							= 0x0010,
-	WEAPON_COLLIDE_WALLS									= 0x0020,
-	WEAPON_COLLIDE_SMALL_MISSILES					= 0x0040, //All missiles are also projectiles! 
-	WEAPON_COLLIDE_BALLISTIC_MISSILES			= 0x0080, //All missiles are also projectiles!
+	WEAPON_COLLIDE_ALLIES					= 0x0001,	
+	WEAPON_COLLIDE_ENEMIES					= 0x0002,	
+	WEAPON_COLLIDE_STRUCTURES				= 0x0004,	// this is "all structures EXCEPT for structures belonging to the projectile's controller".
+	WEAPON_COLLIDE_SHRUBBERY				= 0x0008,
+	WEAPON_COLLIDE_PROJECTILE				= 0x0010,
+	WEAPON_COLLIDE_WALLS					= 0x0020,
+	WEAPON_COLLIDE_SMALL_MISSILES			= 0x0040, //All missiles are also projectiles! 
+	WEAPON_COLLIDE_BALLISTIC_MISSILES		= 0x0080, //All missiles are also projectiles!
 	WEAPON_COLLIDE_CONTROLLED_STRUCTURES	= 0x0100	//this is "ONLY structures belonging to the projectile's controller".
 };
 
@@ -203,7 +203,7 @@ enum WeaponBonusConditionType: int
 	WEAPONBONUSCONDITION_SOLO_AI_NORMAL,
 	WEAPONBONUSCONDITION_SOLO_AI_HARD,
 	WEAPONBONUSCONDITION_TARGET_FAERIE_FIRE,
-  WEAPONBONUSCONDITION_FANATICISM, // FOR THE NEW GC INFANTRY GENERAL... adds to nationalism
+	WEAPONBONUSCONDITION_FANATICISM, // FOR THE NEW GC INFANTRY GENERAL... adds to nationalism
 	WEAPONBONUSCONDITION_FRENZY_ONE,
 	WEAPONBONUSCONDITION_FRENZY_TWO,
 	WEAPONBONUSCONDITION_FRENZY_THREE,
@@ -241,7 +241,7 @@ static const char *TheWeaponBonusNames[] =
 	"SOLO_AI_NORMAL",
 	"SOLO_AI_HARD",
 	"TARGET_FAERIE_FIRE",
-  "FANATICISM", // FOR THE NEW GC INFANTRY GENERAL... adds to nationalism
+	"FANATICISM", // FOR THE NEW GC INFANTRY GENERAL... adds to nationalism
 	"FRENZY_ONE",
 	"FRENZY_TWO",
 	"FRENZY_THREE",
@@ -348,9 +348,8 @@ public:
 	WeaponTemplate();
 	// virtual destructor declared by memory pool
 
-	// No copies allowed!
 	WeaponTemplate(const WeaponTemplate&) = delete;
-	WeaponTemplate& operator=(const WeaponTemplate&) = delete;
+	WeaponTemplate& operator=(const WeaponTemplate&) = default;
 
 	void reset( void );
 
@@ -409,62 +408,62 @@ public:
 	Int getPreAttackDelay(const WeaponBonus& bonus) const;
 	Bool isContactWeapon() const;
 
-	inline Real getShockWaveAmount() const { return m_shockWaveAmount; }
-	inline Real getShockWaveRadius() const { return m_shockWaveRadius; }
-	inline Real getShockWaveTaperOff() const { return m_shockWaveTaperOff; }
+	inline Real getShockWaveAmount() const { return m_ini.m_shockWaveAmount; }
+	inline Real getShockWaveRadius() const { return m_ini.m_shockWaveRadius; }
+	inline Real getShockWaveTaperOff() const { return m_ini.m_shockWaveTaperOff; }
 
-	inline Real getRequestAssistRange() const {return m_requestAssistRange;}
-	inline AsciiString getName() const { return m_name; }
-	inline AsciiString getProjectileStreamName() const { return m_projectileStreamName; }
-	inline AsciiString getLaserName() const { return m_laserName; }
-	inline const AsciiString& getLaserBoneName() const { return m_laserBoneName; }
-	inline NameKeyType getNameKey() const { return m_nameKey; }
-	inline Real getWeaponSpeed() const { return m_weaponSpeed; }
-	inline Real getMinWeaponSpeed() const { return m_minWeaponSpeed; }
-	inline Bool isScaleWeaponSpeed() const { return m_isScaleWeaponSpeed; }
-	inline Real getWeaponRecoilAmount() const { return m_weaponRecoil; }
-	inline Real getMinTargetPitch() const { return m_minTargetPitch; }
-	inline Real getMaxTargetPitch() const { return m_maxTargetPitch; }
-	inline Real getRadiusDamageAngle() const { return m_radiusDamageAngle; }
-	inline DamageType getDamageType() const { return m_damageType; }
-	inline ObjectStatusTypes getDamageStatusType() const { return m_damageStatusType; }
-	inline DeathType getDeathType() const { return m_deathType; }
-	inline Real getContinueAttackRange() const { return m_continueAttackRange; }
-	inline Real getInfantryInaccuracyDist() const { return m_infantryInaccuracyDist; }
-	inline Real getAimDelta() const { return m_aimDelta; }
-	inline Real getScatterRadius() const { return m_scatterRadius; }
-	inline Real getScatterTargetScalar() const { return m_scatterTargetScalar; }
-	inline const ThingTemplate* getProjectileTemplate() const { return m_projectileTmpl; }
-	inline Bool getDamageDealtAtSelfPosition() const { return m_damageDealtAtSelfPosition; }
-	inline Int getAffectsMask() const { return m_affectsMask; }
-	inline Int getProjectileCollideMask() const { return m_collideMask; }
-	inline WeaponReloadType getReloadType() const { return m_reloadType; }
-	inline WeaponPrefireType getPrefireType() const { return m_prefireType; }
-	inline Bool getAutoReloadsClip() const { return m_reloadType == AUTO_RELOAD; }
-	inline Int getClipSize() const { return m_clipSize; }
-	inline Int getContinuousFireOneShotsNeeded() const { return m_continuousFireOneShotsNeeded; }
-	inline Int getContinuousFireTwoShotsNeeded() const { return m_continuousFireTwoShotsNeeded; }
-	inline UnsignedInt getContinuousFireCoastFrames() const { return m_continuousFireCoastFrames; }
- 	inline UnsignedInt getAutoReloadWhenIdleFrames() const { return m_autoReloadWhenIdleFrames; }
-	inline UnsignedInt getSuspendFXDelay() const { return m_suspendFXDelay; }
+	inline Real getRequestAssistRange() const {return m_ini.m_requestAssistRange;}
+	inline AsciiString getName() const { return m_ini.m_name; }
+	inline AsciiString getProjectileStreamName() const { return m_ini.m_projectileStreamName; }
+	inline AsciiString getLaserName() const { return m_ini.m_laserName; }
+	inline const AsciiString& getLaserBoneName() const { return m_ini.m_laserBoneName; }
+	inline NameKeyType getNameKey() const { return m_ini.m_nameKey; }
+	inline Real getWeaponSpeed() const { return m_ini.m_weaponSpeed; }
+	inline Real getMinWeaponSpeed() const { return m_ini.m_minWeaponSpeed; }
+	inline Bool isScaleWeaponSpeed() const { return m_ini.m_isScaleWeaponSpeed; }
+	inline Real getWeaponRecoilAmount() const { return m_ini.m_weaponRecoil; }
+	inline Real getMinTargetPitch() const { return m_ini.m_minTargetPitch; }
+	inline Real getMaxTargetPitch() const { return m_ini.m_maxTargetPitch; }
+	inline Real getRadiusDamageAngle() const { return m_ini.m_radiusDamageAngle; }
+	inline DamageType getDamageType() const { return m_ini.m_damageType; }
+	inline ObjectStatusTypes getDamageStatusType() const { return m_ini.m_damageStatusType; }
+	inline DeathType getDeathType() const { return m_ini.m_deathType; }
+	inline Real getContinueAttackRange() const { return m_ini.m_continueAttackRange; }
+	inline Real getInfantryInaccuracyDist() const { return m_ini.m_infantryInaccuracyDist; }
+	inline Real getAimDelta() const { return m_ini.m_aimDelta; }
+	inline Real getScatterRadius() const { return m_ini.m_scatterRadius; }
+	inline Real getScatterTargetScalar() const { return m_ini.m_scatterTargetScalar; }
+	inline const ThingTemplate* getProjectileTemplate() const { return m_ini.m_projectileTmpl; }
+	inline Bool getDamageDealtAtSelfPosition() const { return m_ini.m_damageDealtAtSelfPosition; }
+	inline Int getAffectsMask() const { return m_ini.m_affectsMask; }
+	inline Int getProjectileCollideMask() const { return m_ini.m_collideMask; }
+	inline WeaponReloadType getReloadType() const { return m_ini.m_reloadType; }
+	inline WeaponPrefireType getPrefireType() const { return m_ini.m_prefireType; }
+	inline Bool getAutoReloadsClip() const { return m_ini.m_reloadType == AUTO_RELOAD; }
+	inline Int getClipSize() const { return m_ini.m_clipSize; }
+	inline Int getContinuousFireOneShotsNeeded() const { return m_ini.m_continuousFireOneShotsNeeded; }
+	inline Int getContinuousFireTwoShotsNeeded() const { return m_ini.m_continuousFireTwoShotsNeeded; }
+	inline UnsignedInt getContinuousFireCoastFrames() const { return m_ini.m_continuousFireCoastFrames; }
+ 	inline UnsignedInt getAutoReloadWhenIdleFrames() const { return m_ini.m_autoReloadWhenIdleFrames; }
+	inline UnsignedInt getSuspendFXDelay() const { return m_ini.m_suspendFXDelay; }
 
-	inline const FXList* getFireFX(VeterancyLevel v) const { return m_fireFXs[v]; }
-	inline const FXList* getProjectileDetonateFX(VeterancyLevel v) const { return m_projectileDetonateFXs[v]; }
-	inline const ObjectCreationList* getFireOCL(VeterancyLevel v) const { return m_fireOCLs[v]; }
-	inline const ObjectCreationList* getProjectileDetonationOCL(VeterancyLevel v) const { return m_projectileDetonationOCLs[v]; }
-	inline const ParticleSystemTemplate* getProjectileExhaust(VeterancyLevel v) const { return m_projectileExhausts[v]; }
+	inline const FXList* getFireFX(VeterancyLevel v) const { return m_ini.m_fireFXs[v]; }
+	inline const FXList* getProjectileDetonateFX(VeterancyLevel v) const { return m_ini.m_projectileDetonateFXs[v]; }
+	inline const ObjectCreationList* getFireOCL(VeterancyLevel v) const { return m_ini.m_fireOCLs[v]; }
+	inline const ObjectCreationList* getProjectileDetonationOCL(VeterancyLevel v) const { return m_ini.m_projectileDetonationOCLs[v]; }
+	inline const ParticleSystemTemplate* getProjectileExhaust(VeterancyLevel v) const { return m_ini.m_projectileExhausts[v]; }
 
 	inline const AudioEventRTS& getFireSound() const { return m_fireSound; }
-	inline UnsignedInt getFireSoundLoopTime() const { return m_fireSoundLoopTime; }
-	inline const std::vector<Coord2D>& getScatterTargetsVector() const { return m_scatterTargets; }
-	inline const WeaponBonusSet* getExtraBonus() const { return m_extraBonus; }
-	inline Int getShotsPerBarrel() const { return m_shotsPerBarrel; }
-	inline Int getAntiMask() const { return m_antiMask; }
-	inline Bool isLeechRangeWeapon() const { return m_leechRangeWeapon; }
-	inline Bool isCapableOfFollowingWaypoint() const { return m_capableOfFollowingWaypoint; }
-	inline Bool isShowsAmmoPips() const { return m_isShowsAmmoPips; }
-	inline Bool isPlayFXWhenStealthed() const { return m_playFXWhenStealthed; }
-	inline Bool getDieOnDetonate() const { return m_dieOnDetonate; }
+	inline UnsignedInt getFireSoundLoopTime() const { return m_ini.m_fireSoundLoopTime; }
+	inline const std::vector<Coord2D>& getScatterTargetsVector() const { return m_ini.m_scatterTargets; }
+	inline const WeaponBonusSet* getExtraBonus() const { return m_ini.m_extraBonus; }
+	inline Int getShotsPerBarrel() const { return m_ini.m_shotsPerBarrel; }
+	inline Int getAntiMask() const { return m_ini.m_antiMask; }
+	inline Bool isLeechRangeWeapon() const { return m_ini.m_leechRangeWeapon; }
+	inline Bool isCapableOfFollowingWaypoint() const { return m_ini.m_capableOfFollowingWaypoint; }
+	inline Bool isShowsAmmoPips() const { return m_ini.m_isShowsAmmoPips; }
+	inline Bool isPlayFXWhenStealthed() const { return m_ini.m_playFXWhenStealthed; }
+	inline Bool getDieOnDetonate() const { return m_ini.m_dieOnDetonate; }
 
 	Bool shouldProjectileCollideWith(
 		const Object* projectileLauncher, 
@@ -489,82 +488,93 @@ private:
 	static void parseWeaponBonusSet( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ );
 	static void parseScatterTarget( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ );
 	static void parseShotDelay( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ );
+	// Proxy parse function to avoid offset problems:
+	static void parseAudioEventRTS(INI* ini, void *instance, void* store, const void* userData);
 
 	static const FieldParse TheWeaponTemplateFieldParseTable[];		///< the parse table for INI definition
 
-	AsciiString m_name;											///< name for this weapon
-	NameKeyType m_nameKey;									///< unique name key for this weapon template
-	AsciiString m_projectileStreamName;			///< Name of object that tracks are stream, if we have one
-	AsciiString m_laserName;								///< Name of the laser object that persists.
-	AsciiString m_laserBoneName;						///< Where to put the laser object
-	Real m_primaryDamage;										///< primary damage amount
-	Real m_primaryDamageRadius;							///< primary damage radius range
-	Real m_secondaryDamage;									///< secondary damage amount
-	Real m_secondaryDamageRadius;						///< secondary damage radius range	
-	Real m_shockWaveAmount;									///( How much shockwave generated 
-	Real m_shockWaveRadius;									///( How far shockwave effect affects objects
-	Real m_shockWaveTaperOff;								///( How much shockwave is left at the tip of the shockwave radius
-	Real m_attackRange;											///< max distance the weapon can deal damage
-	Real m_minimumAttackRange;							///< Min distance the weapon should be fired from
-	Real m_requestAssistRange;							///< My object will look this far around to get people to join in the attack.
-	Real m_aimDelta;												///< when aiming, consider yourself "aimed" if you are within +/- this much of an angle
-	Real m_scatterRadius;										///< Radius of area actual fire point will be in, default is zero for no deviation
-	Real m_scatterTargetScalar;							///< Radius of area covered by the coordinates in the scatterTarget table
-	std::vector<Coord2D> m_scatterTargets;	///< instead of pure randomness, this is the list of places I will randomly choose from to attack
-	DamageType m_damageType;								///< damage type enum
-	DeathType m_deathType;									///< death type enum
-	Real m_weaponSpeed;											///< speed of damage travel, in dist/frame
-	Real m_minWeaponSpeed;									///< speed of damage travel, in dist/frame
-	Bool m_isScaleWeaponSpeed;							///< Scale from min to normal based on range (for lobbers)
-	Real m_weaponRecoil;										///< amt of recoil caused to firer, in rads
-	Real m_minTargetPitch;									///< min pitch from source->victim allowable in order to target
-	Real m_maxTargetPitch;									///< max pitch from source->victim allowable in order to target
-	Real m_radiusDamageAngle;								///< Damage is directional, so max defelection of straight at target (cone) you do damage
-	AsciiString m_projectileName;																			///< if projectile, object name to "fire"
-	const ThingTemplate* m_projectileTmpl;														///< direct access to projectile object type to "fire"
-	AsciiString m_fireOCLNames[LEVEL_COUNT];														///< Name of OCL to create at firing
-	AsciiString m_projectileDetonationOCLNames[LEVEL_COUNT];						///< Name of OCL to create at firing at missile's end
-	const ParticleSystemTemplate* m_projectileExhausts[LEVEL_COUNT];			///< Templates of particle systems for projectile exhaust
-	const ObjectCreationList* m_fireOCLs[LEVEL_COUNT];									///< Post-loaded lookup of name string for ease and speed
-	const ObjectCreationList* m_projectileDetonationOCLs[LEVEL_COUNT];	///< Post-loaded lookup of name string for ease and speed (and subsystem init order)
-	const FXList* m_fireFXs[LEVEL_COUNT];															///< weapon is fired fx
-	const FXList* m_projectileDetonateFXs[LEVEL_COUNT];								///< if we have a projectile, fx for projectile blowing up
-	AudioEventRTS m_fireSound;							///< weapon is fired sound
-	UnsignedInt m_fireSoundLoopTime;				///< if nonzero, num frames for looping of fire sound
-	WeaponBonusSet* m_extraBonus;						///< optional extra per-weapon bonus
-	Int m_clipSize;													///< number of 'shots' in a clip
-	Int m_clipReloadTime;										///< when 'clip' is empty, how long it takes to reload (frames)
-	Int m_minDelayBetweenShots;							///< min time allowed between firing single shots (frames)
-	Int m_maxDelayBetweenShots;							///< max time allowed between firing single shots (frames)
-	Int m_continuousFireOneShotsNeeded;			///< How many consecutive shots will give my owner the ContinuousFire Property
-	Int m_continuousFireTwoShotsNeeded;			///< How many consecutive shots will give my owner the ContinuousFireTwo Property
-	UnsignedInt m_continuousFireCoastFrames;///< How long after we should have shot should we start to wind down from Continuous fire mode
- 	UnsignedInt m_autoReloadWhenIdleFrames;	///< How long we have to wait after our last shot to force a reload
-	Int m_shotsPerBarrel;										///< If non zero, don't cycle through your launch points every shot, mod the shot by this to get even chucks of firing
-	Int m_antiMask;													///< what we can target
-	Int m_affectsMask;											///< what we can affect
-	Int m_collideMask;											///< what we can collide with (projectiles only)
-	Bool m_damageDealtAtSelfPosition;				///< if T, weapon damage is done at source's position, not victim's pos. (useful for suicide weapons.)
-	WeaponReloadType m_reloadType;					///< does the weapon auto-reload a clip when empty?
-	WeaponPrefireType m_prefireType;				///< The way this weapon handles its prefire delay
-	UnsignedInt m_historicBonusTime;				///< if 'count' instances of this weapon do damage within 'time' and 'radius' from each other, fire the historic bonus weapon
-	Real m_historicBonusRadius;							///< see above
-	Int m_historicBonusCount;								///< see above
-	const WeaponTemplate* m_historicBonusWeapon;	///< see above
-	Bool m_leechRangeWeapon;								///< once the weapon has fired once at the proper range, the weapon gains unlimited range for the remainder of the attack cycle
-	Bool m_capableOfFollowingWaypoint;			///< determines if the weapon is capable of following a waypoint path.
-	Bool m_isShowsAmmoPips;									///< shows ammo pips
-	Bool m_allowAttackGarrisonedBldgs;			///< allow attacks on garrisoned bldgs, even if estimated damage would be zero
-	Bool m_playFXWhenStealthed;					///< Ignores rule about not playing FX when stealthed
-	Int m_preAttackDelay;										///< doesn't attack until preAttack delay is finish (triggering detonation, aiming a snipe shot, etc.)
-	Real m_continueAttackRange;							///< if nonzero: when you destroy something, look for a similar obj controlled by same player to attack (used mainly for mine-clearing)
-	Real m_infantryInaccuracyDist;					///< When this weapon is used against infantry, it can randomly miss by as much as this distance.
-	ObjectStatusTypes m_damageStatusType;		///< If our damage is Status damage, the status we apply
-	UnsignedInt m_suspendFXDelay;						///< The fx can be suspended for any delay, in frames, then they will execute as normal
-	Bool m_dieOnDetonate;
 
-	mutable HistoricWeaponDamageList m_historicDamage;
-};  
+	// MG: Cannot apply offsetof to WeaponTemplate, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_name;											///< name for this weapon
+		NameKeyType m_nameKey;									///< unique name key for this weapon template
+		AsciiString m_projectileStreamName;			///< Name of object that tracks are stream, if we have one
+		AsciiString m_laserName;								///< Name of the laser object that persists.
+		AsciiString m_laserBoneName;						///< Where to put the laser object
+		Real m_primaryDamage;										///< primary damage amount
+		Real m_primaryDamageRadius;							///< primary damage radius range
+		Real m_secondaryDamage;									///< secondary damage amount
+		Real m_secondaryDamageRadius;						///< secondary damage radius range	
+		Real m_shockWaveAmount;									///( How much shockwave generated 
+		Real m_shockWaveRadius;									///( How far shockwave effect affects objects
+		Real m_shockWaveTaperOff;								///( How much shockwave is left at the tip of the shockwave radius
+		Real m_attackRange;											///< max distance the weapon can deal damage
+		Real m_minimumAttackRange;							///< Min distance the weapon should be fired from
+		Real m_requestAssistRange;							///< My object will look this far around to get people to join in the attack.
+		Real m_aimDelta;												///< when aiming, consider yourself "aimed" if you are within +/- this much of an angle
+		Real m_scatterRadius;										///< Radius of area actual fire point will be in, default is zero for no deviation
+		Real m_scatterTargetScalar;							///< Radius of area covered by the coordinates in the scatterTarget table
+		std::vector<Coord2D> m_scatterTargets;	///< instead of pure randomness, this is the list of places I will randomly choose from to attack
+		DamageType m_damageType;								///< damage type enum
+		DeathType m_deathType;									///< death type enum
+		Real m_weaponSpeed;											///< speed of damage travel, in dist/frame
+		Real m_minWeaponSpeed;									///< speed of damage travel, in dist/frame
+		Bool m_isScaleWeaponSpeed;							///< Scale from min to normal based on range (for lobbers)
+		Real m_weaponRecoil;										///< amt of recoil caused to firer, in rads
+		Real m_minTargetPitch;									///< min pitch from source->victim allowable in order to target
+		Real m_maxTargetPitch;									///< max pitch from source->victim allowable in order to target
+		Real m_radiusDamageAngle;								///< Damage is directional, so max defelection of straight at target (cone) you do damage
+		AsciiString m_projectileName;																			///< if projectile, object name to "fire"
+		const ThingTemplate* m_projectileTmpl;														///< direct access to projectile object type to "fire"
+		AsciiString m_fireOCLNames[LEVEL_COUNT];														///< Name of OCL to create at firing
+		AsciiString m_projectileDetonationOCLNames[LEVEL_COUNT];						///< Name of OCL to create at firing at missile's end
+		const ParticleSystemTemplate* m_projectileExhausts[LEVEL_COUNT];			///< Templates of particle systems for projectile exhaust
+		const ObjectCreationList* m_fireOCLs[LEVEL_COUNT];									///< Post-loaded lookup of name string for ease and speed
+		const ObjectCreationList* m_projectileDetonationOCLs[LEVEL_COUNT];	///< Post-loaded lookup of name string for ease and speed (and subsystem init order)
+		const FXList* m_fireFXs[LEVEL_COUNT];															///< weapon is fired fx
+		const FXList* m_projectileDetonateFXs[LEVEL_COUNT];								///< if we have a projectile, fx for projectile blowing up
+		UnsignedInt m_fireSoundLoopTime;				///< if nonzero, num frames for looping of fire sound
+		WeaponBonusSet* m_extraBonus;						///< optional extra per-weapon bonus
+		Int m_clipSize;													///< number of 'shots' in a clip
+		Int m_clipReloadTime;										///< when 'clip' is empty, how long it takes to reload (frames)
+		Int m_minDelayBetweenShots;							///< min time allowed between firing single shots (frames)
+		Int m_maxDelayBetweenShots;							///< max time allowed between firing single shots (frames)
+		Int m_continuousFireOneShotsNeeded;			///< How many consecutive shots will give my owner the ContinuousFire Property
+		Int m_continuousFireTwoShotsNeeded;			///< How many consecutive shots will give my owner the ContinuousFireTwo Property
+		UnsignedInt m_continuousFireCoastFrames;///< How long after we should have shot should we start to wind down from Continuous fire mode
+		UnsignedInt m_autoReloadWhenIdleFrames;	///< How long we have to wait after our last shot to force a reload
+		Int m_shotsPerBarrel;										///< If non zero, don't cycle through your launch points every shot, mod the shot by this to get even chucks of firing
+		Int m_antiMask;													///< what we can target
+		Int m_affectsMask;											///< what we can affect
+		Int m_collideMask;											///< what we can collide with (projectiles only)
+		Bool m_damageDealtAtSelfPosition;				///< if T, weapon damage is done at source's position, not victim's pos. (useful for suicide weapons.)
+		WeaponReloadType m_reloadType;					///< does the weapon auto-reload a clip when empty?
+		WeaponPrefireType m_prefireType;				///< The way this weapon handles its prefire delay
+		UnsignedInt m_historicBonusTime;				///< if 'count' instances of this weapon do damage within 'time' and 'radius' from each other, fire the historic bonus weapon
+		Real m_historicBonusRadius;							///< see above
+		Int m_historicBonusCount;								///< see above
+		const WeaponTemplate* m_historicBonusWeapon;	///< see above
+		Bool m_leechRangeWeapon;								///< once the weapon has fired once at the proper range, the weapon gains unlimited range for the remainder of the attack cycle
+		Bool m_capableOfFollowingWaypoint;			///< determines if the weapon is capable of following a waypoint path.
+		Bool m_isShowsAmmoPips;									///< shows ammo pips
+		Bool m_allowAttackGarrisonedBldgs;			///< allow attacks on garrisoned bldgs, even if estimated damage would be zero
+		Bool m_playFXWhenStealthed;					///< Ignores rule about not playing FX when stealthed
+		Int m_preAttackDelay;										///< doesn't attack until preAttack delay is finish (triggering detonation, aiming a snipe shot, etc.)
+		Real m_continueAttackRange;							///< if nonzero: when you destroy something, look for a similar obj controlled by same player to attack (used mainly for mine-clearing)
+		Real m_infantryInaccuracyDist;					///< When this weapon is used against infantry, it can randomly miss by as much as this distance.
+		ObjectStatusTypes m_damageStatusType;		///< If our damage is Status damage, the status we apply
+		UnsignedInt m_suspendFXDelay;						///< The fx can be suspended for any delay, in frames, then they will execute as normal
+		Bool m_dieOnDetonate;
+
+		WeaponTemplate* m_obj {};					///< pointer to the parent object
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS m_fireSound {};							///< weapon is fired sound
+	mutable HistoricWeaponDamageList m_historicDamage {};
+};
 
 // ---------------------------------------------------------
 class Weapon : public MemoryPoolObject,
@@ -793,22 +803,22 @@ protected:
 
 
 private:
-	const WeaponTemplate*			m_template;									///< the kind of weapon this is
-	WeaponSlotType						m_wslot;										///< are we primary, secondary, etc. weapon? (used for projectile placement on reload)
-	mutable WeaponStatus			m_status;										///< weapon status 
-	UnsignedInt								m_ammoInClip;								///< how many shots left in current clip
-	UnsignedInt								m_whenWeCanFireAgain;				///< the first frame the weapon can fire again
-	UnsignedInt								m_whenPreAttackFinished;		///< the frame the pre attack will complete.
-	UnsignedInt								m_whenLastReloadStarted;		///< the frame the current reload/between-shots began. (only valid if status is RELOADING_CLIP or BETWEEN_FIRING_SHOTS)
-	UnsignedInt								m_lastFireFrame;						///< frame a shot was last fired on
-	UnsignedInt								m_suspendFXFrame;						///< The fireFX can be suspended for any delay, in frames, then they will execute as normal
-	ObjectID									m_projectileStreamID;				///< the object that is tracking our stream if we have one.  It can't go away without us.
-	Int												m_maxShotCount;							///< used for limiting consecutive firing
-	Int												m_curBarrel;								///< current barrel used for firing
-	Int												m_numShotsForCurBarrel;			///< how many shots to fire from cur barrel before moving to next barrel
-	std::vector<Int>					m_scatterTargetsUnused;			///< A running memory of which targets I've used, so I can shoot them all at random
-	Bool											m_pitchLimited;
-	Bool											m_leechWeaponRangeActive;		///< This weapon has unlimited range until attack state is aborted!
+	const WeaponTemplate*	m_template {};									///< the kind of weapon this is
+	WeaponSlotType			m_wslot {};										///< are we primary, secondary, etc. weapon? (used for projectile placement on reload)
+	mutable WeaponStatus	m_status {};										///< weapon status 
+	UnsignedInt				m_ammoInClip {};								///< how many shots left in current clip
+	UnsignedInt				m_whenWeCanFireAgain {};				///< the first frame the weapon can fire again
+	UnsignedInt				m_whenPreAttackFinished {};		///< the frame the pre attack will complete.
+	UnsignedInt				m_whenLastReloadStarted {};		///< the frame the current reload/between-shots began. (only valid if status is RELOADING_CLIP or BETWEEN_FIRING_SHOTS)
+	UnsignedInt				m_lastFireFrame {};						///< frame a shot was last fired on
+	UnsignedInt				m_suspendFXFrame {};						///< The fireFX can be suspended for any delay, in frames, then they will execute as normal
+	ObjectID				m_projectileStreamID {};				///< the object that is tracking our stream if we have one.  It can't go away without us.
+	Int						m_maxShotCount {};							///< used for limiting consecutive firing
+	Int						m_curBarrel {};								///< current barrel used for firing
+	Int						m_numShotsForCurBarrel {};			///< how many shots to fire from cur barrel before moving to next barrel
+	std::vector<Int>		m_scatterTargetsUnused {};			///< A running memory of which targets I've used, so I can shoot them all at random
+	Bool					m_pitchLimited {};
+	Bool					m_leechWeaponRangeActive {};		///< This weapon has unlimited range until attack state is aborted!
 
 	// setter function for status that should not be used outside this class
 	void setStatus( WeaponStatus status) { m_status = status; }
@@ -876,16 +886,16 @@ private:
 	struct WeaponDelayedDamageInfo
 	{
 	public:
-		const WeaponTemplate *m_delayedWeapon;			///< if delayed damage is pending, the weapon to deal the damage
-		Coord3D m_delayDamagePos;										///< where to do the delay damage when it's time
-		UnsignedInt m_delayDamageFrame;							///< frames we do the damage
-		ObjectID m_delaySourceID;										///< who dealt the damage (by ID since it might be dead due to delay)
-		ObjectID m_delayIntendedVictimID;						///< who the damage was intended for (or zero if no specific target)
-		WeaponBonus m_bonus;												///< the weapon bonus to use
+		const WeaponTemplate *m_delayedWeapon {};			///< if delayed damage is pending, the weapon to deal the damage
+		Coord3D m_delayDamagePos {};										///< where to do the delay damage when it's time
+		UnsignedInt m_delayDamageFrame {};							///< frames we do the damage
+		ObjectID m_delaySourceID {};										///< who dealt the damage (by ID since it might be dead due to delay)
+		ObjectID m_delayIntendedVictimID {};						///< who the damage was intended for (or zero if no specific target)
+		WeaponBonus m_bonus {};												///< the weapon bonus to use
 	};
 
-	std::vector<WeaponTemplate*> m_weaponTemplateVector;
-	std::list<WeaponDelayedDamageInfo> m_weaponDDI;
+	std::vector<WeaponTemplate*> m_weaponTemplateVector {};
+	std::list<WeaponDelayedDamageInfo> m_weaponDDI {};
 };
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////

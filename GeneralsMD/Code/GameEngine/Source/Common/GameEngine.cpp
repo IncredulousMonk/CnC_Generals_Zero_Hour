@@ -58,7 +58,7 @@
 #include "Common/Science.h"
 #include "Common/FunctionLexicon.h"
 #include "Common/CommandLine.h"
-// #include "Common/DamageFX.h"
+#include "Common/DamageFX.h"
 #include "Common/MultiplayerSettings.h"
 // #include "Common/Recorder.h"
 // #include "Common/SpecialPower.h"
@@ -71,14 +71,14 @@
 // #include "Common/Registry.h"
 // #include "Common/GameCommon.h"	// FOR THE ALLOW_DEBUG_CHEATS_IN_RELEASE #define
 
-// #include "GameLogic/Armor.h"
+#include "GameLogic/Armor.h"
 // #include "GameLogic/AI.h"
 // #include "GameLogic/CaveSystem.h"
 // #include "GameLogic/CrateSystem.h"
 // #include "GameLogic/Damage.h"
 // #include "GameLogic/VictoryConditions.h"
 // #include "GameLogic/ObjectCreationList.h"
-// #include "GameLogic/Weapon.h"
+#include "GameLogic/Weapon.h"
 #include "GameLogic/GameLogic.h"
 // #include "GameLogic/Locomotor.h"
 // #include "GameLogic/RankInfo.h"
@@ -86,7 +86,7 @@
 // #include "GameLogic/SidesList.h"
 
 // #include "GameClient/Display.h"
-// #include "GameClient/FXList.h"
+#include "GameClient/FXList.h"
 #include "GameClient/GameClient.h"
 // #include "GameClient/Keyboard.h"
 // #include "GameClient/Shell.h"
@@ -474,15 +474,15 @@ void GameEngine::init( int argc, char *argv[] )
   startTime64 = endTime64;//Reset the clock ////////////////////////////////////////////////////////
 	DEBUG_LOG(("%s", Buf));////////////////////////////////////////////////////////////////////////////
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
-    
-    
-		// initSubsystem(TheFXListStore,"TheFXListStore", MSGNEW("GameEngineSubsystem") FXListStore(), &xferCRC, "Data\\INI\\Default\\FXList.ini", "Data\\INI\\FXList.ini");
-		// initSubsystem(TheWeaponStore,"TheWeaponStore", MSGNEW("GameEngineSubsystem") WeaponStore(), &xferCRC, NULL, "Data\\INI\\Weapon.ini");
+
+
+		initSubsystem(TheFXListStore,"TheFXListStore", MSGNEW("GameEngineSubsystem") FXListStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\FXList.ini", "Data\\INI\\FXList.ini");
+		initSubsystem(TheWeaponStore,"TheWeaponStore", MSGNEW("GameEngineSubsystem") WeaponStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Weapon.ini");
 		// initSubsystem(TheObjectCreationListStore,"TheObjectCreationListStore", MSGNEW("GameEngineSubsystem") ObjectCreationListStore(), &xferCRC, "Data\\INI\\Default\\ObjectCreationList.ini", "Data\\INI\\ObjectCreationList.ini");
 		// initSubsystem(TheLocomotorStore,"TheLocomotorStore", MSGNEW("GameEngineSubsystem") LocomotorStore(), &xferCRC, NULL, "Data\\INI\\Locomotor.ini");
 		// initSubsystem(TheSpecialPowerStore,"TheSpecialPowerStore", MSGNEW("GameEngineSubsystem") SpecialPowerStore(), &xferCRC, "Data\\INI\\Default\\SpecialPower.ini", "Data\\INI\\SpecialPower.ini");
-		// initSubsystem(TheDamageFXStore,"TheDamageFXStore", MSGNEW("GameEngineSubsystem") DamageFXStore(), &xferCRC, NULL, "Data\\INI\\DamageFX.ini");
-		// initSubsystem(TheArmorStore,"TheArmorStore", MSGNEW("GameEngineSubsystem") ArmorStore(), &xferCRC, NULL, "Data\\INI\\Armor.ini");
+		initSubsystem(TheDamageFXStore,"TheDamageFXStore", MSGNEW("GameEngineSubsystem") DamageFXStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\DamageFX.ini");
+		initSubsystem(TheArmorStore,"TheArmorStore", MSGNEW("GameEngineSubsystem") ArmorStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Armor.ini");
 		// initSubsystem(TheBuildAssistant,"TheBuildAssistant", MSGNEW("GameEngineSubsystem") BuildAssistant, NULL);
 
 

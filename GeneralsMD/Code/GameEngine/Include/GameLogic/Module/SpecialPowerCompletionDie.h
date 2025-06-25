@@ -42,23 +42,33 @@ class SpecialPowerTemplate;
 class SpecialPowerCompletionDieModuleData : public DieModuleData
 {
 public:
-	SpecialPowerTemplate *m_specialPowerTemplate;		///< pointer to the special power template
+	// No copies allowed!
+	SpecialPowerCompletionDieModuleData(const SpecialPowerCompletionDieModuleData&) = delete;
+	SpecialPowerCompletionDieModuleData& operator=(const SpecialPowerCompletionDieModuleData&) = delete;
+
+	// MG: Cannot apply offsetof to SpecialPowerCompletionDieModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		SpecialPowerTemplate *m_specialPowerTemplate;		///< pointer to the special power template
+	};
+
+	IniData m_ini {};
 
 	SpecialPowerCompletionDieModuleData()
 	{
-		m_specialPowerTemplate = NULL;
+		m_ini.m_specialPowerTemplate = NULL;
 	}
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
 	{
-    DieModuleData::buildFieldParse(p);
+		DieModuleData::buildFieldParse(p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "SpecialPowerTemplate", INI::parseSpecialPowerTemplate,	NULL, offsetof( SpecialPowerCompletionDieModuleData, m_specialPowerTemplate ) },
+			{ "SpecialPowerTemplate", INI::parseSpecialPowerTemplate,	NULL, offsetof( SpecialPowerCompletionDieModuleData::IniData, m_specialPowerTemplate ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		p.add(dataFieldParse);
 
 	}
 };

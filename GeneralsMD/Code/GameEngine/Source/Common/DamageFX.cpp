@@ -122,14 +122,14 @@ const FieldParse* DamageFX::getFieldParse() const
 {
 	static const FieldParse myFieldParse[] = 
 	{
-		{ "AmountForMajorFX",						parseAmount,			NULL, 0 },
-		{ "MajorFX",										parseMajorFXList,	NULL, 0 },
-		{ "MinorFX",										parseMinorFXList,	NULL, 0 },
-		{ "ThrottleTime",								parseTime,				NULL, 0 },
-		{ "VeterancyAmountForMajorFX",	parseAmount,			TheVeterancyNames, 0 },
-		{ "VeterancyMajorFX",						parseMajorFXList,	TheVeterancyNames, 0 },
-		{ "VeterancyMinorFX",						parseMinorFXList,	TheVeterancyNames, 0 },
-		{ "VeterancyThrottleTime",			parseTime,				TheVeterancyNames, 0 },
+		{ "AmountForMajorFX",			parseAmount,		NULL, 0 },
+		{ "MajorFX",					parseMajorFXList,	NULL, 0 },
+		{ "MinorFX",					parseMinorFXList,	NULL, 0 },
+		{ "ThrottleTime",				parseTime,			NULL, 0 },
+		{ "VeterancyAmountForMajorFX",	parseAmount,		TheVeterancyNames, 0 },
+		{ "VeterancyMajorFX",			parseMajorFXList,	TheVeterancyNames, 0 },
+		{ "VeterancyMinorFX",			parseMinorFXList,	TheVeterancyNames, 0 },
+		{ "VeterancyThrottleTime",		parseTime,			TheVeterancyNames, 0 },
 		{ 0, 0, 0,0 }
 	};
 	return myFieldParse;
@@ -157,7 +157,7 @@ static void parseCommonStuff(
 	}
 
 	const char* damageName = ini->getNextToken();
-	if (stricmp(damageName, "Default") == 0)
+	if (strcasecmp(damageName, "Default") == 0)
 	{
 		damageFirst = (DamageType)0;
 		damageLast = (DamageType)(DAMAGE_NUM_TYPES - 1);

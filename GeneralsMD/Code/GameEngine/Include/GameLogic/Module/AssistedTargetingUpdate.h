@@ -39,18 +39,18 @@
 class AssistedTargetingUpdateModuleData : public UpdateModuleData
 {
 public:
-	Int m_clipSize;
-	WeaponSlotType m_weaponSlot;
+	Int m_clipSize {};
+	WeaponSlotType m_weaponSlot {};
 
-  AsciiString m_laserFromAssistedName;
-  AsciiString m_laserToTargetName;
+	AsciiString m_laserFromAssistedName {};
+	AsciiString m_laserToTargetName {};
 
 	AssistedTargetingUpdateModuleData()
 	{
 		m_clipSize = 1;
 		m_weaponSlot = PRIMARY_WEAPON;
-    m_laserFromAssistedName.clear();
-    m_laserToTargetName.clear();
+		m_laserFromAssistedName.clear();
+		m_laserToTargetName.clear();
 	}
 
 	static void buildFieldParse(MultiIniFieldParse& p);
@@ -69,6 +69,10 @@ public:
 	AssistedTargetingUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	AssistedTargetingUpdate(const AssistedTargetingUpdate&) = delete;
+	AssistedTargetingUpdate& operator=(const AssistedTargetingUpdate&) = delete;
+
 	virtual UpdateSleepTime update( void );
 
 	Bool isFreeToAssist() const;
@@ -84,4 +88,3 @@ private:
 };
 
 #endif 
-

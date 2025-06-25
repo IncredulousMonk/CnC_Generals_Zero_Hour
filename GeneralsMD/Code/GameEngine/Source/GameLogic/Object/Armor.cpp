@@ -80,14 +80,14 @@ Real ArmorTemplate::adjustDamage(DamageType t, Real damage) const
 }
 
 //-------------------------------------------------------------------------------------------Static
-/*static*/ void ArmorTemplate::parseArmorCoefficients( INI* ini, void *instance, void* /* store */, const void* userData )
+/*static*/ void ArmorTemplate::parseArmorCoefficients( INI* ini, void *instance, void* /* store */, const void* /*userData*/ )
 {
 	ArmorTemplate* self = (ArmorTemplate*) instance;
 
 	const char* damageName = ini->getNextToken();
 	Real pct = INI::scanPercentToReal(ini->getNextToken());
 
-	if (stricmp(damageName, "Default") == 0)
+	if (strcasecmp(damageName, "Default") == 0)
 	{
 		for (Int i = 0; i < DAMAGE_NUM_TYPES; i++)
 		{

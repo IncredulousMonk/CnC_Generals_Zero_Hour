@@ -158,7 +158,7 @@ public:
 private:
 
 	typedef std::unordered_map< NameKeyType, DamageFX, rts::hash<NameKeyType>, rts::equal_to<NameKeyType> > DamageFXMap;
-	DamageFXMap m_dfxmap;
+	DamageFXMap m_dfxmap {};
 
 };
 

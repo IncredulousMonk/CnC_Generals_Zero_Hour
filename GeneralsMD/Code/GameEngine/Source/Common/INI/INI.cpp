@@ -49,16 +49,16 @@
 
 // #include "GameClient/Anim2D.h"
 // #include "GameClient/Color.h"
-// #include "GameClient/FXList.h"
+#include "GameClient/FXList.h"
 #include "GameClient/GameText.h"
 #include "GameClient/Image.h"
 // #include "GameClient/ParticleSys.h"
-// #include "GameLogic/Armor.h"
+#include "GameLogic/Armor.h"
 // #include "GameLogic/ExperienceTracker.h"
 // #include "GameLogic/FPUControl.h"
 // #include "GameLogic/ObjectCreationList.h"
 // #include "GameLogic/ScriptEngine.h"
-// #include "GameLogic/Weapon.h"
+#include "GameLogic/Weapon.h"
 
 #include <cstdint>
 
@@ -90,7 +90,7 @@ static const BlockParse theTypeTable[] =
 	// FIXME: Uncomment these as they are added.
 // 	{ "AIData",							INI::parseAIDataDefinition },
 	{ "Animation",						INI::parseAnim2DDefinition },
-// 	{ "Armor",							INI::parseArmorDefinition },
+	{ "Armor",							INI::parseArmorDefinition },
 	{ "AudioEvent",						INI::parseAudioEventDefinition },
 	{ "AudioSettings",					INI::parseAudioSettingsDefinition },
 	{ "Bridge",							INI::parseTerrainBridgeDefinition },
@@ -104,11 +104,11 @@ static const BlockParse theTypeTable[] =
 // 	{ "CrateData",						INI::parseCrateTemplateDefinition },
 	{ "Credits",						INI::parseCredits},
 	{ "WindowTransition",				INI::parseWindowTransitions},
-// 	{ "DamageFX",						INI::parseDamageFXDefinition },
+	{ "DamageFX",						INI::parseDamageFXDefinition },
 	{ "DialogEvent",					INI::parseDialogDefinition },
 	{ "DrawGroupInfo",					INI::parseDrawGroupNumberDefinition },
 // 	{ "EvaEvent",						INI::parseEvaEvent },
-// 	{ "FXList",							INI::parseFXListDefinition },
+	{ "FXList",							INI::parseFXListDefinition },
 	{ "GameData",						INI::parseGameDataDefinition },
 // 	{ "InGameUI",						INI::parseInGameUIDefinition },
 // 	{ "Locomotor",						INI::parseLocomotorTemplateDefinition },
@@ -140,7 +140,7 @@ static const BlockParse theTypeTable[] =
 	{ "WaterSet",						INI::parseWaterSettingDefinition },
 	{ "WaterTransparency",				INI::parseWaterTransparencyDefinition},
 	{ "Weather",						INI::parseWeatherDefinition},
-// 	{ "Weapon",							INI::parseWeaponTemplateDefinition },
+	{ "Weapon",							INI::parseWeaponTemplateDefinition },
 // 	{ "WebpageURL",						INI::parseWebpageURLDefinition },
 	{ "HeaderTemplate",					INI::parseHeaderTemplateDefinition },
 	{ "StaticGameLOD",					INI::parseStaticGameLODDefinition },
@@ -1232,24 +1232,22 @@ void INI::parseThingTemplate( INI* ini, void * /*instance*/, void *store, const 
 //-------------------------------------------------------------------------------------------------
 void INI::parseArmorTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) store;
 	const char *token = ini->getNextToken();
-	DEBUG_LOG(("WARNING: parseArmorTemplate not yet implemented: trying to load template %s\n", token));
 
-	// typedef const ArmorTemplate *ConstArmorTemplatePtr;
-	// ConstArmorTemplatePtr* theArmorTemplate = (ConstArmorTemplatePtr*)store;		
+	typedef const ArmorTemplate *ConstArmorTemplatePtr;
+	ConstArmorTemplatePtr* theArmorTemplate = (ConstArmorTemplatePtr*)store;
 
-	// if (strcasecmp(token, "None") == 0)
-	// {
-	// 	*theArmorTemplate = NULL;
-	// }
-	// else
-	// {
-	// 	const ArmorTemplate *tt = TheArmorStore->findArmorTemplate(token);	// could be null!
-	// 	DEBUG_ASSERTCRASH(tt, ("ArmorTemplate %s not found!\n",token));
-	// 	// assign it, even if null!
-	// 	*theArmorTemplate = tt;
-	// }
+	if (strcasecmp(token, "None") == 0)
+	{
+		*theArmorTemplate = NULL;
+	}
+	else
+	{
+		const ArmorTemplate *tt = TheArmorStore->findArmorTemplate(token);	// could be null!
+		DEBUG_ASSERTCRASH(tt, ("ArmorTemplate %s not found!\n",token));
+		// assign it, even if null!
+		*theArmorTemplate = tt;
+	}
 
 } 
 
@@ -1258,17 +1256,15 @@ void INI::parseArmorTemplate( INI* ini, void * /*instance*/, void *store, const 
 //-------------------------------------------------------------------------------------------------
 void INI::parseWeaponTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) store;
 	const char *token = ini->getNextToken();
-	DEBUG_LOG(("WARNING: parseWeaponTemplate not yet implemented: trying to load template %s\n", token));
 
-	// typedef const WeaponTemplate *ConstWeaponTemplatePtr;
-	// ConstWeaponTemplatePtr* theWeaponTemplate = (ConstWeaponTemplatePtr*)store;
+	typedef const WeaponTemplate *ConstWeaponTemplatePtr;
+	ConstWeaponTemplatePtr* theWeaponTemplate = (ConstWeaponTemplatePtr*)store;
 
-	// const WeaponTemplate *tt = TheWeaponStore->findWeaponTemplate(token);	// could be null!
-	// DEBUG_ASSERTCRASH(tt || strcasecmp(token, "None") == 0, ("WeaponTemplate %s not found!\n",token));
-	// // assign it, even if null!
-	// *theWeaponTemplate = tt;
+	const WeaponTemplate *tt = TheWeaponStore->findWeaponTemplate(token);	// could be null!
+	DEBUG_ASSERTCRASH(tt || strcasecmp(token, "None") == 0, ("WeaponTemplate %s not found!\n",token));
+	// assign it, even if null!
+	*theWeaponTemplate = tt;
 
 } 
 
@@ -1277,18 +1273,15 @@ void INI::parseWeaponTemplate( INI* ini, void * /*instance*/, void *store, const
 //-------------------------------------------------------------------------------------------------
 void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseFXList not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// typedef const FXList *ConstFXListPtr;
-	// ConstFXListPtr* theFXList = (ConstFXListPtr*)store;		
+	typedef const FXList *ConstFXListPtr;
+	ConstFXListPtr* theFXList = (ConstFXListPtr*)store;		
 
-	// const FXList *fxl = TheFXListStore->findFXList(token);	// could be null!
-	// DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
-	// // assign it, even if null!
-	// *theFXList = fxl;
+	const FXList *fxl = TheFXListStore->findFXList(token);	// could be null!
+	DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
+	// assign it, even if null!
+	*theFXList = fxl;
 
 } 
 
@@ -1297,16 +1290,15 @@ void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /
 //-------------------------------------------------------------------------------------------------
 void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	(void) ini;
 	(void) store;
-	DEBUG_CRASH(("parseParticleSystemTemplate not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
+	DEBUG_LOG(("WARNING! parseParticleSystemTemplate not yet implemented: %s\n", token));
 
 	// const ParticleSystemTemplate *pSystemT = TheParticleSystemManager->findTemplate( AsciiString( token ) );
 	// DEBUG_ASSERTCRASH( pSystemT || strcasecmp( token, "None" ) == 0, ("ParticleSystem %s not found!\n",token) );
 
 	// typedef const ParticleSystemTemplate* ConstParticleSystemTemplatePtr;
-	// ConstParticleSystemTemplatePtr* theParticleSystemTemplate = (ConstParticleSystemTemplatePtr*)store;		
+	// ConstParticleSystemTemplatePtr* theParticleSystemTemplate = (ConstParticleSystemTemplatePtr*)store;
 
 	// *theParticleSystemTemplate = pSystemT;
 
@@ -1317,24 +1309,22 @@ void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *stor
 //-------------------------------------------------------------------------------------------------
 void INI::parseDamageFX( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) store;
 	const char *token = ini->getNextToken();
-	DEBUG_LOG(("WARNING: parseDamageFX not yet implemented: trying to load template %s\n", token));
 
-	// typedef const DamageFX *ConstDamageFXPtr;
-	// ConstDamageFXPtr* theDamageFX = (ConstDamageFXPtr*)store;		
+	typedef const DamageFX *ConstDamageFXPtr;
+	ConstDamageFXPtr* theDamageFX = (ConstDamageFXPtr*)store;		
 
-	// if (strcasecmp(token, "None") == 0)
-	// {
-	// 	*theDamageFX = NULL;
-	// }
-	// else
-	// {
-	// 	const DamageFX *fxl = TheDamageFXStore->findDamageFX(token);	// could be null!
-	// 	DEBUG_ASSERTCRASH(fxl, ("DamageFX %s not found!\n",token));
-	// 	// assign it, even if null!
-	// 	*theDamageFX = fxl;
-	// }
+	if (strcasecmp(token, "None") == 0)
+	{
+		*theDamageFX = NULL;
+	}
+	else
+	{
+		const DamageFX *fxl = TheDamageFXStore->findDamageFX(token);	// could be null!
+		DEBUG_ASSERTCRASH(fxl, ("DamageFX %s not found!\n",token));
+		// assign it, even if null!
+		*theDamageFX = fxl;
+	}
 
 } 
 
@@ -1767,27 +1757,24 @@ const char* INI::getNextSubToken(const char* expected)
  */
 void INI::parseGameClientRandomVariable( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseGameClientRandomVariable not yet implemented"));
-	// GameClientRandomVariable *var = static_cast<GameClientRandomVariable *>(store);
+	GameClientRandomVariable *var = static_cast<GameClientRandomVariable *>(store);
 
-	// const char* token;
+	const char* token;
 
-	// token = ini->getNextToken();
-	// Real low = INI::scanReal(token);
+	token = ini->getNextToken();
+	Real low = INI::scanReal(token);
 
-	// token = ini->getNextToken();
-	// Real high = INI::scanReal(token);
+	token = ini->getNextToken();
+	Real high = INI::scanReal(token);
 
-	// // if omitted, assume uniform
-	// GameClientRandomVariable::DistributionType type = GameClientRandomVariable::UNIFORM;
-	// token = ini->getNextTokenOrNull();
-	// if (token)
-	// 	type = (GameClientRandomVariable::DistributionType)INI::scanIndexList(token, GameClientRandomVariable::DistributionTypeNames);
+	// if omitted, assume uniform
+	GameClientRandomVariable::DistributionType type = GameClientRandomVariable::UNIFORM;
+	token = ini->getNextTokenOrNull();
+	if (token)
+		type = (GameClientRandomVariable::DistributionType)INI::scanIndexList(token, GameClientRandomVariable::DistributionTypeNames);
 
-	// // set the range of the random variable
-	// var->setRange( low, high, type );
+	// set the range of the random variable
+	var->setRange( low, high, type );
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -81,6 +81,7 @@ class BridgeBehaviorInterface
 
 public:
 
+	virtual ~BridgeBehaviorInterface() {}
 	virtual void setTower( BridgeTowerType towerType, Object *tower ) = 0;
 	virtual ObjectID getTowerID( BridgeTowerType towerType ) = 0;
 	virtual void createScaffolding( void ) = 0;
@@ -102,10 +103,16 @@ public:
 
 	static void buildFieldParse( MultiIniFieldParse &p );
 
-	Real m_lateralScaffoldSpeed;
-	Real m_verticalScaffoldSpeed;
-	BridgeFXList m_fx;							///< list of FX lists to execute
-	BridgeOCLList m_ocl;						///< list of OCL to execute
+	// MG: Cannot apply offsetof to BridgeBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_lateralScaffoldSpeed;
+		Real m_verticalScaffoldSpeed;
+		BridgeFXList m_fx;							///< list of FX lists to execute
+		BridgeOCLList m_ocl;						///< list of OCL to execute
+	};
+
+	IniData m_ini {};
 
 	static void parseFX( INI *ini, void *instance, void *store, const void* userData );
 	static void parseOCL( INI *ini, void *instance, void *store, const void* userData );
@@ -127,6 +134,10 @@ public:
 
 	BridgeBehavior( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	BridgeBehavior(const BridgeBehavior&) = delete;
+	BridgeBehavior& operator=(const BridgeBehavior&) = delete;
 
 	// module methods
 	static Int getInterfaceMask( void ) { return (MODULEINTERFACE_DAMAGE) | 

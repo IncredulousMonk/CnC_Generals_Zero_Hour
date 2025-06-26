@@ -68,7 +68,7 @@
 // #include "GameClient/LookAtXlat.h"
 // #include "GameClient/MetaEvent.h"
 // #include "GameClient/Mouse.h"
-// #include "GameClient/ParticleSys.h"
+#include "GameClient/ParticleSys.h"
 // #include "GameClient/PlaceEventTranslator.h"
 // #include "GameClient/RayEffect.h"
 // #include "GameClient/SelectionXlat.h"

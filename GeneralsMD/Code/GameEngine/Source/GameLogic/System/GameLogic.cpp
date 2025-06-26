@@ -70,7 +70,7 @@
 // #include "GameClient/LoadScreen.h"
 // #include "GameClient/MapUtil.h"
 // #include "GameClient/Mouse.h"
-// #include "GameClient/ParticleSys.h"
+#include "GameClient/ParticleSys.h"
 // #include "GameClient/TerrainVisual.h"
 // #include "GameClient/View.h"
 // #include "GameClient/ControlBar.h"

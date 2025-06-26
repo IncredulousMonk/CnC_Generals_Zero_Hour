@@ -49,8 +49,9 @@ $(WWMO)/quat.o: $(WWMS)/quat.cpp $(WWMS)/quat.h
 ENGINE_DEVICE_OBJS = $(GEDO)/SdlAudioManager.o \
 $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o $(GEDO)/SdlFileStream.o \
 $(GEDO)/LinuxFunctionLexicon.o \
+$(GEDO)/LinuxModuleFactory.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
-$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxGameClient.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
+$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxParticleSys.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
 $(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
    $(GEDO)/LinuxTextEntry.o $(GEDO)/LinuxVerticalSlider.o \
@@ -87,6 +88,10 @@ $(GEDO)/SdlFileStream.o: $(GEDSLDC)/SdlFileStream.cpp GameEngineDevice/Include/L
 $(GEDO)/LinuxFunctionLexicon.o: $(GEDSLD)/Common/System/LinuxFunctionLexicon.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxFunctionLexicon.o $(GEDSLD)/Common/System/LinuxFunctionLexicon.cpp
 
+# --- GameEngineDevice/Source/LinuxDevice/Common/Thing ---
+$(GEDO)/LinuxModuleFactory.o: $(GEDSLD)/Common/Thing/LinuxModuleFactory.cpp GameEngineDevice/Include/LinuxDevice/Common/LinuxModuleFactory.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxModuleFactory.o $(GEDSLD)/Common/Thing/LinuxModuleFactory.cpp
+
 # --- GameEngineDevice/Source/LinuxDevice/FFmpeg ---
 $(GEDO)/FFmpegVideoPlayer.o: $(GEDSLDF)/FFmpegVideoPlayer.cpp GameEngineDevice/Include/LinuxDevice/FFmpeg/FFmpegVideoPlayer.h GameEngineDevice/Include/LinuxDevice/FFmpeg/FFmpegVideo.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/FFmpegVideoPlayer.o $(GEDSLDF)/FFmpegVideoPlayer.cpp
@@ -118,6 +123,9 @@ $(GEDO)/LinuxDisplayStringManager.o: $(GEDSLD)/GameClient/LinuxDisplayStringMana
 
 $(GEDO)/LinuxGameClient.o: $(GEDSLD)/GameClient/LinuxGameClient.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGameClient.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameClient.o $(GEDSLD)/GameClient/LinuxGameClient.cpp
+
+$(GEDO)/LinuxParticleSys.o: $(GEDSLD)/GameClient/LinuxParticleSys.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxParticleSys.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxParticleSys.o $(GEDSLD)/GameClient/LinuxParticleSys.cpp
 
 $(GEDO)/SdlKeyboard.o: $(GEDSLD)/GameClient/SdlKeyboard.cpp GameEngineDevice/Include/LinuxDevice/GameClient/SdlKeyboard.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/SdlKeyboard.o $(GEDSLD)/GameClient/SdlKeyboard.cpp
@@ -184,7 +192,8 @@ ENGINE_OBJS = $(GEO)/BitFlags.o $(GEO)/CommandLine.o $(GEO)/DamageFX.o $(GEO)/Ga
    $(GEO)/MultiplayerSettings.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/TerrainTypes.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
 $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
 $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDamageFX.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o \
-   $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIVideo.o $(GEO)/INIWater.o $(GEO)/INIWeapon.o \
+   $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
+   $(GEO)/INIWeapon.o \
 $(GEO)/Money.o $(GEO)/ProductionPrerequisite.o $(GEO)/Science.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o \
    $(GEO)/GameCommon.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/Geometry.o $(GEO)/KindOf.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o $(GEO)/ObjectStatusTypes.o $(GEO)/RAMFile.o \
@@ -200,8 +209,9 @@ $(GEO)/ExtendedMessageBox.o $(GEO)/MessageBox.o \
 $(GEO)/CreditsMenu.o $(GEO)/MainMenu.o $(GEO)/OptionsMenu.o \
 $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
-$(GEO)/Anim2D.o $(GEO)/Image.o \
+$(GEO)/Anim2D.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
 $(GEO)/TerrainRoads.o \
+$(GEO)/TerrainLogic.o \
 $(GEO)/Armor.o $(GEO)/Object.o $(GEO)/Weapon.o $(GEO)/WeaponSet.o \
 $(GEO)/BehaviorModule.o \
 $(GEO)/BodyModule.o \
@@ -308,6 +318,9 @@ $(GEO)/INIMultiplayer.o: $(GES)/Common/INI/INIMultiplayer.cpp
 
 $(GEO)/INIObject.o: $(GES)/Common/INI/INIObject.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIObject.o $(GES)/Common/INI/INIObject.cpp
+
+$(GEO)/INIParticleSys.o: $(GES)/Common/INI/INIParticleSys.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIParticleSys.o $(GES)/Common/INI/INIParticleSys.cpp
 
 $(GEO)/INITerrain.o: $(GES)/Common/INI/INITerrain.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INITerrain.o $(GES)/Common/INI/INITerrain.cpp
@@ -600,9 +613,16 @@ $(GEO)/Anim2D.o: $(GES)/GameClient/System/Anim2D.cpp
 $(GEO)/Image.o: $(GES)/GameClient/System/Image.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Image.o $(GES)/GameClient/System/Image.cpp
 
+$(GEO)/ParticleSys.o: $(GES)/GameClient/System/ParticleSys.cpp GameEngine/Include/GameClient/ParticleSys.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ParticleSys.o $(GES)/GameClient/System/ParticleSys.cpp
+
 # --- GameEngine/Source/GameClient/Terrain ---
 $(GEO)/TerrainRoads.o: $(GES)/GameClient/Terrain/TerrainRoads.cpp GameEngine/Include/GameClient/TerrainRoads.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainRoads.o $(GES)/GameClient/Terrain/TerrainRoads.cpp
+
+# --- GameEngine/Source/GameLogic/Map ---
+$(GEO)/TerrainLogic.o: $(GES)/GameLogic/Map/TerrainLogic.cpp GameEngine/Include/GameLogic/TerrainLogic.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainLogic.o $(GES)/GameLogic/Map/TerrainLogic.cpp
 
 # --- GameEngine/Source/GameLogic/Object ---
 $(GEO)/Armor.o: $(GES)/GameLogic/Object/Armor.cpp GameEngine/Include/GameLogic/Armor.h

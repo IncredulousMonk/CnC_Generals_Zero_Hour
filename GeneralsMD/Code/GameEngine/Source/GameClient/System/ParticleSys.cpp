@@ -299,7 +299,7 @@ Particle::Particle( ParticleSystem *system, const ParticleInfo *info )
 	computeAlphaRate();
 
 	// set up colors
-	for( i=0; i<MAX_KEYFRAMES; i++ )
+	for( Int i=0; i<MAX_KEYFRAMES; i++ )
 		m_colorKey[i] = info->m_colorKey[i];
 
 	m_color = m_colorKey[0].color;
@@ -613,6 +613,9 @@ Bool Particle::isInvisible( void )
 					return true;
 			}
 			return false;
+
+		default:
+			break;
 	}
 
 	// should never get here - if we do, data is incorrect
@@ -708,7 +711,7 @@ void Particle::loadPostProcess( void )
 		controlParticleSystem( system );
 
 		// sanity
-		if( m_systemUnderControlID == NULL )
+		if( m_systemUnderControlID == 0 )
 		{
 
 			DEBUG_CRASH(( "Particle::loadPostProcess - Unable to find system under control pointer\n" ));
@@ -727,35 +730,35 @@ void Particle::loadPostProcess( void )
 // ------------------------------------------------------------------------------------------------
 ParticleSystemInfo::ParticleSystemInfo()
 {
-	m_priority = PARTICLE_PRIORITY_LOWEST;
-	m_isGroundAligned = false;
-	m_isEmitAboveGroundOnly = false;
-	m_isParticleUpTowardsEmitter = false;
+	m_ini.m_priority = PARTICLE_PRIORITY_LOWEST;
+	m_ini.m_isGroundAligned = false;
+	m_ini.m_isEmitAboveGroundOnly = false;
+	m_ini.m_isParticleUpTowardsEmitter = false;
 	
 	//Added By Sadullah Nader
 	//Initializations inserted
-	m_driftVelocity.zero();
-	m_gravity = 0.0f;
-	m_isEmissionVolumeHollow = FALSE;
-	m_isOneShot = FALSE;
-	m_slavePosOffset.zero();
-	m_systemLifetime = 0;
+	m_ini.m_driftVelocity.zero();
+	m_ini.m_gravity = 0.0f;
+	m_ini.m_isEmissionVolumeHollow = FALSE;
+	m_ini.m_isOneShot = FALSE;
+	m_ini.m_slavePosOffset.zero();
+	m_ini.m_systemLifetime = 0;
 	
 	//
 	// some default values for the wind motion values
-	m_windMotion = WIND_MOTION_NOT_USED;
-	m_windAngle = 0.0f;
-	m_windAngleChange = 0.15f;  // higher is ping pong faster
-	m_windAngleChangeMin = 0.15f;
-	m_windAngleChangeMax = 0.45f;
-	m_windMotionStartAngleMin = 0.0f;
-	m_windMotionStartAngleMax = PI / 4.0f;
-	m_windMotionStartAngle = m_windMotionStartAngleMin;
-	m_windMotionEndAngleMin = TWO_PI - (PI / 4.0f);
-	m_windMotionEndAngleMax = TWO_PI;
-	m_windMotionEndAngle = m_windMotionEndAngleMin;
-	m_windMotionMovingToEndAngle = TRUE;
-	m_volumeParticleDepth = DEFAULT_VOLUME_PARTICLE_DEPTH;
+	m_ini.m_windMotion = WIND_MOTION_NOT_USED;
+	m_ini.m_windAngle = 0.0f;
+	m_ini.m_windAngleChange = 0.15f;  // higher is ping pong faster
+	m_ini.m_windAngleChangeMin = 0.15f;
+	m_ini.m_windAngleChangeMax = 0.45f;
+	m_ini.m_windMotionStartAngleMin = 0.0f;
+	m_ini.m_windMotionStartAngleMax = PI / 4.0f;
+	m_ini.m_windMotionStartAngle = m_ini.m_windMotionStartAngleMin;
+	m_ini.m_windMotionEndAngleMin = TWO_PI - (PI / 4.0f);
+	m_ini.m_windMotionEndAngleMax = TWO_PI;
+	m_ini.m_windMotionEndAngle = m_ini.m_windMotionEndAngleMin;
+	m_ini.m_windMotionMovingToEndAngle = TRUE;
+	m_ini.m_volumeParticleDepth = DEFAULT_VOLUME_PARTICLE_DEPTH;
 
 }
 
@@ -763,14 +766,14 @@ ParticleSystemInfo::ParticleSystemInfo()
 void ParticleSystemInfo::tintAllColors( Color tintColor )
 {
 	RGBColor rgb;
-	rgb.setFromInt(tintColor);
+	rgb.setFromUnsignedInt(tintColor);
 
 	//This tints all but the first colorKey!!!
 	for (int key = 1; key < MAX_KEYFRAMES; ++key )
 	{
-		m_colorKey[ key ].color.red   *= (Real)(rgb.red  ) / 255.0f;
-		m_colorKey[ key ].color.green *= (Real)(rgb.green) / 255.0f;
-		m_colorKey[ key ].color.blue  *= (Real)(rgb.blue ) / 255.0f;
+		m_ini.m_colorKey[ key ].color.red   *= (Real)(rgb.red  ) / 255.0f;
+		m_ini.m_colorKey[ key ].color.green *= (Real)(rgb.green) / 255.0f;
+		m_ini.m_colorKey[ key ].color.blue  *= (Real)(rgb.blue ) / 255.0f;
 	}
 
 }  // end loadPostProcess
@@ -799,58 +802,58 @@ void ParticleSystemInfo::xfer( Xfer *xfer )
 	xfer->xferVersion( &version, currentVersion );
 
 	// is one shot
-	xfer->xferBool( &m_isOneShot );
+	xfer->xferBool( &m_ini.m_isOneShot );
 
 	// shader type
-	xfer->xferUser( &m_shaderType, sizeof( ParticleShaderType ) );
+	xfer->xferUser( &m_ini.m_shaderType, sizeof( ParticleShaderType ) );
 
 	// particle type
-	xfer->xferUser( &m_particleType, sizeof( ParticleType ) );
+	xfer->xferUser( &m_ini.m_particleType, sizeof( ParticleType ) );
 
 	// particle type name
-	xfer->xferAsciiString( &m_particleTypeName );
+	xfer->xferAsciiString( &m_ini.m_particleTypeName );
 
 	// angles
 	GameClientRandomVariable	tempRandom;	//for backwards compatibility when we supported x,y
 	xfer->xferUser( &tempRandom, sizeof( GameClientRandomVariable ) );
 	xfer->xferUser( &tempRandom, sizeof( GameClientRandomVariable ) );
-	xfer->xferUser( &m_angleZ, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_angleZ, sizeof( GameClientRandomVariable ) );
 
 	// angular rate
 	xfer->xferUser( &tempRandom, sizeof( GameClientRandomVariable ) );
 	xfer->xferUser( &tempRandom, sizeof( GameClientRandomVariable ) );
-	xfer->xferUser( &m_angularRateZ, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_angularRateZ, sizeof( GameClientRandomVariable ) );
 
 	// angular damping
-	xfer->xferUser( &m_angularDamping, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_angularDamping, sizeof( GameClientRandomVariable ) );
 
 	// velocity damping
-	xfer->xferUser( &m_velDamping, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_velDamping, sizeof( GameClientRandomVariable ) );
 
 	// lifetime
-	xfer->xferUser( &m_lifetime, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_lifetime, sizeof( GameClientRandomVariable ) );
 
 	// system lifetime
-	xfer->xferUnsignedInt( &m_systemLifetime );
+	xfer->xferUnsignedInt( &m_ini.m_systemLifetime );
 
 	// start size
-	xfer->xferUser( &m_startSize, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_startSize, sizeof( GameClientRandomVariable ) );
 
 	// start size rate
-	xfer->xferUser( &m_startSizeRate, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_startSizeRate, sizeof( GameClientRandomVariable ) );
 
 	// size rate
-	xfer->xferUser( &m_sizeRate, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_sizeRate, sizeof( GameClientRandomVariable ) );
 
 	// size rate damping
-	xfer->xferUser( &m_sizeRateDamping, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_sizeRateDamping, sizeof( GameClientRandomVariable ) );
 
 	// alpha keys
 	for( i = 0; i < MAX_KEYFRAMES; ++i )
 	{
 
-		xfer->xferUser( &m_alphaKey[ i ].var, sizeof( GameClientRandomVariable ) );
-		xfer->xferUnsignedInt( &m_alphaKey[ i ].frame );
+		xfer->xferUser( &m_ini.m_alphaKey[ i ].var, sizeof( GameClientRandomVariable ) );
+		xfer->xferUnsignedInt( &m_ini.m_alphaKey[ i ].frame );
 
 	}  // end for, i
 
@@ -858,84 +861,87 @@ void ParticleSystemInfo::xfer( Xfer *xfer )
 	for( i = 0; i < MAX_KEYFRAMES; ++i )
 	{
 
-		xfer->xferRGBColor( &m_colorKey[ i ].color );
-		xfer->xferUnsignedInt( &m_colorKey[ i ].frame );
+		xfer->xferRGBColor( &m_ini.m_colorKey[ i ].color );
+		xfer->xferUnsignedInt( &m_ini.m_colorKey[ i ].frame );
 
 	}  // end for, i
 
 	// color scale
-	xfer->xferUser( &m_colorScale, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_colorScale, sizeof( GameClientRandomVariable ) );
 	
 	// burst delay
-	xfer->xferUser( &m_burstDelay, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_burstDelay, sizeof( GameClientRandomVariable ) );
 	
 	// burst count
-	xfer->xferUser( &m_burstCount, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_burstCount, sizeof( GameClientRandomVariable ) );
 	
 	// initial delay
-	xfer->xferUser( &m_initialDelay, sizeof( GameClientRandomVariable ) );
+	xfer->xferUser( &m_ini.m_initialDelay, sizeof( GameClientRandomVariable ) );
 	
 	// drift velocity
-	xfer->xferCoord3D( &m_driftVelocity );
+	xfer->xferCoord3D( &m_ini.m_driftVelocity );
 	
 	// gravity
-	xfer->xferReal( &m_gravity );
+	xfer->xferReal( &m_ini.m_gravity );
 		
 	// slave system name
-	xfer->xferAsciiString( &m_slaveSystemName );
+	xfer->xferAsciiString( &m_ini.m_slaveSystemName );
 
 	// slave position offset
-	xfer->xferCoord3D( &m_slavePosOffset );
+	xfer->xferCoord3D( &m_ini.m_slavePosOffset );
 
 	// attached system name
-	xfer->xferAsciiString( &m_attachedSystemName );
+	xfer->xferAsciiString( &m_ini.m_attachedSystemName );
 
 	// emission velocity type, this must come before m_emissionVelocity
-	xfer->xferUser( &m_emissionVelocityType, sizeof( EmissionVelocityType ) );
+	xfer->xferUser( &m_ini.m_emissionVelocityType, sizeof( EmissionVelocityType ) );
 
 	// particle priority
-	xfer->xferUser( &m_priority, sizeof( ParticlePriorityType ) );
+	xfer->xferUser( &m_ini.m_priority, sizeof( ParticlePriorityType ) );
 
 	// emission velocity
-	switch( m_emissionVelocityType )
+	switch( m_ini.m_emissionVelocityType )
 	{
 
 		// --------------------------------------------------------------------------------------------
 		case ORTHO:
-			xfer->xferUser( &m_emissionVelocity.ortho.x, sizeof( GameClientRandomVariable ) );
-			xfer->xferUser( &m_emissionVelocity.ortho.y, sizeof( GameClientRandomVariable ) );
-			xfer->xferUser( &m_emissionVelocity.ortho.z, sizeof( GameClientRandomVariable ) );
+			xfer->xferUser( &m_ini.m_emissionVelocity.ortho.x, sizeof( GameClientRandomVariable ) );
+			xfer->xferUser( &m_ini.m_emissionVelocity.ortho.y, sizeof( GameClientRandomVariable ) );
+			xfer->xferUser( &m_ini.m_emissionVelocity.ortho.z, sizeof( GameClientRandomVariable ) );
 			break;
 
 		// --------------------------------------------------------------------------------------------
 		case SPHERICAL:		
-			xfer->xferUser( &m_emissionVelocity.spherical.speed, sizeof( GameClientRandomVariable ) );			
+			xfer->xferUser( &m_ini.m_emissionVelocity.spherical.speed, sizeof( GameClientRandomVariable ) );			
 			break;
 
 		// --------------------------------------------------------------------------------------------
 		case HEMISPHERICAL:
-			xfer->xferUser( &m_emissionVelocity.hemispherical.speed, sizeof( GameClientRandomVariable ) );			
+			xfer->xferUser( &m_ini.m_emissionVelocity.hemispherical.speed, sizeof( GameClientRandomVariable ) );			
 			break;
 
 		// --------------------------------------------------------------------------------------------
 		case CYLINDRICAL:
-			xfer->xferUser( &m_emissionVelocity.cylindrical.radial, sizeof( GameClientRandomVariable ) );						
-			xfer->xferUser( &m_emissionVelocity.cylindrical.normal, sizeof( GameClientRandomVariable ) );
+			xfer->xferUser( &m_ini.m_emissionVelocity.cylindrical.radial, sizeof( GameClientRandomVariable ) );						
+			xfer->xferUser( &m_ini.m_emissionVelocity.cylindrical.normal, sizeof( GameClientRandomVariable ) );
 			break;
 
 		// --------------------------------------------------------------------------------------------
 		case OUTWARD:
-			xfer->xferUser( &m_emissionVelocity.outward.speed, sizeof( GameClientRandomVariable ) );
-			xfer->xferUser( &m_emissionVelocity.outward.otherSpeed, sizeof( GameClientRandomVariable ) );
+			xfer->xferUser( &m_ini.m_emissionVelocity.outward.speed, sizeof( GameClientRandomVariable ) );
+			xfer->xferUser( &m_ini.m_emissionVelocity.outward.otherSpeed, sizeof( GameClientRandomVariable ) );
+			break;
+
+		default:
 			break;
 
 	}  // end switch, m_emissionVelocityType
 
 	// emission volume type
-	xfer->xferUser( &m_emissionVolumeType, sizeof( EmissionVolumeType ) );
+	xfer->xferUser( &m_ini.m_emissionVolumeType, sizeof( EmissionVolumeType ) );
 
 	// emission volume
-	switch( m_emissionVolumeType )
+	switch( m_ini.m_emissionVolumeType )
 	{
 
 		// --------------------------------------------------------------------------------------------
@@ -945,75 +951,78 @@ void ParticleSystemInfo::xfer( Xfer *xfer )
 
 		// --------------------------------------------------------------------------------------------
 		case LINE:
-			xfer->xferCoord3D( &m_emissionVolume.line.start );
-			xfer->xferCoord3D( &m_emissionVolume.line.end );
+			xfer->xferCoord3D( &m_ini.m_emissionVolume.line.start );
+			xfer->xferCoord3D( &m_ini.m_emissionVolume.line.end );
 			break;
 
 		// --------------------------------------------------------------------------------------------
 		case BOX:
-			xfer->xferCoord3D( &m_emissionVolume.box.halfSize );
+			xfer->xferCoord3D( &m_ini.m_emissionVolume.box.halfSize );
 			break;
 
 		// --------------------------------------------------------------------------------------------
 		case SPHERE:
-			xfer->xferReal( &m_emissionVolume.sphere.radius );
+			xfer->xferReal( &m_ini.m_emissionVolume.sphere.radius );
 			break;
 
 		// --------------------------------------------------------------------------------------------
 		case CYLINDER:
-			xfer->xferReal( &m_emissionVolume.cylinder.radius );
-			xfer->xferReal( &m_emissionVolume.cylinder.length );
+			xfer->xferReal( &m_ini.m_emissionVolume.cylinder.radius );
+			xfer->xferReal( &m_ini.m_emissionVolume.cylinder.length );
+			break;
+
+		default:
 			break;
 
 	}  // end switch, m_emissionVolumeType
 
 	// is emission volume hollow
-	xfer->xferBool( &m_isEmissionVolumeHollow );
+	xfer->xferBool( &m_ini.m_isEmissionVolumeHollow );
 
 	// is ground aligned
-	xfer->xferBool( &m_isGroundAligned );
+	xfer->xferBool( &m_ini.m_isGroundAligned );
 
 	// emit above ground only
-	xfer->xferBool( &m_isEmitAboveGroundOnly );
+	xfer->xferBool( &m_ini.m_isEmitAboveGroundOnly );
 
 	// is particle up towards emitter
-	xfer->xferBool( &m_isParticleUpTowardsEmitter );
+	xfer->xferBool( &m_ini.m_isParticleUpTowardsEmitter );
 
 	// wind motion
-	xfer->xferUser( &m_windMotion, sizeof( WindMotion ) );
+	xfer->xferUser( &m_ini.m_windMotion, sizeof( WindMotion ) );
 
 	// wind angle
-	xfer->xferReal( &m_windAngle );
+	xfer->xferReal( &m_ini.m_windAngle );
 
 	// wind angle change
-	xfer->xferReal( &m_windAngleChange );
+	xfer->xferReal( &m_ini.m_windAngleChange );
 
 	// wind angle change min
-	xfer->xferReal( &m_windAngleChangeMin );
+	xfer->xferReal( &m_ini.m_windAngleChangeMin );
 
 	// wind angle change max
-	xfer->xferReal( &m_windAngleChangeMax );
+	xfer->xferReal( &m_ini.m_windAngleChangeMax );
 
 	// wind motion start angle
-	xfer->xferReal( &m_windMotionStartAngle );
+	xfer->xferReal( &m_ini.m_windMotionStartAngle );
 
 	// wind motion start angle min
-	xfer->xferReal( &m_windMotionStartAngleMin );
+	xfer->xferReal( &m_ini.m_windMotionStartAngleMin );
 
 	// wind motion start angle max
-	xfer->xferReal( &m_windMotionStartAngleMax );
+	xfer->xferReal( &m_ini.m_windMotionStartAngleMax );
 
 	// wind motion end angle
-	xfer->xferReal( &m_windMotionEndAngle );
+	xfer->xferReal( &m_ini.m_windMotionEndAngle );
 
 	// wind motion end angle min
-	xfer->xferReal( &m_windMotionEndAngleMin );
+	xfer->xferReal( &m_ini.m_windMotionEndAngleMin );
 
 	// wind motion end angle max
-	xfer->xferReal( &m_windMotionEndAngleMax );
+	xfer->xferReal( &m_ini.m_windMotionEndAngleMax );
 
 	// wind motion moving to end angle
-	xfer->xferByte( &m_windMotionMovingToEndAngle );
+	xfer->xferByte( &m_ini.m_windMotionMovingToEndAngle );
 
 }  // end xfer
 
@@ -1057,20 +1066,20 @@ ParticleSystem::ParticleSystem( const ParticleSystemTemplate *sysTemplate,
 
 	m_isIdentity = true;
 	m_transform.Make_Identity();
-  m_skipParentXfrm = false;
+	m_skipParentXfrm = false;
 
 	m_isStopped = false;
 	m_isDestroyed = false;
 	m_isSaveable = true;
 
-	m_slavePosOffset = sysTemplate->m_slavePosOffset;
+	m_ini.m_slavePosOffset = sysTemplate->m_ini.m_slavePosOffset;
 
 
 	///@todo: further formalize this parameter with an UnsignedInt field in the editor
-	m_volumeParticleDepth = DEFAULT_VOLUME_PARTICLE_DEPTH;
+	m_ini.m_volumeParticleDepth = DEFAULT_VOLUME_PARTICLE_DEPTH;
 
 
-	m_driftVelocity = sysTemplate->m_driftVelocity;
+	m_ini.m_driftVelocity = sysTemplate->m_ini.m_driftVelocity;
 
 	m_velCoeff.x = 1.0f;
 	m_velCoeff.y = 1.0f;
@@ -1079,79 +1088,79 @@ ParticleSystem::ParticleSystem( const ParticleSystemTemplate *sysTemplate,
 	m_delayCoeff = 1.0f;
 	m_sizeCoeff = 1.0f;
 
-	m_gravity = sysTemplate->m_gravity;
+	m_ini.m_gravity = sysTemplate->m_ini.m_gravity;
 
-	m_lifetime = sysTemplate->m_lifetime;
-	m_startSize = sysTemplate->m_startSize;
-	m_startSizeRate = sysTemplate->m_startSizeRate;
-	m_sizeRate = sysTemplate->m_sizeRate;
-	m_sizeRateDamping = sysTemplate->m_sizeRateDamping;
+	m_ini.m_lifetime = sysTemplate->m_ini.m_lifetime;
+	m_ini.m_startSize = sysTemplate->m_ini.m_startSize;
+	m_ini.m_startSizeRate = sysTemplate->m_ini.m_startSizeRate;
+	m_ini.m_sizeRate = sysTemplate->m_ini.m_sizeRate;
+	m_ini.m_sizeRateDamping = sysTemplate->m_ini.m_sizeRateDamping;
 
 	for( int i=0; i<MAX_KEYFRAMES; i++ )
-		m_alphaKey[i] = sysTemplate->m_alphaKey[i];
+		m_ini.m_alphaKey[i] = sysTemplate->m_ini.m_alphaKey[i];
 
-	for( i=0; i<MAX_KEYFRAMES; i++ )
-		m_colorKey[i] = sysTemplate->m_colorKey[i];
+	for( int i=0; i<MAX_KEYFRAMES; i++ )
+		m_ini.m_colorKey[i] = sysTemplate->m_ini.m_colorKey[i];
 
 	/// @todo It is confusing to do this conversion here...
-	Real low = sysTemplate->m_colorScale.getMinimumValue();
-	Real hi = sysTemplate->m_colorScale.getMaximumValue();
-	m_colorScale.setRange( low / 255.0f, hi / 255.0f );
+	Real low = sysTemplate->m_ini.m_colorScale.getMinimumValue();
+	Real hi = sysTemplate->m_ini.m_colorScale.getMaximumValue();
+	m_ini.m_colorScale.setRange( low / 255.0f, hi / 255.0f );
 
-	m_burstDelay = sysTemplate->m_burstDelay;
+	m_ini.m_burstDelay = sysTemplate->m_ini.m_burstDelay;
 	m_burstDelayLeft = 0;
 
-	m_burstCount = sysTemplate->m_burstCount;
+	m_ini.m_burstCount = sysTemplate->m_ini.m_burstCount;
 
-	m_isOneShot = sysTemplate->m_isOneShot;
+	m_ini.m_isOneShot = sysTemplate->m_ini.m_isOneShot;
 
-	m_delayLeft = (UnsignedInt)sysTemplate->m_initialDelay.getValue();
+	m_delayLeft = (UnsignedInt)sysTemplate->m_ini.m_initialDelay.getValue();
 
 	m_startTimestamp = TheGameClient->getFrame();
-	m_systemLifetimeLeft = sysTemplate->m_systemLifetime;
-	if (sysTemplate->m_systemLifetime)
+	m_systemLifetimeLeft = sysTemplate->m_ini.m_systemLifetime;
+	if (sysTemplate->m_ini.m_systemLifetime)
 		m_isForever = false;
 	else
 		m_isForever = true;
 
 	m_accumulatedSizeBonus = 0;
 
-	m_velDamping = sysTemplate->m_velDamping;
+	m_ini.m_velDamping = sysTemplate->m_ini.m_velDamping;
 
-	m_angleZ = sysTemplate->m_angleZ;
-	m_angularRateZ = sysTemplate->m_angularRateZ;
-	m_angularDamping = sysTemplate->m_angularDamping;
+	m_ini.m_angleZ = sysTemplate->m_ini.m_angleZ;
+	m_ini.m_angularRateZ = sysTemplate->m_ini.m_angularRateZ;
+	m_ini.m_angularDamping = sysTemplate->m_ini.m_angularDamping;
 
-	m_priority = sysTemplate->m_priority;
+	m_ini.m_priority = sysTemplate->m_ini.m_priority;
 
-	m_emissionVelocityType = sysTemplate->m_emissionVelocityType;
-	m_emissionVelocity = sysTemplate->m_emissionVelocity;
+	m_ini.m_emissionVelocityType = sysTemplate->m_ini.m_emissionVelocityType;
+	m_ini.m_emissionVelocity = sysTemplate->m_ini.m_emissionVelocity;
 
-	m_emissionVolumeType = sysTemplate->m_emissionVolumeType;
-	m_emissionVolume = sysTemplate->m_emissionVolume;
+	m_ini.m_emissionVolumeType = sysTemplate->m_ini.m_emissionVolumeType;
+	m_ini.m_emissionVolume = sysTemplate->m_ini.m_emissionVolume;
 
-	m_isEmissionVolumeHollow = sysTemplate->m_isEmissionVolumeHollow;
-	m_isGroundAligned = sysTemplate->m_isGroundAligned;
-	m_isEmitAboveGroundOnly = sysTemplate->m_isEmitAboveGroundOnly;
-	m_isParticleUpTowardsEmitter = sysTemplate->m_isParticleUpTowardsEmitter;
+	m_ini.m_isEmissionVolumeHollow = sysTemplate->m_ini.m_isEmissionVolumeHollow;
+	m_ini.m_isGroundAligned = sysTemplate->m_ini.m_isGroundAligned;
+	m_ini.m_isEmitAboveGroundOnly = sysTemplate->m_ini.m_isEmitAboveGroundOnly;
+	m_ini.m_isParticleUpTowardsEmitter = sysTemplate->m_ini.m_isParticleUpTowardsEmitter;
 
-	m_windMotion = sysTemplate->m_windMotion;
-	m_windAngleChange = sysTemplate->m_windAngleChange;
-	m_windAngleChangeMin = sysTemplate->m_windAngleChangeMin;
-	m_windAngleChangeMax = sysTemplate->m_windAngleChangeMax;
-	m_windMotionStartAngleMin = sysTemplate->m_windMotionStartAngleMin;
-	m_windMotionStartAngleMax = sysTemplate->m_windMotionStartAngleMax;
-	m_windMotionEndAngleMin = sysTemplate->m_windMotionEndAngleMin;
-	m_windMotionEndAngleMax = sysTemplate->m_windMotionEndAngleMax;
-	m_windMotionMovingToEndAngle = sysTemplate->m_windMotionMovingToEndAngle;
-	m_windMotionStartAngle = GameClientRandomValueReal( m_windMotionStartAngleMin, m_windMotionStartAngleMax );
-	m_windMotionEndAngle = GameClientRandomValueReal( m_windMotionEndAngleMin, m_windMotionEndAngleMax );
-	m_windAngle = GameClientRandomValueReal( m_windMotionStartAngle, m_windMotionEndAngle );
-			
-	m_shaderType = sysTemplate->m_shaderType;
+	m_ini.m_windMotion = sysTemplate->m_ini.m_windMotion;
+	m_ini.m_windAngleChange = sysTemplate->m_ini.m_windAngleChange;
+	m_ini.m_windAngleChangeMin = sysTemplate->m_ini.m_windAngleChangeMin;
+	m_ini.m_windAngleChangeMax = sysTemplate->m_ini.m_windAngleChangeMax;
+	m_ini.m_windMotionStartAngleMin = sysTemplate->m_ini.m_windMotionStartAngleMin;
+	m_ini.m_windMotionStartAngleMax = sysTemplate->m_ini.m_windMotionStartAngleMax;
+	m_ini.m_windMotionEndAngleMin = sysTemplate->m_ini.m_windMotionEndAngleMin;
+	m_ini.m_windMotionEndAngleMax = sysTemplate->m_ini.m_windMotionEndAngleMax;
+	m_ini.m_windMotionMovingToEndAngle = sysTemplate->m_ini.m_windMotionMovingToEndAngle;
+	m_ini.m_windMotionStartAngle = GameClientRandomValueReal( m_ini.m_windMotionStartAngleMin, m_ini.m_windMotionStartAngleMax );
+	m_ini.m_windMotionEndAngle = GameClientRandomValueReal( m_ini.m_windMotionEndAngleMin, m_ini.m_windMotionEndAngleMax );
+	m_ini.m_windAngle = GameClientRandomValueReal( m_ini.m_windMotionStartAngle, m_ini.m_windMotionEndAngle );
 
-	m_particleType = sysTemplate->m_particleType;
-	m_particleTypeName = sysTemplate->m_particleTypeName;
+	m_ini.m_shaderType = sysTemplate->m_ini.m_shaderType;
+
+	m_ini.m_particleType = sysTemplate->m_ini.m_particleType;
+	m_ini.m_particleTypeName = sysTemplate->m_ini.m_particleTypeName;
 
 	m_isStopped = false;
 
@@ -1174,7 +1183,7 @@ ParticleSystem::ParticleSystem( const ParticleSystemTemplate *sysTemplate,
 
 	}  // end if
 
-	m_attachedSystemName = sysTemplate->m_attachedSystemName;
+	m_ini.m_attachedSystemName = sysTemplate->m_ini.m_attachedSystemName;
 	m_particleCount = 0;
 	m_personalityStore = 0;
 	m_controlParticle = NULL;
@@ -1396,32 +1405,32 @@ const Coord3D *ParticleSystem::computeParticleVelocity( const Coord3D *pos )
 {
 	static Coord3D newVel;
 
-	switch( m_emissionVelocityType )
+	switch( m_ini.m_emissionVelocityType )
 	{
 		case ORTHO:
-			newVel.x = m_emissionVelocity.ortho.x.getValue();
-			newVel.y = m_emissionVelocity.ortho.y.getValue();
-			newVel.z = m_emissionVelocity.ortho.z.getValue();
+			newVel.x = m_ini.m_emissionVelocity.ortho.x.getValue();
+			newVel.y = m_ini.m_emissionVelocity.ortho.y.getValue();
+			newVel.z = m_ini.m_emissionVelocity.ortho.z.getValue();
 			break;
 		
 		case CYLINDRICAL:
 		{
 			Real radialSpeed, angle;
-			radialSpeed = m_emissionVelocity.cylindrical.radial.getValue();
+			radialSpeed = m_ini.m_emissionVelocity.cylindrical.radial.getValue();
 
 			angle = GameClientRandomValueReal( 0, 2.0f*PI );
 			newVel.x = radialSpeed * cos( angle );
 			newVel.y = radialSpeed * sin( angle );
 
-			newVel.z = m_emissionVelocity.cylindrical.normal.getValue();
+			newVel.z = m_ini.m_emissionVelocity.cylindrical.normal.getValue();
 			break;
 		}
 
 		// "outward" velocity is directed along the surface normal of the emission volume
 		case OUTWARD:
 		{
-			Real speed = m_emissionVelocity.outward.speed.getValue();
-			Real otherSpeed = m_emissionVelocity.outward.otherSpeed.getValue();
+			Real speed = m_ini.m_emissionVelocity.outward.speed.getValue();
+			Real otherSpeed = m_ini.m_emissionVelocity.outward.otherSpeed.getValue();
 			Coord3D sysPos;
 
 			/*
@@ -1433,7 +1442,7 @@ const Coord3D *ParticleSystem::computeParticleVelocity( const Coord3D *pos )
 			sysPos.y = 0.0f;
 			sysPos.z = 0.0f;
 
-			switch( m_emissionVolumeType )
+			switch( m_ini.m_emissionVolumeType )
 			{
 				case CYLINDER:
 					Coord2D disk;
@@ -1465,9 +1474,9 @@ const Coord3D *ParticleSystem::computeParticleVelocity( const Coord3D *pos )
 				{
 					Coord3D along;			// unit vector along line direction
 
-					along.x = m_emissionVolume.line.end.x - m_emissionVolume.line.start.x;
-					along.y = m_emissionVolume.line.end.y - m_emissionVolume.line.start.y;
-					along.z = m_emissionVolume.line.end.z - m_emissionVolume.line.start.z;
+					along.x = m_ini.m_emissionVolume.line.end.x - m_ini.m_emissionVolume.line.start.x;
+					along.y = m_ini.m_emissionVolume.line.end.y - m_ini.m_emissionVolume.line.start.y;
+					along.z = m_ini.m_emissionVolume.line.end.z - m_ini.m_emissionVolume.line.start.z;
 					along.normalize();
 
 					Coord3D perp;				// unit vector perpendicular to the along/up plane
@@ -1494,6 +1503,9 @@ const Coord3D *ParticleSystem::computeParticleVelocity( const Coord3D *pos )
 					newVel.z = speed * vel.z;
 					break;
 				}
+
+				default:
+					break;
 			}
 
 			break;
@@ -1501,7 +1513,7 @@ const Coord3D *ParticleSystem::computeParticleVelocity( const Coord3D *pos )
 
 		case SPHERICAL:
 		{
-			Real speed = m_emissionVelocity.spherical.speed.getValue();
+			Real speed = m_ini.m_emissionVelocity.spherical.speed.getValue();
 			Coord3D vel = *computePointOnUnitSphere();
 
 			newVel.x = speed * vel.x;
@@ -1513,7 +1525,7 @@ const Coord3D *ParticleSystem::computeParticleVelocity( const Coord3D *pos )
 		case HEMISPHERICAL:
 		{
 			Coord3D vel;
-			Real speed = m_emissionVelocity.spherical.speed.getValue();
+			Real speed = m_ini.m_emissionVelocity.spherical.speed.getValue();
 
 			do
 			{
@@ -1539,9 +1551,9 @@ const Coord3D *ParticleSystem::computeParticleVelocity( const Coord3D *pos )
 	}
 
 	// scale the velocity by the velocity multiplier
-	newVel.x *= m_velCoeff.x*(0.5f+TheGlobalData->m_particleScale/2.0f);
-	newVel.y *= m_velCoeff.y*(0.5f+TheGlobalData->m_particleScale/2.0f);
-	newVel.z *= m_velCoeff.z*(0.5f+TheGlobalData->m_particleScale/2.0f);
+	newVel.x *= m_velCoeff.x*(0.5f+TheGlobalData->m_data.m_particleScale/2.0f);
+	newVel.y *= m_velCoeff.y*(0.5f+TheGlobalData->m_data.m_particleScale/2.0f);
+	newVel.z *= m_velCoeff.z*(0.5f+TheGlobalData->m_data.m_particleScale/2.0f);
 
 	return &newVel;
 }
@@ -1553,22 +1565,22 @@ const Coord3D *ParticleSystem::computeParticlePosition( void )
 {
 	static Coord3D newPos;
 
-	switch( m_emissionVolumeType )
+	switch( m_ini.m_emissionVolumeType )
 	{
 		case CYLINDER:
 		{
 			Real angle = GameClientRandomValueReal( 0, 2.0f*PI );
 			Real radius;
 			
-			if (m_isEmissionVolumeHollow)
-				radius = m_emissionVolume.cylinder.radius;
+			if (m_ini.m_isEmissionVolumeHollow)
+				radius = m_ini.m_emissionVolume.cylinder.radius;
 			else
-				radius = GameClientRandomValueReal( 0.0f, m_emissionVolume.cylinder.radius );
+				radius = GameClientRandomValueReal( 0.0f, m_ini.m_emissionVolume.cylinder.radius );
 
 			newPos.x = radius * cos( angle );
 			newPos.y = radius * sin( angle );
 
-			Real halfLength = m_emissionVolume.cylinder.length/2.0f;
+			Real halfLength = m_ini.m_emissionVolume.cylinder.length/2.0f;
 			newPos.z = GameClientRandomValueReal( -halfLength, halfLength );
 
 			break;
@@ -1578,10 +1590,10 @@ const Coord3D *ParticleSystem::computeParticlePosition( void )
 		{
 			Real radius;
 
-			if (m_isEmissionVolumeHollow)
-				radius = m_emissionVolume.sphere.radius;
+			if (m_ini.m_isEmissionVolumeHollow)
+				radius = m_ini.m_emissionVolume.sphere.radius;
 			else
-				radius = GameClientRandomValueReal( 0.0f, m_emissionVolume.sphere.radius );
+				radius = GameClientRandomValueReal( 0.0f, m_ini.m_emissionVolume.sphere.radius );
 
 			newPos = *computePointOnUnitSphere();
 
@@ -1594,7 +1606,7 @@ const Coord3D *ParticleSystem::computeParticlePosition( void )
 
 		case BOX:
 		{			
-			if (m_isEmissionVolumeHollow) {
+			if (m_ini.m_isEmissionVolumeHollow) {
 				// determine which side to generate on.
 				// 0 is bottom, 3 is top, 
 				// 1 is left , 4 is right
@@ -1603,48 +1615,48 @@ const Coord3D *ParticleSystem::computeParticlePosition( void )
 				int side = GameClientRandomValue(0, 6);
 				if (side % 3 == 0) {
 					// generate X, Y
-					newPos.x = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.x, m_emissionVolume.box.halfSize.x );
-					newPos.y = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.y, m_emissionVolume.box.halfSize.y );
+					newPos.x = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.x, m_ini.m_emissionVolume.box.halfSize.x );
+					newPos.y = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.y, m_ini.m_emissionVolume.box.halfSize.y );
 					if (side == 0) {
-						newPos.z = -m_emissionVolume.box.halfSize.z;
+						newPos.z = -m_ini.m_emissionVolume.box.halfSize.z;
 					} else {
-						newPos.z = m_emissionVolume.box.halfSize.z;
+						newPos.z = m_ini.m_emissionVolume.box.halfSize.z;
 					}
-															
+
 				} else if (side % 3 == 1) {
 					// generate Y, Z
-					newPos.y = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.y, m_emissionVolume.box.halfSize.y );
-					newPos.z = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.z, m_emissionVolume.box.halfSize.z );
+					newPos.y = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.y, m_ini.m_emissionVolume.box.halfSize.y );
+					newPos.z = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.z, m_ini.m_emissionVolume.box.halfSize.z );
 					if (side == 1) {
-						newPos.x = -m_emissionVolume.box.halfSize.x;
+						newPos.x = -m_ini.m_emissionVolume.box.halfSize.x;
 					} else {
-						newPos.x = m_emissionVolume.box.halfSize.y;
+						newPos.x = m_ini.m_emissionVolume.box.halfSize.y;
 					}
 
 				} else if (side % 3 == 2) {
 					// generate X, Z
-					newPos.x = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.x, m_emissionVolume.box.halfSize.x );
-					newPos.z = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.z, m_emissionVolume.box.halfSize.z );
+					newPos.x = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.x, m_ini.m_emissionVolume.box.halfSize.x );
+					newPos.z = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.z, m_ini.m_emissionVolume.box.halfSize.z );
 					if (side == 2) {
-						newPos.y = -m_emissionVolume.box.halfSize.y;
+						newPos.y = -m_ini.m_emissionVolume.box.halfSize.y;
 					} else {
-						newPos.y = m_emissionVolume.box.halfSize.y;
+						newPos.y = m_ini.m_emissionVolume.box.halfSize.y;
 					}
 				}
 			} else {
-				newPos.x = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.x, m_emissionVolume.box.halfSize.x );
-				newPos.y = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.y, m_emissionVolume.box.halfSize.y );
-				newPos.z = GameClientRandomValueReal( -m_emissionVolume.box.halfSize.z, m_emissionVolume.box.halfSize.z );
-			break;
+				newPos.x = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.x, m_ini.m_emissionVolume.box.halfSize.x );
+				newPos.y = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.y, m_ini.m_emissionVolume.box.halfSize.y );
+				newPos.z = GameClientRandomValueReal( -m_ini.m_emissionVolume.box.halfSize.z, m_ini.m_emissionVolume.box.halfSize.z );
 			}
+			break;
 		}
 
 		case LINE:
 		{
 			Coord3D delta, start, end;
 
-			start = m_emissionVolume.line.start;
-			end = m_emissionVolume.line.end;
+			start = m_ini.m_emissionVolume.line.start;
+			end = m_ini.m_emissionVolume.line.end;
 
 			delta.x = end.x - start.x;
 			delta.y = end.y - start.y;
@@ -1665,9 +1677,9 @@ const Coord3D *ParticleSystem::computeParticlePosition( void )
 			newPos.z = 0.0f;
 			break;
 	}
-	newPos.x *= (0.5f+TheGlobalData->m_particleScale/2.0f);
-	newPos.y *= (0.5f+TheGlobalData->m_particleScale/2.0f);
-	newPos.z *= (0.5f+TheGlobalData->m_particleScale/2.0f);
+	newPos.x *= (0.5f+TheGlobalData->m_data.m_particleScale/2.0f);
+	newPos.y *= (0.5f+TheGlobalData->m_data.m_particleScale/2.0f);
+	newPos.z *= (0.5f+TheGlobalData->m_data.m_particleScale/2.0f);
 	return &newPos;
 }
 
@@ -1687,7 +1699,7 @@ Particle *ParticleSystem::createParticle( const ParticleInfo *info,
 	if( forceCreate == FALSE )
 	{
 
-		if (TheGlobalData->m_useFX == FALSE)
+		if (TheGlobalData->m_data.m_useFX == FALSE)
 			return NULL;
 
 		//
@@ -1706,20 +1718,20 @@ Particle *ParticleSystem::createParticle( const ParticleInfo *info,
 				 TheGameLODManager->isParticleSkipped()) )
 			return NULL;
 
-		if ( getParticleCount() > 0 && priority == AREA_EFFECT && m_isGroundAligned && TheParticleSystemManager->getFieldParticleCount() > (UnsignedInt)TheGlobalData->m_maxFieldParticleCount )
+		if ( getParticleCount() > 0 && priority == AREA_EFFECT && m_ini.m_isGroundAligned && TheParticleSystemManager->getFieldParticleCount() > (UnsignedInt)TheGlobalData->m_data.m_maxFieldParticleCount )
 			return NULL;
 		
 		// ALWAYS_RENDER particles are exempt from all count limits, and are always created, regardless of LOD issues.
 		if (priority != ALWAYS_RENDER)
 		{
-			int numInExcess = TheParticleSystemManager->getParticleCount() - (UnsignedInt)TheGlobalData->m_maxParticleCount;
+			UnsignedInt numInExcess = TheParticleSystemManager->getParticleCount() - (UnsignedInt)TheGlobalData->m_data.m_maxParticleCount;
 			if ( numInExcess > 0)
 			{
-				if( TheParticleSystemManager->removeOldestParticles((UnsignedInt) numInExcess, priority) != numInExcess )
+				if( (UnsignedInt) TheParticleSystemManager->removeOldestParticles(numInExcess, priority) != numInExcess )
 					return NULL;  // could not remove enough particles, don't create new stuff
 			}
 
-			if (TheGlobalData->m_maxParticleCount == 0)
+			if (TheGlobalData->m_data.m_maxParticleCount == 0)
 				return NULL;
 		}
 
@@ -1795,29 +1807,29 @@ const ParticleInfo *ParticleSystem::generateParticleInfo( Int particleNum, Int p
 		info.m_vel.z = vr.Z;
 	}
 
-	info.m_velDamping = m_velDamping.getValue();
-	info.m_angularDamping = m_angularDamping.getValue();
+	info.m_velDamping = m_ini.m_velDamping.getValue();
+	info.m_angularDamping = m_ini.m_angularDamping.getValue();
 
-	info.m_angleZ = m_angleZ.getValue();
-	info.m_angularRateZ = m_angularRateZ.getValue();
+	info.m_angleZ = m_ini.m_angleZ.getValue();
+	info.m_angularRateZ = m_ini.m_angularRateZ.getValue();
 
-	info.m_lifetime = (UnsignedInt)m_lifetime.getValue();
+	info.m_lifetime = (UnsignedInt)m_ini.m_lifetime.getValue();
 
-	info.m_size = m_startSize.getValue()*m_sizeCoeff*TheGlobalData->m_particleScale;
-	info.m_sizeRate = m_sizeRate.getValue()*m_sizeCoeff*TheGlobalData->m_particleScale;
-	info.m_sizeRateDamping = m_sizeRateDamping.getValue();
+	info.m_size = m_ini.m_startSize.getValue()*m_sizeCoeff*TheGlobalData->m_data.m_particleScale;
+	info.m_sizeRate = m_ini.m_sizeRate.getValue()*m_sizeCoeff*TheGlobalData->m_data.m_particleScale;
+	info.m_sizeRateDamping = m_ini.m_sizeRateDamping.getValue();
 
 	// Keeping a running tally makes each successive particle spawned start a bit bigger (or smaller).
 	info.m_size += m_accumulatedSizeBonus;
-	m_accumulatedSizeBonus += m_startSizeRate.getValue();
+	m_accumulatedSizeBonus += m_ini.m_startSizeRate.getValue();
 	if( m_accumulatedSizeBonus )
 		m_accumulatedSizeBonus = min( m_accumulatedSizeBonus, (float)MAX_SIZE_BONUS );
 
 	for( int i=0; i<MAX_KEYFRAMES; i++ )
 	{
-		info.m_alphaKey[i].value = m_alphaKey[i].var.getValue();
-		info.m_alphaKey[i].frame = m_alphaKey[i].frame;
-		info.m_colorKey[i] = m_colorKey[i];
+		info.m_alphaKey[i].value = m_ini.m_alphaKey[i].var.getValue();
+		info.m_alphaKey[i].frame = m_ini.m_alphaKey[i].frame;
+		info.m_colorKey[i] = m_ini.m_colorKey[i];
 	}
 
 /*
@@ -1826,7 +1838,7 @@ const ParticleInfo *ParticleSystem::generateParticleInfo( Int particleNum, Int p
 	info.m_color.blue = m_color.blue.getValue();
 */
 
-	info.m_colorScale = m_colorScale.getValue();
+	info.m_colorScale = m_ini.m_colorScale.getValue();
 #ifdef ALLOW_TEMPORARIES
 	Vector3 pos = m_transform * Vector3(0, 0, 0);
 #else
@@ -1836,7 +1848,7 @@ const ParticleInfo *ParticleSystem::generateParticleInfo( Int particleNum, Int p
 	info.m_emitterPos.x = pos.X;
 	info.m_emitterPos.y = pos.Y;
 	info.m_emitterPos.z = pos.Z;
-	info.m_particleUpTowardsEmitter = m_isParticleUpTowardsEmitter;
+	info.m_particleUpTowardsEmitter = m_ini.m_isParticleUpTowardsEmitter;
 
 	info.m_windRandomness = GameClientRandomValueReal( 0.7f, 1.3f );
 
@@ -1848,7 +1860,7 @@ const ParticleInfo *ParticleSystem::generateParticleInfo( Int particleNum, Int p
 // ------------------------------------------------------------------------------------------------
 Bool ParticleSystem::update( Int localPlayerIndex  )
 {
-	if (TheGlobalData->m_useFX == FALSE)
+	if (TheGlobalData->m_data.m_useFX == FALSE)
 		return false;
 
 	// do initial delay ... note, this currently delays the lifetime
@@ -1865,7 +1877,7 @@ Bool ParticleSystem::update( Int localPlayerIndex  )
 	}
 
 	// update the wind motion
-	if (m_windMotion != ParticleSystemInfo::WIND_MOTION_NOT_USED )
+	if (m_ini.m_windMotion != ParticleSystemInfo::WIND_MOTION_NOT_USED )
 		updateWindMotion();
 
 	// if this system is attached to a Drawable/Object, update the current transform
@@ -1904,17 +1916,16 @@ Bool ParticleSystem::update( Int localPlayerIndex  )
 
 		if (objectAttachedTo)
 		{
-			if (!isShrouded)
+			if (!isShrouded) {
 				isShrouded = (objectAttachedTo->getShroudedStatus(localPlayerIndex) >= OBJECTSHROUD_FOGGED);
+			}
  
-      const Drawable * draw = objectAttachedTo->getDrawable();
-      if ( draw )
-  			parentXfrm = draw->getTransformMatrix();
-      else
-  			parentXfrm = objectAttachedTo->getTransformMatrix();
-      
-
-
+			const Drawable * draw = objectAttachedTo->getDrawable();
+			if ( draw ) {
+				parentXfrm = draw->getTransformMatrix();
+			} else {
+				parentXfrm = objectAttachedTo->getTransformMatrix();
+			}
 
 			m_lastPos = m_pos;
 			m_pos = *objectAttachedTo->getPosition();
@@ -1998,7 +2009,7 @@ Bool ParticleSystem::update( Int localPlayerIndex  )
 					ParticlePriorityType priority = getPriority();
 
 					// emit a burst of particles
-					Int count = REAL_TO_INT(m_burstCount.getValue());
+					Int count = REAL_TO_INT(m_ini.m_burstCount.getValue());
 
 					count *= m_countCoeff;
 
@@ -2006,16 +2017,16 @@ Bool ParticleSystem::update( Int localPlayerIndex  )
 					{
 						// generate this particle's unique attributes
 						const ParticleInfo *info = generateParticleInfo(i, count);
-						if (!m_isEmitAboveGroundOnly || (info->m_pos.z >= TheTerrainLogic->getGroundHeight(info->m_pos.x, info->m_pos.y)))
+						if (!m_ini.m_isEmitAboveGroundOnly || (info->m_pos.z >= TheTerrainLogic->getGroundHeight(info->m_pos.x, info->m_pos.y)))
 						{
 							// actually create a particle
 							Particle *p = createParticle( info, priority );
 							if (p == NULL)
 								continue;
 
-							if (m_attachedSystemName.isEmpty() == false)
+							if (m_ini.m_attachedSystemName.isEmpty() == false)
 							{
-								const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( m_attachedSystemName );
+								const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( m_ini.m_attachedSystemName );
 								if (tmp)
 								{
 									ParticleSystem *sys = TheParticleSystemManager->createParticleSystem( tmp, TRUE );
@@ -2036,7 +2047,7 @@ Bool ParticleSystem::update( Int localPlayerIndex  )
 					}
 						
 					// compute next burst delay
-					m_burstDelayLeft = (UnsignedInt)m_burstDelay.getValue();
+					m_burstDelayLeft = (UnsignedInt)m_ini.m_burstDelay.getValue();
 					m_burstDelayLeft *= m_delayCoeff;
 				}
 				else
@@ -2057,12 +2068,12 @@ Bool ParticleSystem::update( Int localPlayerIndex  )
 	{
 
 		// apply 'gravity' force
-		if (m_gravity != 0.0f)
+		if (m_ini.m_gravity != 0.0f)
 		{
 			Coord3D force;
 			force.x = 0.0f;
 			force.y = 0.0f;
-			force.z = m_gravity;
+			force.z = m_ini.m_gravity;
 			p->applyForce( &force );
 		}
 
@@ -2109,14 +2120,14 @@ Bool ParticleSystem::update( Int localPlayerIndex  )
 void ParticleSystem::updateWindMotion( void )
 {
 
-	switch( m_windMotion )
+	switch( m_ini.m_windMotion )
 	{
 
 		// --------------------------------------------------------------------------------------------
 		case ParticleSystemInfo::WIND_MOTION_PING_PONG:
 		{
-			Real startAngle = m_windMotionStartAngle;
-			Real endAngle = m_windMotionEndAngle;
+			Real startAngle = m_ini.m_windMotionStartAngle;
+			Real endAngle = m_ini.m_windMotionEndAngle;
 
 			// this only works when start angle is less than end angle
 			DEBUG_ASSERTCRASH( startAngle < endAngle, ("updateWindMotion: startAngle must be < endAngle\n") );
@@ -2126,14 +2137,14 @@ void ParticleSystem::updateWindMotion( void )
 			Real halfSpan = totalSpan / 2.0f;
 
 			// given our current angle ... how far away from the "center" of the span are we
-			Real diffFromCenter = fabs( halfSpan - m_windAngle + startAngle );
+			Real diffFromCenter = fabs( halfSpan - m_ini.m_windAngle + startAngle );
 	
 			//
 			// given our distance from the center ... we need to compute how much we will change
 			// the angle.  When we are closer to the center we change it faster (more), and when
 			// we are near the edges we change is slower (less)
 			//
-			Real change = (1.0f - (diffFromCenter / halfSpan)) * m_windAngleChange;
+			Real change = (1.0f - (diffFromCenter / halfSpan)) * m_ini.m_windAngleChange;
 
 			// we will always change a little bit
 			#define MINIMUM_CHANGE 0.005f  // lower #'s have softer swings at the edge angles
@@ -2144,30 +2155,30 @@ void ParticleSystem::updateWindMotion( void )
 			// if we are moving toward the end angle we add the change, if we're moving away
 			// from it we subtract it
 			//
-			if( m_windMotionMovingToEndAngle )
+			if( m_ini.m_windMotionMovingToEndAngle )
 			{
 
 				// add angle
-				m_windAngle += change;
+				m_ini.m_windAngle += change;
 
 				// see if we're at the end and should switch directions
-				if( m_windAngle >= endAngle )
+				if( m_ini.m_windAngle >= endAngle )
 				{
 
 					// change directions
-					m_windMotionMovingToEndAngle = FALSE;
+					m_ini.m_windMotionMovingToEndAngle = FALSE;
 
 					// pick a new change delta
-					m_windAngleChange = 
-							GameClientRandomValueReal( m_windAngleChangeMin, m_windAngleChangeMax );
+					m_ini.m_windAngleChange = 
+							GameClientRandomValueReal( m_ini.m_windAngleChangeMin, m_ini.m_windAngleChangeMax );
 
 					// pick new start and end angles
-					m_windMotionStartAngle = 
-							GameClientRandomValueReal( m_windMotionStartAngleMin, 
-																				 m_windMotionStartAngleMax );
-					m_windMotionEndAngle = 
-							GameClientRandomValueReal( m_windMotionEndAngleMin, 
-																				 m_windMotionEndAngleMax );
+					m_ini.m_windMotionStartAngle = 
+							GameClientRandomValueReal( m_ini.m_windMotionStartAngleMin, 
+																				 m_ini.m_windMotionStartAngleMax );
+					m_ini.m_windMotionEndAngle = 
+							GameClientRandomValueReal( m_ini.m_windMotionEndAngleMin, 
+																				 m_ini.m_windMotionEndAngleMax );
 
 				}  // end if
 
@@ -2176,26 +2187,26 @@ void ParticleSystem::updateWindMotion( void )
 			{
 
 				// subtract angle
-				m_windAngle -= change;
+				m_ini.m_windAngle -= change;
 
 				// see if we're at the end and should switch directions
-				if( m_windAngle <= startAngle )
+				if( m_ini.m_windAngle <= startAngle )
 				{
 
 					// change directions
-					m_windMotionMovingToEndAngle = TRUE;
+					m_ini.m_windMotionMovingToEndAngle = TRUE;
 
 					// pick a new change delta
-					m_windAngleChange = 
-							GameClientRandomValueReal( m_windAngleChangeMin, m_windAngleChangeMax );
+					m_ini.m_windAngleChange = 
+							GameClientRandomValueReal( m_ini.m_windAngleChangeMin, m_ini.m_windAngleChangeMax );
 
 					// pick new start and end angles
-					m_windMotionStartAngle = 
-							GameClientRandomValueReal( m_windMotionStartAngleMin, 
-																				 m_windMotionStartAngleMax );
-					m_windMotionEndAngle = 
-							GameClientRandomValueReal( m_windMotionEndAngleMin, 
-																				 m_windMotionEndAngleMax );
+					m_ini.m_windMotionStartAngle = 
+							GameClientRandomValueReal( m_ini.m_windMotionStartAngleMin, 
+																				 m_ini.m_windMotionStartAngleMax );
+					m_ini.m_windMotionEndAngle = 
+							GameClientRandomValueReal( m_ini.m_windMotionEndAngleMin, 
+																				 m_ini.m_windMotionEndAngleMax );
 
 				}  // end if
 
@@ -2210,17 +2221,17 @@ void ParticleSystem::updateWindMotion( void )
 		{
 
 			// give us a wind angle change if one hasn't been specifed (this plays nice with the particle editor)
-			if( m_windAngleChange == 0.0f )
-				m_windAngleChange = GameClientRandomValueReal( m_windAngleChangeMin, m_windAngleChangeMax );
+			if( m_ini.m_windAngleChange == 0.0f )
+				m_ini.m_windAngleChange = GameClientRandomValueReal( m_ini.m_windAngleChangeMin, m_ini.m_windAngleChangeMax );
 
 			// add to our wind angle
-			m_windAngle += m_windAngleChange;
+			m_ini.m_windAngle += m_ini.m_windAngleChange;
 			
 			// keep in 0 to 2PI range just to keep the numbers safe and sane
-			if( m_windAngle > TWO_PI )
-				m_windAngle -= TWO_PI;
-			else if( m_windAngle < 0.0f )
-				m_windAngle += TWO_PI;
+			if( m_ini.m_windAngle > TWO_PI )
+				m_ini.m_windAngle -= TWO_PI;
+			else if( m_ini.m_windAngle < 0.0f )
+				m_ini.m_windAngle += TWO_PI;
 
 			break;
 
@@ -2301,8 +2312,8 @@ ParticleInfo ParticleSystem::mergeRelatedParticleSystems( ParticleSystem *master
 {
 	if (!masterParticleSystem || !slaveParticleSystem) {
 		DEBUG_CRASH(("masterParticleSystem or slaveParticleSystem was NULL. Should not happen. JKMCD"));
-		ParticleInfo bogus;
-		memset( &bogus, 0, sizeof( bogus ) );
+		ParticleInfo bogus {};
+		// memset( &bogus, 0, sizeof( bogus ) );
 		return bogus;
 	}
 
@@ -2327,7 +2338,7 @@ ParticleInfo ParticleSystem::mergeRelatedParticleSystems( ParticleSystem *master
 	for( int i=0; i<MAX_KEYFRAMES; i++ )
 		mergeInfo.m_alphaKey[i] = info->m_alphaKey[i];
 
-	for( i=0; i<MAX_KEYFRAMES; i++ )
+	for( int i=0; i<MAX_KEYFRAMES; i++ )
 		mergeInfo.m_colorKey[i] = info->m_colorKey[i];
 
 	mergeInfo.m_colorScale = info->m_colorScale;
@@ -2339,28 +2350,28 @@ ParticleInfo ParticleSystem::mergeRelatedParticleSystems( ParticleSystem *master
 	mergeInfo.m_pos.z += offset->z;
 
 	if (slaveNeedsFullPromotion) {
-		slaveParticleSystem->m_burstCount = masterParticleSystem->m_burstCount;
-		slaveParticleSystem->m_burstDelay = masterParticleSystem->m_burstDelay;
+		slaveParticleSystem->m_ini.m_burstCount = masterParticleSystem->m_ini.m_burstCount;
+		slaveParticleSystem->m_ini.m_burstDelay = masterParticleSystem->m_ini.m_burstDelay;
 
-		slaveParticleSystem->m_priority = masterParticleSystem->m_priority;
-		slaveParticleSystem->m_emissionVelocity = masterParticleSystem->m_emissionVelocity;
-		slaveParticleSystem->m_emissionVelocityType = masterParticleSystem->m_emissionVelocityType;
-		slaveParticleSystem->m_emissionVolume = masterParticleSystem->m_emissionVolume;
-		slaveParticleSystem->m_emissionVolumeType = masterParticleSystem->m_emissionVolumeType;
-		slaveParticleSystem->m_isEmissionVolumeHollow = masterParticleSystem->m_isEmissionVolumeHollow;
+		slaveParticleSystem->m_ini.m_priority = masterParticleSystem->m_ini.m_priority;
+		slaveParticleSystem->m_ini.m_emissionVelocity = masterParticleSystem->m_ini.m_emissionVelocity;
+		slaveParticleSystem->m_ini.m_emissionVelocityType = masterParticleSystem->m_ini.m_emissionVelocityType;
+		slaveParticleSystem->m_ini.m_emissionVolume = masterParticleSystem->m_ini.m_emissionVolume;
+		slaveParticleSystem->m_ini.m_emissionVolumeType = masterParticleSystem->m_ini.m_emissionVolumeType;
+		slaveParticleSystem->m_ini.m_isEmissionVolumeHollow = masterParticleSystem->m_ini.m_isEmissionVolumeHollow;
 
 		
-		slaveParticleSystem->m_startSize.setRange(masterParticleSystem->m_startSize.getMinimumValue() * slaveParticleSystem->m_startSize.getMinimumValue(),
-																							masterParticleSystem->m_startSize.getMaximumValue() * slaveParticleSystem->m_startSize.getMaximumValue(),
-																							masterParticleSystem->m_startSize.getDistributionType());
+		slaveParticleSystem->m_ini.m_startSize.setRange(masterParticleSystem->m_ini.m_startSize.getMinimumValue() * slaveParticleSystem->m_ini.m_startSize.getMinimumValue(),
+																							masterParticleSystem->m_ini.m_startSize.getMaximumValue() * slaveParticleSystem->m_ini.m_startSize.getMaximumValue(),
+																							masterParticleSystem->m_ini.m_startSize.getDistributionType());
 	
-		slaveParticleSystem->m_sizeRate.setRange(masterParticleSystem->m_sizeRate.getMinimumValue() * slaveParticleSystem->m_sizeRate.getMinimumValue(),
-																							masterParticleSystem->m_sizeRate.getMaximumValue() * slaveParticleSystem->m_sizeRate.getMaximumValue(),
-																							masterParticleSystem->m_sizeRate.getDistributionType());
+		slaveParticleSystem->m_ini.m_sizeRate.setRange(masterParticleSystem->m_ini.m_sizeRate.getMinimumValue() * slaveParticleSystem->m_ini.m_sizeRate.getMinimumValue(),
+																							masterParticleSystem->m_ini.m_sizeRate.getMaximumValue() * slaveParticleSystem->m_ini.m_sizeRate.getMaximumValue(),
+																							masterParticleSystem->m_ini.m_sizeRate.getDistributionType());
 
-		slaveParticleSystem->m_sizeRateDamping.setRange(masterParticleSystem->m_sizeRateDamping.getMinimumValue() * slaveParticleSystem->m_sizeRateDamping.getMinimumValue(),
-																							masterParticleSystem->m_sizeRateDamping.getMaximumValue() * slaveParticleSystem->m_sizeRateDamping.getMaximumValue(),
-																							masterParticleSystem->m_sizeRateDamping.getDistributionType());
+		slaveParticleSystem->m_ini.m_sizeRateDamping.setRange(masterParticleSystem->m_ini.m_sizeRateDamping.getMinimumValue() * slaveParticleSystem->m_ini.m_sizeRateDamping.getMinimumValue(),
+																							masterParticleSystem->m_ini.m_sizeRateDamping.getMaximumValue() * slaveParticleSystem->m_ini.m_sizeRateDamping.getMaximumValue(),
+																							masterParticleSystem->m_ini.m_sizeRateDamping.getDistributionType());
 		
 //		slaveParticleSystem->m_burstCount.setRange(masterParticleSystem->m_burstCount.getMinimumValue() / 2, 
 //																							 masterParticleSystem->m_burstCount.getMaximumValue() / 2,
@@ -2375,7 +2386,7 @@ ParticleInfo ParticleSystem::mergeRelatedParticleSystems( ParticleSystem *master
 // ------------------------------------------------------------------------------------------------
 void ParticleSystem::setLifetimeRange( Real min, Real max )
 {
-	m_lifetime.setRange( min, max );
+	m_ini.m_lifetime.setRange( min, max );
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -2605,99 +2616,99 @@ void ParticleSystem::loadPostProcess( void )
 // ------------------------------------------------------------------------------------------------
 const FieldParse ParticleSystemTemplate::m_fieldParseTable[] = 
 {
-	{ "Priority",								INI::parseIndexList, ParticlePriorityNames, offsetof( ParticleSystemTemplate, m_priority ) },
-	{ "IsOneShot",							INI::parseBool,						NULL,		offsetof( ParticleSystemTemplate, m_isOneShot ) },
-	{ "Shader",									INI::parseIndexList,			ParticleShaderTypeNames,		offsetof( ParticleSystemTemplate, m_shaderType ) },
-	{ "Type",										INI::parseIndexList,			ParticleTypeNames,		offsetof( ParticleSystemTemplate, m_particleType ) },
-	{ "ParticleName",						INI::parseAsciiString,		NULL,		offsetof( ParticleSystemTemplate, m_particleTypeName ) },
-	{ "AngleZ",									INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_angleZ ) },
-	{ "AngularRateZ",						INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_angularRateZ ) },
-	{ "AngularDamping",					INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_angularDamping ) },
+	{ "Priority",						INI::parseIndexList, 							ParticlePriorityNames,		offsetof( ParticleSystemTemplate::IniData, m_priority ) },
+	{ "IsOneShot",						INI::parseBool,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_isOneShot ) },
+	{ "Shader",							INI::parseIndexList,							ParticleShaderTypeNames,	offsetof( ParticleSystemTemplate::IniData, m_shaderType ) },
+	{ "Type",							INI::parseIndexList,							ParticleTypeNames,			offsetof( ParticleSystemTemplate::IniData, m_particleType ) },
+	{ "ParticleName",					INI::parseAsciiString,							NULL,						offsetof( ParticleSystemTemplate::IniData, m_particleTypeName ) },
+	{ "AngleZ",							INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_angleZ ) },
+	{ "AngularRateZ",					INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_angularRateZ ) },
+	{ "AngularDamping",					INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_angularDamping ) },
 
-	{ "VelocityDamping",				INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_velDamping ) },
-	{ "Gravity",								INI::parseReal,																NULL,		offsetof( ParticleSystemTemplate, m_gravity ) },
-	{ "SlaveSystem",						INI::parseAsciiString,												NULL,		offsetof( ParticleSystemTemplate, m_slaveSystemName ) },
-	{ "SlavePosOffset",					INI::parseCoord3D,														NULL,		offsetof( ParticleSystemTemplate, m_slavePosOffset ) },
-	{ "PerParticleAttachedSystem",		INI::parseAsciiString,								NULL,		offsetof( ParticleSystemTemplate, m_attachedSystemName ) },
+	{ "VelocityDamping",				INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_velDamping ) },
+	{ "Gravity",						INI::parseReal,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_gravity ) },
+	{ "SlaveSystem",					INI::parseAsciiString,							NULL,						offsetof( ParticleSystemTemplate::IniData, m_slaveSystemName ) },
+	{ "SlavePosOffset",					INI::parseCoord3D,								NULL,						offsetof( ParticleSystemTemplate::IniData, m_slavePosOffset ) },
+	{ "PerParticleAttachedSystem",		INI::parseAsciiString,							NULL,						offsetof( ParticleSystemTemplate::IniData, m_attachedSystemName ) },
 
-	{ "Lifetime",								INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_lifetime ) },
-	{ "SystemLifetime",					INI::parseUnsignedInt,												NULL,		offsetof( ParticleSystemTemplate, m_systemLifetime ) },
+	{ "Lifetime",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_lifetime ) },
+	{ "SystemLifetime",					INI::parseUnsignedInt,							NULL,						offsetof( ParticleSystemTemplate::IniData, m_systemLifetime ) },
 
-	{ "Size",										INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_startSize ) },
-	{ "StartSizeRate",					INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_startSizeRate ) },
-	{ "SizeRate",								INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_sizeRate ) },
-	{ "SizeRateDamping",				INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_sizeRateDamping ) },
+	{ "Size",							INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_startSize ) },
+	{ "StartSizeRate",					INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_startSizeRate ) },
+	{ "SizeRate",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_sizeRate ) },
+	{ "SizeRateDamping",				INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_sizeRateDamping ) },
 
-	{ "Alpha1",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[0] ) },
-	{ "Alpha2",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[1] ) },
-	{ "Alpha3",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[2] ) },
-	{ "Alpha4",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[3] ) },
-	{ "Alpha5",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[4] ) },
-	{ "Alpha6",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[5] ) },
-	{ "Alpha7",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[6] ) },
-	{ "Alpha8",									ParticleSystemTemplate::parseRandomKeyframe,	NULL,		offsetof( ParticleSystemTemplate, m_alphaKey[7] ) },
+	{ "Alpha1",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[0] ) },
+	{ "Alpha2",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[1] ) },
+	{ "Alpha3",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[2] ) },
+	{ "Alpha4",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[3] ) },
+	{ "Alpha5",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[4] ) },
+	{ "Alpha6",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[5] ) },
+	{ "Alpha7",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[6] ) },
+	{ "Alpha8",							ParticleSystemTemplate::parseRandomKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_alphaKey[7] ) },
 
-	{ "Color1",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[0] ) },
-	{ "Color2",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[1] ) },
-	{ "Color3",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[2] ) },
-	{ "Color4",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[3] ) },
-	{ "Color5",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[4] ) },
-	{ "Color6",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[5] ) },
-	{ "Color7",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[6] ) },
-	{ "Color8",									ParticleSystemTemplate::parseRGBColorKeyframe,NULL,		offsetof( ParticleSystemTemplate, m_colorKey[7] ) },
+	{ "Color1",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[0] ) },
+	{ "Color2",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[1] ) },
+	{ "Color3",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[2] ) },
+	{ "Color4",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[3] ) },
+	{ "Color5",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[4] ) },
+	{ "Color6",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[5] ) },
+	{ "Color7",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[6] ) },
+	{ "Color8",							ParticleSystemTemplate::parseRGBColorKeyframe,	NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorKey[7] ) },
 
-//	{ "COLOR",									ParticleSystemTemplate::parseRandomRGBColor,	NULL,		offsetof( ParticleSystemTemplate, m_color ) },
-	{ "ColorScale",							INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_colorScale ) },
+//	{ "COLOR",							ParticleSystemTemplate::parseRandomRGBColor,	NULL,						offsetof( ParticleSystemTemplate, m_color ) },
+	{ "ColorScale",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_colorScale ) },
 
-	{ "BurstDelay",							INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_burstDelay ) },
-	{ "BurstCount",							INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_burstCount ) },
+	{ "BurstDelay",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_burstDelay ) },
+	{ "BurstCount",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_burstCount ) },
 
-	{ "InitialDelay",						INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_initialDelay ) },
+	{ "InitialDelay",					INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_initialDelay ) },
 
-	{ "DriftVelocity",					INI::parseCoord3D,														NULL,		offsetof( ParticleSystemTemplate, m_driftVelocity ) },
-	{ "VelocityType",						INI::parseIndexList,													EmissionVelocityTypeNames,		offsetof( ParticleSystemTemplate, m_emissionVelocityType ) },
-	{ "VelOrthoX",							INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.ortho.x ) },
-	{ "VelOrthoY",							INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.ortho.y ) },
-	{ "VelOrthoZ",							INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.ortho.z ) },
+	{ "DriftVelocity",					INI::parseCoord3D,								NULL,						offsetof( ParticleSystemTemplate::IniData, m_driftVelocity ) },
+	{ "VelocityType",					INI::parseIndexList,							EmissionVelocityTypeNames,	offsetof( ParticleSystemTemplate::IniData, m_emissionVelocityType ) },
+	{ "VelOrthoX",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.ortho.x ) },
+	{ "VelOrthoY",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.ortho.y ) },
+	{ "VelOrthoZ",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.ortho.z ) },
 
-	{ "VelSpherical",						INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.spherical.speed ) },
-	{ "VelHemispherical",				INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.hemispherical.speed ) },
+	{ "VelSpherical",					INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.spherical.speed ) },
+	{ "VelHemispherical",				INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.hemispherical.speed ) },
 
-	{ "VelCylindricalRadial",		INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.cylindrical.radial ) },
-	{ "VelCylindricalNormal",		INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.cylindrical.normal ) },
+	{ "VelCylindricalRadial",			INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.cylindrical.radial ) },
+	{ "VelCylindricalNormal",			INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.cylindrical.normal ) },
 
-	{ "VelOutward",							INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.outward.speed ) },
-	{ "VelOutwardOther",				INI::parseGameClientRandomVariable,	NULL,		offsetof( ParticleSystemTemplate, m_emissionVelocity.outward.otherSpeed ) },
+	{ "VelOutward",						INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.outward.speed ) },
+	{ "VelOutwardOther",				INI::parseGameClientRandomVariable,				NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVelocity.outward.otherSpeed ) },
 
-	{ "VolumeType",							INI::parseIndexList,													EmissionVolumeTypeNames,		offsetof( ParticleSystemTemplate, m_emissionVolumeType ) },
-	{ "VolLineStart",						INI::parseCoord3D,														NULL,		offsetof( ParticleSystemTemplate, m_emissionVolume.line.start ) },
-	{ "VolLineEnd",							INI::parseCoord3D,														NULL,		offsetof( ParticleSystemTemplate, m_emissionVolume.line.end ) },
+	{ "VolumeType",						INI::parseIndexList,							EmissionVolumeTypeNames,	offsetof( ParticleSystemTemplate::IniData, m_emissionVolumeType ) },
+	{ "VolLineStart",					INI::parseCoord3D,								NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVolume.line.start ) },
+	{ "VolLineEnd",						INI::parseCoord3D,								NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVolume.line.end ) },
 
-	{ "VolBoxHalfSize",					INI::parseCoord3D,														NULL,		offsetof( ParticleSystemTemplate, m_emissionVolume.box.halfSize ) },
+	{ "VolBoxHalfSize",					INI::parseCoord3D,								NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVolume.box.halfSize ) },
 
-	{ "VolSphereRadius",				INI::parseReal,																NULL,		offsetof( ParticleSystemTemplate, m_emissionVolume.sphere.radius ) },
+	{ "VolSphereRadius",				INI::parseReal,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVolume.sphere.radius ) },
 
-	{ "VolCylinderRadius",			INI::parseReal,																NULL,		offsetof( ParticleSystemTemplate, m_emissionVolume.cylinder.radius ) },
-	{ "VolCylinderLength",			INI::parseReal,																NULL,		offsetof( ParticleSystemTemplate, m_emissionVolume.cylinder.length ) },
+	{ "VolCylinderRadius",				INI::parseReal,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVolume.cylinder.radius ) },
+	{ "VolCylinderLength",				INI::parseReal,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_emissionVolume.cylinder.length ) },
 
-	{ "IsHollow",								INI::parseBool,																NULL,		offsetof( ParticleSystemTemplate, m_isEmissionVolumeHollow ) },
-	{ "IsGroundAligned",				INI::parseBool,																NULL,		offsetof( ParticleSystemTemplate, m_isGroundAligned ) },
-	{ "IsEmitAboveGroundOnly",	INI::parseBool,																NULL,		offsetof( ParticleSystemTemplate, m_isEmitAboveGroundOnly) },
-	{ "IsParticleUpTowardsEmitter",	INI::parseBool,																NULL,		offsetof( ParticleSystemTemplate, m_isParticleUpTowardsEmitter) },
+	{ "IsHollow",						INI::parseBool,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_isEmissionVolumeHollow ) },
+	{ "IsGroundAligned",				INI::parseBool,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_isGroundAligned ) },
+	{ "IsEmitAboveGroundOnly",			INI::parseBool,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_isEmitAboveGroundOnly) },
+	{ "IsParticleUpTowardsEmitter",		INI::parseBool,									NULL,						offsetof( ParticleSystemTemplate::IniData, m_isParticleUpTowardsEmitter) },
 
-	{ "WindMotion",					INI::parseIndexList, WindMotionNames, offsetof( ParticleSystemTemplate, m_windMotion ) },
+	{ "WindMotion",						INI::parseIndexList, 							WindMotionNames,			offsetof( ParticleSystemTemplate::IniData, m_windMotion ) },
 
-	{ "WindAngleChangeMin", INI::parseReal, NULL, offsetof( ParticleSystemTemplate, m_windAngleChangeMin ) },
-	{ "WindAngleChangeMax", INI::parseReal, NULL, offsetof( ParticleSystemTemplate, m_windAngleChangeMax ) },
+	{ "WindAngleChangeMin",				INI::parseReal, 								NULL,						offsetof( ParticleSystemTemplate::IniData, m_windAngleChangeMin ) },
+	{ "WindAngleChangeMax",				INI::parseReal, 								NULL,						offsetof( ParticleSystemTemplate::IniData, m_windAngleChangeMax ) },
 
-	{ "WindPingPongStartAngleMin",			INI::parseReal, NULL, offsetof( ParticleSystemTemplate, m_windMotionStartAngleMin ) },
-	{ "WindPingPongStartAngleMax",			INI::parseReal, NULL, offsetof( ParticleSystemTemplate, m_windMotionStartAngleMax ) },
+	{ "WindPingPongStartAngleMin",		INI::parseReal, 								NULL,						offsetof( ParticleSystemTemplate::IniData, m_windMotionStartAngleMin ) },
+	{ "WindPingPongStartAngleMax",		INI::parseReal, 								NULL,						offsetof( ParticleSystemTemplate::IniData, m_windMotionStartAngleMax ) },
 
-	{ "WindPingPongEndAngleMin",				INI::parseReal, NULL, offsetof( ParticleSystemTemplate, m_windMotionEndAngleMin ) },
-	{ "WindPingPongEndAngleMax",				INI::parseReal, NULL, offsetof( ParticleSystemTemplate, m_windMotionEndAngleMax ) },
+	{ "WindPingPongEndAngleMin",		INI::parseReal, 								NULL,						offsetof( ParticleSystemTemplate::IniData, m_windMotionEndAngleMin ) },
+	{ "WindPingPongEndAngleMax",		INI::parseReal, 								NULL,						offsetof( ParticleSystemTemplate::IniData, m_windMotionEndAngleMax ) },
 
 
-	{ NULL,											NULL,																					NULL,		0 },
+	{ NULL,								NULL,											NULL,						0 },
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -2806,8 +2817,8 @@ ParticleSystemTemplate::~ParticleSystemTemplate()
 // ------------------------------------------------------------------------------------------------
 ParticleSystem *ParticleSystemTemplate::createSlaveSystem( Bool createSlaves ) const
 {
-	if (m_slaveTemplate == NULL && m_slaveSystemName.isEmpty() == false)
-		m_slaveTemplate = TheParticleSystemManager->findTemplate( m_slaveSystemName );
+	if (m_slaveTemplate == NULL && m_ini.m_slaveSystemName.isEmpty() == false)
+		m_slaveTemplate = TheParticleSystemManager->findTemplate( m_ini.m_slaveSystemName );
 
 	ParticleSystem *slave = NULL;
 	if (m_slaveTemplate)
@@ -2917,7 +2928,7 @@ void ParticleSystemManager::reset( void )
 
 	m_uniqueSystemID = INVALID_PARTICLE_SYSTEM_ID;
 	
-	m_lastLogicFrameUpdate = -1;
+	m_lastLogicFrameUpdate = 0xffffffff;
 	// leave templates as-is
 }
 
@@ -3071,7 +3082,7 @@ ParticleSystemTemplate *ParticleSystemManager::findParentTemplate( const AsciiSt
 	TemplateMap::const_iterator end(m_templateMap.end());
 	for(; begin != end; ++begin) {
 		ParticleSystemTemplate *sysTemplate = (*begin).second;
-		if (name.compare(sysTemplate->m_slaveSystemName) == 0) {
+		if (name.compare(sysTemplate->m_ini.m_slaveSystemName) == 0) {
 			if (! parentNum--) {
 				return sysTemplate;
 			}
@@ -3201,7 +3212,7 @@ void ParticleSystemManager::friend_removeParticleSystem( ParticleSystem *particl
 Int ParticleSystemManager::removeOldestParticles( UnsignedInt count, 
 																									ParticlePriorityType priorityCap )
 {
-	Int countToRemove = count;
+	Int countToRemove = static_cast<Int>(count);
 
 	while (count-- && getParticleCount()) 
 	{
@@ -3218,7 +3229,7 @@ Int ParticleSystemManager::removeOldestParticles( UnsignedInt count,
 	}
 
 	// return the number of particles actually removed
-	return countToRemove - count;
+	return countToRemove - static_cast<Int>(count);
 
 }
 
@@ -3232,10 +3243,10 @@ void ParticleSystemManager::preloadAssets( TimeOfDay timeOfDay )
 
 	for (; begin != end; ++begin) {
 		const ParticleSystemTemplate *tmplate = (*begin).second;
-		if (tmplate->m_particleType == ParticleSystemInfo::PARTICLE &&
-			 	(! tmplate->m_particleTypeName.isEmpty()))
+		if (tmplate->m_ini.m_particleType == ParticleSystemInfo::PARTICLE &&
+			 	(! tmplate->m_ini.m_particleTypeName.isEmpty()))
 		{
-			TheDisplay->preloadTextureAssets(tmplate->m_particleTypeName);
+			TheDisplay->preloadTextureAssets(tmplate->m_ini.m_particleTypeName);
 		}
 	}
 }
@@ -3394,7 +3405,7 @@ void ParticleSystemDebugDisplay( DebugDisplayInterface *dd, void *, FILE *fp )
 
 			templateMapParticleCountIt = templateMapParticleCount.find(templateName);
 			if (templateMapParticleCountIt != templateMapParticleCount.end())
-				templateMapParticleCountIt->second += (*it)->getParticleCount();
+				templateMapParticleCountIt->second += static_cast<Int>((*it)->getParticleCount());
 		}
 	}
 

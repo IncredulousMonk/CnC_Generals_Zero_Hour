@@ -240,10 +240,13 @@ public:
 	virtual void reset( void );		///< Reset
 	virtual void update( void );	///< Update
 
+#if 0
 	virtual Bool loadMap( AsciiString filename, Bool query );
 	virtual void newMap( Bool saveGame );	///< Initialize the logic for new map.
+#endif // if 0
 
 	virtual Real getGroundHeight( Real x, Real y, Coord3D* normal = NULL )  const;
+#if 0
 	virtual Real getLayerHeight(Real x, Real y, PathfindLayerEnum layer, Coord3D* normal = NULL, Bool clip = true) const;
 	virtual void getExtent( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
 	virtual void getExtentIncludingBorder( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
@@ -327,8 +330,9 @@ public:
 	Int getActiveBoundary(void) { return m_activeBoundary; }
 	void setActiveBoundary(Int newActiveBoundary);
 
-  void flattenTerrain(Object *obj);  ///< Flatten the terrain under a building.
-  void createCraterInTerrain(Object *obj);  ///< Flatten the terrain under a building.
+	void flattenTerrain(Object *obj);  ///< Flatten the terrain under a building.
+	void createCraterInTerrain(Object *obj);  ///< Flatten the terrain under a building.
+#endif // if 0
 
 protected:
 
@@ -337,6 +341,7 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
+#if 0
 	/// Chunk parser callback.
  	static Bool parseWaypointDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData);
 	/// Chunk parser callback.
@@ -352,22 +357,23 @@ protected:
 
 	/// find the axis aligned region bounding the water table
 	void findAxisAlignedBoundingRect( const WaterHandle *waterHandle, Region3D *region );
+#endif // if 0
 
-	UnsignedByte	*m_mapData;									///< array of height samples
-	Int	m_mapDX;															///< width of map samples
-	Int	m_mapDY;															///< height of map samples
+	UnsignedByte	*m_mapData {};									///< array of height samples
+	Int	m_mapDX {};															///< width of map samples
+	Int	m_mapDY {};															///< height of map samples
 
-	VecICoord2D m_boundaries;
-	Int m_activeBoundary;
+	VecICoord2D m_boundaries {};
+	Int m_activeBoundary {};
 
-	Waypoint *m_waypointListHead;
-	Bridge *m_bridgeListHead;
+	Waypoint *m_waypointListHead {};
+	Bridge *m_bridgeListHead {};
 
-	Bool		m_bridgeDamageStatesChanged;
+	Bool		m_bridgeDamageStatesChanged {};
 
-	AsciiString m_filenameString;  ///< filename for terrain data
+	AsciiString m_filenameString {};  ///< filename for terrain data
 
-	Bool m_waterGridEnabled;			 ///< TRUE when water grid is enabled
+	Bool m_waterGridEnabled {};			///< TRUE when water grid is enabled
 
 	static WaterHandle m_gridWaterHandle;		///< water handle for the grid water (we only presently have one)
 
@@ -384,7 +390,7 @@ protected:
 		Real damageAmount;							///< amount of damage to do to objects that are underwater
 		Real currentHeight;							///< we need to keep track of this ourselves cause some water height are represented with ints
 	} m_waterToUpdate[ MAX_DYNAMIC_WATER ];  ///< water tables to dynamicall update
-	Int m_numWaterToUpdate;						///< how many valid entries are in m_waterToUpdate
+	Int m_numWaterToUpdate {};						///< how many valid entries are in m_waterToUpdate
 
 };  // end class TerrainLogic
 

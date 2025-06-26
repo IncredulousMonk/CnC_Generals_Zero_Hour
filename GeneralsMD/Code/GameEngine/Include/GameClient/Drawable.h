@@ -312,8 +312,10 @@ public:
 
 	Drawable *getNextDrawable( void ) const { return m_nextDrawable; }	///< return the next drawable in the global list
 	Drawable *getPrevDrawable( void ) const { return m_prevDrawable; }  ///< return the prev drawable in the global list
+#endif // if 0
 	DrawableID getID( void ) const;																			///< return this drawable's unique ID
 
+#if 0
 	void friend_bindToObject( Object *obj ); ///< bind this drawable to an object ID. for use ONLY by GameLogic!
 	void setIndicatorColor(Color color);
 	
@@ -391,8 +393,10 @@ public:
 	void allocateShadows(void); ///< create shadow resources if not already present. Used by Options screen.
 
 	void setFullyObscuredByShroud(Bool fullyObscured);
+#endif // if 0
 	inline Bool getFullyObscuredByShroud(void) {return m_drawableFullyObscuredByShroud;}
 
+#if 0
 	// Put on ice until later... M Lorenzen
 	//	inline UnsignedByte getFullyObscuredByShroudWithCheatSpy(void) {return (UnsignedByte)m_drawableFullyObscuredByShroud | 128;}//8 looks like a zero in most fonts
 
@@ -678,8 +682,10 @@ private:
 	Real m_decalOpacity {};
 
 	Object *m_object {};						///< object (if any) that this drawable represents
-		
+#endif // if 0
+
 	DrawableID m_id {};						///< this drawable's unique ID
+#if 0
 	Drawable *m_nextDrawable {}; 
 	Drawable *m_prevDrawable {};		///< list links
 
@@ -725,6 +731,7 @@ private:
 
 	UnsignedInt				m_expirationDate {};		///< if nonzero, Drawable should destroy itself at this frame
 	DrawableIconInfo*		m_iconInfo {};					///< lazily allocated!
+#endif // if 0
 
 	Real m_secondMaterialPassOpacity {};			///< drawable gets rendered again in hardware with an extra material layer
 	// --------- BYTE-SIZED THINGS GO HERE
@@ -736,6 +743,7 @@ private:
 	Bool m_ambientSoundEnabled {};
 	Bool m_ambientSoundEnabledFromScript {};
 
+#if 0
 	Bool m_receivesDynamicLights {};
 
 #ifdef DIRTY_CONDITION_FLAGS

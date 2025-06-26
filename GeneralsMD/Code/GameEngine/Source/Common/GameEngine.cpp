@@ -51,7 +51,7 @@
 // #include "Common/PerfTimer.h"
 // #include "Common/RandomValue.h"
 #include "Common/NameKeyGenerator.h"
-// #include "Common/ModuleFactory.h"
+#include "Common/ModuleFactory.h"
 // #include "Common/Debug.h"
 // #include "Common/GameState.h"
 // #include "Common/GameStateMap.h"
@@ -91,7 +91,7 @@
 // #include "GameClient/Keyboard.h"
 // #include "GameClient/Shell.h"
 #include "GameClient/GameText.h"
-// #include "GameClient/ParticleSys.h"
+#include "GameClient/ParticleSys.h"
 #include "GameClient/Water.h"
 #include "GameClient/Snow.h" // MG: Only needed to delete TheWeatherSetting
 #include "GameClient/TerrainRoads.h"
@@ -460,13 +460,13 @@ void GameEngine::init( int argc, char *argv[] )
 
 
 		initSubsystem(TheFunctionLexicon,"TheFunctionLexicon", createFunctionLexicon(), NULL);
-		// initSubsystem(TheModuleFactory,"TheModuleFactory", createModuleFactory(), NULL);
+		initSubsystem(TheModuleFactory,"TheModuleFactory", createModuleFactory(), NULL);
 		initSubsystem(TheMessageStream,"TheMessageStream", createMessageStream(), NULL);
 		// initSubsystem(TheSidesList,"TheSidesList", MSGNEW("GameEngineSubsystem") SidesList(), NULL);
 		// initSubsystem(TheCaveSystem,"TheCaveSystem", MSGNEW("GameEngineSubsystem") CaveSystem(), NULL);
 		// initSubsystem(TheRankInfoStore,"TheRankInfoStore", MSGNEW("GameEngineSubsystem") RankInfoStore(), &xferCRC, NULL, "Data\\INI\\Rank.ini");
 		// initSubsystem(ThePlayerTemplateStore,"ThePlayerTemplateStore", MSGNEW("GameEngineSubsystem") PlayerTemplateStore(), &xferCRC, "Data\\INI\\Default\\PlayerTemplate.ini", "Data\\INI\\PlayerTemplate.ini");
-		// initSubsystem(TheParticleSystemManager,"TheParticleSystemManager", createParticleSystemManager(), NULL);
+		initSubsystem(TheParticleSystemManager,"TheParticleSystemManager", createParticleSystemManager(), NULL);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////

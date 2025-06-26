@@ -71,6 +71,7 @@ TerrainLogic *TheTerrainLogic = NULL;
 // STATIC /////////////////////////////////////////////////////////////////////////////////////////
 WaterHandle TerrainLogic::m_gridWaterHandle;
 
+#if 0
 // Waypoint ///////////////////////////////////////////////////////////////////////////////////////
 
 //-------------------------------------------------------------------------------------------------
@@ -114,7 +115,7 @@ BridgeInfo::BridgeInfo()
 	fromRight.zero();
 	toLeft.zero();
 	toRight.zero();
-  bridgeIndex = 0;
+	bridgeIndex = 0;
 	curDamageState = BODY_PRISTINE;
 	damageStateChanged = FALSE;
 	bridgeObjectID = INVALID_ID;
@@ -476,7 +477,7 @@ Bool Bridge::isPointOnBridge(const Coord3D *pLoc)
 	return(false);
 }
 
-/*-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 /** Clip a floating point line to the region provided.  The source line runs from p1 to p2, and is clipped
 	* using the clipRegion.  
 	*
@@ -957,11 +958,13 @@ Real Bridge::getBridgeHeight(const Coord3D *pLoc, Coord3D* normal)
 
 	return t*factor;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 TerrainLogic::TerrainLogic()
 {
+#if 0
 	Int i;
 	
 	//Added By Sadullah Nader
@@ -987,6 +990,7 @@ TerrainLogic::TerrainLogic()
 	m_bridgeDamageStatesChanged = FALSE;
 	m_mapDX = 0;
 	m_mapDY = 0;
+#endif // if 0
 
 
 }  // end TerrainLogic
@@ -1014,10 +1018,12 @@ void TerrainLogic::init( void )
 void TerrainLogic::reset( void )
 {
 
+#if 0
 	deleteWaypoints();
 	deleteBridges();
 	PolygonTrigger::deleteTriggers();
 	m_numWaterToUpdate = 0;
+#endif // if 0
 
 }  // end reset
 
@@ -1027,6 +1033,7 @@ void TerrainLogic::reset( void )
 void TerrainLogic::update( void )
 {
 
+#if 0
 	// bridge damage states have not changed this frame now
 	m_bridgeDamageStatesChanged = false;
 
@@ -1117,9 +1124,11 @@ void TerrainLogic::update( void )
 		}  // end for i
 
 	}  // end if
+#endif // if 0
 
 }  // end update
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** newMap */
 //-------------------------------------------------------------------------------------------------
@@ -1431,6 +1440,7 @@ Bool TerrainLogic::isClearLineOfSight(const Coord3D& pos, const Coord3D& posOthe
 	DEBUG_CRASH(("implement ME"));
 	return false;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** default get height for terrain logic */
@@ -1444,6 +1454,7 @@ Real TerrainLogic::getGroundHeight( Real x, Real y, Coord3D* normal ) const
 
 }  // end getHight
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** default get height for terrain logic */
 //-------------------------------------------------------------------------------------------------
@@ -2904,11 +2915,7 @@ void TerrainLogic::createCraterInTerrain(Object *obj)
   } // next i
 
 }
-
-
-
-
-
+#endif // if 0
 
 
 // ------------------------------------------------------------------------------------------------
@@ -2929,6 +2936,7 @@ void TerrainLogic::crc( Xfer *xfer )
 void TerrainLogic::xfer( Xfer *xfer )
 {
 
+#if 0
 	// version
 	const XferVersion currentVersion = 2;	
 	XferVersion version = currentVersion;
@@ -3009,6 +3017,7 @@ void TerrainLogic::xfer( Xfer *xfer )
 		}  // end for, i
 
 	}  // end if
+#endif // if 0
 
 }  // end xfer
 
@@ -3017,6 +3026,7 @@ void TerrainLogic::xfer( Xfer *xfer )
 // ------------------------------------------------------------------------------------------------
 void TerrainLogic::loadPostProcess( void )
 {
+#if 0
 	Bridge* pBridge = getFirstBridge();
 	Bridge* pNext;
 	while (pBridge) 
@@ -3029,6 +3039,6 @@ void TerrainLogic::loadPostProcess( void )
 		}
 		pBridge = pNext;
 	}
+#endif // if 0
 
 }  // end loadPostProcess
-

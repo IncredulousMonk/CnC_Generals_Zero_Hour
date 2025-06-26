@@ -51,6 +51,11 @@ class GhostObject : public Snapshot
 public:
 	GhostObject();
 	virtual ~GhostObject();
+
+	// No copies allowed!
+	GhostObject(const GhostObject&) = delete;
+	GhostObject& operator=(const GhostObject&) = delete;
+
 	virtual void snapShot(int playerIndex)=0;
 	virtual void updateParentObject(Object *object, PartitionData *mod)=0;
 	virtual void freeSnapShot(int playerIndex)=0;

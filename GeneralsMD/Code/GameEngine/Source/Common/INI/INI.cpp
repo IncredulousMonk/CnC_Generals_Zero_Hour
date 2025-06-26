@@ -52,7 +52,7 @@
 #include "GameClient/FXList.h"
 #include "GameClient/GameText.h"
 #include "GameClient/Image.h"
-// #include "GameClient/ParticleSys.h"
+#include "GameClient/ParticleSys.h"
 #include "GameLogic/Armor.h"
 // #include "GameLogic/ExperienceTracker.h"
 // #include "GameLogic/FPUControl.h"
@@ -127,7 +127,7 @@ static const BlockParse theTypeTable[] =
 	{ "Object",							INI::parseObjectDefinition },
 // 	{ "ObjectCreationList",				INI::parseObjectCreationListDefinition },
 	{ "ObjectReskin",					INI::parseObjectReskinDefinition },
-// 	{ "ParticleSystem",					INI::parseParticleSystemDefinition },
+	{ "ParticleSystem",					INI::parseParticleSystemDefinition },
 // 	{ "PlayerTemplate",					INI::parsePlayerTemplateDefinition },
 	{ "Road",							INI::parseTerrainRoadDefinition },
 	{ "Science",						INI::parseScienceDefinition },
@@ -1290,17 +1290,15 @@ void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /
 //-------------------------------------------------------------------------------------------------
 void INI::parseParticleSystemTemplate( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	(void) store;
 	const char *token = ini->getNextToken();
-	DEBUG_LOG(("WARNING! parseParticleSystemTemplate not yet implemented: %s\n", token));
 
-	// const ParticleSystemTemplate *pSystemT = TheParticleSystemManager->findTemplate( AsciiString( token ) );
-	// DEBUG_ASSERTCRASH( pSystemT || strcasecmp( token, "None" ) == 0, ("ParticleSystem %s not found!\n",token) );
+	const ParticleSystemTemplate *pSystemT = TheParticleSystemManager->findTemplate( AsciiString( token ) );
+	DEBUG_ASSERTCRASH( pSystemT || strcasecmp( token, "None" ) == 0, ("ParticleSystem %s not found!\n",token) );
 
-	// typedef const ParticleSystemTemplate* ConstParticleSystemTemplatePtr;
-	// ConstParticleSystemTemplatePtr* theParticleSystemTemplate = (ConstParticleSystemTemplatePtr*)store;
+	typedef const ParticleSystemTemplate* ConstParticleSystemTemplatePtr;
+	ConstParticleSystemTemplatePtr* theParticleSystemTemplate = (ConstParticleSystemTemplatePtr*)store;
 
-	// *theParticleSystemTemplate = pSystemT;
+	*theParticleSystemTemplate = pSystemT;
 
 }  // end parseParticleSystemTemplate
 

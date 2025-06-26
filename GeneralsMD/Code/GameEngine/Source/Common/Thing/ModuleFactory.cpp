@@ -407,7 +407,7 @@ void ModuleFactory::init( void )
 	addModule( LifetimeUpdate );
 	addModule( RadiusDecalUpdate );
 	addModule( EMPUpdate );
-  addModule( LeafletDropBehavior );
+	addModule( LeafletDropBehavior );
 	addModule( AutoDepositUpdate );
 	addModule( WeaponBonusUpdate );
 	addModule( MissileAIUpdate );

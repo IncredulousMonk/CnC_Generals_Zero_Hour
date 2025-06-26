@@ -34,6 +34,7 @@
 
 #include <stdio.h>
 #include "Common/AsciiString.h"
+#include "Common/File.h"
 #include "Common/GameMemory.h"
 #include "Common/GameType.h"
 #include "Common/Snapshot.h"
@@ -121,29 +122,29 @@ public:
 
 	ParticleInfo( void );
 
-	Coord3D m_vel;															///< initial velocity
-	Coord3D m_pos;															///< initial position
-	Coord3D m_emitterPos;												///< position of the emitter
-	Real m_velDamping;													///< velocity damping coefficient
+	Coord3D m_vel {};															///< initial velocity
+	Coord3D m_pos {};															///< initial position
+	Coord3D m_emitterPos {};												///< position of the emitter
+	Real m_velDamping {};													///< velocity damping coefficient
 
-	Real m_angleZ;															///< initial angle around Z axis
-	Real m_angularRateZ;												///< initial angle around Z axis
-	Real m_angularDamping;											///< angular velocity damping coefficient
+	Real m_angleZ {};															///< initial angle around Z axis
+	Real m_angularRateZ {};												///< initial angle around Z axis
+	Real m_angularDamping {};											///< angular velocity damping coefficient
 
-	UnsignedInt m_lifetime;											///< lifetime of this particle
+	UnsignedInt m_lifetime {};											///< lifetime of this particle
 
-	Real m_size;																///< size of the particle
-	Real m_sizeRate;														///< rate of change of size
-	Real m_sizeRateDamping;											///< damping of size change rate
+	Real m_size {};																///< size of the particle
+	Real m_sizeRate {};														///< rate of change of size
+	Real m_sizeRateDamping {};											///< damping of size change rate
 
 	Keyframe m_alphaKey[ MAX_KEYFRAMES ];
 	RGBColorKeyframe m_colorKey[ MAX_KEYFRAMES ];
 
-	Real m_colorScale;													///< color "scaling" coefficient
+	Real m_colorScale {};													///< color "scaling" coefficient
 
-	Real m_windRandomness;											///< multiplier for wind randomness per particle
+	Real m_windRandomness {};											///< multiplier for wind randomness per particle
 
-	Bool m_particleUpTowardsEmitter;						///< if this is true, then the 0.0 Z rotation should actually
+	Bool m_particleUpTowardsEmitter {};						///< if this is true, then the 0.0 Z rotation should actually
 																							///< correspond to the direction of the emitter.
 
 protected:
@@ -210,35 +211,35 @@ protected:
 	void computeColorRate( void );							///< compute color change to get to next key
 
 public:
-	Particle *				m_systemNext;
-	Particle *				m_systemPrev;
-	Particle *				m_overallNext;
-	Particle *				m_overallPrev;
+	Particle *				m_systemNext {};
+	Particle *				m_systemPrev {};
+	Particle *				m_overallNext {};
+	Particle *				m_overallPrev {};
 
 protected:
-	ParticleSystem *	m_system;										///< the particle system this particle belongs to
-	UnsignedInt				m_personality;							    ///< each new particle assigned a number one higher than the previous
+	ParticleSystem *		m_system {};										///< the particle system this particle belongs to
+	UnsignedInt				m_personality {};							    ///< each new particle assigned a number one higher than the previous
 
 	// most of the particle data is derived from ParticleInfo
 
-	Coord3D						m_accel;														///< current acceleration
-	Coord3D						m_lastPos;													///< previous position
-	UnsignedInt				m_lifetimeLeft;									///< lifetime remaining, if zero -> destroy
-	UnsignedInt				m_createTimestamp;							///< frame this particle was created
+	Coord3D					m_accel {};														///< current acceleration
+	Coord3D					m_lastPos {};													///< previous position
+	UnsignedInt				m_lifetimeLeft {};									///< lifetime remaining, if zero -> destroy
+	UnsignedInt				m_createTimestamp {};							///< frame this particle was created
 
-	Real							m_alpha;																///< current alpha of this particle
-	Real							m_alphaRate;														///< current rate of alpha change
-	Int								m_alphaTargetKey;												///< next index into key array
+	Real					m_alpha {};																///< current alpha of this particle
+	Real					m_alphaRate {};														///< current rate of alpha change
+	Int						m_alphaTargetKey {};												///< next index into key array
 
-	RGBColor					m_color;														///< current color of this particle
-	RGBColor					m_colorRate;												///< current rate of color change
-	Int								m_colorTargetKey;												///< next index into key array
+	RGBColor				m_color {};														///< current color of this particle
+	RGBColor				m_colorRate {};												///< current rate of color change
+	Int						m_colorTargetKey {};												///< next index into key array
 
 
-	Bool							m_isCulled;														///< status of particle relative to screen bounds
+	Bool					m_isCulled {};														///< status of particle relative to screen bounds
 public:
-	Bool							m_inSystemList;
-	Bool							m_inOverallList;
+	Bool					m_inSystemList {};
+	Bool					m_inOverallList {};
 
 	union
 	{
@@ -255,25 +256,25 @@ public:
 
 /**** NOTE: These MUST be kept in sync with the enumerations below *****/
 
-// static const char *ParticleShaderTypeNames[] = 
-// {
-// 	"NONE", "ADDITIVE", "ALPHA", "ALPHA_TEST", "MULTIPLY", NULL
-// };
+static const char *ParticleShaderTypeNames[] = 
+{
+	"NONE", "ADDITIVE", "ALPHA", "ALPHA_TEST", "MULTIPLY", NULL
+};
 
-// static const char *ParticleTypeNames[] = 
-// {
-// 	"NONE", "PARTICLE", "DRAWABLE", "STREAK", "VOLUME_PARTICLE","SMUDGE", NULL
-// };
+static const char *ParticleTypeNames[] = 
+{
+	"NONE", "PARTICLE", "DRAWABLE", "STREAK", "VOLUME_PARTICLE","SMUDGE", NULL
+};
 
-// static const char *EmissionVelocityTypeNames[] =
-// {
-// 	"NONE", "ORTHO", "SPHERICAL", "HEMISPHERICAL", "CYLINDRICAL", "OUTWARD", NULL
-// };
+static const char *EmissionVelocityTypeNames[] =
+{
+	"NONE", "ORTHO", "SPHERICAL", "HEMISPHERICAL", "CYLINDRICAL", "OUTWARD", NULL
+};
 
-// static const char *EmissionVolumeTypeNames[] =
-// {
-// 	"NONE", "POINT", "LINE", "BOX", "SPHERE", "CYLINDER", NULL
-// };
+static const char *EmissionVolumeTypeNames[] =
+{
+	"NONE", "POINT", "LINE", "BOX", "SPHERE", "CYLINDER", NULL
+};
 
 //"NONE", "FLUFF", "DEBRIS", "NATURE", "WEAPON", "DAMAGE", "SPECIAL"
 static const char *ParticlePriorityNames[] = 
@@ -281,10 +282,10 @@ static const char *ParticlePriorityNames[] =
 	"NONE", "WEAPON_EXPLOSION","SCORCHMARK","DUST_TRAIL","BUILDUP","DEBRIS_TRAIL","UNIT_DAMAGE_FX","DEATH_EXPLOSION","SEMI_CONSTANT","CONSTANT","WEAPON_TRAIL","AREA_EFFECT","CRITICAL", "ALWAYS_RENDER", NULL
 };
 
-// static const char *WindMotionNames[] = 
-// {
-// 	"NONE", "Unused", "PingPong", "Circular", NULL
-// };
+static const char *WindMotionNames[] = 
+{
+	"NONE", "Unused", "PingPong", "Circular", NULL
+};
 
 #endif
 
@@ -304,38 +305,35 @@ public:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	Bool m_isOneShot;														///< if true, destroy system after one burst has occurred
+	void tintAllColors( Color tintColor );
 
-	enum ParticleShaderType
-	{
+	enum ParticleShaderType	{
 		INVALID_SHADER=0, ADDITIVE, ALPHA, ALPHA_TEST, MULTIPLY
-	} 
-	m_shaderType;																///< how this particle is rendered
+	};
 
-	enum ParticleType
-	{
+	enum ParticleType {
 		INVALID_TYPE=0, PARTICLE, DRAWABLE, STREAK, VOLUME_PARTICLE, SMUDGE	 ///< is a particle a 2D-screen-facing particle, or a Drawable, or a Segment in a streak?
-	}
-	m_particleType;
+	};
 
-	AsciiString m_particleTypeName;							///< if PARTICLE, texture filename, if DRAWABLE, Drawable name
+	//----------------------------------------------------------
+	// The volume of space where particles are initially created
+	// Note that the volume is relative to the system's position and orientation
+	enum EmissionVolumeType {
+		INVALID_VOLUME=0, POINT, LINE, BOX, SPHERE, CYLINDER
+	};
 
-	GameClientRandomVariable m_angleZ;										///< initial angle around Z axis
-	GameClientRandomVariable m_angularRateZ;							///< initial angle around Z axis
-	GameClientRandomVariable m_angularDamping;						///< angular velocity damping coefficient
+	//-------------------------------------------------------
+	// The direction and speed at which particles are emitted
+	enum EmissionVelocityType {
+		INVALID_VELOCITY=0, ORTHO, SPHERICAL, HEMISPHERICAL, CYLINDRICAL, OUTWARD
+	};
 
-	GameClientRandomVariable m_velDamping;								///< velocity damping factor
-
-	GameClientRandomVariable m_lifetime;									///< lifetime of emitted particles
-	UnsignedInt m_systemLifetime;								///< lifetime of the particle system
-
-	GameClientRandomVariable m_startSize;									///< initial size of emitted particles
-	GameClientRandomVariable m_startSizeRate;							///< change in start size of emitted particles
-	GameClientRandomVariable m_sizeRate;									///< rate of change of size
-	GameClientRandomVariable m_sizeRateDamping;						///< damping of size change
-
-
-	UnsignedInt m_volumeParticleDepth;								///< how many layers deep to draw the particle, if >1
+	enum WindMotion {
+		WIND_MOTION_INVALID = 0,
+		WIND_MOTION_NOT_USED,
+		WIND_MOTION_PING_PONG,
+		WIND_MOTION_CIRCULAR
+	};
 
 	struct RandomKeyframe
 	{
@@ -343,140 +341,149 @@ public:
 		UnsignedInt frame;												///< the frame number
 	};
 
-
-	RandomKeyframe m_alphaKey[ MAX_KEYFRAMES ];
-	RGBColorKeyframe m_colorKey[ MAX_KEYFRAMES ];	///< color of particle
-
-	typedef Int Color;
-
-	void tintAllColors( Color tintColor );
-	
-	GameClientRandomVariable m_colorScale;								///< color coefficient
-
-	GameClientRandomVariable m_burstDelay;								///< time between particle emissions
-	GameClientRandomVariable m_burstCount;								///< number of particles emitted per burst
-
-	GameClientRandomVariable m_initialDelay;							///< delay before particles begin emitting
-
-	Coord3D m_driftVelocity;										///< additional velocity added to all particles
-	Real m_gravity;															///< gravity acceleration (global Z) for particles in this system
-
-	AsciiString m_slaveSystemName;							///< if non-empty, create a system whose particles track this system's
-	Coord3D m_slavePosOffset;										///< positional offset of slave particles relative to master's
-
-	AsciiString m_attachedSystemName;						///< if non-empty, create a system attached to each particle of this system
-
-	//-------------------------------------------------------
-	// The direction and speed at which particles are emitted
-	enum EmissionVelocityType
+	// MG: Cannot apply offsetof to ParticleSystemInfo, so had to move data into an embedded struct.
+	struct IniData
 	{
-		INVALID_VELOCITY=0, ORTHO, SPHERICAL, HEMISPHERICAL, CYLINDRICAL, OUTWARD
-	}
-	m_emissionVelocityType;
+		Bool m_isOneShot;														///< if true, destroy system after one burst has occurred
 
-	ParticlePriorityType m_priority;
+		ParticleShaderType m_shaderType;																///< how this particle is rendered
 
-	union
-	{
-		struct
+		ParticleType m_particleType;
+
+		AsciiString m_particleTypeName;							///< if PARTICLE, texture filename, if DRAWABLE, Drawable name
+
+		GameClientRandomVariable m_angleZ;										///< initial angle around Z axis
+		GameClientRandomVariable m_angularRateZ;							///< initial angle around Z axis
+		GameClientRandomVariable m_angularDamping;						///< angular velocity damping coefficient
+
+		GameClientRandomVariable m_velDamping;								///< velocity damping factor
+
+		GameClientRandomVariable m_lifetime;									///< lifetime of emitted particles
+		UnsignedInt m_systemLifetime;								///< lifetime of the particle system
+
+		GameClientRandomVariable m_startSize;									///< initial size of emitted particles
+		GameClientRandomVariable m_startSizeRate;							///< change in start size of emitted particles
+		GameClientRandomVariable m_sizeRate;									///< rate of change of size
+		GameClientRandomVariable m_sizeRateDamping;						///< damping of size change
+
+
+		UnsignedInt m_volumeParticleDepth;								///< how many layers deep to draw the particle, if >1
+
+		RandomKeyframe m_alphaKey[ MAX_KEYFRAMES ];
+		RGBColorKeyframe m_colorKey[ MAX_KEYFRAMES ];	///< color of particle
+
+		typedef Int Color;
+
+		GameClientRandomVariable m_colorScale;								///< color coefficient
+
+		GameClientRandomVariable m_burstDelay;								///< time between particle emissions
+		GameClientRandomVariable m_burstCount;								///< number of particles emitted per burst
+
+		GameClientRandomVariable m_initialDelay;							///< delay before particles begin emitting
+
+		Coord3D m_driftVelocity;										///< additional velocity added to all particles
+		Real m_gravity;															///< gravity acceleration (global Z) for particles in this system
+
+		AsciiString m_slaveSystemName;							///< if non-empty, create a system whose particles track this system's
+		Coord3D m_slavePosOffset;										///< positional offset of slave particles relative to master's
+
+		AsciiString m_attachedSystemName;						///< if non-empty, create a system attached to each particle of this system
+
+		EmissionVelocityType m_emissionVelocityType;
+
+		ParticlePriorityType m_priority;
+
+		union
 		{
-			GameClientRandomVariable x;												///< initial speed of particle along X axis
-			GameClientRandomVariable y;												///< initial speed of particle along Y axis
-			GameClientRandomVariable z;												///< initial speed of particle along Z axis
-		}
-		ortho;
+			struct
+			{
+				GameClientRandomVariable x;												///< initial speed of particle along X axis
+				GameClientRandomVariable y;												///< initial speed of particle along Y axis
+				GameClientRandomVariable z;												///< initial speed of particle along Z axis
+			}
+			ortho;
 
-		struct
+			struct
+			{
+				GameClientRandomVariable speed;										///< initial speed of particle along random radial direction
+			}
+			spherical, hemispherical;
+
+			struct
+			{
+				GameClientRandomVariable radial;									///< initial speed of particle in the disk
+				GameClientRandomVariable normal;									///< initial speed of particle perpendicular to disk
+			}
+			cylindrical;
+
+			struct
+			{
+				GameClientRandomVariable speed;										///< speed outward from emission volume
+				GameClientRandomVariable otherSpeed;							///< speed along "other" axis, such as cylinder length
+			}
+			outward;
+		}
+		m_emissionVelocity;
+
+		EmissionVolumeType m_emissionVolumeType;												///< the type of volume where particles are created
+		
+		union emissionVolumeUnion
 		{
-			GameClientRandomVariable speed;										///< initial speed of particle along random radial direction
+			// point just uses system's position
+
+			// line
+			struct
+			{
+				Coord3D start, end;
+			}
+			line;
+
+			// box
+			struct
+			{
+				Coord3D halfSize;
+			}
+			box;
+
+			// sphere
+			struct
+			{
+				Real radius;
+			}
+			sphere;
+
+			// cylinder
+			struct
+			{
+				Real radius;
+				Real length;
+			}
+			cylinder;
 		}
-		spherical, hemispherical;
+		m_emissionVolume;														///< the dimensions of the emission volume
 
-		struct
-		{
-			GameClientRandomVariable radial;									///< initial speed of particle in the disk
-			GameClientRandomVariable normal;									///< initial speed of particle perpendicular to disk
-		}
-		cylindrical;
+		Bool m_isEmissionVolumeHollow;							///< if true, only create particles at boundary of volume
+		Bool m_isGroundAligned;											///< if true, align with the ground. if false, then do the normal billboarding. 
+		Bool m_isEmitAboveGroundOnly;								///< if true, only emit particles when the system is above ground.
+		Bool m_isParticleUpTowardsEmitter;					///< if true, align the up direction to be towards the emitter.
 
-		struct
-		{
-			GameClientRandomVariable speed;										///< speed outward from emission volume
-			GameClientRandomVariable otherSpeed;							///< speed along "other" axis, such as cylinder length
-		}
-		outward;
-	}
-	m_emissionVelocity;
+		WindMotion m_windMotion;				///< motion of the wind angle updating
+		Real m_windAngle;								///< angle of the "wind" associated with this system
+		Real m_windAngleChange;					///< current how fast the angle changes (higher=faster change)
+		Real m_windAngleChangeMin;			///< min for angle change
+		Real m_windAngleChangeMax;			///< max for angle change
+		Real m_windMotionStartAngle;						///< (for ping pong) angle 1 of the ping pong
+		Real m_windMotionStartAngleMin;					///< (for ping pong) min angle for angle 1
+		Real m_windMotionStartAngleMax;					///< (for ping pong) max angle for angle 1
+		Real m_windMotionEndAngle;							///< (for ping pong) angle 2 of the ping pong
+		Real m_windMotionEndAngleMin;						///< (for ping pong) min angle for angle 2
+		Real m_windMotionEndAngleMax;						///< (for ping pong) max angel for angle 2
+		Byte m_windMotionMovingToEndAngle;			///< (for ping pong) TRUE if we're moving "towards" the end angle
 
-	//----------------------------------------------------------
-	// The volume of space where particles are initially created
-	// Note that the volume is relative to the system's position and orientation
-	enum EmissionVolumeType
-	{
-		INVALID_VOLUME=0, POINT, LINE, BOX, SPHERE, CYLINDER
-	}
-	m_emissionVolumeType;												///< the type of volume where particles are created
-	
-	union emissionVolumeUnion
-	{
-		// point just uses system's position
-
-		// line
-		struct
-		{
-			Coord3D start, end;
-		}
-		line;
-
-		// box
-		struct
-		{
-			Coord3D halfSize;
-		}
-		box;
-
-		// sphere
-		struct
-		{
-			Real radius;
-		}
-		sphere;
-
-		// cylinder
-		struct
-		{
-			Real radius;
-			Real length;
-		}
-		cylinder;
-	}
-	m_emissionVolume;														///< the dimensions of the emission volume
-
-	Bool m_isEmissionVolumeHollow;							///< if true, only create particles at boundary of volume
-	Bool m_isGroundAligned;											///< if true, align with the ground. if false, then do the normal billboarding. 
-	Bool m_isEmitAboveGroundOnly;								///< if true, only emit particles when the system is above ground.
-	Bool m_isParticleUpTowardsEmitter;					///< if true, align the up direction to be towards the emitter.
-
-	enum WindMotion
-	{
-		WIND_MOTION_INVALID = 0,
-		WIND_MOTION_NOT_USED,
-		WIND_MOTION_PING_PONG,
-		WIND_MOTION_CIRCULAR
+		ParticleSystemInfo* m_obj {};					///< pointer to the parent object
 	};
-	WindMotion m_windMotion;				///< motion of the wind angle updating
-	Real m_windAngle;								///< angle of the "wind" associated with this system
-	Real m_windAngleChange;					///< current how fast the angle changes (higher=faster change)
-	Real m_windAngleChangeMin;			///< min for angle change
-	Real m_windAngleChangeMax;			///< max for angle change
-	Real m_windMotionStartAngle;						///< (for ping pong) angle 1 of the ping pong
-	Real m_windMotionStartAngleMin;					///< (for ping pong) min angle for angle 1
-	Real m_windMotionStartAngleMax;					///< (for ping pong) max angle for angle 1
-	Real m_windMotionEndAngle;							///< (for ping pong) angle 2 of the ping pong
-	Real m_windMotionEndAngleMin;						///< (for ping pong) min angle for angle 2
-	Real m_windMotionEndAngleMax;						///< (for ping pong) max angel for angle 2
-	Byte m_windMotionMovingToEndAngle;			///< (for ping pong) TRUE if we're moving "towards" the end angle
 
+	IniData m_ini {};
 };
 
 
@@ -518,12 +525,14 @@ protected:
 	static const FieldParse m_fieldParseTable[];			///< the parse table for INI definition
 
 protected:
-	AsciiString								m_name;													///< the name of this template
+	AsciiString								m_name {};													///< the name of this template
 
 	// This has to be mutable because of the delayed initialization thing in createSlaveSystem
-	mutable const ParticleSystemTemplate *m_slaveTemplate;		///< if non-NULL, use this to create a slave system
+	mutable const ParticleSystemTemplate *m_slaveTemplate {};		///< if non-NULL, use this to create a slave system
 
 	// template attribute data inherited from ParticleSystemInfo class
+
+	friend class INI;
 };
 
 /**
@@ -532,8 +541,7 @@ protected:
  * before destroying itself in order to ensure everything can be cleaned up if the system
  * is reset.
  */
-class ParticleSystem : public MemoryPoolObject, 
-											 public ParticleSystemInfo
+class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ParticleSystem, "ParticleSystemPool" )		
@@ -556,9 +564,9 @@ public:
 	void rotateLocalTransformX( Real x );				///< rotate local transform matrix
 	void rotateLocalTransformY( Real y );				///< rotate local transform matrix
 	void rotateLocalTransformZ( Real z );				///< rotate local transform matrix
-  void setSkipParentXfrm(Bool enable) { m_skipParentXfrm = enable; } ///<disable transforming particle system with parent matrix.
-		
-	const Coord3D *getDriftVelocity( void ) { return &m_driftVelocity; }	///< get the drift velocity of the system
+	void setSkipParentXfrm(Bool enable) { m_skipParentXfrm = enable; } ///<disable transforming particle system with parent matrix.
+
+	const Coord3D *getDriftVelocity( void ) { return &m_ini.m_driftVelocity; }	///< get the drift velocity of the system
 
 	void attachToDrawable( const Drawable *draw );							///< attach this particle system to a Drawable
 	void attachToObject( const Object *obj );									///< attach this particle system to an Object
@@ -589,21 +597,21 @@ public:
 
 	void setInitialDelay( UnsignedInt delay ) { m_delayLeft = delay; }
 
-	AsciiString getParticleTypeName( void ) { return m_particleTypeName; }	///< return the name of the particles
-	Bool isUsingDrawables( void ) { return (m_particleType == DRAWABLE) ? true : false; }
-	Bool isUsingStreak( void ) { return (m_particleType == STREAK) ? true : false; }
-	Bool isUsingSmudge( void ) { return (m_particleType == SMUDGE) ? true : false; }
-	UnsignedInt getVolumeParticleDepth( void ) { return ( m_particleType == VOLUME_PARTICLE ) ? OPTIMUM_VOLUME_PARTICLE_DEPTH : 0; }
+	AsciiString getParticleTypeName( void ) { return m_ini.m_particleTypeName; }	///< return the name of the particles
+	Bool isUsingDrawables( void ) { return (m_ini.m_particleType == DRAWABLE) ? true : false; }
+	Bool isUsingStreak( void ) { return (m_ini.m_particleType == STREAK) ? true : false; }
+	Bool isUsingSmudge( void ) { return (m_ini.m_particleType == SMUDGE) ? true : false; }
+	UnsignedInt getVolumeParticleDepth( void ) { return ( m_ini.m_particleType == VOLUME_PARTICLE ) ? OPTIMUM_VOLUME_PARTICLE_DEPTH : 0; }
 
-	Bool shouldBillboard( void ) { return !m_isGroundAligned; }
+	Bool shouldBillboard( void ) { return !m_ini.m_isGroundAligned; }
 
-	ParticleShaderType getShaderType( void ) { return m_shaderType; }
+	ParticleShaderType getShaderType( void ) { return m_ini.m_shaderType; }
 
 	void setSlave( ParticleSystem *slave );			///< set a slave system for us
 	ParticleSystem *getSlave( void ) { return m_slaveSystem; }
 	void setMaster( ParticleSystem *master );  ///< make this a slave with a master
 	ParticleSystem *getMaster( void ) { return m_masterSystem; }
-	const Coord3D *getSlavePositionOffset( void ) { return &m_slavePosOffset; }
+	const Coord3D *getSlavePositionOffset( void ) { return &m_ini.m_slavePosOffset; }
 	
 	void setSystemLifetime( UnsignedInt frames ) { m_systemLifetimeLeft = frames; }; ///< not the particle life, the system!... Lorenzen
 	void setLifetimeRange( Real min, Real max );
@@ -637,14 +645,14 @@ public:
 	inline DrawableID getAttachedDrawable( void ) { return m_attachedToDrawableID; }
 
 	// Access to dynamically changing part of a particle system.
-	void setEmissionVolumeSphereRadius( Real newRadius ) { if (m_emissionVolumeType == SPHERE) m_emissionVolume.sphere.radius = newRadius; }
-	void setEmissionVolumeCylinderRadius( Real newRadius ) { if (m_emissionVolumeType == CYLINDER) m_emissionVolume.cylinder.radius = newRadius; }
-	EmissionVolumeType getEmisionVolumeType() const { return m_emissionVolumeType; }
-	ParticlePriorityType getPriority() const { return m_priority; }
+	void setEmissionVolumeSphereRadius( Real newRadius ) { if (m_ini.m_emissionVolumeType == SPHERE) m_ini.m_emissionVolume.sphere.radius = newRadius; }
+	void setEmissionVolumeCylinderRadius( Real newRadius ) { if (m_ini.m_emissionVolumeType == CYLINDER) m_ini.m_emissionVolume.cylinder.radius = newRadius; }
+	EmissionVolumeType getEmisionVolumeType() const { return m_ini.m_emissionVolumeType; }
+	ParticlePriorityType getPriority() const { return m_ini.m_priority; }
 
 	// Access to wind motoin
-	Real getWindAngle( void ) { return m_windAngle; }
-	WindMotion getWindMotion( void ) { return m_windMotion; }
+	Real getWindAngle( void ) { return m_ini.m_windAngle; }
+	WindMotion getWindMotion( void ) { return m_ini.m_windMotion; }
 
 protected:
 
@@ -664,54 +672,54 @@ protected:
 	const Coord3D *computePointOnUnitSphere( void );	///< compute a random point on a unit sphere
 
 protected:
-	Particle *				m_systemParticlesHead;
-	Particle *				m_systemParticlesTail;
 
-	UnsignedInt				m_particleCount;								///< current count of particles for this system
-	ParticleSystemID	m_systemID;											///< unique id given to this system from the particle system manager
+	Particle *						m_systemParticlesHead {};
+	Particle *						m_systemParticlesTail {};
 
-	DrawableID				m_attachedToDrawableID;					///< if non-zero, system is parented to this Drawable
-	ObjectID					m_attachedToObjectID;						///< if non-zero, system is parented to this Object
+	UnsignedInt						m_particleCount {};			///< current count of particles for this system
+	ParticleSystemID				m_systemID {};				///< unique id given to this system from the particle system manager
 
-	Matrix3D					m_localTransform;								///< local orientation & position of system
-	Matrix3D					m_transform;										///< composite transform of parent Drawable and local
+	DrawableID						m_attachedToDrawableID {};	///< if non-zero, system is parented to this Drawable
+	ObjectID						m_attachedToObjectID {};	///< if non-zero, system is parented to this Object
 
-	UnsignedInt				m_burstDelayLeft;								///< when zero, emit a particle burst
-	UnsignedInt				m_delayLeft;										///< decremented until zero
+	Matrix3D						m_localTransform {};		///< local orientation & position of system
+	Matrix3D						m_transform {};				///< composite transform of parent Drawable and local
 
-	UnsignedInt				m_startTimestamp;								///< timestamp when this particle system was (re)started
-	UnsignedInt				m_systemLifetimeLeft;						///< lifetime remaining for entire particle system
-	UnsignedInt				m_personalityStore;							///< increments each time it is aggigned to each new particle
-																										///< so that each particle gets an ever greater number
+	UnsignedInt						m_burstDelayLeft {};		///< when zero, emit a particle burst
+	UnsignedInt						m_delayLeft {};				///< decremented until zero
 
-	Real							m_accumulatedSizeBonus;					///< For a system that wants to make particles start bigger and bigger.  StartSizeRate
+	UnsignedInt						m_startTimestamp {};		///< timestamp when this particle system was (re)started
+	UnsignedInt						m_systemLifetimeLeft {};	///< lifetime remaining for entire particle system
+	UnsignedInt						m_personalityStore {};		///< increments each time it is aggigned to each new particle
+																///< so that each particle gets an ever greater number
 
-	Coord3D						m_velCoeff;											///< scalar value multiplied by all velocity parameters
-	Real							m_countCoeff;										///< scalar value multiplied by burst count
-	Real							m_delayCoeff;										///< scalar value multiplied by burst delay
-	Real							m_sizeCoeff;										///< scalar value multiplied by initial size
+	Real							m_accumulatedSizeBonus {};	///< For a system that wants to make particles start bigger and bigger.  StartSizeRate
 
-	Coord3D						m_pos;													///< this is the position to emit at.
-	Coord3D						m_lastPos;											///< this is the previous position we emitted at.
+	Coord3D							m_velCoeff {};				///< scalar value multiplied by all velocity parameters
+	Real							m_countCoeff {};			///< scalar value multiplied by burst count
+	Real							m_delayCoeff {};			///< scalar value multiplied by burst delay
+	Real							m_sizeCoeff {};				///< scalar value multiplied by initial size
 
-	ParticleSystem *	m_slaveSystem;									///< if non-NULL, another system this one has control of
-	ParticleSystemID	m_slaveSystemID;								///< id of slave system (if present)
+	Coord3D							m_pos {};					///< this is the position to emit at.
+	Coord3D							m_lastPos {};				///< this is the previous position we emitted at.
 
-	ParticleSystem *	m_masterSystem;									///< if non-NULL, the system that controls this one
-	ParticleSystemID	m_masterSystemID;								///< master system id (if present);
+	ParticleSystem *				m_slaveSystem {};			///< if non-NULL, another system this one has control of
+	ParticleSystemID				m_slaveSystemID {};			///< id of slave system (if present)
 
-	const ParticleSystemTemplate *	m_template;						///< the template this system was constructed from
-	Particle *											m_controlParticle;		///< if non-NULL, this system is controlled by this particle
+	ParticleSystem *				m_masterSystem {};			///< if non-NULL, the system that controls this one
+	ParticleSystemID				m_masterSystemID {};		///< master system id (if present);
 
-	Bool							m_isLocalIdentity;										///< if true, the matrix can be ignored
-	Bool							m_isIdentity;													///< if true, the matrix can be ignored
-	Bool							m_isForever;													///< System has infinite lifetime
-	Bool							m_isStopped;													///< if stopped, do not emit particles
-	Bool							m_isDestroyed;												///< are we destroyed and waiting for particles to die
-	Bool							m_isFirstPos;													///< true if this system hasn't been drawn before.
-	Bool							m_isSaveable;													///< true if this system should be saved/loaded
-  Bool              m_skipParentXfrm;                     ///< true if this system is already in world space.
+	const ParticleSystemTemplate *	m_template {};				///< the template this system was constructed from
+	Particle *						m_controlParticle {};		///< if non-NULL, this system is controlled by this particle
 
+	Bool							m_isLocalIdentity {};		///< if true, the matrix can be ignored
+	Bool							m_isIdentity {};			///< if true, the matrix can be ignored
+	Bool							m_isForever {};				///< System has infinite lifetime
+	Bool							m_isStopped {};				///< if stopped, do not emit particles
+	Bool							m_isDestroyed {};			///< are we destroyed and waiting for particles to die
+	Bool							m_isFirstPos {};			///< true if this system hasn't been drawn before.
+	Bool							m_isSaveable {};			///< true if this system should be saved/loaded
+	Bool							m_skipParentXfrm {};		///< true if this system is already in world space.
 
 	// the actual particle system data is inherited from ParticleSystemInfo
 
@@ -722,8 +730,7 @@ protected:
 /**
  * The particle system manager, responsible for maintaining all ParticleSystems
  */
-class ParticleSystemManager : public SubsystemInterface,
-															public Snapshot
+class ParticleSystemManager : public SubsystemInterface, public Snapshot
 {
 
 public:
@@ -744,7 +751,7 @@ public:
 	virtual void update( void );								///< update all particle systems
 
 	virtual Int getOnScreenParticleCount( void ) = 0;   ///< returns the number of particles on screen
-  virtual void setOnScreenParticleCount(int count);
+	virtual void setOnScreenParticleCount(int count);
 
 	ParticleSystemTemplate *findTemplate( const AsciiString &name ) const;
 	ParticleSystemTemplate *findParentTemplate( const AsciiString &name, int parentNum ) const;
@@ -809,19 +816,19 @@ protected:
 	Particle *m_allParticlesHead[ NUM_PARTICLE_PRIORITIES ];
 	Particle *m_allParticlesTail[ NUM_PARTICLE_PRIORITIES ];
 
-	ParticleSystemID m_uniqueSystemID;					///< unique system ID to assign to each system created
+	ParticleSystemID m_uniqueSystemID {};					///< unique system ID to assign to each system created
 
-	ParticleSystemList m_allParticleSystemList;
+	ParticleSystemList m_allParticleSystemList {};
 
-	UnsignedInt m_particleCount;
-	UnsignedInt m_fieldParticleCount; ///< this does not need to be xfered, since it is evaluated every frame
-	UnsignedInt m_particleSystemCount;
-	Int m_onScreenParticleCount;                ///< number of particles displayed on screen per frame
-	UnsignedInt m_lastLogicFrameUpdate;
-	Int m_localPlayerIndex;	///<used to tell particle systems which particles can be skipped due to player shroud status
+	UnsignedInt m_particleCount {};
+	UnsignedInt m_fieldParticleCount {}; ///< this does not need to be xfered, since it is evaluated every frame
+	UnsignedInt m_particleSystemCount {};
+	Int m_onScreenParticleCount {};                ///< number of particles displayed on screen per frame
+	UnsignedInt m_lastLogicFrameUpdate {};
+	Int m_localPlayerIndex {};	///<used to tell particle systems which particles can be skipped due to player shroud status
 
 private:
-	TemplateMap m_templateMap;		///< a hash map of all particle system templates
+	TemplateMap m_templateMap {};		///< a hash map of all particle system templates
 };
 
 /// The particle system manager singleton

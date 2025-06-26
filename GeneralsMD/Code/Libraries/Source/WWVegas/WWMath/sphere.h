@@ -87,8 +87,8 @@ public:
 	inline SphereClass & operator += (const SphereClass & s);
 	inline SphereClass & operator *= (const Matrix3D & m);
 
-	Vector3	Center;
-	float		Radius;
+	Vector3	Center {};
+	float	Radius {};
 };
 
 

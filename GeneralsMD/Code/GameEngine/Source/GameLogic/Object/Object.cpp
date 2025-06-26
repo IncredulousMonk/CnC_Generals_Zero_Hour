@@ -66,7 +66,7 @@
 // #include "GameLogic/Module/AIUpdate.h"
 // #include "GameLogic/Module/AutoHealBehavior.h"
 // #include "GameLogic/Module/BehaviorModule.h"
-// #include "GameLogic/Module/BodyModule.h"
+#include "GameLogic/Module/BodyModule.h"
 // #include "GameLogic/Module/CollideModule.h"
 // #include "GameLogic/Module/ContainModule.h"
 // #include "GameLogic/Module/CountermeasuresBehavior.h"
@@ -185,9 +185,8 @@ return AsciiString();
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatusMask, Team *team ) : 
-	Thing(tt) /*,
-	m_geometryInfo(tt->getTemplateGeometryInfo())*/
-	// FIXME: GeometryInfo
+	Thing(tt),
+	m_geometryInfo(tt->getTemplateGeometryInfo())
 {
 #if defined(_DEBUG) || defined(_INTERNAL)
 	m_hasDiedAlready = false;
@@ -1783,10 +1782,10 @@ void Object::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPo
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 ObjectShroudStatus Object::getShroudedStatus(Int playerIndex) const 
 {
+#if 0
 	if (getTemplate()->isKindOf( KINDOF_ALWAYS_VISIBLE ))
 		return OBJECTSHROUD_CLEAR;
 
@@ -1795,9 +1794,11 @@ ObjectShroudStatus Object::getShroudedStatus(Int playerIndex) const
 
 	// This can happen for objects removed from the partition system (e.g.,
 	// for soldiers that are garrisoned inside a building). 
+#endif // if 0
 	return OBJECTSHROUD_CLEAR;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Something is attempting to damage this object */
 //-------------------------------------------------------------------------------------------------
@@ -1864,6 +1865,7 @@ void Object::attemptDamage( DamageInfo *damageInfo )
 		TheRadar->tryUnderAttackEvent( this );
 
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::attemptHealing(Real amount, const Object* source)
@@ -1923,7 +1925,7 @@ Bool Object::attemptHealingFromSoleBenefactor ( Real amount, const Object* sourc
 
 }
 
-
+#if 0
 //-------------------------------------------------------------------------------------------------
 Real Object::estimateDamage( DamageInfoInput& damageInfo ) const
 {

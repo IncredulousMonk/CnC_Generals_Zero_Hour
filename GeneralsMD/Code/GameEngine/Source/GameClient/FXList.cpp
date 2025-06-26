@@ -47,7 +47,7 @@
 #include "GameClient/Display.h"
 #include "GameClient/GameClient.h"
 #include "GameClient/Drawable.h"
-// #include "GameClient/ParticleSys.h"
+#include "GameClient/ParticleSys.h"
 // #include "GameLogic/PartitionManager.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

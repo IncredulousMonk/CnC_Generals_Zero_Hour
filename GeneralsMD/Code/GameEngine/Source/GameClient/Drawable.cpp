@@ -72,7 +72,7 @@
 // #include "GameClient/GlobalLanguage.h"
 // #include "GameClient/InGameUI.h"
 // #include "GameClient/Image.h"
-// #include "GameClient/ParticleSys.h"
+#include "GameClient/ParticleSys.h"
 // #include "GameClient/LanguageFilter.h"
 // #include "GameClient/Shadow.h"
 // #include "GameClient/GameText.h"
@@ -4155,6 +4155,7 @@ void Drawable::setID( DrawableID id )
 	}
 
 }  // end setID
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Return drawable ID, this ID is only good on the client */
@@ -4169,6 +4170,7 @@ DrawableID Drawable::getID( void ) const
 
 }  // end get ID
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::friend_bindToObject( Object *obj ) ///< bind this drawable to an object ID
 { 

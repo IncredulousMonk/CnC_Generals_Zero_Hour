@@ -233,10 +233,12 @@ public:
 
 	// health and damage
 	void attemptDamage( DamageInfo *damageInfo );			///< damage object as specified by the info
+#endif // if 0
 	void attemptHealing(Real amount, const Object* source);		///< heal object as specified by the info
 	Bool attemptHealingFromSoleBenefactor ( Real amount, const Object* source, UnsignedInt duration );///< for the non-stacking healers like ambulance and propaganda
 	ObjectID getSoleHealingBenefactor( void ) const;
 
+#if 0
 	Real estimateDamage( DamageInfoInput& damageInfo ) const;
 	void kill( DamageType damageType = DAMAGE_UNRESISTABLE, DeathType deathType = DEATH_NORMAL );	///< kill the object with an optional type of damage and death.
 	void healCompletely();														///< Restore max health to this Object
@@ -276,7 +278,8 @@ public:
 
 	Bool isLocallyControlled() const;
 	Bool isNeutralControlled() const;
-	
+#endif // if 0
+
 	Bool getIsUndetectedDefector(void) const { return BitTest(m_privateStatus, UNDETECTED_DEFECTOR); }
 	void friend_setUndetectedDefector(Bool status);
 
@@ -286,6 +289,7 @@ public:
 	void setCaptured(Bool isCaptured);
 
 	inline const GeometryInfo& getGeometryInfo() const { return m_geometryInfo; }
+#if 0
 	void setGeometryInfo(const GeometryInfo& geom);
 	void setGeometryInfoZ( Real newZ );
 
@@ -303,8 +307,8 @@ public:
 
 	BehaviorModule** getBehaviorModules() const { return m_behaviors; }
 
-#if 0
 	BodyModuleInterface* getBodyModule() const { return m_body; }
+#if 0
 	ContainModuleInterface* getContain() const { return m_contain; }
 	StealthUpdate*          getStealth() const { return m_stealth; }
 	SpawnBehaviorInterface* getSpawnBehaviorInterface() const;
@@ -611,9 +615,11 @@ public:
 	// exiting of any kind
 	ExitInterface *getObjectExitInterface() const;  ///< get exit interface is present
 	Bool hasExitInterface() const { return getObjectExitInterface() != 0; }
+#endif // if 0
 
 	ObjectShroudStatus getShroudedStatus(Int playerIndex) const;
 
+#if 0
 	DisabledMaskType getDisabledFlags() const { return m_disabledMask; }
 	Bool isDisabled() const { return m_disabledMask.any(); }
 	Bool clearDisabled( DisabledType type );
@@ -742,9 +748,7 @@ private:
 	Object *				m_prev {};
 	ObjectStatusMaskType	m_status {};									///< status bits (see ObjectStatusMaskType)
 
-#if 0
 	GeometryInfo			m_geometryInfo;
-#endif // if 0
 
 	AIGroup*				m_group {};								///< if non-NULL, we are part of this group of agents
 

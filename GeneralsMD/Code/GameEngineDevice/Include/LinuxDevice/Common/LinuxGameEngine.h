@@ -35,16 +35,14 @@
 #include "LinuxDevice/Audio/SdlAudioManager.h"
 #include "LinuxDevice/Common/LinuxBIGFileSystem.h"
 #include "LinuxDevice/Common/LinuxLocalFileSystem.h"
-// #include "W3DDevice/Common/W3DModuleFactory.h"
+#include "LinuxDevice/Common/LinuxModuleFactory.h"
 #include "LinuxDevice/GameLogic/LinuxGameLogic.h"
 #include "LinuxDevice/GameClient/LinuxGameClient.h"
+#include "LinuxDevice/GameClient/LinuxParticleSys.h"
 // #include "W3DDevice/GameClient/W3DWebBrowser.h"
 #include "LinuxDevice/Common/LinuxFunctionLexicon.h"
 // #include "W3DDevice/Common/W3DRadar.h"
 #include "Common/ThingFactory.h"
-
-
-
 
 //-------------------------------------------------------------------------------------------------
 /** Class declaration for the Linux game engine */
@@ -84,14 +82,12 @@ protected:
 // INLINE -----------------------------------------------------------------------------------------
 inline GameLogic* LinuxGameEngine::createGameLogic( void ) { return NEW LinuxGameLogic; }
 inline GameClient* LinuxGameEngine::createGameClient( void ) { return NEW LinuxGameClient; }
-// inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { return NEW W3DModuleFactory; }
-inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { printf("Creating NULL ModuleFactory!\n"); return nullptr; }
+inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { return NEW LinuxModuleFactory; }
 inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { return NEW ThingFactory; }
 inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { return NEW LinuxFunctionLexicon; }
 inline LocalFileSystem* LinuxGameEngine::createLocalFileSystem( void ) { return NEW LinuxLocalFileSystem; }
 inline ArchiveFileSystem* LinuxGameEngine::createArchiveFileSystem( void ) { return NEW LinuxBIGFileSystem; }
-// inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return NEW W3DParticleSystemManager; }
-inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { printf("Creating NULL ParticleSystemManager!\n"); return nullptr; }
+inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return NEW LinuxParticleSystemManager; }
 
 // inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { return NetworkInterface::createNetwork(); }
 inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { printf("Creating NULL Network!\n"); return nullptr; }

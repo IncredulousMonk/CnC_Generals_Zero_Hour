@@ -88,7 +88,7 @@ class DebugDisplayInterface
 
 		virtual ~DebugDisplayInterface() {};
 
-		virtual void	printf( Char *format, ...) = 0;			///< Print formatted text at current cursor position
+		virtual void	printf( const Char *format, ...) = 0;			///< Print formatted text at current cursor position
 		virtual void	setCursorPos( Int x, Int y ) = 0;		///< Set new cursor position
 		virtual Int		getCursorXPos( void ) = 0;					///< Get current X position of cursor
 		virtual Int		getCursorYPos( void ) = 0;					///< Get current Y position of cursor

@@ -53,5 +53,5 @@ void INI::parseParticleSystemDefinition( INI* ini )
 	}
 
 	// parse the ini definition
-	ini->initFromINI( sysTemplate, sysTemplate->getFieldParse() );
+	ini->initFromINI( &sysTemplate->m_ini, sysTemplate->getFieldParse() );
 }

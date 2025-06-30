@@ -73,7 +73,7 @@ public:
 	virtual Bool amIObserver( void ) = 0;													///< Am I an observer?( need this for scripts )
 	virtual UnsignedInt getEndFrame( void ) = 0;									///< on which frame was the game effectively over?
 protected:
-	Int m_victoryConditions;
+	Int m_victoryConditions {};
 };
 
 VictoryConditionsInterface * createVictoryConditions( void );

@@ -33,7 +33,7 @@
 // #include "Common/BuildAssistant.h"
 // #include "Common/CRCDebug.h"
 // #include "Common/Radar.h"
-// #include "Common/PlayerTemplate.h"
+#include "Common/PlayerTemplate.h"
 // #include "Common/Team.h"
 // #include "Common/PlayerList.h"
 #include "Common/GameAudio.h"
@@ -81,7 +81,7 @@
 #include "GameLogic/Weapon.h"
 #include "GameLogic/GameLogic.h"
 // #include "GameLogic/Locomotor.h"
-// #include "GameLogic/RankInfo.h"
+#include "GameLogic/RankInfo.h"
 // #include "GameLogic/ScriptEngine.h"
 // #include "GameLogic/SidesList.h"
 
@@ -464,8 +464,8 @@ void GameEngine::init( int argc, char *argv[] )
 		initSubsystem(TheMessageStream,"TheMessageStream", createMessageStream(), NULL);
 		// initSubsystem(TheSidesList,"TheSidesList", MSGNEW("GameEngineSubsystem") SidesList(), NULL);
 		// initSubsystem(TheCaveSystem,"TheCaveSystem", MSGNEW("GameEngineSubsystem") CaveSystem(), NULL);
-		// initSubsystem(TheRankInfoStore,"TheRankInfoStore", MSGNEW("GameEngineSubsystem") RankInfoStore(), &xferCRC, NULL, "Data\\INI\\Rank.ini");
-		// initSubsystem(ThePlayerTemplateStore,"ThePlayerTemplateStore", MSGNEW("GameEngineSubsystem") PlayerTemplateStore(), &xferCRC, "Data\\INI\\Default\\PlayerTemplate.ini", "Data\\INI\\PlayerTemplate.ini");
+		initSubsystem(TheRankInfoStore,"TheRankInfoStore", MSGNEW("GameEngineSubsystem") RankInfoStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Rank.ini");
+		initSubsystem(ThePlayerTemplateStore,"ThePlayerTemplateStore", MSGNEW("GameEngineSubsystem") PlayerTemplateStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\PlayerTemplate.ini", "Data\\INI\\PlayerTemplate.ini");
 		initSubsystem(TheParticleSystemManager,"TheParticleSystemManager", createParticleSystemManager(), NULL);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////

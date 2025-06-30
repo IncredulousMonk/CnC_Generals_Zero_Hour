@@ -380,7 +380,7 @@ private:																																							\
 		inline DLINKHEAD_##LISTNAME(const DLINKHEAD_##LISTNAME&) = delete;									\
 		inline DLINKHEAD_##LISTNAME& operator=(const DLINKHEAD_##LISTNAME&) = delete;						\
 	};																																									\
-	DLINKHEAD_##LISTNAME m_dlinkhead_##LISTNAME;	
+	DLINKHEAD_##LISTNAME m_dlinkhead_##LISTNAME {};	
 
 // ----------------------------------------------------------------------------------------------
 #define MAKE_DLINK(OBJCLASS, LISTNAME)	\

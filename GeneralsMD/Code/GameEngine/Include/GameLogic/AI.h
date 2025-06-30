@@ -41,7 +41,9 @@
 
 class AIGroup;
 class AttackPriorityInfo;
-class BuildListInfo;	
+#endif // if 0
+class BuildListInfo;
+#if 0
 class CommandButton;
 class Object;
 class PartitionFilter;
@@ -120,6 +122,7 @@ public:
 	AISideInfo *m_next {};
 };
 EMPTY_DTOR(AISideInfo)
+#endif // if 0
 
 class AISideBuildList : public MemoryPoolObject
 {
@@ -135,13 +138,13 @@ public:
 	void addInfo(BuildListInfo *info);
 
 public:
-	AsciiString				m_side;						///< Name of the faction.
-	BuildListInfo*		m_buildList;				///< Build list for the faction.
-	AISideBuildList*	m_next;
+	AsciiString			m_side {};						///< Name of the faction.
+	BuildListInfo*		m_buildList {};				///< Build list for the faction.
+	AISideBuildList*	m_next {};
 };
 
 
-
+#if 0
 class TAiData : public Snapshot
 {
 public:
@@ -327,6 +330,7 @@ extern AI *TheAI;												///< the Artificial Intelligence singleton
 class Waypoint;
 class Team;
 class Weapon;
+#endif // if 0
 
 // Note - written out in save/load xfer and .map files, don't change these numbers.  
 enum AttitudeType: int { AI_SLEEP = -2, AI_PASSIVE=-1, AI_NORMAL=0, AI_ALERT=1, AI_AGGRESSIVE=2, AI_INVALID=3 };		///< AI "attitude" behavior modifiers
@@ -334,7 +338,6 @@ enum AttitudeType: int { AI_SLEEP = -2, AI_PASSIVE=-1, AI_NORMAL=0, AI_ALERT=1, 
 enum CommandSourceType;
 
 typedef UnsignedInt CommandSourceMask;
-#endif // if 0
 
 #ifdef DEFINE_COMMANDSOURCEMASK_NAMES
 static const char *TheCommandSourceMaskNames[] = 

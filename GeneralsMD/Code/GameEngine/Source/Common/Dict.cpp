@@ -73,6 +73,8 @@ void Dict::DictPair::copyFrom(DictPair* that)
 			this->m_key = that->m_key;
 			*this->asUnicodeString() = *that->asUnicodeString();
 			break;
+		default:
+			break;
 	}
 }
 
@@ -91,6 +93,8 @@ void Dict::DictPair::clear()
 			break;
 		case DICT_UNICODESTRING:
 			asUnicodeString()->clear();
+			break;
+		default:
 			break;
 	}
 }
@@ -163,8 +167,8 @@ Dict::DictPair *Dict::ensureUnique(int numPairsNeeded, Bool preserveData, DictPa
 	Dict::DictPairData* newData = NULL;
 	if (numPairsNeeded > 0)
 	{
-		int minBytes = sizeof(Dict::DictPairData) + numPairsNeeded*sizeof(Dict::DictPair);
-		int actualBytes = TheDynamicMemoryAllocator->getActualAllocationSize(minBytes);
+		size_t minBytes = sizeof(Dict::DictPairData) + static_cast<size_t>(numPairsNeeded)*sizeof(Dict::DictPair);
+		size_t actualBytes = TheDynamicMemoryAllocator->getActualAllocationSize(minBytes);
 		// note: be certain to alloc with zero; we'll take advantage of the fact that all-zero
 		// is a bit-pattern that happens to init all our pairs to legal values: 
 		// type BOOL, key INVALID, value FALSE.

@@ -192,9 +192,9 @@ class PartitionContactList;
 class CellAndObjectIntersection	// not MPO: we allocate these in arrays
 {
 private:
-	PartitionCell							*m_cell;									///< the cell being touched
-	PartitionData							*m_module;								///< the module (and thus, Object) touching
-	CellAndObjectIntersection *m_prevCoi, *m_nextCoi;		///< if in use, next/prev in this cell. if not in use, next/prev free in this module.
+	PartitionCell							*m_cell {};									///< the cell being touched
+	PartitionData							*m_module {};								///< the module (and thus, Object) touching
+	CellAndObjectIntersection *m_prevCoi {}, *m_nextCoi {};		///< if in use, next/prev in this cell. if not in use, next/prev free in this module.
 
 public:
 
@@ -256,11 +256,11 @@ public:
 	void reset();
 	Bool isInvalid() const;
 
-	Coord3D					m_where;
-	Real						m_howFar;
-	PlayerMaskType	m_forWhom;	// ask not for whom the sighting is masked; it masks for thee
+	Coord3D			m_where {};
+	Real			m_howFar {};
+	PlayerMaskType	m_forWhom {};	// ask not for whom the sighting is masked; it masks for thee
 	
-	UnsignedInt			m_data;			// Threat and value use as the value.  Sighting uses it for a Timestamp
+	UnsignedInt		m_data {};			// Threat and value use as the value.  Sighting uses it for a Timestamp
 
 protected:
 
@@ -299,17 +299,17 @@ struct ShroudStatusStoreRestore
 class PartitionCell : public Snapshot	// not MPO: allocated in an array
 {
 private:
-	CellAndObjectIntersection*		m_firstCoiInCell;	///< list of COIs in this cell (may be null).
-	ShroudLevel										m_shroudLevel[MAX_PLAYER_COUNT];	
+	CellAndObjectIntersection*		m_firstCoiInCell {};	///< list of COIs in this cell (may be null).
+	ShroudLevel						m_shroudLevel[MAX_PLAYER_COUNT];	
 #ifdef PM_CACHE_TERRAIN_HEIGHT
-	Real													m_loTerrainZ;			///< lowest terrain-pt in this cell
-	Real													m_hiTerrainZ;			///< highest terrain-pt in this cell
+	Real							m_loTerrainZ {};			///< lowest terrain-pt in this cell
+	Real							m_hiTerrainZ {};			///< highest terrain-pt in this cell
 #endif
-	Int														m_threatValue[MAX_PLAYER_COUNT];
-	Int														m_cashValue[MAX_PLAYER_COUNT];
-	Short													m_coiCount;					///< number of COIs in this cell.
-	Short													m_cellX;						///< x-coord of this cell within the Partition Mgr coords (NOT in world coords)
-	Short													m_cellY;						///< y-coord of this cell within the Partition Mgr coords (NOT in world coords)
+	UnsignedInt						m_threatValue[MAX_PLAYER_COUNT];
+	UnsignedInt						m_cashValue[MAX_PLAYER_COUNT];
+	Short							m_coiCount {};					///< number of COIs in this cell.
+	Short							m_cellX {};						///< x-coord of this cell within the Partition Mgr coords (NOT in world coords)
+	Short							m_cellY {};						///< y-coord of this cell within the Partition Mgr coords (NOT in world coords)
 
 public:
 
@@ -390,22 +390,22 @@ private:
 		NEED_CELL_UPDATE_AND_COLLISION_CHECK
 	};
 
-	Object											*m_object;								///< Object this module is for
-	GhostObject										*m_ghostObject;							///< Temporary object used when real object is gone but player thinks it's there because of fog.
-	PartitionData								*m_next;									///< next module in master list
-	PartitionData								*m_prev;									///< prev module in master list
-	PartitionData								*m_nextDirty;
-	PartitionData								*m_prevDirty;
+	Object							*m_object {};								///< Object this module is for
+	GhostObject						*m_ghostObject {};							///< Temporary object used when real object is gone but player thinks it's there because of fog.
+	PartitionData					*m_next {};									///< next module in master list
+	PartitionData					*m_prev {};									///< prev module in master list
+	PartitionData					*m_nextDirty {};
+	PartitionData					*m_prevDirty {};
 
-	Int													m_coiArrayCount;					///< number of COIs allocated (may be more than are in use)
-	Int													m_coiInUseCount;					///< number of COIs that are actually in use
-	CellAndObjectIntersection		*m_coiArray;							///< The array of COIs 
-	Int													m_doneFlag;
-	DirtyStatus									m_dirtyStatus;
-	ObjectShroudStatus					m_shroudedness[MAX_PLAYER_COUNT];						
-	ObjectShroudStatus					m_shroudednessPrevious[MAX_PLAYER_COUNT];	///<previous frames value of m_shroudedness						
-	Bool												m_everSeenByPlayer[MAX_PLAYER_COUNT];		///<whether this object has ever been seen by a given player.
-	const PartitionCell					*m_lastCell;							///< The last cell I thought my center was in.
+	Int								m_coiArrayCount {};							///< number of COIs allocated (may be more than are in use)
+	Int								m_coiInUseCount {};							///< number of COIs that are actually in use
+	CellAndObjectIntersection		*m_coiArray {};								///< The array of COIs 
+	Int								m_doneFlag {};
+	DirtyStatus						m_dirtyStatus {};
+	ObjectShroudStatus				m_shroudedness[MAX_PLAYER_COUNT];						
+	ObjectShroudStatus				m_shroudednessPrevious[MAX_PLAYER_COUNT];	///<previous frames value of m_shroudedness						
+	Bool							m_everSeenByPlayer[MAX_PLAYER_COUNT];		///<whether this object has ever been seen by a given player.
+	const PartitionCell				*m_lastCell {};								///< The last cell I thought my center was in.
 	
 	/**
 		Given a shape's geometry and size parameters, calculate the maximum number of COIs
@@ -671,8 +671,8 @@ public:
 class PartitionFilterRelationship : public PartitionFilter
 {
 private:
-	const Object *m_obj;
-	Int m_flags;
+	const Object *m_obj {};
+	Int m_flags {};
 public:
 	enum RelationshipAllowTypes
 	{
@@ -747,7 +747,7 @@ public:
 class PartitionFilterLineOfSight : public PartitionFilter
 {
 private:
-	const Object *m_obj;
+	const Object *m_obj {};
 public:
 	PartitionFilterLineOfSight(const Object *obj);
 	virtual ~PartitionFilterLineOfSight() {}
@@ -767,9 +767,9 @@ public:
 class PartitionFilterPossibleToAttack : public PartitionFilter
 {
 private:
-	const Object *m_obj;
-	CommandSourceType m_commandSource;
 	AbleToAttackType m_attackType;
+	const Object *m_obj {};
+	CommandSourceType m_commandSource;
 public:
 	PartitionFilterPossibleToAttack(AbleToAttackType t, const Object *obj, CommandSourceType commandSource);
 	virtual ~PartitionFilterPossibleToAttack() {}
@@ -789,7 +789,7 @@ public:
 class PartitionFilterPossibleToEnter : public PartitionFilter
 {
 private:
-	const Object *m_obj;
+	const Object *m_obj {};
 	CommandSourceType m_commandSource;
 
 public:
@@ -811,7 +811,7 @@ public:
 class PartitionFilterPossibleToHijack : public PartitionFilter
 {
 private:
-	const Object *m_obj;
+	const Object *m_obj {};
 	CommandSourceType m_commandSource;
 
 public:
@@ -833,7 +833,7 @@ public:
 class PartitionFilterLastAttackedBy : public PartitionFilter
 {
 private:
-	ObjectID m_lastAttackedBy;
+	ObjectID m_lastAttackedBy {};
 public:
 	PartitionFilterLastAttackedBy(Object *obj);
 	virtual Bool allow(Object *other);
@@ -849,7 +849,7 @@ public:
 class PartitionFilterAcceptByObjectStatus : public PartitionFilter
 {
 private:
-	ObjectStatusMaskType m_mustBeSet, m_mustBeClear;
+	ObjectStatusMaskType m_mustBeSet {}, m_mustBeClear {};
 public:
 	PartitionFilterAcceptByObjectStatus( ObjectStatusMaskType mustBeSet, ObjectStatusMaskType mustBeClear) : m_mustBeSet(mustBeSet), m_mustBeClear(mustBeClear) { }
 	virtual Bool allow(Object *objOther);
@@ -866,7 +866,7 @@ public:
 class PartitionFilterRejectByObjectStatus : public PartitionFilter
 {
 private:
-	ObjectStatusMaskType m_mustBeSet, m_mustBeClear;
+	ObjectStatusMaskType m_mustBeSet {}, m_mustBeClear {};
 public:
 	PartitionFilterRejectByObjectStatus( ObjectStatusMaskType mustBeSet, ObjectStatusMaskType mustBeClear ) 
 		: m_mustBeSet(mustBeSet), m_mustBeClear(mustBeClear) 
@@ -906,7 +906,7 @@ public:
 class PartitionFilterAcceptByKindOf : public PartitionFilter
 {
 private:
-	KindOfMaskType m_mustBeSet, m_mustBeClear;
+	KindOfMaskType m_mustBeSet {}, m_mustBeClear {};
 public:
 	PartitionFilterAcceptByKindOf(const KindOfMaskType& mustBeSet, const KindOfMaskType& mustBeClear) : m_mustBeSet(mustBeSet), m_mustBeClear(mustBeClear) { }
 	virtual Bool allow(Object *objOther);
@@ -923,7 +923,7 @@ public:
 class PartitionFilterRejectByKindOf : public PartitionFilter
 {
 private:
-	KindOfMaskType m_mustBeSet, m_mustBeClear;
+	KindOfMaskType m_mustBeSet {}, m_mustBeClear {};
 public:
 	PartitionFilterRejectByKindOf(const KindOfMaskType& mustBeSet, const KindOfMaskType& mustBeClear) 
 		: m_mustBeSet(mustBeSet), m_mustBeClear(mustBeClear) 
@@ -943,7 +943,7 @@ public:
 class PartitionFilterRejectBehind: public PartitionFilter
 {
 private:
-	Object *m_obj;
+	Object *m_obj {};
 public:
 	PartitionFilterRejectBehind( Object *obj );
 	virtual ~PartitionFilterRejectBehind() {}
@@ -1338,27 +1338,27 @@ class PartitionManager : public SubsystemInterface, public Snapshot
 private:
 
 #ifdef FASTER_GCO
-	typedef std::vector<ICoord2D>		OffsetVec;
+	typedef std::vector<ICoord2D>	OffsetVec;
 	typedef std::vector<OffsetVec>	RadiusVec;
 #endif
 
-	PartitionData		*m_moduleList;		///< master partition module list
+	PartitionData	*m_moduleList {};			///< master partition module list
 
-	Region3D				m_worldExtents;		///< should be same as TheTerrainLogic->getExtents()
-	Real						m_cellSize;				///< edge size of each cell, in world coord space
-	Real						m_cellSizeInv;		///< 1/cellSize (used for efficiency)
-	Int							m_cellCountX;			///< number of cells, x
-	Int							m_cellCountY;			///< number of cells, y
-	Int							m_totalCellCount;	///< x * y
-	PartitionCell*	m_cells;					///< array of cells
-	PartitionData*	m_dirtyModules;
-	Bool						m_updatedSinceLastReset;	///< Used to force a return of OBJECTSHROUD_INVALID before update has been called.
+	Region3D		m_worldExtents {};			///< should be same as TheTerrainLogic->getExtents()
+	Real			m_cellSize {};				///< edge size of each cell, in world coord space
+	Real			m_cellSizeInv {};			///< 1/cellSize (used for efficiency)
+	Int				m_cellCountX {};			///< number of cells, x
+	Int				m_cellCountY {};			///< number of cells, y
+	Int				m_totalCellCount {};		///< x * y
+	PartitionCell*	m_cells {};					///< array of cells
+	PartitionData*	m_dirtyModules {};
+	Bool			m_updatedSinceLastReset {};	///< Used to force a return of OBJECTSHROUD_INVALID before update has been called.
 
-	std::queue<SightingInfo *> m_pendingUndoShroudReveals;	///< Anything can queue up an Undo to happen later. This is a queue, because "later" is a constant
+	std::queue<SightingInfo *> m_pendingUndoShroudReveals {};	///< Anything can queue up an Undo to happen later. This is a queue, because "later" is a constant
 
 #ifdef FASTER_GCO
-	Int							m_maxGcoRadius;
-	RadiusVec				m_radiusVec;
+	Int						m_maxGcoRadius {};
+	RadiusVec				m_radiusVec {};
 #endif
 
 protected:

@@ -222,26 +222,28 @@ public:
 #endif // if 0
 	Bool isDestroyed() const { return m_status.test( OBJECT_STATUS_DESTROYED ); }		///< Returns TRUE if object has been destroyed
 	Bool isAirborneTarget() const { return m_status.test( OBJECT_STATUS_AIRBORNE_TARGET ); }	///< Our locomotor will control marking us as a valid target for anti air weapons or not
-#if 0
 	Bool isUsingAirborneLocomotor( void ) const;										///< returns true if the current locomotor is an airborne one
-
+	
+#if 0
 	/// central place for us to put any additional capture logic
 	void onCapture( Player *oldOwner, Player *newOwner );
 
 	/// And game death logic.  Destroy is deletion of object as code
 	void onDie( DamageInfo *damageInfo );
+#endif // if 0
 
 	// health and damage
 	void attemptDamage( DamageInfo *damageInfo );			///< damage object as specified by the info
-#endif // if 0
 	void attemptHealing(Real amount, const Object* source);		///< heal object as specified by the info
 	Bool attemptHealingFromSoleBenefactor ( Real amount, const Object* source, UnsignedInt duration );///< for the non-stacking healers like ambulance and propaganda
 	ObjectID getSoleHealingBenefactor( void ) const;
 
 #if 0
 	Real estimateDamage( DamageInfoInput& damageInfo ) const;
+#endif // if 0
 	void kill( DamageType damageType = DAMAGE_UNRESISTABLE, DeathType deathType = DEATH_NORMAL );	///< kill the object with an optional type of damage and death.
 	void healCompletely();														///< Restore max health to this Object
+#if 0
 	void notifySubdualDamage( Real amount );///< At this level, we just pass this on to our helper and do a special tint
 	void doStatusDamage( ObjectStatusTypes status, Real duration );///< At this level, we just pass this on to our helper
 	void doTempWeaponBonus( WeaponBonusConditionType status, UnsignedInt duration );///< At this level, we just pass this on to our helper
@@ -256,7 +258,6 @@ public:
 	inline const AsciiString& getName() const { return m_name; }
 	inline void setName( const AsciiString& newName ) { m_name = newName; }
 
-#if 0
 	inline Team* getTeam() { return m_team; }
 	inline const Team *getTeam() const { return m_team; }
 
@@ -264,12 +265,11 @@ public:
 
 	void setTeam( Team* team );						///< sets the unit's team AND original team
 	void setTemporaryTeam( Team* team );	///< sets the unit's team BUT NOT its original team
-#endif // if 0
 
 	Player* getControllingPlayer() const;
-#if 0
 	Relationship getRelationship(const Object *that) const;
-
+	
+#if 0
 	Color getIndicatorColor() const;
 	Color getNightIndicatorColor() const;
 	Bool hasCustomIndicatorColor() const { return m_indicatorColor != 0; }
@@ -308,8 +308,8 @@ public:
 	BehaviorModule** getBehaviorModules() const { return m_behaviors; }
 
 	BodyModuleInterface* getBodyModule() const { return m_body; }
-#if 0
 	ContainModuleInterface* getContain() const { return m_contain; }
+#if 0
 	StealthUpdate*          getStealth() const { return m_stealth; }
 	SpawnBehaviorInterface* getSpawnBehaviorInterface() const;
 	ProjectileUpdateInterface* getProjectileUpdateInterface() const;
@@ -445,6 +445,7 @@ public:
 #if 0
 	// this is intended for use ONLY by GameLogic.
 	void friend_deleteInstance() { deleteInstance(); }
+#endif // if 0
 
 	/// cache the partition module (should be called only by PartitionData)
 	void friend_setPartitionData(PartitionData *pd) { m_partitionData = pd; }
@@ -454,14 +455,17 @@ public:
 	void onPartitionCellChange();///< We have moved a 'significant' amount, so do maintenence that can be considered 'cell-based'
 	void handlePartitionCellMaintenance();					///< Undo and redo all shroud actions.  Call when something has changed, like position or ownership or Death
 
+#if 0
 	Real getVisionRange() const;				///< How far can you see?  This is dynamic so it is in Object.
 	void setVisionRange( Real newVisionRange );	///< Access to setting someone's Vision distance
 	Real getShroudRange() const;				///< How far can you shroud?  Even more dynamic since it'll start at zero for everyone.
 	void setShroudRange( Real newShroudRange );	///< Access to setting someone's shrouding distance
 	Real getShroudClearingRange() const;				///< How far do you clear shroud?
 	void setShroudClearingRange( Real newShroudClearingRange );	///< Access to setting someone's clear shroud distance
+#endif // if 0
 	void setVisionSpied(Bool setting, Int byWhom);///< Change who is looking through our eyes
 
+#if 0
 	// Both of these calls are intended to only be used by TerrainLogic, specifically setActiveBoundary()
 	void friend_prepareForMapBoundaryAdjust(void);
 	void friend_notifyOfNewMapBoundary(void);
@@ -535,6 +539,7 @@ public:
 	Bool getAmmoPipShowingInfo(Int& numTotal, Int& numFull) const;
 
 	void notifyFiringTrackerShotFired( const Weapon* weaponFired, ObjectID victimID ) ;
+#endif // if 0
 
 	/**
 		Determines if the unit has any weapon that could conceivably
@@ -550,6 +555,7 @@ public:
 	*/
 	CanAttackResult getAbleToAttackSpecificObject( AbleToAttackType t, const Object* target, CommandSourceType commandSource, WeaponSlotType specificSlot = (WeaponSlotType)-1 ) const;
 
+#if 0
 	//Used for base defenses and otherwise stationary units to see if you can attack a position potentially out of range.
 	CanAttackResult getAbleToUseWeaponAgainstTarget( AbleToAttackType attackType, const Object *victim, const Coord3D *pos, CommandSourceType commandSource, WeaponSlotType specificSlot = (WeaponSlotType)-1 ) const;
 
@@ -622,12 +628,14 @@ public:
 #if 0
 	DisabledMaskType getDisabledFlags() const { return m_disabledMask; }
 	Bool isDisabled() const { return m_disabledMask.any(); }
+#endif // if 0
 	Bool clearDisabled( DisabledType type );
 
 	void setDisabled( DisabledType type );
 	void setDisabledUntil( DisabledType type, UnsignedInt frame );
 	Bool isDisabledByType( DisabledType type ) const { return TEST_DISABLEDMASK( m_disabledMask, type ); }
 
+#if 0
 	UnsignedInt getDisabledUntil( DisabledType type = DISABLED_ANY ) const;
 
 	void pauseAllSpecialPowers( const Bool disabling ) const;	
@@ -649,6 +657,7 @@ public:
 	// This is public, since there is no Thing level master setting of Turret stuff.  It is all done in a sleepy hamlet
 	// of a module called TurretAI.
 	virtual void reactToTurretChange( WhichTurretType turret, Real oldRotation, Real oldPitch );
+#endif // if 0
 
 	// Convenience function for checking certain kindof bits
 	Bool isStructure(void) const;
@@ -658,7 +667,8 @@ public:
 
 	// Convenience function for checking certain kindof bits
 	Bool isNonFactionStructure(void) const;
-
+	
+#if 0
 	Bool isHero(void) const;
 
 	Bool getReceivingDifficultyBonus() const { return m_isReceivingDifficultyBonus; }

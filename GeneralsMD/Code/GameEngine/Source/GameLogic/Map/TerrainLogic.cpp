@@ -1433,6 +1433,7 @@ void TerrainLogic::deleteWaypoints(void)
 	}
 	m_waypointListHead = NULL;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool TerrainLogic::isClearLineOfSight(const Coord3D& pos, const Coord3D& posOther) const
@@ -1440,7 +1441,6 @@ Bool TerrainLogic::isClearLineOfSight(const Coord3D& pos, const Coord3D& posOthe
 	DEBUG_CRASH(("implement ME"));
 	return false;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** default get height for terrain logic */
@@ -1569,6 +1569,7 @@ void TerrainLogic::addLandmarkBridgeToLogic(Object *bridgeObj)
 	pBridge->setLayer(layer);
 
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Given a name, return the associated waypoint. */
@@ -1594,6 +1595,7 @@ Waypoint *TerrainLogic::getWaypointByID( UnsignedInt id )
 	return NULL;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Return the closest waypoint on the labeled path. */
 //-------------------------------------------------------------------------------------------------

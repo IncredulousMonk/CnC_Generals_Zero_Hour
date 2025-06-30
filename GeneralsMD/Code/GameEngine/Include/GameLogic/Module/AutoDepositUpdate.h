@@ -61,7 +61,7 @@
 //-----------------------------------------------------------------------------
 class Player;
 class Thing;
-void parseUpgradePair( INI *ini, void *instance, void *store, const void *userData );
+void parseUpgradeBoost( INI *ini, void *instance, void *store, const void *userData );
 struct upgradePair
 {
 	std::string type;
@@ -75,18 +75,27 @@ class AutoDepositUpdateModuleData : public UpdateModuleData
 {
 public:
 
-	UnsignedInt m_depositFrame;
-	Int m_depositAmount;
-	Int m_initialCaptureBonus;
-	Bool m_isActualMoney;
-	std::list<upgradePair> m_upgradeBoost;
+	// MG: Cannot apply offsetof to AutoDepositUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_depositFrame;
+		Int m_depositAmount;
+		Int m_initialCaptureBonus;
+		Bool m_isActualMoney;
+		AutoDepositUpdateModuleData* m_obj {}; ///< pointer to the parent object
+	};
+
+	IniData m_ini {};
+
+	std::list<upgradePair> m_upgradeBoost {};
 
 	AutoDepositUpdateModuleData()
 	{
-		m_depositFrame = 0;
-		m_depositAmount = 0;
-		m_initialCaptureBonus = 0;
-		m_isActualMoney = TRUE;
+		m_ini.m_depositFrame = 0;
+		m_ini.m_depositAmount = 0;
+		m_ini.m_initialCaptureBonus = 0;
+		m_ini.m_isActualMoney = TRUE;
+		m_ini.m_obj = this;
 		m_upgradeBoost.clear();
 	}
 
@@ -95,11 +104,11 @@ public:
     UpdateModuleData::buildFieldParse(p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "DepositTiming",					INI::parseDurationUnsignedInt,		NULL, offsetof( AutoDepositUpdateModuleData, m_depositFrame ) },
-			{ "DepositAmount",					INI::parseInt,		NULL, offsetof( AutoDepositUpdateModuleData, m_depositAmount ) },
-			{ "InitialCaptureBonus",		INI::parseInt,		NULL, offsetof( AutoDepositUpdateModuleData, m_initialCaptureBonus ) },
-			{ "ActualMoney",						INI::parseBool,		NULL, offsetof( AutoDepositUpdateModuleData, m_isActualMoney ) },
-			{ "UpgradedBoost",					parseUpgradePair,		NULL, offsetof( AutoDepositUpdateModuleData, m_upgradeBoost ) },
+			{ "DepositTiming",			INI::parseDurationUnsignedInt,	NULL, offsetof( AutoDepositUpdateModuleData::IniData, m_depositFrame ) },
+			{ "DepositAmount",			INI::parseInt,					NULL, offsetof( AutoDepositUpdateModuleData::IniData, m_depositAmount ) },
+			{ "InitialCaptureBonus",	INI::parseInt,					NULL, offsetof( AutoDepositUpdateModuleData::IniData, m_initialCaptureBonus ) },
+			{ "ActualMoney",			INI::parseBool,					NULL, offsetof( AutoDepositUpdateModuleData::IniData, m_isActualMoney ) },
+			{ "UpgradedBoost",			parseUpgradeBoost,				NULL, 0 },
 			{ 0, 0, 0, 0 }
 		};
     p.add(dataFieldParse);

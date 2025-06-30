@@ -59,7 +59,7 @@ public:
 
 	/** @todo I'm jsut wrappign this up in a nice snapshot object, we really should isolate
 		* m_map from public access and make access methods for our operations */
-	TeamRelationMapType m_map;
+	TeamRelationMapType m_map {};
 
 protected:
 
@@ -113,9 +113,9 @@ class PlayerRelationMap;
 enum AttitudeType: int;
 
 typedef struct {
-	Int	minUnits;
-	Int	maxUnits;
-	AsciiString unitThingName;
+	Int	minUnits {};
+	Int	maxUnits {};
+	AsciiString unitThingName {};
 } TCreateUnitsInfo;
 
 enum { MAX_GENERIC_SCRIPTS = 16 };
@@ -132,42 +132,42 @@ public:
 	enum {MAX_UNIT_TYPES = 7};
 	typedef enum {NORMAL=0, IGNORE_DISTRACTIONS=1, DEAL_AGGRESSIVELY=2} TBehavior;
 
-	TCreateUnitsInfo	m_unitsInfo[MAX_UNIT_TYPES];	///< Quantity of units to create or build.
-	Int								m_numUnitsInfo;								///< Number of entries in m_unitsInfo
-	Coord3D						m_homeLocation;								///< Spawn location for team.
-	Bool							m_hasHomeLocation;						///< True is m_homeLocation is valid.
-	AsciiString				m_scriptOnCreate;							///< Script executed when team is created.
-	AsciiString				m_scriptOnIdle;								///< Script executed when team is idle.
-	Int								m_initialIdleFrames;					///< Number of frames to continue recruiting after the minimum team size is achieved.
-	AsciiString				m_scriptOnEnemySighted;				///< Script executed when enemy is sighted.
-	AsciiString				m_scriptOnAllClear;						///< Script executed when enemy is sighted.
-	AsciiString				m_scriptOnUnitDestroyed;			///< Script executed each time a unit on this team dies.
-	AsciiString				m_scriptOnDestroyed;					///< Script executed m_destroyedThreshold of member units are destroyed.
-	Real							m_destroyedThreshold;					///< OnDestroyed threshold - 1.0 = 100% = all destroyed, .5 = 50% = half of the units destroyed, 0 = useless.
-	Bool							m_isAIRecruitable;						///< True if other ai teams can recruit.
-	Bool							m_isBaseDefense;							///< True if is base defense team.
-	Bool							m_isPerimeterDefense;					///< True if is a perimeter base defense team.
-	Bool							m_automaticallyReinforce;			///< True is team automatically tries to reinforce.
-	Bool							m_transportsReturn;						///< True if transports return to base after unloading.
-	Bool							m_avoidThreats;								///< True if the team avoids threats.
-	Bool							m_attackCommonTarget;					///< True if the team attacks the same target unit.
-	Int								m_maxInstances;								///< Maximum number of instances of a team that is not singleton.
-	mutable Int				m_productionPriority;					///< Production priority.
-	Int								m_productionPrioritySuccessIncrease; ///< Production priority increase on success.
-	Int								m_productionPriorityFailureDecrease; ///< Production priority decrease on failure.
-	AttitudeType			m_initialTeamAttitude;				///< The initial team attitude
+	TCreateUnitsInfo	m_unitsInfo[MAX_UNIT_TYPES];			///< Quantity of units to create or build.
+	Int					m_numUnitsInfo {};						///< Number of entries in m_unitsInfo
+	Coord3D				m_homeLocation {};						///< Spawn location for team.
+	Bool				m_hasHomeLocation {};					///< True is m_homeLocation is valid.
+	AsciiString			m_scriptOnCreate {};					///< Script executed when team is created.
+	AsciiString			m_scriptOnIdle {};						///< Script executed when team is idle.
+	Int					m_initialIdleFrames {};					///< Number of frames to continue recruiting after the minimum team size is achieved.
+	AsciiString			m_scriptOnEnemySighted {};				///< Script executed when enemy is sighted.
+	AsciiString			m_scriptOnAllClear {};					///< Script executed when enemy is sighted.
+	AsciiString			m_scriptOnUnitDestroyed {};				///< Script executed each time a unit on this team dies.
+	AsciiString			m_scriptOnDestroyed {};					///< Script executed m_destroyedThreshold of member units are destroyed.
+	Real				m_destroyedThreshold {};				///< OnDestroyed threshold - 1.0 = 100% = all destroyed, .5 = 50% = half of the units destroyed, 0 = useless.
+	Bool				m_isAIRecruitable {};					///< True if other ai teams can recruit.
+	Bool				m_isBaseDefense {};						///< True if is base defense team.
+	Bool				m_isPerimeterDefense {};				///< True if is a perimeter base defense team.
+	Bool				m_automaticallyReinforce {};			///< True is team automatically tries to reinforce.
+	Bool				m_transportsReturn {};					///< True if transports return to base after unloading.
+	Bool				m_avoidThreats {};						///< True if the team avoids threats.
+	Bool				m_attackCommonTarget {};				///< True if the team attacks the same target unit.
+	Int					m_maxInstances {};						///< Maximum number of instances of a team that is not singleton.
+	mutable Int			m_productionPriority {};				///< Production priority.
+	Int					m_productionPrioritySuccessIncrease {}; ///< Production priority increase on success.
+	Int					m_productionPriorityFailureDecrease {}; ///< Production priority decrease on failure.
+	AttitudeType		m_initialTeamAttitude {};				///< The initial team attitude
 
-	AsciiString				m_transportUnitType;					///< Unit used to transport the team.
-	AsciiString				m_startReinforceWaypoint;			///< Waypoint where the reinforcement team starts.
-	Bool							m_teamStartsFull;							///< If true, team loads into member transports.
-	Bool							m_transportsExit;							///< True if the transports leave after deploying team.	
-	VeterancyLevel		m_veterancy;								///< Veterancy level;
+	AsciiString			m_transportUnitType {};					///< Unit used to transport the team.
+	AsciiString			m_startReinforceWaypoint {};			///< Waypoint where the reinforcement team starts.
+	Bool				m_teamStartsFull {};					///< If true, team loads into member transports.
+	Bool				m_transportsExit {};					///< True if the transports leave after deploying team.	
+	VeterancyLevel		m_veterancy {};							///< Veterancy level;
 
 	// Production scripts stuff
-	AsciiString				m_productionCondition;				///< Script that contains the production conditions.
-	Bool							m_executeActions;							///< If this is true, then when the production condition becomes true, we also execute the actions.
+	AsciiString			m_productionCondition {};				///< Script that contains the production conditions.
+	Bool				m_executeActions {};					///< If this is true, then when the production condition becomes true, we also execute the actions.
 
-	AsciiString				m_teamGenericScripts[MAX_GENERIC_SCRIPTS];
+	AsciiString			m_teamGenericScripts[MAX_GENERIC_SCRIPTS];
 protected:
 
 	// snapshot methods
@@ -186,52 +186,52 @@ class Team : public MemoryPoolObject,
 
 private:
 
-	TeamPrototype	*m_proto;							///< the prototype used to create this Team
-	TeamID m_id;												///< unique team id
+	TeamPrototype			*m_proto {};				///< the prototype used to create this Team
+	TeamID					m_id {};					///< unique team id
 
 	// lists we own
 	/// @todo srj -- convert to non-DLINK list, after it is once again possible to test the change
-	MAKE_DLINK_HEAD(Object, TeamMemberList)		///< the members of this team
+	MAKE_DLINK_HEAD(Object, TeamMemberList)				///< the members of this team
 
 	// lists we are members of
 	/// @todo srj -- convert to non-DLINK list, after it is once again possible to test the change
-	MAKE_DLINK(Team, TeamInstanceList)				///< the instances of our prototype
+	MAKE_DLINK(Team, TeamInstanceList)					///< the instances of our prototype
 
-	AsciiString		m_state;						///< Name of the current AI state.
+	AsciiString				m_state {};					///< Name of the current AI state.
 
-	Bool					m_enteredOrExited;  ///< True if a team member entered or exited a trigger area this frame.
-	Bool					m_active;						///< True if a team is complete.  False while members are being added.
-	Bool					m_created;					///< True when first activated.
+	Bool					m_enteredOrExited {};		///< True if a team member entered or exited a trigger area this frame.
+	Bool					m_active {};				///< True if a team is complete.  False while members are being added.
+	Bool					m_created {};				///< True when first activated.
 
 	// Enemy sighted & All Clear:
-	Bool					m_checkEnemySighted;///< True if we have an on enemy sighted or all clear script.
-	Bool					m_seeEnemy;					///< True if we see an enemy.
-	Bool					m_prevSeeEnemy;			///< Last value.
+	Bool					m_checkEnemySighted {};		///< True if we have an on enemy sighted or all clear script.
+	Bool					m_seeEnemy {};				///< True if we see an enemy.
+	Bool					m_prevSeeEnemy {};			///< Last value.
 
 	// Idle flag.
-	Bool					m_wasIdle;					///< True if idle last frame.
+	Bool					m_wasIdle {};				///< True if idle last frame.
 
 	// On %Destroyed
-	Int					m_destroyThreshold;
-	Int					m_curUnits;
+	Int						m_destroyThreshold {};
+	Int						m_curUnits {};
 
 	// Following waypoint paths as a team.
-	const Waypoint *m_currentWaypoint;
+	const Waypoint			*m_currentWaypoint {};
 
 	// Should check/Execute generic script
 	Bool					m_shouldAttemptGenericScript[MAX_GENERIC_SCRIPTS];
 
 	// Recruitablity.
-	Bool				m_isRecruitablitySet;	///< If false, recruitability is team proto value.  If true, m_isRecruitable.
-	Bool				m_isRecruitable;
+	Bool					m_isRecruitablitySet {};	///< If false, recruitability is team proto value.  If true, m_isRecruitable.
+	Bool					m_isRecruitable {};
 
 	// Attack target.
-	ObjectID		m_commonAttackTarget;
+	ObjectID				m_commonAttackTarget {};
 
-	TeamRelationMap				*m_teamRelations;									///< override allies & enemies
-	PlayerRelationMap			*m_playerRelations;								///< override allies & enemies
+	TeamRelationMap			*m_teamRelations {};		///< override allies & enemies
+	PlayerRelationMap		*m_playerRelations {};		///< override allies & enemies
 
-	std::list< ObjectID > m_xferMemberIDList;			///< list for post processing and restoring object pointers after a load
+	std::list< ObjectID >	m_xferMemberIDList {};		///< list for post processing and restoring object pointers after a load
 
 protected:
 
@@ -662,25 +662,25 @@ private:
 		TEAM_SINGLETON = 0x01
 	};
 
-	TeamFactory						*m_factory;						///< the factory that created us
-	Player								*m_owningPlayer;			///< the Player that currently controls the team-proto (null if NOT a top-level team)
+	TeamFactory			*m_factory {};							///< the factory that created us
+	Player				*m_owningPlayer {};						///< the Player that currently controls the team-proto (null if NOT a top-level team)
 
-	TeamPrototypeID				m_id;							///< unique prototype ID
-	AsciiString						m_name;						///< name of the team(s) produced
-	Int										m_flags;					///< misc team flags
+	TeamPrototypeID		m_id {};								///< unique prototype ID
+	AsciiString			m_name {};								///< name of the team(s) produced
+	Int					m_flags {};								///< misc team flags
 
-	Bool									m_productionConditionAlwaysFalse; ///< Flag set to true if we don't have a production condition.
-	Script								*m_productionConditionScript; ///< Script to evaluate for production condition.
+	Bool				m_productionConditionAlwaysFalse {};	///< Flag set to true if we don't have a production condition.
+	Script				*m_productionConditionScript {};		///< Script to evaluate for production condition.
 	
-	Bool									m_retrievedGenericScripts;
-	Script								*m_genericScriptsToRun[MAX_GENERIC_SCRIPTS];
+	Bool				m_retrievedGenericScripts {};
+	Script				*m_genericScriptsToRun[MAX_GENERIC_SCRIPTS];
 	
-	TeamTemplateInfo			m_teamTemplate;						///< Team template info.
+	TeamTemplateInfo	m_teamTemplate;							///< Team template info.
 
-	AsciiString						m_attackPriorityName;
+	AsciiString			m_attackPriorityName {};
 	// lists we own
 	/// @todo srj -- convert to non-DLINK list, after it is once again possible to test the change
-	MAKE_DLINK_HEAD(Team, TeamInstanceList)							///< the instances of this prototype
+	MAKE_DLINK_HEAD(Team, TeamInstanceList)						///< the instances of this prototype
 
 };
 
@@ -746,9 +746,9 @@ private:
 
 	typedef std::map< NameKeyType, TeamPrototype*, std::less<NameKeyType> > TeamPrototypeMap;
 
-	TeamPrototypeMap m_prototypes;
-	TeamPrototypeID m_uniqueTeamPrototypeID;		///< used to assign unique ids to each team prototype
-	TeamID m_uniqueTeamID;											///< used to assign unique team ids to each team instance
+	TeamPrototypeMap m_prototypes {};
+	TeamPrototypeID m_uniqueTeamPrototypeID {};		///< used to assign unique ids to each team prototype
+	TeamID m_uniqueTeamID {};											///< used to assign unique team ids to each team instance
 
 };
 

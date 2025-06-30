@@ -41,15 +41,19 @@
 #include "Common/Xfer.h"
 #include "GameClient/Drawable.h"
 
+#include "GameLogic/GameLogic.h"
 #include "GameLogic/SidesList.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/Module/BodyModule.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/PolygonTrigger.h"
-#include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/AI.h"
+// #include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/LocomotorSet.h"
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/ScriptActions.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
+#include "GameLogic/TerrainLogic.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -163,11 +167,13 @@ void TeamRelationMap::loadPostProcess( void )
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 // STATIC FUNCTIONS ///////////////////////////////////////////////////////////
+#if 0
 static Bool locoSetMatches(LocomotorSurfaceTypeMask lstm, UnsignedInt surfaceBitFlags)
 {
-	surfaceBitFlags = surfaceBitFlags & 0x01 | ((surfaceBitFlags & 0x02) << 2);
-	return (surfaceBitFlags & lstm) != 0;
+	surfaceBitFlags = (surfaceBitFlags & 0x01) | ((surfaceBitFlags & 0x02) << 2);
+	return (surfaceBitFlags & (UnsignedInt)lstm) != 0;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------
 
@@ -334,6 +340,10 @@ Team *TeamFactory::findTeamByID( TeamID teamID )
 Call team->setActive() when all members are added. */
 Team *TeamFactory::createInactiveTeam(const AsciiString& name)
 {
+(void) name;
+DEBUG_CRASH(("TeamFactory::createInactiveTeam not yet implemented!"));
+return nullptr;
+#if 0
 	TeamPrototype *tp = findTeamPrototype(name);
 	if (!tp)
 		throw ERROR_BAD_ARG;
@@ -362,6 +372,7 @@ Team *TeamFactory::createInactiveTeam(const AsciiString& name)
 	}
 	
 	return t;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -807,14 +818,14 @@ TeamPrototype::TeamPrototype( TeamFactory *tf,
 															Bool isSingleton, 
 															Dict *d, 
 															TeamPrototypeID id ) : 
-	m_id(id),
 	m_factory(tf), 
-	m_name(name), 
 	m_owningPlayer(ownerPlayer), 
+	m_id(id),
+	m_name(name), 
 	m_flags(isSingleton ? TeamPrototype::TEAM_SINGLETON : 0),
-	m_teamTemplate(d), 
 	m_productionConditionAlwaysFalse(false),
-	m_productionConditionScript(NULL)
+	m_productionConditionScript(NULL),
+	m_teamTemplate(d)
 {
 	DEBUG_ASSERTCRASH(!(m_owningPlayer == NULL), ("bad args to TeamPrototype ctor"));
 	if (m_factory)
@@ -831,17 +842,21 @@ TeamPrototype::TeamPrototype( TeamFactory *tf,
 
 // ------------------------------------------------------------------------
 
-	static void deleteTeamCallback(Team* o)
+#if 0
+static void deleteTeamCallback(Team* o)
+{
+	if (o)
 	{
-		if (o)
-		{
-			TheTeamFactory->teamAboutToBeDeleted(o);
-			o->deleteInstance();
-		}
+		TheTeamFactory->teamAboutToBeDeleted(o);
+		o->deleteInstance();
 	}
+}
+#endif // if 0
 
 TeamPrototype::~TeamPrototype()
 {
+DEBUG_LOG(("TeamPrototype::~TeamPrototype not yet implemented!"));
+#if 0
 	removeAll_TeamInstanceList(deleteTeamCallback);
 
 	if (m_owningPlayer)
@@ -864,6 +879,7 @@ TeamPrototype::~TeamPrototype()
 			m_genericScriptsToRun[i] = NULL;
 		}
 	}
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -922,6 +938,9 @@ void TeamPrototype::teamAboutToBeDeleted(Team* team)
 // ------------------------------------------------------------------------
 Script *TeamPrototype::getGenericScript(Int scriptToRetrieve)
 {
+DEBUG_CRASH(("TeamPrototype::getGenericScript not yet implemented!"));
+return nullptr;
+#if 0
 	if (!m_retrievedGenericScripts) {
 		m_retrievedGenericScripts = TRUE;	// set this to true so we won't do the lookup again.
 		// Go get them from the script engine, and duplicate each one.
@@ -943,6 +962,7 @@ Script *TeamPrototype::getGenericScript(Int scriptToRetrieve)
 	}
 
 	return m_genericScriptsToRun[scriptToRetrieve];
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -1127,6 +1147,9 @@ void TeamPrototype::moveTeamTo(Coord3D destination)
 // ------------------------------------------------------------------------
 Bool TeamPrototype::evaluateProductionCondition(void)
 {
+DEBUG_CRASH(("TeamPrototype::evaluateProductionCondition not yet implemented!"));
+return false;
+#if 0
 	if (m_productionConditionAlwaysFalse) {
 		// Set if we don't have a script.
 		return false;
@@ -1139,7 +1162,7 @@ Bool TeamPrototype::evaluateProductionCondition(void)
 		Int delaySeconds = m_productionConditionScript->getDelayEvalSeconds();
 
 		if (delaySeconds>0) {
-			m_productionConditionScript->setFrameToEvaluate(TheGameLogic->getFrame()+delaySeconds*LOGICFRAMES_PER_SECOND);
+			m_productionConditionScript->setFrameToEvaluate(TheGameLogic->getFrame() + static_cast<UnsignedInt>(delaySeconds*LOGICFRAMES_PER_SECOND));
 		}
 		return TheScriptEngine->evaluateConditions(m_productionConditionScript, NULL, getControllingPlayer());
 	}
@@ -1171,6 +1194,8 @@ Bool TeamPrototype::evaluateProductionCondition(void)
 					return false;
 				}
 				break;
+			default:
+				break;
 		}
 
 		// Make a copy of the script locally, just for paranoia's sake.  We can't be sure
@@ -1181,6 +1206,7 @@ Bool TeamPrototype::evaluateProductionCondition(void)
 	// Couldn't find a script.
 	m_productionConditionAlwaysFalse = true;
 	return false;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -1310,18 +1336,18 @@ void TeamPrototype::loadPostProcess( void )
 
 // ------------------------------------------------------------------------
 Team::Team(TeamPrototype *proto, TeamID id ) : 
-  m_id( id ),
 	m_proto(proto), 
+	m_id( id ),
 	m_enteredOrExited(false), 
 	m_active(false), 
+	m_checkEnemySighted(false),
 	m_seeEnemy(false), 
 	m_prevSeeEnemy(false), 
-	m_checkEnemySighted(false),
-	m_isRecruitablitySet(false),
-	m_isRecruitable(false),
+	m_wasIdle(false),
 	m_destroyThreshold(0), 
 	m_curUnits(0), 
-	m_wasIdle(false)
+	m_isRecruitablitySet(false),
+	m_isRecruitable(false)
 {
 	//Added By Sadullah Nader
 	//Initialization(s) inserted
@@ -1345,7 +1371,8 @@ Team::Team(TeamPrototype *proto, TeamID id ) :
 		
 		AsciiString teamName = proto->getName();
 		teamName.concat(" - creating team instance.");
-		TheScriptEngine->AppendDebugMessage(teamName, false);
+		// FIXME: TheScriptEngine
+		// TheScriptEngine->AppendDebugMessage(teamName, false);
 	}
 
 	for (Int i = 0; i < MAX_GENERIC_SCRIPTS; ++i) 
@@ -1361,7 +1388,8 @@ Team::~Team()
 {
 //	DEBUG_ASSERTCRASH(getFirstItemIn_TeamMemberList() == NULL, ("Team still has members in existence"));
 
-	TheScriptEngine->notifyOfTeamDestruction(this);
+	// FIXME: TheScriptEngine
+	// TheScriptEngine->notifyOfTeamDestruction(this);
 
 	// Tell the players a team is going away.
 	Int i;
@@ -1432,6 +1460,9 @@ void Team::setAttackPriorityName(AsciiString name)
 // ------------------------------------------------------------------------
 void Team::getTeamAsAIGroup(AIGroup *pAIGroup)
 {
+(void) pAIGroup;
+DEBUG_CRASH(("Team::getTeamAsAIGroup not yet implemented!"));
+#if 0
 	if (!pAIGroup) {
 		return;
 	}
@@ -1444,12 +1475,16 @@ void Team::getTeamAsAIGroup(AIGroup *pAIGroup)
 			pAIGroup->add(iter.cur());
 		}
 	}
+#endif // if 0
 }
 
 
 // ------------------------------------------------------------------------
 Int Team::getTargetableCount() const
 {
+DEBUG_CRASH(("Team::getTargetableCount not yet implemented!"));
+return 0;
+#if 0
 	Int retVal = 0;
 	for (DLINK_ITERATOR<Object> iter = iterate_TeamMemberList(); !iter.done(); iter.advance()) {
 		Object *obj = iter.cur();
@@ -1465,6 +1500,7 @@ Int Team::getTargetableCount() const
 	}
 
 	return retVal;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -1753,6 +1789,9 @@ Bool Team::hasAnyUnits() const
 // ------------------------------------------------------------------------
 Bool Team::isIdle() const
 {
+DEBUG_CRASH(("Team::isIdle not yet implemented!"));
+return false;
+#if 0
 	Bool idle = true; // assume idle.
 	for (DLINK_ITERATOR<Object> iter = iterate_TeamMemberList(); !iter.done(); iter.advance())
 	{
@@ -1769,6 +1808,7 @@ Bool Team::isIdle() const
 		}
 	}
 	return idle;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -1806,6 +1846,8 @@ Bool Team::hasAnyObjects() const
 /** Clears m_enteredExited, checks & clears m_created. */
 void Team::updateState(void) 
 {
+DEBUG_CRASH(("Team::updateState not yet implemented!"));
+#if 0
 	m_enteredOrExited = false;
 	if (!m_active) {
 		return; 
@@ -1917,6 +1959,7 @@ void Team::updateState(void)
 		}
 		m_wasIdle = isIdle;
 	}
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -1931,12 +1974,18 @@ void Team::notifyTeamOfObjectDeath( void )
 		return;
 	}
 
-	TheScriptEngine->runScript(pInfo->m_scriptOnUnitDestroyed, this);
+	// FIXME: TheScriptEngine
+	// TheScriptEngine->runScript(pInfo->m_scriptOnUnitDestroyed, this);
 }
 
 // ------------------------------------------------------------------------
 Bool Team::didAllEnter(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) const
 {
+DEBUG_CRASH(("Team::didAllEnter not yet implemented!"));
+(void) pTrigger;
+(void) whichToConsider;
+return false;
+#if 0
 	// If any units entered or exited, they set this flag.
 	if (!m_enteredOrExited) return false;
 
@@ -1978,11 +2027,17 @@ Bool Team::didAllEnter(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) co
 		anyConsidered = true;
 	}
 	return entered && !outside;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
 Bool Team::didPartialEnter(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) const
 {
+DEBUG_CRASH(("Team::didPartialEnter not yet implemented!"));
+(void) pTrigger;
+(void) whichToConsider;
+return false;
+#if 0
 	// If any units entered or exited, they set this flag.
 	if (!m_enteredOrExited) return false;
 
@@ -2014,11 +2069,17 @@ Bool Team::didPartialEnter(PolygonTrigger *pTrigger, UnsignedInt whichToConsider
 		} 
 	}
 	return false;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
 Bool Team::didPartialExit(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) const
 {
+DEBUG_CRASH(("Team::didPartialExit not yet implemented!"));
+(void) pTrigger;
+(void) whichToConsider;
+return false;
+#if 0
 	// If any units entered or exited, they set this flag.
 	if (!m_enteredOrExited) return false;
 
@@ -2050,11 +2111,17 @@ Bool Team::didPartialExit(PolygonTrigger *pTrigger, UnsignedInt whichToConsider)
 		} 
 	}
 	return false;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
 Bool Team::didAllExit(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) const
 {
+DEBUG_CRASH(("Team::didAllExit not yet implemented!"));
+(void) pTrigger;
+(void) whichToConsider;
+return false;
+#if 0
 	// If any units entered or exited, they set this flag.
 	if (!m_enteredOrExited) 
 		return false;
@@ -2097,11 +2164,17 @@ Bool Team::didAllExit(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) con
 		anyConsidered = true;
 	}
 	return anyConsidered && exited && !inside;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
 Bool Team::allInside(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) const
 {
+DEBUG_CRASH(("Team::allInside not yet implemented!"));
+(void) pTrigger;
+(void) whichToConsider;
+return false;
+#if 0
 	// empty teams are not inside.
 	if (!hasAnyObjects()) {
 		return false;
@@ -2141,11 +2214,17 @@ Bool Team::allInside(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) cons
 		anyConsidered = true;
 	}
 	return anyConsidered && !anyOutside;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
 Bool Team::noneInside(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) const
 {
+DEBUG_CRASH(("Team::noneInside not yet implemented!"));
+(void) pTrigger;
+(void) whichToConsider;
+return false;
+#if 0
 	Bool anyConsidered = false;
 	Bool anyInside = false;
 	for (DLINK_ITERATOR<Object> iter = iterate_TeamMemberList(); !iter.done(); iter.advance())
@@ -2181,11 +2260,17 @@ Bool Team::noneInside(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) con
 		anyConsidered = true;
 	}
 	return anyConsidered && !anyInside;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
 Bool Team::someInsideSomeOutside(PolygonTrigger *pTrigger, UnsignedInt whichToConsider) const
 {
+DEBUG_CRASH(("Team::someInsideSomeOutside not yet implemented!"));
+(void) pTrigger;
+(void) whichToConsider;
+return false;
+#if 0
 	Bool anyConsidered = false;
 	Bool anyInside = false;
 	Bool anyOutside = false;
@@ -2225,6 +2310,7 @@ Bool Team::someInsideSomeOutside(PolygonTrigger *pTrigger, UnsignedInt whichToCo
 		anyConsidered = true;
 	}
 	return anyConsidered && anyInside && anyOutside;
+#endif // if 0
 }
 
 const Coord3D* Team::getEstimateTeamPosition(void) const
@@ -2316,6 +2402,7 @@ void Team::transferUnitsTo(Team *newTeam)
 	} 
 }
 
+#if 0
 // ------------------------------------------------------------------------
 static Bool isInBuildVariations(const ThingTemplate* ttWithVariations, const ThingTemplate* b)
 {
@@ -2330,11 +2417,18 @@ static Bool isInBuildVariations(const ThingTemplate* ttWithVariations, const Thi
 	}
 	return false;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------
 /* Try to recruit a unit from other teams of this player. */
 Object *Team::tryToRecruit(const ThingTemplate *tTemplate, const Coord3D *teamHome, Real maxDist)
 {
+(void) tTemplate;
+(void) teamHome;
+(void) maxDist;
+DEBUG_CRASH(("Team::tryToRecruit not yet implemented!"));
+return nullptr;
+#if 0
 	Player *myPlayer = getControllingPlayer();
 	Object *obj=NULL;
 	Real distSqr = maxDist*maxDist;
@@ -2397,6 +2491,7 @@ Object *Team::tryToRecruit(const ThingTemplate *tTemplate, const Coord3D *teamHo
 		return recruit;
 	}
  	return NULL;	 
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -2529,6 +2624,8 @@ Bool Team::hasAnyBuildFacility() const
 //DECLARE_PERF_TIMER(updateGenericScripts)
 void Team::updateGenericScripts(void)
 {
+DEBUG_CRASH(("Team::updateGenericScripts not yet implemented!"));
+#if 0
 	//USE_PERF_TIMER(updateGenericScripts)
 	for (Int i = 0; i < MAX_GENERIC_SCRIPTS; ++i) {
 		if (m_shouldAttemptGenericScript[i]) {
@@ -2553,6 +2650,7 @@ void Team::updateGenericScripts(void)
 			}
 		}
 	}
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -2664,7 +2762,7 @@ void Team::xfer( Xfer *xfer )
 	xfer->xferInt( &m_curUnits );
 
 	// waypoint
-	UnsignedInt currentWaypointID = m_currentWaypoint ? m_currentWaypoint->getID() : 0;
+	UnsignedInt currentWaypointID = m_currentWaypoint ? m_currentWaypoint->getID() : 0u;
 	xfer->xferUnsignedInt( &currentWaypointID );
 	if( xfer->getXferMode() == XFER_LOAD )
 		m_currentWaypoint = TheTerrainLogic->getWaypointByID( currentWaypointID );

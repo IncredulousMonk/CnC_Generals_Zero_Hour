@@ -71,7 +71,7 @@
 #include "Common/BitFlagsIO.h"
 #include "Common/SpecialPower.h"
 
-#include "GameClient/ControlBar.h"
+// #include "GameClient/ControlBar.h"
 #include "GameClient/Drawable.h"
 #include "GameClient/Eva.h"
 #include "GameClient/GameClient.h"
@@ -89,12 +89,12 @@
 #include "GameLogic/RankInfo.h"
 #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
-#include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/Module/AutoDepositUpdate.h"
 #include "GameLogic/Module/StealthUpdate.h"
 #include "GameLogic/Module/SpecialPowerModule.h"
-#include "GameLogic/Module/SupplyTruckAIUpdate.h"
+// #include "GameLogic/Module/SupplyTruckAIUpdate.h"
 #include "GameLogic/Module/BattlePlanUpdate.h"
 #include "GameLogic/Module/ProductionUpdate.h"
 #include "GameLogic/VictoryConditions.h"
@@ -118,13 +118,13 @@ public:
 	ClosestKindOfData( void );
 
 	//In
-	KindOfMaskType m_setKindOf;
-	KindOfMaskType m_clearKindOf;
-	Object *m_source;
+	KindOfMaskType m_setKindOf {};
+	KindOfMaskType m_clearKindOf {};
+	Object *m_source {};
 
 	//Out
-	Object *m_closest;
-	Real m_closestDistSq;
+	Object *m_closest {};
+	Real m_closestDistSq {};
 
 };
 
@@ -168,7 +168,7 @@ AsciiString kindofMaskAsAsciiString(KindOfMaskType m)
 	const char** kindofNames = KindOfMaskType::getBitNames();
 	for (Int i=KINDOF_FIRST; i<KINDOF_COUNT; ++i)
 	{
-		if (m.test(i))
+		if (m.test((UnsignedInt)i))
 		{
 			if (s.isNotEmpty())
 				s.concat("|");
@@ -183,7 +183,7 @@ void dumpBattlePlanBonuses(const BattlePlanBonuses *b, AsciiString name, const P
 {
 	CRCDEBUG_LOG(("dumpBattlePlanBonuses() %s:%d %s\n  Player %d(%ls) object %d(%s) armor:%g/%8.8X bombardment:%d, holdTheLine:%d, searchAndDestroy:%d sight:%g/%8.8X, valid:%s invalid:%s\n",
 		fname.str(), line, name.str(),
-		(p)?p->getPlayerIndex():-1, (p)?((Player *)p)->getPlayerDisplayName().str():L"<No Name>", (o)?o->getID():-1, (o)?o->getTemplate()->getName().str():"<No Name>",
+		(p)?p->getPlayerIndex():-1, (p)?((Player *)p)->getPlayerDisplayName().str():L"<No Name>", (o)?o->getID():0u, (o)?o->getTemplate()->getName().str():"<No Name>",
 		b->m_armorScalar, AS_INT(b->m_armorScalar),
 		b->m_bombardment, b->m_holdTheLine, b->m_searchAndDestroy,
 		b->m_sightRangeScalar, AS_INT(b->m_sightRangeScalar),
@@ -193,7 +193,7 @@ void dumpBattlePlanBonuses(const BattlePlanBonuses *b, AsciiString name, const P
 		return;
 	DEBUG_LOG(("dumpBattlePlanBonuses() %s:%d %s\n  Player %d(%ls) object %d(%s) armor:%g/%8.8X bombardment:%d, holdTheLine:%d, searchAndDestroy:%d sight:%g/%8.8X, valid:%s invalid:%s\n",
 		fname.str(), line, name.str(),
-		(p)?p->getPlayerIndex():-1, (p)?((Player *)p)->getPlayerDisplayName().str():L"<No Name>", (o)?o->getID():-1, (o)?o->getTemplate()->getName().str():"<No Name>",
+		(p)?p->getPlayerIndex():-1, (p)?((Player *)p)->getPlayerDisplayName().str():L"<No Name>", (o)?o->getID():0u, (o)?o->getTemplate()->getName().str():"<No Name>",
 		b->m_armorScalar, AS_INT(b->m_armorScalar),
 		b->m_bombardment, b->m_holdTheLine, b->m_searchAndDestroy,
 		b->m_sightRangeScalar, AS_INT(b->m_sightRangeScalar),
@@ -447,7 +447,7 @@ void Player::init(const PlayerTemplate* pt)
 		m_productionCostChanges = pt->getProductionCostChanges();
 		m_productionTimeChanges = pt->getProductionTimeChanges();
 		m_productionVeterancyLevels = pt->getProductionVeterancyLevels();
-		m_color = pt->getPreferredColor()->getAsInt() | 0xff000000;
+		m_color = pt->getPreferredColor()->getAsUnsignedInt() | 0xff000000;
 		m_nightColor = m_color;
 
 		m_money = *pt->getMoney();
@@ -743,14 +743,14 @@ void Player::update()
 		//Only check and post the message once every second so we don't spam the message stream to account for lag.
 		if( now % LOGICFRAMES_PER_SECOND == 0 )
 		{
-			if( TheGlobalData->m_clientRetaliationModeEnabled != isLogicalRetaliationModeEnabled() )
+			if( TheGlobalData->m_data.m_clientRetaliationModeEnabled != isLogicalRetaliationModeEnabled() )
 			{
 				//Post a logical message that will switch the retaliation mode on or off.
 				GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_ENABLE_RETALIATION_MODE );
 				if( msg )
 				{
 					msg->appendIntegerArgument( getPlayerIndex() );
-					msg->appendBooleanArgument( TheGlobalData->m_clientRetaliationModeEnabled );
+					msg->appendBooleanArgument( TheGlobalData->m_data.m_clientRetaliationModeEnabled );
 				}
 			}
 		}
@@ -767,6 +767,10 @@ void Player::newMap()
 //=============================================================================
 void Player::setPlayerType(PlayerType t, Bool skirmish)
 {
+(void) t;
+(void) skirmish;
+DEBUG_CRASH(("Player::setPlayerType not yet implemented!"));
+#if 0
 	m_playerType = t;
 
 	if (m_ai)
@@ -785,6 +789,7 @@ void Player::setPlayerType(PlayerType t, Bool skirmish)
 			m_ai = newInstance(AIPlayer)( this );
 		}
 	}
+#endif // if 0
 }
 
 //=============================================================================
@@ -1026,19 +1031,19 @@ void Player::initFromDict(const Dict* d)
 	Int c = d->getInt(TheKey_playerColor, &exists);
 	if (exists)
 	{
-		m_color = c | 0xff000000;
+		m_color = (UnsignedInt)c | 0xff000000;
 		m_nightColor = m_color;
 	}
 
 	c = d->getInt(TheKey_playerNightColor, &exists);
 	if (exists)
 	{
-		m_nightColor = c | 0xff000000;
+		m_nightColor = (UnsignedInt)c | 0xff000000;
 	}
 
 	Int m = d->getInt(TheKey_playerStartMoney, &exists);
 	if (exists)
-		m_money.deposit(m);
+		m_money.deposit((UnsignedInt)m);
 
 	for ( i = 0; i < NUM_HOTKEY_SQUADS; ++i ) {
 		if (m_squads[i] != NULL)
@@ -1059,6 +1064,10 @@ void Player::initFromDict(const Dict* d)
 //=============================================================================
 void Player::becomingTeamMember(Object *obj, Bool yes) 
 { 
+(void) obj;
+(void) yes;
+DEBUG_CRASH(("Player::becomingTeamMember not yet implemented!"));
+#if 0
 	if (!obj)
 		return;	
 
@@ -1104,11 +1113,15 @@ void Player::becomingTeamMember(Object *obj, Bool yes)
 		else
 			TheInGameUI->removeIdleWorker(obj, getPlayerIndex());
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::becomingLocalPlayer(Bool yes)
 {
+(void) yes;
+DEBUG_CRASH(("Player::becomingLocalPlayer not yet implemented!"));
+#if 0
 	if (yes)
 	{
 		// This changes the color of the little dot on the upper right side of the screen indicating
@@ -1142,8 +1155,8 @@ void Player::becomingLocalPlayer(Bool yes)
 					Drawable *draw = object->getDrawable();
 					if( draw )
 					{
-            
-            StealthUpdate *update = object->getStealth();
+
+						StealthUpdate *update = object->getStealth();
 
 						if( update && update->isDisguised() )
 						{
@@ -1151,7 +1164,7 @@ void Player::becomingLocalPlayer(Bool yes)
 							if( getRelationship( object->getTeam() ) != ALLIES && isPlayerActive() )
 							{
 								//Neutrals and enemies will see this disguised unit as the team it's disguised as.
-								if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+								if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 									draw->setIndicatorColor( disguisedPlayer->getPlayerNightColor());
 								else
 									draw->setIndicatorColor( disguisedPlayer->getPlayerColor() );
@@ -1159,7 +1172,7 @@ void Player::becomingLocalPlayer(Bool yes)
 							else
 							{
 								//Otherwise, the color will show up as the team it really belongs to.
-								if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+								if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 									draw->setIndicatorColor(object->getNightIndicatorColor());
 								else
 									draw->setIndicatorColor( object->getIndicatorColor() );
@@ -1180,6 +1193,7 @@ void Player::becomingLocalPlayer(Bool yes)
 	{
 		// nothing to do
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1262,6 +1276,10 @@ static void doFindCommandCenter(Object* obj, void* userData)
 //-------------------------------------------------------------------------------------------------
 static void doFindSpecialPowerSourceObject( Object *obj, void *userData )
 {
+(void) obj;
+(void) userData;
+DEBUG_CRASH(("doFindSpecialPowerSourceObject not yet implemented!"));
+#if 0
 	PlayerObjectFindInfo* info = (PlayerObjectFindInfo*)userData;
 
 	if( info->lowestReadyFrame == 0 )
@@ -1294,7 +1312,7 @@ static void doFindSpecialPowerSourceObject( Object *obj, void *userData )
 				
 #if defined(_DEBUG) || defined(_INTERNAL) || defined(_ALLOW_DEBUG_CHEATS_IN_RELEASE)
 				// Everything is ready if timers are debug off'd
-				if( ! TheGlobalData->m_specialPowerUsesDelay )
+				if( ! TheGlobalData->m_data.m_specialPowerUsesDelay )
 					readyFrame = 0;
 #endif
 				// A disabled guy should only be considered as a last resort.  We need it to be counted
@@ -1321,6 +1339,7 @@ static void doFindSpecialPowerSourceObject( Object *obj, void *userData )
 			}
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1329,6 +1348,10 @@ static void doFindSpecialPowerSourceObject( Object *obj, void *userData )
 //-------------------------------------------------------------------------------------------------
 static void doCountSpecialPowersReady( Object *obj, void *userData )
 {
+(void) obj;
+(void) userData;
+DEBUG_CRASH(("doCountSpecialPowersReady not yet implemented!"));
+#if 0
 	PlayerObjectFindInfo* info = (PlayerObjectFindInfo*)userData;
 
 	if( !obj->testStatus( OBJECT_STATUS_UNDER_CONSTRUCTION ) 
@@ -1351,7 +1374,7 @@ static void doCountSpecialPowersReady( Object *obj, void *userData )
 
 #if defined(_DEBUG) || defined(_INTERNAL) || defined(_ALLOW_DEBUG_CHEATS_IN_RELEASE)
 				// Everything is ready if timers are debug off'd
-				if( ! TheGlobalData->m_specialPowerUsesDelay )
+				if( ! TheGlobalData->m_data.m_specialPowerUsesDelay )
 					readyFrame = 0;
 #endif
 
@@ -1369,11 +1392,16 @@ static void doCountSpecialPowersReady( Object *obj, void *userData )
 			}
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 static void doFindMostReadyWeaponForThing( Object *obj, void *userData )
 {
+(void) obj;
+(void) userData;
+DEBUG_CRASH(("doFindMostReadyWeaponForThing not yet implemented!"));
+#if 0
 	PlayerObjectFindInfo* info = (PlayerObjectFindInfo*)userData;
 
 	if( info->highestPercentage >= 100 )
@@ -1401,6 +1429,7 @@ static void doFindMostReadyWeaponForThing( Object *obj, void *userData )
 			}
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1542,7 +1571,7 @@ Int Player::countReadyShortcutSpecialPowersOfType( SpecialPowerType spType )
 	info.spType = spType; 
 	info.numReady = 0;
 	iterateObjects( doCountSpecialPowersReady, &info );
-	return info.numReady;
+	return (Int)info.numReady;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1667,6 +1696,11 @@ void Player::onStructureCreated( Object *builder, Object *structure )
 //-------------------------------------------------------------------------------------------------
 void Player::onStructureConstructionComplete( Object *builder, Object *structure, Bool isRebuild )
 {
+(void) builder;
+(void) structure;
+(void) isRebuild;
+DEBUG_CRASH(("Player::onStructureConstructionComplete not yet implemented!"));
+#if 0
 	// When a a structure is completed, it becomes "real" as far as scripting is 
 	// concerned. jba.
 	TheScriptEngine->notifyOfObjectCreationOrDestruction();
@@ -1698,57 +1732,58 @@ void Player::onStructureConstructionComplete( Object *builder, Object *structure
 	if( structure->hasSpecialPower( SPECIAL_PARTICLE_UPLINK_CANNON ) || 
 			structure->hasSpecialPower( SUPW_SPECIAL_PARTICLE_UPLINK_CANNON ) ||
 			structure->hasSpecialPower( LAZR_SPECIAL_PARTICLE_UPLINK_CANNON ) )
-  {
-    if ( localPlayer == structure->getControllingPlayer() )
-    {
-		  TheEva->setShouldPlay(EVA_SuperweaponDetected_Own_ParticleCannon);
-    }
-    else if ( localPlayer->getRelationship(structure->getTeam()) != ENEMIES )
-    {
-      // Note: treating NEUTRAL as ally. Is this correct?
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Ally_ParticleCannon);
-    }
-    else
-    {
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Enemy_ParticleCannon);
-    }
-  }
+	{
+		if ( localPlayer == structure->getControllingPlayer() )
+		{
+				TheEva->setShouldPlay(EVA_SuperweaponDetected_Own_ParticleCannon);
+		}
+		else if ( localPlayer->getRelationship(structure->getTeam()) != ENEMIES )
+		{
+			// Note: treating NEUTRAL as ally. Is this correct?
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Ally_ParticleCannon);
+		}
+		else
+		{
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Enemy_ParticleCannon);
+		}
+	}
 
 	if( structure->hasSpecialPower( SPECIAL_NEUTRON_MISSILE ) || 
 			structure->hasSpecialPower( NUKE_SPECIAL_NEUTRON_MISSILE ) || 
 			structure->hasSpecialPower( SUPW_SPECIAL_NEUTRON_MISSILE ) )
-  {
-    if ( localPlayer == structure->getControllingPlayer() )
-    {
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Own_Nuke);
-    }
-    else if ( localPlayer->getRelationship(structure->getTeam()) != ENEMIES )
-    {
-      // Note: treating NEUTRAL as ally. Is this correct?
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Ally_Nuke);
-    }
-    else
-    {
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Enemy_Nuke);
-    }
-  }
-  
+	{
+		if ( localPlayer == structure->getControllingPlayer() )
+		{
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Own_Nuke);
+		}
+		else if ( localPlayer->getRelationship(structure->getTeam()) != ENEMIES )
+		{
+			// Note: treating NEUTRAL as ally. Is this correct?
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Ally_Nuke);
+		}
+		else
+		{
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Enemy_Nuke);
+		}
+	}
+
 	if (structure->hasSpecialPower(SPECIAL_SCUD_STORM))
-  {
-    if ( localPlayer == structure->getControllingPlayer() )
-    {
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Own_ScudStorm);
-    }
-    else if ( localPlayer->getRelationship(structure->getTeam()) != ENEMIES )
-    {
-      // Note: treating NEUTRAL as ally. Is this correct?
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Ally_ScudStorm);
-    }
-    else
-    {
-      TheEva->setShouldPlay(EVA_SuperweaponDetected_Enemy_ScudStorm);
-    }
-  }
+	{
+		if ( localPlayer == structure->getControllingPlayer() )
+		{
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Own_ScudStorm);
+		}
+		else if ( localPlayer->getRelationship(structure->getTeam()) != ENEMIES )
+		{
+			// Note: treating NEUTRAL as ally. Is this correct?
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Ally_ScudStorm);
+		}
+		else
+		{
+			TheEva->setShouldPlay(EVA_SuperweaponDetected_Enemy_ScudStorm);
+		}
+	}
+#endif // if 0
 }  // end onStructureConstructionComplete
 
 //=============================================================================
@@ -1959,7 +1994,7 @@ Bool Player::getListInScoreScreen()
 UnsignedInt Player::getSupplyBoxValue()
 {
 	/// @todo This would be the hookup for difficulty level modifiers and special economy buildings
-	return TheGlobalData->m_baseValuePerSupplyBox;
+	return (UnsignedInt)TheGlobalData->m_data.m_baseValuePerSupplyBox;
 }
 
 //=============================================================================
@@ -2010,6 +2045,10 @@ void Player::friend_setSkillset(Int skillSet)
 //=============================================================================
 void Player::setUnitsShouldHunt(Bool unitsShouldHunt, CommandSourceType source)
 {
+(void) unitsShouldHunt;
+(void) source;
+DEBUG_CRASH(("Player::setUnitsShouldHunt not yet implemented!"));
+#if 0
 	m_unitsShouldHunt = unitsShouldHunt;
 
 	Coord3D pos;
@@ -2049,11 +2088,14 @@ void Player::setUnitsShouldHunt(Bool unitsShouldHunt, CommandSourceType source)
 			}
 		}
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::killPlayer(void)
 {
+DEBUG_CRASH(("Player::killPlayer not yet implemented!"));
+#if 0
 	for (PlayerTeamList::iterator it = m_playerTeamPrototypes.begin(); it != m_playerTeamPrototypes.end(); ++it) {
 		for (DLINK_ITERATOR<Team> iter = (*it)->iterate_TeamInstanceList(); !iter.done(); iter.advance()) {
 			Team *team = iter.cur();
@@ -2066,7 +2108,7 @@ void Player::killPlayer(void)
 
 	m_isPlayerDead = TRUE; // this is so OCLs don't ever again spawn useful units for us.
 
-	for (it = m_playerTeamPrototypes.begin(); it != m_playerTeamPrototypes.end(); ++it) {
+	for (PlayerTeamList::iterator it = m_playerTeamPrototypes.begin(); it != m_playerTeamPrototypes.end(); ++it) {
 		for (DLINK_ITERATOR<Team> iter = (*it)->iterate_TeamInstanceList(); !iter.done(); iter.advance()) {
 			Team *team = iter.cur();
 			if (!team) {
@@ -2100,11 +2142,16 @@ void Player::killPlayer(void)
 	}
 
 	m_money.withdraw(m_money.countMoney()); // force $$$ to 0 on death
+#endif // if 0
 }
 
 //=============================================================================
 void Player::setObjectsEnabled(AsciiString templateTypeToAffect, Bool enable)
 {
+(void) templateTypeToAffect;
+(void) enable;
+DEBUG_CRASH(("Player::setObjectsEnabled not yet implemented!"));
+#if 0
 	for (PlayerTeamList::iterator it = m_playerTeamPrototypes.begin(); 
 			 it != m_playerTeamPrototypes.end(); ++it) {
 		for (DLINK_ITERATOR<Team> iter = (*it)->iterate_TeamInstanceList(); !iter.done(); iter.advance()) {
@@ -2126,6 +2173,7 @@ void Player::setObjectsEnabled(AsciiString templateTypeToAffect, Bool enable)
 			}
 		}
 	}
+#endif // if 0
 }
 
 //=============================================================================
@@ -2178,6 +2226,9 @@ void Player::transferAssetsFromThat(Player *that)
 //=============================================================================
 void Player::garrisonAllUnits(CommandSourceType source)
 {
+(void) source;
+DEBUG_CRASH(("Player::garrisonAllUnits not yet implemented!"));
+#if 0
 	PartitionFilterAcceptByKindOf f1(MAKE_KINDOF_MASK(KINDOF_STRUCTURE), KINDOFMASK_NONE);
 	PartitionFilter *filters[] = { &f1, NULL };
 
@@ -2226,11 +2277,15 @@ void Player::garrisonAllUnits(CommandSourceType source)
 			}
 		}
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::ungarrisonAllUnits(CommandSourceType source)
 {
+(void) source;
+DEBUG_CRASH(("Player::ungarrisonAllUnits not yet implemented!"));
+#if 0
 	for (PlayerTeamList::iterator it = m_playerTeamPrototypes.begin(); 
 			 it != m_playerTeamPrototypes.end(); ++it) {
 		for (DLINK_ITERATOR<Team> iter = (*it)->iterate_TeamInstanceList(); !iter.done(); iter.advance()) {
@@ -2259,12 +2314,16 @@ void Player::ungarrisonAllUnits(CommandSourceType source)
 			}
 		}
 	}
+#endif // if 0
 }
 
 
 //=============================================================================
 void Player::setUnitsShouldIdleOrResume(Bool idle)
 {
+(void) idle;
+DEBUG_CRASH(("Player::setUnitsShouldIdleOrResume not yet implemented!"));
+#if 0
 	for (PlayerTeamList::iterator it = m_playerTeamPrototypes.begin(); 
 			 it != m_playerTeamPrototypes.end(); ++it) 
 	{
@@ -2305,6 +2364,7 @@ void Player::setUnitsShouldIdleOrResume(Bool idle)
 			}
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------
@@ -2444,7 +2504,7 @@ void Player::doBountyForKill(const Object* killer, const Object* victim)
 	if( bounty )
 	{
 
-		getMoney()->deposit( bounty );
+		getMoney()->deposit( (UnsignedInt)bounty );
 		m_scoreKeeper.addMoneyEarned( bounty );
 
 		//Display cash income floating over the recipient.
@@ -2534,6 +2594,10 @@ void Player::resetSciences()
 /// returns TRUE if sciences were gained/lost.
 Bool Player::addScience(ScienceType science)
 {
+(void) science;
+DEBUG_CRASH(("Player::killPlayer not yet implemented!"));
+return false;
+#if 0
 	if (hasScience(science))
 		return false;
 
@@ -2581,11 +2645,15 @@ Bool Player::addScience(ScienceType science)
 	TheScriptEngine->notifyOfAcquiredScience(getPlayerIndex(), science);
 	
 	return true;
+#endif // if 0
 }
 
 //=============================================================================
 void Player::addSciencePurchasePoints(Int delta)
 {
+(void) delta;
+DEBUG_CRASH(("Player::addSciencePurchasePoints not yet implemented!"));
+#if 0
 	//DEBUG_LOG(("Adding SciencePurchasePoints %d -> %d\n",m_sciencePurchasePoints,m_sciencePurchasePoints+delta));
 	Int oldSPP = m_sciencePurchasePoints;
 	m_sciencePurchasePoints += delta;
@@ -2595,11 +2663,16 @@ void Player::addSciencePurchasePoints(Int delta)
 	if (oldSPP != m_sciencePurchasePoints && TheControlBar != NULL)
 		TheControlBar->onPlayerSciencePurchasePointsChanged(this);
 
+#endif // if 0
 }
 
 //=============================================================================
 Bool Player::attemptToPurchaseScience(ScienceType science)
 {
+(void) science;
+DEBUG_CRASH(("Player::attemptToPurchaseScience not yet implemented!"));
+return false;
+#if 0
 	if (!isCapableOfPurchasingScience(science))
 	{
 		DEBUG_CRASH(("isCapableOfPurchasingScience: need other prereqs/points to purchase, request is ignored!\n"));
@@ -2610,7 +2683,7 @@ Bool Player::attemptToPurchaseScience(ScienceType science)
 	addSciencePurchasePoints(-cost);
 	addScience(science);
 
-	getAcademyStats()->recordGeneralsPointsSpent( cost );
+	getAcademyStats()->recordGeneralsPointsSpent( (UnsignedInt)cost );
 	
 	if( ThePlayerList->getLocalPlayer() == this )
 	{
@@ -2618,6 +2691,7 @@ Bool Player::attemptToPurchaseScience(ScienceType science)
 	}
 
 	return true;
+#endif // if 0
 }
 
 //=============================================================================
@@ -2685,6 +2759,10 @@ void Player::resetRank()
 /// returns TRUE if rank level really changed.
 Bool Player::setRankLevel(Int newLevel)
 {
+(void) newLevel;
+DEBUG_CRASH(("Player::setRankLevel not yet implemented!"));
+return false;
+#if 0
 	if (newLevel < 1) 
 		newLevel = 1;
 	else if (newLevel > TheRankInfoStore->getRankLevelCount())
@@ -2755,6 +2833,7 @@ Bool Player::setRankLevel(Int newLevel)
 	}
 
 	return true;
+#endif // if 0
 }
 
 //=============================================================================
@@ -2960,7 +3039,7 @@ Bool Player::canAffordBuild( const ThingTemplate *whatToBuild ) const
 {
 	// make sure we have enough money to build this
 	const Money *money = getMoney();
-	if( whatToBuild->calcCostToBuild( this ) <= money->countMoney() )
+	if( whatToBuild->calcCostToBuild( this ) <= (Int)money->countMoney() )
 	{
 		return true;
 	}
@@ -3036,6 +3115,11 @@ Bool Player::hasUpgradeInProduction( const UpgradeTemplate *upgradeTemplate )
 //=================================================================================================
 Upgrade *Player::addUpgrade( const UpgradeTemplate *upgradeTemplate, UpgradeStatusType status )
 {
+(void) upgradeTemplate;
+(void) status;
+DEBUG_CRASH(("Player::addUpgrade not yet implemented!"));
+return nullptr;
+#if 0
 	Upgrade *u = findUpgrade( upgradeTemplate );
 
 	// if no upgrade instance found, make a new one
@@ -3076,7 +3160,7 @@ Upgrade *Player::addUpgrade( const UpgradeTemplate *upgradeTemplate, UpgradeStat
 	}
 
 	return u;
-
+#endif // if 0
 }  // end addUpgrade
 
 //=================================================================================================
@@ -3085,6 +3169,9 @@ Upgrade *Player::addUpgrade( const UpgradeTemplate *upgradeTemplate, UpgradeStat
 */  
 void Player::onUpgradeCompleted( const UpgradeTemplate *upgradeTemplate )
 {
+(void) upgradeTemplate;
+DEBUG_CRASH(("Player::onUpgradeCompleted not yet implemented!"));
+#if 0
 	for (PlayerTeamList::iterator it = m_playerTeamPrototypes.begin(); 
 			 it != m_playerTeamPrototypes.end(); ++it) 
 	{
@@ -3110,6 +3197,7 @@ void Player::onUpgradeCompleted( const UpgradeTemplate *upgradeTemplate )
 			}
 		}
 	}
+#endif // if 0
 }
 
 //=================================================================================================
@@ -3117,6 +3205,9 @@ void Player::onUpgradeCompleted( const UpgradeTemplate *upgradeTemplate )
 //=================================================================================================
 void Player::removeUpgrade( const UpgradeTemplate *upgradeTemplate )
 {
+(void) upgradeTemplate;
+DEBUG_CRASH(("Player::removeUpgrade not yet implemented!"));
+#if 0
 	Upgrade *upgrade = findUpgrade( upgradeTemplate );
 	
 	if( upgrade )
@@ -3142,7 +3233,7 @@ void Player::removeUpgrade( const UpgradeTemplate *upgradeTemplate )
 	}
 
 	}  // end if
-
+#endif // if 0
 }  // end removeUpgrade
 
 
@@ -3369,9 +3460,13 @@ UnsignedInt Player::getOrStartSpecialPowerReadyFrame( const SpecialPowerTemplate
 //-------------------------------------------------------------------------------------------------
 void Player::friend_applyDifficultyBonusesForObject(Object* obj, Bool apply) const
 {
+(void) obj;
+(void) apply;
+DEBUG_CRASH(("Player::friend_applyDifficultyBonusesForObject not yet implemented!"));
+#if 0
 	if (TheGameLogic->isInSinglePlayerGame())
 	{
-		Real healthFactor = TheGlobalData->m_soloPlayerHealthBonusForDifficulty[getPlayerType()][getPlayerDifficulty()];
+		Real healthFactor = TheGlobalData->m_data.m_soloPlayerHealthBonusForDifficulty[getPlayerType()][getPlayerDifficulty()];
 		if (healthFactor != 1.0f)
 		{
 			BodyModuleInterface* body = obj->getBodyModule();
@@ -3398,7 +3493,7 @@ void Player::friend_applyDifficultyBonusesForObject(Object* obj, Bool apply) con
 		else
 			obj->clearWeaponBonusCondition(wbonus[getPlayerType()][getPlayerDifficulty()]);
 	}
-
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3466,6 +3561,8 @@ void Player::changeBattlePlan( BattlePlanStatus plan, Int delta, BattlePlanBonus
 			}
 			break;
 		}
+		default:
+			break;
 	}
 	if( addBonus )
 	{
@@ -3474,8 +3571,8 @@ void Player::changeBattlePlan( BattlePlanStatus plan, Int delta, BattlePlanBonus
 	else if( removeBonus )
 	{
 		//First, inverse the bonuses
-		bonus->m_armorScalar				= 1.0f / __max( bonus->m_armorScalar, 0.01f );
-		bonus->m_sightRangeScalar		= 1.0f / __max( bonus->m_sightRangeScalar, 0.01f );
+		bonus->m_armorScalar				= 1.0f / max( bonus->m_armorScalar, 0.01f );
+		bonus->m_sightRangeScalar		= 1.0f / max( bonus->m_sightRangeScalar, 0.01f );
 		if( bonus->m_bombardment > 0 )
 		{
 			bonus->m_bombardment			= -1;
@@ -3510,6 +3607,8 @@ Int Player::getBattlePlansActiveSpecific( BattlePlanStatus plan ) const
 		{
 			return m_searchAndDestroyBattlePlans;
 		}
+		default:
+			break;
 	}
 	return 0;
 }
@@ -3517,6 +3616,10 @@ Int Player::getBattlePlansActiveSpecific( BattlePlanStatus plan ) const
 //------------------------------------------------------------------------------------------------
 static void localApplyBattlePlanBonusesToObject( Object *obj, void *userData )
 {
+(void) obj;
+(void) userData;
+DEBUG_CRASH(("localApplyBattlePlanBonusesToObject not yet implemented!"));
+#if 0
 	const BattlePlanBonuses* bonus = (const BattlePlanBonuses*)userData;
 	Object *objectToValidate = obj;
 	Object *objectToModify = obj;
@@ -3589,6 +3692,7 @@ static void localApplyBattlePlanBonusesToObject( Object *obj, void *userData )
 			}
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3607,8 +3711,8 @@ void Player::removeBattlePlanBonusesForObject( Object *obj ) const
 	//Copy bonuses, and invert them.
 	BattlePlanBonuses* bonus = newInstance(BattlePlanBonuses);
 	*bonus = *m_battlePlanBonuses;
-	bonus->m_armorScalar					= 1.0f / __max( bonus->m_armorScalar, 0.01f );
-	bonus->m_sightRangeScalar			= 1.0f / __max( bonus->m_sightRangeScalar, 0.01f );
+	bonus->m_armorScalar					= 1.0f / max( bonus->m_armorScalar, 0.01f );
+	bonus->m_sightRangeScalar			= 1.0f / max( bonus->m_sightRangeScalar, 0.01f );
 	bonus->m_bombardment					= -ALL_PLANS; //Safe to remove as it clears the weapon bonus flag
 	bonus->m_searchAndDestroy			= -ALL_PLANS; //Safe to remove as it clears the weapon bonus flag
 	bonus->m_holdTheLine					= -ALL_PLANS; //Safe to remove as it clears the weapon bonus flag
@@ -3700,7 +3804,7 @@ void Player::processSelectTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
 	
 	for (Int i = 0; i < numObjs; ++i) 
 	{
-		m_currentSelection->addObject(objectList[i]);
+		m_currentSelection->addObject(objectList.data()[i]);
 	}
 
 	if( numObjs > 0 )
@@ -3731,7 +3835,7 @@ void Player::processAddTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
 	Int numObjs = objectList.size();
 
 	for (Int i = 0; i < numObjs; ++i) {
-		m_currentSelection->addObject(objectList[i]);
+		m_currentSelection->addObject(objectList.data()[i]);
 	}
 }
 
@@ -3803,6 +3907,9 @@ void Player::removeObjectFromHotkeySquad(Object *objToRemove)
 /** Select a hotkey team based on this GameMessage */
 //-------------------------------------------------------------------------------------------------
 void Player::addAIGroupToCurrentSelection(AIGroup *group) {
+(void) group;
+DEBUG_CRASH(("Player::addAIGroupToCurrentSelection not yet implemented!"));
+#if 0
 	if (group == NULL) {
 		return;
 	}
@@ -3816,6 +3923,7 @@ void Player::addAIGroupToCurrentSelection(AIGroup *group) {
 	for (Int i = 0; i < numObjs; ++i) {
 		m_currentSelection->addObjectID(objectIDVec[i]);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3913,9 +4021,9 @@ Bool Player::getAttackedBy( Int playerNdx ) const
 // Little wrapper function so I can use it in iterateObjects, which is cool.
 struct VisionSpiedStruct
 {
-	Bool setting;
-	KindOfMaskType whichUnits;
-	PlayerIndex byWhom;
+	Bool setting {};
+	KindOfMaskType whichUnits {};
+	PlayerIndex byWhom {};
 };
 
 static void iterator_setUnitsVisionSpied( Object *obj, void * voidData)

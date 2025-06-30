@@ -48,6 +48,11 @@ class AISkirmishPlayer : public AIPlayer
 public:	 // AISkirmish specific methods.
 
 	AISkirmishPlayer( Player *p );							///< constructor
+
+	// No copies allowed!
+	AISkirmishPlayer(const AISkirmishPlayer&) = delete;
+	AISkirmishPlayer& operator=(const AISkirmishPlayer&) = delete;
+
 	virtual Bool computeSuperweaponTarget(const SpecialPowerTemplate *power, Coord3D *pos, Int playerNdx, Real weaponRadius); ///< Calculates best pos for weapon given radius.
 
 public:	// AIPlayer interface methods.  

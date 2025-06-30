@@ -71,6 +71,7 @@ enum BuildableStatus: int;
 
 #if 0
 typedef const CommandButton* ConstCommandButtonPtr;
+#endif // if 0
 
 // What kind of game we're in.
 enum
@@ -91,6 +92,7 @@ enum
 };
 
 
+#if 0
 /// Function pointers for use by GameLogic callback functions.
 typedef void (*GameLogicFuncPtr)( Object *obj, void *userData ); 
 //typedef std::hash_map<ObjectID, Object *, rts::hash<ObjectID>, rts::equal_to<ObjectID> > ObjectPtrHash;
@@ -143,9 +145,9 @@ public:
 	Real getWidth( void );													///< Returns the width of the world
 	void setHeight( Real height );									///< Sets the height of the world
 	Real getHeight( void );													///< Returns the height of the world
+#endif // if 0
 
 	Bool isInGameLogicUpdate( void ) const { return m_isInUpdate; }
-#endif // if 0
 	UnsignedInt getFrame( void );										///< Returns the current simulation frame number
 #if 0
 	UnsignedInt getCRC( Int mode = CRC_CACHED, AsciiString deepCRCFileName = AsciiString::TheEmptyString );		///< Returns the CRC
@@ -184,6 +186,7 @@ public:
 	void setLoadingMap( Bool loading ) { m_loadingMap = loading; }
 	void setLoadingSave( Bool loading ) { m_loadingSave = loading; }
 	void setClearingGameData( Bool clearing ) { m_clearingGameData = clearing; }
+#endif // if 0
 	
 	void setGameMode( Int mode );
 	Int getGameMode( void );
@@ -195,7 +198,8 @@ public:
 	Bool isInInternetGame( void );
 	Bool isInShellGame( void );
 	Bool isInMultiplayerGame( void );
-
+	
+#if 0
 	//Kris: Cut isLoadingGame() and replaced with isLoadingMap() and isLoadingSave() -- reason: nomenclature
 	//Bool isLoadingGame() const { return m_loadingScene; }		// This is the old function that isn't very clear on it's definition.
 	Bool isLoadingMap() const { return m_loadingMap; }			// Whenever a map is in the process of loading.
@@ -242,6 +246,7 @@ public:
 	void timeOutGameStart( void );
 	void initTimeOutValues( void );
 	UnsignedInt getObjectCount( void );
+#endif // if 0
 
 	Int getRankLevelLimit() const { return m_rankLevelLimit; }
 	void setRankLevelLimit(Int limit) 
@@ -250,6 +255,7 @@ public:
 		m_rankLevelLimit = limit; 
 	}
 	
+#if 0
 	// We need to allow access to this, because on a restartGame, we need to restart with the settings we started with
 	Int getRankPointsToAddAtGameStart() const { return m_rankPointsToAddAtGameStart; }
 #endif // if 0
@@ -312,8 +318,8 @@ private:
 	typedef std::unordered_map< AsciiString, ConstCommandButtonPtr, rts::hash<AsciiString>, rts::equal_to<AsciiString> > ControlBarOverrideMap;
 	ControlBarOverrideMap m_controlBarOverrides;
 
-	Real m_width, m_height;																	///< Dimensions of the world
 #endif // if 0
+	Real m_width {}, m_height {};																	///< Dimensions of the world
 	UnsignedInt m_frame {};																		///< Simulation frame number
 
 #if 0
@@ -322,21 +328,21 @@ private:
 	std::map<Int, UnsignedInt> m_cachedCRCs;								///< CRCs we've seen this frame
 	Bool m_shouldValidateCRCs;															///< Should we validate CRCs this frame?
 	//-----------------------------------------------------------------------------------------------
+#endif // if 0
 
 	//Added By Sadullah Nader
 	//Used to for load scene
 	//Bool m_loadingScene;
-	Bool m_loadingMap;
-	Bool m_loadingSave;
-	Bool m_clearingGameData;
+	Bool m_loadingMap {};
+	Bool m_loadingSave {};
+	Bool m_clearingGameData {};
 
-	Bool m_isInUpdate;
+	Bool m_isInUpdate {};
 
-	Int m_rankPointsToAddAtGameStart;
+	Int m_rankPointsToAddAtGameStart {};
 
-	Bool m_isScoringEnabled;
-	Bool m_showBehindBuildingMarkers;	//used by designers to override the user setting for cinematics
-#endif // if 0
+	Bool m_isScoringEnabled {};
+	Bool m_showBehindBuildingMarkers {};	//used by designers to override the user setting for cinematics
 	Bool m_drawIconUI {};
 #if 0
 	Bool m_showDynamicLOD;	//used by designers to override the user setting for cinematics
@@ -362,16 +368,14 @@ private:
 	std::list<UpdateModulePtr> m_normalUpdates;
 #endif
 
-#if 0
 	UpdateModulePtr					 m_curUpdateModule {};
-#endif // if 0
 
 	ObjectPointerList m_objectsToDestroy {};										///< List of things that need to be destroyed at end of frame
 
 	ObjectID m_nextObjID {};																		///< For allocating object id's
 
-#if 0
 	void setDefaults( Bool loadSaveGame );									///< Set default values of class object
+#if 0
 	void processDestroyList( void );												///< Destroy all pending objects on the destroy list
 
 	void destroyAllObjectsImmediate();											///< destroy, and process destroy list immediately
@@ -379,10 +383,10 @@ private:
 	/// factory for TheTerrainLogic, called from init()
 	virtual TerrainLogic *createTerrainLogic( void );
 	virtual GhostObjectManager *createGhostObjectManager(void);
-
-	Int m_gameMode;
-	Int m_rankLevelLimit;
 #endif // if 0
+
+	Int m_gameMode {};
+	Int m_rankLevelLimit {};
 	UnsignedShort m_superweaponRestriction {};
 
 #if 0
@@ -432,7 +436,6 @@ inline Real GameLogic::getHeight( void ) { return m_height; }
 #endif // if 0
 inline UnsignedInt GameLogic::getFrame( void ) { return m_frame; }
 
-#if 0
 inline Bool GameLogic::isInGame( void ) { return !(m_gameMode == GAME_NONE); }
 inline void GameLogic::setGameMode( Int mode ) { m_gameMode = mode; }
 inline Int  GameLogic::getGameMode( void ) { return m_gameMode; }
@@ -442,7 +445,6 @@ inline Bool GameLogic::isInMultiplayerGame( void ) { return ((m_gameMode == GAME
 inline Bool GameLogic::isInReplayGame( void ) { return (m_gameMode == GAME_REPLAY); }
 inline Bool GameLogic::isInInternetGame( void ) { return (m_gameMode == GAME_INTERNET); }
 inline Bool GameLogic::isInShellGame( void ) { return (m_gameMode == GAME_SHELL); }
-#endif // if 0
 inline UnsignedShort GameLogic::getSuperweaponRestriction() const { return m_superweaponRestriction; }
 
 inline Object* GameLogic::findObjectByID( ObjectID id )

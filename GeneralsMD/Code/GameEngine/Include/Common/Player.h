@@ -123,9 +123,9 @@ class KindOfPercentProductionChange : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(KindOfPercentProductionChange, "KindOfPercentProductionChange")		
 public:
-	KindOfMaskType		m_kindOf;
-	Real							m_percent;
-	UnsignedInt				m_ref;
+	KindOfMaskType		m_kindOf {};
+	Real				m_percent {};
+	UnsignedInt			m_ref {};
 };
 EMPTY_DTOR(KindOfPercentProductionChange)
 
@@ -163,7 +163,7 @@ public:
 
 	/** @todo I'm jsut wrappign this up in a nice snapshot object, we really should isolate
 		* m_map from public access and make access methods for our operations */
-	PlayerRelationMapType m_map;
+	PlayerRelationMapType m_map {};
 
 protected:
 
@@ -271,10 +271,10 @@ public:
 
 	// Can we afford to build?
 	Bool canAffordBuild( const ThingTemplate *whatToBuild ) const;
-  
-  // Check MaxSimultaneousOfType
-  Bool canBuildMoreOfType( const ThingTemplate *whatToBuild ) const;
-  
+
+	// Check MaxSimultaneousOfType
+	Bool canBuildMoreOfType( const ThingTemplate *whatToBuild ) const;
+
 	/// Difficulty level for this player.
 	GameDifficulty getPlayerDifficulty(void) const;
 
@@ -738,97 +738,97 @@ protected:
 
 private:
 
-	const PlayerTemplate*				m_playerTemplate;			///< Pointer back to the Player Template
+	const PlayerTemplate*			m_playerTemplate {};			///< Pointer back to the Player Template
 
-	UnicodeString								m_playerDisplayName;					///< This player's persistent name.
-	Handicap										m_handicap;										///< adjustment to varied capabilities (@todo: is this persistent or recalced each time?)
-	AsciiString									m_playerName;									///< player's itnernal name 9for matching map objects)
-	NameKeyType									m_playerNameKey;							///< This player's internal name (for matching map objects)
-	PlayerIndex									m_playerIndex;								///< player unique index.
-	AsciiString									m_side;												///< the "side" this player is on
-	AsciiString									m_baseSide;											///< the base side, GLA, USA, or China
-	PlayerType									m_playerType;									///< human/computer control
-	Money												m_money;											///< Player's current wealth
-	Upgrade*										m_upgradeList;								///< list of all upgrades this player has
-	Int													m_radarCount;									///< # of facilities that have a radar under the players control
-	Int													m_disableProofRadarCount;			///< # of disable proof radars.  A disable proof one will be in both refcounts
-	Bool												m_radarDisabled;							///< The radar is disabled regardless of the number of radar objects
-	Int													m_bombardBattlePlans;					///< Number of strategy centers with active bombardment plan
-	Int													m_holdTheLineBattlePlans;			///< Number of strategy centers with active hold the line plan
-	Int													m_searchAndDestroyBattlePlans;///< Number of strategy centers with active search and destroy plan
-	BattlePlanBonuses*					m_battlePlanBonuses;
-	UpgradeMaskType							m_upgradesInProgress;					///< Bit field of in Production status upgrades
-	UpgradeMaskType							m_upgradesCompleted;					///< Bit field of upgrades completed.  Bits are assigned by UpgradeCenter
-	Energy											m_energy;											///< current energy production & consumption
-	MissionStats								m_stats;											///< stats about the current mission (units destroyed, etc)
-	BuildListInfo*							m_pBuildList;									///< linked list of buildings for PLAYER_COMPUTER.
-	Color												m_color;											///< color for our units
-	Color												m_nightColor;	///<tweaked version of regular color to make it easier to see on night maps.
-	ProductionChangeMap					m_productionCostChanges;			///< Map to keep track of Faction specific discounts or penalties on prices of units
-	ProductionChangeMap					m_productionTimeChanges;			///< Map to keep track of Faction specific discounts or penalties on build times of units
-	ProductionVeterancyMap			m_productionVeterancyLevels;	///< Map to keep track of starting level of produced units
-	AIPlayer*										m_ai;													///< if PLAYER_COMPUTER, the entity that does the thinking
-	Int													m_mpStartIndex;								///< The player's starting index for multiplayer.
-	ResourceGatheringManager*		m_resourceGatheringManager;		///< Keeps track of all Supply Centers and Warehouses
-	TunnelTracker*							m_tunnelSystem;								///< All TunnelContain buildings use this part of me for actual conatinment
-	Team*												m_defaultTeam;								///< our "default" team.
+	UnicodeString					m_playerDisplayName {};					///< This player's persistent name.
+	Handicap						m_handicap {};										///< adjustment to varied capabilities (@todo: is this persistent or recalced each time?)
+	AsciiString						m_playerName {};									///< player's itnernal name 9for matching map objects)
+	NameKeyType						m_playerNameKey {};							///< This player's internal name (for matching map objects)
+	PlayerIndex						m_playerIndex {};								///< player unique index.
+	AsciiString						m_side {};												///< the "side" this player is on
+	AsciiString						m_baseSide {};											///< the base side, GLA, USA, or China
+	PlayerType						m_playerType {};									///< human/computer control
+	Money							m_money {};											///< Player's current wealth
+	Upgrade*						m_upgradeList {};								///< list of all upgrades this player has
+	Int								m_radarCount {};									///< # of facilities that have a radar under the players control
+	Int								m_disableProofRadarCount {};			///< # of disable proof radars.  A disable proof one will be in both refcounts
+	Bool							m_radarDisabled {};							///< The radar is disabled regardless of the number of radar objects
+	Int								m_bombardBattlePlans {};					///< Number of strategy centers with active bombardment plan
+	Int								m_holdTheLineBattlePlans {};			///< Number of strategy centers with active hold the line plan
+	Int								m_searchAndDestroyBattlePlans {};///< Number of strategy centers with active search and destroy plan
+	BattlePlanBonuses*				m_battlePlanBonuses {};
+	UpgradeMaskType					m_upgradesInProgress {};					///< Bit field of in Production status upgrades
+	UpgradeMaskType					m_upgradesCompleted {};					///< Bit field of upgrades completed.  Bits are assigned by UpgradeCenter
+	Energy							m_energy {};											///< current energy production & consumption
+	MissionStats					m_stats {};											///< stats about the current mission (units destroyed, etc)
+	BuildListInfo*					m_pBuildList {};									///< linked list of buildings for PLAYER_COMPUTER.
+	Color							m_color {};											///< color for our units
+	Color							m_nightColor {};	///<tweaked version of regular color to make it easier to see on night maps.
+	ProductionChangeMap				m_productionCostChanges {};			///< Map to keep track of Faction specific discounts or penalties on prices of units
+	ProductionChangeMap				m_productionTimeChanges {};			///< Map to keep track of Faction specific discounts or penalties on build times of units
+	ProductionVeterancyMap			m_productionVeterancyLevels {};	///< Map to keep track of starting level of produced units
+	AIPlayer*						m_ai {};													///< if PLAYER_COMPUTER, the entity that does the thinking
+	Int								m_mpStartIndex {};								///< The player's starting index for multiplayer.
+	ResourceGatheringManager*		m_resourceGatheringManager {};		///< Keeps track of all Supply Centers and Warehouses
+	TunnelTracker*					m_tunnelSystem {};								///< All TunnelContain buildings use this part of me for actual conatinment
+	Team*							m_defaultTeam {};								///< our "default" team.
 
-	ScienceVec						m_sciences;					///< (SAVE) sciences that we know (either intrinsically or via later purchases)
-	ScienceVec						m_sciencesDisabled;	///< (SAVE) sciences that we are not permitted to purchase "yet". Controlled by mission scripts.
-	ScienceVec						m_sciencesHidden;		///< (SAVE) sciences that aren't shown. Controlled by mission scripts.
+	ScienceVec						m_sciences {};					///< (SAVE) sciences that we know (either intrinsically or via later purchases)
+	ScienceVec						m_sciencesDisabled {};	///< (SAVE) sciences that we are not permitted to purchase "yet". Controlled by mission scripts.
+	ScienceVec						m_sciencesHidden {};		///< (SAVE) sciences that aren't shown. Controlled by mission scripts.
 	
-	Int										m_rankLevel;			///< (SAVE) our RankLevel, 1...n
-	Int										m_skillPoints;		///< (SAVE) our cumulative SkillPoint total
-	Int										m_sciencePurchasePoints;		///< (SAVE) our unspent SciencePurchasePoint total
-	Int										m_levelUp, m_levelDown;			///< (NO-SAVE) skill points to go up/down a level (runtime only)
-	UnicodeString					m_generalName;		///< (SAVE) This is the name of the general the player is allowed to change.
+	Int								m_rankLevel {};			///< (SAVE) our RankLevel, 1...n
+	Int								m_skillPoints {};		///< (SAVE) our cumulative SkillPoint total
+	Int								m_sciencePurchasePoints {};		///< (SAVE) our unspent SciencePurchasePoint total
+	Int								m_levelUp {}, m_levelDown {};			///< (NO-SAVE) skill points to go up/down a level (runtime only)
+	UnicodeString					m_generalName {};		///< (SAVE) This is the name of the general the player is allowed to change.
 	
-	PlayerTeamList				m_playerTeamPrototypes;				///< ALL the teams we control, via prototype
-	PlayerRelationMap			*m_playerRelations;						///< allies & enemies
-	TeamRelationMap				*m_teamRelations;							///< allies & enemies
+	PlayerTeamList					m_playerTeamPrototypes {};				///< ALL the teams we control, via prototype
+	PlayerRelationMap				*m_playerRelations {};						///< allies & enemies
+	TeamRelationMap					*m_teamRelations {};							///< allies & enemies
 	
-	AcademyStats					m_academyStats;				///< Keeps track of various statistics in order to provide advice to the player about how to improve playing.
+	AcademyStats					m_academyStats {};				///< Keeps track of various statistics in order to provide advice to the player about how to improve playing.
 
-	Bool									m_canBuildUnits;		///< whether the current player is allowed to build units
-	Bool									m_canBuildBase;			///< whether the current player is allowed to build Base buildings
-	Bool									m_observer;
-	Bool									m_isPreorder;
-	Real									m_skillPointsModifier;	///< Multiplied by skill points before they are applied
+	Bool							m_canBuildUnits {};		///< whether the current player is allowed to build units
+	Bool							m_canBuildBase {};			///< whether the current player is allowed to build Base buildings
+	Bool							m_observer {};
+	Bool							m_isPreorder {};
+	Real							m_skillPointsModifier {};	///< Multiplied by skill points before they are applied
 
-	Bool									m_listInScoreScreen;	///< should this player be listed in the score screen or not.
-	Bool									m_unitsShouldHunt;
+	Bool							m_listInScoreScreen {};	///< should this player be listed in the score screen or not.
+	Bool							m_unitsShouldHunt {};
 
-	Bool									m_attackedBy[MAX_PLAYER_COUNT];	///< For each player, have they attacked me?
-	UnsignedInt						m_attackedFrame;	///< Last frame attacked.
+	Bool							m_attackedBy[MAX_PLAYER_COUNT];	///< For each player, have they attacked me?
+	UnsignedInt						m_attackedFrame {};	///< Last frame attacked.
 	
-	Real									m_cashBountyPercent;
+	Real							m_cashBountyPercent {};
 
 	/// @todo REMOVE (not disable) these cheat keys
 #if defined(_DEBUG) || defined(_INTERNAL)
-	Bool									m_DEMO_ignorePrereqs;		///< Can I ignore prereq checks?
-	Bool									m_DEMO_freeBuild;				///< Can I build everything for no money?
+	Bool							m_DEMO_ignorePrereqs {};		///< Can I ignore prereq checks?
+	Bool							m_DEMO_freeBuild {};				///< Can I build everything for no money?
 #endif
 
 #if defined(_DEBUG) || defined(_INTERNAL) || defined(_ALLOW_DEBUG_CHEATS_IN_RELEASE)
-	Bool									m_DEMO_instantBuild;		///< Can I build anything in one frame?
+	Bool							m_DEMO_instantBuild {};		///< Can I build anything in one frame?
 #endif
 
-	ScoreKeeper						m_scoreKeeper;					///< The local scorekeeper for this player
+	ScoreKeeper						m_scoreKeeper {};					///< The local scorekeeper for this player
 
 	typedef std::list<KindOfPercentProductionChange*> KindOfPercentProductionChangeList;
 	typedef KindOfPercentProductionChangeList::iterator KindOfPercentProductionChangeListIt;
-	mutable KindOfPercentProductionChangeList m_kindOfPercentProductionChangeList;
-	
+	mutable KindOfPercentProductionChangeList m_kindOfPercentProductionChangeList {};
+
 
 	typedef std::list<SpecialPowerReadyTimerType> SpecialPowerReadyTimerList;
 	typedef SpecialPowerReadyTimerList::iterator SpecialPowerReadyTimerListIterator;
-	SpecialPowerReadyTimerList m_specialPowerReadyTimerList;
+	SpecialPowerReadyTimerList m_specialPowerReadyTimerList {};
 
-	Squad									*m_squads[NUM_HOTKEY_SQUADS];	///< The hotkeyed squads
-	Squad									*m_currentSelection;		///< This player's currently selected group
+	Squad							*m_squads[NUM_HOTKEY_SQUADS];	///< The hotkeyed squads
+	Squad							*m_currentSelection {};		///< This player's currently selected group
 
-	Bool									m_isPlayerDead;
-	Bool									m_logicalRetaliationModeEnabled;
+	Bool							m_isPlayerDead {};
+	Bool							m_logicalRetaliationModeEnabled {};
 };
 
 #endif // _PLAYER_H_

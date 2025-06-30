@@ -45,7 +45,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Common/DataChunk.h"
+// #include "Common/DataChunk.h"
 #include "Common/GameState.h"
 #include "Common/PlayerTemplate.h"
 #include "Common/WellKnownKeys.h"
@@ -88,8 +88,9 @@ void SidesInfo::init(const Dict* d)
 	m_pBuildList->deleteInstance();
 	m_pBuildList = NULL;
 	m_dict.clear();
-	if (m_scripts) 
-		m_scripts->deleteInstance();
+	// FIXME: ScriptList
+	// if (m_scripts) 
+	// 	m_scripts->deleteInstance();
 	m_scripts = NULL;
 	if (d)
 		m_dict = *d;
@@ -118,9 +119,10 @@ SidesInfo& SidesInfo::operator=(const SidesInfo& that)
 			thisBLTail = thisBL;
 		}
 
-		if (that.m_scripts)
-			this->m_scripts = that.m_scripts->duplicate();
-		else
+		// FIXME: ScriptList
+		// if (that.m_scripts)
+		// 	this->m_scripts = that.m_scripts->duplicate();
+		// else
 			this->m_scripts = NULL;
 	}
 	return *this;
@@ -240,8 +242,13 @@ void SidesList::clear(void)
 *	Input: DataChunkInput 
 *		
 */
-Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /*userData*/)
 {
+DEBUG_CRASH(("SidesList::ParseSidesDataChunk not yet implemented!"));
+(void) file;
+(void) info;
+return false;
+#if 0
 	DEBUG_ASSERTCRASH(TheSidesList, ("TheSidesList is null"));
 
 	if (TheSidesList==NULL) 
@@ -271,7 +278,7 @@ Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, v
 			pBuildList->setLocation(loc);
 			pBuildList->setAngle(file.readReal());
 			pBuildList->setInitiallyBuilt(file.readByte());
-			pBuildList->setNumRebuilds(file.readInt());
+			pBuildList->setNumRebuilds((UnsignedInt)file.readInt());
 			if (info->version >= K_SIDES_DATA_VERSION_3)
 			{
 				pBuildList->setScript(file.readAsciiString());
@@ -316,6 +323,7 @@ Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, v
 
 	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Incorrect data file length."));
 	return true;
+#endif // if 0
 }
 
 
@@ -324,20 +332,23 @@ Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, v
 * Format is the newer CHUNKY format.
 *	See SidesList::ParseSidesDataChunk for the reader.
 *	Input: DataChunkInput 
-*		
+*
 */
 void SidesList::WriteSidesDataChunk(DataChunkOutput &chunkWriter)
 {
+DEBUG_CRASH(("SidesList::WriteSidesDataChunk not yet implemented!"));
+(void) chunkWriter;
+#if 0
 	DEBUG_ASSERTCRASH(TheSidesList, ("TheSidesList is null"));
 	if (TheSidesList==NULL) 
 		return;
 	/**********HEIGHT MAP DATA ***********************/
-	chunkWriter.openDataChunk("SidesList", K_SIDES_DATA_VERSION_3);	
+	chunkWriter.openDataChunk("SidesList", K_SIDES_DATA_VERSION_3);
 	
 		chunkWriter.writeInt(TheSidesList->getNumSides());
 		Int i;
 		for (i=0; i<TheSidesList->getNumSides(); i++) {
-			chunkWriter.writeDict(*TheSidesList->getSideInfo(i)->getDict());	
+			chunkWriter.writeDict(*TheSidesList->getSideInfo(i)->getDict());
 			BuildListInfo* pBuildList = TheSidesList->getSideInfo(i)->getBuildList();
 			Int count = 0;
 			while (pBuildList) {
@@ -354,7 +365,7 @@ void SidesList::WriteSidesDataChunk(DataChunkOutput &chunkWriter)
 				chunkWriter.writeReal(pBuildList->getLocation()->z);
 				chunkWriter.writeReal(pBuildList->getAngle());
 				chunkWriter.writeByte(pBuildList->isInitiallyBuilt());
-				chunkWriter.writeInt(pBuildList->getNumRebuilds());
+				chunkWriter.writeInt((Int)pBuildList->getNumRebuilds());
 				// BEGIN stuff new to K_SIDES_DATA_VERSION_3
 				chunkWriter.writeAsciiString(pBuildList->getScript());
 				chunkWriter.writeInt(pBuildList->getHealth());
@@ -385,6 +396,7 @@ void SidesList::WriteSidesDataChunk(DataChunkOutput &chunkWriter)
 	DEBUG_ASSERTLOG(!modified, ("*** had to clean up sideslist on read"));
 	modified = false;	// silence compiler warnings in release build
 	
+#endif // if 0
 }
 
 TeamsInfo *SidesList::findTeamInfo(AsciiString name, Int* index /*= NULL*/)
@@ -431,7 +443,8 @@ static AsciiString static_readPlayerNames[MAX_PLAYER_COUNT];
 #define K_PLAYERS_NAMES_FOR_SCRIPTS_VERSION_1 1
 #define K_PLAYERS_NAMES_FOR_SCRIPTS_VERSION_2 2
 
-static Bool ParsePlayersDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+#if 0
+static Bool ParsePlayersDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /*userData*/)
 {
 	Int readDicts = 0;
 	if (info->version >= K_PLAYERS_NAMES_FOR_SCRIPTS_VERSION_2) {
@@ -456,7 +469,7 @@ static Bool ParsePlayersDataChunk(DataChunkInput &file, DataChunkInfo *info, voi
 *	Input: DataChunkInput 
 *		
 */
-static Bool ParseTeamsDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+static Bool ParseTeamsDataChunk(DataChunkInput &file, DataChunkInfo * /*info*/, void *userData)
 {
 	SidesList *sides = (SidesList *)userData;
 	while (!file.atEndOfChunk()) {
@@ -474,9 +487,12 @@ static Bool ParseTeamsDataChunk(DataChunkInput &file, DataChunkInfo *info, void 
 	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Unexpected data left over."));
 	return true;
 }
+#endif // if 0
 
 void SidesList::prepareForMP_or_Skirmish(void)
 {
+DEBUG_CRASH(("SidesList::prepareForMP_or_Skirmish not yet implemented!"));
+#if 0
 	m_skirmishTeamrec.clear();
 	Int i;
 	for (i = 0; i < getNumTeams(); i++)
@@ -559,6 +575,7 @@ void SidesList::prepareForMP_or_Skirmish(void)
 
 
 	}
+#endif // if 0
 }
 
 
@@ -841,7 +858,7 @@ validate_team_names:
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void SidesList::crc( Xfer *xfer )
+void SidesList::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc
@@ -909,31 +926,26 @@ void SidesList::loadPostProcess( void )
 */
 BuildListInfo::BuildListInfo(void) :
 m_nextBuildList(NULL),
-m_renderObj(NULL),
-m_shadowObj(NULL),
-m_isInitiallyBuilt(false),
-m_numRebuilds(0),
-m_angle(0),
 m_script(AsciiString::TheEmptyString),
 m_health(100),
 m_whiner(true),
 m_unsellable(false),
 m_repairable(true),
+m_renderObj(NULL),
+m_shadowObj(NULL),
 m_objectID(INVALID_ID),
 m_objectTimestamp(0),
 m_underConstruction(false),
 m_isSupplyBuilding(false),
 m_desiredGatherers(0),
 m_currentGatherers(0),
-m_automaticallyBuild(true),
-m_priorityBuild(false),
-m_buildingName(AsciiString::TheEmptyString)
+m_priorityBuild(false)
 {
 	// Added by Sadullah Nader
 	// these initialized values are necessary!!!
-	m_location.zero();
-	m_rallyPointOffset.x = 0.0f;
-	m_rallyPointOffset.y = 0.0f;
+	m_ini.m_location.zero();
+	m_ini.m_rallyPointOffset.x = 0.0f;
+	m_ini.m_rallyPointOffset.y = 0.0f;
 	m_selected = FALSE;
 
 	Int i;
@@ -968,20 +980,22 @@ void BuildListInfo::parseStructure(INI *ini, void *instance, void* /*store*/, co
 
 	static const FieldParse myFieldParse[] = 
 		{
-			{ "Name",				INI::parseAsciiString,		NULL, offsetof( BuildListInfo, m_buildingName	 ) },
-			{ "Location",		INI::parseCoord2D,				NULL, offsetof( BuildListInfo, m_location ) },
-      { "Rebuilds",		INI::parseInt,						NULL, offsetof( BuildListInfo, m_numRebuilds ) },
-      { "Angle",			INI::parseAngleReal,			NULL, offsetof( BuildListInfo, m_angle ) },
-      { "InitiallyBuilt",			INI::parseBool,		NULL, offsetof( BuildListInfo, m_isInitiallyBuilt ) },
-      { "RallyPointOffset",			INI::parseCoord2D,		NULL, offsetof( BuildListInfo, m_rallyPointOffset ) },
-      { "AutomaticallyBuild",			INI::parseBool,	NULL, offsetof( BuildListInfo, m_automaticallyBuild ) },
-			{ NULL,							NULL,											NULL, 0 }  // keep this last
+			{ "Name",					INI::parseAsciiString,	NULL, offsetof( BuildListInfo::IniData, m_buildingName ) },
+			{ "Location",				INI::parseCoord2D,		NULL, offsetof( BuildListInfo::IniData, m_location ) },
+			{ "Rebuilds",				INI::parseInt,			NULL, offsetof( BuildListInfo::IniData, m_numRebuilds ) },
+			{ "Angle",					INI::parseAngleReal,	NULL, offsetof( BuildListInfo::IniData, m_angle ) },
+			{ "InitiallyBuilt",			INI::parseBool,			NULL, offsetof( BuildListInfo::IniData, m_isInitiallyBuilt ) },
+			{ "RallyPointOffset",		INI::parseCoord2D,		NULL, offsetof( BuildListInfo::IniData, m_rallyPointOffset ) },
+			{ "AutomaticallyBuild",		INI::parseBool,			NULL, offsetof( BuildListInfo::IniData, m_automaticallyBuild ) },
+			{ NULL,						NULL,					NULL, 0 }  // keep this last
 		};
 
 	BuildListInfo *buildInfo = newInstance( BuildListInfo );
 	buildInfo->setTemplateName(tTemplateName);
-	ini->initFromINI(buildInfo, myFieldParse);
-	((AISideBuildList*)instance)->addInfo(buildInfo);
+	ini->initFromINI(&buildInfo->m_ini, myFieldParse);
+	// FIXME: AISideBuildList
+	(void) instance;
+	// ((AISideBuildList*)instance)->addInfo(buildInfo);
 }
 
 
@@ -1009,7 +1023,7 @@ BuildListInfo *BuildListInfo::duplicate(void)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void BuildListInfo::crc( Xfer *xfer )
+void BuildListInfo::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc
@@ -1027,19 +1041,19 @@ void BuildListInfo::xfer( Xfer *xfer )
 	XferVersion version = currentVersion;
 	xfer->xferVersion( &version, currentVersion );
 
-	xfer->xferAsciiString( &m_buildingName );
+	xfer->xferAsciiString( &m_ini.m_buildingName );
 	xfer->xferAsciiString( &m_templateName );
-	xfer->xferCoord3D( &m_location );
-	xfer->xferCoord2D( &m_rallyPointOffset );
-	xfer->xferReal( &m_angle );
-	xfer->xferBool( &m_isInitiallyBuilt );
-	xfer->xferUnsignedInt( &m_numRebuilds );
+	xfer->xferCoord3D( &m_ini.m_location );
+	xfer->xferCoord2D( &m_ini.m_rallyPointOffset );
+	xfer->xferReal( &m_ini.m_angle );
+	xfer->xferBool( &m_ini.m_isInitiallyBuilt );
+	xfer->xferUnsignedInt( &m_ini.m_numRebuilds );
 	xfer->xferAsciiString( &m_script );
 	xfer->xferInt( &m_health );
 	xfer->xferBool( &m_whiner );
 	xfer->xferBool( &m_unsellable );
 	xfer->xferBool( &m_repairable );
-	xfer->xferBool( &m_automaticallyBuild );
+	xfer->xferBool( &m_ini.m_automaticallyBuild );
 	// m_renderObj we don't need to xfer this, its for the editor only
 	// m_shadowObj we don't need to xfer this, its for the editor only
 	// m_selected we don't need to xfer this, its for the editor only

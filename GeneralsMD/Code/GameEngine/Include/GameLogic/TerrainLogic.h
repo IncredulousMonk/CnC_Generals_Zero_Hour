@@ -52,7 +52,7 @@ class Matrix3D;
 class WaterHandle;
 class Xfer;
 
-enum WaypointID: int
+enum WaypointID: UnsignedInt
 {
 	INVALID_WAYPOINT_ID = 0x7FFFFFFF
 };
@@ -223,8 +223,7 @@ public:
 /** Device independent implementation for some functionality of the
   * logical terrain singleton */
 //-------------------------------------------------------------------------------------------------
-class TerrainLogic : public Snapshot,
-										 public SubsystemInterface
+class TerrainLogic : public Snapshot, public SubsystemInterface
 {
 
 public:
@@ -248,13 +247,17 @@ public:
 	virtual Real getGroundHeight( Real x, Real y, Coord3D* normal = NULL )  const;
 #if 0
 	virtual Real getLayerHeight(Real x, Real y, PathfindLayerEnum layer, Coord3D* normal = NULL, Bool clip = true) const;
+#endif // if 0
 	virtual void getExtent( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
 	virtual void getExtentIncludingBorder( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
 	virtual void getMaximumPathfindExtent( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
+#if 0
 	virtual Coord3D findClosestEdgePoint( const Coord3D *closestTo ) const ;
 	virtual Coord3D findFarthestEdgePoint( const Coord3D *farthestFrom ) const ;
+#endif // if 0
 	virtual Bool isClearLineOfSight(const Coord3D& pos, const Coord3D& posOther) const;
 
+#if 0
 	virtual AsciiString getSourceFilename( void ) { return m_filenameString; }
 
 	virtual PathfindLayerEnum alignOnTerrain( Real angle, const Coord3D& pos, Bool stickToGround, Matrix3D& mtx);
@@ -272,6 +275,7 @@ public:
 																					Real finalHeight,
 																					Real transitionTimeInSeconds,
 																					Real damageAmount );///< change water height over time
+#endif // if 0
 
 	virtual Waypoint *getFirstWaypoint(void) { return m_waypointListHead; }
 
@@ -281,6 +285,7 @@ public:
 	/// Return the waypoint with the given ID
 	virtual Waypoint *getWaypointByID( UnsignedInt id );
 
+#if 0
 	/// Return the closest waypoint on the labeled path
 	virtual Waypoint *getClosestWaypointOnPath( const Coord3D *pos, AsciiString label );
 

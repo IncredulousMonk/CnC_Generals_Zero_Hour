@@ -30,6 +30,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #define DEFINE_PARTICLE_SYSTEM_NAMES
+#define DEFINE_PARTICLE_PRIORITY_NAMES
 
 #include "Common/GameState.h"
 #include "Common/INI.h"

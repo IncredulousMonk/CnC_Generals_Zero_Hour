@@ -53,7 +53,11 @@ class WorkOrder : public MemoryPoolObject,
 
 public:
 
-	WorkOrder():m_thing(NULL), m_factoryID(INVALID_ID), m_isResourceGatherer(false), m_numCompleted(0), m_numRequired(1), m_next(NULL) {};
+	WorkOrder():m_thing(NULL), m_factoryID(INVALID_ID), m_next(NULL), m_numCompleted(0), m_numRequired(1), m_isResourceGatherer(false) {};
+
+	// No copies allowed!
+	WorkOrder(const WorkOrder&) = delete;
+	WorkOrder& operator=(const WorkOrder&) = delete;
 
 	Bool isWaitingToBuild( void );		///< return true if nothing is yet building this unit
 	void validateFactory( Player *thisPlayer );			///< verify factoryID still refers to an active object
@@ -65,7 +69,7 @@ public:
 	WorkOrder *m_next;
 	Int			m_numCompleted;					  ///< Number built.
 	Int			m_numRequired;					  ///< Number needed.
-	Bool		m_required;								///< True if part of minimum requirement.
+	Bool		m_required {};								///< True if part of minimum requirement.
 	Bool		m_isResourceGatherer;			///< True if resource gatherer.
 
 protected:
@@ -110,19 +114,21 @@ public:
 
 	TeamInQueue() : 
 		m_workOrders(NULL), 
+		m_priorityBuild(FALSE),
 		m_team(NULL), 
 		m_nextTeamInQueue(NULL), 
-		m_sentToStartLocation(false), 
-		m_reinforcement(false), 
-		m_stopQueueing(false),
-		m_reinforcementID(INVALID_ID),
-		//Added By Sadullah Nader
-		//Initialization(s) inserted
 		m_frameStarted(0),
-		m_priorityBuild(FALSE)
+		m_sentToStartLocation(false), 
+		m_stopQueueing(false),
+		m_reinforcement(false), 
+		m_reinforcementID(INVALID_ID)
 		//		
 	{
 	}
+
+	// No copies allowed!
+	TeamInQueue(const TeamInQueue&) = delete;
+	TeamInQueue& operator=(const TeamInQueue&) = delete;
 
 	Bool isAllBuilt( void );				///< Returns true if the team is finished building.
 	Bool isBuildTimeExpired( void );///< Returns true if the team has run out of build time.
@@ -158,6 +164,10 @@ class AIPlayer : public MemoryPoolObject,
 public:
 
 	AIPlayer( Player *p );							///< constructor
+
+	// No copies allowed!
+	AIPlayer(const AIPlayer&) = delete;
+	AIPlayer& operator=(const AIPlayer&) = delete;
 	
 	virtual Bool computeSuperweaponTarget(const SpecialPowerTemplate *power, Coord3D *pos, Int playerNdx, Real weaponRadius); ///< Calculates best pos for weapon given radius.
 
@@ -241,8 +251,8 @@ protected:
 
 protected:
 
-	MAKE_DLINK_HEAD(TeamInQueue, TeamBuildQueue);		///< List of teams being build
-	MAKE_DLINK_HEAD(TeamInQueue, TeamReadyQueue);		///< List of teams built, waiting to reach rally point.
+	MAKE_DLINK_HEAD(TeamInQueue, TeamBuildQueue)		///< List of teams being build
+	MAKE_DLINK_HEAD(TeamInQueue, TeamReadyQueue)		///< List of teams built, waiting to reach rally point.
 
 protected:
 	Bool isPossibleToBuildTeam( TeamPrototype *proto, Bool requireIdleFactory, Bool &needMoney );		///< return true if team can be considered for building

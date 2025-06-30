@@ -38,7 +38,7 @@
 #include "GameClient/GameClient.h"
 #include "Common/UserPreferences.h"
 
-#define DEFINE_PARTICLE_SYSTEM_NAMES
+#define DEFINE_PARTICLE_PRIORITY_NAMES
 #include "GameClient/ParticleSys.h"
 
 #ifdef _INTERNAL

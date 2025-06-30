@@ -72,58 +72,58 @@
 {
 	static const FieldParse TheFieldParseTable[] = 
 	{
-		{ "Side",											INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_side ) },
-		{ "BaseSide",								INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_baseSide ) },
-		{ "PlayableSide",							INI::parseBool,																	NULL, offsetof( PlayerTemplate, m_playableSide ) },
-		{ "DisplayName",							INI::parseAndTranslateLabel,										NULL, offsetof( PlayerTemplate, m_displayName) },
-		{ "StartMoney",								PlayerTemplate::parseStartMoney,								NULL, offsetof( PlayerTemplate, m_money ) },
-		{ "PreferredColor",						INI::parseRGBColor,															NULL, offsetof( PlayerTemplate, m_preferredColor ) },
-		{ "StartingBuilding",					INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingBuilding ) },
-		{ "StartingUnit0",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[0] ) },
-		{ "StartingUnit1",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[1] ) },
-		{ "StartingUnit2",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[2] ) },
-		{ "StartingUnit3",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[3] ) },
-		{ "StartingUnit4",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[4] ) },
-		{ "StartingUnit5",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[5] ) },
-		{ "StartingUnit6",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[6] ) },
-		{ "StartingUnit7",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[7] ) },
-		{ "StartingUnit8",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[8] ) },
-		{ "StartingUnit9",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_startingUnits[9] ) },
-		{ "ProductionCostChange",			PlayerTemplate::parseProductionCostChange,			NULL, 0 },
-		{ "ProductionTimeChange",			PlayerTemplate::parseProductionTimeChange,			NULL, 0 },
-		{ "ProductionVeterancyLevel",	PlayerTemplate::parseProductionVeterancyLevel,	NULL, 0 },
-		{ "IntrinsicSciences",				INI::parseScienceVector,												NULL, offsetof( PlayerTemplate, m_intrinsicSciences ) },
-		{ "PurchaseScienceCommandSetRank1",INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_purchaseScienceCommandSetRank1 ) },
-		{ "PurchaseScienceCommandSetRank3",INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_purchaseScienceCommandSetRank3 ) },
-		{ "PurchaseScienceCommandSetRank8",INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_purchaseScienceCommandSetRank8 ) },
-		{ "SpecialPowerShortcutCommandSet",INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_specialPowerShortcutCommandSet ) },
-		{ "SpecialPowerShortcutWinName"		,INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_specialPowerShortcutWinName) },
-		{ "SpecialPowerShortcutButtonCount",INI::parseInt,												NULL, offsetof( PlayerTemplate, m_specialPowerShortcutButtonCount ) },
-		{ "IsObserver",								INI::parseBool,																	NULL, offsetof( PlayerTemplate, m_observer ) },
-    { "OldFaction",               INI::parseBool,                                 NULL, offsetof( PlayerTemplate, m_oldFaction ) },
-		{ "IntrinsicSciencePurchasePoints",				INI::parseInt,												NULL, offsetof( PlayerTemplate, m_intrinsicSPP ) },
-		{ "ScoreScreenImage",					INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_scoreScreenImage ) },
-		{ "LoadScreenImage",					INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_loadScreenImage ) },
-		{ "LoadScreenMusic",					INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_loadScreenMusic ) },
-		{ "ScoreScreenMusic",					INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_scoreScreenMusic ) },
+		{ "Side",								INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_side ) },
+		{ "BaseSide",							INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_baseSide ) },
+		{ "PlayableSide",						INI::parseBool,									NULL, offsetof( PlayerTemplate::IniData, m_playableSide ) },
+		{ "DisplayName",						INI::parseAndTranslateLabel,					NULL, offsetof( PlayerTemplate::IniData, m_displayName) },
+		{ "StartMoney",							PlayerTemplate::parseStartMoney,				NULL, 0 },
+		{ "PreferredColor",						INI::parseRGBColor,								NULL, offsetof( PlayerTemplate::IniData, m_preferredColor ) },
+		{ "StartingBuilding",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingBuilding ) },
+		{ "StartingUnit0",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[0] ) },
+		{ "StartingUnit1",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[1] ) },
+		{ "StartingUnit2",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[2] ) },
+		{ "StartingUnit3",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[3] ) },
+		{ "StartingUnit4",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[4] ) },
+		{ "StartingUnit5",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[5] ) },
+		{ "StartingUnit6",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[6] ) },
+		{ "StartingUnit7",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[7] ) },
+		{ "StartingUnit8",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[8] ) },
+		{ "StartingUnit9",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_startingUnits[9] ) },
+		{ "ProductionCostChange",				PlayerTemplate::parseProductionCostChange,		NULL, 0 },
+		{ "ProductionTimeChange",				PlayerTemplate::parseProductionTimeChange,		NULL, 0 },
+		{ "ProductionVeterancyLevel",			PlayerTemplate::parseProductionVeterancyLevel,	NULL, 0 },
+		{ "IntrinsicSciences",					INI::parseScienceVector,						NULL, offsetof( PlayerTemplate::IniData, m_intrinsicSciences ) },
+		{ "PurchaseScienceCommandSetRank1",		INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_purchaseScienceCommandSetRank1 ) },
+		{ "PurchaseScienceCommandSetRank3",		INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_purchaseScienceCommandSetRank3 ) },
+		{ "PurchaseScienceCommandSetRank8",		INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_purchaseScienceCommandSetRank8 ) },
+		{ "SpecialPowerShortcutCommandSet",		INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_specialPowerShortcutCommandSet ) },
+		{ "SpecialPowerShortcutWinName",		INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_specialPowerShortcutWinName) },
+		{ "SpecialPowerShortcutButtonCount",	INI::parseInt,									NULL, offsetof( PlayerTemplate::IniData, m_specialPowerShortcutButtonCount ) },
+		{ "IsObserver",							INI::parseBool,									NULL, offsetof( PlayerTemplate::IniData, m_observer ) },
+		{ "OldFaction",							INI::parseBool,									NULL, offsetof( PlayerTemplate::IniData, m_oldFaction ) },
+		{ "IntrinsicSciencePurchasePoints",		INI::parseInt,									NULL, offsetof( PlayerTemplate::IniData, m_intrinsicSPP ) },
+		{ "ScoreScreenImage",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_scoreScreenImage ) },
+		{ "LoadScreenImage",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_loadScreenImage ) },
+		{ "LoadScreenMusic",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_loadScreenMusic ) },
+		{ "ScoreScreenMusic",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_scoreScreenMusic ) },
 
-		{ "HeadWaterMark",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_headWaterMark ) },
-		{ "FlagWaterMark",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_flagWaterMark ) },
-		{ "EnabledImage",							INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_enabledImage ) },
-		//{ "DisabledImage",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_disabledImage ) },
-		//{ "HiliteImage",							INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_hiliteImage ) },
-		//{ "PushedImage",							INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_pushedImage ) },
-		{ "SideIconImage",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_sideIconImage ) },
-		{ "GeneralImage",						INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_generalImage ) },
+		{ "HeadWaterMark",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_headWaterMark ) },
+		{ "FlagWaterMark",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_flagWaterMark ) },
+		{ "EnabledImage",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_enabledImage ) },
+		//{ "DisabledImage",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_disabledImage ) },
+		//{ "HiliteImage",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_hiliteImage ) },
+		//{ "PushedImage",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_pushedImage ) },
+		{ "SideIconImage",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_sideIconImage ) },
+		{ "GeneralImage",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_generalImage ) },
 
-		{ "BeaconName",								INI::parseAsciiString,													NULL, offsetof( PlayerTemplate, m_beaconTemplate ) },
-		{ "ArmyTooltip",						INI::parseAsciiString,					NULL, offsetof( PlayerTemplate, m_tooltip ) },
-		{ "Features",						INI::parseAsciiString,					NULL, offsetof( PlayerTemplate, m_strGeneralFeatures ) },
-		{ "MedallionRegular",						INI::parseAsciiString,					NULL, offsetof( PlayerTemplate, m_strMedallionNormal ) },
-		{ "MedallionHilite",						INI::parseAsciiString,					NULL, offsetof( PlayerTemplate, m_strMedallionHilite ) },
-		{ "MedallionSelect",						INI::parseAsciiString,					NULL, offsetof( PlayerTemplate, m_strMedallionSelected ) },
+		{ "BeaconName",							INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_beaconTemplate ) },
+		{ "ArmyTooltip",						INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_tooltip ) },
+		{ "Features",							INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_strGeneralFeatures ) },
+		{ "MedallionRegular",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_strMedallionNormal ) },
+		{ "MedallionHilite",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_strMedallionHilite ) },
+		{ "MedallionSelect",					INI::parseAsciiString,							NULL, offsetof( PlayerTemplate::IniData, m_strMedallionSelected ) },
 
-		{ NULL,											NULL,																				NULL, 0 },
+		{ NULL,									NULL,											NULL, 0 },
 	};
 
 	return TheFieldParseTable;
@@ -134,12 +134,12 @@ AsciiString PlayerTemplate::getStartingUnit( Int i ) const
 	if (i<0 || i>= MAX_MP_STARTING_UNITS)
 		return AsciiString::TheEmptyString;
 
-	return m_startingUnits[i];
+	return m_ini.m_startingUnits[i];
 }
 
 //-------------------------------------------------------------------------------------------------
 // This is is a Template, and a percent change to the cost of producing it.
-/*static*/ void PlayerTemplate::parseProductionCostChange( INI* ini, void *instance, void *store, const void* /*userData*/ )
+/*static*/ void PlayerTemplate::parseProductionCostChange( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
 	PlayerTemplate* self = (PlayerTemplate*)instance;
 
@@ -150,7 +150,7 @@ AsciiString PlayerTemplate::getStartingUnit( Int i ) const
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void PlayerTemplate::parseProductionTimeChange( INI* ini, void *instance, void *store, const void* /*userData*/ )
+/*static*/ void PlayerTemplate::parseProductionTimeChange( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
 	PlayerTemplate* self = (PlayerTemplate*)instance;
 
@@ -161,7 +161,7 @@ AsciiString PlayerTemplate::getStartingUnit( Int i ) const
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void PlayerTemplate::parseProductionVeterancyLevel( INI* ini, void *instance, void *store, const void* /*userData*/ )
+/*static*/ void PlayerTemplate::parseProductionVeterancyLevel( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
 	PlayerTemplate* self = (PlayerTemplate*)instance;
 
@@ -176,17 +176,18 @@ AsciiString PlayerTemplate::getStartingUnit( Int i ) const
 //-------------------------------------------------------------------------------------------------
 /** Parse integer money and deposit in the m_money */
 //-------------------------------------------------------------------------------------------------
-/*static*/ void PlayerTemplate::parseStartMoney( INI* ini, void *instance, void *store, const void* /*userData*/ )
+/*static*/ void PlayerTemplate::parseStartMoney( INI* ini, void *instance, void * /*store*/, const void* /*userData*/ )
 {
-	Int money = 0;
+	UnsignedInt money = 0;
 
 	// parse the money as a regular "FIELD = <integer>"
-	INI::parseInt( ini, instance, &money, NULL );
+	INI::parseUnsignedInt( ini, instance, &money, NULL );
 
-	// assign the money into the 'Money' (m_money) pointed to at 'store'
-	Money *theMoney = (Money *)store;
-	theMoney->init();
-	theMoney->deposit( money );
+	// assign the money into the 'Money' (m_money)
+	PlayerTemplate::IniData* data = (PlayerTemplate::IniData*) instance;
+	PlayerTemplate* self = data->m_obj;
+	self->m_money.init();
+	self->m_money.deposit( money );
 
 }  // end parseStartMoney
 
@@ -194,46 +195,41 @@ AsciiString PlayerTemplate::getStartingUnit( Int i ) const
 // PUBLIC FUNCTIONS ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-PlayerTemplate::PlayerTemplate() : 
-	m_nameKey(NAMEKEY_INVALID),
-	m_observer(false),
-	m_playableSide(false),
-  m_oldFaction(false),
-	m_intrinsicSPP(0),
-	m_specialPowerShortcutButtonCount(0)
+PlayerTemplate::PlayerTemplate()
 {
-	m_preferredColor.red = m_preferredColor.green = m_preferredColor.blue = 0.0f;
-	m_beaconTemplate.clear();
+	m_ini.m_preferredColor.red = m_ini.m_preferredColor.green = m_ini.m_preferredColor.blue = 0.0f;
+	m_ini.m_beaconTemplate.clear();
+	m_ini.m_obj = this;
 }
 
 //-----------------------------------------------------------------------------
 const Image *PlayerTemplate::getHeadWaterMarkImage( void ) const
 {
-	return TheMappedImageCollection->findImageByName(m_headWaterMark);
+	return TheMappedImageCollection->findImageByName(m_ini.m_headWaterMark);
 }
 
 //-----------------------------------------------------------------------------
 const Image *PlayerTemplate::getFlagWaterMarkImage( void ) const
 {
-	return TheMappedImageCollection->findImageByName(m_flagWaterMark);
+	return TheMappedImageCollection->findImageByName(m_ini.m_flagWaterMark);
 }
 
 //-----------------------------------------------------------------------------
 const Image *PlayerTemplate::getSideIconImage( void ) const
 {
-	return TheMappedImageCollection->findImageByName(m_sideIconImage);
+	return TheMappedImageCollection->findImageByName(m_ini.m_sideIconImage);
 }
 
 //-----------------------------------------------------------------------------
 const Image *PlayerTemplate::getGeneralImage( void ) const
 {
-	return TheMappedImageCollection->findImageByName(m_generalImage);
+	return TheMappedImageCollection->findImageByName(m_ini.m_generalImage);
 }
 
 //-----------------------------------------------------------------------------
 const Image *PlayerTemplate::getEnabledImage( void ) const
 {
-	return TheMappedImageCollection->findImageByName(m_enabledImage);
+	return TheMappedImageCollection->findImageByName(m_ini.m_enabledImage);
 }
 
 //-----------------------------------------------------------------------------
@@ -294,10 +290,10 @@ void PlayerTemplateStore::update()
 
 Int PlayerTemplateStore::getTemplateNumByName(AsciiString name) const
 {
-	for (Int num = 0; num < m_playerTemplates.size(); num++)
+	for (size_t num = 0; num < m_playerTemplates.size(); num++)
 	{
 		if (m_playerTemplates[num].getName().compareNoCase(name.str()) == 0)
-			return num;
+			return (Int)num;
 	}
 	DEBUG_ASSERTCRASH(NULL, ("Template doesn't exist for given name"));
 	return -1;
@@ -350,8 +346,9 @@ const PlayerTemplate* PlayerTemplateStore::findPlayerTemplate(NameKeyType nameke
 //-----------------------------------------------------------------------------
 const PlayerTemplate* PlayerTemplateStore::getNthPlayerTemplate(Int i) const
 {
-	if (i >= 0 && i < m_playerTemplates.size())
-		return &m_playerTemplates[i];
+	size_t ii {static_cast<size_t>(i)};
+	if (i >= 0 && ii < m_playerTemplates.size())
+		return &m_playerTemplates[ii];
 
 	return NULL;
 }

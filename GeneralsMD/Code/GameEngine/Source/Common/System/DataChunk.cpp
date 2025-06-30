@@ -275,7 +275,7 @@ DataChunkOutput::~DataChunkOutput()
 	::fclose(m_tmp_file);
 }
 
-void DataChunkOutput::openDataChunk( char *name, DataChunkVersionType ver )
+void DataChunkOutput::openDataChunk( const char *name, DataChunkVersionType ver )
 {
 	// allocate (or get existing) ID from the table of m_contents
 	UnsignedInt id = m_contents.allocateID( AsciiString(name) );
@@ -575,7 +575,7 @@ void DataChunkTableOfContents::read( ChunkInputStream &s)
 	m_headerOpened = count > 0 && !s.eof();
 
 	// adjust next ID so no ID's are reused
-	this->m_nextID = max( this->m_nextID, maxID+1 );
+	this->m_nextID = std::max( this->m_nextID, maxID+1 );
 }
 
 //----------------------------------------------------------------------

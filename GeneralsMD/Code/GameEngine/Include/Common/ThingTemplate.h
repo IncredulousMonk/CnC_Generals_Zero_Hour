@@ -579,10 +579,10 @@ public:
 #if 0
 	/// calculate how long (in logic frames) it will take the given player to build this unit
 	Int calcTimeToBuild( const Player* player) const;
+#endif // if 0
 
 	/// calculate how much money it will take the given player to build this unit
 	Int calcCostToBuild( const Player* player) const;
-#endif // if 0
 
 	/// Used only by Skirmish AI. Everyone else should call calcCostToBuild.
 	Int friend_getBuildCost() const { return m_ini.m_buildCost; }

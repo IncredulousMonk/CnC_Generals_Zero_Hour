@@ -34,6 +34,8 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheModuleFactory (0 out of 199 modules implemented)
   - TheParticleSystemManager (minimal)
   - TheMessageStream
+  - TheRankInfoStore
+  - ThePlayerTemplateStore
   - TheFXListStore
   - TheWeaponStore
   - TheDamageFXStore

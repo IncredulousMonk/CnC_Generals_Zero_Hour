@@ -90,7 +90,7 @@
 // #include "GameLogic/Module/CreateModule.h"
 #include "GameLogic/Module/DestroyModule.h"
 // #include "GameLogic/Module/OpenContain.h"
-// #include "GameLogic/PartitionManager.h"
+#include "GameLogic/PartitionManager.h"
 // #include "GameLogic/PolygonTrigger.h"
 // #include "GameLogic/ScriptActions.h"
 // #include "GameLogic/ScriptConditions.h"
@@ -268,7 +268,6 @@ GameLogic::GameLogic( void )
 #endif // if 0
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** Utility function to set class variables to default values. */
 // ------------------------------------------------------------------------------------------------
@@ -302,11 +301,15 @@ void GameLogic::setDefaults( Bool loadingSaveGame )
 //-------------------------------------------------------------------------------------------------
 Bool GameLogic::isInSinglePlayerGame( void )
 {
+DEBUG_CRASH(("GameLogic::isInSinglePlayerGame not yet implemented!"));
+return false;
+#if 0
 	return (m_gameMode == GAME_SINGLE_PLAYER ||
 		(TheRecorder && TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK && TheRecorder->getGameMode() == GAME_SINGLE_PLAYER));
+#endif // if 0
 }
 
-
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Destroy all objects immediately */
 //-------------------------------------------------------------------------------------------------
@@ -355,11 +358,13 @@ GameLogic::~GameLogic()
 
 	delete TheGhostObjectManager;
 	TheGhostObjectManager=NULL;
+#endif // if 0
 
-	// delete the partition manager
-	delete ThePartitionManager;
-	ThePartitionManager = NULL;
+	// // delete the partition manager
+	// delete ThePartitionManager;
+	// ThePartitionManager = NULL;
 
+#if 0
 	delete TheScriptActions;
 	TheScriptActions = NULL;
 
@@ -386,13 +391,15 @@ void GameLogic::init( void )
 
 	/// @todo Clear object and destroy lists
 	setDefaults( FALSE );
+#endif // if 0
 
-	// create the partition manager
-	ThePartitionManager = NEW PartitionManager;
-	ThePartitionManager->init();
-	ThePartitionManager->setName("ThePartitionManager");
+	// // create the partition manager
+	// ThePartitionManager = NEW PartitionManager;
+	// ThePartitionManager->init();
+	// ThePartitionManager->setName("ThePartitionManager");
 
 
+#if 0
 	// Create system for holding deleted objects that are
 	// still in the partition manager because player has a fogged
 	// view of them.

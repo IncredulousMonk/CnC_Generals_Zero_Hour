@@ -68,7 +68,7 @@
 #include "GameClient/GameText.h"
 
 //-------------------------------------------------------------------------------------------------
-void parseUpgradePair( INI *ini, void *instance, void *store, const void *userData )
+void parseUpgradeBoost( INI *ini, void *instance, void *store, const void *userData )
 {
 	upgradePair info;
 	info.type = "";
@@ -76,7 +76,7 @@ void parseUpgradePair( INI *ini, void *instance, void *store, const void *userDa
 
 	const char *token = ini->getNextToken( ini->getSepsColon() );
 
-	if ( stricmp(token, "UpgradeType") == 0 )
+	if ( strcasecmp(token, "UpgradeType") == 0 )
 	{
 		token = ini->getNextTokenOrNull( ini->getSepsColon() );
 		if (!token)	throw INI_INVALID_DATA;
@@ -88,14 +88,15 @@ void parseUpgradePair( INI *ini, void *instance, void *store, const void *userDa
 
 
 	token = ini->getNextTokenOrNull( ini->getSepsColon() );
-	if ( stricmp(token, "Boost") == 0 )
+	if ( strcasecmp(token, "Boost") == 0 )
 		info.amount = INI::scanInt(ini->getNextToken( ini->getSepsColon() ));
 	else
 		throw INI_INVALID_DATA;
 
 	// Insert the info into the upgrade list
-	std::list<upgradePair> * theList = (std::list<upgradePair>*)store;
-	theList->push_back(info);
+	AutoDepositUpdateModuleData::IniData* data = (AutoDepositUpdateModuleData::IniData*) instance;
+	AutoDepositUpdateModuleData* self = data->m_obj;
+	self->m_upgradeBoost.push_back(info);
 	
 }  // end parseFactionObjectCreationList
 
@@ -104,7 +105,7 @@ void parseUpgradePair( INI *ini, void *instance, void *store, const void *userDa
 //-----------------------------------------------------------------------------
 AutoDepositUpdate::AutoDepositUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateModule( thing, moduleData )
 {
-	m_depositOnFrame = TheGameLogic->getFrame() + getAutoDepositUpdateModuleData()->m_depositFrame;
+	m_depositOnFrame = TheGameLogic->getFrame() + getAutoDepositUpdateModuleData()->m_ini.m_depositFrame;
 	m_awardInitialCaptureBonus = FALSE;
 	m_initialized = FALSE;
 }
@@ -119,18 +120,18 @@ AutoDepositUpdate::~AutoDepositUpdate( void )
 //-------------------------------------------------------------------------------------------------
 void AutoDepositUpdate::awardInitialCaptureBonus( Player *player )
 {
-	m_depositOnFrame = TheGameLogic->getFrame() + getAutoDepositUpdateModuleData()->m_depositFrame;
-	if(!player || !m_awardInitialCaptureBonus || getAutoDepositUpdateModuleData()->m_initialCaptureBonus <= 0)
+	m_depositOnFrame = TheGameLogic->getFrame() + getAutoDepositUpdateModuleData()->m_ini.m_depositFrame;
+	if(!player || !m_awardInitialCaptureBonus || getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus <= 0)
 		return;
 
-	player->getMoney()->deposit( getAutoDepositUpdateModuleData()->m_initialCaptureBonus );
-	player->getScoreKeeper()->addMoneyEarned( getAutoDepositUpdateModuleData()->m_initialCaptureBonus );
+	player->getMoney()->deposit( getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus );
+	player->getScoreKeeper()->addMoneyEarned( getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus );
 
 	//Display cash income floating over the blacklotus
-	if(getAutoDepositUpdateModuleData()->m_initialCaptureBonus > 0)
+	if(getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus > 0)
 	{
 		UnicodeString moneyString;
-		moneyString.format( TheGameText->fetch( "GUI:AddCash" ), getAutoDepositUpdateModuleData()->m_initialCaptureBonus );
+		moneyString.format( TheGameText->fetch( "GUI:AddCash" ), getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus );
 		Coord3D pos;
 		pos.set( getObject()->getPosition() );
 		pos.z += 10.0f; //add a little z to make it show up above the unit.
@@ -155,21 +156,21 @@ UpdateSleepTime AutoDepositUpdate::update( void )
 			m_awardInitialCaptureBonus = TRUE;
 			m_initialized = TRUE;
 		}
-		m_depositOnFrame = TheGameLogic->getFrame() + modData->m_depositFrame;
+		m_depositOnFrame = TheGameLogic->getFrame() + modData->m_ini.m_depositFrame;
 		
-		if(getObject()->isNeutralControlled() || modData->m_depositAmount <= 0 )
+		if(getObject()->isNeutralControlled() || modData->m_ini.m_depositAmount <= 0 )
 			return UPDATE_SLEEP_NONE;
 
 		// makes sure that buildings under construction do not get a bonus CCB
 		if( getObject()->getConstructionPercent() != CONSTRUCTION_COMPLETE )
 			return UPDATE_SLEEP_NONE;
 		
-		int moneyAmount = modData->m_depositAmount + getUpgradedSupplyBoost();
+		int moneyAmount = modData->m_ini.m_depositAmount + getUpgradedSupplyBoost();
 
-		if( modData->m_isActualMoney )
+		if( modData->m_ini.m_isActualMoney )
 		{
 			getObject()->getControllingPlayer()->getMoney()->deposit( moneyAmount );
-			getObject()->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( modData->m_depositAmount);
+			getObject()->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( modData->m_ini.m_depositAmount);
 		}
 		
 		Bool displayMoney = moneyAmount > 0 ? TRUE : FALSE;

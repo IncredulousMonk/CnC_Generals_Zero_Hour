@@ -51,7 +51,7 @@ enum LocomotorSurfaceType
 	LOCOMOTORSURFACE_GROUND			= (1 << 0),									///< clear, unobstructed ground
 	LOCOMOTORSURFACE_WATER			= (1 << 1),									///< water area
 	LOCOMOTORSURFACE_CLIFF			= (1 << 2),									///< steep altitude change
-	LOCOMOTORSURFACE_AIR				= (1 << 3),									///< airborne
+	LOCOMOTORSURFACE_AIR			= (1 << 3),									///< airborne
 	LOCOMOTORSURFACE_RUBBLE			= (1 << 4)									///< building rubble
 };
 

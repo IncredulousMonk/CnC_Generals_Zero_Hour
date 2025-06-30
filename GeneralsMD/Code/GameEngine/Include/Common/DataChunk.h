@@ -134,7 +134,7 @@ public:
 	DataChunkOutput(const DataChunkOutput&) = delete;
 	DataChunkOutput& operator=(const DataChunkOutput&) = delete;
 
-	void openDataChunk( char *name, DataChunkVersionType ver );
+	void openDataChunk( const char *name, DataChunkVersionType ver );
 	void closeDataChunk( void );
 
 	void writeReal(Real r);

@@ -46,7 +46,7 @@
 #include "Common/MessageStream.h"
 #include "Common/Module.h"
 #include "Common/ModuleFactory.h"
-// #include "Common/Player.h"
+#include "Common/Player.h"
 #include "Common/PlayerList.h"
 #include "Common/ProductionPrerequisite.h"
 #include "Common/Radar.h"
@@ -1604,7 +1604,6 @@ Bool ThingTemplate::isBuildableItem(void) const
 	return (getBuildCost() != 0);
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** NOTE that we're not paying attention to m_override here, instead the portions
 	* that retrieve template data values use the get() wrappers, which *DO* pay
@@ -1612,15 +1611,19 @@ Bool ThingTemplate::isBuildableItem(void) const
 //-------------------------------------------------------------------------------------------------
 Int ThingTemplate::calcCostToBuild( const Player* player) const
 {
-	if (!player)
-		return 0;
+//FIXME: Player
+(void) player;
+return 0;
+	// if (!player)
+	// 	return 0;
 
-	// changePercent format is "-.2 equals 20% cheaper"
-	Real factionModifier = 1 + player->getProductionCostChangePercent( getName() );
-	factionModifier *= player->getProductionCostChangeBasedOnKindOf( m_ini.m_kindof );
-	return getBuildCost() * factionModifier * player->getHandicap()->getHandicap(Handicap::BUILDCOST, this);
+	// // changePercent format is "-.2 equals 20% cheaper"
+	// Real factionModifier = 1 + player->getProductionCostChangePercent( getName() );
+	// factionModifier *= player->getProductionCostChangeBasedOnKindOf( m_ini.m_kindof );
+	// return getBuildCost() * factionModifier * player->getHandicap()->getHandicap(Handicap::BUILDCOST, this);
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** NOTE that we're not paying attention to m_override here, instead the portions
 	* that retrieve template data values use the get() wrappers, which *DO* pay

@@ -32,6 +32,10 @@
 #include "Common/Version.h"
 #include "BuildVersion.h"
 
+// FIXME: Remove this once WorldHeightMap.cpp is implemented.  It defines a bunch of global variables.
+#define INSTANTIATE_WELL_KNOWN_KEYS
+#include "Common/WellKnownKeys.h"
+
 SDL_Window* window {};
 SDL_Renderer* renderer {};
 static SDL_Texture* texture {};

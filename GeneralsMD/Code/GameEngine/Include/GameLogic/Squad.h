@@ -70,11 +70,11 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	VecObjectID m_objectIDs;
+	VecObjectID m_objectIDs {};
 
 	// this one is the last requested object stuff. Its used so that we can return a
 	// const& rather than making a copy and placing it on the stack.
-	VecObjectPtr m_objectsCached;
+	VecObjectPtr m_objectsCached {};
 
 public:
 	void addObject(Object *objectToAdd);							// add an object

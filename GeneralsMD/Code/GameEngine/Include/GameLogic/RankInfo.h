@@ -24,7 +24,7 @@
 
 // FILE: RankInfo.h ////////////////////////////////////////////////////////////////////////////////
 // Author: Steven Johnson, Sep 2002
-// Desc:   RankInfo descriptoins
+// Desc:   RankInfo descriptions
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -44,10 +44,16 @@ class RankInfo : public Overridable
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( RankInfo, "RankInfo" );
 public:
-	UnicodeString		m_rankName;
-	Int							m_skillPointsNeeded;
-	Int							m_sciencePurchasePointsGranted;
-	ScienceVec			m_sciencesGranted;
+	// MG: Cannot apply offsetof to RankInfo, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnicodeString		m_rankName {};
+		Int					m_skillPointsNeeded {};
+		Int					m_sciencePurchasePointsGranted {};
+		ScienceVec			m_sciencesGranted {};
+	};
+
+	IniData m_ini {};
 };
 //EMPTY_DTOR(RankInfo)
 
@@ -72,7 +78,7 @@ public:
 private:
 
 	typedef std::vector<RankInfo*> RankInfoVec;
-	RankInfoVec m_rankInfos;
+	RankInfoVec m_rankInfos {};
 };
 
 extern RankInfoStore* TheRankInfoStore;

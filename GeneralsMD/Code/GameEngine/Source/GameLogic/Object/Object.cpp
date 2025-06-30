@@ -60,7 +60,7 @@
 // #include "GameLogic/AIPathfind.h"
 // #include "GameLogic/ExperienceTracker.h"
 // #include "GameLogic/FiringTracker.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameLogic/Locomotor.h"
 
 // #include "GameLogic/Module/AIUpdate.h"
@@ -779,50 +779,58 @@ void Object::friend_setUndetectedDefector( Bool status )
 	else
 		m_privateStatus &= ~UNDETECTED_DEFECTOR;
 }
+#endif // if 0
 
 //=============================================================================
 void Object::restoreOriginalTeam()
 {
-	if( m_team == NULL || m_originalTeamName.isEmpty() )
-		return;
+// FIXME: Team
+	// if( m_team == NULL || m_originalTeamName.isEmpty() )
+	// 	return;
 	
-	Team* origTeam = TheTeamFactory->findTeam(m_originalTeamName);
-	if (origTeam == NULL)
-	{
-		DEBUG_CRASH(("Object original team (%s) could not be found or created! (srj)\n",m_originalTeamName.str()));
-		return;
-	}
+	// Team* origTeam = TheTeamFactory->findTeam(m_originalTeamName);
+	// if (origTeam == NULL)
+	// {
+	// 	DEBUG_CRASH(("Object original team (%s) could not be found or created! (srj)\n",m_originalTeamName.str()));
+	// 	return;
+	// }
 
-	if (m_team == origTeam)
-	{
-		DEBUG_CRASH(("Object appears to still be on its original team, so why are we attempting to restore it? (srj)\n"));
-		return;
-	}
+	// if (m_team == origTeam)
+	// {
+	// 	DEBUG_CRASH(("Object appears to still be on its original team, so why are we attempting to restore it? (srj)\n"));
+	// 	return;
+	// }
 
-	setTeam(origTeam);
+	// setTeam(origTeam);
 }
 
 //=============================================================================
 //=============================================================================
 void Object::setTeam( Team *team )
 {
-	// In order to prevent spawning useful units for a player after he dies, we
-	// just assign objects to the neutral player if we try to misbehave.
-	if (team && !team->getControllingPlayer()->isPlayerActive())
-		team = ThePlayerList->getNeutralPlayer()->getDefaultTeam();
+// FIXME:: ThePlayerList
+	// // In order to prevent spawning useful units for a player after he dies, we
+	// // just assign objects to the neutral player if we try to misbehave.
+	// if (team && !team->getControllingPlayer()->isPlayerActive())
+	// 	team = ThePlayerList->getNeutralPlayer()->getDefaultTeam();
 
-	setTemporaryTeam(team);
-	m_originalTeamName = m_team ? m_team->getName() : AsciiString::TheEmptyString;
+	// setTemporaryTeam(team);
+	// m_originalTeamName = m_team ? m_team->getName() : AsciiString::TheEmptyString;
 }
 
 //=============================================================================
 //=============================================================================
 void Object::setTemporaryTeam( Team *team )
 {
+DEBUG_CRASH(("Object::setTemporaryTeam not yet implemented!"));
+(void) team;
+#if 0
 	const Bool restoring = false;
 	setOrRestoreTeam(team, restoring);
+#endif // if 0
 }
 
+#if 0
 //=============================================================================
 //=============================================================================
 void Object::setOrRestoreTeam( Team* team, Bool restoring )
@@ -1414,6 +1422,7 @@ Bool Object::getAmmoPipShowingInfo(Int& numTotal, Int& numFull) const
 		return false;
 	}
 }
+#endif // if 0
 
 //=============================================================================
 /*
@@ -1433,6 +1442,7 @@ CanAttackResult Object::getAbleToAttackSpecificObject( AbleToAttackType t, const
 	return m_weaponSet.getAbleToAttackSpecificObject( t, this, target, commandSource, specificSlot );
 }
 
+#if 0
 //=============================================================================
 //Used for base defenses and otherwise stationary units to see if you can attack a position potentially out of range.
 CanAttackResult Object::getAbleToUseWeaponAgainstTarget( AbleToAttackType attackType, const Object *victim, const Coord3D *pos, CommandSourceType commandSource, WeaponSlotType specificSlot ) const
@@ -1542,12 +1552,17 @@ ObjectID Object::getLastVictimID() const
 {
 	return m_firingTracker ? m_firingTracker->getLastShotVictim() : INVALID_ID;
 } 
+#endif // if 0
 
 //=============================================================================
 // Object::getRelationship
 //=============================================================================
 Relationship Object::getRelationship(const Object *that) const
 { 
+DEBUG_CRASH(("Object::getRelationship not yet implemented!"));
+(void) that;
+return NEUTRAL;
+#if 0
 	const Team *myTeam = getTeam();
 
 	if (myTeam && that)
@@ -1568,8 +1583,8 @@ Relationship Object::getRelationship(const Object *that) const
 
 	return NEUTRAL;
 
-}
 #endif // if 0
+}
 
 //=============================================================================
 // Object::getControllingPlayer
@@ -1798,12 +1813,14 @@ ObjectShroudStatus Object::getShroudedStatus(Int playerIndex) const
 	return OBJECTSHROUD_CLEAR;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Something is attempting to damage this object */
 //-------------------------------------------------------------------------------------------------
 void Object::attemptDamage( DamageInfo *damageInfo )
 {
+(void) damageInfo;
+DEBUG_CRASH(("Object::attemptDamage not yet implemented!"));
+#if 0
 	BodyModuleInterface* body = getBodyModule();
 	if (body)
 		body->attemptDamage( damageInfo );
@@ -1864,8 +1881,8 @@ void Object::attemptDamage( DamageInfo *damageInfo )
 			getControllingPlayer() == ThePlayerList->getLocalPlayer() )
 		TheRadar->tryUnderAttackEvent( this );
 
-}
 #endif // if 0
+}
 
 //-------------------------------------------------------------------------------------------------
 void Object::attemptHealing(Real amount, const Object* source)
@@ -1935,6 +1952,7 @@ Real Object::estimateDamage( DamageInfoInput& damageInfo ) const
 			
 	return 0.0f;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Do so much damage to an object that it will certainly die */
@@ -1963,6 +1981,7 @@ void Object::healCompletely()
 	attemptHealing(HUGE_DAMAGE_AMOUNT, NULL);
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void Object::setEffectivelyDead(Bool dead)
@@ -1992,8 +2011,7 @@ void Object::setCaptured(Bool isCaptured)
 
 	// No need to see if we should skip updates, this flag has no effect on skipping updates.
 }
-
-
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool Object::isStructure(void) const
@@ -2013,6 +2031,7 @@ Bool Object::isNonFactionStructure(void) const
 	return isStructure() && !isFactionStructure();
 }
 
+#if 0
 void localIsHero( Object *obj, void* userData )
 {
 	Bool *hero = (Bool*)userData;
@@ -2049,6 +2068,7 @@ void Object::setReceivingDifficultyBonus(Bool receive)
 	m_isReceivingDifficultyBonus = receive;
 	getControllingPlayer()->friend_applyDifficultyBonusesForObject(this, m_isReceivingDifficultyBonus);
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //- DISABLEDNESS STUFF ----------------------------------------------------------------------------
@@ -2061,6 +2081,10 @@ void Object::setDisabled( DisabledType type )
 //-------------------------------------------------------------------------------------------------
 void Object::setDisabledUntil( DisabledType type, UnsignedInt frame )
 {
+(void) type;
+(void) frame;
+DEBUG_CRASH(("Object::setDisabledUntil not yet implemented!"));
+#if 0
 	Bool edgeCase = !isDisabled();
 
 	if( type < 0 || type >= DISABLED_COUNT )
@@ -2197,8 +2221,10 @@ void Object::setDisabledUntil( DisabledType type, UnsignedInt frame )
 	if (edgeCase) {
 		onDisabledEdge(true);
 	}
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 UnsignedInt Object::getDisabledUntil( DisabledType type ) const
 {
@@ -2223,10 +2249,15 @@ UnsignedInt Object::getDisabledUntil( DisabledType type ) const
 	//Not disabled.
 	return 0;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool Object::clearDisabled( DisabledType type )
 {
+(void) type;
+DEBUG_CRASH(("Object::clearDisabled not yet implemented!"));
+return false;
+#if 0
 	if( type < 0 || type >= DISABLED_COUNT )
 	{
 		DEBUG_CRASH( ("Invalid disabled type value %d specified -- doesn't not exist!", type ) );
@@ -2320,9 +2351,11 @@ Bool Object::clearDisabled( DisabledType type )
 		onDisabledEdge(false);
 	}
 	return TRUE;
+#endif // if 0
 }
 
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 //Checks any timers and clears disabled statii that have expired.
 //-------------------------------------------------------------------------------------------------
@@ -3358,6 +3391,7 @@ void Object::maskObject( Bool mask )
 		TheGameLogic->deselectObject(this, ~getControllingPlayer()->getPlayerMask(), TRUE);
 
 }  // end maskObject
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /*
@@ -3365,9 +3399,14 @@ void Object::maskObject( Bool mask )
  */
 Bool Object::isUsingAirborneLocomotor( void ) const
 {
+DEBUG_CRASH(("Object::isUsingAirborneLocomotor not yet implemented!"));
+return false;
+#if 0
 	return ( m_ai && m_ai->getCurLocomotor() && ((m_ai->getCurLocomotor()->getLegalSurfaces() & LOCOMOTORSURFACE_AIR) != 0) );
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 //THIS FUNCTION BELONGS AT THE OBJECT LEVEL BECAUSE THERE IS AT LEAST ONE SPECIAL UNIT
 //(ANGRY MOB) WHICH NEEDS LOGIC-SIDE POSITION CALC'S...
@@ -4791,6 +4830,7 @@ void Object::adjustModelConditionForWeaponStatus()
 		}
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /// We have moved a 'significant' amount, so do maintenence that can be considered 'cell-based'
@@ -4802,11 +4842,14 @@ void Object::onPartitionCellChange()
 //-------------------------------------------------------------------------------------------------
 void Object::handlePartitionCellMaintenance()
 {
+#if 0
 	handleShroud();
 	handleValueMap();
 	handleThreatMap();
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::handleShroud()
 {
@@ -5249,10 +5292,15 @@ void Object::setShroudRange( Real newShroudRange )
 {
 	m_shroudRange = newShroudRange;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::setVisionSpied(Bool setting, Int byWhom)
 {
+(void) setting;
+(void) byWhom;
+DEBUG_CRASH(("Object::setVisionSpied not yet implemented!"));
+#if 0
 	Bool needRefresh = FALSE; // If this setting is an edge trigger on the reference count, I need to refresh
 
 	if( setting )
@@ -5283,8 +5331,10 @@ void Object::setVisionSpied(Bool setting, Int byWhom)
 
 		handlePartitionCellMaintenance();
 	}
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::doStatusDamage( ObjectStatusTypes status, Real duration )
 {

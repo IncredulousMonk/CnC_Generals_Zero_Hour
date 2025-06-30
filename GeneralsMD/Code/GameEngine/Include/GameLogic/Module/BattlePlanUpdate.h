@@ -41,7 +41,7 @@ class SpecialPowerModule;
 class ParticleSystem;
 class FXList;
 class AudioEventRTS;
-enum  MaxHealthChangeType;
+enum  MaxHealthChangeType: int;
 enum  CommandOption;
 
 //-------------------------------------------------------------------------------------------------
@@ -49,15 +49,22 @@ enum  CommandOption;
 class BattlePlanUpdateModuleData : public ModuleData
 {
 public:
+	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	struct IniData
+	{
+	};
+
+	IniData m_ini {};
+
 	// No copies allowed!
 	BattlePlanUpdateModuleData(const BattlePlanUpdateModuleData&) = delete;
 	BattlePlanUpdateModuleData& operator=(const BattlePlanUpdateModuleData&) = delete;
 
 	SpecialPowerTemplate *m_specialPowerTemplate;
 
-  UnsignedInt m_bombardmentPlanAnimationFrames;
-  UnsignedInt m_holdTheLinePlanAnimationFrames;
-  UnsignedInt m_searchAndDestroyPlanAnimationFrames;
+	UnsignedInt m_bombardmentPlanAnimationFrames;
+	UnsignedInt m_holdTheLinePlanAnimationFrames;
+	UnsignedInt m_searchAndDestroyPlanAnimationFrames;
 	UnsignedInt m_transitionIdleFrames;
 
 	AsciiString	m_bombardmentUnpackName;
@@ -114,13 +121,13 @@ class BattlePlanBonuses : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(BattlePlanBonuses, "BattlePlanBonuses")		
 public:
-	Real						m_armorScalar;
-	Int							m_bombardment;				//Represents having weapon bonuses for bombardment plan
-	Int							m_searchAndDestroy;		//Represents having weapon bonuses for searchAndDestroy plan
-	Int							m_holdTheLine;				//Represents having weapon bonuses for holdTheLine plan
-	Real						m_sightRangeScalar;
-	KindOfMaskType	m_validKindOf;
-	KindOfMaskType	m_invalidKindOf;
+	Real			m_armorScalar {};
+	Int				m_bombardment {};			//Represents having weapon bonuses for bombardment plan
+	Int				m_searchAndDestroy {};		//Represents having weapon bonuses for searchAndDestroy plan
+	Int				m_holdTheLine {};			//Represents having weapon bonuses for holdTheLine plan
+	Real			m_sightRangeScalar {};
+	KindOfMaskType	m_validKindOf {};
+	KindOfMaskType	m_invalidKindOf {};
 };
 EMPTY_DTOR(BattlePlanBonuses)
 

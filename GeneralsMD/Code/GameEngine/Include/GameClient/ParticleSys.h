@@ -276,15 +276,19 @@ static const char *EmissionVolumeTypeNames[] =
 	"NONE", "POINT", "LINE", "BOX", "SPHERE", "CYLINDER", NULL
 };
 
+static const char *WindMotionNames[] = 
+{
+	"NONE", "Unused", "PingPong", "Circular", NULL
+};
+
+#endif
+
+#ifdef DEFINE_PARTICLE_PRIORITY_NAMES
+
 //"NONE", "FLUFF", "DEBRIS", "NATURE", "WEAPON", "DAMAGE", "SPECIAL"
 static const char *ParticlePriorityNames[] = 
 {
 	"NONE", "WEAPON_EXPLOSION","SCORCHMARK","DUST_TRAIL","BUILDUP","DEBRIS_TRAIL","UNIT_DAMAGE_FX","DEATH_EXPLOSION","SEMI_CONSTANT","CONSTANT","WEAPON_TRAIL","AREA_EFFECT","CRITICAL", "ALWAYS_RENDER", NULL
-};
-
-static const char *WindMotionNames[] = 
-{
-	"NONE", "Unused", "PingPong", "Circular", NULL
 };
 
 #endif

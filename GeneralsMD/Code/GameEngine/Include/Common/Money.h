@@ -50,6 +50,7 @@
 #include "Lib/BaseType.h"
 #include "Common/Debug.h"
 #include "Common/Snapshot.h"
+#include "Common/INI.h"
 
 // ----------------------------------------------------------------------------------------------
 /**

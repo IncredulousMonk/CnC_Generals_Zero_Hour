@@ -40,7 +40,7 @@
 #include "GameClient/Color.h"
 #include "Common/STLTypedefs.h"
 // #include "Common/GameCommon.h"
-// #include "Common/Money.h"
+#include "Common/Money.h"
 
 // FORWARD DECLARATIONS ///////////////////////////////////////////////////////////////////////////
 struct FieldParse;
@@ -331,7 +331,7 @@ public:
 
 		Int m_maxParticleCount;						///< maximum number of particles that can exist
 		Int m_maxFieldParticleCount;			///< maximum number of field-type particles that can exist (roughly)
-		// WeaponBonusSet* m_weaponBonusSet; // FIXME: This is a class!
+		WeaponBonusSet* m_weaponBonusSet;
 		Real m_healthBonus[LEVEL_COUNT];			///< global bonuses to health for veterancy.
 		Real m_defaultStructureRubbleHeight;	///< for rubbled structures, compress height to this if none specified
 
@@ -414,11 +414,9 @@ public:
 		Real m_standardMinefieldDensity;
 		Real m_standardMinefieldDistance;
 
-		
+
 		Bool  m_showMetrics;								///< whether or not to show the metrics.
-		// FIXME: Money is a class!
-		// Money m_defaultStartingCash;				///< The amount of cash a player starts with by default.
-		
+
 		Bool m_debugShowGraphicalFramerate;		///< Whether or not to show the graphical framerate bar.
 
 		Int m_powerBarBase;										///< Logrithmic base for the power bar scale
@@ -515,10 +513,13 @@ public:
 		AsciiString m_modBIG;
 		//-allAdvice feature
 		//Bool m_allAdvice;
+
+		GlobalData* m_obj {};					///< pointer to the parent object
 	};
 
 	Data m_data {};
 
+	Money m_defaultStartingCash {};				///< The amount of cash a player starts with by default.
 
 	// the trailing '\' is included!
   const AsciiString &getPath_UserData() const { return m_userDataDir; }
@@ -536,6 +537,8 @@ private:
 	GlobalData *newOverride( void );		/** create a new override, copy data from previous
 																			override, and return it */
 
+	// Proxy parse function to avoid offset problems:
+	static void parseDefaultStartingCash(INI* ini, void *instance, void* store, const void* userData);
 
 	GlobalData(const GlobalData& that) = delete;
 	GlobalData& operator=(const GlobalData& that) = delete;

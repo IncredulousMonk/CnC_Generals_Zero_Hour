@@ -56,9 +56,9 @@ class Shadow;
 class SidesInfo 
 {
 protected:
-	BuildListInfo*	m_pBuildList;		///< linked list.
-	Dict						m_dict;					///< general player dict.
-	ScriptList			*m_scripts;			///< linked list.
+	BuildListInfo*	m_pBuildList {};		///< linked list.
+	Dict			m_dict {};				///< general player dict.
+	ScriptList		*m_scripts {};			///< linked list.
 
 public:
 	SidesInfo(void);
@@ -83,7 +83,7 @@ public:
 class TeamsInfo
 {
 private:
-	Dict m_dict;
+	Dict m_dict {};
 public:
 	Dict* getDict() { return &m_dict; }
 	void init(const Dict* d) { m_dict.clear(); if (d) m_dict = *d; }
@@ -96,9 +96,9 @@ public:
 class TeamsInfoRec
 {
 private:
-	Int					m_numTeams;
-	Int					m_numTeamsAllocated;
-	TeamsInfo*	m_teams;
+	Int			m_numTeams {};
+	Int			m_numTeamsAllocated {};
+	TeamsInfo*	m_teams {};
 
 public:
 	TeamsInfoRec();
@@ -193,14 +193,14 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	Int					m_numSides;
-	SidesInfo		m_sides[MAX_PLAYER_COUNT];
+	Int				m_numSides {};
+	SidesInfo		m_sides[MAX_PLAYER_COUNT] {};
 
-	Int					m_numSkirmishSides;
+	Int				m_numSkirmishSides {};
 	SidesInfo		m_skirmishSides[MAX_PLAYER_COUNT];
 
-	TeamsInfoRec	m_teamrec;
-	TeamsInfoRec	m_skirmishTeamrec;
+	TeamsInfoRec	m_teamrec {};
+	TeamsInfoRec	m_skirmishTeamrec {};
 
 	Bool validateAllyEnemyList(const AsciiString& tname, AsciiString& allies);
 };
@@ -267,9 +267,8 @@ public:
 	BuildListInfo(void);
 	//~BuildListInfo(void);								///< Note that deleting the head of a list deletes all linked objects in the list.
 
-	// No copies allowed!
 	BuildListInfo(const BuildListInfo&) = delete;
-	BuildListInfo& operator=(const BuildListInfo&) = delete;
+	BuildListInfo& operator=(const BuildListInfo&) = default;
 
 	static void parseStructure(INI *ini, void *instance, void* /*store*/, const void* /*userData*/);
 
@@ -280,45 +279,52 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	AsciiString			m_buildingName;			///< The name of this building.
-	AsciiString			m_templateName;			///< The thing template name for this model's info.
-	Coord3D					m_location;					///< The location of the object.
-	Coord2D					m_rallyPointOffset; ///< Offset to the natural rally point.
-	Real						m_angle;						///< Initial orientation of the building.
-	Bool						m_isInitiallyBuilt; ///< Whether the building is built at the start of the game.
-	UnsignedInt			m_numRebuilds;			///< Number of rebuilds allowed.
-	BuildListInfo*	m_nextBuildList;		///< linked list.
-	AsciiString		m_script;
-	Int				m_health;
-	Bool			m_whiner;
-	Bool			m_unsellable;
-	Bool			m_repairable;
-	Bool			m_automaticallyBuild;			///< If true, the ai will build.  If false, script has to enable this.
+	AsciiString		m_templateName {};			///< The thing template name for this model's info.
+	BuildListInfo*	m_nextBuildList {};		///< linked list.
+	AsciiString		m_script {};
+	Int				m_health {};
+	Bool			m_whiner {};
+	Bool			m_unsellable {};
+	Bool			m_repairable {};
 
 
 	// For WorldBuilder use only:
-	RenderObjClass	*m_renderObj;				///< object that renders in the 3d scene.
-	Shadow			*m_shadowObj;				///< object that renders shadows in the 3d scane.
-	Bool				m_selected;					///< True if the obj is selected in the editor.
+	RenderObjClass	*m_renderObj {};				///< object that renders in the 3d scene.
+	Shadow			*m_shadowObj {};				///< object that renders shadows in the 3d scane.
+	Bool			m_selected {};					///< True if the obj is selected in the editor.
 
 	// For solo AI use only:
-	ObjectID m_objectID;								///< the object on the map instantiated by this info
-	UnsignedInt m_objectTimestamp;			///< frame when object was built
-	Bool		 m_underConstruction;				///< True if being constructed by dozer.
-	ObjectID m_resourceGatherers[MAX_RESOURCE_GATHERERS];	///< gatherers for this supply center type building. 
-	Bool		 m_isSupplyBuilding;				///< Uses gatherers to get supplies.
-	Int			 m_desiredGatherers;				///< Number of gatherers desired.
-	Int			 m_currentGatherers;				///< Number of gatherers available.
-	Bool		 m_priorityBuild;						///< Is priority build.
+	ObjectID 		m_objectID {};								///< the object on the map instantiated by this info
+	UnsignedInt 	m_objectTimestamp {};			///< frame when object was built
+	Bool		 	m_underConstruction {};				///< True if being constructed by dozer.
+	ObjectID 		m_resourceGatherers[MAX_RESOURCE_GATHERERS];	///< gatherers for this supply center type building. 
+	Bool		 	m_isSupplyBuilding {};				///< Uses gatherers to get supplies.
+	Int			 	m_desiredGatherers {};				///< Number of gatherers desired.
+	Int			 	m_currentGatherers {};				///< Number of gatherers available.
+	Bool		 	m_priorityBuild {};						///< Is priority build.
+
+	// MG: Cannot apply offsetof to BuildListInfo, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString		m_buildingName {};			///< The name of this building.
+		Coord3D			m_location {};					///< The location of the object.
+		Coord2D			m_rallyPointOffset {}; ///< Offset to the natural rally point.
+		Real			m_angle {};						///< Initial orientation of the building.
+		Bool			m_isInitiallyBuilt {}; ///< Whether the building is built at the start of the game.
+		UnsignedInt		m_numRebuilds {};			///< Number of rebuilds allowed.
+		Bool			m_automaticallyBuild {true};			///< If true, the ai will build.  If false, script has to enable this.
+	};
+
+	IniData m_ini {};
 
 public:
 	// srj sez: naughty public access to avoid 'friend' -- should be friend for JUST THESE, but hey
-	void setNumRebuilds(UnsignedInt numRebuilds) {m_numRebuilds = numRebuilds;}
+	void setNumRebuilds(UnsignedInt numRebuilds) {m_ini.m_numRebuilds = numRebuilds;}
 	void setNextBuildList(BuildListInfo *pNext) {m_nextBuildList = pNext;}
-	void setLocation(Coord3D loc) {m_location = loc;}
-	void setAngle(Real angle) {m_angle = angle;}
-	void setInitiallyBuilt(Bool built) {m_isInitiallyBuilt = built;}
-	void setBuildingName(AsciiString name) {m_buildingName = name;}
+	void setLocation(Coord3D loc) {m_ini.m_location = loc;}
+	void setAngle(Real angle) {m_ini.m_angle = angle;}
+	void setInitiallyBuilt(Bool built) {m_ini.m_isInitiallyBuilt = built;}
+	void setBuildingName(AsciiString name) {m_ini.m_buildingName = name;}
 	void setScript(AsciiString script) {m_script = script;}
 	void setHealth(Int health) {m_health = health;}
 	void setWhiner(Bool whiner) {m_whiner = whiner;}
@@ -327,16 +333,16 @@ public:
 
 public:
 	BuildListInfo *getNext(void) const {return m_nextBuildList;}
-	AsciiString getBuildingName(void) const {return m_buildingName;} ///< Gets the name.
+	AsciiString getBuildingName(void) const {return m_ini.m_buildingName;} ///< Gets the name.
 	AsciiString getTemplateName(void) const {return m_templateName;} ///< Gets the name.
 	void setTemplateName(AsciiString name) {m_templateName = name;}
-	UnsignedInt getNumRebuilds(void) {return m_numRebuilds;}
+	UnsignedInt getNumRebuilds(void) {return m_ini.m_numRebuilds;}
 	void decrementNumRebuilds(void);
 	void incrementNumRebuilds(void);
-	const Coord3D *getLocation(void) const {return &m_location;}
-	const Coord2D *getRallyOffset(void) const {return &m_rallyPointOffset;}
-	Real getAngle(void) const {return m_angle;}
-	Bool isInitiallyBuilt(void) {return m_isInitiallyBuilt;}
+	const Coord3D *getLocation(void) const {return &m_ini.m_location;}
+	const Coord2D *getRallyOffset(void) const {return &m_ini.m_rallyPointOffset;}
+	Real getAngle(void) const {return m_ini.m_angle;}
+	Bool isInitiallyBuilt(void) {return m_ini.m_isInitiallyBuilt;}
 	AsciiString getScript(void) {return m_script;}
 	Int getHealth(void) {return m_health;}
 	Bool getWhiner(void) {return m_whiner;}
@@ -361,7 +367,7 @@ public:
 	void setUnderConstruction(Bool construction) { m_underConstruction=construction;}
 	void markPriorityBuild(void) {m_priorityBuild = true; }
 	Bool isPriorityBuild(void) {return m_priorityBuild;}
-	Bool isAutomaticBuild(void) {return m_automaticallyBuild;}
+	Bool isAutomaticBuild(void) {return m_ini.m_automaticallyBuild;}
 
 	Bool isSupplyBuilding(void) {return m_isSupplyBuilding;}
 	void setSupplyBuilding(Bool isSupply) {m_isSupplyBuilding = isSupply;}
@@ -377,14 +383,14 @@ public:
 
 inline void BuildListInfo::decrementNumRebuilds(void)  
 {
-	if (m_numRebuilds > 0 && m_numRebuilds != UNLIMITED_REBUILDS) 
-		m_numRebuilds--;
+	if (m_ini.m_numRebuilds > 0 && m_ini.m_numRebuilds != UNLIMITED_REBUILDS) 
+		m_ini.m_numRebuilds--;
 }
 
 inline void BuildListInfo::incrementNumRebuilds(void)  
 {
-	if (m_numRebuilds != UNLIMITED_REBUILDS) 
-		m_numRebuilds++;
+	if (m_ini.m_numRebuilds != UNLIMITED_REBUILDS) 
+		m_ini.m_numRebuilds++;
 }
 
 inline Bool BuildListInfo::isBuildable( void )
@@ -397,4 +403,3 @@ inline Bool BuildListInfo::isBuildable( void )
 
 
 #endif
-

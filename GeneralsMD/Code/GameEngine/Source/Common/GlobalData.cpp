@@ -48,7 +48,7 @@
 // #include "Common/Version.h"
 
 // #include "GameLogic/AI.h"
-// #include "GameLogic/Weapon.h"
+#include "GameLogic/Weapon.h"
 // #include "GameLogic/Module/BodyModule.h"
 
 #include "GameClient/Color.h"
@@ -417,8 +417,7 @@ GlobalData* GlobalData::m_theOriginal = NULL;
 	{ "AISoloPlayerHealthBonus_Normal",				INI::parsePercentToReal,			NULL,			offsetof( GlobalData::Data, m_soloPlayerHealthBonusForDifficulty[PLAYER_COMPUTER][DIFFICULTY_NORMAL] ) },
 	{ "AISoloPlayerHealthBonus_Hard",				INI::parsePercentToReal,			NULL,			offsetof( GlobalData::Data, m_soloPlayerHealthBonusForDifficulty[PLAYER_COMPUTER][DIFFICULTY_HARD] ) },
 
-	// FIXME: Fix this.
-	// { "WeaponBonus",								WeaponBonusSet::parseWeaponBonusSetPtr,	NULL,	offsetof( GlobalData::Data, m_weaponBonusSet ) },
+	{ "WeaponBonus",								WeaponBonusSet::parseWeaponBonusSetPtr,	NULL,	offsetof( GlobalData::Data, m_weaponBonusSet ) },
 
 	{ "DefaultStructureRubbleHeight",	INI::parseReal,			NULL,			offsetof( GlobalData::Data, m_defaultStructureRubbleHeight ) },
 
@@ -463,8 +462,7 @@ GlobalData* GlobalData::m_theOriginal = NULL;
 
 	{ "StandardPublicBone", INI::parseAsciiStringVectorAppend, NULL, offsetof(GlobalData::Data, m_standardPublicBones) },
 	{ "ShowMetrics",								INI::parseBool,				   NULL,		offsetof( GlobalData::Data, m_showMetrics ) },
-	// FIXME: Fix this.
-	// { "DefaultStartingCash",				Money::parseMoneyAmount, NULL,		offsetof( GlobalData::Data, m_defaultStartingCash ) },
+	{ "DefaultStartingCash",				GlobalData::parseDefaultStartingCash, NULL,		0 },
 
 // NOTE: m_doubleClickTimeMS is still in use, but we disallow setting it from the GameData.ini file. It is now set in the constructor according to the windows parameter.
 //	{ "DoubleClickTimeMS",									INI::parseUnsignedInt,			NULL, offsetof( GlobalData::Data, m_doubleClickTimeMS ) },
@@ -1072,6 +1070,8 @@ GlobalData::GlobalData()
 
 	m_data.m_clientRetaliationModeEnabled = TRUE; //On by default.
 
+	m_data.m_obj = this;
+
 }  // end GlobalData
 
 
@@ -1244,3 +1244,10 @@ void GlobalData::parseGameDataDefinition( INI* ini )
 	// TheWritableGlobalData->m_data.m_yResolution = yres;
 }
 
+//-------------------------------------------------------------------------------------------------
+void GlobalData::parseDefaultStartingCash(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	GlobalData::Data* data = (GlobalData::Data*) instance;
+	GlobalData* self = data->m_obj;
+	Money::parseMoneyAmount(ini, nullptr, &self->m_defaultStartingCash, nullptr);
+}

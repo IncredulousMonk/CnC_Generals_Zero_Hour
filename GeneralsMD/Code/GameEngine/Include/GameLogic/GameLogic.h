@@ -205,10 +205,12 @@ public:
 	Bool isLoadingMap() const { return m_loadingMap; }			// Whenever a map is in the process of loading.
 	Bool isLoadingSave() const { return m_loadingSave; }		// Whenever a saved game is in the process of loading.
 	Bool isClearingGameData() const { return m_clearingGameData; }
+#endif // if 0
 
 	void enableScoring(Bool score) { m_isScoringEnabled = score; }
 	Bool isScoringEnabled() const { return m_isScoringEnabled; }
 
+#if 0
 	void setShowBehindBuildingMarkers(Bool b) { m_showBehindBuildingMarkers = b; }
 	Bool getShowBehindBuildingMarkers() const { return m_showBehindBuildingMarkers; }
 #endif // if 0

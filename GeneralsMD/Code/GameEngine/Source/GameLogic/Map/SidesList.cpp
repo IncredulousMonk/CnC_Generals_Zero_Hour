@@ -85,7 +85,9 @@ SidesInfo::~SidesInfo(void)
 
 void SidesInfo::init(const Dict* d)
 {
-	m_pBuildList->deleteInstance();
+	if (m_pBuildList) {
+		m_pBuildList->deleteInstance();
+	}
 	m_pBuildList = NULL;
 	m_dict.clear();
 	// FIXME: ScriptList

@@ -34,6 +34,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheModuleFactory (0 out of 199 modules implemented)
   - TheParticleSystemManager (minimal)
   - TheMessageStream
+  - TheSidesList
   - TheRankInfoStore
   - ThePlayerTemplateStore
   - TheFXListStore
@@ -57,6 +58,8 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheIMEManager
     - TheShell
   - TheGameLogic (minimal)
+  - TheTeamFactory
+  - ThePlayerList
 
 ## Still to do
 

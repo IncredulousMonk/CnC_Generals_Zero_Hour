@@ -214,8 +214,8 @@ void TeamFactory::update( void )
 // ------------------------------------------------------------------------
 void TeamFactory::clear()
 {
-		// must remove it from the map before deleting the TeamProto, since
-		// the TeamProto will try to remove itself from the list when it goes away
+	// must remove it from the map before deleting the TeamProto, since
+	// the TeamProto will try to remove itself from the list when it goes away
 	TeamPrototypeMap tmp = m_prototypes;
 	m_prototypes.clear();
 	for (TeamPrototypeMap::iterator it = tmp.begin(); it != tmp.end(); ++it)

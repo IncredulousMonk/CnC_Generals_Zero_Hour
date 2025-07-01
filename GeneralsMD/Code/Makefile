@@ -194,7 +194,8 @@ $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic
 $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDamageFX.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o \
    $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
    $(GEO)/INIWeapon.o \
-$(GEO)/Money.o $(GEO)/Handicap.o $(GEO)/ProductionPrerequisite.o $(GEO)/PlayerTemplate.o $(GEO)/Science.o \
+$(GEO)/AcademyStats.o $(GEO)/Energy.o $(GEO)/Handicap.o $(GEO)/MissionStats.o $(GEO)/Money.o $(GEO)/ProductionPrerequisite.o $(GEO)/Player.o $(GEO)/PlayerList.o $(GEO)/PlayerTemplate.o \
+   $(GEO)/Science.o $(GEO)/ScoreKeeper.o $(GEO)/Team.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o $(GEO)/FileSystem.o \
    $(GEO)/FunctionLexicon.o $(GEO)/GameCommon.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/Geometry.o $(GEO)/KindOf.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
    $(GEO)/ObjectStatusTypes.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/Trig.o $(GEO)/UnicodeString.o $(GEO)/Upgrade.o \
@@ -211,7 +212,7 @@ $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
 $(GEO)/Anim2D.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
 $(GEO)/TerrainRoads.o \
-$(GEO)/TerrainLogic.o \
+$(GEO)/SidesList.o $(GEO)/TerrainLogic.o \
 $(GEO)/Armor.o $(GEO)/Object.o $(GEO)/Weapon.o $(GEO)/WeaponSet.o \
 $(GEO)/BehaviorModule.o \
 $(GEO)/BodyModule.o \
@@ -222,8 +223,6 @@ $(GEO)/UpdateModule.o \
 $(GEO)/UpgradeModule.o \
 $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/RankInfo.o \
 $(GEO)/Chat.o
-#$(GEO)/Money.o $(GEO)/Handicap.o $(GEO)/ProductionPrerequisite.o $(GEO)/Player.o $(GEO)/PlayerList.o $(GEO)/PlayerTemplate.o $(GEO)/Science.o $(GEO)/Team.o \
-#$(GEO)/SidesList.o $(GEO)/TerrainLogic.o \
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
 	ar rcs $(ENGINE_LIB) $(ENGINE_OBJS)
@@ -346,20 +345,29 @@ $(GEO)/INIWeapon.o: $(GES)/Common/INI/INIWeapon.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIWeapon.o $(GES)/Common/INI/INIWeapon.cpp
 
 # --- GameEngine/Source/Common/RTS ---
-$(GEO)/Money.o: $(GES)/Common/RTS/Money.cpp GameEngine/Include/Common/Money.h
-	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Money.o $(GES)/Common/RTS/Money.cpp
+$(GEO)/AcademyStats.o: $(GES)/Common/RTS/AcademyStats.cpp GameEngine/Include/Common/AcademyStats.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AcademyStats.o $(GES)/Common/RTS/AcademyStats.cpp
+
+$(GEO)/Energy.o: $(GES)/Common/RTS/Energy.cpp GameEngine/Include/Common/Energy.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Energy.o $(GES)/Common/RTS/Energy.cpp
 
 $(GEO)/Handicap.o: $(GES)/Common/RTS/Handicap.cpp GameEngine/Include/Common/Handicap.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Handicap.o $(GES)/Common/RTS/Handicap.cpp
 
+$(GEO)/MissionStats.o: $(GES)/Common/RTS/MissionStats.cpp GameEngine/Include/Common/MissionStats.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MissionStats.o $(GES)/Common/RTS/MissionStats.cpp
+
+$(GEO)/Money.o: $(GES)/Common/RTS/Money.cpp GameEngine/Include/Common/Money.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Money.o $(GES)/Common/RTS/Money.cpp
+
 $(GEO)/ProductionPrerequisite.o: $(GES)/Common/RTS/ProductionPrerequisite.cpp GameEngine/Include/Common/ProductionPrerequisite.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ProductionPrerequisite.o $(GES)/Common/RTS/ProductionPrerequisite.cpp
 
-#$(GEO)/Player.o: $(GES)/Common/RTS/Player.cpp GameEngine/Include/Common/Player.h
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Player.o $(GES)/Common/RTS/Player.cpp
+$(GEO)/Player.o: $(GES)/Common/RTS/Player.cpp GameEngine/Include/Common/Player.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Player.o $(GES)/Common/RTS/Player.cpp
 
-#$(GEO)/PlayerList.o: $(GES)/Common/RTS/PlayerList.cpp GameEngine/Include/Common/PlayerList.h
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PlayerList.o $(GES)/Common/RTS/PlayerList.cpp
+$(GEO)/PlayerList.o: $(GES)/Common/RTS/PlayerList.cpp GameEngine/Include/Common/PlayerList.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PlayerList.o $(GES)/Common/RTS/PlayerList.cpp
 
 $(GEO)/PlayerTemplate.o: $(GES)/Common/RTS/PlayerTemplate.cpp GameEngine/Include/Common/PlayerTemplate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PlayerTemplate.o $(GES)/Common/RTS/PlayerTemplate.cpp
@@ -367,8 +375,11 @@ $(GEO)/PlayerTemplate.o: $(GES)/Common/RTS/PlayerTemplate.cpp GameEngine/Include
 $(GEO)/Science.o: $(GES)/Common/RTS/Science.cpp GameEngine/Include/Common/Science.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Science.o $(GES)/Common/RTS/Science.cpp
 
-#$(GEO)/Team.o: $(GES)/Common/RTS/Team.cpp GameEngine/Include/Common/Team.h
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Team.o $(GES)/Common/RTS/Team.cpp
+$(GEO)/ScoreKeeper.o: $(GES)/Common/RTS/ScoreKeeper.cpp GameEngine/Include/Common/ScoreKeeper.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ScoreKeeper.o $(GES)/Common/RTS/ScoreKeeper.cpp
+
+$(GEO)/Team.o: $(GES)/Common/RTS/Team.cpp GameEngine/Include/Common/Team.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Team.o $(GES)/Common/RTS/Team.cpp
 
 # --- GameEngine/Source/Common/System ---
 $(GEO)/ArchiveFile.o: $(GES)/Common/System/ArchiveFile.cpp
@@ -641,8 +652,8 @@ $(GEO)/TerrainRoads.o: $(GES)/GameClient/Terrain/TerrainRoads.cpp GameEngine/Inc
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainRoads.o $(GES)/GameClient/Terrain/TerrainRoads.cpp
 
 # --- GameEngine/Source/GameLogic/Map ---
-#$(GEO)/SidesList.o: $(GES)/GameLogic/Map/SidesList.cpp GameEngine/Include/GameLogic/SidesList.h
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SidesList.o $(GES)/GameLogic/Map/SidesList.cpp
+$(GEO)/SidesList.o: $(GES)/GameLogic/Map/SidesList.cpp GameEngine/Include/GameLogic/SidesList.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SidesList.o $(GES)/GameLogic/Map/SidesList.cpp
 
 $(GEO)/TerrainLogic.o: $(GES)/GameLogic/Map/TerrainLogic.cpp GameEngine/Include/GameLogic/TerrainLogic.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainLogic.o $(GES)/GameLogic/Map/TerrainLogic.cpp

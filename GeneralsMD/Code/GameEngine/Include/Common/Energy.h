@@ -121,10 +121,10 @@ protected:
 
 private:
 
-	Int		m_energyProduction;		///< level of energy production, in kw
-	Int		m_energyConsumption;	///< level of energy consumption, in kw
-	UnsignedInt m_powerSabotagedTillFrame; ///< If power is sabotaged, the frame will be greater than now.
-	Player *m_owner;						///< Tight pointer to the Player I am intrinsic to.
+	Int		m_energyProduction {};		///< level of energy production, in kw
+	Int		m_energyConsumption {};	///< level of energy consumption, in kw
+	UnsignedInt m_powerSabotagedTillFrame {}; ///< If power is sabotaged, the frame will be greater than now.
+	Player *m_owner {};						///< Tight pointer to the Player I am intrinsic to.
 };
 
 #endif // _ENERGY_H_

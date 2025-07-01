@@ -34,8 +34,8 @@
 // #include "Common/CRCDebug.h"
 // #include "Common/Radar.h"
 #include "Common/PlayerTemplate.h"
-// #include "Common/Team.h"
-// #include "Common/PlayerList.h"
+#include "Common/Team.h"
+#include "Common/PlayerList.h"
 #include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
 #include "Common/INI.h"
@@ -83,7 +83,7 @@
 // #include "GameLogic/Locomotor.h"
 #include "GameLogic/RankInfo.h"
 // #include "GameLogic/ScriptEngine.h"
-// #include "GameLogic/SidesList.h"
+#include "GameLogic/SidesList.h"
 
 // #include "GameClient/Display.h"
 #include "GameClient/FXList.h"
@@ -462,7 +462,7 @@ void GameEngine::init( int argc, char *argv[] )
 		initSubsystem(TheFunctionLexicon,"TheFunctionLexicon", createFunctionLexicon(), NULL);
 		initSubsystem(TheModuleFactory,"TheModuleFactory", createModuleFactory(), NULL);
 		initSubsystem(TheMessageStream,"TheMessageStream", createMessageStream(), NULL);
-		// initSubsystem(TheSidesList,"TheSidesList", MSGNEW("GameEngineSubsystem") SidesList(), NULL);
+		initSubsystem(TheSidesList,"TheSidesList", MSGNEW("GameEngineSubsystem") SidesList(), NULL);
 		// initSubsystem(TheCaveSystem,"TheCaveSystem", MSGNEW("GameEngineSubsystem") CaveSystem(), NULL);
 		initSubsystem(TheRankInfoStore,"TheRankInfoStore", MSGNEW("GameEngineSubsystem") RankInfoStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Rank.ini");
 		initSubsystem(ThePlayerTemplateStore,"ThePlayerTemplateStore", MSGNEW("GameEngineSubsystem") PlayerTemplateStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\PlayerTemplate.ini", "Data\\INI\\PlayerTemplate.ini");
@@ -519,9 +519,9 @@ void GameEngine::init( int argc, char *argv[] )
 	
 		// initSubsystem(TheAI,"TheAI", MSGNEW("GameEngineSubsystem") AI(), &xferCRC,  "Data\\INI\\Default\\AIData.ini", "Data\\INI\\AIData.ini");
 		initSubsystem(TheGameLogic,"TheGameLogic", createGameLogic(), NULL);
-		// initSubsystem(TheTeamFactory,"TheTeamFactory", MSGNEW("GameEngineSubsystem") TeamFactory(), NULL);
+		initSubsystem(TheTeamFactory,"TheTeamFactory", MSGNEW("GameEngineSubsystem") TeamFactory(), NULL);
 		// initSubsystem(TheCrateSystem,"TheCrateSystem", MSGNEW("GameEngineSubsystem") CrateSystem(), &xferCRC, "Data\\INI\\Default\\Crate.ini", "Data\\INI\\Crate.ini");
-		// initSubsystem(ThePlayerList,"ThePlayerList", MSGNEW("GameEngineSubsystem") PlayerList(), NULL);
+		initSubsystem(ThePlayerList,"ThePlayerList", MSGNEW("GameEngineSubsystem") PlayerList(), NULL);
 		// initSubsystem(TheRecorder,"TheRecorder", createRecorder(), NULL);
 		// initSubsystem(TheRadar,"TheRadar", createRadar(), NULL);
 		// initSubsystem(TheVictoryConditions,"TheVictoryConditions", createVictoryConditions(), NULL);

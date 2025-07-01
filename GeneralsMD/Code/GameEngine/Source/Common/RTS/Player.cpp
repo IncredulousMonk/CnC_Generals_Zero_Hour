@@ -77,7 +77,7 @@
 #include "GameClient/GameClient.h"
 #include "GameClient/GameText.h"
 
-#include "GameLogic/AI.h"
+// #include "GameLogic/AI.h"
 #include "GameLogic/AIPathfind.h"
 #include "GameLogic/AISkirmishPlayer.h"
 #include "GameLogic/ExperienceTracker.h"
@@ -85,9 +85,9 @@
 #include "GameLogic/Scripts.h"
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/SidesList.h"
-#include "GameLogic/Squad.h"
+// #include "GameLogic/Squad.h"
 #include "GameLogic/RankInfo.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
 // #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/ContainModule.h"
@@ -141,6 +141,8 @@ ClosestKindOfData::ClosestKindOfData( void )
 // ------------------------------------------------------------------------------------------------
 static void findClosestKindOf( Object *obj, void *userData )
 {
+DEBUG_CRASH(("findClosestKindOf not yet implemented!\n"));
+#if 0
 	ClosestKindOfData *closestData = (ClosestKindOfData *)userData;
 
 	if( ! obj->isKindOfMulti( closestData->m_setKindOf, closestData->m_clearKindOf ) )
@@ -153,6 +155,7 @@ static void findClosestKindOf( Object *obj, void *userData )
 		closestData->m_closest = obj;
 		closestData->m_closestDistSq = distSq;
 	} 
+#endif // if 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,14 +184,15 @@ AsciiString kindofMaskAsAsciiString(KindOfMaskType m)
 }
 void dumpBattlePlanBonuses(const BattlePlanBonuses *b, AsciiString name, const Player *p, const Object *o, AsciiString fname, Int line, Bool doDebugLog)
 {
-	CRCDEBUG_LOG(("dumpBattlePlanBonuses() %s:%d %s\n  Player %d(%ls) object %d(%s) armor:%g/%8.8X bombardment:%d, holdTheLine:%d, searchAndDestroy:%d sight:%g/%8.8X, valid:%s invalid:%s\n",
-		fname.str(), line, name.str(),
-		(p)?p->getPlayerIndex():-1, (p)?((Player *)p)->getPlayerDisplayName().str():L"<No Name>", (o)?o->getID():0u, (o)?o->getTemplate()->getName().str():"<No Name>",
-		b->m_armorScalar, AS_INT(b->m_armorScalar),
-		b->m_bombardment, b->m_holdTheLine, b->m_searchAndDestroy,
-		b->m_sightRangeScalar, AS_INT(b->m_sightRangeScalar),
-		kindofMaskAsAsciiString(b->m_validKindOf).str(),
-		kindofMaskAsAsciiString(b->m_invalidKindOf).str()));
+	// FIXME: CRCDEBUG_LOG
+	// CRCDEBUG_LOG(("dumpBattlePlanBonuses() %s:%d %s\n  Player %d(%ls) object %d(%s) armor:%g/%8.8X bombardment:%d, holdTheLine:%d, searchAndDestroy:%d sight:%g/%8.8X, valid:%s invalid:%s\n",
+	// 	fname.str(), line, name.str(),
+	// 	(p)?p->getPlayerIndex():-1, (p)?((Player *)p)->getPlayerDisplayName().str():L"<No Name>", (o)?o->getID():0u, (o)?o->getTemplate()->getName().str():"<No Name>",
+	// 	b->m_armorScalar, AS_INT(b->m_armorScalar),
+	// 	b->m_bombardment, b->m_holdTheLine, b->m_searchAndDestroy,
+	// 	b->m_sightRangeScalar, AS_INT(b->m_sightRangeScalar),
+	// 	kindofMaskAsAsciiString(b->m_validKindOf).str(),
+	// 	kindofMaskAsAsciiString(b->m_invalidKindOf).str()));
 	if (!doDebugLog)
 		return;
 	DEBUG_LOG(("dumpBattlePlanBonuses() %s:%d %s\n  Player %d(%ls) object %d(%s) armor:%g/%8.8X bombardment:%d, holdTheLine:%d, searchAndDestroy:%d sight:%g/%8.8X, valid:%s invalid:%s\n",
@@ -313,7 +317,9 @@ Player::Player( Int playerIndex )
 
 	m_upgradeList = NULL;
 	m_pBuildList = NULL;
+#if 0
 	m_ai = NULL;
+#endif // if 0
 	m_resourceGatheringManager = NULL;
 	m_defaultTeam = NULL;
 	m_radarCount = 0;
@@ -360,6 +366,9 @@ Player::Player( Int playerIndex )
 void Player::init(const PlayerTemplate* pt)
 {
 
+(void) pt;
+DEBUG_LOG(("Player::init not yet implemented!\n"));
+#if 0
 	DEBUG_ASSERTCRASH(m_playerTeamPrototypes.size() == 0, ("Player::m_playerTeamPrototypes is not empty at game start!\n"));
 	m_skillPointsModifier = 1.0f;
 	m_attackedFrame = 0;
@@ -531,11 +540,14 @@ void Player::init(const PlayerTemplate* pt)
 	//Always off at the beginning of a game! Only GameLogic::update has
 	//the power to turn it on. Don't want to cause desyncs!
 	m_logicalRetaliationModeEnabled = FALSE;
+#endif // if 0
 }
 
 //=============================================================================
 Player::~Player()
 {
+DEBUG_LOG(("Player::~Player not yet implemented!\n"));
+#if 0
 	m_defaultTeam = NULL;
 	m_playerTemplate = NULL;
 
@@ -545,11 +557,13 @@ Player::~Player()
 		(*it)->friend_setOwningPlayer(NULL);
 	}
 	m_playerTeamPrototypes.clear();	// empty, but don't free the contents
+#endif // if 0
 
 	// delete the relation maps (the destructor clears the actual map if any data is present)
 	m_teamRelations->deleteInstance();
 	m_playerRelations->deleteInstance();
 
+#if 0
 	for (Int i = 0; i < NUM_HOTKEY_SQUADS; ++i) {
 		if (m_squads[i] != NULL) {
 			m_squads[i]->deleteInstance();
@@ -567,6 +581,7 @@ Player::~Player()
 		m_battlePlanBonuses->deleteInstance();
 		m_battlePlanBonuses = NULL;
 	}
+#endif // if 0
 }
 
 //=============================================================================
@@ -710,6 +725,8 @@ void Player::addToPriorityBuildList(AsciiString templateName, Coord3D *pos, Real
 //=============================================================================
 void Player::update()
 {
+DEBUG_CRASH(("Player::update not yet implemented!"));
+#if 0
 	if (m_ai)
 		m_ai->update();
 
@@ -755,13 +772,17 @@ void Player::update()
 			}
 		}
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::newMap()
 {
+DEBUG_CRASH(("Player::newMap not yet implemented!"));
+#if 0
 	if (m_ai)
 		m_ai->newMap();
+#endif // if 0
 }
 
 //=============================================================================
@@ -812,6 +833,9 @@ void Player::setDefaultTeam(void) {
 //
 void Player::initFromDict(const Dict* d)
 {
+(void) d;
+DEBUG_CRASH(("Player::initFromDict not yet implemented!"));
+#if 0
 	AsciiString tmplname = d->getAsciiString(TheKey_playerFaction);
 	const PlayerTemplate* pt = ThePlayerTemplateStore->findPlayerTemplate(NAMEKEY(tmplname));
 	DEBUG_ASSERTCRASH(pt != NULL, ("PlayerTemplate %s not found -- this is an obsolete map (please open and resave in WB)\n",tmplname.str()));
@@ -1059,6 +1083,7 @@ void Player::initFromDict(const Dict* d)
 		m_currentSelection = NULL;
 	}
 	m_currentSelection = newInstance( Squad );
+#endif // if 0
 }
 
 //=============================================================================
@@ -1120,7 +1145,7 @@ DEBUG_CRASH(("Player::becomingTeamMember not yet implemented!"));
 void Player::becomingLocalPlayer(Bool yes)
 {
 (void) yes;
-DEBUG_CRASH(("Player::becomingLocalPlayer not yet implemented!"));
+DEBUG_LOG(("Player::becomingLocalPlayer not yet implemented!\n"));
 #if 0
 	if (yes)
 	{
@@ -1201,7 +1226,11 @@ DEBUG_CRASH(("Player::becomingLocalPlayer not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 Bool Player::isSkirmishAIPlayer( void )
 {
+DEBUG_CRASH(("Player::isSkirmishAIPlayer not yet implemented!"));
+return false;
+#if 0
 	return m_ai ? m_ai->isSkirmishAI() : false; 
+#endif // if 0
 }
 
 
@@ -1211,19 +1240,27 @@ Bool Player::isSkirmishAIPlayer( void )
  */
 Bool Player::computeSuperweaponTarget(const SpecialPowerTemplate *power, Coord3D *retPos, Int playerNdx, Real weaponRadius)
 {
+DEBUG_CRASH(("Player::computeSuperweaponTarget not yet implemented!"));
+return false;
+#if 0
 	if (m_ai) {
 		return m_ai->computeSuperweaponTarget(power, retPos, playerNdx, weaponRadius);
 	}
 
-  return FALSE;
+	return FALSE;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 /** Get this player's current enemy. NOTE - Can be NULL. */
 //-------------------------------------------------------------------------------------------------
-Player  *Player::getCurrentEnemy( void )
+Player *Player::getCurrentEnemy( void )
 {
+DEBUG_CRASH(("Player::getCurrentEnemy not yet implemented!"));
+return nullptr;
+#if 0
 	return m_ai?m_ai->getAiEnemy():NULL; 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1579,11 +1616,15 @@ Int Player::countReadyShortcutSpecialPowersOfType( SpecialPowerType spType )
 //-------------------------------------------------------------------------------------------------
 GameDifficulty Player::getPlayerDifficulty(void) const
 {
+DEBUG_CRASH(("Player::getPlayerDifficulty not yet implemented!"));
+return DIFFICULTY_EASY;
+#if 0
 	if (m_ai) 
 	{
 		return m_ai->getAIDifficulty();
 	}
 	return TheScriptEngine->getGlobalDifficulty();
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1591,7 +1632,11 @@ GameDifficulty Player::getPlayerDifficulty(void) const
 //-------------------------------------------------------------------------------------------------
 Bool Player::checkBridges(Object *unit, Waypoint *way)
 {
+DEBUG_CRASH(("Player::checkBridges not yet implemented!"));
+return false;
+#if 0
 	return m_ai?m_ai->checkBridges(unit, way):false; 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1599,7 +1644,11 @@ Bool Player::checkBridges(Object *unit, Waypoint *way)
 //-------------------------------------------------------------------------------------------------
 Bool Player::getAiBaseCenter(Coord3D *pos)
 {
+DEBUG_CRASH(("Player::getAiBaseCenter not yet implemented!"));
+return false;
+#if 0
 	return m_ai?m_ai->getBaseCenter(pos):false; 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1607,10 +1656,13 @@ Bool Player::getAiBaseCenter(Coord3D *pos)
 //-------------------------------------------------------------------------------------------------
 void Player::repairStructure(ObjectID structureID)
 {
+DEBUG_CRASH(("Player::repairStructure not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		m_ai->repairStructure(structureID); 
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1618,6 +1670,8 @@ void Player::repairStructure(ObjectID structureID)
 //-------------------------------------------------------------------------------------------------
 void Player::onUnitCreated( Object *factory, Object *unit )
 {
+DEBUG_CRASH(("Player::onUnitCreated not yet implemented!"));
+#if 0
 	// When a a unit is completed, it becomes "real" as far as scripting is 
 	// concerned. jba.
 	TheScriptEngine->notifyOfObjectCreationOrDestruction();
@@ -1628,6 +1682,7 @@ void Player::onUnitCreated( Object *factory, Object *unit )
 	// ai notification callback
 	if( m_ai )
 		m_ai->onUnitProduced( factory, unit );
+#endif // if 0
 }  // end onUnitCreated
 
 
@@ -1636,10 +1691,14 @@ void Player::onUnitCreated( Object *factory, Object *unit )
 //-------------------------------------------------------------------------------------------------
 Bool Player::isSupplySourceSafe( Int minSupplies )
 {
+DEBUG_CRASH(("Player::isSupplySourceSafe not yet implemented!"));
+return false;
+#if 0
 	// ai query
 	if( m_ai )
 		return m_ai->isSupplySourceSafe( minSupplies );
 	return true;
+#endif // if 0
 }  // isSupplySourceSafe
 
 //-------------------------------------------------------------------------------------------------
@@ -1647,10 +1706,14 @@ Bool Player::isSupplySourceSafe( Int minSupplies )
 //-------------------------------------------------------------------------------------------------
 Bool Player::isSupplySourceAttacked( void )
 {
+DEBUG_CRASH(("Player::isSupplySourceAttacked not yet implemented!"));
+return false;
+#if 0
 	// ai query
 	if( m_ai )
 		return m_ai->isSupplySourceAttacked( );
 	return false;
+#endif // if 0
 }  // isSupplySourceSafe
 
 //-------------------------------------------------------------------------------------------------
@@ -1658,9 +1721,12 @@ Bool Player::isSupplySourceAttacked( void )
 //-------------------------------------------------------------------------------------------------
 void Player::setTeamDelaySeconds(Int delay  )
 {
+DEBUG_CRASH(("Player::setTeamDelaySeconds not yet implemented!"));
+#if 0
 	// ai action
 	if( m_ai )
 		m_ai->setTeamDelaySeconds( delay );
+#endif // if 0
 }  // guardSupplyCenter
 
 //-------------------------------------------------------------------------------------------------
@@ -1668,9 +1734,12 @@ void Player::setTeamDelaySeconds(Int delay  )
 //-------------------------------------------------------------------------------------------------
 void Player::guardSupplyCenter( Team *team, Int minSupplies  )
 {
+DEBUG_CRASH(("Player::guardSupplyCenter not yet implemented!"));
+#if 0
 	// ai action
 	if( m_ai )
 		m_ai->guardSupplyCenter( team, minSupplies );
+#endif // if 0
 }  // guardSupplyCenter
 
 //-------------------------------------------------------------------------------------------------
@@ -1678,9 +1747,12 @@ void Player::guardSupplyCenter( Team *team, Int minSupplies  )
 //-------------------------------------------------------------------------------------------------
 void Player::preTeamDestroy( const Team *team )
 {
+DEBUG_CRASH(("Player::preTeamDestroy not yet implemented!"));
+#if 0
 	// ai notification callback
 	if( m_ai )
 		m_ai->aiPreTeamDestroy( team );
+#endif // if 0
 }  // preTeamDestroy
 
 //-------------------------------------------------------------------------------------------------
@@ -2037,9 +2109,12 @@ VeterancyLevel Player::getProductionVeterancyLevel( AsciiString buildTemplateNam
 //=============================================================================
 void Player::friend_setSkillset(Int skillSet)
 {
+DEBUG_CRASH(("Player::friend_setSkillset not yet implemented!"));
+#if 0
 	if (m_ai) {
 		m_ai->selectSkillset(skillSet);
 	}
+#endif // if 0
 }
 
 //=============================================================================
@@ -2370,10 +2445,15 @@ DEBUG_CRASH(("Player::setUnitsShouldIdleOrResume not yet implemented!"));
 //-------------------------------------------------------------------------------
 void sellBuildings( Object *obj, void *userData )
 {
-  if( obj->isFactionStructure() || obj->isKindOf( KINDOF_COMMANDCENTER ) || obj->isKindOf( KINDOF_FS_POWER ) )
-  {
-    TheBuildAssistant->sellObject( obj );
-  }
+(void) obj;
+(void) userData;
+DEBUG_CRASH(("sellBuildings not yet implemented!\n"));
+#if 0
+	if( obj->isFactionStructure() || obj->isKindOf( KINDOF_COMMANDCENTER ) || obj->isKindOf( KINDOF_FS_POWER ) )
+	{
+		TheBuildAssistant->sellObject( obj );
+	}
+#endif // if 0
 }
 
 //=============================================================================
@@ -2400,78 +2480,102 @@ Bool Player::allowedToBuild(const ThingTemplate *tmplate) const
 //=============================================================================
 void Player::buildSpecificTeam( TeamPrototype *teamProto) 
 {
+DEBUG_CRASH(("Player::buildSpecificTeam not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildSpecificAITeam(teamProto, true);
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::buildBaseDefense(Bool flank) 
 {
+DEBUG_CRASH(("Player::buildBaseDefense not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildAIBaseDefense(flank);
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::buildBaseDefenseStructure(const AsciiString &thingName, Bool flank) 
 {
+DEBUG_CRASH(("Player::buildBaseDefenseStructure not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildAIBaseDefenseStructure(thingName, flank);
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::buildSpecificBuilding(const AsciiString &thingName) 
 {
+DEBUG_CRASH(("Player::buildSpecificBuilding not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildSpecificAIBuilding(thingName);
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::buildBySupplies(Int minimumCash, const AsciiString &thingName) 
 {
+DEBUG_CRASH(("Player::buildBySupplies not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		m_ai->buildBySupplies(minimumCash, thingName);
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::buildSpecificBuildingNearestTeam( const AsciiString &thingName, const Team *team )
 {
+DEBUG_CRASH(("Player::buildSpecificBuildingNearestTeam not yet implemented!"));
+#if 0
 	if( m_ai )
 	{
 		m_ai->buildSpecificBuildingNearestTeam( thingName, team );
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::buildUpgrade( const AsciiString &upgrade) 
 {
+DEBUG_CRASH(("Player::buildUpgrade not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		m_ai->buildUpgrade(upgrade);
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Player::recruitSpecificTeam( TeamPrototype *teamProto, Real recruitRadius) 
 {
+DEBUG_CRASH(("Player::recruitSpecificTeam not yet implemented!"));
+#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->recruitSpecificAITeam(teamProto, recruitRadius);
 	}
+#endif // if 0
 }
 
 
@@ -2480,17 +2584,25 @@ void Player::recruitSpecificTeam( TeamPrototype *teamProto, Real recruitRadius)
 //=============================================================================
 Bool Player::calcClosestConstructionZoneLocation( const ThingTemplate *constructTemplate, Coord3D *location )
 {
+DEBUG_CRASH(("Player::calcClosestConstructionZoneLocation not yet implemented!"));
+return false;
+#if 0
 	if( m_ai )
 	{
 		return m_ai->calcClosestConstructionZoneLocation( constructTemplate, location );
 	}
 
   return FALSE;
+#endif // if 0
 }
 
 //=============================================================================
 void Player::doBountyForKill(const Object* killer, const Object* victim)
 {
+(void) killer;
+(void) victim;
+DEBUG_CRASH(("Player::doBountyForKill not yet implemented!\n"));
+#if 0
 	if (!killer || !victim)
 		return;
 
@@ -2516,6 +2628,7 @@ void Player::doBountyForKill(const Object* killer, const Object* victim)
 		pos.z += 10.0f; //add a little z to make it show up above the unit.
 		TheInGameUI->addFloatingText( moneyString, &pos, GameMakeColor( 255, 255, 0, 255 ) );
 	}
+#endif // if 0
 }
 
 //=============================================================================
@@ -2534,7 +2647,7 @@ Bool Player::addSkillPoints(Int delta)
 		return false;
 
 	Int levelCap = min( TheGameLogic->getRankLevelLimit(), TheRankInfoStore->getRankLevelCount() );
-	Int pointCap = TheRankInfoStore->getRankInfo(levelCap)->m_skillPointsNeeded; // Cap at lowest point of cap level, not highest.
+	Int pointCap = TheRankInfoStore->getRankInfo(levelCap)->m_ini.m_skillPointsNeeded; // Cap at lowest point of cap level, not highest.
 
 	Bool levelGained = FALSE;
 	m_skillPoints = min( pointCap, (m_skillPoints + delta) );
@@ -2569,6 +2682,8 @@ Bool Player::addSkillPointsForKill(const Object* killer, const Object* victim)
 //=============================================================================
 void Player::resetSciences()
 {
+DEBUG_CRASH(("Player::resetSciences not yet implemented!"));
+#if 0
 	m_sciences.clear();
 
 	if (getPlayerTemplate())
@@ -2579,7 +2694,7 @@ void Player::resetSciences()
 		const RankInfo* rank = TheRankInfoStore->getRankInfo(i);
 		if (rank)
 		{
-			for (ScienceVec::const_iterator it = rank->m_sciencesGranted.begin(); it != rank->m_sciencesGranted.end(); ++it)
+			for (ScienceVec::const_iterator it = rank->m_ini.m_sciencesGranted.begin(); it != rank->m_ini.m_sciencesGranted.end(); ++it)
 			{
 				addScience(*it);
 			}
@@ -2588,6 +2703,7 @@ void Player::resetSciences()
 
 	for (ScienceVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
 		TheScriptEngine->notifyOfAcquiredScience(getPlayerIndex(), *it);
+#endif // if 0
 }
 
 //=============================================================================
@@ -2745,12 +2861,12 @@ void Player::resetRank()
 	m_rankLevel = 1;
 	m_skillPoints = 0;
 	const RankInfo* nextRank = TheRankInfoStore->getRankInfo(m_rankLevel+1);
-	m_levelUp = nextRank ? nextRank->m_skillPointsNeeded : INT_MAX;
+	m_levelUp = nextRank ? nextRank->m_ini.m_skillPointsNeeded : INT_MAX;
 	m_levelDown = 0;
 	m_sciences.clear();
 	m_sciencePurchasePoints = getPlayerTemplate() ? getPlayerTemplate()->getIntrinsicSciencePurchasePoints() : 0;
 	const RankInfo* curRank = TheRankInfoStore->getRankInfo(m_rankLevel);
-	m_sciencePurchasePoints += curRank ? curRank->m_sciencePurchasePointsGranted : 0;
+	m_sciencePurchasePoints += curRank ? curRank->m_ini.m_sciencePurchasePointsGranted : 0;
 	m_generalName = TheGameText? TheGameText->fetch("SCIENCE:GeneralName"):UnicodeString::TheEmptyString;
 	resetSciences();
 }
@@ -2935,6 +3051,10 @@ namespace
 // ------------------------------------------------------------------------------------------------
 static void countExisting( Object *obj, void *userData )
 {
+(void) obj;
+(void) userData;
+DEBUG_CRASH(("countExisting not yet implemented!"));
+#if 0
   // Don't care about dead objects
   if ( obj->isEffectivelyDead() )
     return;
@@ -2958,6 +3078,7 @@ static void countExisting( Object *obj, void *userData )
       typeCountData->count += pui->countUnitTypeInQueue( typeCountData->type ); 
     }  // end if
   }  
+#endif // if 0
 }  // end countInProduction
 
 //=============================================================================
@@ -3240,6 +3361,9 @@ DEBUG_CRASH(("Player::removeUpgrade not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 Bool Player::okToPlayRadarEdgeSound( void )
 {
+DEBUG_CRASH(("Player::okToPlayRadarEdgeSound not yet implemented!"));
+return false;
+#if 0
 	return (
 		! TheVictoryConditions->hasSinglePlayerBeenDefeated( this ) 
 		&& ! m_isPlayerDead 
@@ -3247,6 +3371,7 @@ Bool Player::okToPlayRadarEdgeSound( void )
 		&& TheGameLogic->isInGameLogicUpdate() 
 		&& TheGameLogic->getFrame() > 0 );
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3763,6 +3888,10 @@ void Player::applyBattlePlanBonusesForPlayerObjects( const BattlePlanBonuses *bo
 /** Create a hotkey team based on this GameMessage */
 //-------------------------------------------------------------------------------------------------
 void Player::processCreateTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
+(void) hotkeyNum;
+(void) msg;
+DEBUG_CRASH(("Player::processCreateTeamGameMessage not yet implemented!"));
+#if 0
 	// GameMessage arguments are the object ID's of the objects that are to be in this team.
 
 	if ((hotkeyNum < 0) || (hotkeyNum >= NUM_HOTKEY_SQUADS)) {
@@ -3782,12 +3911,17 @@ void Player::processCreateTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
 			m_squads[hotkeyNum]->addObject(obj);
 		}
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 /** Select a hotkey team based on this GameMessage */
 //-------------------------------------------------------------------------------------------------
 void Player::processSelectTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
+(void) hotkeyNum;
+(void) msg;
+DEBUG_CRASH(("Player::processSelectTeamGameMessage not yet implemented!"));
+#if 0
 	if ((hotkeyNum < 0) || (hotkeyNum >= NUM_HOTKEY_SQUADS)) {
 		DEBUG_CRASH(("processSelectTeamGameMessage got an invalid hotkey number"));
 		return;
@@ -3812,12 +3946,17 @@ void Player::processSelectTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
 		getAcademyStats()->recordControlGroupsUsed();
 	}
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 /** Select a hotkey team based on this GameMessage */
 //-------------------------------------------------------------------------------------------------
 void Player::processAddTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
+(void) hotkeyNum;
+(void) msg;
+DEBUG_CRASH(("Player::processAddTeamGameMessage not yet implemented!"));
+#if 0
 	if ((hotkeyNum < 0) || (hotkeyNum >= NUM_HOTKEY_SQUADS)) {
 		DEBUG_CRASH(("processAddTeamGameMessage got an invalid hotkey number"));
 		return;
@@ -3837,21 +3976,29 @@ void Player::processAddTeamGameMessage(Int hotkeyNum, GameMessage *msg) {
 	for (Int i = 0; i < numObjs; ++i) {
 		m_currentSelection->addObject(objectList.data()[i]);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 /** Select a hotkey team based on this GameMessage */
 //-------------------------------------------------------------------------------------------------
 void Player::getCurrentSelectionAsAIGroup(AIGroup *group) {
+(void) group;
+DEBUG_CRASH(("Player::getCurrentSelectionAsAIGroup not yet implemented!"));
+#if 0
 	if (m_currentSelection != NULL) {
 		m_currentSelection->aiGroupFromSquad(group);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 /** Select a hotkey team based on this GameMessage */
 //-------------------------------------------------------------------------------------------------
 void Player::setCurrentlySelectedAIGroup(AIGroup *group) {
+(void) group;
+DEBUG_CRASH(("Player::setCurrentlySelectedAIGroup not yet implemented!"));
+#if 0
 	if (m_currentSelection == NULL) {
 		m_currentSelection = newInstance( Squad );
 	}
@@ -3861,6 +4008,7 @@ void Player::setCurrentlySelectedAIGroup(AIGroup *group) {
 	if (group != NULL) {
 		m_currentSelection->squadFromAIGroup(group, true);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3879,6 +4027,10 @@ Squad *Player::getHotkeySquad(Int squadNumber)
 //-------------------------------------------------------------------------------------------------
 Int Player::getSquadNumberForObject(const Object *objToFind) const
 {
+(void) objToFind;
+DEBUG_CRASH(("Player::getSquadNumberForObject not yet implemented!"));
+return 0;
+#if 0
 	for (Int i = 0; i < NUM_HOTKEY_SQUADS; ++i) {
 		if (m_squads[i]->isOnSquad(objToFind)) {
 			return i;
@@ -3886,6 +4038,7 @@ Int Player::getSquadNumberForObject(const Object *objToFind) const
 	}
 
 	return NO_HOTKEY_SQUAD;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3894,6 +4047,9 @@ Int Player::getSquadNumberForObject(const Object *objToFind) const
 //-------------------------------------------------------------------------------------------------
 void Player::removeObjectFromHotkeySquad(Object *objToRemove)
 {
+(void) objToRemove;
+DEBUG_CRASH(("Player::removeObjectFromHotkeySquad not yet implemented!"));
+#if 0
 	for (Int i = 0; i < NUM_HOTKEY_SQUADS; ++i) {
 		if (!m_squads[i]) {
 			continue;
@@ -3901,6 +4057,7 @@ void Player::removeObjectFromHotkeySquad(Object *objToRemove)
 
 		m_squads[i]->removeObject(objToRemove);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -4081,7 +4238,8 @@ void Player::crc( Xfer *xfer )
 	// Player battle plan bonuses
 	Bool battlePlanBonus = m_battlePlanBonuses != NULL;
 	xfer->xferBool( &battlePlanBonus );
-	CRCDEBUG_LOG(("Player %d[%ls] %s battle plans\n", m_playerIndex, m_playerDisplayName.str(), (battlePlanBonus)?"has":"doesn't have"));
+	// FIXME: CRCDEBUG_LOG
+	// CRCDEBUG_LOG(("Player %d[%ls] %s battle plans\n", m_playerIndex, m_playerDisplayName.str(), (battlePlanBonus)?"has":"doesn't have"));
 	if( m_battlePlanBonuses )
 	{
 		CRCDUMPBATTLEPLANBONUSES(m_battlePlanBonuses, this, NULL);
@@ -4115,6 +4273,9 @@ void Player::crc( Xfer *xfer )
 void Player::xfer( Xfer *xfer )
 {
 
+(void) xfer;
+DEBUG_CRASH(("Player::xfer not yet implemented!"));
+#if 0
 	// version
 	const XferVersion currentVersion = 8;
 	XferVersion version = currentVersion;
@@ -4653,6 +4814,7 @@ void Player::xfer( Xfer *xfer )
 	else
 		m_unitsShouldHunt = FALSE;
 
+#endif // if 0
 }  // end xfer
 
 // ------------------------------------------------------------------------------------------------

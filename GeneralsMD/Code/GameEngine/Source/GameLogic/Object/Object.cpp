@@ -6161,6 +6161,7 @@ Int Object::getMultiLogicalBonePosition(const char* boneNamePrefix, Int maxBones
 		return 0;
 	}
 }
+#endif // if 0
 
 //=============================================================================
 const AsciiString& Object::getCommandSetString() const 
@@ -6171,6 +6172,7 @@ const AsciiString& Object::getCommandSetString() const
 	return getTemplate()->friend_getCommandSetString();
 }
 
+#if 0
 //=============================================================================
 Bool Object::canProduceUpgrade( const UpgradeTemplate *upgrade )
 {

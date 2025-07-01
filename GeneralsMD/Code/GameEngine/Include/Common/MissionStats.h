@@ -80,9 +80,9 @@ protected:
 private:
 
 	Int m_unitsKilled[MAX_PLAYER_COUNT];					///< how many units for each Player were killed by us?
-	Int m_unitsLost;															///< how many of our units were destroyed?
+	Int m_unitsLost {};															///< how many of our units were destroyed?
 	Int m_buildingsKilled[MAX_PLAYER_COUNT];			///< how many buildings for each Player were killed by us?
-	Int m_buildingsLost;													///< how many of our buildings were destroyed?
+	Int m_buildingsLost {};													///< how many of our buildings were destroyed?
 	//Int	m_whoLastHurtMe;													///< last Player to destroy one of my units
 };
 

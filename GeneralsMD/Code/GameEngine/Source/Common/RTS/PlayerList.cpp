@@ -159,11 +159,12 @@ void PlayerList::newGame()
 			setLocal = true;
 		}
 
-		if (!setLocal && !TheNetwork && d->getBool(TheKey_playerIsHuman))
-		{
-			setLocalPlayer(p);
-			setLocal = true;
-		}
+		// FIXME: TheNetwork
+		// if (!setLocal && !TheNetwork && d->getBool(TheKey_playerIsHuman))
+		// {
+		// 	setLocalPlayer(p);
+		// 	setLocal = true;
+		// }
 
 		// Set the build list.
 		p->setBuildList(TheSidesList->getSideInfo(i)->getBuildList());
@@ -173,7 +174,8 @@ void PlayerList::newGame()
 
 	if (!setLocal)
 	{
-		DEBUG_ASSERTCRASH(TheNetwork, ("*** Map has no human player... picking first nonneutral player for control\n"));
+		// FIXME: TheNetwork
+		// DEBUG_ASSERTCRASH(TheNetwork, ("*** Map has no human player... picking first nonneutral player for control\n"));
 		for( i = 0; i < TheSidesList->getNumSides(); i++)
 		{
 			Player* p = getNthPlayer(i);

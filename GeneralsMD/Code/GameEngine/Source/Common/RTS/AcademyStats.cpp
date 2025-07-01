@@ -87,6 +87,10 @@ AcademyStats::AcademyStats()
 //------------------------------------------------------------------------------------------------
 void findDozerCommandSet( Object *object, void *userData )
 {
+(void) object;
+(void) userData;
+DEBUG_CRASH(("findDozerCommandSet not yet implemented!"));
+#if 0
 	const CommandSet *dozerCommandSet = (const CommandSet*)userData;
 	if( dozerCommandSet )
 	{
@@ -96,6 +100,7 @@ void findDozerCommandSet( Object *object, void *userData )
 	{
 		dozerCommandSet = TheControlBar->findCommandSet( object->getCommandSetString() );
 	}
+#endif // if 0
 }
 
 //------------------------------------------------------------------------------------------------
@@ -115,9 +120,9 @@ void AcademyStats::init( const Player *player )
 	const PlayerTemplate *plyrTemplate = player->getPlayerTemplate();
 
 	if( !plyrTemplate ||
-			plyrTemplate->getBaseSide().compareNoCase( "USA" ) &&
+			(plyrTemplate->getBaseSide().compareNoCase( "USA" ) &&
 			plyrTemplate->getBaseSide().compareNoCase( "China" ) &&
-			plyrTemplate->getBaseSide().compareNoCase( "GLA" ) )
+			plyrTemplate->getBaseSide().compareNoCase( "GLA" )) )
 	{
 		//Admittedly, this is a massive violation of data driven design. Shame on me!
 		//Unknown side... don't provide ANY advice. Simplicity reasons.
@@ -132,31 +137,32 @@ void AcademyStats::init( const Player *player )
 	m_commandCenterTemplate = NULL;
 	m_supplyCenterTemplate = NULL;
 
-	if( m_dozerCommandSet )
-	{
-		for( int i = 0; i < MAX_COMMANDS_PER_SET; i++ )
-		{
-			const CommandButton *button = m_dozerCommandSet->getCommandButton( i );
-			if( button )
-			{
-				const ThingTemplate *thing = button->getThingTemplate();
-				if( thing )
-				{
-					if( thing->isKindOf( KINDOF_FS_SUPPLY_CENTER ) )
-					{
-						m_supplyCenterTemplate = thing;
-						m_supplyCenterCost = m_supplyCenterTemplate->calcCostToBuild( player );
-					}
-					else if( thing->isKindOf( KINDOF_COMMANDCENTER ) )
-					{
-						//Wow, this is bogus... but we need this template pointer in order to fire special powers from the
-						//shortcut... ugh.
-						m_commandCenterTemplate = thing;
-					}
-				}
-			}
-		}
-	}
+	// FIXME: CommandSet
+	// if( m_dozerCommandSet )
+	// {
+	// 	for( int i = 0; i < MAX_COMMANDS_PER_SET; i++ )
+	// 	{
+	// 		const CommandButton *button = m_dozerCommandSet->getCommandButton( i );
+	// 		if( button )
+	// 		{
+	// 			const ThingTemplate *thing = button->getThingTemplate();
+	// 			if( thing )
+	// 			{
+	// 				if( thing->isKindOf( KINDOF_FS_SUPPLY_CENTER ) )
+	// 				{
+	// 					m_supplyCenterTemplate = thing;
+	// 					m_supplyCenterCost = (UnsignedInt)m_supplyCenterTemplate->calcCostToBuild( player );
+	// 				}
+	// 				else if( thing->isKindOf( KINDOF_COMMANDCENTER ) )
+	// 				{
+	// 					//Wow, this is bogus... but we need this template pointer in order to fire special powers from the
+	// 					//shortcut... ugh.
+	// 					m_commandCenterTemplate = thing;
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	//+-----------------------+
 	//| Tier 1 (Basic advice) |
@@ -363,7 +369,7 @@ void AcademyStats::update()
 }
 
 //------------------------------------------------------------------------------------------------
-void AcademyStats::recordProduction( const Object *obj, const Object *constructer )
+void AcademyStats::recordProduction( const Object *obj, const Object * /*constructer*/ )
 {
 	UnsignedInt now = TheGameLogic->getFrame();
 
@@ -527,8 +533,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_spentCashBeforeBuildingSupplyCenter )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:BuildSupplyCenterEarlier" ) );
@@ -541,8 +547,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_researchedRadar )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:TryBuildingRadar" ) );
@@ -555,8 +561,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_peonsBuilt < 2 )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:BuildMorePeons" ) );
@@ -569,8 +575,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_structuresCaptured )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:TryCapturingStructures" ) );
@@ -583,8 +589,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_generalsPointsSpent )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:SpendGeneralsPoints" ) );
@@ -597,8 +603,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_specialPowersUsed )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:TryUsingSuperweapons" ) );
@@ -611,8 +617,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_structuresGarrisoned )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:TryGarrisoningAStructure" ) );
@@ -630,8 +636,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_idleBuildingUnitsMaxFrames > 300 * LOGICFRAMES_PER_SECOND || !m_lastUnitBuiltFrame )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:IdleBuildingUnits" ) );
@@ -644,8 +650,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_dragSelectUnits )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:TryDragSelectingUnits" ) );
@@ -658,8 +664,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_upgradesPurchased )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:ResearchUpgrades" ) );
@@ -681,8 +687,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_powerOutMaxFrames > 600 * LOGICFRAMES_PER_SECOND )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:RanOutOfPower" ) );
@@ -696,8 +702,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	{
 		//Don't count free ones that come with supply centers!
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:BuildMoreGatherers" ) );
@@ -710,8 +716,8 @@ void AcademyStats::evaluateTier1Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_heroesBuilt )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:BuildAHero" ) );
@@ -748,8 +754,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_hadAStrategyCenter && !m_choseAStrategyForCenter )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:PickStrategyCenterPlan" ) );
@@ -762,8 +768,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_hadATunnelNetwork && !m_unitsEnteredTunnelNetwork )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:UseTunnelNetwork" ) );
@@ -776,8 +782,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_controlGroupsUsed )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:UseControlGroups" ) );
@@ -790,8 +796,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_secondaryIncomeUnitsBuilt )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:UseSecondaryIncomeMethods" ) );
@@ -804,8 +810,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_clearedGarrisonedBuildings )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:ClearBuildings" ) );
@@ -820,8 +826,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 		if( !m_salvageCollected )
 		{
 			availableTips++;
-			Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-			Int limit = maxAdviceTips - info->numTips;
+			UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+			UnsignedInt limit = maxAdviceTips - info->numTips;
 			if( choosing &&  rand < limit )
 			{
 				info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:PickUpSalvage" ) );
@@ -835,8 +841,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_guardAbilityUsedCount )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:UseGuardAbility" ) );
@@ -849,8 +855,8 @@ void AcademyStats::evaluateTier2Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_supplyCentersBuilt < 2 )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:MultipleSupplyCenters" ) );
@@ -893,11 +899,11 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 	Int availableTips = 0;
 
 	//25) Did the player use the new alternate interface in the options?
-	if( !TheGlobalData->m_useAlternateMouse ) 
+	if( !TheGlobalData->m_data.m_useAlternateMouse ) 
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:AlternateMouseInterface" ) );
@@ -910,8 +916,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_doubleClickAttackMoveOrdersGiven ) 
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:DoubleClickAttackMoveGuard" ) );
@@ -924,8 +930,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_builtBarracksWithinFiveMinutes )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:BuildBarracksSooner" ) );
@@ -938,8 +944,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_builtWarFactoryWithinTenMinutes )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:BuildWarFactorySooner" ) );
@@ -952,8 +958,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( !m_builtTechStructureWithinFifteenMinutes )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:BuildTechStructureSooner" ) );
@@ -971,8 +977,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( m_maxFramesBetweenIncome > LOGICFRAMES_PER_SECOND * 120 || !m_lastIncomeFrame )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:NoIncome" ) );
@@ -985,8 +991,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 	if( ThePlayerList->getLocalPlayer()->getAcademyStats()->getMines() > 0 && !m_minesCleared )
 	{
 		availableTips++;
-		Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-		Int limit = maxAdviceTips - info->numTips;
+		UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+		UnsignedInt limit = maxAdviceTips - info->numTips;
 		if( choosing &&  rand < limit )
 		{
 			info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:NoIncome" ) );
@@ -1001,8 +1007,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 		if( !m_vehiclesRecovered )
 		{
 			availableTips++;
-			Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-			Int limit = maxAdviceTips - info->numTips;
+			UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+			UnsignedInt limit = maxAdviceTips - info->numTips;
 			if( choosing &&  rand < limit )
 			{
 				info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:UnmannedVehicles" ) );
@@ -1018,8 +1024,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 		if( !m_vehiclesDisguised )
 		{
 			availableTips++;
-			Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-			Int limit = maxAdviceTips - info->numTips;
+			UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+			UnsignedInt limit = maxAdviceTips - info->numTips;
 			if( choosing &&  rand < limit )
 			{
 				info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:DisguisedUnits" ) );
@@ -1035,8 +1041,8 @@ void AcademyStats::evaluateTier3Advice( AcademyAdviceInfo *info, Int numAvailabl
 		if( !m_firestormsCreated )
 		{
 			availableTips++;
-			Int rand = GameClientRandomValue( 0, numAvailableTips - 1 );
-			Int limit = maxAdviceTips - info->numTips;
+			UnsignedInt rand = (UnsignedInt)GameClientRandomValue( 0, numAvailableTips - 1 );
+			UnsignedInt limit = maxAdviceTips - info->numTips;
 			if( choosing &&  rand < limit )
 			{
 				info->advice[ info->numTips ].concat( TheGameText->fetch( "ACADEMY:Firestorm" ) );
@@ -1081,7 +1087,7 @@ Bool AcademyStats::calculateAcademyAdvice( AcademyAdviceInfo *info )
 	info->numTips = 0;
 
 	//Build the header for each string.
-	for( Int i = 0; i < maxAdviceTips; i++ )
+	for( UnsignedInt i = 0; i < maxAdviceTips; i++ )
 	{
 		info->advice[ i ].format( UnicodeString( L"\n\n" ) );
 	}
@@ -1108,7 +1114,7 @@ Bool AcademyStats::calculateAcademyAdvice( AcademyAdviceInfo *info )
 //------------------------------------------------------------------------------------------------
 // CRC 
 //------------------------------------------------------------------------------------------------
-void AcademyStats::crc( Xfer *xfer )
+void AcademyStats::crc( Xfer * /*xfer*/ )
 {
 
 }  // end crc

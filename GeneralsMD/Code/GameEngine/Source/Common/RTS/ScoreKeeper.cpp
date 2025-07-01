@@ -396,7 +396,7 @@ Int ScoreKeeper::getTotalUnitsDestroyed( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ScoreKeeper::crc( Xfer *xfer )
+void ScoreKeeper::crc( Xfer * /*xfer*/ )
 {
 
 }  // end ScoreKeeper

@@ -198,11 +198,13 @@ public:
 
 	ObjectID getBuilderID() const { return m_builderID; }
 	void setBuilder( const Object *obj );
+#endif // if 0
 
 	void enterGroup( AIGroup *group );							///< become a member of the AIGroup
 	void leaveGroup( void );												///< leave our current AIGroup
 	AIGroup *getGroup(void);
 
+#if 0
 	// physical properties
 	Bool isMobile() const;																	///< returns true if object is currently able to move
 #endif // if 0
@@ -359,9 +361,9 @@ public:
 
 	inline ObjectStatusMaskType getStatusBits() const { return m_status; }
 	inline Bool testStatus( ObjectStatusTypes bit ) const { return m_status.test( bit ); }
-#if 0
 	void setStatus( ObjectStatusMaskType objectStatus, Bool set = true );
 	inline void clearStatus( ObjectStatusMaskType objectStatus ) { setStatus( objectStatus, false ); }
+#if 0
 	void updateUpgradeModules();	///< We need to go through our Upgrade Modules and see which should be activated
 	UpgradeMaskType getObjectCompletedUpgradeMask() const { return m_objectUpgradesCompleted; } ///< Upgrades I complete locally
 
@@ -479,16 +481,18 @@ public:
 	// contained-by
 	inline Object *getContainedBy() { return m_containedBy; }
 	inline const Object *getContainedBy() const { return m_containedBy; }
-#if 0
 	inline UnsignedInt getContainedByFrame() const { return m_containedByFrame; }
 	inline Bool isContained() const { return m_containedBy != NULL; }
 	void onContainedBy( Object *containedBy );
 	void onRemovedFrom( Object *removedFrom );
+#if 0
 	Int getTransportSlotCount() const;
 	void friend_setContainedBy( Object *containedBy ) { m_containedBy = containedBy; }
+#endif // if 0
 
 	// Special Powers -------------------------------------------------------------------------------
 	SpecialPowerModuleInterface *getSpecialPowerModule( const SpecialPowerTemplate *specialPowerTemplate ) const;
+#if 0
 	void doSpecialPower( const SpecialPowerTemplate *specialPowerTemplate, UnsignedInt commandOptions, Bool forced = false );	///< execute power
 	void doSpecialPowerAtObject( const SpecialPowerTemplate *specialPowerTemplate, Object *obj, UnsignedInt commandOptions, Bool forced = false );	///< execute power
 	void doSpecialPowerAtLocation( const SpecialPowerTemplate *specialPowerTemplate, const Coord3D *loc, Real angle, UnsignedInt commandOptions, Bool forced = false );	///< execute power

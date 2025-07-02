@@ -58,7 +58,7 @@
 #include "Common/BitFlagsIO.h"
 
 #include "GameClient/Drawable.h"
-// #include "GameClient/FXList.h"
+#include "GameClient/FXList.h"
 #include "GameClient/GameText.h"
 #include "GameClient/Image.h"
 #include "GameClient/Shadow.h"
@@ -688,13 +688,12 @@ void ThingTemplate::parsePrerequisites( INI* ini, void *instance, void *store, c
 //-------------------------------------------------------------------------------------------Static
 static void parseArbitraryFXIntoMap( INI* ini, void *instance, void* /* store */, const void* userData )
 {
-	// PerUnitFXMap* mapFX = (PerUnitFXMap*)instance;
-	// const char* name = (const char*)userData;
-	// const char* token = ini->getNextToken();
-	// FIXME: TheFXListStore
-	// const FXList* fxl = TheFXListStore->findFXList(token);	// could be null!
-	// DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
-	// mapFX->insert(std::make_pair(AsciiString(name), fxl));	
+	PerUnitFXMap* mapFX = (PerUnitFXMap*)instance;
+	const char* name = (const char*)userData;
+	const char* token = ini->getNextToken();
+	const FXList* fxl = TheFXListStore->findFXList(token);	// could be null!
+	DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
+	mapFX->insert(std::make_pair(AsciiString(name), fxl));	
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1611,16 +1610,13 @@ Bool ThingTemplate::isBuildableItem(void) const
 //-------------------------------------------------------------------------------------------------
 Int ThingTemplate::calcCostToBuild( const Player* player) const
 {
-//FIXME: Player
-(void) player;
-return 0;
-	// if (!player)
-	// 	return 0;
+	if (!player)
+		return 0;
 
-	// // changePercent format is "-.2 equals 20% cheaper"
-	// Real factionModifier = 1 + player->getProductionCostChangePercent( getName() );
-	// factionModifier *= player->getProductionCostChangeBasedOnKindOf( m_ini.m_kindof );
-	// return getBuildCost() * factionModifier * player->getHandicap()->getHandicap(Handicap::BUILDCOST, this);
+	// changePercent format is "-.2 equals 20% cheaper"
+	Real factionModifier = 1 + player->getProductionCostChangePercent( getName() );
+	factionModifier *= player->getProductionCostChangeBasedOnKindOf( m_ini.m_kindof );
+	return getBuildCost() * factionModifier * player->getHandicap()->getHandicap(Handicap::BUILDCOST, this);
 }
 
 #if 0

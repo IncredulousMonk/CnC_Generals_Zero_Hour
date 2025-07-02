@@ -336,8 +336,10 @@ public:
 	inline const Object *getObject( void ) const { return m_object; }		///< return object ID bound to this drawble
 
 	inline DrawableInfo *getDrawableInfo(void) {return &m_drawableInfo;}
+#endif // if 0
 
 	void setDrawableHidden( Bool hidden );																		///< hide or unhide drawable
+#if 0
 	//
 	// note that this is not necessarily the 'get' reflection of setDrawableHidden, since drawables
 	// can spontaneously hide via stealth. (srj)
@@ -657,11 +659,11 @@ protected:
 #endif // if 0
 
 	virtual void reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle);
-#if 0
 	void updateHiddenStatus();
 
 private:
 
+#if 0
 	// note, these are lazily allocated!
 	TintEnvelope*		m_selectionFlashEnvelope {};	///< used for selection flash, works WITH m_colorTintEnvelope
 	TintEnvelope*		m_colorTintEnvelope {};			///< house color flashing, etc... works WITH m_selectionFlashEnvelope

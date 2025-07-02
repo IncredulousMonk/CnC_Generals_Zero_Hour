@@ -35,8 +35,8 @@
 // #include "Common/DrawModule.h"
 #include "Common/GameAudio.h"
 #include "Common/INI.h"
-// #include "Common/Player.h"
-// #include "Common/PlayerList.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
 #include "Common/RandomValue.h"
 #include "Common/ThingTemplate.h"
 #include "Common/ThingFactory.h"
@@ -912,9 +912,8 @@ DEBUG_CRASH(("FXList::doFXPos not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 void FXList::doFXObj(const Object* primary, const Object* secondary) const
 {
-	// FIXME: ThePlayerList
-	// if (primary && primary->getShroudedStatus(ThePlayerList->getLocalPlayer()->getPlayerIndex()) > OBJECTSHROUD_PARTIAL_CLEAR)
-	// 	return;	//the primary object is fogged or shrouded so don't bother with the effect.
+	if (primary && primary->getShroudedStatus(ThePlayerList->getLocalPlayer()->getPlayerIndex()) > OBJECTSHROUD_PARTIAL_CLEAR)
+		return;	//the primary object is fogged or shrouded so don't bother with the effect.
 
 	for (FXNuggetList::const_iterator it = m_nuggets.begin(); it != m_nuggets.end(); ++it)
 	{

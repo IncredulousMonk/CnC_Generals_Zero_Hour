@@ -61,7 +61,7 @@
 #include "Common/DamageFX.h"
 #include "Common/MultiplayerSettings.h"
 // #include "Common/Recorder.h"
-// #include "Common/SpecialPower.h"
+#include "Common/SpecialPower.h"
 #include "Common/TerrainTypes.h"
 #include "Common/Upgrade.h"
 // #include "Common/UserPreferences.h"
@@ -73,7 +73,7 @@
 
 #include "GameLogic/Armor.h"
 // #include "GameLogic/AI.h"
-// #include "GameLogic/CaveSystem.h"
+#include "GameLogic/CaveSystem.h"
 // #include "GameLogic/CrateSystem.h"
 // #include "GameLogic/Damage.h"
 // #include "GameLogic/VictoryConditions.h"
@@ -463,7 +463,7 @@ void GameEngine::init( int argc, char *argv[] )
 		initSubsystem(TheModuleFactory,"TheModuleFactory", createModuleFactory(), NULL);
 		initSubsystem(TheMessageStream,"TheMessageStream", createMessageStream(), NULL);
 		initSubsystem(TheSidesList,"TheSidesList", MSGNEW("GameEngineSubsystem") SidesList(), NULL);
-		// initSubsystem(TheCaveSystem,"TheCaveSystem", MSGNEW("GameEngineSubsystem") CaveSystem(), NULL);
+		initSubsystem(TheCaveSystem,"TheCaveSystem", MSGNEW("GameEngineSubsystem") CaveSystem(), NULL);
 		initSubsystem(TheRankInfoStore,"TheRankInfoStore", MSGNEW("GameEngineSubsystem") RankInfoStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Rank.ini");
 		initSubsystem(ThePlayerTemplateStore,"ThePlayerTemplateStore", MSGNEW("GameEngineSubsystem") PlayerTemplateStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\PlayerTemplate.ini", "Data\\INI\\PlayerTemplate.ini");
 		initSubsystem(TheParticleSystemManager,"TheParticleSystemManager", createParticleSystemManager(), NULL);
@@ -480,7 +480,7 @@ void GameEngine::init( int argc, char *argv[] )
 		initSubsystem(TheWeaponStore,"TheWeaponStore", MSGNEW("GameEngineSubsystem") WeaponStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Weapon.ini");
 		// initSubsystem(TheObjectCreationListStore,"TheObjectCreationListStore", MSGNEW("GameEngineSubsystem") ObjectCreationListStore(), &xferCRC, "Data\\INI\\Default\\ObjectCreationList.ini", "Data\\INI\\ObjectCreationList.ini");
 		// initSubsystem(TheLocomotorStore,"TheLocomotorStore", MSGNEW("GameEngineSubsystem") LocomotorStore(), &xferCRC, NULL, "Data\\INI\\Locomotor.ini");
-		// initSubsystem(TheSpecialPowerStore,"TheSpecialPowerStore", MSGNEW("GameEngineSubsystem") SpecialPowerStore(), &xferCRC, "Data\\INI\\Default\\SpecialPower.ini", "Data\\INI\\SpecialPower.ini");
+		initSubsystem(TheSpecialPowerStore,"TheSpecialPowerStore", MSGNEW("GameEngineSubsystem") SpecialPowerStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\SpecialPower.ini", "Data\\INI\\SpecialPower.ini");
 		initSubsystem(TheDamageFXStore,"TheDamageFXStore", MSGNEW("GameEngineSubsystem") DamageFXStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\DamageFX.ini");
 		initSubsystem(TheArmorStore,"TheArmorStore", MSGNEW("GameEngineSubsystem") ArmorStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Armor.ini");
 		// initSubsystem(TheBuildAssistant,"TheBuildAssistant", MSGNEW("GameEngineSubsystem") BuildAssistant, NULL);

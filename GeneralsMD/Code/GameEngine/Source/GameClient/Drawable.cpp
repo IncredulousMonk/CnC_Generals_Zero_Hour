@@ -4667,11 +4667,14 @@ void Drawable::removeFromList(Drawable **pListHead)
 	else
 		*pListHead = m_nextDrawable;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void Drawable::updateHiddenStatus()
 {
+DEBUG_CRASH(("Drawable::updateHiddenStatus not yet implemented!"));
+#if 0
 	Bool hidden = m_hidden || m_hiddenByStealth;
 	if( hidden )
 		TheInGameUI->deselectDrawable( this );
@@ -4683,6 +4686,7 @@ void Drawable::updateHiddenStatus()
 			di->setHidden(hidden != 0);
 	}
 	
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -4697,6 +4701,7 @@ void Drawable::setDrawableHidden( Bool hidden )
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::updateDrawableClipStatus( UnsignedInt shotsRemaining, UnsignedInt maxShots, WeaponSlotType slot )
 {

@@ -45,7 +45,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/ProductionPrerequisite.h"
-// #include "Common/Player.h"
+#include "Common/Player.h"
 #include "Common/ThingFactory.h"
 #include "Common/ThingTemplate.h"
 #include "GameLogic/Object.h"
@@ -107,18 +107,15 @@ void ProductionPrerequisite::resolveNames()
 //-----------------------------------------------------------------------------
 Int ProductionPrerequisite::calcNumPrereqUnitsOwned(const Player *player, Int counts[MAX_PREREQ]) const
 {
-	// FIXME: Player
-	(void) player;
-	(void) counts;
-	// const ThingTemplate *tmpls[MAX_PREREQ];
-	// size_t cnt = m_prereqUnits.size();
-	// if (cnt > MAX_PREREQ)
-	// 	cnt = MAX_PREREQ;
-	// for (size_t i = 0; i < cnt; i++)
-	// 	tmpls[i] = m_prereqUnits[i].unit;
+	const ThingTemplate *tmpls[MAX_PREREQ];
+	size_t cnt = m_prereqUnits.size();
+	if (cnt > MAX_PREREQ)
+		cnt = MAX_PREREQ;
+	for (size_t i = 0; i < cnt; i++)
+		tmpls[i] = m_prereqUnits[i].unit;
 
-	// player->countObjectsByThingTemplate(cnt, tmpls, false, counts);
-	// return cnt;
+	player->countObjectsByThingTemplate(cnt, tmpls, false, counts);
+	return cnt;
 	return 0;
 }
 
@@ -167,9 +164,8 @@ Bool ProductionPrerequisite::isSatisfied(const Player *player) const
 	// gotta have all the prereq sciences.
 	for (i = 0; i < m_prereqSciences.size(); i++)
 	{
-		// FIXME: Player
-		// if (!player->hasScience(m_prereqSciences[i]))
-		// 	return false;
+		if (!player->hasScience(m_prereqSciences[i]))
+			return false;
 	}
 
 	// the player must have at least one instance of each prereq unit.
@@ -310,9 +306,8 @@ UnicodeString ProductionPrerequisite::getRequiresList(const Player *player) cons
 	// gotta have all the prereq sciences.
 	for (i = 0; i < m_prereqSciences.size(); i++)
 	{
-		// FIXME: Player
-		// if (!player->hasScience(m_prereqSciences[i]))
-		// 	hasSciences = FALSE;
+		if (!player->hasScience(m_prereqSciences[i]))
+			hasSciences = FALSE;
 	}
 
 	if (hasSciences == FALSE) {

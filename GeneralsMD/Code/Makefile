@@ -192,10 +192,10 @@ ENGINE_OBJS = $(GEO)/BitFlags.o $(GEO)/CommandLine.o $(GEO)/DamageFX.o $(GEO)/Di
    $(GEO)/MessageStream.o $(GEO)/MultiplayerSettings.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/TerrainTypes.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
 $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
 $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDamageFX.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o \
-   $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIVideo.o $(GEO)/INIWater.o \
-   $(GEO)/INIWeapon.o \
+   $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INISpecialPower.o $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIVideo.o \
+   $(GEO)/INIWater.o $(GEO)/INIWeapon.o \
 $(GEO)/AcademyStats.o $(GEO)/Energy.o $(GEO)/Handicap.o $(GEO)/MissionStats.o $(GEO)/Money.o $(GEO)/ProductionPrerequisite.o $(GEO)/Player.o $(GEO)/PlayerList.o $(GEO)/PlayerTemplate.o \
-   $(GEO)/Science.o $(GEO)/ScoreKeeper.o $(GEO)/Team.o \
+   $(GEO)/Science.o $(GEO)/ScoreKeeper.o $(GEO)/SpecialPower.o $(GEO)/Team.o $(GEO)/TunnelTracker.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o $(GEO)/FileSystem.o \
    $(GEO)/FunctionLexicon.o $(GEO)/GameCommon.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/Geometry.o $(GEO)/KindOf.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
    $(GEO)/ObjectStatusTypes.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/Trig.o $(GEO)/UnicodeString.o $(GEO)/Upgrade.o \
@@ -221,7 +221,7 @@ $(GEO)/DamageModule.o \
 $(GEO)/DieModule.o \
 $(GEO)/UpdateModule.o \
 $(GEO)/UpgradeModule.o \
-$(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/RankInfo.o \
+$(GEO)/CaveSystem.o $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/RankInfo.o \
 $(GEO)/Chat.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
@@ -326,6 +326,9 @@ $(GEO)/INIObject.o: $(GES)/Common/INI/INIObject.cpp
 $(GEO)/INIParticleSys.o: $(GES)/Common/INI/INIParticleSys.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIParticleSys.o $(GES)/Common/INI/INIParticleSys.cpp
 
+$(GEO)/INISpecialPower.o: $(GES)/Common/INI/INISpecialPower.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INISpecialPower.o $(GES)/Common/INI/INISpecialPower.cpp
+
 $(GEO)/INITerrain.o: $(GES)/Common/INI/INITerrain.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INITerrain.o $(GES)/Common/INI/INITerrain.cpp
 
@@ -378,8 +381,14 @@ $(GEO)/Science.o: $(GES)/Common/RTS/Science.cpp GameEngine/Include/Common/Scienc
 $(GEO)/ScoreKeeper.o: $(GES)/Common/RTS/ScoreKeeper.cpp GameEngine/Include/Common/ScoreKeeper.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ScoreKeeper.o $(GES)/Common/RTS/ScoreKeeper.cpp
 
+$(GEO)/SpecialPower.o: $(GES)/Common/RTS/SpecialPower.cpp GameEngine/Include/Common/SpecialPower.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpecialPower.o $(GES)/Common/RTS/SpecialPower.cpp
+
 $(GEO)/Team.o: $(GES)/Common/RTS/Team.cpp GameEngine/Include/Common/Team.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Team.o $(GES)/Common/RTS/Team.cpp
+
+$(GEO)/TunnelTracker.o: $(GES)/Common/RTS/TunnelTracker.cpp GameEngine/Include/Common/TunnelTracker.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TunnelTracker.o $(GES)/Common/RTS/TunnelTracker.cpp
 
 # --- GameEngine/Source/Common/System ---
 $(GEO)/ArchiveFile.o: $(GES)/Common/System/ArchiveFile.cpp
@@ -706,6 +715,9 @@ $(GEO)/UpgradeModule.o: $(GES)/GameLogic/Object/Upgrade/UpgradeModule.cpp GameEn
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UpgradeModule.o $(GES)/GameLogic/Object/Upgrade/UpgradeModule.cpp
 
 # --- GameEngine/Source/GameLogic/System ---
+$(GEO)/CaveSystem.o: $(GES)/GameLogic/System/CaveSystem.cpp GameEngine/Include/GameLogic/CaveSystem.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CaveSystem.o $(GES)/GameLogic/System/CaveSystem.cpp
+
 $(GEO)/Damage.o: $(GES)/GameLogic/System/Damage.cpp GameEngine/Include/GameLogic/Damage.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Damage.o $(GES)/GameLogic/System/Damage.cpp
 

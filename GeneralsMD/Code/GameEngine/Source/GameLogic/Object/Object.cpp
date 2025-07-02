@@ -87,7 +87,7 @@
 // #include "GameLogic/Module/RadarUpgrade.h"
 // #include "GameLogic/Module/RebuildHoleBehavior.h"
 // #include "GameLogic/Module/SpawnBehavior.h"
-// #include "GameLogic/Module/SpecialPowerModule.h"
+#include "GameLogic/Module/SpecialPowerModule.h"
 // #include "GameLogic/Module/SpecialAbilityUpdate.h"
 // #include "GameLogic/Module/StatusDamageHelper.h"
 // #include "GameLogic/Module/StickyBombUpdate.h"
@@ -661,12 +661,14 @@ Object::~Object()
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /// this object now contained in "containedBy"
 //-------------------------------------------------------------------------------------------------
 void Object::onContainedBy( Object *containedBy )
 {
+DEBUG_CRASH(("Object::onContainedBy not yet implemented!"));
+(void) containedBy;
+#if 0
 	setStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_UNSELECTABLE ) );
 	if (containedBy && containedBy->getContain()->isEnclosingContainerFor(this))
 		setStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_MASKED ) );
@@ -676,7 +678,8 @@ void Object::onContainedBy( Object *containedBy )
 	m_containedByFrame = TheGameLogic->getFrame();
 
   handlePartitionCellMaintenance(); // which should unlook me now that I am contained
-  
+
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -692,6 +695,7 @@ void Object::onRemovedFrom( Object *removedFrom )
 
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Int Object::getTransportSlotCount() const
@@ -784,38 +788,36 @@ void Object::friend_setUndetectedDefector( Bool status )
 //=============================================================================
 void Object::restoreOriginalTeam()
 {
-// FIXME: Team
-	// if( m_team == NULL || m_originalTeamName.isEmpty() )
-	// 	return;
+	if( m_team == NULL || m_originalTeamName.isEmpty() )
+		return;
 	
-	// Team* origTeam = TheTeamFactory->findTeam(m_originalTeamName);
-	// if (origTeam == NULL)
-	// {
-	// 	DEBUG_CRASH(("Object original team (%s) could not be found or created! (srj)\n",m_originalTeamName.str()));
-	// 	return;
-	// }
+	Team* origTeam = TheTeamFactory->findTeam(m_originalTeamName);
+	if (origTeam == NULL)
+	{
+		DEBUG_CRASH(("Object original team (%s) could not be found or created! (srj)\n",m_originalTeamName.str()));
+		return;
+	}
 
-	// if (m_team == origTeam)
-	// {
-	// 	DEBUG_CRASH(("Object appears to still be on its original team, so why are we attempting to restore it? (srj)\n"));
-	// 	return;
-	// }
+	if (m_team == origTeam)
+	{
+		DEBUG_CRASH(("Object appears to still be on its original team, so why are we attempting to restore it? (srj)\n"));
+		return;
+	}
 
-	// setTeam(origTeam);
+	setTeam(origTeam);
 }
 
 //=============================================================================
 //=============================================================================
 void Object::setTeam( Team *team )
 {
-// FIXME:: ThePlayerList
-	// // In order to prevent spawning useful units for a player after he dies, we
-	// // just assign objects to the neutral player if we try to misbehave.
-	// if (team && !team->getControllingPlayer()->isPlayerActive())
-	// 	team = ThePlayerList->getNeutralPlayer()->getDefaultTeam();
+	// In order to prevent spawning useful units for a player after he dies, we
+	// just assign objects to the neutral player if we try to misbehave.
+	if (team && !team->getControllingPlayer()->isPlayerActive())
+		team = ThePlayerList->getNeutralPlayer()->getDefaultTeam();
 
-	// setTemporaryTeam(team);
-	// m_originalTeamName = m_team ? m_team->getName() : AsciiString::TheEmptyString;
+	setTemporaryTeam(team);
+	m_originalTeamName = m_team ? m_team->getName() : AsciiString::TheEmptyString;
 }
 
 //=============================================================================
@@ -958,10 +960,15 @@ Bool Object::checkAndDetonateBoobyTrap(const Object *victim)
 
 	return FALSE;
 }
+#endif // if 0
 
 //=============================================================================
 void Object::setStatus( ObjectStatusMaskType objectStatus, Bool set )
 {
+DEBUG_CRASH(("Object::setStatus not yet implemented!"));
+(void) objectStatus;
+(void) set;
+#if 0
 	ObjectStatusMaskType oldStatus = m_status;
 
 	if (set)
@@ -1022,8 +1029,10 @@ void Object::setStatus( ObjectStatusMaskType objectStatus, Bool set )
 
 	}
 
+#endif // if 0
 }
 
+#if 0
 //=============================================================================
 void Object::setScriptStatus( ObjectScriptStatusBit bit, Bool set )
 {
@@ -5364,6 +5373,7 @@ void Object::notifySubdualDamage( Real amount )
 			getDrawable()->clearTintStatus(TINT_STATUS_GAINING_SUBDUAL_DAMAGE);
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Given a special power template, find the module in the object that can implement it.
@@ -5391,6 +5401,7 @@ SpecialPowerModuleInterface *Object::getSpecialPowerModule( const SpecialPowerTe
 
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Execute special power */
 //-------------------------------------------------------------------------------------------------
@@ -6359,6 +6370,7 @@ RadarPriorityType Object::getRadarPriority( void ) const
 	return priority;
 
 }  // end getRadarPriority
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 AIGroup *Object::getGroup(void)
@@ -6369,16 +6381,22 @@ AIGroup *Object::getGroup(void)
 //-------------------------------------------------------------------------------------------------
 void Object::enterGroup( AIGroup *group )
 {
+DEBUG_CRASH(("Object::enterGroup not yet implemented!"));
+(void) group;
+#if 0
 //	DEBUG_LOG(("***AIGROUP %x involved in enterGroup on %x\n", group, this));
 	// if we are in another group, remove ourselves from it first
 	leaveGroup();
 
 	m_group = group;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void Object::leaveGroup( void )
 {
+DEBUG_CRASH(("Object::leaveGroup not yet implemented!"));
+#if 0
 //	DEBUG_LOG(("***AIGROUP %x involved in leaveGroup on %x\n", m_group, this));
 	// if we are in a group, remove ourselves from it
 	if (m_group)
@@ -6388,8 +6406,10 @@ void Object::leaveGroup( void )
 		m_group = NULL;
 		group->remove( this );
 	}
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Real Object::getCarrierDeckHeight() const
 {

@@ -61,12 +61,12 @@ public:
 protected:
 
 	// snapshot methods
-	virtual void crc( Xfer *xfer ) { }
+	virtual void crc( Xfer * /*xfer*/ ) { }
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void ) { }
 
 private:
-	std::vector<TunnelTracker*> m_tunnelTrackerVector;// A vector of pointers where the indexes are known by
+	std::vector<TunnelTracker*> m_tunnelTrackerVector {};// A vector of pointers where the indexes are known by
 	// others, so it can have NULLs in it to keep position.  I've been advised against a map, so don't be a jerk
 	// and use spot 20 first.
 

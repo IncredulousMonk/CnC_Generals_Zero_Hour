@@ -30,7 +30,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/INI.h"
-// #include "Common/Player.h"
+#include "Common/Player.h"
 #include "Common/Science.h"
 
 ScienceStore* TheScienceStore = NULL;
@@ -280,51 +280,43 @@ Bool ScienceStore::getNameAndDescription(ScienceType st, UnicodeString& name, Un
 //-----------------------------------------------------------------------------
 Bool ScienceStore::playerHasPrereqsForScience(const Player* player, ScienceType st) const
 {
-	(void) player;
-	(void) st;
-	DEBUG_CRASH(("ScienceStore::playerHasPrereqsForScience not yet implemented"));
-	// FIXME: Player
-	// const ScienceInfo* si = findScienceInfo(st);
-	// if (si)
-	// {
-	// 	for (ScienceVec::const_iterator it2 = si->m_ini.m_prereqSciences.begin(); it2 != si->m_ini.m_prereqSciences.end(); ++it2)
-	// 	{
-	// 		if (!player->hasScience(*it2))
-	// 		{
-	// 			return false;
-	// 		}
-	// 	}
-	// 	return true;
-	// }
-	// else
-	// {
+	const ScienceInfo* si = findScienceInfo(st);
+	if (si)
+	{
+		for (ScienceVec::const_iterator it2 = si->m_ini.m_prereqSciences.begin(); it2 != si->m_ini.m_prereqSciences.end(); ++it2)
+		{
+			if (!player->hasScience(*it2))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else
+	{
 		return false;
-	// }
+	}
 }
 
 //-----------------------------------------------------------------------------
 Bool ScienceStore::playerHasRootPrereqsForScience(const Player* player, ScienceType st) const
 {
-	(void) player;
-	(void) st;
-	DEBUG_CRASH(("ScienceStore::playerHasRootPrereqsForScience not yet implemented"));
-	// FIXME: Player
-	// const ScienceInfo* si = findScienceInfo(st);
-	// if (si)
-	// {
-	// 	for (ScienceVec::const_iterator it2 = si->m_ini.m_rootSciences.begin(); it2 != si->m_ini.m_rootSciences.end(); ++it2)
-	// 	{
-	// 		if (!player->hasScience(*it2))
-	// 		{
-	// 			return false;
-	// 		}
-	// 	}
-	// 	return true;
-	// }
-	// else
-	// {
+	const ScienceInfo* si = findScienceInfo(st);
+	if (si)
+	{
+		for (ScienceVec::const_iterator it2 = si->m_ini.m_rootSciences.begin(); it2 != si->m_ini.m_rootSciences.end(); ++it2)
+		{
+			if (!player->hasScience(*it2))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	else
+	{
 		return false;
-	// }
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -332,37 +324,32 @@ Bool ScienceStore::playerHasRootPrereqsForScience(const Player* player, ScienceT
 	but currently lacks prereqs or points for. (either might be an empty list) */
 void ScienceStore::getPurchasableSciences(const Player* player, ScienceVec& purchasable, ScienceVec& potentiallyPurchasable) const
 {
-	(void) player;
-	(void) purchasable;
-	(void) potentiallyPurchasable;
-	DEBUG_CRASH(("ScienceStore::getPurchasableSciences not yet implemented"));
-	// FIXME: Player
-	// purchasable.clear();
-	// potentiallyPurchasable.clear();
-	// for (ScienceInfoVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
-	// {
-	// 	const ScienceInfo* si = (const ScienceInfo*)(*it)->getFinalOverride();
+	purchasable.clear();
+	potentiallyPurchasable.clear();
+	for (ScienceInfoVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
+	{
+		const ScienceInfo* si = (const ScienceInfo*)(*it)->getFinalOverride();
 		
-	// 	if (si->m_ini.m_sciencePurchasePointCost == 0)
-	// 	{
-	// 		// 0 means "cannot be purchased"
-	// 		continue;
-	// 	}
+		if (si->m_ini.m_sciencePurchasePointCost == 0)
+		{
+			// 0 means "cannot be purchased"
+			continue;
+		}
 
-	// 	if (player->hasScience(si->m_ini.m_science))
-	// 	{
-	// 		continue;
-	// 	}
+		if (player->hasScience(si->m_ini.m_science))
+		{
+			continue;
+		}
 
-	// 	if (playerHasPrereqsForScience(player, si->m_ini.m_science))
-	// 	{
-	// 		purchasable.push_back(si->m_ini.m_science);
-	// 	}
-	// 	else if (playerHasRootPrereqsForScience(player, si->m_ini.m_science))
-	// 	{
-	// 		potentiallyPurchasable.push_back(si->m_ini.m_science);
-	// 	}
-	// }
+		if (playerHasPrereqsForScience(player, si->m_ini.m_science))
+		{
+			purchasable.push_back(si->m_ini.m_science);
+		}
+		else if (playerHasRootPrereqsForScience(player, si->m_ini.m_science))
+		{
+			potentiallyPurchasable.push_back(si->m_ini.m_science);
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

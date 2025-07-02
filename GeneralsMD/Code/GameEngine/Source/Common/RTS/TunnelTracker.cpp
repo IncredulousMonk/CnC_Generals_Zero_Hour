@@ -104,7 +104,7 @@ void TunnelTracker::iterateContained( ContainIterateFunc func, void *userData, B
 // ------------------------------------------------------------------------
 Int TunnelTracker::getContainMax() const
 {
-	return TheGlobalData->m_maxTunnelCapacity;
+	return TheGlobalData->m_data.m_maxTunnelCapacity;
 }
 
 // ------------------------------------------------------------------------
@@ -162,7 +162,7 @@ Bool TunnelTracker::isValidContainerFor(const Object* obj, Bool checkCapacity) c
 		if (checkCapacity)
 		{
 			Int containMax = getContainMax();
-			Int containCount = getContainCount();
+			Int containCount = (Int)getContainCount();
 			return ( containCount < containMax );
 		}
 		else
@@ -319,7 +319,7 @@ void TunnelTracker::xfer( Xfer *xfer )
 	xfer->xferSTLObjectIDList( &m_tunnelIDs );
 
 	// contain list count
-	xfer->xferInt( &m_containListSize );
+	xfer->xferUnsignedInt( &m_containListSize );
 
 	// contain list data
 	ObjectID objectID;
@@ -391,17 +391,19 @@ void TunnelTracker::loadPostProcess( void )
 		{
 			// remove object from its group (if any)
 			obj->leaveGroup();
-			
-			// remove rider from partition manager
-			ThePartitionManager->unRegisterObject( obj );
+
+			// FIXME: ThePartitionManager.
+			// // remove rider from partition manager
+			// ThePartitionManager->unRegisterObject( obj );
 			
 			// hide the drawable associated with rider
 			if( obj->getDrawable() )
 				obj->getDrawable()->setDrawableHidden( true );
 			
-			// remove object from pathfind map
-			if( TheAI )
-				TheAI->pathfinder()->removeObjectFromPathfindMap( obj );
+			// FIXME: TheAI
+			// // remove object from pathfind map
+			// if( TheAI )
+			// 	TheAI->pathfinder()->removeObjectFromPathfindMap( obj );
 			
 		}
 	}  // end for, it

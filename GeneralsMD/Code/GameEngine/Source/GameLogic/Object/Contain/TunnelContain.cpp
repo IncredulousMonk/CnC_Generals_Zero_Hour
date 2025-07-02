@@ -160,7 +160,7 @@ void TunnelContain::killAllContained( void )
 		obj = *it;
 		it++;
 		removeFromContain( obj, true );
-    obj->kill();
+		obj->kill();
 	}
 }
 //-------------------------------------------------------------------------------------------------

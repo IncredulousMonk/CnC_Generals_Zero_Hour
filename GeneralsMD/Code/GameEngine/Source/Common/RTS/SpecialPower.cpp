@@ -53,6 +53,7 @@ SpecialPowerStore *TheSpecialPowerStore = NULL;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Externs ////////////////////////////////////////////////////////////////////////////////////////
+template<>
 const char* SpecialPowerMaskType::s_bitNameList[] = 
 {
 	"SPECIAL_INVALID",
@@ -105,8 +106,8 @@ const char* SpecialPowerMaskType::s_bitNameList[] =
 	"SPECIAL_CIA_INTELLIGENCE",
 	"SPECIAL_CLEANUP_AREA",
 	"SPECIAL_LAUNCH_BAIKONUR_ROCKET",
-  "SPECIAL_SPECTRE_GUNSHIP",
-  "SPECIAL_GPS_SCRAMBLER",
+	"SPECIAL_SPECTRE_GUNSHIP",
+	"SPECIAL_GPS_SCRAMBLER",
 	"SPECIAL_FRENZY",
 	"SPECIAL_SNEAK_ATTACK",
 
@@ -141,7 +142,7 @@ const char* SpecialPowerMaskType::s_bitNameList[] =
 void SpecialPowerStore::parseSpecialPowerDefinition( INI *ini )
 {
 	// read the name
-	AsciiString name = ini->getNextToken();	
+	AsciiString name = ini->getNextToken();
 
 	SpecialPowerTemplate* specialPower = TheSpecialPowerStore->findSpecialPowerTemplatePrivate( name );
 
@@ -186,7 +187,7 @@ void SpecialPowerStore::parseSpecialPowerDefinition( INI *ini )
 
 	// parse the ini definition
 	if (specialPower)
-		ini->initFromINI( specialPower, specialPower->getFieldParse() );
+		ini->initFromINI( &specialPower->m_ini, specialPower->getFieldParse() );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -194,38 +195,55 @@ void SpecialPowerStore::parseSpecialPowerDefinition( INI *ini )
 /* static */ const FieldParse SpecialPowerTemplate::m_specialPowerFieldParse[] = 
 {
 	
-	{ "ReloadTime",								INI::parseDurationUnsignedInt,		NULL,	offsetof( SpecialPowerTemplate, m_reloadTime ) },
-	{ "RequiredScience",					INI::parseScience,								NULL, offsetof( SpecialPowerTemplate, m_requiredScience ) },
-	{ "InitiateSound",						INI::parseAudioEventRTS,					NULL,	offsetof( SpecialPowerTemplate, m_initiateSound ) },
-	{ "InitiateAtLocationSound",	INI::parseAudioEventRTS,					NULL,	offsetof( SpecialPowerTemplate, m_initiateAtLocationSound ) },
-	{ "PublicTimer",							INI::parseBool,										NULL, offsetof( SpecialPowerTemplate, m_publicTimer ) },
-	{ "Enum",											INI::parseIndexList,							SpecialPowerMaskType::getBitNames(), offsetof( SpecialPowerTemplate, m_type ) },
-	{ "DetectionTime",						INI::parseDurationUnsignedInt,		NULL,	offsetof( SpecialPowerTemplate, m_detectionTime ) },
-	{ "SharedSyncedTimer",				INI::parseBool,										NULL, offsetof( SpecialPowerTemplate, m_sharedNSync ) },
-	{ "ViewObjectDuration",				INI::parseDurationUnsignedInt,		NULL,	offsetof( SpecialPowerTemplate, m_viewObjectDuration ) },
-	{ "ViewObjectRange",					INI::parseReal,										NULL,	offsetof( SpecialPowerTemplate, m_viewObjectRange ) },
-	{ "RadiusCursorRadius",				INI::parseReal,										NULL,	offsetof( SpecialPowerTemplate, m_radiusCursorRadius ) },
-	{ "ShortcutPower",						INI::parseBool,										NULL, offsetof( SpecialPowerTemplate, m_shortcutPower ) },
-	{ "AcademyClassify",					INI::parseIndexList,			TheAcademyClassificationTypeNames, offsetof( SpecialPowerTemplate, m_academyClassificationType ) },
+	{ "ReloadTime",					INI::parseDurationUnsignedInt,						NULL,									offsetof( SpecialPowerTemplate::IniData, m_reloadTime ) },
+	{ "RequiredScience",			INI::parseScience,									NULL,									offsetof( SpecialPowerTemplate::IniData, m_requiredScience ) },
+	{ "InitiateSound",				SpecialPowerTemplate::parseInitiateSound,			NULL,									0 },
+	{ "InitiateAtLocationSound",	SpecialPowerTemplate::parseInitiateAtLocationSound,	NULL,									0 },
+	{ "PublicTimer",				INI::parseBool,										NULL,									offsetof( SpecialPowerTemplate::IniData, m_publicTimer ) },
+	{ "Enum",						INI::parseIndexList,								SpecialPowerMaskType::getBitNames(),	offsetof( SpecialPowerTemplate::IniData, m_type ) },
+	{ "DetectionTime",				INI::parseDurationUnsignedInt,						NULL,									offsetof( SpecialPowerTemplate::IniData, m_detectionTime ) },
+	{ "SharedSyncedTimer",			INI::parseBool,										NULL,									offsetof( SpecialPowerTemplate::IniData, m_sharedNSync ) },
+	{ "ViewObjectDuration",			INI::parseDurationUnsignedInt,						NULL,									offsetof( SpecialPowerTemplate::IniData, m_viewObjectDuration ) },
+	{ "ViewObjectRange",			INI::parseReal,										NULL,									offsetof( SpecialPowerTemplate::IniData, m_viewObjectRange ) },
+	{ "RadiusCursorRadius",			INI::parseReal,										NULL,									offsetof( SpecialPowerTemplate::IniData, m_radiusCursorRadius ) },
+	{ "ShortcutPower",				INI::parseBool,										NULL,									offsetof( SpecialPowerTemplate::IniData, m_shortcutPower ) },
+	{ "AcademyClassify",			INI::parseIndexList,								TheAcademyClassificationTypeNames,		offsetof( SpecialPowerTemplate::IniData, m_academyClassificationType ) },
 	{ NULL,	NULL, NULL,	0 }  // keep this last
 
 };
+
+//-------------------------------------------------------------------------------------------------
+void SpecialPowerTemplate::parseInitiateSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	SpecialPowerTemplate::IniData* data = (SpecialPowerTemplate::IniData*) instance;
+	SpecialPowerTemplate* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_initiateSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void SpecialPowerTemplate::parseInitiateAtLocationSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	SpecialPowerTemplate::IniData* data = (SpecialPowerTemplate::IniData*) instance;
+	SpecialPowerTemplate* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_initiateAtLocationSound);
+}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 SpecialPowerTemplate::SpecialPowerTemplate()
 {
 	m_id = 0;
-	m_type = SPECIAL_INVALID;
-	m_reloadTime = 0;
-	m_requiredScience = SCIENCE_INVALID;
-	m_publicTimer = FALSE;
-	m_detectionTime = DEFAULT_DEFECTION_DETECTION_PROTECTION_TIME_LIMIT;
-	m_sharedNSync = FALSE;
-	m_viewObjectDuration = 0;
-	m_viewObjectRange = 0;
-	m_radiusCursorRadius = 0;
-	m_shortcutPower = FALSE;
+	m_ini.m_type = SPECIAL_INVALID;
+	m_ini.m_reloadTime = 0;
+	m_ini.m_requiredScience = SCIENCE_INVALID;
+	m_ini.m_publicTimer = FALSE;
+	m_ini.m_detectionTime = DEFAULT_DEFECTION_DETECTION_PROTECTION_TIME_LIMIT;
+	m_ini.m_sharedNSync = FALSE;
+	m_ini.m_viewObjectDuration = 0;
+	m_ini.m_viewObjectRange = 0;
+	m_ini.m_radiusCursorRadius = 0;
+	m_ini.m_shortcutPower = FALSE;
+	m_ini.m_obj = this;
 
 }  // end SpecialPowerTemplate
 
@@ -255,7 +273,7 @@ SpecialPowerStore::~SpecialPowerStore( void )
 {
 
 	// delete all templates
-	for( Int i = 0; i < m_specialPowerTemplates.size(); ++i )
+	for( size_t i = 0; i < m_specialPowerTemplates.size(); ++i )
 		m_specialPowerTemplates[ i ]->deleteInstance();
 
 	// erase the list
@@ -272,7 +290,7 @@ SpecialPowerTemplate* SpecialPowerStore::findSpecialPowerTemplatePrivate( AsciiS
 {
 
 	// search the template list for matching name
-	for( Int i = 0; i < m_specialPowerTemplates.size(); ++i )
+	for( size_t i = 0; i < m_specialPowerTemplates.size(); ++i )
 		if( m_specialPowerTemplates[ i ]->getName() == name )
 			return m_specialPowerTemplates[ i ];
 
@@ -287,7 +305,7 @@ const SpecialPowerTemplate *SpecialPowerStore::findSpecialPowerTemplateByID( Uns
 {
 
 	// search the template list for matching name
-	for( Int i = 0; i < m_specialPowerTemplates.size(); ++i )
+	for( size_t i = 0; i < m_specialPowerTemplates.size(); ++i )
 		if( m_specialPowerTemplates[ i ]->getID() == id )
 			return m_specialPowerTemplates[ i ];
 
@@ -301,7 +319,7 @@ const SpecialPowerTemplate *SpecialPowerStore::findSpecialPowerTemplateByID( Uns
 const SpecialPowerTemplate *SpecialPowerStore::getSpecialPowerTemplateByIndex( UnsignedInt index )
 {
 
-	if (index >= 0 && index < m_specialPowerTemplates.size())
+	if (index < m_specialPowerTemplates.size())
 		return m_specialPowerTemplates[ index ];
 
 	return NULL;  // not found

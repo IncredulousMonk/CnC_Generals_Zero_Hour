@@ -50,8 +50,8 @@
 #include "Common/AudioEventInfo.h"
 #include "Common/AudioEventRTS.h"
 #include "Common/AudioRequest.h"
-// #include "Common/Player.h"
-// #include "Common/PlayerList.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
 
 // #include "GameLogic/PartitionManager.h"
 
@@ -232,7 +232,7 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 				return false;
 			}
 
-// FIXME: ThePlayerList
+// FIXME: ThePartitionManager
 // 			Int localPlayerNdx = ThePlayerList->getLocalPlayer()->getPlayerIndex();
 // 			if( (event->getAudioEventInfo()->m_type & ST_SHROUDED) && 
 // 					 ThePartitionManager->getShroudStatusForPlayer(localPlayerNdx, pos) != CELLSHROUD_CLEAR ) 

@@ -67,18 +67,21 @@ void CaveSystem::update()
 
 Bool CaveSystem::canSwitchIndexToIndex( Int oldIndex, Int newIndex )
 {
+	UnsignedInt oldIndexU {static_cast<UnsignedInt>(oldIndex)};
+	UnsignedInt newIndexU {static_cast<UnsignedInt>(newIndex)};
+
 	// When I grant permission, you need to do it.  ie call Unregister and then re-register with the new number
 	TunnelTracker *oldTracker = NULL;
 	TunnelTracker *newTracker = NULL;
-	if( m_tunnelTrackerVector.size() > oldIndex )
+	if( m_tunnelTrackerVector.size() > oldIndexU )
 	{
-		oldTracker = m_tunnelTrackerVector[oldIndex];
+		oldTracker = m_tunnelTrackerVector[oldIndexU];
 		if( oldTracker && oldTracker->getContainCount() > 0 )
 			return FALSE;// You can't switch a connection if one of the two is non empty
 	}
-	if( m_tunnelTrackerVector.size() > newIndex )
+	if( m_tunnelTrackerVector.size() > newIndexU )
 	{
-		newTracker = m_tunnelTrackerVector[newIndex];
+		newTracker = m_tunnelTrackerVector[newIndexU];
 		if( newTracker && newTracker->getContainCount() > 0 )
 			return FALSE;// You can't switch a connection if one of the two is non empty
 	}
@@ -92,10 +95,12 @@ Bool CaveSystem::canSwitchIndexToIndex( Int oldIndex, Int newIndex )
 void CaveSystem::registerNewCave( Int theIndex )
 {
 	Bool needToCreate = FALSE;
-	if( theIndex >= m_tunnelTrackerVector.size() )
+	UnsignedInt theIndexU {static_cast<UnsignedInt>(theIndex)};
+
+	if( theIndexU >= m_tunnelTrackerVector.size() )
 	{
 		// You are new and off the edge, so I will fill NULLs up to you and then make a newTracker at that spot
-		while( theIndex >= m_tunnelTrackerVector.size() )
+		while( theIndexU >= m_tunnelTrackerVector.size() )
 			m_tunnelTrackerVector.push_back( NULL );
 
 		needToCreate = TRUE;
@@ -103,27 +108,29 @@ void CaveSystem::registerNewCave( Int theIndex )
 	else
 	{
 		// else you either exist or have existed, so I will either let things be or re-create that slot
-		if( m_tunnelTrackerVector[theIndex] == NULL )
+		if( m_tunnelTrackerVector[theIndexU] == NULL )
 			needToCreate = TRUE;
 	}
 
 	if( needToCreate )// if true, we new theIndex is the index of a NULL to be filled
-		m_tunnelTrackerVector[theIndex] = newInstance(TunnelTracker);
+		m_tunnelTrackerVector[theIndexU] = newInstance(TunnelTracker);
 }
 
 void CaveSystem::unregisterCave( Int theIndex )
 {
 	// Doesn't need to do a thing.  ContainModule logic knows how to say goodbye, and a TunnelTracker
 	// knows how to exist while having no entry points.
-	theIndex;
+	(void) theIndex;
 }
 
 TunnelTracker *CaveSystem::getTunnelTrackerForCaveIndex( Int theIndex )
 {
+	UnsignedInt theIndexU {static_cast<UnsignedInt>(theIndex)};
 	TunnelTracker *theTracker = NULL;
-	if( theIndex < m_tunnelTrackerVector.size() )
+
+	if( theIndexU < m_tunnelTrackerVector.size() )
 	{
-		theTracker = m_tunnelTrackerVector[theIndex];
+		theTracker = m_tunnelTrackerVector[theIndexU];
 	}
 
 	DEBUG_ASSERTCRASH( theTracker != NULL, ("No one should be interested in a sub-cave that doesn't exist.") );
@@ -192,5 +199,3 @@ void CaveSystem::xfer( Xfer *xfer )
 	}  // end else, laod
 
 }  // end xfer
-
-

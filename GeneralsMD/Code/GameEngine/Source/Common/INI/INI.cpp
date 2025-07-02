@@ -132,7 +132,7 @@ static const BlockParse theTypeTable[] =
 	{ "Road",							INI::parseTerrainRoadDefinition },
 	{ "Science",						INI::parseScienceDefinition },
 	{ "Rank",							INI::parseRankDefinition },
-// 	{ "SpecialPower",					INI::parseSpecialPowerDefinition },
+	{ "SpecialPower",					INI::parseSpecialPowerDefinition },
 	{ "ShellMenuScheme",				INI::parseShellMenuSchemeDefinition },
 	{ "Terrain",						INI::parseTerrainDefinition },
 // 	{ "Upgrade",						INI::parseUpgradeDefinition },
@@ -1402,18 +1402,15 @@ void INI::parseSpecialPowerTemplate( INI* ini, void * /*instance*/, void *store,
 //-------------------------------------------------------------------------------------------------
 /* static */void INI::parseScience( INI *ini, void * /*instance*/, void *store, const void * )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseScience not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// if (!TheScienceStore)
-	// {
-	// 	DEBUG_CRASH(("TheScienceStore not inited yet"));
-	// 	throw ERROR_BUG;
-	// }
+	if (!TheScienceStore)
+	{
+		DEBUG_CRASH(("TheScienceStore not inited yet"));
+		throw ERROR_BUG;
+	}
 
-	// *((ScienceType *)store) = INI::scanScience(token);
+	*((ScienceType *)store) = INI::scanScience(token);
 
 }
 

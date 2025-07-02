@@ -46,13 +46,19 @@ class TunnelContainModuleData : public OpenContainModuleData
 {
 public:
 
-	Real m_framesForFullHeal;			///< time (in frames) something becomes fully healed
+	// MG: Cannot apply offsetof to TunnelContainModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_framesForFullHeal {};			///< time (in frames) something becomes fully healed
+	};
+
+	IniData m_ini {};
 
 	TunnelContainModuleData()
 	{
 
 		// by default, takes no time to heal ppl
-		m_framesForFullHeal = 1.0f;
+		m_ini.m_framesForFullHeal = 1.0f;
 
 		//
 		// by default we say that transports can have infantry inside them, this will be totally
@@ -64,14 +70,14 @@ public:
 
 	static void buildFieldParse(MultiIniFieldParse& p) 
 	{
-    OpenContainModuleData::buildFieldParse(p);
+		OpenContainModuleData::buildFieldParse(p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "TimeForFullHeal", INI::parseDurationReal, NULL, offsetof( TunnelContainModuleData, m_framesForFullHeal ) },
+			{ "TimeForFullHeal", INI::parseDurationReal, NULL, offsetof( TunnelContainModuleData::IniData, m_framesForFullHeal ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		p.add(dataFieldParse);
 	}
 };
 

@@ -47,8 +47,8 @@
 
 #include "Common/GameAudio.h"
 #include "Common/MiscAudio.h"
-// #include "Common/Player.h"
-// #include "Common/PlayerList.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
 #include "Common/Xfer.h"
 
 // ------------------------------------------------------------------------------------------------
@@ -91,12 +91,11 @@ void Money::deposit(UnsignedInt amountToDeposit, Bool playSound)
 
 	if( amountToDeposit > 0 )
 	{
-		// FIXME: ThePlayerList
-		// Player *player = ThePlayerList->getNthPlayer( m_playerIndex );
-		// if( player )
-		// {
-		// 	player->getAcademyStats()->recordIncome();
-		// }
+		Player *player = ThePlayerList->getNthPlayer( m_playerIndex );
+		if( player )
+		{
+			player->getAcademyStats()->recordIncome();
+		}
 	}
 }
 

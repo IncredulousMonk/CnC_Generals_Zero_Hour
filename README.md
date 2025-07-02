@@ -35,10 +35,12 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheParticleSystemManager (minimal)
   - TheMessageStream
   - TheSidesList
+  - TheCaveSystem
   - TheRankInfoStore
   - ThePlayerTemplateStore
   - TheFXListStore
   - TheWeaponStore
+  - TheSpecialPowerStore
   - TheDamageFXStore
   - TheArmorStore
   - TheThingFactory

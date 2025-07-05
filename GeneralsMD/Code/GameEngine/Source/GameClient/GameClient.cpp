@@ -172,9 +172,9 @@ GameClient::~GameClient()
 	// delete TheHotKeyManager;
 	// TheHotKeyManager = NULL;
 
-	// // destroy the in-game user interface
-	// delete TheInGameUI;
-	// TheInGameUI = NULL;
+	// destroy the in-game user interface
+	delete TheInGameUI;
+	TheInGameUI = NULL;
 
 	// delete TheChallengeGenerals;
 	// TheChallengeGenerals = NULL;
@@ -367,12 +367,12 @@ void GameClient::init( void )
  		TheShell->setName("TheShell");
 	}
 
-// 	// instantiate the in-game user interface
-// 	TheInGameUI = createInGameUI();
-// 	if( TheInGameUI ) {
-// 		TheInGameUI->init();
-//  		TheInGameUI->setName("TheInGameUI");
-// 	}
+	// instantiate the in-game user interface
+	TheInGameUI = createInGameUI();
+	if( TheInGameUI ) {
+		TheInGameUI->init();
+		TheInGameUI->setName("TheInGameUI");
+	}
 
 //  	TheChallengeGenerals = createChallengeGenerals();
 //  	if( TheChallengeGenerals ) {

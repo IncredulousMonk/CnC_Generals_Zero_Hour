@@ -392,9 +392,8 @@ void TunnelTracker::loadPostProcess( void )
 			// remove object from its group (if any)
 			obj->leaveGroup();
 
-			// FIXME: ThePartitionManager.
 			// // remove rider from partition manager
-			// ThePartitionManager->unRegisterObject( obj );
+			ThePartitionManager->unRegisterObject( obj );
 			
 			// hide the drawable associated with rider
 			if( obj->getDrawable() )

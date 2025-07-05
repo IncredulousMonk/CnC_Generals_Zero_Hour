@@ -102,8 +102,8 @@ void View::init( void )
 	m_maxZoom = 1.3f;
 	m_minZoom = 0.2f;
 	m_zoom = m_maxZoom;
-	m_maxHeightAboveGround = TheGlobalData->m_maxCameraHeight;
-	m_minHeightAboveGround = TheGlobalData->m_minCameraHeight;
+	m_maxHeightAboveGround = TheGlobalData->m_data.m_maxCameraHeight;
+	m_minHeightAboveGround = TheGlobalData->m_data.m_minCameraHeight;
 	m_okToAdjustHeight = FALSE;
 
 	m_defaultAngle = 0.0f;

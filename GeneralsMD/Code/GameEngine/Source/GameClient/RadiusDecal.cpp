@@ -44,13 +44,13 @@
 
 // ------------------------------------------------------------------------------------------------
 RadiusDecalTemplate::RadiusDecalTemplate() : 
-	m_shadowType(SHADOW_ALPHA_DECAL), 
+	m_name(AsciiString::TheEmptyString),  // Added By Sadullah Nader for Init purposes
+	m_shadowType(SHADOW_ALPHA_DECAL),
 	m_minOpacity(1.0f),
 	m_maxOpacity(1.0f),
 	m_opacityThrobTime(LOGICFRAMES_PER_SECOND),
 	m_color(0),
-	m_onlyVisibleToOwningPlayer(true),
-	m_name(AsciiString::TheEmptyString)  // Added By Sadullah Nader for Init purposes
+	m_onlyVisibleToOwningPlayer(true)
 {
 }
 
@@ -82,18 +82,20 @@ void RadiusDecalTemplate::createRadiusDecal(const Coord3D& pos, Real radius, con
 		decalInfo.m_sizeX = radius*2;									// world space dimensions
 		decalInfo.m_sizeY = radius*2;									// world space dimensions
 
-		result.m_decal = TheProjectedShadowManager->addDecal(&decalInfo);
-		if (result.m_decal)
-		{
-			result.m_decal->setAngle(0.0f);
-			result.m_decal->setColor(m_color == 0 ? owningPlayer->getPlayerColor() : m_color);
-			result.m_decal->setPosition(pos.x, pos.y, pos.z);	
-			result.m_template = this;
-		}
-		else
-		{
-			DEBUG_CRASH(("Unable to add decal %s\n",decalInfo.m_ShadowName));
-		}
+		// FIXME: TheProjectedShadowManager
+		(void) pos;
+		// result.m_decal = TheProjectedShadowManager->addDecal(&decalInfo);
+		// if (result.m_decal)
+		// {
+			// result.m_decal->setAngle(0.0f);
+			// result.m_decal->setColor(m_color == 0 ? owningPlayer->getPlayerColor() : m_color);
+			// result.m_decal->setPosition(pos.x, pos.y, pos.z);	
+			// result.m_template = this;
+		// }
+		// else
+		// {
+			// DEBUG_CRASH(("Unable to add decal %s\n",decalInfo.m_ShadowName));
+		// }
 	}
 }
 
@@ -115,17 +117,17 @@ void RadiusDecalTemplate::xferRadiusDecalTemplate( Xfer *xfer )
 }
 
 // ------------------------------------------------------------------------------------------------
-/*static*/ void RadiusDecalTemplate::parseRadiusDecalTemplate(INI* ini, void *instance, void * store, const void* /*userData*/)
+/*static*/ void RadiusDecalTemplate::parseRadiusDecalTemplate(INI* ini, void * /* instance */, void * store, const void* /*userData*/)
 {
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "Texture",										INI::parseAsciiString,				NULL,							offsetof( RadiusDecalTemplate, m_name ) },
-		{ "Style",											INI::parseBitString32,				TheShadowNames,		offsetof( RadiusDecalTemplate, m_shadowType ) },
-		{ "OpacityMin",									INI::parsePercentToReal,			NULL,							offsetof( RadiusDecalTemplate, m_minOpacity ) },
-		{ "OpacityMax",									INI::parsePercentToReal,			NULL,							offsetof( RadiusDecalTemplate, m_maxOpacity) },
-		{ "OpacityThrobTime",						INI::parseDurationUnsignedInt,NULL,							offsetof( RadiusDecalTemplate, m_opacityThrobTime ) },
-		{ "Color",											INI::parseColorInt,						NULL,							offsetof( RadiusDecalTemplate, m_color ) },
-		{ "OnlyVisibleToOwningPlayer",	INI::parseBool,								NULL,							offsetof( RadiusDecalTemplate, m_onlyVisibleToOwningPlayer ) },
+		{ "Texture",					INI::parseAsciiString,			NULL,				offsetof( RadiusDecalTemplate, m_name ) },
+		{ "Style",						INI::parseBitString32,			TheShadowNames,		offsetof( RadiusDecalTemplate, m_shadowType ) },
+		{ "OpacityMin",					INI::parsePercentToReal,		NULL,				offsetof( RadiusDecalTemplate, m_minOpacity ) },
+		{ "OpacityMax",					INI::parsePercentToReal,		NULL,				offsetof( RadiusDecalTemplate, m_maxOpacity) },
+		{ "OpacityThrobTime",			INI::parseDurationUnsignedInt,	NULL,				offsetof( RadiusDecalTemplate, m_opacityThrobTime ) },
+		{ "Color",						INI::parseColorInt,				NULL,				offsetof( RadiusDecalTemplate, m_color ) },
+		{ "OnlyVisibleToOwningPlayer",	INI::parseBool,					NULL,				offsetof( RadiusDecalTemplate, m_onlyVisibleToOwningPlayer ) },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -141,7 +143,7 @@ RadiusDecal::RadiusDecal() :
 }
 
 // ------------------------------------------------------------------------------------------------
-RadiusDecal::RadiusDecal(const RadiusDecal& that) : 
+RadiusDecal::RadiusDecal(const RadiusDecal& /* that */) : 
 	m_template(NULL), 
 	m_decal(NULL),
 	m_empty(true)

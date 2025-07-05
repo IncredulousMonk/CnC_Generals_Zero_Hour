@@ -512,8 +512,8 @@ Bool ModuleInfo::clearAiModuleInfo()
 //-------------------------------------------------------------------------------------------------
 void ThingTemplate::parseModuleName(INI* ini, void *instance, void* store, const void* userData)
 {
-	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
-	ThingTemplate* self = data->m_obj;
+	ThingTemplate::IniData* inidata = (ThingTemplate::IniData*) instance;
+	ThingTemplate* self = inidata->m_obj;
 	ModuleInfo* mi = (ModuleInfo*)store;
 	ModuleType type = (ModuleType)(intptr_t)userData;
 	const char* token = ini->getNextToken();

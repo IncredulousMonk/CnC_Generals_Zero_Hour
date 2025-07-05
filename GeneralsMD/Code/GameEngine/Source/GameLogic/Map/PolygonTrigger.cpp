@@ -28,7 +28,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Common/DataChunk.h"
+// #include "Common/DataChunk.h"
 #include "Common/MapObject.h"
 #include "Common/MapReaderWriterInfo.h"
 #include "Common/Xfer.h"
@@ -46,14 +46,12 @@ m_nextPolygonTrigger(NULL),
 m_points(NULL),
 m_numPoints(0),
 m_sizePoints(0),
+m_riverStart(0),
 m_exportWithScripts(false),
 m_isWaterArea(false),
-m_shouldRender(true),
-m_selected(false),
-//Added By Sadullah Nader
-//Initializations inserted
 m_isRiver(FALSE),
-m_riverStart(0)
+m_shouldRender(true),
+m_selected(false)
 //
 {
 	if (initialAllocation < 2) initialAllocation = 2;
@@ -132,8 +130,13 @@ PolygonTrigger *PolygonTrigger::getPolygonTriggerByID(Int triggerID)
 *	Input: DataChunkInput 
 *		
 */
-Bool PolygonTrigger::ParsePolygonTriggersDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+Bool PolygonTrigger::ParsePolygonTriggersDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /* userData */)
 {
+(void) file;
+(void) info;
+DEBUG_CRASH(("PolygonTrigger::ParsePolygonTriggersDataChunk not yet implemented!"));
+return false;
+#if 0
 	Int count;
 	Int numPoints;
 	Int triggerID;
@@ -212,9 +215,9 @@ Bool PolygonTrigger::ParsePolygonTriggersDataChunk(DataChunkInput &file, DataChu
 		loc.y = -30*MAP_XY_FACTOR;
 		loc.z = 7;  // The old water position.
 		pTrig->addPoint(loc);
-		loc.x = 30*MAP_XY_FACTOR + TheGlobalData->m_waterExtentX;
+		loc.x = 30*MAP_XY_FACTOR + TheGlobalData->m_data.m_waterExtentX;
 		pTrig->addPoint(loc);
-		loc.y = 30*MAP_XY_FACTOR + TheGlobalData->m_waterExtentY;
+		loc.y = 30*MAP_XY_FACTOR + TheGlobalData->m_data.m_waterExtentY;
 		pTrig->addPoint(loc);
 		loc.x = -30*MAP_XY_FACTOR;
 		pTrig->addPoint(loc);
@@ -228,6 +231,7 @@ Bool PolygonTrigger::ParsePolygonTriggersDataChunk(DataChunkInput &file, DataChu
 	s_currentID = maxTriggerId+1;
 	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Incorrect data file length."));
 	return true;
+#endif // if 0
 }
 
 /**
@@ -239,6 +243,9 @@ Bool PolygonTrigger::ParsePolygonTriggersDataChunk(DataChunkInput &file, DataChu
 */
 void PolygonTrigger::WritePolygonTriggersDataChunk(DataChunkOutput &chunkWriter)
 {
+(void) chunkWriter;
+DEBUG_CRASH(("PolygonTrigger::WritePolygonTriggersDataChunk not yet implemented!"));
+#if 0
 	chunkWriter.openDataChunk("PolygonTriggers", 	K_TRIGGERS_VERSION_4);
 		
 		PolygonTrigger *pTrig;
@@ -265,6 +272,7 @@ void PolygonTrigger::WritePolygonTriggersDataChunk(DataChunkOutput &chunkWriter)
 		}
 
 	chunkWriter.closeDataChunk();
+#endif // if 0
 }
 
 /**
@@ -309,8 +317,9 @@ void PolygonTrigger::addPolygonTrigger(PolygonTrigger *pTrigger)
 */
 void PolygonTrigger::removePolygonTrigger(PolygonTrigger *pTrigger)
 {	
+	PolygonTrigger *pTrig = NULL;
 	PolygonTrigger *pPrev = NULL;
-	for (PolygonTrigger *pTrig=getFirstPolygonTrigger(); pTrig; pTrig = pTrig->getNext()) {
+	for (pTrig=getFirstPolygonTrigger(); pTrig; pTrig = pTrig->getNext()) {
 		if (pTrig==pTrigger) break;
 		pPrev = pTrig;
 	}
@@ -505,7 +514,7 @@ Bool PolygonTrigger::isValid(void) const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void PolygonTrigger::crc( Xfer *xfer )
+void PolygonTrigger::crc( Xfer * /* xfer */ )
 {
 
 }  // end crc

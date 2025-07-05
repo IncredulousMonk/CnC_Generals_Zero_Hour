@@ -932,6 +932,7 @@ void Drawable::setFullyObscuredByShroud(Bool fullyObscured)
 		m_drawableFullyObscuredByShroud = fullyObscured;
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Set drawable's "selected" status, if not already set.  Also update running
@@ -945,7 +946,7 @@ void Drawable::friend_setSelected( void )
 		onSelected();
 	}
 
-}			
+}
 
 //-------------------------------------------------------------------------------------------------
 /** Clear drawable's "selected" status, if not already clear.  Also update running
@@ -965,6 +966,12 @@ void Drawable::friend_clearSelected( void )
 // ------------------------------------------------------------------------------------------------
 void Drawable::colorFlash( const RGBColor* color, UnsignedInt decayFrames, UnsignedInt attackFrames, UnsignedInt sustainAtPeak )
 {
+(void) color;
+(void) decayFrames;
+(void) attackFrames;
+(void) sustainAtPeak;
+DEBUG_CRASH(("Drawable::colorFlash not yet implemented!"));
+#if 0
 	if (m_colorTintEnvelope == NULL)
 		m_colorTintEnvelope = newInstance(TintEnvelope);
 
@@ -981,6 +988,7 @@ void Drawable::colorFlash( const RGBColor* color, UnsignedInt decayFrames, Unsig
 
 	// make sure the tint color is unlocked so we "fade back down" to normal
 	clearDrawableStatus( DRAWABLE_STATUS_TINT_COLOR_LOCKED );
+#endif // if 0
 } 
 
 // ------------------------------------------------------------------------------------------------
@@ -988,6 +996,9 @@ void Drawable::colorFlash( const RGBColor* color, UnsignedInt decayFrames, Unsig
 // ------------------------------------------------------------------------------------------------
 void Drawable::colorTint( const RGBColor* color )
 {
+(void) color;
+DEBUG_CRASH(("Drawable::colorTint not yet implemented!"));
+#if 0
 	if( color )
 	{
 		// set the color via color flash
@@ -1010,6 +1021,7 @@ void Drawable::colorTint( const RGBColor* color )
 
 	}
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1017,6 +1029,8 @@ void Drawable::colorTint( const RGBColor* color )
 //-------------------------------------------------------------------------------------------------
 void Drawable::onSelected()
 {
+DEBUG_CRASH(("Drawable::onSelected not yet implemented!"));
+#if 0
 
 	flashAsSelected();//much simpler
 	
@@ -1030,6 +1044,7 @@ void Drawable::onSelected()
 		}
 	}
 
+#endif // if 0
 }  // end onSelected
 
 //-------------------------------------------------------------------------------------------------
@@ -1040,6 +1055,7 @@ void Drawable::onUnselected()
 	// nothing
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** get FX color value to add to ALL LIGHTS when drawing */
 //-------------------------------------------------------------------------------------------------
@@ -1160,13 +1176,6 @@ void Drawable::imitateStealthLook( Drawable& otherDraw )
   m_secondMaterialPassOpacity = otherDraw.getSecondMaterialPassOpacity();
 
 }
-
-
-
-
-
-
-
 
 
 //-------------------------------------------------------------------------------------------------
@@ -4111,18 +4120,24 @@ void Drawable::replaceModelConditionFlags( const ModelConditionFlags &flags, Boo
 	}
 #endif
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::setIndicatorColor(Color color)
 {
+(void) color;
+DEBUG_CRASH(("Drawable::setIndicatorColor not yet implemented!"));
+#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
 		if (di)
 			di->replaceIndicatorColor(color);
 	}
+#endif // if 0
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 const GeometryInfo& Drawable::getDrawableGeometryInfo() const 
 { 

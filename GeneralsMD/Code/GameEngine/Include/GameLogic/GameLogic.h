@@ -237,9 +237,11 @@ public:
 	void sendObjectDestroyed( Object *obj );
 
 	void bindObjectAndDrawable(Object* obj, Drawable* draw);
+#endif // if 0
 
 	void setGamePaused( Bool paused, Bool pauseMusic = TRUE );
 	Bool isGamePaused( void );
+#if 0
 	Bool getInputEnabledMemory( void ) { return m_inputEnabledMemory; }
 
 	void processProgress(Int playerId, Int percentage);
@@ -394,10 +396,12 @@ private:
 #if 0
 	LoadScreen *getLoadScreen( Bool loadSaveGame );
 	LoadScreen *m_loadScreen;
-	Bool m_gamePaused;
-	Bool m_inputEnabledMemory;// Latches used to remember what to restore to after we unpause
-	Bool m_mouseVisibleMemory;
+#endif // if 0
+	Bool m_gamePaused {};
+	Bool m_inputEnabledMemory {};// Latches used to remember what to restore to after we unpause
+	Bool m_mouseVisibleMemory {};
 
+#if 0
 	Bool m_progressComplete[MAX_SLOTS];
 	enum { PROGRESS_COMPLETE_TIMEOUT = 60000 };							///< Timeout we wait for when we've completed our Load
 	Int m_progressCompleteTimeout[MAX_SLOTS];

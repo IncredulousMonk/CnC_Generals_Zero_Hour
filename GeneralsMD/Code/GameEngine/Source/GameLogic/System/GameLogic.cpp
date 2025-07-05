@@ -29,7 +29,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-// #include "Common/AudioAffect.h"
+#include "Common/AudioAffect.h"
 // #include "Common/AudioHandleSpecialValues.h"
 // #include "Common/BuildAssistant.h"
 // #include "Common/CopyProtection.h"
@@ -360,9 +360,9 @@ GameLogic::~GameLogic()
 	TheGhostObjectManager=NULL;
 #endif // if 0
 
-	// // delete the partition manager
-	// delete ThePartitionManager;
-	// ThePartitionManager = NULL;
+	// delete the partition manager
+	delete ThePartitionManager;
+	ThePartitionManager = NULL;
 
 #if 0
 	delete TheScriptActions;
@@ -393,10 +393,10 @@ void GameLogic::init( void )
 	setDefaults( FALSE );
 #endif // if 0
 
-	// // create the partition manager
-	// ThePartitionManager = NEW PartitionManager;
-	// ThePartitionManager->init();
-	// ThePartitionManager->setName("ThePartitionManager");
+	// create the partition manager
+	ThePartitionManager = NEW PartitionManager;
+	ThePartitionManager->init();
+	ThePartitionManager->setName("ThePartitionManager");
 
 
 #if 0
@@ -4213,6 +4213,7 @@ void GameLogic::sendObjectDestroyed( Object *obj )
 	obj->friend_bindToDrawable( NULL );
 
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Return if the game is paused or not */
@@ -4297,6 +4298,7 @@ void GameLogic::setGamePaused( Bool paused, Bool pauseMusic )
 	}
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GameLogic::processProgress(Int playerId, Int percentage)

@@ -258,7 +258,7 @@ private:
 		Int interfaceMask;
 		Bool copiedFromDefault;
 		Bool inheritable;
-    Bool overrideableByLikeKind;
+		Bool overrideableByLikeKind;
 
 		Nugget(const AsciiString& n, const AsciiString& moduleTag, const ModuleData* d, Int i, Bool inh, Bool oblk) 
 		: first(n), 
@@ -267,7 +267,7 @@ private:
 			interfaceMask(i), 
 			copiedFromDefault(false), 
 			inheritable(inh),
-      overrideableByLikeKind(oblk)
+			overrideableByLikeKind(oblk)
 		{ 
 		}
 

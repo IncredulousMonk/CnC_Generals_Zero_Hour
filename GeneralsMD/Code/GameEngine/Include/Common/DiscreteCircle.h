@@ -60,9 +60,9 @@ typedef void (*ScanlineDrawFunc)(Int xStart, Int xEnd, Int yPos, void *otherParm
 */
 class DiscreteCircle
 {
-	VecHorzLine m_edges;	// Should be HorzLines
-	Int m_yPos;						// Used to know when to draw the bottom scanline
-	Int m_yPosDoubled;		// Used to draw the bottom half of the circle.
+	VecHorzLine m_edges {};	// Should be HorzLines
+	Int m_yPos {};						// Used to know when to draw the bottom scanline
+	Int m_yPosDoubled {};		// Used to draw the bottom half of the circle.
 
 	public:
 		DiscreteCircle(Int xCenter, Int yCenter, Int radius);

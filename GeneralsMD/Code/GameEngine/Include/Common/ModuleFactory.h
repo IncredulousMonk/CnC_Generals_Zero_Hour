@@ -113,6 +113,12 @@ protected:
 											 classname::getModuleType(),		\
 											 AsciiString( #classname ),			\
 											 classname::getInterfaceMask())
+	#define addModuleRename(classname, ininame) \
+		addModuleInternal( classname::friend_newModuleInstance, \
+											 classname::friend_newModuleData, \
+											 classname::getModuleType(), \
+											 AsciiString( #ininame ), \
+											 classname::getInterfaceMask())
 
 	static NameKeyType makeDecoratedNameKey(const AsciiString& name, ModuleType type);
 

@@ -338,8 +338,7 @@ Object *ThingFactory::newObject( const ThingTemplate *tmplate, Team *team, Objec
 	// all objects are part of the partition manager system, add it to that 
 	// system now
 	//
-	// FIXME: ThePartitionManager
-	// ThePartitionManager->registerObject( obj );
+	ThePartitionManager->registerObject( obj );
 
 	obj->initObject();
 

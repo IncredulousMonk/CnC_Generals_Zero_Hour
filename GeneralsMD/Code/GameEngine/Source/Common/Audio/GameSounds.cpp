@@ -53,7 +53,7 @@
 #include "Common/Player.h"
 #include "Common/PlayerList.h"
 
-// #include "GameLogic/PartitionManager.h"
+#include "GameLogic/PartitionManager.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef _INTERNAL
@@ -232,16 +232,15 @@ Bool SoundManager::canPlayNow( AudioEventRTS *event )
 				return false;
 			}
 
-// FIXME: ThePartitionManager
-// 			Int localPlayerNdx = ThePlayerList->getLocalPlayer()->getPlayerIndex();
-// 			if( (event->getAudioEventInfo()->m_type & ST_SHROUDED) && 
-// 					 ThePartitionManager->getShroudStatusForPlayer(localPlayerNdx, pos) != CELLSHROUD_CLEAR ) 
-// 			{
-// #ifdef INTENSIVE_AUDIO_DEBUG
-// 				DEBUG_LOG(("- culled due to shroud.\n"));
-// #endif
-// 				return false;
-// 			}
+			Int localPlayerNdx = ThePlayerList->getLocalPlayer()->getPlayerIndex();
+			if( (event->getAudioEventInfo()->m_data.m_type & ST_SHROUDED) && 
+					 ThePartitionManager->getShroudStatusForPlayer(localPlayerNdx, pos) != CELLSHROUD_CLEAR ) 
+			{
+#ifdef INTENSIVE_AUDIO_DEBUG
+				DEBUG_LOG(("- culled due to shroud.\n"));
+#endif
+				return false;
+			}
 		} 
 	}
 

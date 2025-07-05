@@ -167,6 +167,10 @@ void Squad::squadFromTeam(const Team* fromTeam, Bool clearSquadFirst)
 // squadFromAIGroup ///////////////////////////////////////////////////////////////////////////////
 void Squad::squadFromAIGroup(const AIGroup* fromAIGroup, Bool clearSquadFirst)
 {
+(void) fromAIGroup;
+(void) clearSquadFirst;
+DEBUG_CRASH(("Squad::squadFromAIGroup not yet implemented!"));
+#if 0
 	if (!fromAIGroup) {
 		return;
 	}
@@ -176,11 +180,15 @@ void Squad::squadFromAIGroup(const AIGroup* fromAIGroup, Bool clearSquadFirst)
 	}
 
 	m_objectIDs = fromAIGroup->getAllIDs();
+#endif // if 0
 }
 
 // aiGroupFromSquad ///////////////////////////////////////////////////////////////////////////////
 void Squad::aiGroupFromSquad(AIGroup* aiGroupToFill)
 {
+(void) aiGroupToFill;
+DEBUG_CRASH(("Squad::aiGroupFromSquad not yet implemented!"));
+#if 0
 	if (!aiGroupToFill) {
 		return;
 	}
@@ -190,12 +198,13 @@ void Squad::aiGroupFromSquad(AIGroup* aiGroupToFill)
 	for (VecObjectPtr::iterator it = m_objectsCached.begin(); it != m_objectsCached.end(); ++it) {
 		aiGroupToFill->add((*it));
 	}
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Squad::crc( Xfer *xfer )
+void Squad::crc( Xfer * /* xfer */ )
 {
 
 }  // end crc

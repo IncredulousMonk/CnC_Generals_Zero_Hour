@@ -95,7 +95,9 @@
 #include "GameLogic/Module/CreateObjectDie.h"
 #include "GameLogic/Module/CrushDie.h"
 #include "GameLogic/Module/DamDie.h"
+#endif // if 0
 #include "GameLogic/Module/DestroyDie.h"
+#if 0
 #include "GameLogic/Module/EjectPilotDie.h"
 #include "GameLogic/Module/FXListDie.h"
 #include "GameLogic/Module/RebuildHoleExposeDie.h"
@@ -248,9 +250,11 @@
 #include "GameLogic/Module/ShroudCrateCollide.h"
 #include "GameLogic/Module/UnitCrateCollide.h"
 #include "GameLogic/Module/VeterancyCrateCollide.h"
+#endif // if 0
 
 // body includes
 #include "GameLogic/Module/InactiveBody.h"
+#if 0
 #include "GameLogic/Module/ActiveBody.h"
 #include "GameLogic/Module/HighlanderBody.h"
 #include "GameLogic/Module/ImmortalBody.h"
@@ -281,7 +285,7 @@
 #include "GameClient/Module/AnimatedParticleSysBoneClientUpdate.h"
 #include "GameClient/Module/SwayClientUpdate.h"
 #include "GameClient/Module/BeaconClientUpdate.h"
-#endif
+#endif // if 0
 
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 ModuleFactory *TheModuleFactory = NULL;  ///< the module factory singleton
@@ -327,8 +331,8 @@ void ModuleFactory::init( void )
 {
 
 	// behavior modules
-#if 0
 	addModule( AutoHealBehavior );
+#if 0
 	addModule( GrantStealthBehavior );
 	addModule( NeutronBlastBehavior );
 	addModule( BridgeBehavior );
@@ -376,9 +380,11 @@ void ModuleFactory::init( void )
 	addModule( JetSlowDeathBehavior );
 	addModule( RailroadBehavior );
 	addModule( SpawnBehavior );
+#endif // if 0
 
 	// die modules
 	addModule( DestroyDie );
+#if 0
 	addModule( FXListDie );
 	addModule( CrushDie );
 	addModule( DamDie );
@@ -533,9 +539,11 @@ void ModuleFactory::init( void )
 	addModule( SabotageSupplyCenterCrateCollide );
 	addModule( SabotageSupplyDropzoneCrateCollide );
 	addModule( SalvageCrateCollide );
+#endif // if 0
 
 	// body modules
 	addModule( InactiveBody );
+#if 0
 	addModule( ActiveBody );
 	addModule( HighlanderBody );
 	addModule( ImmortalBody );
@@ -566,7 +574,7 @@ void ModuleFactory::init( void )
 	addModule( AnimatedParticleSysBoneClientUpdate );
 	addModule( SwayClientUpdate );
 	addModule( BeaconClientUpdate );
-#endif
+#endif // if 0
 
 }  // end init
 
@@ -623,7 +631,7 @@ const ModuleFactory::ModuleTemplate* ModuleFactory::findModuleTemplate(const Asc
   ModuleTemplateMap::const_iterator it = m_moduleTemplateMap.find(namekey);
   if (it == m_moduleTemplateMap.end()) 
 	{
-		DEBUG_CRASH(( "Module name '%s' not found\n", name.str() ));
+		DEBUG_CRASH(( "ModuleFactory::findModuleTemplate: Module name '%s' not found\n", name.str() ));
 		return NULL;
 	}
 	else

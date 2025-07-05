@@ -40,7 +40,6 @@
 #include "WWMath/matrix3d.h"
 #include "GameClient/DrawableInfo.h"
 
-#if 0
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class PositionalSound;
 class ThingTemplate;
@@ -57,11 +56,13 @@ class ModuleInfo;
 class Anim2DTemplate;
 class Image;
 class DynamicAudioEventInfo;
-enum BodyDamageType;
+enum BodyDamageType: Int;
 
+#if 0
 // this is a very worthwhile performance win. left conditionally defined for now, just 
 // in case, but probably should be made permanent soon. (srj)
 #define DIRTY_CONDITION_FLAGS
+#endif // if 0
 
 #define DEFAULT_TINT_COLOR_FADE_RATE (0.6f) // fast fade
 #define DEF_ATTACK_FRAMES (1)
@@ -69,6 +70,7 @@ enum BodyDamageType;
 #define DEF_DECAY_FRAMES (4)
 #define SUSTAIN_INDEFINITELY (0xfffffffe) // forever and ever, amen.
 
+#if 0
 //-----------------------------------------------------------------------------
 //@TODO -- The drawable icon system needs to be implemented in a proper manner -- KM
 //				 Fact 1: Every drawable in the world shouldn't have to have a pointer 
@@ -309,16 +311,18 @@ public:
 #if 0
 	void onDestroy( void );																							///< run from GameClient::destroyDrawable
 	void onLevelStart();                                                ///< run from GameLogic::startNewGame
+#endif // if 0
 
 	Drawable *getNextDrawable( void ) const { return m_nextDrawable; }	///< return the next drawable in the global list
 	Drawable *getPrevDrawable( void ) const { return m_prevDrawable; }  ///< return the prev drawable in the global list
-#endif // if 0
 	DrawableID getID( void ) const;																			///< return this drawable's unique ID
 
 #if 0
 	void friend_bindToObject( Object *obj ); ///< bind this drawable to an object ID. for use ONLY by GameLogic!
+#endif // if 0
 	void setIndicatorColor(Color color);
 	
+#if 0
 	void setTintStatus( TintStatus statusBits ) { BitSet( m_tintStatus, statusBits ); };
 	void clearTintStatus( TintStatus statusBits ) { BitClear( m_tintStatus, statusBits ); };
 	Bool testTintStatus( TintStatus statusBits ) const { return BitTest( m_tintStatus, statusBits ); };
@@ -331,10 +335,12 @@ public:
 	void setTerrainDecal(TerrainDecalType type);	///<decal that is to appear under the drawable
 	void setTerrainDecalSize(Real x, Real y);
 	void setTerrainDecalFadeTarget(Real target, Real rate = 0.1f);
+#endif // if 0
 
 	inline Object *getObject( void ) { return m_object; }								///< return object ID bound to this drawble
 	inline const Object *getObject( void ) const { return m_object; }		///< return object ID bound to this drawble
 
+#if 0
 	inline DrawableInfo *getDrawableInfo(void) {return &m_drawableInfo;}
 #endif // if 0
 
@@ -403,17 +409,21 @@ public:
 	//	inline UnsignedByte getFullyObscuredByShroudWithCheatSpy(void) {return (UnsignedByte)m_drawableFullyObscuredByShroud | 128;}//8 looks like a zero in most fonts
 
 	Bool getDrawsInMirror() const { return BitTest(m_status, DRAWABLE_STATUS_DRAWS_IN_MIRROR) || isKindOf(KINDOF_CAN_CAST_REFLECTIONS); }
+#endif // if 0
 
 	void colorFlash( const RGBColor *color, UnsignedInt decayFrames = DEF_DECAY_FRAMES, UnsignedInt attackFrames = 0, UnsignedInt sustainAtPeak = FALSE );  ///< flash a drawable in the color specified for a short time
 	void colorTint( const RGBColor *color );	 ///< tint this drawable the color specified
+#if 0
 	void setTintEnvelope( const RGBColor *color, Real attack, Real decay );	 ///< how to transition color
 	void flashAsSelected( const RGBColor *color = NULL ); ///< drawable takes care of the details if you spec no color
+#endif // if 0
 	
 	/// Return true if drawable has been marked as "selected"
 	Bool isSelected( void ) const {	return m_selected; }
 	void onSelected();														///< Work unrelated to selection that must happen at time of selection
 	void onUnselected();													///< Work unrelated to selection that must happen at time of unselection
 
+#if 0
 	//---------------------------------------------------------------------------
 
 	// an "instance" matrix defines the local transform of the Drawable, and is concatenated with the global transform
@@ -531,6 +541,7 @@ public:
 
 	UnsignedInt getExpirationDate() const { return m_expirationDate; }
 	void setExpirationDate(UnsignedInt frame) { m_expirationDate = frame; }
+#endif // if 0
 
 	//
 	// *ONLY* the InGameUI should do the actual drawable selection and de-selection
@@ -538,6 +549,7 @@ public:
 	void friend_setSelected( void );							///< mark drawable as "selected"
 	void friend_clearSelected( void );						///< clear drawable's "selected" 
 	
+#if 0
 	Vector3 * getAmbientLight( void );					///< get color value to add to ambient light when drawing
 	void setAmbientLight( Vector3 *ambient );		///< set color value to add to ambient light when drawing
 
@@ -545,9 +557,11 @@ public:
 	const Vector3 * getSelectionColor( void ) const;					///< get FX color value to add to ALL LIGHTS when drawing
 
 	inline TerrainDecalType getTerrainDecalType( void ) const { return m_terrainDecalType; }
+#endif // if 0
 
 	inline void setDrawableOpacity( Real value ) { m_explicitOpacity = value; }	///< set alpha/opacity value used to override defaults when drawing.
-	
+
+#if 0
 	// note that this is not the 'get' inverse of setDrawableOpacity, since stealthing can also affect the effective opacity!
 	inline Real getEffectiveOpacity() const { return m_explicitOpacity * m_effectiveStealthOpacity; }		///< get alpha/opacity value used to override defaults when drawing.
 	void setEffectiveOpacity( Real pulseFactor, Real explicitOpacity = -1.0f );
@@ -663,7 +677,6 @@ protected:
 
 private:
 
-#if 0
 	// note, these are lazily allocated!
 	TintEnvelope*		m_selectionFlashEnvelope {};	///< used for selection flash, works WITH m_colorTintEnvelope
 	TintEnvelope*		m_colorTintEnvelope {};			///< house color flashing, etc... works WITH m_selectionFlashEnvelope
@@ -673,7 +686,9 @@ private:
 																//   zero = no effect
 																//   1    = full effect
 
+#if 0
 	TerrainDecalType m_terrainDecalType {}; ///<current decal in use by m_terrainDecal
+#endif // if 0
 
 	Real m_explicitOpacity {};			///< opacity level. 1.0f == Solid/Opaque.
 	Real m_stealthOpacity {};			///< <<minimum>> opacity due to stealth. pulse is between opaque and this
@@ -684,14 +699,13 @@ private:
 	Real m_decalOpacity {};
 
 	Object *m_object {};						///< object (if any) that this drawable represents
-#endif // if 0
 
 	DrawableID m_id {};						///< this drawable's unique ID
-#if 0
 	Drawable *m_nextDrawable {}; 
 	Drawable *m_prevDrawable {};		///< list links
 
-  DynamicAudioEventInfo *m_customSoundAmbientInfo {}; ///< If not NULL, info about the ambient sound to attach to this object
+#if 0
+	DynamicAudioEventInfo *m_customSoundAmbientInfo {}; ///< If not NULL, info about the ambient sound to attach to this object
 
 	UnsignedInt m_status {};				///< status bits (see DrawableStatus enum)
 	UnsignedInt m_tintStatus {};				///< tint color status bits (see TintStatus enum)

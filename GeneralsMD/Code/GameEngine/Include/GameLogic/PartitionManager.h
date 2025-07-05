@@ -109,16 +109,16 @@ enum ValueOrThreat
 // ----------------------------------------------------------------------------------------------
 enum FindPositionFlags
 {
-	FPF_NONE															= 0x00000000,		// no options, default behavior
-	FPF_IGNORE_WATER											= 0x00000001,		// a position found underwater is ok
-	FPF_WATER_ONLY												= 0x00000002,		// find positions in the water only
-	FPF_IGNORE_ALL_OBJECTS								= 0x00000004,		// ignore all objects, positions inside objects are ok
-	FPF_IGNORE_ALLY_OR_NEUTRAL_UNITS			= 0x00000008,		// ignore friendly units (requires relationshipObject)
+	FPF_NONE								= 0x00000000,		// no options, default behavior
+	FPF_IGNORE_WATER						= 0x00000001,		// a position found underwater is ok
+	FPF_WATER_ONLY							= 0x00000002,		// find positions in the water only
+	FPF_IGNORE_ALL_OBJECTS					= 0x00000004,		// ignore all objects, positions inside objects are ok
+	FPF_IGNORE_ALLY_OR_NEUTRAL_UNITS		= 0x00000008,		// ignore friendly units (requires relationshipObject)
 	FPF_IGNORE_ALLY_OR_NEUTRAL_STRUCTURES	= 0x00000010,		// ignore friendly structures (requires relationshipObject)
-	FPF_IGNORE_ENEMY_UNITS								= 0x00000020,		// ignore enemy units (requires relationshipObject)
-	FPF_IGNORE_ENEMY_STRUCTURES						= 0x00000040,		// ignore enemy structures (requires relationshipObject)
-	FPF_USE_HIGHEST_LAYER									= 0x00000080,		// examine pos on highest layer at given xy (rather than on ground layer)
-	FPF_CLEAR_CELLS_ONLY									= 0x00000100,		// Reject anything that is not PathFindCell::Clear
+	FPF_IGNORE_ENEMY_UNITS					= 0x00000020,		// ignore enemy units (requires relationshipObject)
+	FPF_IGNORE_ENEMY_STRUCTURES				= 0x00000040,		// ignore enemy structures (requires relationshipObject)
+	FPF_USE_HIGHEST_LAYER					= 0x00000080,		// examine pos on highest layer at given xy (rather than on ground layer)
+	FPF_CLEAR_CELLS_ONLY					= 0x00000100,		// Reject anything that is not PathFindCell::Clear
 };
 // ----------------------------------------------------------------------------------------------
 

@@ -44,9 +44,9 @@ class RadiusDecal
 {
 	friend class RadiusDecalTemplate;
 private:
-	const RadiusDecalTemplate*	m_template;
-	Shadow*											m_decal;
-	Bool												m_empty;
+	const RadiusDecalTemplate*	m_template {};
+	Shadow*						m_decal {};
+	Bool						m_empty {};
 public:
 	RadiusDecal();
 	RadiusDecal(const RadiusDecal& that);
@@ -70,13 +70,13 @@ class RadiusDecalTemplate
 {
 	friend class RadiusDecal;
 private:
-	AsciiString		m_name;
-	ShadowType		m_shadowType;
-	Real					m_minOpacity;
-	Real					m_maxOpacity;
-	UnsignedInt		m_opacityThrobTime;
-	Color					m_color;
-	Bool					m_onlyVisibleToOwningPlayer;
+	AsciiString		m_name {};
+	ShadowType		m_shadowType {};
+	Real			m_minOpacity {};
+	Real			m_maxOpacity {};
+	UnsignedInt		m_opacityThrobTime {};
+	Color			m_color {};
+	Bool			m_onlyVisibleToOwningPlayer {};
 
 public:
 	RadiusDecalTemplate();

@@ -73,12 +73,12 @@ public:
 		ATTACK_ExitIfNoUnitFound			= 0x04
 	};
 
-	Int							m_conditionsToConsider;
-	Coord3D					m_center;								// can be updated at any time by owner
-	Real						m_radiusSqr;						// can be updated at any time by owner
+	Int					m_conditionsToConsider;
+	Coord3D				m_center {};				// can be updated at any time by owner
+	Real				m_radiusSqr;				// can be updated at any time by owner
 	UnsignedInt			m_attackGiveUpFrame;		// frame at which we give up (if using)
 
-	ExitConditions() : m_attackGiveUpFrame(0), m_conditionsToConsider(0), m_radiusSqr(0.0f)
+	ExitConditions() : m_conditionsToConsider(0), m_radiusSqr(0.0f), m_attackGiveUpFrame(0)
 	{
 		//Added By Sadullah Nader
 		// Initializations missing and needed
@@ -97,11 +97,11 @@ class AIGuardMachine : public StateMachine
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( AIGuardMachine, "AIGuardMachinePool" );
 
 private:
-	ObjectID								m_targetToGuard;
-	const PolygonTrigger *	m_areaToGuard;
-	Coord3D									m_positionToGuard;
-	ObjectID								m_nemesisToAttack;
-	GuardMode								m_guardMode;
+	ObjectID				m_targetToGuard {};
+	const PolygonTrigger *	m_areaToGuard {};
+	Coord3D					m_positionToGuard {};
+	ObjectID				m_nemesisToAttack {};
+	GuardMode				m_guardMode {};
 
 protected:
 	// snapshot interface
@@ -115,6 +115,11 @@ public:
 	 * used by this machine.
 	 */
 	AIGuardMachine( Object *owner );
+
+	// No copies allowed!
+	AIGuardMachine(const AIGuardMachine&) = delete;
+	AIGuardMachine& operator=(const AIGuardMachine&) = delete;
+
 	Object* findTargetToGuardByID( void ) { return TheGameLogic->findObjectByID(m_targetToGuard); }
 	void setTargetToGuard( const Object *object ) { m_targetToGuard = object ? object->getID() : INVALID_ID; }
 	
@@ -145,6 +150,11 @@ public:
 		m_attackState = 0;
 		m_enterState = 0;
 	}
+
+	// No copies allowed!
+	AIGuardInnerState(const AIGuardInnerState&) = delete;
+	AIGuardInnerState& operator=(const AIGuardInnerState&) = delete;
+
 	virtual Bool isAttack() const { return m_attackState ? m_attackState->isAttack() : FALSE; }
 	virtual StateReturnType onEnter( void );
 	virtual StateReturnType update( void );
@@ -157,9 +167,9 @@ protected:
 private:
 	AIGuardMachine* getGuardMachine() { return (AIGuardMachine*)getMachine(); }
 
-	ExitConditions m_exitConditions; 
-	AIAttackState *m_attackState;
-	AIEnterState *m_enterState;
+	ExitConditions m_exitConditions {};
+	AIAttackState *m_attackState {};
+	AIEnterState *m_enterState {};
 };
 EMPTY_DTOR(AIGuardInnerState)
 
@@ -182,8 +192,8 @@ protected:
 private:
 	AIGuardMachine* getGuardMachine() { return (AIGuardMachine*)getMachine(); }
 
-	UnsignedInt m_nextEnemyScanTime;
-	Coord3D			m_guardeePos;						///< Where the object we are guarding was last.
+	UnsignedInt m_nextEnemyScanTime {};
+	Coord3D		m_guardeePos {};						///< Where the object we are guarding was last.
 };
 EMPTY_DTOR(AIGuardIdleState)
 
@@ -196,6 +206,11 @@ public:
 	{
 		m_attackState = NULL;
 	}
+
+	// No copies allowed!
+	AIGuardOuterState(const AIGuardOuterState&) = delete;
+	AIGuardOuterState& operator=(const AIGuardOuterState&) = delete;
+
 	virtual Bool isAttack() const { return m_attackState ? m_attackState->isAttack() : FALSE; }
 	virtual StateReturnType onEnter( void );
 	virtual StateReturnType update( void );
@@ -208,8 +223,8 @@ protected:
 private:
 	AIGuardMachine* getGuardMachine() { return (AIGuardMachine*)getMachine(); }
 
-	ExitConditions m_exitConditions; 
-	AIAttackState *m_attackState;
+	ExitConditions m_exitConditions {};
+	AIAttackState *m_attackState {};
 };
 EMPTY_DTOR(AIGuardOuterState)
 
@@ -234,7 +249,7 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess();
 private:
-	UnsignedInt m_nextReturnScanTime;
+	UnsignedInt m_nextReturnScanTime {};
 };
 EMPTY_DTOR(AIGuardReturnState)
 
@@ -258,6 +273,11 @@ class AIGuardAttackAggressorState : public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIGuardAttackAggressorState, "AIGuardAttackAggressorState")		
 public:
 	AIGuardAttackAggressorState( StateMachine *machine );
+
+	// No copies allowed!
+	AIGuardAttackAggressorState(const AIGuardAttackAggressorState&) = delete;
+	AIGuardAttackAggressorState& operator=(const AIGuardAttackAggressorState&) = delete;
+
 	virtual Bool isAttack() const { return m_attackState ? m_attackState->isAttack() : FALSE; }
 	virtual StateReturnType onEnter( void );
 	virtual StateReturnType update( void );
@@ -269,8 +289,8 @@ protected:
 	virtual void loadPostProcess();
 private:
 	AIGuardMachine* getGuardMachine() { return (AIGuardMachine*)getMachine(); }
-	ExitConditions m_exitConditions; 
-	AIAttackState *m_attackState;
+	ExitConditions m_exitConditions {};
+	AIAttackState *m_attackState {};
 };
 
 EMPTY_DTOR(AIGuardAttackAggressorState)

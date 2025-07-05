@@ -98,9 +98,9 @@ private:
 		MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Clump, "SimpleObjectIteratorClumpPool" )		
 	public:
 
-		Clump			*m_nextClump;
-		Object		*m_obj;
-		Real			m_numeric;	// typically, dist-squared
+		Clump		*m_nextClump {};
+		Object		*m_obj {};
+		Real		m_numeric {};	// typically, dist-squared
 
 		Clump();
 	//~Clump();
@@ -118,9 +118,9 @@ private:
 	static Real sortExpensiveToCheap(Clump *a, Clump *b);
 
 
-	Clump				*m_firstClump;
-	Clump				*m_curClump;
-	Int					m_clumpCount;
+	Clump				*m_firstClump {};
+	Clump				*m_curClump {};
+	Int					m_clumpCount {};
 
 	void reset();
 

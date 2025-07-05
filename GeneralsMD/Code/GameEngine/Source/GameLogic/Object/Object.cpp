@@ -1691,6 +1691,7 @@ Color Object::getNightIndicatorColor() const
 		return m_indicatorColor;
 	}
 }
+#endif // if 0
 
 //=============================================================================
 // Object::isLocallyControlled
@@ -1701,13 +1702,14 @@ Bool Object::isLocallyControlled() const
 }
 
 //=============================================================================
-// Object::isLocallyControlled
+// Object::isNeutralControlled
 //=============================================================================
 Bool Object::isNeutralControlled() const
 {
 	return getControllingPlayer() == ThePlayerList->getNeutralPlayer();
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 inline Bool isPosDifferent(const Coord3D* a, const Coord3D* b)
 {
@@ -1990,7 +1992,6 @@ void Object::healCompletely()
 	attemptHealing(HUGE_DAMAGE_AMOUNT, NULL);
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void Object::setEffectivelyDead(Bool dead)
@@ -2002,11 +2003,13 @@ void Object::setEffectivelyDead(Bool dead)
 
 	if (dead)
 	{
-		if( m_radarData )
-			TheRadar->removeObject( this );
+		// FIXME: TheRadar.
+		// if( m_radarData )
+		// 	TheRadar->removeObject( this );
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::setCaptured(Bool isCaptured)
 {
@@ -3060,6 +3063,7 @@ void Object::setSelectable(Bool selectable)
 		m_drawable->setSelectable(selectable);
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool Object::isSelectable() const
@@ -3089,7 +3093,6 @@ Bool Object::isMassSelectable() const
 {
 	return isSelectable() && !isKindOf(KINDOF_STRUCTURE);
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::setWeaponSetFlag(WeaponSetType wst) 
@@ -4622,12 +4625,16 @@ void Object::onCapture( Player *oldOwner, Player *newOwner )
 	}
 
 }  // end onCapture
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /// Object level events that need to happen upon game death
 void Object::onDie( DamageInfo *damageInfo )
 {
 
+(void) damageInfo;
+DEBUG_CRASH(("Object::onDie not yet implemented!"));
+#if 0
 	checkAndDetonateBoobyTrap(NULL);// Already dying, so no need to handle death case of explosion
 
 #if defined(_DEBUG) || defined(_INTERNAL)
@@ -4724,8 +4731,10 @@ void Object::onDie( DamageInfo *damageInfo )
 		}
 	}
 
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::setWeaponBonusCondition(WeaponBonusConditionType wst) 
 {
@@ -5897,6 +5906,7 @@ void Object::clearLeechRangeModeForAllWeapons()
 {
 	m_weaponSet.clearLeechRangeModeForAllWeapons();
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Search our update modules for a production update interface and return it if one is found */
@@ -5919,6 +5929,7 @@ ProductionUpdateInterface* Object::getProductionUpdateInterface( void )
 
 }  // end getProductionUpdateInterface
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 DockUpdateInterface *Object::getDockUpdateInterface( void )

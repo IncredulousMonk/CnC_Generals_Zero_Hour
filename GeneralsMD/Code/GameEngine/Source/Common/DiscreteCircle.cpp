@@ -50,7 +50,7 @@ DiscreteCircle::DiscreteCircle(Int xCenter, Int yCenter, Int radius)
 {
 	m_yPos = yCenter;
 	m_yPosDoubled = (yCenter << 1);
-	m_edges.reserve(radius << 1);	// largest that it should ever be.
+	m_edges.reserve(static_cast<size_t>(radius) << 1);	// largest that it should ever be.
 
 	generateEdgePairs(xCenter, yCenter, radius);
 	removeDuplicates();

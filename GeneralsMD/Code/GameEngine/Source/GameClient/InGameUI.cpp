@@ -29,9 +29,9 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_SHADOW_NAMES
+// #define DEFINE_SHADOW_NAMES
 
-#include "Common/ActionManager.h"
+// #include "Common/ActionManager.h"
 #include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
 #include "Common/GameType.h"
@@ -39,7 +39,7 @@
 #include "Common/PerfTimer.h"
 #include "Common/Player.h"
 #include "Common/PlayerList.h"
-#include "Common/Radar.h"
+// #include "Common/Radar.h"
 #include "Common/Team.h"
 #include "Common/ThingFactory.h"
 #include "Common/ThingTemplate.h"
@@ -49,7 +49,7 @@
 #include "Common/SpecialPower.h"
 
 #include "GameClient/Anim2D.h"
-#include "GameClient/ControlBar.h"
+// #include "GameClient/ControlBar.h"
 #include "GameClient/DisplayStringManager.h"
 #include "GameClient/Diplomacy.h"
 #include "GameClient/Eva.h"
@@ -66,8 +66,7 @@
 #include "GameClient/Mouse.h"
 #include "GameClient/GadgetStaticText.h"
 #include "GameClient/View.h"
-#include "GameClient/TerrainVisual.h"	
-#include "GameClient/ControlBar.h"
+// #include "GameClient/TerrainVisual.h"
 #include "GameClient/Display.h"
 #include "GameClient/WindowLayout.h"
 #include "GameClient/LookAtXlat.h"
@@ -75,12 +74,12 @@
 #include "GameClient/Shadow.h"
 #include "GameClient/GlobalLanguage.h"
 
-#include "GameLogic/AIGuard.h"
+// #include "GameLogic/AIGuard.h"
 #include "GameLogic/Weapon.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/PartitionManager.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/Module/ProductionUpdate.h"
 #include "GameLogic/Module/SpecialPowerModule.h"
@@ -107,13 +106,14 @@ InGameUI *TheInGameUI = NULL;
 
 GameWindow *m_replayWindow = NULL;
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 struct KindOfSelectionData
 {
-	KindOfMaskType m_mustbeSet;
-	KindOfMaskType m_mustbeClear;
+	KindOfMaskType m_mustbeSet {};
+	KindOfMaskType m_mustbeClear {};
 
-	DrawableList newlySelectedDrawables;
+	DrawableList newlySelectedDrawables {};
 };
 // ------------------------------------------------------------------------------------------------
 static Bool kindOfUnitSelection( Drawable *test, void *userData )
@@ -166,9 +166,9 @@ static Bool kindOfUnitSelection( Drawable *test, void *userData )
 // ------------------------------------------------------------------------------------------------
 struct MatchingUnitSelectionData
 {
-	const ThingTemplate *templateToSelect;
-	DrawableList newlySelectedDrawables;
-	Bool isCarBomb;
+	const ThingTemplate *templateToSelect {};
+	DrawableList newlySelectedDrawables {};
+	Bool isCarBomb {};
 };
 // ------------------------------------------------------------------------------------------------
 static Bool similarUnitSelection( Drawable *test, void *userData )
@@ -221,6 +221,7 @@ static Bool similarUnitSelection( Drawable *test, void *userData )
 	}
 	return FALSE;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -262,24 +263,24 @@ SuperweaponInfo::SuperweaponInfo(
 	Bool hiddenByScript,
 	Bool hiddenByScience,
 	Bool ready,
-  Bool evaReadyPlayed,
+	Bool evaReadyPlayed,
 	const AsciiString& superweaponNormalFont, 
 	Int superweaponNormalPointSize, 
 	Bool superweaponNormalBold,
 	Color c, 
 	const SpecialPowerTemplate* spt
 ) :
+	m_nameDisplayString(NULL),
+	m_timeDisplayString(NULL),
+	m_color(c),
+	m_powerTemplate(spt),
 	m_id(id),
 	m_timestamp(timestamp),
 	m_hiddenByScript(hiddenByScript),
 	m_hiddenByScience(hiddenByScience),
 	m_ready(ready),
-  m_evaReadyPlayed( evaReadyPlayed ),
-	m_forceUpdateText(false),
-	m_nameDisplayString(NULL),
-	m_timeDisplayString(NULL),
-	m_color(c),
-	m_powerTemplate(spt)
+	m_evaReadyPlayed( evaReadyPlayed ),
+	m_forceUpdateText(false)
 {
 	m_nameDisplayString = TheDisplayStringManager->newDisplayString();
 	m_nameDisplayString->reset();
@@ -371,7 +372,7 @@ void InGameUI::xfer( Xfer *xfer )
 	if( version >= 2 )
 	{
 		// Saving the named timer infos and their friends so we get script timers back after we load
-		xfer->xferInt(&m_namedTimerLastFlashFrame);
+		xfer->xferUnsignedInt(&m_namedTimerLastFlashFrame);
 		xfer->xferBool(&m_namedTimerUsedFlashColor);
 		xfer->xferBool(&m_showNamedTimers);
 
@@ -503,10 +504,10 @@ void InGameUI::xfer( Xfer *xfer )
 					hiddenByScript,
 					hiddenByScience,
 					ready,
-          evaReadyPlayed,
-					m_superweaponNormalFont, 
-					m_superweaponNormalPointSize, 
-					m_superweaponNormalBold, 
+					evaReadyPlayed,
+					m_ini.m_superweaponNormalFont, 
+					m_ini.m_superweaponNormalPointSize, 
+					m_ini.m_superweaponNormalBold, 
 					player->getPlayerColor(), 
 					powerTemplate);
 				m_superweapons[playerIndex][powerName].push_back(swInfo);
@@ -587,16 +588,16 @@ void InGameUI::addSuperweapon(Int playerIndex, const AsciiString& powerName, Obj
 #endif
 	SuperweaponInfo *info = newInstance(SuperweaponInfo)(
 					id,
-					-1,			// timestamp
+					0,			// timestamp
 					FALSE,	// hiddenByScript
 					hiddenByScience,//Aaayeeee! This is meaningless and just clogs up the works, sez srj, nuke or repair or SHIP WITH(tm), ASAP
 													// THe trouble is: There is no mechanism to clear this bit when the science is granted, thus,
 													// the timer never, ever, ever get drawn.... unless the owning object is post-science constructed.
 					FALSE,	// ready
-          FALSE,  // evaReadyPlayed
-					m_superweaponNormalFont, 
-					m_superweaponNormalPointSize, 
-					m_superweaponNormalBold, 
+					FALSE,  // evaReadyPlayed
+					m_ini.m_superweaponNormalFont, 
+					m_ini.m_superweaponNormalPointSize, 
+					m_ini.m_superweaponNormalBold, 
 					player->getPlayerColor(), 
 					powerTemplate);
 
@@ -734,14 +735,14 @@ void InGameUI::addNamedTimer( const AsciiString& timerName, const UnicodeString&
 {
 	NamedTimerInfo *info = newInstance( NamedTimerInfo );	
 	info->m_timerName = timerName;
-	info->color = m_namedTimerNormalColor;
+	info->color = m_ini.m_namedTimerNormalColor;
 	info->timerText = text;
 	info->displayString = TheDisplayStringManager->newDisplayString();
 	info->displayString->reset();
-	info->displayString->setFont( TheFontLibrary->getFont( m_namedTimerNormalFont, 
-		TheGlobalLanguageData->adjustFontSize(m_namedTimerNormalPointSize), m_namedTimerNormalBold ) );
+	info->displayString->setFont( TheFontLibrary->getFont( m_ini.m_namedTimerNormalFont, 
+		TheGlobalLanguageData->adjustFontSize(m_ini.m_namedTimerNormalPointSize), m_ini.m_namedTimerNormalBold ) );
 	info->displayString->setText( UnicodeString::TheEmptyString );
-	info->timestamp = -1;
+	info->timestamp = 0;
 	info->isCountdown = isCountdown;
 
 //	GameFont *font = info->displayString->getFont();
@@ -775,108 +776,108 @@ void InGameUI::showNamedTimerDisplay( Bool show )
 //-------------------------------------------------------------------------------------------------
 const FieldParse InGameUI::s_fieldParseTable[] = 
 {
-	{ "MaxSelectionSize",								INI::parseInt,					NULL,		offsetof( InGameUI, m_maxSelectCount ) },
+	{ "MaxSelectionSize",						INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_maxSelectCount ) },
 
-	{ "MessageColor1",									INI::parseColorInt,			NULL,		offsetof( InGameUI, m_messageColor1 ) },
-	{ "MessageColor2",									INI::parseColorInt,			NULL,		offsetof( InGameUI, m_messageColor2 ) },
-	{ "MessagePosition",								INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_messagePosition ) },
-	{ "MessageFont",										INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_messageFont ) },
-	{ "MessagePointSize",								INI::parseInt,					NULL,		offsetof( InGameUI, m_messagePointSize ) },
-	{ "MessageBold",										INI::parseBool,					NULL,		offsetof( InGameUI, m_messageBold ) },
-	{ "MessageDelayMS",									INI::parseInt,					NULL,		offsetof( InGameUI, m_messageDelayMS ) },
+	{ "MessageColor1",							INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_messageColor1 ) },
+	{ "MessageColor2",							INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_messageColor2 ) },
+	{ "MessagePosition",						INI::parseICoord2D,				NULL,		offsetof( InGameUI::IniData, m_messagePosition ) },
+	{ "MessageFont",							INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_messageFont ) },
+	{ "MessagePointSize",						INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_messagePointSize ) },
+	{ "MessageBold",							INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_messageBold ) },
+	{ "MessageDelayMS",							INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_messageDelayMS ) },
 
-	{ "MilitaryCaptionColor",						INI::parseRGBAColorInt,	NULL,		offsetof( InGameUI, m_militaryCaptionColor ) },
-	{ "MilitaryCaptionPosition",				INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_militaryCaptionPosition ) },
+	{ "MilitaryCaptionColor",					INI::parseRGBAColorInt,			NULL,		offsetof( InGameUI::IniData, m_militaryCaptionColor ) },
+	{ "MilitaryCaptionPosition",				INI::parseICoord2D,				NULL,		offsetof( InGameUI::IniData, m_militaryCaptionPosition ) },
 
-	{ "MilitaryCaptionTitleFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_militaryCaptionTitleFont ) },
-	{ "MilitaryCaptionTitlePointSize",	INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionTitlePointSize ) },
-	{ "MilitaryCaptionTitleBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionTitleBold ) },
+	{ "MilitaryCaptionTitleFont",				INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_militaryCaptionTitleFont ) },
+	{ "MilitaryCaptionTitlePointSize",			INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_militaryCaptionTitlePointSize ) },
+	{ "MilitaryCaptionTitleBold",				INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_militaryCaptionTitleBold ) },
 
-	{ "MilitaryCaptionFont",						INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_militaryCaptionFont ) },
-	{ "MilitaryCaptionPointSize",				INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionPointSize ) },
-	{ "MilitaryCaptionBold",						INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionBold ) },
+	{ "MilitaryCaptionFont",					INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_militaryCaptionFont ) },
+	{ "MilitaryCaptionPointSize",				INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_militaryCaptionPointSize ) },
+	{ "MilitaryCaptionBold",					INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_militaryCaptionBold ) },
 
-	{ "MilitaryCaptionRandomizeTyping",	INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionRandomizeTyping ) },
-	{ "MilitaryCaptionSpeed",						INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionSpeed ) },
+	{ "MilitaryCaptionRandomizeTyping",			INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_militaryCaptionRandomizeTyping ) },
+	{ "MilitaryCaptionSpeed",					INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_militaryCaptionSpeed ) },
 
-	{ "MilitaryCaptionPosition",				INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_militaryCaptionPosition ) },
+	{ "MilitaryCaptionPosition",				INI::parseICoord2D,				NULL,		offsetof( InGameUI::IniData, m_militaryCaptionPosition ) },
 
-	{ "SuperweaponCountdownPosition",					INI::parseCoord2D,			NULL,		offsetof( InGameUI, m_superweaponPosition ) },
-	{ "SuperweaponCountdownFlashDuration",		INI::parseDurationReal,	NULL,		offsetof( InGameUI, m_superweaponFlashDuration ) },
-	{ "SuperweaponCountdownFlashColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_superweaponFlashColor ) },
+	{ "SuperweaponCountdownPosition",			INI::parseCoord2D,				NULL,		offsetof( InGameUI::IniData, m_superweaponPosition ) },
+	{ "SuperweaponCountdownFlashDuration",		INI::parseDurationReal,			NULL,		offsetof( InGameUI::IniData, m_superweaponFlashDuration ) },
+	{ "SuperweaponCountdownFlashColor",			INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_superweaponFlashColor ) },
 
-	{ "SuperweaponCountdownNormalFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_superweaponNormalFont ) },
-	{ "SuperweaponCountdownNormalPointSize",	INI::parseInt,					NULL,		offsetof( InGameUI, m_superweaponNormalPointSize ) },
-	{ "SuperweaponCountdownNormalBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_superweaponNormalBold ) },
+	{ "SuperweaponCountdownNormalFont",			INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_superweaponNormalFont ) },
+	{ "SuperweaponCountdownNormalPointSize",	INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_superweaponNormalPointSize ) },
+	{ "SuperweaponCountdownNormalBold",			INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_superweaponNormalBold ) },
 
-	{ "SuperweaponCountdownReadyFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_superweaponReadyFont ) },
-	{ "SuperweaponCountdownReadyPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI, m_superweaponReadyPointSize ) },
-	{ "SuperweaponCountdownReadyBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_superweaponReadyBold ) },
+	{ "SuperweaponCountdownReadyFont",			INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_superweaponReadyFont ) },
+	{ "SuperweaponCountdownReadyPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_superweaponReadyPointSize ) },
+	{ "SuperweaponCountdownReadyBold",			INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_superweaponReadyBold ) },
 
-	{ "NamedTimerCountdownPosition",					INI::parseCoord2D,			NULL,		offsetof( InGameUI, m_namedTimerPosition ) },
-	{ "NamedTimerCountdownFlashDuration",			INI::parseDurationReal,	NULL,		offsetof( InGameUI, m_namedTimerFlashDuration ) },
-	{ "NamedTimerCountdownFlashColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerFlashColor ) },
+	{ "NamedTimerCountdownPosition",			INI::parseCoord2D,				NULL,		offsetof( InGameUI::IniData, m_namedTimerPosition ) },
+	{ "NamedTimerCountdownFlashDuration",		INI::parseDurationReal,			NULL,		offsetof( InGameUI::IniData, m_namedTimerFlashDuration ) },
+	{ "NamedTimerCountdownFlashColor",			INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_namedTimerFlashColor ) },
 
-	{ "NamedTimerCountdownNormalFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_namedTimerNormalFont ) },
-	{ "NamedTimerCountdownNormalPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI, m_namedTimerNormalPointSize ) },
-	{ "NamedTimerCountdownNormalBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_namedTimerNormalBold ) },
-	{ "NamedTimerCountdownNormalColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerNormalColor ) },
+	{ "NamedTimerCountdownNormalFont",			INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_namedTimerNormalFont ) },
+	{ "NamedTimerCountdownNormalPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_namedTimerNormalPointSize ) },
+	{ "NamedTimerCountdownNormalBold",			INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_namedTimerNormalBold ) },
+	{ "NamedTimerCountdownNormalColor",			INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_namedTimerNormalColor ) },
 
-	{ "NamedTimerCountdownReadyFont",					INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_namedTimerReadyFont ) },
-	{ "NamedTimerCountdownReadyPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI, m_namedTimerReadyPointSize ) },
-	{ "NamedTimerCountdownReadyBold",					INI::parseBool,					NULL,		offsetof( InGameUI, m_namedTimerReadyBold ) },
-	{ "NamedTimerCountdownReadyColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerReadyColor ) },
+	{ "NamedTimerCountdownReadyFont",			INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_namedTimerReadyFont ) },
+	{ "NamedTimerCountdownReadyPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_namedTimerReadyPointSize ) },
+	{ "NamedTimerCountdownReadyBold",			INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_namedTimerReadyBold ) },
+	{ "NamedTimerCountdownReadyColor",			INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_namedTimerReadyColor ) },
 
-	{ "FloatingTextTimeOut",									INI::parseDurationUnsignedInt,		NULL,		offsetof( InGameUI, m_floatingTextTimeOut ) },
-	{ "FloatingTextMoveUpSpeed",							INI::parseVelocityReal,	NULL,		offsetof( InGameUI, m_floatingTextMoveUpSpeed ) },
-	{ "FloatingTextVanishRate",								INI::parseVelocityReal,	NULL,		offsetof( InGameUI, m_floatingTextMoveVanishRate ) },
+	{ "FloatingTextTimeOut",					INI::parseDurationUnsignedInt,	NULL,		offsetof( InGameUI::IniData, m_floatingTextTimeOut ) },
+	{ "FloatingTextMoveUpSpeed",				INI::parseVelocityReal,			NULL,		offsetof( InGameUI::IniData, m_floatingTextMoveUpSpeed ) },
+	{ "FloatingTextVanishRate",					INI::parseVelocityReal,			NULL,		offsetof( InGameUI::IniData, m_floatingTextMoveVanishRate ) },
 
-	{ "PopupMessageColor",								INI::parseColorInt,					NULL,		offsetof( InGameUI, m_popupMessageColor ) },
+	{ "PopupMessageColor",						INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_popupMessageColor ) },
 	
-	{ "DrawableCaptionFont",									INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_drawableCaptionFont ) },
-	{ "DrawableCaptionPointSize",							INI::parseInt,					NULL,		offsetof( InGameUI, m_drawableCaptionPointSize ) },
-	{ "DrawableCaptionBold",									INI::parseBool,					NULL,		offsetof( InGameUI, m_drawableCaptionBold ) },
-	{ "DrawableCaptionColor",									INI::parseColorInt,			NULL,		offsetof( InGameUI, m_drawableCaptionColor ) },
+	{ "DrawableCaptionFont",					INI::parseAsciiString,			NULL,		offsetof( InGameUI::IniData, m_drawableCaptionFont ) },
+	{ "DrawableCaptionPointSize",				INI::parseInt,					NULL,		offsetof( InGameUI::IniData, m_drawableCaptionPointSize ) },
+	{ "DrawableCaptionBold",					INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_drawableCaptionBold ) },
+	{ "DrawableCaptionColor",					INI::parseColorInt,				NULL,		offsetof( InGameUI::IniData, m_drawableCaptionColor ) },
 
-	{ "DrawRMBScrollAnchor",									INI::parseBool,					NULL,		offsetof( InGameUI, m_drawRMBScrollAnchor ) },
-	{ "MoveRMBScrollAnchor",									INI::parseBool,					NULL,		offsetof( InGameUI, m_moveRMBScrollAnchor ) },
+	{ "DrawRMBScrollAnchor",					INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_drawRMBScrollAnchor ) },
+	{ "MoveRMBScrollAnchor",					INI::parseBool,					NULL,		offsetof( InGameUI::IniData, m_moveRMBScrollAnchor ) },
 
-	{ "AttackDamageAreaRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_ATTACK_DAMAGE_AREA] ) },
-	{ "AttackScatterAreaRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_ATTACK_SCATTER_AREA] ) },
-	{ "AttackContinueAreaRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_ATTACK_CONTINUE_AREA] ) },
-	{ "FriendlySpecialPowerRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_FRIENDLY_SPECIALPOWER] ) },
-	{ "OffensiveSpecialPowerRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_OFFENSIVE_SPECIALPOWER] ) },
-	{ "SuperweaponScatterAreaRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_SUPERWEAPON_SCATTER_AREA] ) },
+	{ "AttackDamageAreaRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_ATTACK_DAMAGE_AREA] ) },
+	{ "AttackScatterAreaRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_ATTACK_SCATTER_AREA] ) },
+	{ "AttackContinueAreaRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_ATTACK_CONTINUE_AREA] ) },
+	{ "FriendlySpecialPowerRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_FRIENDLY_SPECIALPOWER] ) },
+	{ "OffensiveSpecialPowerRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_OFFENSIVE_SPECIALPOWER] ) },
+	{ "SuperweaponScatterAreaRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_SUPERWEAPON_SCATTER_AREA] ) },
 
-	{ "GuardAreaRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_GUARD_AREA] ) },
-	{ "EmergencyRepairRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_EMERGENCY_REPAIR] ) },
+	{ "GuardAreaRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_GUARD_AREA] ) },
+	{ "EmergencyRepairRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_EMERGENCY_REPAIR] ) },
 
-	{ "ParticleCannonRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_PARTICLECANNON] ) },
-	{ "A10StrikeRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_A10STRIKE] ) },
-	{ "CarpetBombRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_CARPETBOMB] ) },
-	{ "DaisyCutterRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_DAISYCUTTER] ) },
-	{ "ParadropRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_PARADROP] ) },
-	{ "SpySatelliteRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_SPYSATELLITE] ) },
-	{ "SpectreGunshipRadiusCursor",	RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_SPECTREGUNSHIP] ) },
-	{ "HelixNapalmBombRadiusCursor",RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_HELIX_NAPALM_BOMB] ) },
+	{ "ParticleCannonRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_PARTICLECANNON] ) },
+	{ "A10StrikeRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_A10STRIKE] ) },
+	{ "CarpetBombRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_CARPETBOMB] ) },
+	{ "DaisyCutterRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_DAISYCUTTER] ) },
+	{ "ParadropRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_PARADROP] ) },
+	{ "SpySatelliteRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_SPYSATELLITE] ) },
+	{ "SpectreGunshipRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_SPECTREGUNSHIP] ) },
+	{ "HelixNapalmBombRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_HELIX_NAPALM_BOMB] ) },
 	
-	{ "NuclearMissileRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_NUCLEARMISSILE] ) }, 
-	{ "EMPPulseRadiusCursor",		  	RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_EMPPULSE] ) },
-	{ "ArtilleryRadiusCursor",		  RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_ARTILLERYBARRAGE] ) },
-	{ "FrenzyRadiusCursor",				  RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_FRENZY] ) },
-	{ "NapalmStrikeRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_NAPALMSTRIKE] ) },
-	{ "ClusterMinesRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_CLUSTERMINES] ) },
+	{ "NuclearMissileRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_NUCLEARMISSILE] ) }, 
+	{ "EMPPulseRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_EMPPULSE] ) },
+	{ "ArtilleryRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_ARTILLERYBARRAGE] ) },
+	{ "FrenzyRadiusCursor",						RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_FRENZY] ) },
+	{ "NapalmStrikeRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_NAPALMSTRIKE] ) },
+	{ "ClusterMinesRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_CLUSTERMINES] ) },
 	
-	{ "ScudStormRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_SCUDSTORM] ) }, 
-	{ "AnthraxBombRadiusCursor",		RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_ANTHRAXBOMB] ) },
-	{ "AmbushRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_AMBUSH] ) }, 
-	{ "RadarRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[	RADIUSCURSOR_RADAR] ) },
-	{ "SpyDroneRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[ RADIUSCURSOR_SPYDRONE] ) },
+	{ "ScudStormRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_SCUDSTORM] ) }, 
+	{ "AnthraxBombRadiusCursor",				RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_ANTHRAXBOMB] ) },
+	{ "AmbushRadiusCursor",						RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_AMBUSH] ) }, 
+	{ "RadarRadiusCursor",						RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_RADAR] ) },
+	{ "SpyDroneRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_SPYDRONE] ) },
 
-	{ "ClearMinesRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[ RADIUSCURSOR_CLEARMINES] ) },
-	{ "AmbulanceRadiusCursor",			RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[ RADIUSCURSOR_AMBULANCE] ) },
+	{ "ClearMinesRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_CLEARMINES] ) },
+	{ "AmbulanceRadiusCursor",					RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI::IniData, m_radiusCursors[RADIUSCURSOR_AMBULANCE] ) },
 
-	{ NULL,													NULL,										NULL,		0 }  // keep this last
+	{ NULL, NULL, NULL, 0 }  // keep this last
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -887,7 +888,7 @@ void INI::parseInGameUIDefinition( INI* ini )
 	if( TheInGameUI )
 	{
 		// parse the ini weapon definition
-		ini->initFromINI( TheInGameUI, TheInGameUI->getFieldParse() );
+		ini->initFromINI( &TheInGameUI->m_ini, TheInGameUI->getFieldParse() );
 	}
 }
 
@@ -898,14 +899,14 @@ InGameUI::InGameUI()
 	Int i;
 
 	
-  m_inputEnabled = true;
+	m_inputEnabled = true;
 	m_isDragSelecting = false;
 	m_nextMoveHint = 0;
 	m_selectCount = 0;
 	m_frameSelectionChanged = 0;
-  m_duringDoubleClickAttackMoveGuardHintTimer = 0;
-  m_duringDoubleClickAttackMoveGuardHintStashedPosition.zero();
-	m_maxSelectCount = -1;
+	m_duringDoubleClickAttackMoveGuardHintTimer = 0;
+	m_duringDoubleClickAttackMoveGuardHintStashedPosition.zero();
+	m_ini.m_maxSelectCount = -1;
 	m_isScrolling = FALSE;
 	m_isSelecting = FALSE;
 	m_mouseMode = MOUSEMODE_DEFAULT;
@@ -920,33 +921,33 @@ InGameUI::InGameUI()
 	m_waypointMode = FALSE;
 	m_clientQuiet = FALSE;
 	
-	m_messageColor1 = GameMakeColor( 255, 255, 255, 255 );
-	m_messageColor2 = GameMakeColor( 180, 180, 180, 255 );
-	m_messagePosition.x = 10;
-	m_messagePosition.y = 10;
-	m_messageFont = "Arial";
-	m_messagePointSize = 10;
-	m_messageBold = FALSE;
-	m_messageDelayMS = 5000;
+	m_ini.m_messageColor1 = GameMakeColor( 255, 255, 255, 255 );
+	m_ini.m_messageColor2 = GameMakeColor( 180, 180, 180, 255 );
+	m_ini.m_messagePosition.x = 10;
+	m_ini.m_messagePosition.y = 10;
+	m_ini.m_messageFont = "Arial";
+	m_ini.m_messagePointSize = 10;
+	m_ini.m_messageBold = FALSE;
+	m_ini.m_messageDelayMS = 5000;
 
-	m_militaryCaptionColor.red   = 200;
-	m_militaryCaptionColor.green = 200;
-	m_militaryCaptionColor.blue  = 30;
-	m_militaryCaptionColor.alpha = 255;
-	m_militaryCaptionPosition.x = 10;
-	m_militaryCaptionPosition.y = 380;
+	m_ini.m_militaryCaptionColor.red   = 200;
+	m_ini.m_militaryCaptionColor.green = 200;
+	m_ini.m_militaryCaptionColor.blue  = 30;
+	m_ini.m_militaryCaptionColor.alpha = 255;
+	m_ini.m_militaryCaptionPosition.x = 10;
+	m_ini.m_militaryCaptionPosition.y = 380;
 
-	m_militaryCaptionTitleFont = "Courier";
-	m_militaryCaptionTitlePointSize = 12;
-	m_militaryCaptionTitleBold = TRUE;
+	m_ini.m_militaryCaptionTitleFont = "Courier";
+	m_ini.m_militaryCaptionTitlePointSize = 12;
+	m_ini.m_militaryCaptionTitleBold = TRUE;
 
-	m_militaryCaptionFont = "Courier";
-	m_militaryCaptionPointSize = 12;
-	m_militaryCaptionBold = FALSE;
+	m_ini.m_militaryCaptionFont = "Courier";
+	m_ini.m_militaryCaptionPointSize = 12;
+	m_ini.m_militaryCaptionBold = FALSE;
 
-	m_militaryCaptionRandomizeTyping = FALSE;
-	m_militaryCaptionSpeed = 1;
-	m_popupMessageColor = GameMakeColor(255,255,255,255);
+	m_ini.m_militaryCaptionRandomizeTyping = FALSE;
+	m_ini.m_militaryCaptionSpeed = 1;
+	m_ini.m_popupMessageColor = GameMakeColor(255,255,255,255);
 
 	m_tooltipsDisabledUntil = 0;
 
@@ -972,8 +973,8 @@ InGameUI::InGameUI()
 	m_pendingGUICommand = NULL;
 
 	// allocate an array for the placement icons
-	m_placeIcon = NEW Drawable* [ TheGlobalData->m_maxLineBuildObjects ];
-	for( i = 0; i < TheGlobalData->m_maxLineBuildObjects; i++ )
+	m_placeIcon = NEW Drawable* [ TheGlobalData->m_data.m_maxLineBuildObjects ];
+	for( i = 0; i < TheGlobalData->m_data.m_maxLineBuildObjects; i++ )
 		m_placeIcon[ i ] = NULL;
 	m_pendingPlaceType = NULL;
 	m_pendingPlaceSourceObjectID = INVALID_ID;
@@ -1001,50 +1002,50 @@ InGameUI::InGameUI()
 	m_replayWindow = NULL;
 	m_messagesOn = TRUE;
 
-	m_superweaponPosition.x = 0.7f;
-	m_superweaponPosition.y = 0.7f;
-	m_superweaponFlashDuration = 1.0f;
-	m_superweaponNormalFont = "Arial";
-	m_superweaponNormalPointSize = 10;
-	m_superweaponNormalBold = FALSE;
-	m_superweaponReadyFont = "Arial";
-	m_superweaponReadyPointSize = 10;
-	m_superweaponReadyBold = FALSE;
+	m_ini.m_superweaponPosition.x = 0.7f;
+	m_ini.m_superweaponPosition.y = 0.7f;
+	m_ini.m_superweaponFlashDuration = 1.0f;
+	m_ini.m_superweaponNormalFont = "Arial";
+	m_ini.m_superweaponNormalPointSize = 10;
+	m_ini.m_superweaponNormalBold = FALSE;
+	m_ini.m_superweaponReadyFont = "Arial";
+	m_ini.m_superweaponReadyPointSize = 10;
+	m_ini.m_superweaponReadyBold = FALSE;
 
-	m_superweaponFlashColor = GameMakeColor(255, 255, 255, 255);
+	m_ini.m_superweaponFlashColor = GameMakeColor(255, 255, 255, 255);
 	m_superweaponLastFlashFrame = 0;
 	m_superweaponUsedFlashColor = TRUE; // so next one is false
 	m_superweaponHiddenByScript = FALSE;
 
-	m_namedTimerPosition.x = 0.05f;
-	m_namedTimerPosition.y = 0.7f;
-	m_namedTimerFlashDuration = 1.0f;
-	m_namedTimerNormalFont = "Arial";
-	m_namedTimerNormalPointSize = 10;
-	m_namedTimerNormalBold = FALSE;
-	m_namedTimerReadyFont = "Arial";
-	m_namedTimerReadyPointSize = 10;
-	m_namedTimerReadyBold = FALSE;
+	m_ini.m_namedTimerPosition.x = 0.05f;
+	m_ini.m_namedTimerPosition.y = 0.7f;
+	m_ini.m_namedTimerFlashDuration = 1.0f;
+	m_ini.m_namedTimerNormalFont = "Arial";
+	m_ini.m_namedTimerNormalPointSize = 10;
+	m_ini.m_namedTimerNormalBold = FALSE;
+	m_ini.m_namedTimerReadyFont = "Arial";
+	m_ini.m_namedTimerReadyPointSize = 10;
+	m_ini.m_namedTimerReadyBold = FALSE;
 
 
-	m_namedTimerNormalColor	= GameMakeColor(255, 255,   0, 255);
-	m_namedTimerReadyColor	= GameMakeColor(255,   0, 255, 255);
-	m_namedTimerFlashColor	= GameMakeColor(  0, 255, 255, 255);
+	m_ini.m_namedTimerNormalColor	= GameMakeColor(255, 255,   0, 255);
+	m_ini.m_namedTimerReadyColor	= GameMakeColor(255,   0, 255, 255);
+	m_ini.m_namedTimerFlashColor	= GameMakeColor(  0, 255, 255, 255);
 	m_namedTimerLastFlashFrame = 0;
 	m_namedTimerUsedFlashColor = TRUE; // so next one is false
 	m_showNamedTimers = TRUE;
 
-	m_floatingTextTimeOut = DEFAULT_FLOATING_TEXT_TIMEOUT;
-	m_floatingTextMoveUpSpeed = 1.0f;
-	m_floatingTextMoveVanishRate = 0.1f;
+	m_ini.m_floatingTextTimeOut = DEFAULT_FLOATING_TEXT_TIMEOUT;
+	m_ini.m_floatingTextMoveUpSpeed = 1.0f;
+	m_ini.m_floatingTextMoveVanishRate = 0.1f;
 
-	m_drawableCaptionFont = "Arial";
-	m_drawableCaptionPointSize = 10;
-	m_drawableCaptionBold = FALSE;
-	m_drawableCaptionColor = GameMakeColor(255, 255, 255, 255);
+	m_ini.m_drawableCaptionFont = "Arial";
+	m_ini.m_drawableCaptionPointSize = 10;
+	m_ini.m_drawableCaptionBold = FALSE;
+	m_ini.m_drawableCaptionColor = GameMakeColor(255, 255, 255, 255);
 
-	m_drawRMBScrollAnchor = FALSE;
-	m_moveRMBScrollAnchor = FALSE;
+	m_ini.m_drawRMBScrollAnchor = FALSE;
+	m_ini.m_moveRMBScrollAnchor = FALSE;
 	m_displayedMaxWarning = FALSE; 
 
 	m_idleWorkerWin = NULL;
@@ -1060,14 +1061,17 @@ InGameUI::InGameUI()
 	
 	m_soloNexusSelectedDrawableID = INVALID_DRAWABLE_ID;
 
+	m_ini.m_obj = this;
+
 }  // end InGameUI
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 InGameUI::~InGameUI()
 {
-	delete TheControlBar;
-	TheControlBar = NULL;
+	// FIXME: TheControlBar.
+	// delete TheControlBar;
+	// TheControlBar = NULL;
 
 	// free all the display strings if we're
 	removeMilitarySubtitle();
@@ -1105,52 +1109,52 @@ void InGameUI::init( void )
 	//override INI values with language localized values:
 	if (TheGlobalLanguageData)
 	{
-		if (TheGlobalLanguageData->m_drawableCaptionFont.name.isNotEmpty())
-		{	m_drawableCaptionFont = TheGlobalLanguageData->m_drawableCaptionFont.name;
-			m_drawableCaptionPointSize = TheGlobalLanguageData->m_drawableCaptionFont.size;
-			m_drawableCaptionBold = TheGlobalLanguageData->m_drawableCaptionFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_drawableCaptionFont.name.isNotEmpty())
+		{	m_ini.m_drawableCaptionFont = TheGlobalLanguageData->m_ini.m_drawableCaptionFont.name;
+			m_ini.m_drawableCaptionPointSize = TheGlobalLanguageData->m_ini.m_drawableCaptionFont.size;
+			m_ini.m_drawableCaptionBold = TheGlobalLanguageData->m_ini.m_drawableCaptionFont.bold;
 		}
 
-		if (TheGlobalLanguageData->m_messageFont.name.isNotEmpty())
-		{	m_messageFont = TheGlobalLanguageData->m_messageFont.name;
-			m_messagePointSize = TheGlobalLanguageData->m_messageFont.size;
-			m_messageBold = TheGlobalLanguageData->m_messageFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_messageFont.name.isNotEmpty())
+		{	m_ini.m_messageFont = TheGlobalLanguageData->m_ini.m_messageFont.name;
+			m_ini.m_messagePointSize = TheGlobalLanguageData->m_ini.m_messageFont.size;
+			m_ini.m_messageBold = TheGlobalLanguageData->m_ini.m_messageFont.bold;
 		}
 
-		if (TheGlobalLanguageData->m_militaryCaptionTitleFont.name.isNotEmpty())
-		{	m_militaryCaptionTitleFont = TheGlobalLanguageData->m_militaryCaptionTitleFont.name;
-			m_militaryCaptionTitlePointSize = TheGlobalLanguageData->m_militaryCaptionTitleFont.size;
-			m_militaryCaptionTitleBold = TheGlobalLanguageData->m_militaryCaptionTitleFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_militaryCaptionTitleFont.name.isNotEmpty())
+		{	m_ini.m_militaryCaptionTitleFont = TheGlobalLanguageData->m_ini.m_militaryCaptionTitleFont.name;
+			m_ini.m_militaryCaptionTitlePointSize = TheGlobalLanguageData->m_ini.m_militaryCaptionTitleFont.size;
+			m_ini.m_militaryCaptionTitleBold = TheGlobalLanguageData->m_ini.m_militaryCaptionTitleFont.bold;
 		}
 
-		if (TheGlobalLanguageData->m_militaryCaptionFont.name.isNotEmpty())
-		{	m_militaryCaptionFont = TheGlobalLanguageData->m_militaryCaptionFont.name;
-			m_militaryCaptionPointSize = TheGlobalLanguageData->m_militaryCaptionFont.size;
-			m_militaryCaptionBold = TheGlobalLanguageData->m_militaryCaptionFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_militaryCaptionFont.name.isNotEmpty())
+		{	m_ini.m_militaryCaptionFont = TheGlobalLanguageData->m_ini.m_militaryCaptionFont.name;
+			m_ini.m_militaryCaptionPointSize = TheGlobalLanguageData->m_ini.m_militaryCaptionFont.size;
+			m_ini.m_militaryCaptionBold = TheGlobalLanguageData->m_ini.m_militaryCaptionFont.bold;
 		}
 
-		if (TheGlobalLanguageData->m_superweaponCountdownNormalFont.name.isNotEmpty())
-		{	m_superweaponNormalFont = TheGlobalLanguageData->m_superweaponCountdownNormalFont.name;
-			m_superweaponNormalPointSize = TheGlobalLanguageData->m_superweaponCountdownNormalFont.size;
-			m_superweaponNormalBold = TheGlobalLanguageData->m_superweaponCountdownNormalFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_superweaponCountdownNormalFont.name.isNotEmpty())
+		{	m_ini.m_superweaponNormalFont = TheGlobalLanguageData->m_ini.m_superweaponCountdownNormalFont.name;
+			m_ini.m_superweaponNormalPointSize = TheGlobalLanguageData->m_ini.m_superweaponCountdownNormalFont.size;
+			m_ini.m_superweaponNormalBold = TheGlobalLanguageData->m_ini.m_superweaponCountdownNormalFont.bold;
 		}
 
-		if (TheGlobalLanguageData->m_superweaponCountdownReadyFont.name.isNotEmpty())
-		{	m_superweaponReadyFont = TheGlobalLanguageData->m_superweaponCountdownReadyFont.name;
-			m_superweaponReadyPointSize = TheGlobalLanguageData->m_superweaponCountdownReadyFont.size;
-			m_superweaponReadyBold = TheGlobalLanguageData->m_superweaponCountdownReadyFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_superweaponCountdownReadyFont.name.isNotEmpty())
+		{	m_ini.m_superweaponReadyFont = TheGlobalLanguageData->m_ini.m_superweaponCountdownReadyFont.name;
+			m_ini.m_superweaponReadyPointSize = TheGlobalLanguageData->m_ini.m_superweaponCountdownReadyFont.size;
+			m_ini.m_superweaponReadyBold = TheGlobalLanguageData->m_ini.m_superweaponCountdownReadyFont.bold;
 		}
 
-		if (TheGlobalLanguageData->m_namedTimerCountdownNormalFont.name.isNotEmpty())
-		{	m_namedTimerNormalFont = TheGlobalLanguageData->m_namedTimerCountdownNormalFont.name;
-			m_namedTimerNormalPointSize = TheGlobalLanguageData->m_namedTimerCountdownNormalFont.size;
-			m_namedTimerNormalBold = TheGlobalLanguageData->m_namedTimerCountdownNormalFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_namedTimerCountdownNormalFont.name.isNotEmpty())
+		{	m_ini.m_namedTimerNormalFont = TheGlobalLanguageData->m_ini.m_namedTimerCountdownNormalFont.name;
+			m_ini.m_namedTimerNormalPointSize = TheGlobalLanguageData->m_ini.m_namedTimerCountdownNormalFont.size;
+			m_ini.m_namedTimerNormalBold = TheGlobalLanguageData->m_ini.m_namedTimerCountdownNormalFont.bold;
 		}
 
-		if (TheGlobalLanguageData->m_namedTimerCountdownReadyFont.name.isNotEmpty())
-		{	m_namedTimerReadyFont = TheGlobalLanguageData->m_namedTimerCountdownReadyFont.name;
-			m_namedTimerReadyPointSize = TheGlobalLanguageData->m_namedTimerCountdownReadyFont.size;
-			m_namedTimerReadyBold = TheGlobalLanguageData->m_namedTimerCountdownReadyFont.bold;
+		if (TheGlobalLanguageData->m_ini.m_namedTimerCountdownReadyFont.name.isNotEmpty())
+		{	m_ini.m_namedTimerReadyFont = TheGlobalLanguageData->m_ini.m_namedTimerCountdownReadyFont.name;
+			m_ini.m_namedTimerReadyPointSize = TheGlobalLanguageData->m_ini.m_namedTimerCountdownReadyFont.size;
+			m_ini.m_namedTimerReadyBold = TheGlobalLanguageData->m_ini.m_namedTimerCountdownReadyFont.bold;
 		}
 	}
 
@@ -1158,19 +1162,20 @@ void InGameUI::init( void )
 	to order the translators when the code is not centralized so it has
 	been moved to where all the other translators are attached in game client */
 
-	// create the tactical view
-	if (TheDisplay)
-	{
-		TheTacticalView = createView();
-		TheTacticalView->init();
-		TheDisplay->attachView( TheTacticalView );
+	// FIXME: TheTacticalView
+	// // create the tactical view
+	// if (TheDisplay)
+	// {
+	// 	TheTacticalView = createView();
+	// 	TheTacticalView->init();
+	// 	TheDisplay->attachView( TheTacticalView );
 
-		// make the tactical display the full screen width for now
-		TheTacticalView->setWidth( TheDisplay->getWidth());
-		// make the tactical display 0.76 of full screen so no drawing under GUI.
-		TheTacticalView->setHeight( TheDisplay->getHeight() * 0.77f);
-	}
-	TheTacticalView->setDefaultView(0.0f, 0.0f, 1.0f);
+	// 	// make the tactical display the full screen width for now
+	// 	TheTacticalView->setWidth( (Int)TheDisplay->getWidth());
+	// 	// make the tactical display 0.76 of full screen so no drawing under GUI.
+	// 	TheTacticalView->setHeight( (Int)TheDisplay->getHeight() * 0.77f);
+	// }
+	// TheTacticalView->setDefaultView(0.0f, 0.0f, 1.0f);
 
 	/** @todo this may be the wrong place to create the sidebar, but for now
 	this is where it lives */
@@ -1180,9 +1185,10 @@ void InGameUI::init( void )
 	this is where it lives */
 	createReplayControl();
 
-	// create the command bar
-	TheControlBar = NEW ControlBar;
-	TheControlBar->init();
+	// FIXME: TheControlBar.
+	// // create the command bar
+	// TheControlBar = NEW ControlBar;
+	// TheControlBar->init();
 
 	m_windowLayouts.clear();
 
@@ -1195,6 +1201,11 @@ void InGameUI::init( void )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::setRadiusCursor(RadiusCursorType cursorType, const SpecialPowerTemplate* specPowTempl, WeaponSlotType weaponSlot)
 {
+(void) cursorType;
+(void) specPowTempl;
+(void) weaponSlot;
+DEBUG_CRASH(("InGameUI::setRadiusCursor not yet implemented!"));
+#if 0
 	if (cursorType == m_curRcType)
 		return;
 
@@ -1261,7 +1272,7 @@ void InGameUI::setRadiusCursor(RadiusCursorType cursorType, const SpecialPowerTe
 		case RADIUSCURSOR_PARTICLECANNON: 
 		case RADIUSCURSOR_A10STRIKE:
 		case RADIUSCURSOR_SPECTREGUNSHIP:
-    case RADIUSCURSOR_HELIX_NAPALM_BOMB:
+		case RADIUSCURSOR_HELIX_NAPALM_BOMB:
 		case RADIUSCURSOR_DAISYCUTTER:
 		case RADIUSCURSOR_CARPETBOMB:
 		case RADIUSCURSOR_PARADROP:
@@ -1280,6 +1291,8 @@ void InGameUI::setRadiusCursor(RadiusCursorType cursorType, const SpecialPowerTe
 		case RADIUSCURSOR_AMBULANCE:
 			radius = specPowTempl ? specPowTempl->getRadiusCursorRadius() : 0.0f;
 			break;
+		default:
+			break;
 
 	}
 
@@ -1287,10 +1300,11 @@ void InGameUI::setRadiusCursor(RadiusCursorType cursorType, const SpecialPowerTe
 		return;
 
 	Coord3D pos = { 0, 0, 0 };	// will be updated right away
-	m_radiusCursors[cursorType].createRadiusDecal(pos, radius, controller, m_curRadiusCursor);
+	m_ini.m_radiusCursors[cursorType].createRadiusDecal(pos, radius, controller, m_curRadiusCursor);
 	m_curRcType = cursorType;
 
 	handleRadiusCursor();
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1298,6 +1312,8 @@ void InGameUI::setRadiusCursor(RadiusCursorType cursorType, const SpecialPowerTe
 //-------------------------------------------------------------------------------------------------
 void InGameUI::handleRadiusCursor()
 {
+DEBUG_CRASH(("InGameUI::handleRadiusCursor not yet implemented!"));
+#if 0
 	if (!m_curRadiusCursor.isEmpty())
 	{
 		const MouseIO* mouseIO = TheMouse->getMouseStatus();
@@ -1319,27 +1335,31 @@ void InGameUI::handleRadiusCursor()
 			TheTacticalView->screenToTerrain( &mouseIO->pos, &pos );
 
 
-    if ( TheGlobalData->m_doubleClickAttackMove && m_duringDoubleClickAttackMoveGuardHintTimer > 0 )
-    {
-      m_curRadiusCursor.setOpacity( m_duringDoubleClickAttackMoveGuardHintTimer * 0.1f );
-  		m_curRadiusCursor.setPosition( m_duringDoubleClickAttackMoveGuardHintStashedPosition );	//world space position of center of decal
+		if ( TheGlobalData->m_data.m_doubleClickAttackMove && m_duringDoubleClickAttackMoveGuardHintTimer > 0 )
+		{
+			m_curRadiusCursor.setOpacity( m_duringDoubleClickAttackMoveGuardHintTimer * 0.1f );
+			m_curRadiusCursor.setPosition( m_duringDoubleClickAttackMoveGuardHintStashedPosition );	//world space position of center of decal
 
-    }
-    else
-    {
-  		m_curRadiusCursor.setPosition(pos);	//world space position of center of decal
-      m_curRadiusCursor.update();
-    }
+		}
+		else
+		{
+			m_curRadiusCursor.setPosition(pos);	//world space position of center of decal
+			m_curRadiusCursor.update();
+		}
 
-  }
+	}
+#endif // if 0
 }
 
 
 void InGameUI::triggerDoubleClickAttackMoveGuardHint( void ) 
 {
-  m_duringDoubleClickAttackMoveGuardHintTimer = 11; 
+DEBUG_CRASH(("InGameUI::triggerDoubleClickAttackMoveGuardHint not yet implemented!"));
+#if 0
+	m_duringDoubleClickAttackMoveGuardHintTimer = 11; 
 	const MouseIO* mouseIO = TheMouse->getMouseStatus();
 	TheTacticalView->screenToTerrain( &mouseIO->pos, &m_duringDoubleClickAttackMoveGuardHintStashedPosition );
+#endif // if 0
 }
 
 
@@ -1353,7 +1373,9 @@ void InGameUI::triggerDoubleClickAttackMoveGuardHint( void )
 
 void InGameUI::evaluateSoloNexus( Drawable *newlyAddedDrawable )
 {
-
+(void) newlyAddedDrawable;
+DEBUG_CRASH(("InGameUI::evaluateSoloNexus not yet implemented!"));
+#if 0
 	m_soloNexusSelectedDrawableID = INVALID_DRAWABLE_ID;//failsafe...
 
 	// short test: If the thing just added is a nonmobster, bail with NULL
@@ -1397,12 +1419,14 @@ void InGameUI::evaluateSoloNexus( Drawable *newlyAddedDrawable )
 
 	}  // end for
 
-
+#endif // if 0
 }
 
 
 void InGameUI::handleBuildPlacements( void )
 {
+DEBUG_CRASH(("InGameUI::handleBuildPlacements not yet implemented!"));
+#if 0
 
 	//
 	// if we're in the process of placing something we need up update one or more drawables
@@ -1491,8 +1515,6 @@ void InGameUI::handleBuildPlacements( void )
 			else
 				m_placeIcon[ 0 ]->colorTint( NULL );
 
-			
-
 
 			// Add the bibs around the structure.
 			if (lbc != LBC_OK) 
@@ -1527,7 +1549,7 @@ void InGameUI::handleBuildPlacements( void )
 			Real objectSize = m_pendingPlaceType->getTemplateGeometryInfo().getMajorRadius() * 2.0f;
 			
 			// what is our max tiling length we can make
-			Int maxObjects = TheGlobalData->m_maxLineBuildObjects;
+			Int maxObjects = TheGlobalData->m_data.m_maxLineBuildObjects;
 
 			// get the builder object that will be constructing things
 			Object *builderObject = TheGameLogic->findObjectByID( TheInGameUI->getPendingPlaceSourceObjectID() );
@@ -1587,6 +1609,7 @@ void InGameUI::handleBuildPlacements( void )
 
 	}  // end if
 
+#endif // if 0
 }  // end handleBuildPlacements
 
 //-------------------------------------------------------------------------------------------------
@@ -1615,6 +1638,8 @@ void InGameUI::preDraw( void )
 //DECLARE_PERF_TIMER(InGameUI_update)
 void InGameUI::update( void )
 { 
+DEBUG_CRASH(("InGameUI::update not yet implemented!"));
+#if 0
 	//USE_PERF_TIMER(InGameUI_update)
 	Int i;
 
@@ -1654,13 +1679,13 @@ void InGameUI::update( void )
 	// frame
 	//
 	UnsignedInt currLogicFrame = TheGameLogic->getFrame();
-	const int messageTimeout = m_messageDelayMS / LOGICFRAMES_PER_SECOND / 1000;
+	const int messageTimeout = m_ini.m_messageDelayMS / LOGICFRAMES_PER_SECOND / 1000;
 	UnsignedByte r, g, b, a;
 	Int amount;
 	for( i = MAX_UI_MESSAGES - 1; i >= 0; i-- )
 	{
 
-		if( currLogicFrame - m_uiMessages[ i ].timestamp > messageTimeout )
+		if( currLogicFrame - m_uiMessages[ i ].timestamp > (UnsignedInt)messageTimeout )
 		{
 
 			// get the current color of this text
@@ -1726,7 +1751,7 @@ void InGameUI::update( void )
 			if( m_militarySubtitle->incrementOnFrame < currLogicFrame )
 			{
 				// first grab the letter we want to add
-				WideChar tempWChar = m_militarySubtitle->subtitle.getCharAt(m_militarySubtitle->index);
+				WideChar tempWChar = m_militarySubtitle->subtitle.getCharAt((Int)m_militarySubtitle->index);
 				// if that letter is a return, add a new line
 				if(tempWChar == L'\n')
 				{
@@ -1742,10 +1767,10 @@ void InGameUI::update( void )
 						m_militarySubtitle->blockPos.x = m_militarySubtitle->position.x;
 						m_militarySubtitle->displayStrings[m_militarySubtitle->currentDisplayString] = TheDisplayStringManager->newDisplayString();
 						m_militarySubtitle->displayStrings[m_militarySubtitle->currentDisplayString]->reset();
-						m_militarySubtitle->displayStrings[m_militarySubtitle->currentDisplayString]->setFont(	TheFontLibrary->getFont( m_militaryCaptionFont, TheGlobalLanguageData->adjustFontSize(m_militaryCaptionPointSize), m_militaryCaptionBold ) )	;
+						m_militarySubtitle->displayStrings[m_militarySubtitle->currentDisplayString]->setFont(	TheFontLibrary->getFont( m_ini.m_militaryCaptionFont, TheGlobalLanguageData->adjustFontSize(m_ini.m_militaryCaptionPointSize), m_ini.m_militaryCaptionBold ) )	;
 
 						m_militarySubtitle->blockDrawn = TRUE;
-						m_militarySubtitle->incrementOnFrame = currLogicFrame + (Int)(((Real)LOGICFRAMES_PER_SECOND * TheGlobalLanguageData->m_militaryCaptionDelayMS)/1000.0f);
+						m_militarySubtitle->incrementOnFrame = currLogicFrame + (UnsignedInt)(((Real)LOGICFRAMES_PER_SECOND * TheGlobalLanguageData->m_ini.m_militaryCaptionDelayMS)/1000.0f);
 					}
 					else
 					{
@@ -1767,9 +1792,9 @@ void InGameUI::update( void )
 					static AudioEventRTS click("MilitarySubtitlesTyping");
 					TheAudio->addAudioEvent(&click);
 					if(TheGlobalLanguageData)
-						m_militarySubtitle->incrementOnFrame = currLogicFrame + TheGlobalLanguageData->m_militaryCaptionSpeed;
+						m_militarySubtitle->incrementOnFrame = currLogicFrame + (UnsignedInt)TheGlobalLanguageData->m_ini.m_militaryCaptionSpeed;
 					else
-						m_militarySubtitle->incrementOnFrame = currLogicFrame + m_militaryCaptionSpeed;
+						m_militarySubtitle->incrementOnFrame = currLogicFrame + (UnsignedInt)m_ini.m_militaryCaptionSpeed;
 
 				}
 				// increment the index			
@@ -1819,7 +1844,7 @@ void InGameUI::update( void )
 		moneyPlayer = ThePlayerList->getLocalPlayer();
 	if( moneyPlayer)
 	{
-		Int currentMoney = moneyPlayer->getMoney()->countMoney();
+		Int currentMoney = (Int)moneyPlayer->getMoney()->countMoney();
 		if( lastMoney != currentMoney )
 		{
 			UnicodeString buffer;
@@ -1857,12 +1882,12 @@ void InGameUI::update( void )
 	if( m_cameraRotatingLeft && !m_cameraRotatingRight )
 	{
 		//Keyboard rotate left
-		TheTacticalView->setAngle( TheTacticalView->getAngle() - TheGlobalData->m_keyboardCameraRotateSpeed );
+		TheTacticalView->setAngle( TheTacticalView->getAngle() - TheGlobalData->m_data.m_keyboardCameraRotateSpeed );
 	}
 	if( m_cameraRotatingRight && !m_cameraRotatingLeft )
 	{
 		//Keyboard rotate right
-		TheTacticalView->setAngle( TheTacticalView->getAngle() + TheGlobalData->m_keyboardCameraRotateSpeed );
+		TheTacticalView->setAngle( TheTacticalView->getAngle() + TheGlobalData->m_data.m_keyboardCameraRotateSpeed );
 	}
 	if( m_cameraZoomingIn && !m_cameraZoomingOut )
 	{
@@ -1875,7 +1900,7 @@ void InGameUI::update( void )
 		TheTacticalView->zoomOut();
 	}
 
-
+#endif // if 0
 }  // end update
 
 //-------------------------------------------------------------------------------------------------
@@ -1903,6 +1928,8 @@ void InGameUI::unregisterWindowLayout( WindowLayout *layout )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::reset( void )
 {
+DEBUG_CRASH(("InGameUI::reset not yet implemented!"));
+#if 0
 	m_isQuitMenuVisible = FALSE;
 	m_inputEnabled = true;
 	// reset the command bar
@@ -1981,6 +2008,7 @@ void InGameUI::reset( void )
 	m_tooltipsDisabledUntil = 0;
 
 	UpdateDiplomacyBriefingText(AsciiString::TheEmptyString, TRUE);
+#endif // if 0
 }  // end reset
 
 //-------------------------------------------------------------------------------------------------
@@ -2026,7 +2054,7 @@ void InGameUI::message( AsciiString stringManagerLabel, ... )
 	va_list args;
   va_start( args, stringManagerLabel );
 	WideChar buf[ UnicodeString::MAX_FORMAT_BUF_LEN ];
-  if( _vsnwprintf(buf, sizeof( buf )/sizeof( WideChar ) - 1, stringManagerString.str(), args ) < 0 )
+  if( vswprintf(buf, sizeof( buf )/sizeof( WideChar ) - 1, stringManagerString.str(), args ) < 0 )
 			throw ERROR_OUT_OF_MEMORY;
 	formattedMessage.set( buf );
   va_end(args);
@@ -2048,7 +2076,7 @@ void InGameUI::message( UnicodeString format, ... )
 	va_list args;
   va_start( args, format );
 	WideChar buf[ UnicodeString::MAX_FORMAT_BUF_LEN ];
-  if( _vsnwprintf(buf, sizeof( buf )/sizeof( WideChar ) - 1, format.str(), args ) < 0 )
+  if( vswprintf(buf, sizeof( buf )/sizeof( WideChar ) - 1, format.str(), args ) < 0 )
 			throw ERROR_OUT_OF_MEMORY;
 	formattedMessage.set( buf );
   va_end(args);
@@ -2070,7 +2098,7 @@ void InGameUI::messageColor( const RGBColor *rgbColor, UnicodeString format, ...
 	va_list args;
   va_start( args, format );
 	WideChar buf[ UnicodeString::MAX_FORMAT_BUF_LEN ];
-  if( _vsnwprintf(buf, sizeof( buf )/sizeof( WideChar ) - 1, format.str(), args ) < 0 )
+  if( vswprintf(buf, sizeof( buf )/sizeof( WideChar ) - 1, format.str(), args ) < 0 )
 			throw ERROR_OUT_OF_MEMORY;
 	formattedMessage.set( buf );
   va_end(args);
@@ -2085,13 +2113,13 @@ void InGameUI::messageColor( const RGBColor *rgbColor, UnicodeString format, ...
 void InGameUI::addMessageText( const UnicodeString& formattedMessage, const RGBColor *rgbColor )
 {
 	Int i;
-	Color color1 = m_messageColor1;
-	Color color2 = m_messageColor2;
+	Color color1 = m_ini.m_messageColor1;
+	Color color2 = m_ini.m_messageColor2;
 
 	if (rgbColor)
 	{
-		color1 = rgbColor->getAsInt() | GameMakeColor( 0, 0, 0, 255 );
-		color2 = rgbColor->getAsInt() | GameMakeColor( 0, 0, 0, 255 );
+		color1 = rgbColor->getAsUnsignedInt() | GameMakeColor( 0, 0, 0, 255 );
+		color2 = rgbColor->getAsUnsignedInt() | GameMakeColor( 0, 0, 0, 255 );
 	}
 
 	// delete the message stuff at the last index
@@ -2113,8 +2141,8 @@ void InGameUI::addMessageText( const UnicodeString& formattedMessage, const RGBC
 	m_uiMessages[ 0 ].fullText = formattedMessage;
 	m_uiMessages[ 0 ].timestamp = TheGameLogic->getFrame();
 	m_uiMessages[ 0 ].displayString = TheDisplayStringManager->newDisplayString();
-	m_uiMessages[ 0 ].displayString->setFont( TheFontLibrary->getFont( m_messageFont, 
-																						TheGlobalLanguageData->adjustFontSize(m_messagePointSize), m_messageBold ) );
+	m_uiMessages[ 0 ].displayString->setFont( TheFontLibrary->getFont( m_ini.m_messageFont, 
+																						TheGlobalLanguageData->adjustFontSize(m_ini.m_messagePointSize), m_ini.m_messageBold ) );
 	m_uiMessages[ 0 ].displayString->setText( m_uiMessages[ 0 ].fullText );
 	
 	//
@@ -2170,7 +2198,7 @@ void InGameUI::createMoveHint( const GameMessage *msg )
 	for( i = 0; i < MAX_MOVE_HINTS; i++ )
 		if( m_moveHint[ i ].sourceID == msg->getArgument( 0 )->objectID &&
 				m_moveHint[ i ].frame != 0 )
-			expireHint( MOVE_HINT, i );
+			expireHint( MOVE_HINT, (UnsignedInt)i );
 
 		
 	if( getSelectCount() == 1 )
@@ -2227,7 +2255,7 @@ void InGameUI::createGarrisonHint( const GameMessage *msg )
 
 #ifdef AI_DEBUG_TOOLTIPS
 #include "Common/StateMachine.h"
-#include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/AIPathfind.h"
 #endif // AI_DEBUG_TOOLTIPS
 
@@ -2240,6 +2268,9 @@ void InGameUI::createGarrisonHint( const GameMessage *msg )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::createMouseoverHint( const GameMessage *msg )
 {
+(void) msg;
+DEBUG_CRASH(("InGameUI::createMouseoverHint not yet implemented!"));
+#if 0
 	if (m_isScrolling || m_isSelecting)
 		return; // no mouseover for you
 
@@ -2308,7 +2339,7 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
  				m_mousedOverDrawableID = draw->getID();
 
 #if defined(_DEBUG) || defined(_INTERNAL) //Extra hacky, sorry, but I need to use this in constantdebug report
-			if ( TheGlobalData->m_constantDebugUpdate == TRUE )
+			if ( TheGlobalData->m_data.m_constantDebugUpdate == TRUE )
 				m_mousedOverDrawableID = draw->getID();
 #endif
 
@@ -2329,7 +2360,7 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 				//Because we have support for disguised units pretending to be units from another
 				//team, we need to intercept it here and make sure it's rendered appropriately
 				//based on which client is rendering it.
-        StealthUpdate *update = obj->getStealth();
+				StealthUpdate *update = obj->getStealth();
 				if( update )
 				{
 					if( update->isDisguised() )
@@ -2364,7 +2395,7 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 			}
 
 #ifdef AI_DEBUG_TOOLTIPS
-			if (TheGlobalData->m_debugAI) {
+			if (TheGlobalData->m_data.m_debugAI) {
 				const Team *team = obj->getTeam();
 				AsciiString objName = obj->getName();
 				AsciiString teamName;
@@ -2416,7 +2447,7 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 			if( warehouseModule != NULL )
 			{
 				Int boxes = warehouseModule->getBoxesStored();
-				Int value = boxes * TheGlobalData->m_baseValuePerSupplyBox;
+				Int value = boxes * TheGlobalData->m_data.m_baseValuePerSupplyBox;
 				warehouseFeedback.format(TheGameText->fetch("TOOLTIP:SupplyWarehouse"), value);
 				str.concat(warehouseFeedback);
 			}
@@ -2515,6 +2546,7 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 	{
 		setMouseCursor((Mouse::MouseCursor)m_mouseModeCursor);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2523,6 +2555,9 @@ void InGameUI::createMouseoverHint( const GameMessage *msg )
 	*/
 void InGameUI::createCommandHint( const GameMessage *msg )
 {
+(void) msg;
+	DEBUG_CRASH(("InGameUI::createCommandHint not yet implemented!"));
+#if 0
 	if (m_isScrolling || m_isSelecting || TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK)
 		return;
 
@@ -2534,7 +2569,7 @@ void InGameUI::createCommandHint( const GameMessage *msg )
 		const Object* obj = draw->getObject();
 		Int localPlayerIndex = ThePlayerList ? ThePlayerList->getLocalPlayer()->getPlayerIndex() : 0;
 #if defined(_DEBUG) || defined(_INTERNAL)
-		ObjectShroudStatus ss = (!obj || !TheGlobalData->m_shroudOn) ? OBJECTSHROUD_CLEAR : obj->getShroudedStatus(localPlayerIndex);
+		ObjectShroudStatus ss = (!obj || !TheGlobalData->m_data.m_shroudOn) ? OBJECTSHROUD_CLEAR : obj->getShroudedStatus(localPlayerIndex);
 #else
 		ObjectShroudStatus ss = (!obj) ? OBJECTSHROUD_CLEAR : obj->getShroudedStatus(localPlayerIndex);
 #endif
@@ -2547,17 +2582,17 @@ void InGameUI::createCommandHint( const GameMessage *msg )
 
 
 	setRadiusCursorNone();
-  if ( TheGlobalData->m_doubleClickAttackMove )
-  {
-    if ( --m_duringDoubleClickAttackMoveGuardHintTimer > 0 )
-    {
-      setMouseCursor(Mouse::FORCE_ATTACK_GROUND);
-		  setRadiusCursor(RADIUSCURSOR_GUARD_AREA, 
-										  NULL,
-										  PRIMARY_WEAPON);
-      return;
-    }
-  }
+	if ( TheGlobalData->m_data.m_doubleClickAttackMove )
+	{
+		if ( --m_duringDoubleClickAttackMoveGuardHintTimer > 0 )
+		{
+		setMouseCursor(Mouse::FORCE_ATTACK_GROUND);
+			setRadiusCursor(RADIUSCURSOR_GUARD_AREA, 
+											NULL,
+											PRIMARY_WEAPON);
+		return;
+		}
+	}
 
 
 
@@ -2707,6 +2742,8 @@ void InGameUI::createCommandHint( const GameMessage *msg )
 					case GameMessage::MSG_DO_INVALID_HINT:
 						setMouseCursor( Mouse::GENERIC_INVALID );
 						break;
+					default:
+						break;
 				}
 			}
 			break;
@@ -2727,6 +2764,8 @@ void InGameUI::createCommandHint( const GameMessage *msg )
 					case GameMessage::MSG_DO_ATTACK_OBJECT_HINT:
 					case GameMessage::MSG_DO_ATTACK_OBJECT_AFTER_MOVING_HINT:
 						setMouseCursor(Mouse::INVALID_BUILD_PLACEMENT);
+						break;
+					default:
 						break;
 				}
 			}
@@ -2792,7 +2831,10 @@ void InGameUI::createCommandHint( const GameMessage *msg )
 				}
 			}
 			break;
+		default:
+			break;
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2810,6 +2852,9 @@ DrawableID InGameUI::getMousedOverDrawableID( void ) const
 //-------------------------------------------------------------------------------------------------
 void InGameUI::setScrolling( Bool isScrolling )
 {
+(void) isScrolling;
+DEBUG_CRASH(("InGameUI::setScrolling not yet implemented!"));
+#if 0
 	if (m_isScrolling == isScrolling)
 	{
 		return;
@@ -2832,6 +2877,7 @@ void InGameUI::setScrolling( Bool isScrolling )
 
 	m_isScrolling = isScrolling;
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2888,6 +2934,9 @@ Coord2D InGameUI::getScrollAmount( void )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::setGUICommand( const CommandButton *command )
 {
+(void) command;
+DEBUG_CRASH(("InGameUI::setGUICommand not yet implemented!"));
+#if 0
 	if (TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK)
 		return;
 
@@ -2939,6 +2988,7 @@ void InGameUI::setGUICommand( const CommandButton *command )
 
 	m_mouseModeCursor = TheMouse->getMouseCursor();
 
+#endif // if 0
 }  // end setGUICommand
 
 //-------------------------------------------------------------------------------------------------
@@ -2956,9 +3006,11 @@ const CommandButton *InGameUI::getGUICommand( void ) const
 //-------------------------------------------------------------------------------------------------
 void InGameUI::destroyPlacementIcons( void )
 {
+DEBUG_CRASH(("InGameUI::destroyPlacementIcons not yet implemented!"));
+#if 0
 	Int i;
 
-	for( i = 0; i < TheGlobalData->m_maxLineBuildObjects; ++i )
+	for( i = 0; i < TheGlobalData->m_data.m_maxLineBuildObjects; ++i )
 	{
 
 		if( m_placeIcon[ i ] ) 
@@ -2971,6 +3023,7 @@ void InGameUI::destroyPlacementIcons( void )
 	}  // end for i
 	TheTerrainVisual->removeAllBibs();
 
+#endif // if 0
 }  // end destroyPlacementIcons
 
 //-------------------------------------------------------------------------------------------------
@@ -3040,7 +3093,7 @@ void InGameUI::placeBuildAvailable( const ThingTemplate *build, Drawable *buildD
 			draw = TheThingFactory->newDrawable( build, DRAWABLE_STATUS_NO_STATE_PARTICLES );
 			if (sourceObject)
 			{
-				if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+				if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 					draw->setIndicatorColor(sourceObject->getControllingPlayer()->getPlayerNightColor());
 				else
 					draw->setIndicatorColor(sourceObject->getControllingPlayer()->getPlayerColor());
@@ -3111,7 +3164,7 @@ const ThingTemplate *InGameUI::getPendingPlaceType( void )
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-const ObjectID InGameUI::getPendingPlaceSourceObjectID( void )
+ObjectID InGameUI::getPendingPlaceSourceObjectID( void )
 {
 
 	return m_pendingPlaceSourceObjectID;
@@ -3191,6 +3244,9 @@ Real InGameUI::getPlacementAngle( void )
 void InGameUI::selectDrawable( Drawable *draw )
 {
 
+(void) draw;
+DEBUG_CRASH(("InGameUI::selectDrawable not yet implemented!"));
+#if 0
 	if( draw->isSelected() == FALSE )
 	{
 
@@ -3213,6 +3269,7 @@ void InGameUI::selectDrawable( Drawable *draw )
 
 	}  // end if
 
+#endif // if 0
 }  // end selectDrawable
 
 //-------------------------------------------------------------------------------------------------
@@ -3221,6 +3278,9 @@ void InGameUI::selectDrawable( Drawable *draw )
 void InGameUI::deselectDrawable( Drawable *draw )
 {
 
+(void) draw;
+DEBUG_CRASH(("InGameUI::deselectDrawable not yet implemented!"));
+#if 0
 	if( draw->isSelected() )
 	{
 
@@ -3252,6 +3312,7 @@ void InGameUI::deselectDrawable( Drawable *draw )
 
 	}  // end if
 
+#endif // if 0
 }  // end deselectDrawable
 
 //-------------------------------------------------------------------------------------------------
@@ -3450,6 +3511,8 @@ void InGameUI::disregardDrawable( Drawable *draw )
 void InGameUI::postDraw( void )
 {
 
+DEBUG_CRASH(("InGameUI::postDraw not yet implemented!"));
+#if 0
 	// render our display strings for the messages if on
 	if( m_messagesOn )
 	{
@@ -3457,8 +3520,8 @@ void InGameUI::postDraw( void )
 		Color dropColor;
 		UnsignedByte r, g, b, a;
 
-		x = m_messagePosition.x;
-		y = m_messagePosition.y;
+		x = m_ini.m_messagePosition.x;
+		y = m_ini.m_messagePosition.y;
 		for( i = MAX_UI_MESSAGES - 1; i >= 0; i-- )
 		{
 
@@ -3491,7 +3554,7 @@ void InGameUI::postDraw( void )
 		UnsignedByte r, g, b, a;
 		GameGetColorComponents( m_militarySubtitle->color, &r, &g, &b, &a );
 		dropColor = GameMakeColor( 0, 0, 0, a );
-		for(Int i = 0; i <= m_militarySubtitle->currentDisplayString; i++)
+		for(UnsignedInt i = 0; i <= m_militarySubtitle->currentDisplayString; i++)
 		{
 			m_militarySubtitle->displayStrings[i]->draw(pos.x,pos.y, m_militarySubtitle->color,dropColor );
 			Int height;
@@ -3509,14 +3572,14 @@ void InGameUI::postDraw( void )
 	}
 
 	// draw superweapon timers
-  // Also responsible for Eva saying "Superweapon is ready for launch"
-  //  IMPORTANT: Don't bail out of this block early just because you don't 
-  //  want to display the timers -- Eva still needs to be checked
+	// Also responsible for Eva saying "Superweapon is ready for launch"
+	//  IMPORTANT: Don't bail out of this block early just because you don't 
+	//  want to display the timers -- Eva still needs to be checked
 	if (TheGameLogic->getFrame() > 0 )
 	{
 //	Int superweaponCount = 0;
-		Int startX = (Int)(m_superweaponPosition.x * TheDisplay->getWidth());
-		Int startY = (Int)(m_superweaponPosition.y * TheDisplay->getHeight());
+		Int startX = (Int)(m_ini.m_superweaponPosition.x * TheDisplay->getWidth());
+		Int startY = (Int)(m_ini.m_superweaponPosition.y * TheDisplay->getHeight());
 		
 		Int bottomMargin = (Int)( (Real)TheTacticalView->getHeight() * 0.82f ); 
 			
@@ -3542,8 +3605,8 @@ void InGameUI::postDraw( void )
 							UnicodeString ellipsis;
 							ellipsis.format(L"...");
 							info->setText( ellipsis, ellipsis );
-							info->setFont( m_superweaponReadyFont, m_superweaponNormalPointSize, m_superweaponNormalBold );
-							info->drawTime( startX,	startY, m_superweaponFlashColor, bgColor );
+							info->setFont( m_ini.m_superweaponReadyFont, m_ini.m_superweaponNormalPointSize, m_ini.m_superweaponNormalBold );
+							info->drawTime( startX,	startY, m_ini.m_superweaponFlashColor, bgColor );
 							
 							marginExceeded = TRUE;
 						}
@@ -3564,155 +3627,155 @@ void InGameUI::postDraw( void )
 							{
 								// found one - draw it
  								Bool isReady = module->isReady();
- 								Int readySecs;
+ 								UnsignedInt readySecs;
  
 								// IsReady includes disabledness, so if you have a 0 timer disabled super, you don't want 
  								// the UnsignedInt to wrap around to hundreds of millions of seconds.
  								if( module->getReadyFrame() < TheGameLogic->getFrame() )
 									readySecs = 0;
- 								else 
- 									readySecs = (module->getReadyFrame() - TheGameLogic->getFrame()) / LOGICFRAMES_PER_SECOND;
+								else 
+									readySecs = (module->getReadyFrame() - TheGameLogic->getFrame()) / LOGICFRAMES_PER_SECOND;
 								// Yes, integer math.  We can't have float imprecision display 4:01 on a disabled superweapon.
- 
-                // Only if we actually changed the ready status do we want to play an Eva event.
-                if ( isReady && !info->m_evaReadyPlayed )
-                {
-                  if ( TheGameLogic->getFrame() > 0 )
-                  {
-                    SpecialPowerType type = module->getSpecialPowerTemplate()->getSpecialPowerType();
-                  
-                    Player *localPlayer = ThePlayerList->getLocalPlayer();
-                  
-                    if( type == SPECIAL_PARTICLE_UPLINK_CANNON || type == SUPW_SPECIAL_PARTICLE_UPLINK_CANNON || type == LAZR_SPECIAL_PARTICLE_UPLINK_CANNON )
-                    {
-                      if ( localPlayer == owningObject->getControllingPlayer() )
-                      {
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Own_ParticleCannon);
-                      }
-                      else if ( localPlayer->getRelationship(owningObject->getTeam()) != ENEMIES )
-                      {
-                        // Note: counting relationship NEUTRAL as ally. Not sure if this makes a difference???
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Ally_ParticleCannon);
-                      }
-                      else
-                      {
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Enemy_ParticleCannon);
-                      }
-                    }
-                    else if( type == SPECIAL_NEUTRON_MISSILE || type == NUKE_SPECIAL_NEUTRON_MISSILE || type == SUPW_SPECIAL_NEUTRON_MISSILE )
-                    {
-                      if ( localPlayer == owningObject->getControllingPlayer() )
-                      {
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Own_Nuke);
-                      }
-                      else if ( localPlayer->getRelationship(owningObject->getTeam()) != ENEMIES )
-                      {
-                        // Note: counting relationship NEUTRAL as ally. Not sure if this makes a difference???
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Ally_Nuke);
-                      }
-                      else
-                      {
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Enemy_Nuke);
-                      }
-                    }
-                    else if (type == SPECIAL_SCUD_STORM)
-                    {
-                      if ( localPlayer == owningObject->getControllingPlayer() )
-                      {
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Own_ScudStorm);
-                      }
-                      else if ( localPlayer->getRelationship(owningObject->getTeam()) != ENEMIES )
-                      {
-                        // Note: counting relationship NEUTRAL as ally. Not sure if this makes a difference???
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Ally_ScudStorm);
-                      }
-                      else
-                      {
-                        TheEva->setShouldPlay(EVA_SuperweaponReady_Enemy_ScudStorm);
-                      }
-                    }
-                  }
-                  info->m_evaReadyPlayed = true;
-                }
-                else
-                {
-                  if ( !isReady )
-                    info->m_evaReadyPlayed = false; // Reset Eva for next time
-                }
-              
-                // draw the text
-                if ( !m_superweaponHiddenByScript && !marginExceeded )
-                {
-                  // Similarly, only checking timers is not truly indicitive of readyness.
- 								  Bool changeBolding = (readySecs != info->m_timestamp) || (isReady != info->m_ready) || info->m_forceUpdateText;
- 								  if (changeBolding)
- 								  {
- 									  if (isReady)
-									  {
-										  // go bold - we're good to go
-										  info->setFont( m_superweaponReadyFont, m_superweaponReadyPointSize, m_superweaponReadyBold );
-									  }
-									  else
-									  {
-										  // if we were at 0, we've just fired - kill the bold
-										  if (info->m_timestamp == 0)
-										  {
-											  info->setFont( m_superweaponNormalFont, m_superweaponNormalPointSize, m_superweaponNormalBold );
-										  }
-									  }
-                  
-									  
-									  info->m_forceUpdateText = false;
- 									  info->m_ready = isReady;
-									  info->m_timestamp = readySecs;
-                    Int min = readySecs/60;
-                    Int sec = readySecs - min*60;
-                    AsciiString strIndex;
-                    strIndex.format("GUI:%s", templateName.str());
-                    UnicodeString name, time;
-                    name.format(L"%ls: ", TheGameText->fetch(strIndex.str()).str());
-                    time.format(L"%d:%2.2d", min, sec);
-                    info->setText(name, time);
-                  }
 
-                  if (isReady)
-								  {
-									  if ( m_superweaponFlashDuration != 0.0f )
-									  {
-										  if ( TheGameLogic->getFrame() >= m_superweaponLastFlashFrame + (Int)(m_superweaponFlashDuration) )
-										  {
-											  m_superweaponUsedFlashColor = !m_superweaponUsedFlashColor;
-											  m_superweaponLastFlashFrame = TheGameLogic->getFrame();
-										  }
-										  info->drawName( startX,
-											  startY, (m_superweaponUsedFlashColor)?0:m_superweaponFlashColor, bgColor );
-										  info->drawTime( startX,
-											  startY, (m_superweaponUsedFlashColor)?0:m_superweaponFlashColor, bgColor );
-									  }
-									  else
-									  {
-										  info->drawName( startX, startY, 0, bgColor );
-										  info->drawTime( startX, startY, 0, bgColor );
-									  }
-								  }
-								  else
-								  {
-									  info->drawName( startX,	startY, 0, bgColor );
-									  info->drawTime( startX, startY, 0, bgColor );
-								  }
+								// Only if we actually changed the ready status do we want to play an Eva event.
+								if ( isReady && !info->m_evaReadyPlayed )
+								{
+								if ( TheGameLogic->getFrame() > 0 )
+								{
+									SpecialPowerType type = module->getSpecialPowerTemplate()->getSpecialPowerType();
+								
+									Player *localPlayer = ThePlayerList->getLocalPlayer();
+								
+									if( type == SPECIAL_PARTICLE_UPLINK_CANNON || type == SUPW_SPECIAL_PARTICLE_UPLINK_CANNON || type == LAZR_SPECIAL_PARTICLE_UPLINK_CANNON )
+									{
+									if ( localPlayer == owningObject->getControllingPlayer() )
+									{
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Own_ParticleCannon);
+									}
+									else if ( localPlayer->getRelationship(owningObject->getTeam()) != ENEMIES )
+									{
+										// Note: counting relationship NEUTRAL as ally. Not sure if this makes a difference???
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Ally_ParticleCannon);
+									}
+									else
+									{
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Enemy_ParticleCannon);
+									}
+									}
+									else if( type == SPECIAL_NEUTRON_MISSILE || type == NUKE_SPECIAL_NEUTRON_MISSILE || type == SUPW_SPECIAL_NEUTRON_MISSILE )
+									{
+									if ( localPlayer == owningObject->getControllingPlayer() )
+									{
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Own_Nuke);
+									}
+									else if ( localPlayer->getRelationship(owningObject->getTeam()) != ENEMIES )
+									{
+										// Note: counting relationship NEUTRAL as ally. Not sure if this makes a difference???
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Ally_Nuke);
+									}
+									else
+									{
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Enemy_Nuke);
+									}
+									}
+									else if (type == SPECIAL_SCUD_STORM)
+									{
+									if ( localPlayer == owningObject->getControllingPlayer() )
+									{
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Own_ScudStorm);
+									}
+									else if ( localPlayer->getRelationship(owningObject->getTeam()) != ENEMIES )
+									{
+										// Note: counting relationship NEUTRAL as ally. Not sure if this makes a difference???
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Ally_ScudStorm);
+									}
+									else
+									{
+										TheEva->setShouldPlay(EVA_SuperweaponReady_Enemy_ScudStorm);
+									}
+									}
+								}
+								info->m_evaReadyPlayed = true;
+								}
+								else
+								{
+								if ( !isReady )
+									info->m_evaReadyPlayed = false; // Reset Eva for next time
+								}
+							
+								// draw the text
+								if ( !m_superweaponHiddenByScript && !marginExceeded )
+								{
+								// Similarly, only checking timers is not truly indicitive of readyness.
+								Bool changeBolding = (readySecs != info->m_timestamp) || (isReady != info->m_ready) || info->m_forceUpdateText;
+								if (changeBolding)
+								{
+									if (isReady)
+									{
+										// go bold - we're good to go
+										info->setFont( m_ini.m_superweaponReadyFont, m_ini.m_superweaponReadyPointSize, m_ini.m_superweaponReadyBold );
+									}
+									else
+									{
+										// if we were at 0, we've just fired - kill the bold
+										if (info->m_timestamp == 0)
+										{
+											info->setFont( m_ini.m_superweaponNormalFont, m_ini.m_superweaponNormalPointSize, m_ini.m_superweaponNormalBold );
+										}
+									}
+				
+									
+									info->m_forceUpdateText = false;
+									info->m_ready = isReady;
+									info->m_timestamp = readySecs;
+									UnsignedInt min = readySecs/60;
+									UnsignedInt sec = readySecs - min*60;
+									AsciiString strIndex;
+									strIndex.format("GUI:%s", templateName.str());
+									UnicodeString name, time;
+									name.format(L"%ls: ", TheGameText->fetch(strIndex.str()).str());
+									time.format(L"%d:%2.2d", min, sec);
+									info->setText(name, time);
+								}
 
-								  // increment text spot to next location
-								  startY += info->getHeight();
+								if (isReady)
+								{
+									if ( m_ini.m_superweaponFlashDuration != 0.0f )
+									{
+										if ( TheGameLogic->getFrame() >= m_superweaponLastFlashFrame + (UnsignedInt)(m_ini.m_superweaponFlashDuration) )
+										{
+											m_superweaponUsedFlashColor = !m_superweaponUsedFlashColor;
+											m_superweaponLastFlashFrame = TheGameLogic->getFrame();
+										}
+										info->drawName( startX,
+											startY, (m_superweaponUsedFlashColor)?0:m_ini.m_superweaponFlashColor, bgColor );
+										info->drawTime( startX,
+											startY, (m_superweaponUsedFlashColor)?0:m_ini.m_superweaponFlashColor, bgColor );
+									}
+									else
+									{
+										info->drawName( startX, startY, 0, bgColor );
+										info->drawTime( startX, startY, 0, bgColor );
+									}
+								}
+								else
+								{
+									info->drawName( startX,	startY, 0, bgColor );
+									info->drawTime( startX, startY, 0, bgColor );
+								}
 
-                }
-                if (info->getSpecialPowerTemplate()->isSharedNSync())
-                  break; // Wow, it is almost too easy!
-                // This prevents redundant timers for shared powers/superweapons
-                // No matter how many specialpowermodules register their timers with me,
-                // I will only draw the timer of the first valid one in my list,
-                // since they all have the same template, ans they all
-                // use the Player::getReadyFrame() functions to stay in sync.
-              }
+								// increment text spot to next location
+								startY += info->getHeight();
+
+								}
+								if (info->getSpecialPowerTemplate()->isSharedNSync())
+								break; // Wow, it is almost too easy!
+								// This prevents redundant timers for shared powers/superweapons
+								// No matter how many specialpowermodules register their timers with me,
+								// I will only draw the timer of the first valid one in my list,
+								// since they all have the same template, ans they all
+								// use the Player::getReadyFrame() functions to stay in sync.
+							}
 						}
 					}
 				}
@@ -3724,9 +3787,9 @@ void InGameUI::postDraw( void )
 	if (TheGameLogic->getFrame() > 0 && m_showNamedTimers)
 	{
 //		Int namedTimerCount = 0;
-		Bool reverseXDir = (m_namedTimerPosition.x >= 0.5f);
-		Int startX = (Int)(m_namedTimerPosition.x * TheDisplay->getWidth());
-		Int startY = (Int)(m_namedTimerPosition.y * TheDisplay->getHeight());
+		Bool reverseXDir = (m_ini.m_namedTimerPosition.x >= 0.5f);
+		Int startX = (Int)(m_ini.m_namedTimerPosition.x * TheDisplay->getWidth());
+		Int startY = (Int)(m_ini.m_namedTimerPosition.y * TheDisplay->getHeight());
 		Color bgColor = GameMakeColor( 0, 0, 0, 255 );
 		for (NamedTimerMapIt mapIt = m_namedTimers.begin(); mapIt != m_namedTimers.end(); ++mapIt)
 		{
@@ -3737,32 +3800,32 @@ void InGameUI::postDraw( void )
 			{
 				// found one - draw it
 				UnicodeString line;
-				Int framesLeft = TheScriptEngine->getCounter(timerName)->value;
+				UnsignedInt framesLeft = (UnsignedInt)TheScriptEngine->getCounter(timerName)->value;
 				UnsignedInt readyFrame = TheGameLogic->getFrame();
 				if (framesLeft > 0)
 					readyFrame += framesLeft;
-				Int readySecs = (Int)(SECONDS_PER_LOGICFRAME_REAL * (readyFrame - TheGameLogic->getFrame()));
+				UnsignedInt readySecs = (UnsignedInt)(SECONDS_PER_LOGICFRAME_REAL * (readyFrame - TheGameLogic->getFrame()));
 				if ( (info->isCountdown && readySecs != info->timestamp) || (!info->isCountdown && framesLeft != info->timestamp) )
 				{
 					if (!readySecs && info->isCountdown)
 					{
 						// go bold - we're good to go
-						info->displayString->setFont( TheFontLibrary->getFont( m_namedTimerReadyFont, 
-							TheGlobalLanguageData->adjustFontSize(m_namedTimerReadyPointSize), m_namedTimerReadyBold ) );
+						info->displayString->setFont( TheFontLibrary->getFont( m_ini.m_namedTimerReadyFont, 
+							TheGlobalLanguageData->adjustFontSize(m_ini.m_namedTimerReadyPointSize), m_ini.m_namedTimerReadyBold ) );
 					}
 					else
 					{
 						// if we were at 0, we've just fired - kill the bold
 						if (info->timestamp == 0 || info->isCountdown)
 						{
-							info->displayString->setFont( TheFontLibrary->getFont( m_namedTimerNormalFont, 
-								TheGlobalLanguageData->adjustFontSize(m_namedTimerNormalPointSize), m_namedTimerNormalBold ) );
+							info->displayString->setFont( TheFontLibrary->getFont( m_ini.m_namedTimerNormalFont, 
+								TheGlobalLanguageData->adjustFontSize(m_ini.m_namedTimerNormalPointSize), m_ini.m_namedTimerNormalBold ) );
 						}
 					}
 
 					info->timestamp = readySecs;
-					Int min = readySecs/60;
-					Int sec = readySecs - min*60;
+					UnsignedInt min = readySecs/60;
+					UnsignedInt sec = readySecs - min*60;
 					
 					if (!info->isCountdown)
 						line.format(L"%s %d", info->timerText.str(), framesLeft);
@@ -3782,14 +3845,14 @@ void InGameUI::postDraw( void )
 					drawX -= info->displayString->getWidth();
 				if (!readySecs && info->isCountdown)
 				{
-					if ( m_namedTimerFlashDuration != 0.0f )
+					if ( m_ini.m_namedTimerFlashDuration != 0.0f )
 					{
-						if ( TheGameLogic->getFrame() >= m_namedTimerLastFlashFrame + (Int)(m_namedTimerFlashDuration) )
+						if ( TheGameLogic->getFrame() >= m_namedTimerLastFlashFrame + (UnsignedInt)(m_ini.m_namedTimerFlashDuration) )
 						{
 							m_namedTimerUsedFlashColor = !m_namedTimerUsedFlashColor;
 							m_namedTimerLastFlashFrame = TheGameLogic->getFrame();
 						}
-						info->displayString->draw( drawX, startY, (m_namedTimerUsedFlashColor)?info->color:m_namedTimerFlashColor, bgColor );
+						info->displayString->draw( drawX, startY, (m_namedTimerUsedFlashColor)?info->color:m_ini.m_namedTimerFlashColor, bgColor );
 					}
 					else
 					{
@@ -3808,7 +3871,7 @@ void InGameUI::postDraw( void )
 	}
 	
 	// draw RMB scroll anchor
-	if (TheLookAtTranslator && m_drawRMBScrollAnchor)
+	if (TheLookAtTranslator && m_ini.m_drawRMBScrollAnchor)
 	{
 		const ICoord2D* anchor = TheLookAtTranslator->getRMBScrollAnchor();
 		if (anchor)
@@ -3828,6 +3891,7 @@ void InGameUI::postDraw( void )
 	//draw superweapon ready multipliers
 	TheControlBar->drawSpecialPowerShortcutMultiplierText();
 
+#endif // if 0
 }  // end postDraw
 
 //-------------------------------------------------------------------------------------------------
@@ -3840,7 +3904,7 @@ void InGameUI::expireHint( HintType type, UnsignedInt hintIndex )
 	{
 
 		// sanity
-		if( hintIndex < 0 || hintIndex >= MAX_MOVE_HINTS )
+		if( hintIndex >= MAX_MOVE_HINTS )
 			return;
 
 		m_moveHint[ hintIndex ].sourceID = 0;
@@ -3863,6 +3927,8 @@ void InGameUI::expireHint( HintType type, UnsignedInt hintIndex )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::createControlBar( void )
 {
+DEBUG_CRASH(("InGameUI::createControlBar not yet implemented!"));
+#if 0
 
 	TheWindowManager->winCreateFromScript( AsciiString("ControlBar.wnd") );
 	HideControlBar();
@@ -3873,6 +3939,7 @@ void InGameUI::createControlBar( void )
 		window->winHide( TRUE );
 */
 
+#endif // if 0
 }  // end createControlBar
 
 //-------------------------------------------------------------------------------------------------
@@ -3910,10 +3977,7 @@ void InGameUI::playMovie( const AsciiString& movieName )
 	m_currentlyPlayingMovie = movieName;
 	m_videoBuffer = TheDisplay->createVideoBuffer();
 
-	if (	m_videoBuffer == NULL || 
-				!m_videoBuffer->allocate(	m_videoStream->width(), 
-													m_videoStream->height())
-		)
+	if (m_videoBuffer == NULL || !m_videoBuffer->allocate((UnsignedInt)m_videoStream->width(), (UnsignedInt)m_videoStream->height()))
 	{
 		stopMovie();
 		return;
@@ -3964,10 +4028,7 @@ void InGameUI::playCameoMovie( const AsciiString& movieName )
 
 	m_cameoVideoBuffer = TheDisplay->createVideoBuffer();
 
-	if (	m_cameoVideoBuffer == NULL || 
-				!m_cameoVideoBuffer->allocate(	m_cameoVideoStream->width(), 
-													m_cameoVideoStream->height())
-		)
+	if (m_cameoVideoBuffer == NULL || !m_cameoVideoBuffer->allocate((UnsignedInt)m_cameoVideoStream->width(), (UnsignedInt)m_cameoVideoStream->height()))
 	{
 		stopCameoMovie();
 		return;
@@ -4062,6 +4123,10 @@ void InGameUI::displayCantBuildMessage( LegalBuildCode lbc )
 // ------------------------------------------------------------------------------------------------
 void InGameUI::militarySubtitle( const AsciiString& label, Int duration )
 {
+(void) label;
+(void) duration;
+DEBUG_CRASH(("InGameUI::militarySubtitle not yet implemented!"));
+#if 0
 	// make sure we don't already have a subtitle up there
 	removeMilitarySubtitle();
 
@@ -4079,7 +4144,7 @@ void InGameUI::militarySubtitle( const AsciiString& label, Int duration )
 
 	// we need some frame info to set our timings
 	UnsignedInt currLogicFrame = TheGameLogic->getFrame();
-	const int messageTimeout = currLogicFrame + (Int)(((Real)LOGICFRAMES_PER_SECOND * duration)/1000.0f);
+	const UnsignedInt messageTimeout = currLogicFrame + (UnsignedInt)(((Real)LOGICFRAMES_PER_SECOND * duration)/1000.0f);
 
 	// disable tooltips until this frame, cause we don't want to collide with the military subtitles.
 	TheInGameUI->disableTooltipsUntil(messageTimeout);
@@ -4096,9 +4161,9 @@ void InGameUI::militarySubtitle( const AsciiString& label, Int duration )
 	m_militarySubtitle->blockDrawn = TRUE;
 	m_militarySubtitle->blockBeginFrame = currLogicFrame;
 	m_militarySubtitle->lifetime = messageTimeout;
-	m_militarySubtitle->blockPos.x =  m_militarySubtitle->position.x = m_militaryCaptionPosition.x * multiplier.x;
-	m_militarySubtitle->blockPos.y =  m_militarySubtitle->position.y = m_militaryCaptionPosition.y * multiplier.y;
-	m_militarySubtitle->incrementOnFrame = currLogicFrame + (Int)(((Real)LOGICFRAMES_PER_SECOND * TheGlobalLanguageData->m_militaryCaptionDelayMS)/1000.0f);
+	m_militarySubtitle->blockPos.x =  m_militarySubtitle->position.x = m_ini.m_militaryCaptionPosition.x * multiplier.x;
+	m_militarySubtitle->blockPos.y =  m_militarySubtitle->position.y = m_ini.m_militaryCaptionPosition.y * multiplier.y;
+	m_militarySubtitle->incrementOnFrame = currLogicFrame + (UnsignedInt)(((Real)LOGICFRAMES_PER_SECOND * TheGlobalLanguageData->m_ini.m_militaryCaptionDelayMS)/1000.0f);
 	m_militarySubtitle->index = 0;
 	for (int i = 1; i < MAX_SUBTITLE_LINES; i ++)
 		m_militarySubtitle->displayStrings[i] = NULL;
@@ -4106,9 +4171,10 @@ void InGameUI::militarySubtitle( const AsciiString& label, Int duration )
 	m_militarySubtitle->currentDisplayString = 0;
 	m_militarySubtitle->displayStrings[0] = TheDisplayStringManager->newDisplayString();
 	m_militarySubtitle->displayStrings[0]->reset();
-	m_militarySubtitle->displayStrings[0]->setFont(	TheFontLibrary->getFont( m_militaryCaptionTitleFont, 
-		TheGlobalLanguageData->adjustFontSize(m_militaryCaptionTitlePointSize), m_militaryCaptionTitleBold ) );
-	m_militarySubtitle->color = GameMakeColor(m_militaryCaptionColor.red, m_militaryCaptionColor.green, m_militaryCaptionColor.blue, m_militaryCaptionColor.alpha);
+	m_militarySubtitle->displayStrings[0]->setFont(	TheFontLibrary->getFont( m_ini.m_militaryCaptionTitleFont, 
+		TheGlobalLanguageData->adjustFontSize(m_ini.m_militaryCaptionTitlePointSize), m_ini.m_militaryCaptionTitleBold ) );
+	m_militarySubtitle->color = GameMakeColor(m_ini.m_militaryCaptionColor.red, m_ini.m_militaryCaptionColor.green, m_ini.m_militaryCaptionColor.blue, m_ini.m_militaryCaptionColor.alpha);
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -4123,7 +4189,7 @@ void InGameUI::removeMilitarySubtitle( void )
 	TheInGameUI->clearTooltipsDisabled();
 
 	// loop through and free up the display strings
-	for(Int i = 0; i <= m_militarySubtitle->currentDisplayString; i ++)
+	for(UnsignedInt i = 0; i <= m_militarySubtitle->currentDisplayString; i ++)
 	{
 		TheDisplayStringManager->freeDisplayString(m_militarySubtitle->displayStrings[i]);
 		m_militarySubtitle->displayStrings[i] = NULL;
@@ -4162,9 +4228,12 @@ Bool InGameUI::areSelectedObjectsControllable() const
 //------------------------------------------------------------------------------
 void InGameUI::resetCamera()
 {
+DEBUG_CRASH(("InGameUI::resetCamera not yet implemented!"));
+#if 0
 	ViewLocation currentView;
 	TheTacticalView->getLocation( &currentView ); 
 	TheTacticalView->resetCamera( &currentView.getPosition(), 1, 0.0f, 0.0f );
+#endif // if 0
 }
 
 //------------------------------------------------------------------------------
@@ -4189,12 +4258,19 @@ Bool InGameUI::canSelectedObjectsNonAttackInteractWithObject( const Object *obje
 
 CanAttackResult InGameUI::getCanSelectedObjectsAttack( ActionType action, const Object *objectToInteractWith, SelectionRules rule, Bool additionalChecking ) const
 {
+(void) action;
+(void) objectToInteractWith;
+(void) rule;
+(void) additionalChecking;
+DEBUG_CRASH(("InGameUI::getCanSelectedObjectsAttack not yet implemented!"));
+return ATTACKRESULT_NOT_POSSIBLE;
+#if 0
 	//Kris: Aug 16, 2003
 	//John McDonald added this code back in Oct 09, 2002. 
 	//Replaced it with palatable code.
 	//if( (objectToInteractWith == NULL) != (action == ACTIONTYPE_SET_RALLY_POINT)) <---BAD CODE
-	if( !objectToInteractWith && action != ACTIONTYPE_SET_RALLY_POINT || //No object to interact with (and not rally point mode)
-			 objectToInteractWith && action == ACTIONTYPE_SET_RALLY_POINT )  //Object to interact with (and rally point mode)
+	if( (!objectToInteractWith && action != ACTIONTYPE_SET_RALLY_POINT) || //No object to interact with (and not rally point mode)
+			 (objectToInteractWith && action == ACTIONTYPE_SET_RALLY_POINT) )  //Object to interact with (and rally point mode)
 	{
 		//Sanity check OR can't set a rally point over an object.
 		return ATTACKRESULT_NOT_POSSIBLE;
@@ -4277,6 +4353,7 @@ CanAttackResult InGameUI::getCanSelectedObjectsAttack( ActionType action, const 
 
 	// no can do!
 	return ATTACKRESULT_NOT_POSSIBLE;
+#endif // if 0
 }
 
 //------------------------------------------------------------------------------
@@ -4285,6 +4362,13 @@ CanAttackResult InGameUI::getCanSelectedObjectsAttack( ActionType action, const 
 Bool InGameUI::canSelectedObjectsDoAction( ActionType action, const Object *objectToInteractWith, SelectionRules rule, Bool additionalChecking ) const
 {
 
+(void) action;
+(void) objectToInteractWith;
+(void) rule;
+(void) additionalChecking;
+DEBUG_CRASH(("InGameUI::canSelectedObjectsDoAction not yet implemented!"));
+return false;
+#if 0
 	//Kris: Aug 16, 2003
 	//John McDonald added this code back in Oct 09, 2002. This code is SO wrong that it should
 	//be a firing offense. Strangely enough, this code has gone unnoticed for nearly a year
@@ -4292,8 +4376,8 @@ Bool InGameUI::canSelectedObjectsDoAction( ActionType action, const Object *obje
 	//because it would be nice if a saboteur could actually sabotage a building via a 
 	//commandbutton.
 	//if( (objectToInteractWith == NULL) != (action == ACTIONTYPE_SET_RALLY_POINT))
-	if( !objectToInteractWith && action != ACTIONTYPE_SET_RALLY_POINT || //No object to interact with (and not rally point mode)
-			 objectToInteractWith && action == ACTIONTYPE_SET_RALLY_POINT )  //Object to interact with (and rally point mode)
+	if( (!objectToInteractWith && action != ACTIONTYPE_SET_RALLY_POINT) || //No object to interact with (and not rally point mode)
+			 (objectToInteractWith && action == ACTIONTYPE_SET_RALLY_POINT) )  //Object to interact with (and rally point mode)
 	{
 		//Sanity check OR can't set a rally point over an object.
 		return FALSE;
@@ -4404,6 +4488,8 @@ Bool InGameUI::canSelectedObjectsDoAction( ActionType action, const Object *obje
 				success = (obj->isKindOf(KINDOF_AUTO_RALLYPOINT) && obj->isLocallyControlled());
 				break;
 			}
+			default:
+				break;
 		}
 
 		if( success )
@@ -4426,11 +4512,21 @@ Bool InGameUI::canSelectedObjectsDoAction( ActionType action, const Object *obje
 
 	// no can do!
 	return FALSE;
+#endif // if 0
 }
 
 //------------------------------------------------------------------------------
 Bool InGameUI::canSelectedObjectsDoSpecialPower( const CommandButton *command, const Object *objectToInteractWith, const Coord3D *position, SelectionRules rule, UnsignedInt commandOptions, Object* ignoreSelObj ) const
 {
+(void) command;
+(void) objectToInteractWith;
+(void) position;
+(void) rule;
+(void) commandOptions;
+(void) ignoreSelObj;
+DEBUG_CRASH(("InGameUI::canSelectedObjectsDoSpecialPower not yet implemented!"));
+return false;
+#if 0
 	//Get the special power template.
 	const SpecialPowerTemplate *spTemplate = command->getSpecialPowerTemplate();
 
@@ -4514,11 +4610,18 @@ Bool InGameUI::canSelectedObjectsDoSpecialPower( const CommandButton *command, c
 		return true;
 	}
 	return false;
+#endif // if 0
 }
 
 //------------------------------------------------------------------------------
 Bool InGameUI::canSelectedObjectsOverrideSpecialPowerDestination( const Coord3D *loc, SelectionRules rule, SpecialPowerType spType ) const
 {
+(void) loc;
+(void) rule;
+(void) spType;
+DEBUG_CRASH(("InGameUI::canSelectedObjectsOverrideSpecialPowerDestination not yet implemented!"));
+return false;
+#if 0
 	// set up counters for rule checking
 	Int count = 0;
 	Int qualify = 0;
@@ -4549,12 +4652,20 @@ Bool InGameUI::canSelectedObjectsOverrideSpecialPowerDestination( const Coord3D 
 		return true;
 	}
 	return false;
+#endif // if 0
 }
 
 
 //------------------------------------------------------------------------------
 Bool InGameUI::canSelectedObjectsEffectivelyUseWeapon( const CommandButton *command, const Object *objectToInteractWith, const Coord3D *position, SelectionRules rule ) const
 {
+(void) command;
+(void) objectToInteractWith;
+(void) position;
+(void) rule;
+DEBUG_CRASH(("InGameUI::canSelectedObjectsEffectivelyUseWeapon not yet implemented!"));
+return false;
+#if 0
 	//Get the special power template.
 	WeaponSlotType slot = command->getWeaponSlot();
 
@@ -4633,13 +4744,20 @@ Bool InGameUI::canSelectedObjectsEffectivelyUseWeapon( const CommandButton *comm
 		return true;
 	}
 	return false;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
 Int InGameUI::selectAllUnitsByTypeAcrossRegion( IRegion2D *region, KindOfMaskType mustBeSet, KindOfMaskType mustBeClear )
 {
+(void) region;
+(void) mustBeSet;
+(void) mustBeClear;
+DEBUG_CRASH(("InGameUI::selectAllUnitsByTypeAcrossRegion not yet implemented!"));
+return 0;
+#if 0
 	KindOfSelectionData data;
-	Int newSelectionCount = 0;
+	UnsignedInt newSelectionCount = 0;
 	Int oldSelectionCount = getAllSelectedDrawables()->size();
 
 	data.m_mustbeSet = mustBeSet;
@@ -4686,7 +4804,8 @@ Int InGameUI::selectAllUnitsByTypeAcrossRegion( IRegion2D *region, KindOfMaskTyp
 		}
 	}
 
-	return newSelectionCount;
+	return (Int)newSelectionCount;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -4694,6 +4813,10 @@ Int InGameUI::selectAllUnitsByTypeAcrossRegion( IRegion2D *region, KindOfMaskTyp
 // ------------------------------------------------------------------------------------------------
 Int InGameUI::selectMatchingAcrossRegion( IRegion2D *region )
 {
+(void) region;
+DEBUG_CRASH(("InGameUI::selectMatchingAcrossRegion not yet implemented!"));
+return 0;
+#if 0
 	const DrawableList *selected = getAllSelectedDrawables();
 
 	/* loop through all the selected drawables and create a set of all the objects,
@@ -4773,13 +4896,19 @@ Int InGameUI::selectMatchingAcrossRegion( IRegion2D *region )
 
 	return newSelectionCount;
 
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
 Int InGameUI::selectAllUnitsByTypeAcrossScreen(KindOfMaskType mustBeSet, KindOfMaskType mustBeClear)
 {
+(void) mustBeSet;
+(void) mustBeClear;
+DEBUG_CRASH(("InGameUI::selectAllUnitsByTypeAcrossScreen not yet implemented!"));
+return 0;
+#if 0
 	/// When implementing this, obey TheInGameUI->getMaxSelectCount() if it is > 0
-			
+
 	IRegion2D region;
 	ICoord2D origin;
 	ICoord2D size;
@@ -4805,6 +4934,7 @@ Int InGameUI::selectAllUnitsByTypeAcrossScreen(KindOfMaskType mustBeSet, KindOfM
 		TheInGameUI->message( message );
 	}
 	return numSelected;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -4812,6 +4942,9 @@ Int InGameUI::selectAllUnitsByTypeAcrossScreen(KindOfMaskType mustBeSet, KindOfM
 // ------------------------------------------------------------------------------------------------
 Int InGameUI::selectMatchingAcrossScreen( void )
 {
+DEBUG_CRASH(("InGameUI::selectMatchingAcrossScreen not yet implemented!"));
+return 0;
+#if 0
 	/// When implementing this, obey TheInGameUI->getMaxSelectCount() if it is > 0
 			
 	IRegion2D region;
@@ -4839,6 +4972,7 @@ Int InGameUI::selectMatchingAcrossScreen( void )
 		TheInGameUI->message( message );
 	}
 	return numSelected;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -4988,12 +5122,12 @@ void InGameUI::addFloatingText(const UnicodeString& text,const Coord3D *pos, Col
 		newFTD->m_pos3D.y = pos->y;
 		newFTD->m_text = text;
 		newFTD->m_dString->setText(text);
-		
-			
-		if(m_floatingTextTimeOut <= 0)
+
+
+		if(m_ini.m_floatingTextTimeOut <= 0)
 			newFTD->m_frameTimeOut = TheGameLogic->getFrame() +  DEFAULT_FLOATING_TEXT_TIMEOUT;
 		else
-			newFTD->m_frameTimeOut = TheGameLogic->getFrame() +  m_floatingTextTimeOut; 
+			newFTD->m_frameTimeOut = TheGameLogic->getFrame() +  m_ini.m_floatingTextTimeOut; 
 		
 		m_floatingTextList.push_front( newFTD ); // add to the list
 	}
@@ -5037,10 +5171,10 @@ try_again:
 	newFTD->m_dString->setText(translate);
 	newFTD->m_dString->setFont(TheWindowManager->winFindFont( AsciiString("Arial"), POINTSIZE, FALSE ));
 				
-	if(m_floatingTextTimeOut <= 0)
+	if(m_ini.m_floatingTextTimeOut <= 0)
 		newFTD->m_frameTimeOut = TheGameLogic->getFrame() +  DEFAULT_FLOATING_TEXT_TIMEOUT;
 	else
-		newFTD->m_frameTimeOut = TheGameLogic->getFrame() +  m_floatingTextTimeOut; 
+		newFTD->m_frameTimeOut = TheGameLogic->getFrame() +  m_ini.m_floatingTextTimeOut; 
 	
 	m_floatingTextList.push_front( newFTD ); // add to the list
 
@@ -5078,7 +5212,7 @@ void InGameUI::updateFloatingText( void )
 		{
 			// modify the color
 			GameGetColorComponents(ftd->m_color, &r, &g, &b, &a);		
-			amount = REAL_TO_INT( (currLogicFrame - ftd->m_frameTimeOut) * m_floatingTextMoveVanishRate);
+			amount = REAL_TO_INT( (currLogicFrame - ftd->m_frameTimeOut) * m_ini.m_floatingTextMoveVanishRate);
 			if(a - amount < 0)
 				a = 0;
 			else
@@ -5105,6 +5239,8 @@ void InGameUI::updateFloatingText( void )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::drawFloatingText( void )
 {
+DEBUG_CRASH(("InGameUI::drawFloatingText not yet implemented!"));
+#if 0
 	FloatingTextData *ftd;
 	// loop through and draw all the texts
 	for(FloatingTextListIt it = m_floatingTextList.begin(); it != m_floatingTextList.end(); ++it)
@@ -5123,7 +5259,7 @@ void InGameUI::drawFloatingText( void )
 			&& ftd->m_dString 
 			&& ThePartitionManager->getShroudStatusForPlayer(playerNdx, pCX, pCY) == CELLSHROUD_CLEAR )
 		{
-			pos.y -= ftd->m_frameCount * m_floatingTextMoveUpSpeed;
+			pos.y -= ftd->m_frameCount * m_ini.m_floatingTextMoveUpSpeed;
 			Color dropColor;
 			UnsignedByte r, g, b, a;
 			Int width;
@@ -5137,6 +5273,7 @@ void InGameUI::drawFloatingText( void )
 		}
 
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -5160,7 +5297,7 @@ void InGameUI::clearFloatingText( void )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::popupMessage( const AsciiString& message, Int x, Int y, Int width, Bool pause, Bool pauseMusic)
 {
-	popupMessage( message, x, y, width, m_popupMessageColor, pause, pauseMusic);
+	popupMessage( message, x, y, width, m_ini.m_popupMessageColor, pause, pauseMusic);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -5168,6 +5305,15 @@ void InGameUI::popupMessage( const AsciiString& message, Int x, Int y, Int width
 //-------------------------------------------------------------------------------------------------
 void InGameUI::popupMessage( const AsciiString& identifier, Int x, Int y, Int width, Color textColor, Bool pause, Bool pauseMusic)
 {
+(void) identifier;
+(void) x;
+(void) y;
+(void) width;
+(void) textColor;
+(void) pause;
+(void) pauseMusic;
+DEBUG_CRASH(("InGameUI::popupMessage not yet implemented!"));
+#if 0
 	if(m_popupMessageData)
 		clearPopupMessageData();
 
@@ -5203,6 +5349,7 @@ void InGameUI::popupMessage( const AsciiString& identifier, Int x, Int y, Int wi
 
 	m_popupMessageData->layout = TheWindowManager->winCreateLayout(AsciiString("InGamePopupMessage.wnd"));
 	m_popupMessageData->layout->runInit();
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -5300,7 +5447,7 @@ void InGameUI::addWorldAnimation( Anim2DTemplate *animTemplate,
 
 	// assign all data
 	wad->m_anim = anim;
-	wad->m_expireFrame = TheGameLogic->getFrame() + (durationInSeconds * LOGICFRAMES_PER_SECOND);
+	wad->m_expireFrame = TheGameLogic->getFrame() + (UnsignedInt)(durationInSeconds * (Real)LOGICFRAMES_PER_SECOND);
 	wad->m_options = options;
 	wad->m_worldPos = *pos;
 	wad->m_zRisePerSecond = zRisePerSecond;
@@ -5346,6 +5493,8 @@ static const UnsignedInt FRAMES_BEFORE_EXPIRE_TO_FADE = LOGICFRAMES_PER_SECOND *
 // ------------------------------------------------------------------------------------------------
 void InGameUI::updateAndDrawWorldAnimations( void )
 {
+DEBUG_CRASH(("InGameUI::updateAndDrawWorldAnimations not yet implemented!"));
+#if 0
 	WorldAnimationData *wad;
 
 	// go through all animations
@@ -5379,7 +5528,7 @@ void InGameUI::updateAndDrawWorldAnimations( void )
 
 			// update the Z value
 			if( wad->m_zRisePerSecond )
-				wad->m_worldPos.z += wad->m_zRisePerSecond / LOGICFRAMES_PER_SECOND;
+				wad->m_worldPos.z += wad->m_zRisePerSecond / (Real)LOGICFRAMES_PER_SECOND;
 
 		}  // end if
 
@@ -5426,11 +5575,11 @@ void InGameUI::updateAndDrawWorldAnimations( void )
 			height *= zoomScale;
 
 			// adjust the screen position to draw so the image is centered at the location
-			screen.x -= width / 2;
-			screen.y -= height / 2;
+			screen.x -= (Int)width / 2;
+			screen.y -= (Int)height / 2;
 
 			// draw the animation
-			wad->m_anim->draw( screen.x, screen.y, width, height );
+			wad->m_anim->draw( screen.x, screen.y, (Int)width, (Int)height );
 
 		}  // end if
 
@@ -5439,6 +5588,7 @@ void InGameUI::updateAndDrawWorldAnimations( void )
 
 	}  // end for
 
+#endif // if 0
 }  // end updateAndDrawWorldAnimations
 
 
@@ -5504,6 +5654,8 @@ void InGameUI::removeIdleWorker( Object *obj, Int playerNumber )
 
 void InGameUI::selectNextIdleWorker( void )
 {
+DEBUG_CRASH(("InGameUI::selectNextIdleWorker not yet implemented!"));
+#if 0
 	Int index = ThePlayerList->getLocalPlayer()->getPlayerIndex();
 	if(m_idleWorkers[index].empty())
 	{
@@ -5573,6 +5725,7 @@ void InGameUI::selectNextIdleWorker( void )
 		// center on the unit
 		TheTacticalView->lookAt(selectThisObject->getPosition());
 	}
+#endif // if 0
 }
 
 Int InGameUI::getIdleWorkerCount( void )
@@ -5639,6 +5792,8 @@ void InGameUI::resetIdleWorker( void )
 
 void InGameUI::recreateControlBar( void )
 {
+DEBUG_CRASH(("InGameUI::recreateControlBar not yet implemented!"));
+#if 0
 	GameWindow *win = TheWindowManager->winGetWindowFromId(NULL, TheNameKeyGenerator->nameToKey(AsciiString("ControlBar.wnd")));
 	if(win)
 		win->deleteInstance();
@@ -5654,7 +5809,7 @@ void InGameUI::recreateControlBar( void )
 		TheControlBar->init();
 	}
 
-
+#endif // if 0
 }
 
 void InGameUI::disableTooltipsUntil(UnsignedInt frameNum)
@@ -5682,9 +5837,11 @@ WindowMsgHandledType IdleWorkerSystem( GameWindow *window, UnsignedInt msg,
 		//---------------------------------------------------------------------------------------------
 		case GWM_INPUT_FOCUS:
 		{	
-			// if we're givin the opportunity to take the keyboard focus we must say we don't want it
-			if( mData1 == TRUE )
+			// if we're given the opportunity to take the keyboard focus we must say we don't want it
+			if( mData1 == TRUE ) {
 				*(Bool *)mData2 = FALSE;
+			}
+			break;
 		}
 		//---------------------------------------------------------------------------------------------
 		case GBM_SELECTED:

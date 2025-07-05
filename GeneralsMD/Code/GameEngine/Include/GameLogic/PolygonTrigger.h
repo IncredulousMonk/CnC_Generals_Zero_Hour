@@ -70,23 +70,23 @@ class PolygonTrigger : public MemoryPoolObject,
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(PolygonTrigger, "PolygonTrigger")		
 
 protected:
-	PolygonTrigger*		m_nextPolygonTrigger;		///< linked list.
-	AsciiString				m_triggerName;		///< The name of this polygon area.
-	Int								m_triggerID; ///< Unique int id for the trigger.
-	WaterHandle				m_waterHandle;		///< handle to use this polygon as a water table
-	ICoord3D*					m_points;	///< Points that are the polygon.
-	Int								m_numPoints; ///< Num points in m_points.
-	Int								m_sizePoints; ///< Space allocated for m_points.
-	mutable IRegion2D	m_bounds;  ///< 2D bounding box for quick checks.	
-	mutable Real			m_radius;
-	Int								m_riverStart;	///< Identifies the start point of the river.
-	mutable Bool			m_boundsNeedsUpdate;
-	Bool							m_exportWithScripts;
-	Bool							m_isWaterArea; ///< Used to specify water areas in the map.
-	Bool							m_isRiver;		///< Used to specify that a water area is a river.
-	AsciiString			m_layerName;  ///< Used to specify the layer in the World Builder.
-	Bool				m_shouldRender;
-	Bool				m_selected;
+	PolygonTrigger*		m_nextPolygonTrigger {};		///< linked list.
+	AsciiString			m_triggerName {};		///< The name of this polygon area.
+	Int					m_triggerID {}; ///< Unique int id for the trigger.
+	WaterHandle			m_waterHandle {};		///< handle to use this polygon as a water table
+	ICoord3D*			m_points {};	///< Points that are the polygon.
+	Int					m_numPoints {}; ///< Num points in m_points.
+	Int					m_sizePoints {}; ///< Space allocated for m_points.
+	mutable IRegion2D	m_bounds {};  ///< 2D bounding box for quick checks.	
+	mutable Real		m_radius {};
+	Int					m_riverStart {};	///< Identifies the start point of the river.
+	mutable Bool		m_boundsNeedsUpdate {};
+	Bool				m_exportWithScripts {};
+	Bool				m_isWaterArea {}; ///< Used to specify water areas in the map.
+	Bool				m_isRiver {};		///< Used to specify that a water area is a river.
+	AsciiString			m_layerName {};  ///< Used to specify the layer in the World Builder.
+	Bool				m_shouldRender {};
+	Bool				m_selected {};
 
 	static PolygonTrigger* ThePolygonTriggerListPtr;
 	static Int s_currentID; ///< Current id for new triggers.

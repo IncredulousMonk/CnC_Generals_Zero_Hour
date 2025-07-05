@@ -102,7 +102,8 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
-extern void addIcon(const Coord3D *pos, Real width, Int numFramesDuration, RGBColor color);
+// FIXME: W3DDebugIcons
+// extern void addIcon(const Coord3D *pos, Real width, Int numFramesDuration, RGBColor color);
 
 const Real HUGE_DIST_SQR = (HUGE_DIST*HUGE_DIST);
 
@@ -1275,6 +1276,9 @@ void PartitionCell::invalidateShroudedStatusForAllCois(Int playerIndex)
 //-----------------------------------------------------------------------------
 void PartitionCell::addLooker(Int playerIndex)
 {
+(void) playerIndex;
+DEBUG_CRASH(("PartitionCell::addLooker not yet implemented!"));
+#if 0
 	CellShroudStatus oldShroud = getShroudStatusForPlayer( playerIndex );
 	// The decreasing Algorithm: A 1 will go straight to -1, otherwise it just gets decremented
 	m_shroudLevel[playerIndex].m_currentShroud = min( m_shroudLevel[playerIndex].m_currentShroud - 1, -1 );
@@ -1301,11 +1305,15 @@ void PartitionCell::addLooker(Int playerIndex)
 			TheRadar->setShroudLevel(m_cellX, m_cellY, newShroud);
 		}
 	}
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
 void PartitionCell::removeLooker(Int playerIndex)
 {
+(void) playerIndex;
+DEBUG_CRASH(("PartitionCell::removeLooker not yet implemented!"));
+#if 0
 	CellShroudStatus oldShroud = getShroudStatusForPlayer( playerIndex );
 	// the increasing Algorithm: a -1 goes up to min(1,activeLevel), otherwise it just gets incremented
 	if( m_shroudLevel[playerIndex].m_currentShroud == -1 )
@@ -1337,11 +1345,15 @@ void PartitionCell::removeLooker(Int playerIndex)
 			TheRadar->setShroudLevel(m_cellX, m_cellY, newShroud);
 		}
 	}
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
 void PartitionCell::addShrouder( Int playerIndex )
 {
+(void) playerIndex;
+DEBUG_CRASH(("PartitionCell::addShrouder not yet implemented!"));
+#if 0
 	CellShroudStatus oldShroud = getShroudStatusForPlayer( playerIndex );
 	// Increasing active shroud: activeLevel gets incremented, and CS is set to 1 if at zero
 	// do the algorithm
@@ -1364,6 +1376,7 @@ void PartitionCell::addShrouder( Int playerIndex )
 			TheRadar->setShroudLevel(m_cellX, m_cellY, newShroud);
 		}
 	}
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
@@ -2993,12 +3006,13 @@ void PartitionManager::update()
 													m_cells[i].getCellY() * size, 
 													0 };
 					pos.z = TheTerrainLogic->getGroundHeight(pos.x, pos.y);
-					RGBColor color;
-					color.red = threatMul;
-					color.blue = 0.0f;
-					color.green = 0.0f;
+					// FIXME: W3DDebugIcons
+					// RGBColor color;
+					// color.red = threatMul;
+					// color.blue = 0.0f;
+					// color.green = 0.0f;
 
-					addIcon(&pos, size, TheGlobalData->m_data.m_debugThreatMapTileDuration, color);
+					// addIcon(&pos, size, TheGlobalData->m_data.m_debugThreatMapTileDuration, color);
 				}
 			}
 		}
@@ -3023,12 +3037,13 @@ void PartitionManager::update()
 													m_cells[i].getCellY() * size, 
 													0 };
 					pos.z = TheTerrainLogic->getGroundHeight(pos.x, pos.y);
-					RGBColor color;
-					color.red = 0.0f;
-					color.blue = 0.0f;
-					color.green = valueMul;
+					// FIXME: W3DDebugIcons
+					// RGBColor color;
+					// color.red = 0.0f;
+					// color.blue = 0.0f;
+					// color.green = valueMul;
 
-					addIcon(&pos, size, TheGlobalData->m_data.m_debugCashValueMapTileDuration, color);
+					// addIcon(&pos, size, TheGlobalData->m_data.m_debugCashValueMapTileDuration, color);
 				}
 			}			
 		}
@@ -3231,6 +3246,8 @@ void PartitionManager::shroudMapForPlayer( Int playerIndex )
 //-----------------------------------------------------------------------------
 void PartitionManager::refreshShroudForLocalPlayer()
 {
+DEBUG_CRASH(("PartitionCell::refreshShroudForLocalPlayer not yet implemented!"));
+#if 0
 	// This is a drawing refresh only, and so is allowed to use the Local Player.
 	TheDisplay->clearShroud();
 	TheRadar->clearShroud();
@@ -3245,6 +3262,7 @@ void PartitionManager::refreshShroudForLocalPlayer()
 		TheRadar->setShroudLevel(x, y, status);
 		m_cells[i].invalidateShroudedStatusForAllCois(playerIndex);
 	}
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
@@ -5347,7 +5365,12 @@ Bool PartitionFilterGarrisonable::allow( Object *other )
 //-----------------------------------------------------------------------------
 Bool PartitionFilterGarrisonableByPlayer::allow( Object *other )
 {
+(void) other;
+DEBUG_CRASH(("PartitionFilterGarrisonableByPlayer not yet implemented!"));
+return false;
+#if 0
 	return TheActionManager->canPlayerGarrison(m_player, other, m_commandSource) == m_match;
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
@@ -5359,7 +5382,12 @@ Bool PartitionFilterUnmannedObject::allow( Object *other )
 //-----------------------------------------------------------------------------
 Bool PartitionFilterValidCommandButtonTarget::allow( Object *other )
 {
+(void) other;
+DEBUG_CRASH(("PartitionFilterValidCommandButtonTarget::allow not yet implemented!"));
+return false;
+#if 0
 	return (m_commandButton->isValidToUseOn(m_source, other, NULL, m_commandSource) == m_match);
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
@@ -5605,6 +5633,10 @@ PartitionFilterPossibleToEnter::PartitionFilterPossibleToEnter(const Object *obj
 //-----------------------------------------------------------------------------
 Bool PartitionFilterPossibleToEnter::allow(Object *objOther)
 {
+(void) objOther;
+DEBUG_CRASH(("PartitionFilterPossibleToEnter::allow not yet implemented!"));
+return false;
+#if 0
 	if (!objOther || !m_obj) 
 		return FALSE;
 
@@ -5612,6 +5644,7 @@ Bool PartitionFilterPossibleToEnter::allow(Object *objOther)
 		return TRUE;
 	else
 		return FALSE;
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
@@ -5626,6 +5659,10 @@ PartitionFilterPossibleToHijack::PartitionFilterPossibleToHijack(const Object *o
 //-----------------------------------------------------------------------------
 Bool PartitionFilterPossibleToHijack::allow(Object *objOther)
 {
+(void) objOther;
+DEBUG_CRASH(("PartitionFilterPossibleToEnter::allow not yet implemented!"));
+return false;
+#if 0
 	if (!objOther || !m_obj) 
 		return FALSE;
 
@@ -5633,6 +5670,7 @@ Bool PartitionFilterPossibleToHijack::allow(Object *objOther)
 		return TRUE;
 	else
 		return FALSE;
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------

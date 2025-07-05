@@ -27,7 +27,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "LinuxDevice/Common/LinuxModuleFactory.h"
 // #include "LinuxDevice/GameClient/Module/LinuxDebrisDraw.h"
-// #include "LinuxDevice/GameClient/Module/LinuxDefaultDraw.h"
+#include "LinuxDevice/GameClient/Module/LinuxDefaultDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxDependencyModelDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxModelDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxLaserDraw.h"
@@ -56,7 +56,7 @@ void LinuxModuleFactory::init()
    ModuleFactory::init();
 
    // add the specific module templates we need for the draw methods
-   // addModule( LinuxDefaultDraw );
+   addModuleRename(LinuxDefaultDraw, W3DDefaultDraw);
    // addModule( LinuxDebrisDraw );
    // addModule( LinuxModelDraw );
    // addModule( LinuxLaserDraw );

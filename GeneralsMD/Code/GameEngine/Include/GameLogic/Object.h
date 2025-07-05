@@ -229,10 +229,10 @@ public:
 #if 0
 	/// central place for us to put any additional capture logic
 	void onCapture( Player *oldOwner, Player *newOwner );
+#endif // if 0
 
 	/// And game death logic.  Destroy is deletion of object as code
 	void onDie( DamageInfo *damageInfo );
-#endif // if 0
 
 	// health and damage
 	void attemptDamage( DamageInfo *damageInfo );			///< damage object as specified by the info
@@ -277,10 +277,10 @@ public:
 	Bool hasCustomIndicatorColor() const { return m_indicatorColor != 0; }
 	void setCustomIndicatorColor(Color c);
 	void removeCustomIndicatorColor();
+#endif // if 0
 
 	Bool isLocallyControlled() const;
 	Bool isNeutralControlled() const;
-#endif // if 0
 
 	Bool getIsUndetectedDefector(void) const { return BitTest(m_privateStatus, UNDETECTED_DEFECTOR); }
 	void friend_setUndetectedDefector(Bool status);
@@ -334,6 +334,7 @@ public:
 	DamageModule* findDamageModule(NameKeyType key) const { return (DamageModule*)findModule(key); }
 
 	Bool isSalvageCrate() const;
+#endif // if 0
 
 	//
 	// Find us our production update interface if we have one.  This method exists simply
@@ -341,7 +342,8 @@ public:
 	//
 	ProductionUpdateInterface* getProductionUpdateInterface( void );
 
-	// 
+#if 0
+	//
 	// Find us our dock update interface if we have one.  Again, this method exists simple
 	// because we want to do this in a lot of places throughout the code
 	//
@@ -387,10 +389,12 @@ public:
 	// object by object basis.  Finally, it can be temporarily overriden by the OBJECT_STATUS_UNSELECTABLE. 
 	// jba.
 	void setSelectable(Bool selectable);
+#endif // if 0
 	Bool isSelectable() const;
 	
 	Bool isMassSelectable() const;
 
+#if 0
 	// User specified formation.
 	void setFormationID(enum FormationID id) {m_formationID = id;}
 	enum FormationID getFormationID(void) const {return m_formationID;}
@@ -407,9 +411,9 @@ public:
 #endif // if 0
 
 	inline Bool isEffectivelyDead() const { return (m_privateStatus & EFFECTIVELY_DEAD) != 0; }
-#if 0
 	void setEffectivelyDead(Bool dead);
 
+#if 0
 	void markSingleUseCommandUsed() { m_singleUseCommandUsed = true; }
 	Bool hasSingleUseCommandBeenUsed() const { return m_singleUseCommandUsed; }
 	

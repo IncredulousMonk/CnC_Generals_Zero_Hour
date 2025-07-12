@@ -57,10 +57,10 @@
 #include "GameClient/GadgetStaticText.h"
 #include "GameClient/Mouse.h"
 #include "GameClient/WindowVideoManager.h"
-// #include "GameClient/CampaignManager.h"
+#include "GameClient/CampaignManager.h"
 #include "GameClient/HotKey.h"
 // #include "GameClient/GameClient.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameLogic/ScriptEngine.h"
 // #include "GameNetwork/GameSpyOverlay.h"
 #include "GameClient/GameWindowTransitions.h"
@@ -207,7 +207,7 @@ static Bool FirstTimeRunningTheGame = TRUE;
 static Bool showLogo = FALSE;
 // static Int  showFrames = 0;
 static Int  showSide = SHOW_NONE;
-// static Bool logoIsShown = FALSE;
+static Bool logoIsShown = FALSE;
 static Bool justEntered = FALSE;
 static Bool launchChallengeMenu = FALSE;
 
@@ -273,15 +273,15 @@ static void quitCallback( void )
 	// 	TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
 }
 
-#if 0
 void setupGameStart(AsciiString mapName, GameDifficulty diff)
 {
 	TheCampaignManager->setGameDifficulty(diff);
 
 	if (launchChallengeMenu)
 	{
-		if (TheChallengeGenerals)
-			TheChallengeGenerals->setCurrentDifficulty(diff);
+		// FIXME: TheChallengeGenerals.
+		// if (TheChallengeGenerals)
+		// 	TheChallengeGenerals->setCurrentDifficulty(diff);
 		
 		campaignSelected = TRUE;
 		TheShell->push( AsciiString("Menus/ChallengeMenu.wnd") );
@@ -302,13 +302,15 @@ void prepareCampaignGame(GameDifficulty diff)
 	OptionPreferences pref;
 	pref.setCampaignDifficulty(diff);
 	pref.write();
-	TheScriptEngine->setGlobalDifficulty(diff);
+	// FIXME: TheScriptEngine.
+	// TheScriptEngine->setGlobalDifficulty(diff);
 
 	buttonPushed = FALSE;
 	TheTransitionHandler->reverse("MainMenuDifficultyMenuBack");
 	setupGameStart(TheCampaignManager->getCurrentMap(), diff );
 }
 
+#if 0
 static MessageBoxReturnType cancelStartBecauseOfNoCD( void *userData )
 {
 	return MB_RETURN_CLOSE;
@@ -326,6 +328,7 @@ static MessageBoxReturnType checkCDCallback( void *userData )
 		return MB_RETURN_CLOSE;
 	}
 }
+#endif
 
 static void doGameStart( void )
 {
@@ -346,18 +349,18 @@ static void doGameStart( void )
 
 static void checkCDBeforeCampaign(GameDifficulty diff)
 {
-	if (!IsFirstCDPresent())
-	{
-		// popup a dialog asking for a CD
-		ExMessageBoxOkCancel(TheGameText->fetch("GUI:InsertCDPrompt"), TheGameText->fetch("GUI:InsertCDMessage"),
-			(void *)diff, checkCDCallback, cancelStartBecauseOfNoCD);
-	}
-	else
-	{
+	// MG: Won't be needing a CD check.
+	// if (!IsFirstCDPresent())
+	// {
+	// 	// popup a dialog asking for a CD
+	// 	ExMessageBoxOkCancel(TheGameText->fetch("GUI:InsertCDPrompt"), TheGameText->fetch("GUI:InsertCDMessage"),
+	// 		(void *)diff, checkCDCallback, cancelStartBecauseOfNoCD);
+	// }
+	// else
+	// {
 		prepareCampaignGame(diff);
-	}
+	// }
 }
-#endif
 
 static void shutdownComplete( WindowLayout *layout )
 {
@@ -957,9 +960,7 @@ void MainMenuUpdate( WindowLayout *layout, void *userData )
 
 	if (startGame && TheShell->isAnimFinished() && TheTransitionHandler->isFinished())
 	{
-#if 0
 		doGameStart();
-#endif
 	}
 
 	// We'll only be successful if we've requested to 
@@ -1585,6 +1586,7 @@ WindowMsgHandledType MainMenuSystem( GameWindow *window, UnsignedInt msg,
 
 //				setupGameStart(TheCampaignManager->getCurrentMap());
 			}*/
+#endif // if 0
 			else if(controlID == buttonUSAID)
 			{
 				if(campaignSelected || dontAllowTransitions)
@@ -1699,7 +1701,6 @@ WindowMsgHandledType MainMenuSystem( GameWindow *window, UnsignedInt msg,
 				diffReverseSide();
 				campaignSelected = FALSE;
 			}
-#endif
 
 			break;
 

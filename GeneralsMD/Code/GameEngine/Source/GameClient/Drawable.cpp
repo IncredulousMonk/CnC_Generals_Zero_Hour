@@ -63,7 +63,7 @@
 // #include "GameLogic/ScriptEngine.h"
 // #include "GameLogic/Weapon.h"
 
-// #include "GameClient/Anim2D.h"
+#include "GameClient/Anim2D.h"
 // #include "GameClient/Display.h"
 // #include "GameClient/DisplayStringManager.h"
 #include "GameClient/Drawable.h"
@@ -108,7 +108,7 @@ static const char *TheDrawableIconNames[] =
 	"BattlePlanIcon_Bombard",
 	"BattlePlanIcon_HoldTheLine",
 	"BattlePlanIcon_SeekAndDestroy",
-  "Emoticon",
+	"Emoticon",
 	"Enthusiastic",//a red cross? // soon to replace?
 	"Subliminal",  //with the gold border! replace?
 	"CarBomb",
@@ -135,7 +135,7 @@ static DynamicAudioEventInfo  * getNoSoundMarker()
 
   return marker;
 }
-
+#endif // if 0
 
 
 // ------------------------------------------------------------------------------------------------
@@ -181,6 +181,7 @@ void DrawableIconInfo::killIcon(DrawableIconType t)
 	}
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 DrawableLocoInfo::DrawableLocoInfo()
@@ -206,8 +207,8 @@ DrawableLocoInfo::DrawableLocoInfo()
 	m_wheelInfo.m_framesAirborne = 0;
 	m_wheelInfo.m_wheelAngle = 0;
 
-  m_yawModulator = 0.0f;
-  m_pitchModulator = 0.0f;
+	m_yawModulator = 0.0f;
+	m_pitchModulator = 0.0f;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -1145,6 +1146,7 @@ void Drawable::reactToBodyDamageStateChange(BodyDamageType newState)
   if ( !TheGameLogic->isLoadingMap() )
  	  startAmbientSound(newState, TheGlobalData->m_data.m_timeOfDay);
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::setEffectiveOpacity( Real pulseFactor, Real explicitOpacity /* = -1.0f */)
@@ -1163,6 +1165,7 @@ void Drawable::setEffectiveOpacity( Real pulseFactor, Real explicitOpacity /* = 
 }		///< get alpha/opacity value used to override defaults when drawing.
 
 
+#if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::imitateStealthLook( Drawable& otherDraw )
@@ -3981,6 +3984,7 @@ void Drawable::drawHealthBar(const IRegion2D* healthBarRegion)
 	}  // end if
 
 }  // end drawHealthBar
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -3994,6 +3998,7 @@ void Drawable::clearAndSetModelConditionState( ModelConditionFlagType clr, Model
 	clearAndSetModelConditionFlags(c, s);
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 DrawModule** Drawable::getDrawModulesNonDirty() 
 { 
@@ -4059,11 +4064,16 @@ DrawModule const** Drawable::getDrawModules() const
 #endif
 	return dm;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void Drawable::clearAndSetModelConditionFlags(const ModelConditionFlags& clr, const ModelConditionFlags& setf)
 {
+(void) clr;
+(void) setf;
+DEBUG_CRASH(("Drawable::clearAndSetModelConditionFlags not yet implemented!"));
+#if 0
 	ModelConditionFlags oldFlags = m_conditionState;
 
 	m_conditionState.clearAndSet(clr, setf);
@@ -4081,6 +4091,7 @@ void Drawable::clearAndSetModelConditionFlags(const ModelConditionFlags& clr, co
 			di->replaceModelConditionState( m_conditionState );
 	}
 #endif
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -4088,6 +4099,10 @@ void Drawable::clearAndSetModelConditionFlags(const ModelConditionFlags& clr, co
 void Drawable::replaceModelConditionFlags( const ModelConditionFlags &flags, Bool forceReplace )
 {
 
+(void) flags;
+(void) forceReplace;
+DEBUG_CRASH(("Drawable::replaceModelConditionFlags not yet implemented!"));
+#if 0
 	//
 	// this is a no-op if the new flags are the same as our existing flags (unless we
 	// have the forceReplace parameter set, in which case we will force the setting of the
@@ -4119,8 +4134,8 @@ void Drawable::replaceModelConditionFlags( const ModelConditionFlags &flags, Boo
 			di->replaceModelConditionState( m_conditionState );
 	}
 #endif
-}
 #endif // if 0
+}
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::setIndicatorColor(Color color)

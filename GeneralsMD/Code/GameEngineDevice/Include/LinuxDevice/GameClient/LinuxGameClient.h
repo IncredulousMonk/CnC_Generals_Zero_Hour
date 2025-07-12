@@ -37,8 +37,8 @@ public:
    LinuxGameClient();
    virtual ~LinuxGameClient();
 
-	/// given a type, create a drawable
-	virtual Drawable* friend_createDrawable(const ThingTemplate* thing, DrawableStatus statusBits = DRAWABLE_STATUS_NONE);
+   /// given a type, create a drawable
+   virtual Drawable* friend_createDrawable(const ThingTemplate* thing, DrawableStatus statusBits = DRAWABLE_STATUS_NONE);
 
    virtual void init(void);      ///< initialize resources
    virtual void update(void);    ///< per frame update

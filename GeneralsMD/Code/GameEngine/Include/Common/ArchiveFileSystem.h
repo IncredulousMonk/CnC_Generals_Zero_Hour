@@ -93,7 +93,7 @@ typedef std::map<AsciiString, AsciiString> ArchivedFileLocationMap; // first str
 class ArchivedDirectoryInfo 
 {
 public:
-	AsciiString								m_directoryName {};
+	AsciiString					m_directoryName {};
 	ArchivedDirectoryInfoMap	m_directories {};
 	ArchivedFileLocationMap		m_files {};
 
@@ -109,9 +109,9 @@ public:
 class DetailedArchivedDirectoryInfo 
 {
 public:
-	AsciiString												m_directoryName {};
+	AsciiString							m_directoryName {};
 	DetailedArchivedDirectoryInfoMap	m_directories {};
-	ArchivedFileInfoMap								m_files {};
+	ArchivedFileInfoMap					m_files {};
 
 	void clear()
 	{
@@ -157,25 +157,25 @@ class ArchiveFileSystem : public SubsystemInterface
 
 	// ArchiveFile operations
 	virtual ArchiveFile*	openArchiveFile( const Char *filename ) = 0;		///< Create new or return existing Archive file from file name
-	virtual void					closeArchiveFile( const Char *filename ) = 0;		///< Close the one specified big file.
-	virtual void					closeAllArchiveFiles( void ) = 0;								///< Close all Archivefiles currently open
+	virtual void			closeArchiveFile( const Char *filename ) = 0;		///< Close the one specified big file.
+	virtual void			closeAllArchiveFiles( void ) = 0;								///< Close all Archivefiles currently open
 
 	// File operations
-	virtual File*					openFile( const Char *filename, Int access = 0);	///< Search Archive files for specified file name and open it if found
-	virtual void					closeAllFiles( void ) = 0;									///< Close all files associated with ArchiveFiles
-	virtual Bool					doesFileExist(const Char *filename) const;		///< return true if that file exists in an archive file somewhere.
+	virtual File*			openFile( const Char *filename, Int access = 0);	///< Search Archive files for specified file name and open it if found
+	virtual void			closeAllFiles( void ) = 0;									///< Close all files associated with ArchiveFiles
+	virtual Bool			doesFileExist(const Char *filename) const;		///< return true if that file exists in an archive file somewhere.
 
 	void					getFileListInDirectory(const AsciiString& currentDirectory, const AsciiString& originalDirectory, const AsciiString& searchName, FilenameList &filenameList, Bool searchSubdirectories) const; ///< search the given directory for files matching the searchName (egs. *.ini, *.rep).  Possibly search subdirectories.  Scans each Archive file.
 	Bool					getFileInfo(const AsciiString& filename, FileInfo *fileInfo) const; ///< see FileSystem.h
 	
-	virtual Bool	loadBigFilesFromDirectory(AsciiString dir, AsciiString fileMask, Bool overwrite = FALSE) = 0;
+	virtual Bool			loadBigFilesFromDirectory(AsciiString dir, AsciiString fileMask, Bool overwrite = FALSE) = 0;
 
 	// Unprotected this for copy-protection routines
-	AsciiString						getArchiveFilenameForFile(const AsciiString& filename) const;
+	AsciiString				getArchiveFilenameForFile(const AsciiString& filename) const;
 	void loadMods( void );
 
 protected:
-	virtual void					loadIntoDirectoryTree(const ArchiveFile *archiveFile, const AsciiString& archiveFilename, Bool overwrite = FALSE );	///< load the archive file's header information and apply it to the global archive directory tree.
+	virtual void			loadIntoDirectoryTree(const ArchiveFile *archiveFile, const AsciiString& archiveFilename, Bool overwrite = FALSE );	///< load the archive file's header information and apply it to the global archive directory tree.
 
 	ArchiveFileMap m_archiveFileMap {};
 	ArchivedDirectoryInfo m_rootDirectory {};

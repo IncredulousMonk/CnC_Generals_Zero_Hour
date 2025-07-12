@@ -52,12 +52,12 @@ SdlFileStream::SdlFileStream(File* file): m_file {file}
 };
 
 Sint64 SdlFileStream::size() {
-   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream: m_file must be set!"));
+   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream::size: m_file must be set!"));
    return m_file->size();
 }
 
 Sint64 SdlFileStream::seek(Sint64 offset, SDL_IOWhence whence) {
-   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream: m_file must be set!"));
+   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream::seek: m_file must be set!"));
    File::seekMode mode {};
    switch (whence) {
    case SDL_IO_SEEK_SET:
@@ -80,7 +80,7 @@ Sint64 SdlFileStream::seek(Sint64 offset, SDL_IOWhence whence) {
 }
 
 size_t SdlFileStream::read(void* ptr, size_t size, SDL_IOStatus* /*status*/) {
-   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream: m_file must be set!"));
+   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream::read: m_file must be set!"));
    Int bytesRead {m_file->read(ptr, static_cast<Int>(size))};
    if (bytesRead < 0) {
       return 0;
@@ -90,7 +90,7 @@ size_t SdlFileStream::read(void* ptr, size_t size, SDL_IOStatus* /*status*/) {
 }
 
 bool SdlFileStream::close() {
-   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream: m_file must be set!"));
+   DEBUG_ASSERTCRASH(m_file, ("SdlFileStream::close: m_file must be set!"));
    m_file->close();
    return true;
 }

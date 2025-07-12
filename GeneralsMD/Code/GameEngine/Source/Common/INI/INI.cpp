@@ -94,7 +94,7 @@ static const BlockParse theTypeTable[] =
 	{ "AudioEvent",						INI::parseAudioEventDefinition },
 	{ "AudioSettings",					INI::parseAudioSettingsDefinition },
 	{ "Bridge",							INI::parseTerrainBridgeDefinition },
-// 	{ "Campaign",						INI::parseCampaignDefinition },
+	{ "Campaign",						INI::parseCampaignDefinition },
 //  	{ "ChallengeGenerals",			INI::parseChallengeModeDefinition },
 // 	{ "CommandButton",					INI::parseCommandButtonDefinition },
 // 	{ "CommandMap",						INI::parseMetaMapDefinition },
@@ -1581,49 +1581,6 @@ void INI::initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList
 
 	}  // end while
 
-}
-
-//-------------------------------------------------------------------------------------------------
-void INI::skipToEnd()
-{
-	Bool done {FALSE};
-
-	std::set<AsciiString> set {}; // A set of names that can start a sub-block.
-	set.insert("DefaultConditionState");
-	set.insert("ConditionState");
-	// set.insert("AliasConditionState");
-	set.insert("TransitionState");
-	set.insert("AttackAreaDecal");
-	set.insert("TargetingReticleDecal");
-	set.insert("Turret");
-	set.insert("AltTurret");
-	set.insert("GridDecalTemplate");
-
-	// read each of the data fields
-	while (!done) {
-		// read next line
-		readLine();
-
-		// check for end token
-		const char* field = strtok(m_buffer, INI::getSeps());
-		if (field) {
-			if (strcasecmp(field, m_blockEndToken) == 0) {
-				done = TRUE;
-			} else if (set.contains(field)) {
-				skipToEnd(); // Recursive skipToEnd!
-			} else {
-				DEBUG_LOG(("Skipping .ini field: %s\n", field));
-			}  // end else
-		}  // end if
-
-		// sanity check for reaching end of file with no closing end token
-		if (done == FALSE && INI::isEOF() == TRUE) {
-			done = TRUE;
-			DEBUG_ASSERTCRASH( 0, ("Error parsing block '%s', in INI file '%s'.  Missing '%s' token\n",
-												 m_curBlockStart, getFilename().str(), m_blockEndToken) );
-			throw INI_MISSING_END_TOKEN;
-		}  // end if
-	}  // end while
 }
 
 //-------------------------------------------------------------------------------------------------

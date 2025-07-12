@@ -70,7 +70,6 @@ enum BodyDamageType: Int;
 #define DEF_DECAY_FRAMES (4)
 #define SUSTAIN_INDEFINITELY (0xfffffffe) // forever and ever, amen.
 
-#if 0
 //-----------------------------------------------------------------------------
 //@TODO -- The drawable icon system needs to be implemented in a proper manner -- KM
 //				 Fact 1: Every drawable in the world shouldn't have to have a pointer 
@@ -114,8 +113,8 @@ class DrawableIconInfo : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(DrawableIconInfo, "DrawableIconInfo" )		
 public:
-	Anim2D*								m_icon[MAX_ICONS];
-	UnsignedInt						m_keepTillFrame[MAX_ICONS];
+	Anim2D*		m_icon[MAX_ICONS];
+	UnsignedInt	m_keepTillFrame[MAX_ICONS];
 
 	DrawableIconInfo();
 	//~DrawableIconInfo();
@@ -129,6 +128,7 @@ public:
 
 };
 
+#if 0
 //-----------------------------------------------------------------------------
 struct TWheelInfo 
 {
@@ -345,13 +345,13 @@ public:
 #endif // if 0
 
 	void setDrawableHidden( Bool hidden );																		///< hide or unhide drawable
-#if 0
 	//
 	// note that this is not necessarily the 'get' reflection of setDrawableHidden, since drawables
 	// can spontaneously hide via stealth. (srj)
 	//
 	inline Bool isDrawableEffectivelyHidden() const { return m_hidden || m_hiddenByStealth; }
 
+#if 0
 	void setSelectable( Bool selectable );												///< Changes the drawables selectability	
 	Bool isSelectable( void ) const;
 	Bool isMassSelectable( void ) const;
@@ -450,6 +450,7 @@ public:
 	void prependToList(Drawable **pListHead);
 	void removeFromList(Drawable **pListHead);
 	void setID( DrawableID id );											///< set this drawable's unique ID
+#endif // if 0
 
 	inline const ModelConditionFlags& getModelConditionFlags( void ) const { return m_conditionState; }
 
@@ -467,6 +468,7 @@ public:
 	void clearAndSetModelConditionFlags( const ModelConditionFlags& clr, const ModelConditionFlags& set );
 	void replaceModelConditionFlags( const ModelConditionFlags &flags, Bool forceReplace = FALSE );
 
+#if 0
 	Bool handleWeaponFireFX(
 							WeaponSlotType wslot, 
 							Int specificBarrelToUse, 
@@ -561,7 +563,6 @@ public:
 
 	inline void setDrawableOpacity( Real value ) { m_explicitOpacity = value; }	///< set alpha/opacity value used to override defaults when drawing.
 
-#if 0
 	// note that this is not the 'get' inverse of setDrawableOpacity, since stealthing can also affect the effective opacity!
 	inline Real getEffectiveOpacity() const { return m_explicitOpacity * m_effectiveStealthOpacity; }		///< get alpha/opacity value used to override defaults when drawing.
 	void setEffectiveOpacity( Real pulseFactor, Real explicitOpacity = -1.0f );
@@ -569,7 +570,8 @@ public:
 	// this is for the add'l pass fx which operates completely independently of the stealth opacity effects. Draw() does the fading every frame.
 	inline Real getSecondMaterialPassOpacity() const { return m_secondMaterialPassOpacity; }		///< get alpha/opacity value used to render add'l  rendering pass.
 	void setSecondMaterialPassOpacity( Real op ) { m_secondMaterialPassOpacity = op; }; ///< set alpha/opacity value used to render add'l  rendering pass.
-	
+
+#if 0
 	// both of these assume that you are starting at one extreme 100% or 0% opacity and are trying to go to the other!! -- amit
 	void fadeOut( UnsignedInt frames );		///< fade object out...how gradually this is done is determined by frames
 	void fadeIn( UnsignedInt frames );		///< fade object in...how gradually this is done is determined by frames
@@ -737,9 +739,10 @@ private:
 	Matrix3D m_instance {};				///< The instance matrix that holds the initial/default position & orientation
 	Real m_instanceScale {};				///< the uniform scale factor applied to the instance matrix before it is sent to W3D. 
 
-	DrawableInfo				m_drawableInfo {};		///< structure pointed to by W3D render objects so they know which drawable they belong to.
+	DrawableInfo			m_drawableInfo {};		///< structure pointed to by W3D render objects so they know which drawable they belong to.
+#endif // if 0
 
-	ModelConditionFlags	m_conditionState {};				///< The Drawables current behavior state
+	ModelConditionFlags		m_conditionState {};				///< The Drawables current behavior state
 	Real					m_lastConstructDisplayed {};						///< last construct percent used to make the string
 	DisplayString*			m_constructDisplayString {};  ///< string to display construction % complete
 	DisplayString*			m_captionDisplayString {};		///< string to display caption
@@ -747,7 +750,6 @@ private:
 
 	UnsignedInt				m_expirationDate {};		///< if nonzero, Drawable should destroy itself at this frame
 	DrawableIconInfo*		m_iconInfo {};					///< lazily allocated!
-#endif // if 0
 
 	Real m_secondMaterialPassOpacity {};			///< drawable gets rendered again in hardware with an extra material layer
 	// --------- BYTE-SIZED THINGS GO HERE

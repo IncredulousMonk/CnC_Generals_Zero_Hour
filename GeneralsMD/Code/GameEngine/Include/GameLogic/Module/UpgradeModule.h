@@ -36,8 +36,8 @@
 #include "Common/STLTypedefs.h"
 #include "Common/Upgrade.h"
 
-// #include "GameClient/Drawable.h"
-// #include "GameClient/FXList.h"
+#include "GameClient/Drawable.h"
+#include "GameClient/FXList.h"
 
 #include "GameLogic/Module/BehaviorModule.h"
 
@@ -73,8 +73,7 @@ public:
 	mutable std::vector<AsciiString>	m_conflictingUpgradeNames {};
 	mutable std::vector<AsciiString>	m_removalUpgradeNames {};
 	
-	// FIXME: FXList
-	// mutable const FXList*				m_fxListUpgrade {};
+	mutable const FXList*				m_fxListUpgrade {};
 	mutable UpgradeMaskType				m_activationMask {};				///< Activation only supports a single name currently
 	mutable UpgradeMaskType				m_conflictingMask {};			///< Conflicts support multiple listings, and they are an OR
 	mutable Bool						m_requiresAllTriggers {};
@@ -86,8 +85,7 @@ public:
 		m_conflictingUpgradeNames.clear();
 		m_removalUpgradeNames.clear();
 
-		// FIXME: FXList
-		// m_fxListUpgrade = NULL;
+		m_fxListUpgrade = NULL;
 		m_activationMask.clear();
 		m_conflictingMask.clear();
 		m_requiresAllTriggers = false;
@@ -104,8 +102,7 @@ public:
 			{ "TriggeredBy",			INI::parseAsciiStringVector,	NULL, offsetof( UpgradeMuxData, m_activationUpgradeNames ) },
 			{ "ConflictsWith",			INI::parseAsciiStringVector,	NULL, offsetof( UpgradeMuxData, m_conflictingUpgradeNames ) },
 			{ "RemovesUpgrades",		INI::parseAsciiStringVector,	NULL, offsetof( UpgradeMuxData, m_removalUpgradeNames ) },
-			// FIXME: FXList
-			// { "FXListUpgrade",			INI::parseFXList,				NULL, offsetof( UpgradeMuxData, m_fxListUpgrade ) },
+			{ "FXListUpgrade",			INI::parseFXList,				NULL, offsetof( UpgradeMuxData, m_fxListUpgrade ) },
 			{ "RequiresAllTriggers",	INI::parseBool,					NULL, offsetof( UpgradeMuxData, m_requiresAllTriggers ) },
 			{ 0, 0, 0, 0 }
 		};

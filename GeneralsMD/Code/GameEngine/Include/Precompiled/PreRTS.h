@@ -46,6 +46,9 @@ class STLSpecialAlloc;
 
 #include <cassert>
 #include <ctype.h>
+#include <chrono>
+#include <thread>
+
 // #include <direct.h>
 // #include <EXCPT.H>
 // #include <float.h>

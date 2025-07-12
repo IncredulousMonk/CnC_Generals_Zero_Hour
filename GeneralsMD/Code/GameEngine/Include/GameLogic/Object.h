@@ -46,7 +46,7 @@
 // #include "GameLogic/WeaponBonusConditionFlags.h"
 #include "GameLogic/WeaponSet.h"
 #include "GameLogic/WeaponSetFlags.h"
-// #include "GameLogic/Module/StealthUpdate.h"
+#include "GameLogic/Module/StealthUpdate.h"
 
 //-----------------------------------------------------------------------------
 //           Forward References
@@ -311,8 +311,8 @@ public:
 
 	BodyModuleInterface* getBodyModule() const { return m_body; }
 	ContainModuleInterface* getContain() const { return m_contain; }
-#if 0
 	StealthUpdate*          getStealth() const { return m_stealth; }
+#if 0
 	SpawnBehaviorInterface* getSpawnBehaviorInterface() const;
 	ProjectileUpdateInterface* getProjectileUpdateInterface() const;
 
@@ -807,9 +807,7 @@ private:
 	// cache these, for convenience
 	ContainModuleInterface*				m_contain {};
 	BodyModuleInterface*				m_body {};
-#if 0
 	StealthUpdate*						m_stealth {};
-#endif // if 0
 
 	AIUpdateInterface*					m_ai {};	///< ai interface (if any), cached for handy access. (duplicate of entry in the module array!)
 	PhysicsBehavior*					m_physics {};	///< physics interface (if any), cached for handy access. (duplicate of entry in the module array!)

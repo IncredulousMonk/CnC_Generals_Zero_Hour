@@ -76,16 +76,26 @@ public:
 	//~Mission( void );
 
 public:
-	AsciiString m_name;
-	AsciiString m_mapName;	
-	AsciiString m_nextMission;
-	AsciiString m_movieLabel;
-	AsciiString m_missionObjectivesLabel[MAX_OBJECTIVE_LINES];
-	AudioEventRTS m_briefingVoice;
-	AsciiString m_locationNameLabel;
-	AsciiString m_unitNames[MAX_DISPLAYED_UNITS];
-	Int m_voiceLength;
-	AsciiString m_generalName;
+
+	// MG: Cannot apply offsetof to Mission, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_mapName;
+		AsciiString m_nextMission;
+		AsciiString m_movieLabel;
+		AsciiString m_missionObjectivesLabel[MAX_OBJECTIVE_LINES];
+		AsciiString m_locationNameLabel;
+		AsciiString m_unitNames[MAX_DISPLAYED_UNITS];
+		Int m_voiceLength;
+		AsciiString m_generalName;
+
+		Mission* m_obj {};					///< pointer to the parent object
+	};
+
+	IniData m_ini {};
+
+	AsciiString m_name {};
+	AudioEventRTS m_briefingVoice {};
 };
 
 class Campaign : public MemoryPoolObject
@@ -99,19 +109,28 @@ public:
 	Mission *getNextMission( Mission *current);
 	Mission *getMission( AsciiString missionName);
 	AsciiString getFinalVictoryMovie( void );
-	Bool isChallengeCampaign( void ) { return m_isChallengeCampaign; }
+	Bool isChallengeCampaign( void ) { return m_ini.m_isChallengeCampaign; }
 
 public:
 	typedef std::list< Mission* > MissionList;			///< list of Shell Menu schemes
 	typedef MissionList::iterator MissionListIt;
 
-	AsciiString m_name;
-	AsciiString m_firstMission;
-	AsciiString m_campaignNameLabel;		///< campaign name label from string manager
-	MissionList m_missions;
-	AsciiString m_finalMovieName;
-	Bool m_isChallengeCampaign;
-	AsciiString m_playerFactionName;
+	// MG: Cannot apply offsetof to Campaign, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_firstMission;
+		AsciiString m_campaignNameLabel;		///< campaign name label from string manager
+		AsciiString m_finalMovieName;
+		Bool m_isChallengeCampaign;
+		AsciiString m_playerFactionName;
+
+		Campaign* m_obj {};					///< pointer to the parent object
+	};
+
+	IniData m_ini {};
+
+	AsciiString m_name {};
+	MissionList m_missions {};
 };
 
 class CampaignManager : public Snapshot
@@ -125,7 +144,7 @@ public:
 	CampaignManager& operator=(const CampaignManager&) = delete;
 
 	// snapshot methods
-	virtual void crc( Xfer *xfer ) { }
+	virtual void crc( Xfer * /* xfer */ ) { }
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
@@ -142,7 +161,9 @@ public:
 	const FieldParse *getFieldParse( void ) const { return m_campaignFieldParseTable; }								///< returns the parsing fields
 	static const FieldParse m_campaignFieldParseTable[];																				///< the parse table
 	static void parseMissionPart( INI* ini, void *instance, void *store, const void *userData );					///< Parse the Mission Part
-	
+	// Proxy parse function to avoid offset problems:
+	static void parseMissionBriefingVoice(INI* ini, void *instance, void* store, const void* userData);
+
 	Campaign *newCampaign(AsciiString name);
 	Bool isVictorious( void ) { return m_victorious; }
 	void SetVictorious( Bool victory ) { m_victorious = victory;	}
@@ -163,13 +184,13 @@ public:
 private:
 	typedef std::list< Campaign* > CampaignList;			///< list of Shell Menu schemes
 	typedef CampaignList::iterator CampaignListIt;
-	CampaignList m_campaignList;											///< Our List of Campaigns
-	Campaign *m_currentCampaign;											///< Our current Campaign
-	Mission *m_currentMission;												///< our Current Mission
-	Bool m_victorious;
-	Int m_currentRankPoints;
-	GameDifficulty m_difficulty;
-	Int m_xferChallengeGeneralsPlayerTemplateNum;			///< Need a place to stick this naughty singleton's important bit.
+	CampaignList m_campaignList {};											///< Our List of Campaigns
+	Campaign *m_currentCampaign {};											///< Our current Campaign
+	Mission *m_currentMission {};												///< our Current Mission
+	Bool m_victorious {};
+	Int m_currentRankPoints {};
+	GameDifficulty m_difficulty {};
+	Int m_xferChallengeGeneralsPlayerTemplateNum {};			///< Need a place to stick this naughty singleton's important bit.
 
 };
 //-----------------------------------------------------------------------------

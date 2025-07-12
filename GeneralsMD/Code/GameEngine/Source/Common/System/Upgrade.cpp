@@ -34,7 +34,7 @@
 #include "Common/Upgrade.h"
 #include "Common/Player.h"
 #include "Common/Xfer.h"
-// #include "GameClient/InGameUI.h"
+#include "GameClient/InGameUI.h"
 #include "GameClient/Image.h"
 
 
@@ -445,8 +445,7 @@ Bool UpgradeCenter::canAffordUpgrade( Player *player, const UpgradeTemplate *upg
 		//Post reason why we can't make upgrade!
 		if( displayReason )
 		{
-			// FIXME: TheInGameUI
-			// TheInGameUI->message( "GUI:NotEnoughMoneyToUpgrade" );
+			TheInGameUI->message( "GUI:NotEnoughMoneyToUpgrade" );
 		}
 		return FALSE;
 	}

@@ -204,19 +204,20 @@ $(GEO)/AcademyStats.o $(GEO)/Energy.o $(GEO)/Handicap.o $(GEO)/MissionStats.o $(
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o $(GEO)/FileSystem.o \
    $(GEO)/FunctionLexicon.o $(GEO)/GameCommon.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/Geometry.o $(GEO)/KindOf.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
    $(GEO)/ObjectStatusTypes.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/Trig.o $(GEO)/UnicodeString.o $(GEO)/Upgrade.o \
+$(GEO)/GameState.o \
 $(GEO)/DrawModule.o $(GEO)/Module.o $(GEO)/ModuleFactory.o $(GEO)/Thing.o $(GEO)/ThingFactory.o $(GEO)/ThingTemplate.o \
 $(GEO)/Color.o $(GEO)/Credits.o $(GEO)/Display.o $(GEO)/DisplayString.o $(GEO)/DisplayStringManager.o $(GEO)/Drawable.o $(GEO)/DrawGroupInfo.o $(GEO)/FXList.o $(GEO)/GameClient.o \
    $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/InGameUI.o $(GEO)/LanguageFilter.o $(GEO)/Line2D.o $(GEO)/RadiusDecal.o $(GEO)/Snow.o \
    $(GEO)/VideoPlayer.o $(GEO)/Water.o \
 $(GEO)/AnimateWindowManager.o $(GEO)/GameFont.o $(GEO)/GameWindow.o $(GEO)/GameWindowGlobal.o $(GEO)/GameWindowManager.o $(GEO)/GameWindowManagerScript.o $(GEO)/GameWindowTransitions.o \
-   $(GEO)/GameWindowTransitionsStyles.o $(GEO)/HeaderTemplate.o $(GEO)/IMEManager.o $(GEO)/ProcessAnimateWindow.o $(GEO)/WinInstanceData.o $(GEO)/WindowLayout.o \
+   $(GEO)/GameWindowTransitionsStyles.o $(GEO)/HeaderTemplate.o $(GEO)/IMEManager.o $(GEO)/LoadScreen.o $(GEO)/ProcessAnimateWindow.o $(GEO)/WinInstanceData.o $(GEO)/WindowLayout.o \
 $(GEO)/GadgetCheckBox.o $(GEO)/GadgetComboBox.o $(GEO)/GadgetHorizontalSlider.o $(GEO)/GadgetListBox.o $(GEO)/GadgetProgressBar.o $(GEO)/GadgetPushButton.o $(GEO)/GadgetRadioButton.o \
    $(GEO)/GadgetStaticText.o $(GEO)/GadgetTabControl.o $(GEO)/GadgetTextEntry.o $(GEO)/GadgetVerticalSlider.o \
 $(GEO)/ExtendedMessageBox.o $(GEO)/MessageBox.o \
 $(GEO)/CreditsMenu.o $(GEO)/MainMenu.o $(GEO)/OptionsMenu.o \
 $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
-$(GEO)/Anim2D.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
+$(GEO)/Anim2D.o $(GEO)/CampaignManager.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
 $(GEO)/TerrainRoads.o \
 $(GEO)/Squad.o \
 $(GEO)/PolygonTrigger.o $(GEO)/SidesList.o $(GEO)/TerrainLogic.o \
@@ -226,9 +227,9 @@ $(GEO)/BodyModule.o $(GEO)/InactiveBody.o \
 $(GEO)/CollideModule.o \
 $(GEO)/DamageModule.o \
 $(GEO)/DestroyDie.o $(GEO)/DieModule.o \
-$(GEO)/UpdateModule.o \
+$(GEO)/StealthUpdate.o $(GEO)/UpdateModule.o \
 $(GEO)/UpgradeModule.o \
-$(GEO)/CaveSystem.o $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/RankInfo.o \
+$(GEO)/CaveSystem.o $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/GameLogicDispatch.o $(GEO)/RankInfo.o \
 $(GEO)/Chat.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
@@ -482,6 +483,10 @@ $(GEO)/Upgrade.o: $(GES)/Common/System/Upgrade.cpp GameEngine/Include/Common/Upg
 #$(GEO)/XferCRC.o: $(GES)/Common/System/XferCRC.cpp
 #	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/XferCRC.o $(GES)/Common/System/XferCRC.cpp
 
+# --- GameEngine/Source/Common/System/SaveGame ---
+$(GEO)/GameState.o: $(GES)/Common/System/SaveGame/GameState.cpp GameEngine/Include/Common/GameState.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameState.o $(GES)/Common/System/SaveGame/GameState.cpp
+
 # --- GameEngine/Source/Common/Thing ---
 $(GEO)/DrawModule.o: $(GES)/Common/Thing/DrawModule.cpp GameEngine/Include/Common/DrawModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DrawModule.o $(GES)/Common/Thing/DrawModule.cpp
@@ -547,6 +552,9 @@ $(GEO)/LanguageFilter.o: $(GES)/GameClient/LanguageFilter.cpp
 $(GEO)/Line2D.o: $(GES)/GameClient/Line2D.cpp GameEngine/Include/GameClient/Line2D.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Line2D.o $(GES)/GameClient/Line2D.cpp
 
+#$(GEO)/MapUtil.o: $(GES)/GameClient/MapUtil.cpp GameEngine/Include/GameClient/MapUtil.h
+#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MapUtil.o $(GES)/GameClient/MapUtil.cpp
+
 $(GEO)/RadiusDecal.o: $(GES)/GameClient/RadiusDecal.cpp GameEngine/Include/GameClient/RadiusDecal.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RadiusDecal.o $(GES)/GameClient/RadiusDecal.cpp
 
@@ -589,6 +597,9 @@ $(GEO)/HeaderTemplate.o: $(GES)/GameClient/GUI/HeaderTemplate.cpp
 
 $(GEO)/IMEManager.o: $(GES)/GameClient/GUI/IMEManager.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/IMEManager.o $(GES)/GameClient/GUI/IMEManager.cpp
+
+$(GEO)/LoadScreen.o: $(GES)/GameClient/GUI/LoadScreen.cpp GameEngine/Include/GameClient/LoadScreen.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/LoadScreen.o $(GES)/GameClient/GUI/LoadScreen.cpp
 
 $(GEO)/ProcessAnimateWindow.o: $(GES)/GameClient/GUI/ProcessAnimateWindow.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ProcessAnimateWindow.o $(GES)/GameClient/GUI/ProcessAnimateWindow.cpp
@@ -672,6 +683,9 @@ $(GEO)/WindowXlat.o: $(GES)/GameClient/MessageStream/WindowXlat.cpp
 $(GEO)/Anim2D.o: $(GES)/GameClient/System/Anim2D.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Anim2D.o $(GES)/GameClient/System/Anim2D.cpp
 
+$(GEO)/CampaignManager.o: $(GES)/GameClient/System/CampaignManager.cpp GameEngine/Include/GameClient/CampaignManager.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CampaignManager.o $(GES)/GameClient/System/CampaignManager.cpp
+
 $(GEO)/Image.o: $(GES)/GameClient/System/Image.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Image.o $(GES)/GameClient/System/Image.cpp
 
@@ -745,6 +759,9 @@ $(GEO)/DieModule.o: $(GES)/GameLogic/Object/Die/DieModule.cpp GameEngine/Include
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DieModule.o $(GES)/GameLogic/Object/Die/DieModule.cpp
 
 # --- GameEngine/Source/GameLogic/Object/Update ---
+$(GEO)/StealthUpdate.o: $(GES)/GameLogic/Object/Update/StealthUpdate.cpp GameEngine/Include/GameLogic/Module/StealthUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StealthUpdate.o $(GES)/GameLogic/Object/Update/StealthUpdate.cpp
+
 $(GEO)/UpdateModule.o: $(GES)/GameLogic/Object/Update/UpdateModule.cpp GameEngine/Include/GameLogic/Module/UpdateModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UpdateModule.o $(GES)/GameLogic/Object/Update/UpdateModule.cpp
 
@@ -761,6 +778,9 @@ $(GEO)/Damage.o: $(GES)/GameLogic/System/Damage.cpp GameEngine/Include/GameLogic
 
 $(GEO)/GameLogic.o: $(GES)/GameLogic/System/GameLogic.cpp GameEngine/Include/GameLogic/GameLogic.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameLogic.o $(GES)/GameLogic/System/GameLogic.cpp
+
+$(GEO)/GameLogicDispatch.o: $(GES)/GameLogic/System/GameLogicDispatch.cpp GameEngine/Include/GameLogic/GameLogic.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameLogicDispatch.o $(GES)/GameLogic/System/GameLogicDispatch.cpp
 
 $(GEO)/RankInfo.o: $(GES)/GameLogic/System/RankInfo.cpp GameEngine/Include/GameLogic/RankInfo.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RankInfo.o $(GES)/GameLogic/System/RankInfo.cpp

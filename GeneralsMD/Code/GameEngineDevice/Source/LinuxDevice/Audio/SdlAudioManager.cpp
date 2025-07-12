@@ -2932,6 +2932,10 @@ void SdlAudioManager::playSample(AudioEventRTS *event, PlayingAudio* audio)
 {
    // Load the file in
    OpenAudioFile* openAudio {loadFileForRead(event)};
+   if (!openAudio) {
+      return;
+   }
+
    audio->m_audioBuf = openAudio->m_audioBuf;
    audio->m_audioLen = openAudio->m_audioLen;
    if (audio->m_audioBuf) {
@@ -3255,6 +3259,13 @@ OpenAudioFile* AudioFileCache::openFile(AudioEventRTS* eventToOpenFrom)
 #ifdef INTENSIVE_AUDIO_DEBUG
    DEBUG_LOG(("AudioFileCache::openFile: %s ", strToFind.str()));
 #endif
+
+   if (strToFind.isEmpty()) {
+#ifdef INTENSIVE_AUDIO_DEBUG
+      DEBUG_LOG(("(filename is empty!)\n"));
+#endif
+      return NULL;
+   }
 
    OpenFilesHash::iterator it;
    it = m_openFiles.find(strToFind);

@@ -535,11 +535,6 @@ void ThingTemplate::parseModuleName(INI* ini, void *instance, void* store, const
 				
 	}
 
-// FIXME: TheModuleFactory
-(void) mi;
-(void) type;
-ini->skipToEnd();
-#if 0
 	Int interfaceMask;
 
 	// ugh -- special case for "Body".
@@ -622,7 +617,6 @@ ini->skipToEnd();
 	Bool inheritable = (self->m_ini.m_moduleParsingMode == MODULEPARSE_INHERITABLE);
 	Bool overrideableByLikeKind = (self->m_ini.m_moduleParsingMode == MODULEPARSE_OVERRIDEABLE_BY_LIKE_KIND);
 	mi->addModuleInfo(self, tokenStr, moduleTagStr, data, interfaceMask, inheritable, overrideableByLikeKind);
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -101,15 +101,15 @@ public:
 	SaveGameInfo( void );
 	~SaveGameInfo( void );
 
-	AsciiString saveGameMapName;			// map name of the "scratch pad" map extracted from save file
-	AsciiString pristineMapName;			// pristine map in the map or user maps directory
-	AsciiString mapLabel;							// pretty name of this level set in the editor
-	SaveDate date;										// date of file save
-	AsciiString campaignSide;					// which campaign side we're playing
-	Int missionNumber;								// mission number in campaign
-	UnicodeString description;				// user description for save game file
-	SaveFileType saveFileType;				// type of save file we're dealing with
-	AsciiString missionMapName;				// used for mission saves
+	AsciiString saveGameMapName {};			// map name of the "scratch pad" map extracted from save file
+	AsciiString pristineMapName {};			// pristine map in the map or user maps directory
+	AsciiString mapLabel {};							// pretty name of this level set in the editor
+	SaveDate date {};										// date of file save
+	AsciiString campaignSide {};					// which campaign side we're playing
+	Int missionNumber {};								// mission number in campaign
+	UnicodeString description {};				// user description for save game file
+	SaveFileType saveFileType {};				// type of save file we're dealing with
+	AsciiString missionMapName {};				// used for mission saves
 
 };
 
@@ -118,10 +118,10 @@ public:
 struct AvailableGameInfo
 {
 
-	AsciiString filename;
-	SaveGameInfo saveGameInfo;
-	AvailableGameInfo *next;
-	AvailableGameInfo *prev;
+	AsciiString filename {};
+	SaveGameInfo saveGameInfo {};
+	AvailableGameInfo *next {};
+	AvailableGameInfo *prev {};
 
 };
 
@@ -220,25 +220,25 @@ private:
 
 	struct SnapshotBlock
 	{
-		Snapshot *snapshot;								///< the snapshot object that handles this block
-		AsciiString blockName;						///< the block name
-	};	
+		Snapshot *snapshot {};							///< the snapshot object that handles this block
+		AsciiString blockName {};						///< the block name
+	};
 	typedef std::list< SnapshotBlock > SnapshotBlockList;
 	typedef SnapshotBlockList::iterator SnapshotBlockListIterator;
 	void addSnapshotBlock( AsciiString blockName, Snapshot *snapshot, SnapshotType which );
 	SnapshotBlock *findBlockInfoByToken( AsciiString token, SnapshotType which );
 
 	SnapshotBlockList m_snapshotBlockList[SNAPSHOT_MAX];	///< list of snapshot blocks of save file data
-	SaveGameInfo m_gameInfo;						///< save game info struct					
+	SaveGameInfo m_gameInfo {};						///< save game info struct					
 
 	typedef std::list< Snapshot * > SnapshotList;
 	typedef SnapshotList::iterator SnapshotListIterator;
 	typedef SnapshotList::reverse_iterator SnapshotListReverseIterator;
-	SnapshotList m_snapshotPostProcessList;
+	SnapshotList m_snapshotPostProcessList {};
 
-	AvailableGameInfo *m_availableGames;		///< list of available games we can save over or load from
+	AvailableGameInfo *m_availableGames {};		///< list of available games we can save over or load from
 
-	Bool m_isInLoadGame; // Brutal hack to allow bone pos validation while loading games
+	Bool m_isInLoadGame {}; // Brutal hack to allow bone pos validation while loading games
 };
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////

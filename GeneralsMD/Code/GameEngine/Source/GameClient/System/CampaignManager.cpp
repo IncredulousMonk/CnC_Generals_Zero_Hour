@@ -76,14 +76,14 @@ CampaignManager *TheCampaignManager = NULL;
 const FieldParse CampaignManager::m_campaignFieldParseTable[] = 
 {
 
-	{ "Mission",						CampaignManager::parseMissionPart,	NULL, NULL },
-	{ "FirstMission",				INI::parseAsciiString,							NULL,	offsetof( Campaign, m_firstMission )  },
-	{ "CampaignNameLabel",	INI::parseAsciiString,							NULL, offsetof( Campaign, m_campaignNameLabel ) },
-	{ "FinalVictoryMovie",	INI::parseAsciiString,							NULL, offsetof( Campaign, m_finalMovieName ) },
-	{ "IsChallengeCampaign",			INI::parseBool,				NULL, offsetof( Campaign, m_isChallengeCampaign ) },
-	{ "PlayerFaction",		INI::parseAsciiString,					NULL, offsetof( Campaign, m_playerFactionName ) },
+	{ "Mission",				CampaignManager::parseMissionPart,	NULL, 0 },
+	{ "FirstMission",			INI::parseAsciiString,				NULL, offsetof( Campaign::IniData, m_firstMission )  },
+	{ "CampaignNameLabel",		INI::parseAsciiString,				NULL, offsetof( Campaign::IniData, m_campaignNameLabel ) },
+	{ "FinalVictoryMovie",		INI::parseAsciiString,				NULL, offsetof( Campaign::IniData, m_finalMovieName ) },
+	{ "IsChallengeCampaign",	INI::parseBool,						NULL, offsetof( Campaign::IniData, m_isChallengeCampaign ) },
+	{ "PlayerFaction",			INI::parseAsciiString,				NULL, offsetof( Campaign::IniData, m_playerFactionName ) },
 
-	{ NULL,										NULL,													NULL, 0 }  // keep this last
+	{ NULL,						NULL,								NULL, 0 }  // keep this last
 
 };
 
@@ -113,18 +113,19 @@ void INI::parseCampaignDefinition( INI *ini )
 	DEBUG_ASSERTCRASH( campaign, ("parseCampaignDefinition: Unable to allocate campaign '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( campaign, TheCampaignManager->getFieldParse() );
+	ini->initFromINI( &campaign->m_ini, TheCampaignManager->getFieldParse() );
 
 }  // end parseCampaignDefinition
 
 //-----------------------------------------------------------------------------
-Campaign::Campaign( void ):
-	m_isChallengeCampaign(FALSE)
+Campaign::Campaign( void )
 {
+	m_ini.m_isChallengeCampaign = FALSE;
 	m_missions.clear();
-	m_firstMission.clear();
+	m_ini.m_firstMission.clear();
 	m_name.clear();
-	m_finalMovieName.clear();
+	m_ini.m_finalMovieName.clear();
+	m_ini.m_obj = this;
 }
 
 //-----------------------------------------------------------------------------
@@ -142,7 +143,7 @@ Campaign::~Campaign( void )
 
 AsciiString Campaign::getFinalVictoryMovie( void )
 {
-	return m_finalMovieName;
+	return m_ini.m_finalMovieName;
 }
 
 //-----------------------------------------------------------------------------
@@ -195,10 +196,10 @@ Mission *Campaign::getNextMission( Mission *current)
 	//if passed a Null pointer, load the first mission
 	if(!current)
 	{
-		name = m_firstMission;
+		name = m_ini.m_firstMission;
 	}
 	else
-		name = current->m_nextMission;
+		name = current->m_ini.m_nextMission;
 	name.toLower();
 	MissionListIt it;
 	it = m_missions.begin();	
@@ -330,7 +331,7 @@ AsciiString CampaignManager::getCurrentMap( void )
 	if(!m_currentMission)
 		return AsciiString::TheEmptyString;
 	
-	return m_currentMission->m_mapName;
+	return m_currentMission->m_ini.m_mapName;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -365,32 +366,41 @@ void CampaignManager::parseMissionPart( INI* ini, void *instance, void *store, c
 {
 	static const FieldParse myFieldParse[] = 
 		{
-			{ "Map",							INI::parseAsciiString,				NULL, offsetof( Mission, m_mapName ) },
-			{ "NextMission",			INI::parseAsciiString,				NULL, offsetof( Mission, m_nextMission ) },
-			{ "IntroMovie",				INI::parseAsciiString,				NULL, offsetof( Mission, m_movieLabel ) },
-			{ "ObjectiveLine0",		INI::parseAsciiString,				NULL, offsetof( Mission, m_missionObjectivesLabel[0] ) },
-      { "ObjectiveLine1",		INI::parseAsciiString,				NULL, offsetof( Mission, m_missionObjectivesLabel[1] ) },
-			{ "ObjectiveLine2",		INI::parseAsciiString,				NULL, offsetof( Mission, m_missionObjectivesLabel[2] ) },
-			{ "ObjectiveLine3",		INI::parseAsciiString,				NULL, offsetof( Mission, m_missionObjectivesLabel[3] ) },
-			{ "ObjectiveLine4",		INI::parseAsciiString,				NULL, offsetof( Mission, m_missionObjectivesLabel[4] ) },
-			{ "BriefingVoice",		INI::parseAudioEventRTS,			NULL, offsetof( Mission, m_briefingVoice ) },
-			{ "UnitNames0",				INI::parseAsciiString,				NULL, offsetof( Mission, m_unitNames[0] ) },
-			{ "UnitNames1",				INI::parseAsciiString,				NULL, offsetof( Mission, m_unitNames[1] ) },
-			{ "UnitNames2",				INI::parseAsciiString,				NULL, offsetof( Mission, m_unitNames[2] ) },
-			{ "GeneralName",			INI::parseAsciiString,			NULL, offsetof( Mission, m_generalName)	},
-			{ "LocationNameLabel",INI::parseAsciiString,				NULL, offsetof( Mission, m_locationNameLabel ) },
-			{ "VoiceLength",			INI::parseInt ,								NULL, offsetof( Mission, m_voiceLength ) },
+			{ "Map",				INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_mapName ) },
+			{ "NextMission",		INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_nextMission ) },
+			{ "IntroMovie",			INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_movieLabel ) },
+			{ "ObjectiveLine0",		INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_missionObjectivesLabel[0] ) },
+			{ "ObjectiveLine1",		INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_missionObjectivesLabel[1] ) },
+			{ "ObjectiveLine2",		INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_missionObjectivesLabel[2] ) },
+			{ "ObjectiveLine3",		INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_missionObjectivesLabel[3] ) },
+			{ "ObjectiveLine4",		INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_missionObjectivesLabel[4] ) },
+			{ "BriefingVoice",		CampaignManager::parseMissionBriefingVoice,	NULL, 0 },
+			{ "UnitNames0",			INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_unitNames[0] ) },
+			{ "UnitNames1",			INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_unitNames[1] ) },
+			{ "UnitNames2",			INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_unitNames[2] ) },
+			{ "GeneralName",		INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_generalName)	},
+			{ "LocationNameLabel",	INI::parseAsciiString,						NULL, offsetof( Mission::IniData, m_locationNameLabel ) },
+			{ "VoiceLength",		INI::parseInt ,								NULL, offsetof( Mission::IniData, m_voiceLength ) },
 
-			{ NULL,							NULL,											NULL, 0 }  // keep this last
+			{ NULL,					NULL,										NULL, 0 }  // keep this last
 		};
 	AsciiString name;
 	const char* c = ini->getNextToken();
 	name.set( c );	
 
-	Mission *mission = ((Campaign*)instance)->newMission(name );
-	ini->initFromINI(mission, myFieldParse);
+	Campaign::IniData* inidata = (Campaign::IniData*) instance;
+	Campaign* campaign = inidata->m_obj;
+	Mission *mission = campaign->newMission(name);
+	ini->initFromINI(&mission->m_ini, myFieldParse);
 }
-	
+
+//-------------------------------------------------------------------------------------------------
+void CampaignManager::parseMissionBriefingVoice(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	Mission::IniData* data = (Mission::IniData*) instance;
+	Mission* mission = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &mission->m_briefingVoice);
+}
 
 //-----------------------------------------------------------------------------
 Campaign *CampaignManager::newCampaign(AsciiString name)
@@ -426,6 +436,9 @@ Campaign *CampaignManager::newCampaign(AsciiString name)
 // ------------------------------------------------------------------------------------------------
 void CampaignManager::xfer( Xfer *xfer )
 {
+(void) xfer;
+DEBUG_CRASH(("CampaignManager::xfer not yet implemented!"));
+#if 0
 
 	// version
 	const XferVersion currentVersion = 5;
@@ -459,10 +472,10 @@ void CampaignManager::xfer( Xfer *xfer )
 	{
 		// The saving of SkirmishInfo in GameStateMap is in the "wrong" place, but I can't move it.
 		// We need to ensure this is saved in a mission save as well as a normal save.
-		// Singletons are bad.  THis is here because a) it is one of two blocks in a Mission Save
+		// Singletons are bad.  This is here because a) it is one of two blocks in a Mission Save
 		// b) It is not the block that is loaded for every save to get desc's in populating the saveload window.
 		// So it is here.  <sob> I've got nowhere else to go!
-		Bool isChallengeCampaign = m_currentCampaign ? m_currentCampaign->m_isChallengeCampaign : FALSE;
+		Bool isChallengeCampaign = m_currentCampaign ? m_currentCampaign->m_ini.m_isChallengeCampaign : FALSE;
 		xfer->xferBool(&isChallengeCampaign);
 
 		if( isChallengeCampaign ) 
@@ -496,10 +509,13 @@ void CampaignManager::xfer( Xfer *xfer )
 		m_xferChallengeGeneralsPlayerTemplateNum = playerTemplateNum;
 	}
 
+#endif // if 0
 }  // end xfer
 
 void CampaignManager::loadPostProcess( void )
 {
+DEBUG_LOG(("CampaignManager::xfer not yet implemented!"));
+#if 0
 	if(TheChallengeGenerals == NULL)
 	{
 		DEBUG_CRASH(("TheChallengeGenerals singleton does not exist. This loaded game will not have a working Continue button for GC mode."));
@@ -507,6 +523,7 @@ void CampaignManager::loadPostProcess( void )
 	}
 
 	TheChallengeGenerals->setCurrentPlayerTemplateNum(m_xferChallengeGeneralsPlayerTemplateNum);
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
@@ -518,7 +535,8 @@ void CampaignManager::loadPostProcess( void )
 //-----------------------------------------------------------------------------
 Mission::Mission( void )
 {
-	m_voiceLength = 0;
+	m_ini.m_voiceLength = 0;
+	m_ini.m_obj = this;
 }
 
 //-----------------------------------------------------------------------------
@@ -526,4 +544,3 @@ Mission::~Mission( void )
 {
 
 }
-	

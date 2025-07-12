@@ -53,7 +53,8 @@
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/Weapon.h"
 
-#include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/GameLogic.h"
+// #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/StealthUpdate.h"
 #include "GameLogic/Module/PhysicsUpdate.h"
 #include "GameLogic/Module/ContainModule.h"
@@ -68,27 +69,27 @@
 
 StealthUpdateModuleData::StealthUpdateModuleData()
 {
-		//Added By Sadullah Nader
-		//Initialization(s) inserted
-		m_disguiseFX = NULL;
-    m_disguiseRevealFX = NULL;
-    //
-    m_stealthDelay		= UINT_MAX;
-    m_stealthLevel		= 0;
-    m_stealthSpeed		= 0.0f;
-    m_friendlyOpacityMin = 0.5f;
-    m_friendlyOpacityMax = 1.0f;
-    m_pulseFrames = 30;
-    m_teamDisguised		= false;
-    m_revealDistanceFromTarget = 0.0f;
-    m_orderIdleEnemiesToAttackMeUponReveal = false;
-    m_innateStealth   = true;
-    m_disguiseTransitionFrames = 0;
-    m_disguiseRevealTransitionFrames = 0;
-    m_blackMarketCheckFrames = 0;
-    m_enemyDetectionEvaEvent = EVA_Invalid;
-    m_ownDetectionEvaEvent = EVA_Invalid;
-    m_grantedBySpecialPower = FALSE;
+	//Added By Sadullah Nader
+	//Initialization(s) inserted
+	m_ini.m_disguiseFX = NULL;
+	m_ini.m_disguiseRevealFX = NULL;
+	//
+	m_ini.m_stealthDelay		= UINT_MAX;
+	m_ini.m_stealthLevel		= 0;
+	m_ini.m_stealthSpeed		= 0.0f;
+	m_ini.m_friendlyOpacityMin = 0.5f;
+	m_ini.m_friendlyOpacityMax = 1.0f;
+	m_ini.m_pulseFrames = 30;
+	m_ini.m_teamDisguised		= false;
+	m_ini.m_revealDistanceFromTarget = 0.0f;
+	m_ini.m_orderIdleEnemiesToAttackMeUponReveal = false;
+	m_ini.m_innateStealth   = true;
+	m_ini.m_disguiseTransitionFrames = 0;
+	m_ini.m_disguiseRevealTransitionFrames = 0;
+	m_ini.m_blackMarketCheckFrames = 0;
+	m_ini.m_enemyDetectionEvaEvent = EVA_Invalid;
+	m_ini.m_ownDetectionEvaEvent = EVA_Invalid;
+	m_ini.m_grantedBySpecialPower = FALSE;
 }
 
 
@@ -99,28 +100,29 @@ void StealthUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "StealthDelay",									INI::parseDurationUnsignedInt,	NULL, offsetof( StealthUpdateModuleData, m_stealthDelay ) },
-		{ "MoveThresholdSpeed",						INI::parseVelocityReal,					NULL, offsetof( StealthUpdateModuleData, m_stealthSpeed ) },
-		{ "StealthForbiddenConditions",		INI::parseBitString32,					TheStealthLevelNames, offsetof( StealthUpdateModuleData, m_stealthLevel) }, 
-		{ "HintDetectableConditions",	  	ObjectStatusMaskType::parseFromINI,	NULL, offsetof( StealthUpdateModuleData, m_hintDetectableStates) },
-		{ "RequiredStatus",								ObjectStatusMaskType::parseFromINI,	NULL, offsetof( StealthUpdateModuleData, m_requiredStatus ) },
-		{ "ForbiddenStatus",							ObjectStatusMaskType::parseFromINI,	NULL, offsetof( StealthUpdateModuleData, m_forbiddenStatus ) },
-		{ "FriendlyOpacityMin",						INI::parsePercentToReal,				NULL, offsetof( StealthUpdateModuleData, m_friendlyOpacityMin ) },
-		{ "FriendlyOpacityMax",						INI::parsePercentToReal,				NULL, offsetof( StealthUpdateModuleData, m_friendlyOpacityMax ) },
-		{ "PulseFrequency",								INI::parseDurationUnsignedInt,	NULL, offsetof( StealthUpdateModuleData, m_pulseFrames ) },
-		{ "DisguisesAsTeam",							INI::parseBool,									NULL, offsetof( StealthUpdateModuleData, m_teamDisguised ) },
-		{ "RevealDistanceFromTarget",			INI::parseReal,									NULL, offsetof( StealthUpdateModuleData, m_revealDistanceFromTarget ) },
-		{ "OrderIdleEnemiesToAttackMeUponReveal", INI::parseBool,					NULL, offsetof( StealthUpdateModuleData, m_orderIdleEnemiesToAttackMeUponReveal ) },
-		{ "DisguiseFX",										INI::parseFXList,								NULL, offsetof( StealthUpdateModuleData, m_disguiseFX ) },
-		{ "DisguiseRevealFX",							INI::parseFXList,								NULL, offsetof( StealthUpdateModuleData, m_disguiseRevealFX ) },
-		{ "DisguiseTransitionTime",				INI::parseDurationUnsignedInt,  NULL, offsetof( StealthUpdateModuleData, m_disguiseTransitionFrames ) },
-		{ "DisguiseRevealTransitionTime",	INI::parseDurationUnsignedInt,  NULL, offsetof( StealthUpdateModuleData, m_disguiseRevealTransitionFrames ) },
-		{ "InnateStealth",								INI::parseBool,									NULL, offsetof( StealthUpdateModuleData, m_innateStealth ) },
-		{ "UseRiderStealth",							INI::parseBool,									NULL, offsetof( StealthUpdateModuleData, m_useRiderStealth ) },
-    { "EnemyDetectionEvaEvent",				Eva::parseEvaMessageFromIni,  	NULL, offsetof( StealthUpdateModuleData, m_enemyDetectionEvaEvent ) },
-    { "OwnDetectionEvaEvent",		  		Eva::parseEvaMessageFromIni,  	NULL, offsetof( StealthUpdateModuleData, m_ownDetectionEvaEvent ) },
-		{ "BlackMarketCheckDelay",				INI::parseDurationUnsignedInt,  NULL, offsetof( StealthUpdateModuleData, m_blackMarketCheckFrames ) },
-    { "GrantedBySpecialPower",        INI::parseBool,                 NULL, offsetof( StealthUpdateModuleData, m_grantedBySpecialPower ) },
+		{ "StealthDelay",							INI::parseDurationUnsignedInt,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_stealthDelay ) },
+		{ "MoveThresholdSpeed",						INI::parseVelocityReal,				NULL,					offsetof( StealthUpdateModuleData::IniData, m_stealthSpeed ) },
+		{ "StealthForbiddenConditions",				INI::parseBitString32,				TheStealthLevelNames,	offsetof( StealthUpdateModuleData::IniData, m_stealthLevel) }, 
+		{ "HintDetectableConditions",				ObjectStatusMaskType::parseFromINI,	NULL,					offsetof( StealthUpdateModuleData::IniData, m_hintDetectableStates) },
+		{ "RequiredStatus",							ObjectStatusMaskType::parseFromINI,	NULL,					offsetof( StealthUpdateModuleData::IniData, m_requiredStatus ) },
+		{ "ForbiddenStatus",						ObjectStatusMaskType::parseFromINI,	NULL,					offsetof( StealthUpdateModuleData::IniData, m_forbiddenStatus ) },
+		{ "FriendlyOpacityMin",						INI::parsePercentToReal,			NULL,					offsetof( StealthUpdateModuleData::IniData, m_friendlyOpacityMin ) },
+		{ "FriendlyOpacityMax",						INI::parsePercentToReal,			NULL,					offsetof( StealthUpdateModuleData::IniData, m_friendlyOpacityMax ) },
+		{ "PulseFrequency",							INI::parseDurationUnsignedInt,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_pulseFrames ) },
+		{ "DisguisesAsTeam",						INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_teamDisguised ) },
+		{ "RevealDistanceFromTarget",				INI::parseReal,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_revealDistanceFromTarget ) },
+		{ "OrderIdleEnemiesToAttackMeUponReveal",	INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_orderIdleEnemiesToAttackMeUponReveal ) },
+		{ "DisguiseFX",								INI::parseFXList,					NULL,					offsetof( StealthUpdateModuleData::IniData, m_disguiseFX ) },
+		{ "DisguiseRevealFX",						INI::parseFXList,					NULL,					offsetof( StealthUpdateModuleData::IniData, m_disguiseRevealFX ) },
+		{ "DisguiseTransitionTime",					INI::parseDurationUnsignedInt,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_disguiseTransitionFrames ) },
+		{ "DisguiseRevealTransitionTime",			INI::parseDurationUnsignedInt,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_disguiseRevealTransitionFrames ) },
+		{ "InnateStealth",							INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_innateStealth ) },
+		{ "UseRiderStealth",						INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_useRiderStealth ) },
+		// FIXME: TheEva
+		// { "EnemyDetectionEvaEvent",					Eva::parseEvaMessageFromIni,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_enemyDetectionEvaEvent ) },
+		// { "OwnDetectionEvaEvent",					Eva::parseEvaMessageFromIni,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_ownDetectionEvaEvent ) },
+		{ "BlackMarketCheckDelay",					INI::parseDurationUnsignedInt,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_blackMarketCheckFrames ) },
+		{ "GrantedBySpecialPower",					INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_grantedBySpecialPower ) },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -132,10 +134,10 @@ StealthUpdate::StealthUpdate( Thing *thing, const ModuleData* moduleData ) : Upd
 {
 	const StealthUpdateModuleData *data = getStealthUpdateModuleData();
 
-	m_stealthAllowedFrame = TheGameLogic->getFrame() + data->m_stealthDelay;
+	m_stealthAllowedFrame = TheGameLogic->getFrame() + data->m_ini.m_stealthDelay;
 
 	//Must be enabled manually if using disguise system (bomb truck uses)
-	m_enabled = !data->m_teamDisguised;
+	m_enabled = !data->m_ini.m_teamDisguised;
 
 	//Added By Sadullah Nader
 	//Initialization(s) inserted
@@ -153,14 +155,14 @@ StealthUpdate::StealthUpdate( Thing *thing, const ModuleData* moduleData ) : Upd
 	m_nextBlackMarketCheckFrame = 0;
 	m_framesGranted = 0;
 	
-	if( data->m_innateStealth )
+	if( data->m_ini.m_innateStealth )
 	{
 		//Giving innate stealth units this status bit allows other code to easily check the status bit.
 		getObject()->setStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_CAN_STEALTH ) );
 	}
 
 	// start active, since some stealths start enabled from the get-go
-  if ( data->m_grantedBySpecialPower )
+  if ( data->m_ini.m_grantedBySpecialPower )
 	  setWakeFrame( getObject(), UPDATE_SLEEP_FOREVER );
   else
 	  setWakeFrame( getObject(), UPDATE_SLEEP_NONE );
@@ -201,12 +203,12 @@ void isBlackMarket( Object *obj, void *userData )
 //---------------------------------------------------------------------------------------~-_-~-_-~-
 void StealthUpdate::receiveGrant( Bool active, UnsignedInt frames )
 {
-  Object *obj = getObject();
-  if ( obj == NULL )
-    return;
+	Object *obj = getObject();
+	if ( obj == NULL )
+		return;
 
-  if (this->canDisguise())
-    return; //so bombtrucks and stuff do not get foiled by this.
+	if (this->canDisguise())
+		return; //so bombtrucks and stuff do not get foiled by this.
 
 	//Kris: Turn it off if we pass in FALSE for active.
 	if( !active && m_enabled )
@@ -221,7 +223,7 @@ void StealthUpdate::receiveGrant( Bool active, UnsignedInt frames )
 		//On
 		obj->setStatus( MAKE_OBJECT_STATUS_MASK2( OBJECT_STATUS_CAN_STEALTH, OBJECT_STATUS_STEALTHED ) );
 		m_stealthAllowedFrame = TheGameLogic->getFrame();
-	  setWakeFrame( obj, UPDATE_SLEEP_NONE );
+		setWakeFrame( obj, UPDATE_SLEEP_NONE );
 		m_framesGranted = frames;
 	}
 	else
@@ -237,31 +239,32 @@ void StealthUpdate::receiveGrant( Bool active, UnsignedInt frames )
 		}
 	}
 
-  const ContainModuleInterface *contain = obj->getContain();
-  if ( contain && contain->isRiderChangeContain() )
-  {
-    const Object *rider = contain->friend_getRider(); 
-    if ( rider )
-    {
-      StealthUpdate *riderStealth = rider->getStealth();
-      if ( riderStealth )
-        riderStealth->receiveGrant( active, frames );
-    }
-  }
-
-
-
+	const ContainModuleInterface *contain = obj->getContain();
+	if ( contain && contain->isRiderChangeContain() )
+	{
+		const Object *rider = contain->friend_getRider(); 
+		if ( rider )
+		{
+		StealthUpdate *riderStealth = rider->getStealth();
+		if ( riderStealth )
+			riderStealth->receiveGrant( active, frames );
+		}
+	}
 }
 
 
 //-------------------------------------------------------------------------------------------------
 Bool StealthUpdate::allowedToStealth( Object *stealthOwner ) const
 {
+(void) stealthOwner;
+DEBUG_CRASH(("StealthUpdate::allowedToStealth not yet implemented!"));
+return false;
+#if 0
 	const Object *self = getObject();
 	const StealthUpdateModuleData *data = getStealthUpdateModuleData();
 	UnsignedInt now = TheGameLogic->getFrame();
 
-	UnsignedInt flags = data->m_stealthLevel;
+	UnsignedInt flags = data->m_ini.m_stealthLevel;
 	if( self != stealthOwner )
 	{
 		//Extract the rules from the rider's stealthupdate module data instead
@@ -304,7 +307,7 @@ Bool StealthUpdate::allowedToStealth( Object *stealthOwner ) const
 	if( flags & STEALTH_ONLY_WITH_BLACK_MARKET && m_nextBlackMarketCheckFrame < now )
 	{
 		//randomize timer a little incase we have a whole bunch on the same frame.
-		m_nextBlackMarketCheckFrame += data->m_blackMarketCheckFrames + GameLogicRandomValue( 0, 10 ); 
+		m_nextBlackMarketCheckFrame += data->m_ini.m_blackMarketCheckFrames + GameLogicRandomValue( 0, 10 ); 
 		
 		//If we can't find an active black market, then we can't stealth.
 		Bool blackMarket = FALSE;
@@ -336,11 +339,11 @@ Bool StealthUpdate::allowedToStealth( Object *stealthOwner ) const
 
 	//We need all required status or else we fail
 	// If we have any requirements
-	if( data->m_requiredStatus.any()  &&  !self->getStatusBits().testForAll( data->m_requiredStatus ) )
+	if( data->m_ini.m_requiredStatus.any()  &&  !self->getStatusBits().testForAll( data->m_ini.m_requiredStatus ) )
 		return FALSE; 
 
 	//If we have any forbidden statii, then fail
-	if( self->getStatusBits().testForAny( data->m_forbiddenStatus ) )
+	if( self->getStatusBits().testForAny( data->m_ini.m_forbiddenStatus ) )
 		return FALSE; 
 
 
@@ -396,23 +399,22 @@ Bool StealthUpdate::allowedToStealth( Object *stealthOwner ) const
 		}
 	}
 
-  //new past-alpha feature, grr...
+	//new past-alpha feature, grr...
 	if( flags & STEALTH_NOT_WHILE_RIDERS_ATTACKING )
 	{
-    ContainModuleInterface *myContain = self->getContain();
-    if ( myContain && myContain->isPassengerAllowedToFire() )
-    {
-      if ( myContain->isAnyRiderAttacking() )
-        return FALSE;
-
-    }
-  }
+		ContainModuleInterface *myContain = self->getContain();
+		if ( myContain && myContain->isPassengerAllowedToFire() )
+		{
+			if ( myContain->isAnyRiderAttacking() )
+			return FALSE;
+		}
+	}
 
 
 
 	const PhysicsBehavior *physics = self->getPhysics();
 	if ((flags & STEALTH_NOT_WHILE_MOVING) && physics != NULL && 
-					physics->getVelocityMagnitude() > getStealthUpdateModuleData()->m_stealthSpeed)
+					physics->getVelocityMagnitude() > getStealthUpdateModuleData()->m_ini.m_stealthSpeed)
 		return FALSE;
 	
 	if( self->testScriptStatusBit(OBJECT_STATUS_SCRIPT_UNSTEALTHED))
@@ -422,6 +424,7 @@ Bool StealthUpdate::allowedToStealth( Object *stealthOwner ) const
 	}
 
 	return TRUE;
+#endif // if 0
 }
 
 
@@ -433,7 +436,7 @@ void StealthUpdate::hintDetectableWhileUnstealthed()
 	Object *self = getObject();
 	const StealthUpdateModuleData *md = getStealthUpdateModuleData();
 
-	if( self && md->m_hintDetectableStates.testForAny( self->getStatusBits() ) )
+	if( self && md->m_ini.m_hintDetectableStates.testForAny( self->getStatusBits() ) )
 	{
 		if ( self->getControllingPlayer() == ThePlayerList->getLocalPlayer() )
 		{
@@ -451,7 +454,7 @@ void StealthUpdate::hintDetectableWhileUnstealthed()
 
 Real StealthUpdate::getFriendlyOpacity() const
 {
-	return getStealthUpdateModuleData()->m_friendlyOpacityMin; 
+	return getStealthUpdateModuleData()->m_ini.m_friendlyOpacityMin; 
 }
 
 
@@ -558,7 +561,7 @@ Object* StealthUpdate::calcStealthOwner()
 	//If we are going to use the rider for stealth rules, then we need to separate the
 	//rider and the container. The rider will determine if the container is stealthed or
 	//not.
-	if( data->m_useRiderStealth )
+	if( data->m_ini.m_useRiderStealth )
 	{
 		//We're actually going to logically check the rider as the stealth owner, but the
 		//stealth effects will go on the container.
@@ -592,6 +595,9 @@ UpdateSleepTime StealthUpdate::calcSleepTime() const
 UpdateSleepTime StealthUpdate::update( void )
 {
 
+DEBUG_CRASH(("StealthUpdate::update not yet implemented!"));
+return UPDATE_SLEEP_NONE;
+#if 0
 	// restore disguise if we need to from a game load
 	if( m_xferRestoreDisguise == TRUE )
 	{
@@ -620,7 +626,7 @@ UpdateSleepTime StealthUpdate::update( void )
 	if( self == stealthOwner )
 	{
 		const StealthUpdateModuleData *data = getStealthUpdateModuleData();
-		stealthDelay = data->m_stealthDelay;
+		stealthDelay = data->m_ini.m_stealthDelay;
 	}
 	else
 	{
@@ -662,11 +668,11 @@ UpdateSleepTime StealthUpdate::update( void )
 			Real factor;
 			if( m_transitioningToDisguise )
 			{
-				factor = 1.0f - ( (Real)m_disguiseTransitionFrames / (Real)data->m_disguiseTransitionFrames );
+				factor = 1.0f - ( (Real)m_disguiseTransitionFrames / (Real)data->m_ini.m_disguiseTransitionFrames );
 			}
 			else
 			{
-				factor = 1.0f - ( (Real)m_disguiseTransitionFrames / (Real)data->m_disguiseRevealTransitionFrames );
+				factor = 1.0f - ( (Real)m_disguiseTransitionFrames / (Real)data->m_ini.m_disguiseRevealTransitionFrames );
 			}
 			if( factor >= 0.5f && !m_disguiseHalfpointReached )
 			{
@@ -835,11 +841,14 @@ UpdateSleepTime StealthUpdate::update( void )
 	}
 
 	return calcSleepTime();
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void setWakeupIfInRange( Object *obj, void *userData)
 {
+DEBUG_CRASH(("setWakeupIfInRange not yet implemented!"));
+#if 0
 	Object *victim = (Object *)userData;
 	AIUpdateInterface *ai = obj->getAI();
 	if (!ai) {
@@ -863,6 +872,7 @@ void setWakeupIfInRange( Object *obj, void *userData)
 //			draw->setEmoticon( "Emoticon_Alarm", 5000 );
 //		}
 //	}
+#endif // if 0
 }
 
 
@@ -877,8 +887,8 @@ void StealthUpdate::markAsDetected(UnsignedInt numFrames)
 	{
 		const StealthUpdateModuleData *data = getStealthUpdateModuleData();
 		//Use the standard module data information (because we stealth ourself)
-		stealthDelay = data->m_stealthDelay;
-		orderIdlesToAttack = data->m_orderIdleEnemiesToAttackMeUponReveal;
+		stealthDelay = data->m_ini.m_stealthDelay;
+		orderIdlesToAttack = data->m_ini.m_orderIdleEnemiesToAttackMeUponReveal;
 	}
 	else
 	{
@@ -938,6 +948,8 @@ void StealthUpdate::markAsDetected(UnsignedInt numFrames)
 //-------------------------------------------------------------------------------------------------
 void StealthUpdate::disguiseAsObject( const Object *target )
 {
+DEBUG_CRASH(("StealthUpdate::changeVisualDisguise not yet implemented!"));
+#if 0
 	Object *self = getObject();
 	const StealthUpdateModuleData *data = getStealthUpdateModuleData();
 	if( target && target->getControllingPlayer() )
@@ -956,7 +968,7 @@ void StealthUpdate::disguiseAsObject( const Object *target )
 		
 		m_enabled										= true;
 		m_transitioningToDisguise		= true; //Means we are gaining disguise over time.
-		m_disguiseTransitionFrames	= data->m_disguiseTransitionFrames;
+		m_disguiseTransitionFrames	= data->m_ini.m_disguiseTransitionFrames;
 		m_disguiseHalfpointReached  = false;
 
 		//Wake up so I can process!
@@ -967,7 +979,7 @@ void StealthUpdate::disguiseAsObject( const Object *target )
 	{
 		m_disguiseAsTemplate				= NULL;
 		m_disguiseAsPlayerIndex			= 0;
-		m_disguiseTransitionFrames	= data->m_disguiseRevealTransitionFrames;
+		m_disguiseTransitionFrames	= data->m_ini.m_disguiseRevealTransitionFrames;
 		m_transitioningToDisguise		= false; //Means we are losing the disguise over time.
 		m_disguiseHalfpointReached  = false;
 	}
@@ -978,11 +990,14 @@ void StealthUpdate::disguiseAsObject( const Object *target )
 		TheControlBar->markUIDirty();
 	}
 	
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void StealthUpdate::changeVisualDisguise()
 {
+DEBUG_CRASH(("StealthUpdate::changeVisualDisguise not yet implemented!"));
+#if 0
 	Object *self = getObject();
 	const StealthUpdateModuleData *data = getStealthUpdateModuleData();
 
@@ -1016,7 +1031,7 @@ void StealthUpdate::changeVisualDisguise()
 			if( self->getControllingPlayer()->getRelationship( clientPlayer->getDefaultTeam() ) != ALLIES && clientPlayer->isPlayerActive() )
 			{
 				//Neutrals and enemies will see this disguised unit as the team it's disguised as.
-				if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+				if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 					draw->setIndicatorColor( player->getPlayerNightColor() );
 				else
 					draw->setIndicatorColor( player->getPlayerColor() );
@@ -1024,7 +1039,7 @@ void StealthUpdate::changeVisualDisguise()
 			else
 			{
 				//If it's on our team or our ally's team, then show it's true colors.
-				if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+				if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 					draw->setIndicatorColor( self->getNightIndicatorColor() );
 				else
 					draw->setIndicatorColor( self->getIndicatorColor() );
@@ -1036,7 +1051,7 @@ void StealthUpdate::changeVisualDisguise()
 		sound.setObjectID( self->getID() );
 		TheAudio->addAudioEvent( &sound );
 
-		FXList::doFXPos( data->m_disguiseFX, self->getPosition() );
+		FXList::doFXPos( data->m_ini.m_disguiseFX, self->getPosition() );
 
 		m_disguised = true;
 		self->setStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_DISGUISED ) );
@@ -1064,7 +1079,7 @@ void StealthUpdate::changeVisualDisguise()
 			draw->setModelConditionFlags( flags );
 			draw->updateDrawable();
 			self->getPhysics()->resetDynamicPhysics();
-			if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+			if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 				draw->setIndicatorColor( self->getNightIndicatorColor() );
 			else
 				draw->setIndicatorColor( self->getIndicatorColor() );
@@ -1105,7 +1120,7 @@ void StealthUpdate::changeVisualDisguise()
 		sound.setObjectID( self->getID() );
 		TheAudio->addAudioEvent( &sound );
 
-		FXList::doFXPos( data->m_disguiseRevealFX, self->getPosition() );
+		FXList::doFXPos( data->m_ini.m_disguiseRevealFX, self->getPosition() );
 		m_disguised = false;
 		self->clearStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_DISGUISED ) );
 		self->clearModelConditionState( MODELCONDITION_DISGUISED );
@@ -1118,6 +1133,7 @@ void StealthUpdate::changeVisualDisguise()
 	// couldn't possibly need to restore a disguise now :)
 	m_xferRestoreDisguise = FALSE;
 
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------

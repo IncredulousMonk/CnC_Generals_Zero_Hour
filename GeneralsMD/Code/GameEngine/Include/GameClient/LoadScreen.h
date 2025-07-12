@@ -60,6 +60,10 @@ public:
 	LoadScreen( void );
 	virtual ~LoadScreen( void );
 
+	// No copies allowed!
+	LoadScreen(const LoadScreen&) = delete;
+	LoadScreen& operator=(const LoadScreen&) = delete;
+
 	virtual void init( GameInfo *game ) = 0;		///< Init the loadscreen
 	virtual void reset( void ) = 0;		///< Reset the system
 	virtual void update( void ) = 0;  ///< Update the state of the slider bars
@@ -68,7 +72,7 @@ public:
 	virtual void setProgressRange( Int min, Int max ) = 0;
 protected:
 	void setLoadScreen( GameWindow *g ) { m_loadScreen = g; }
-	GameWindow *m_loadScreen;		///< The GameWindow that is our loadscreen
+	GameWindow *m_loadScreen {};		///< The GameWindow that is our loadscreen
 
 private:
 
@@ -83,6 +87,10 @@ public:
 	SinglePlayerLoadScreen( void );
 	virtual ~SinglePlayerLoadScreen( void );
 
+	// No copies allowed!
+	SinglePlayerLoadScreen(const SinglePlayerLoadScreen&) = delete;
+	SinglePlayerLoadScreen& operator=(const SinglePlayerLoadScreen&) = delete;
+
 	virtual void init( GameInfo *game );		///< Init the loadscreen
 	virtual void reset( void );		///< Reset the system
 	virtual void update( void )
@@ -98,28 +106,28 @@ public:
 	virtual void setProgressRange( Int min, Int max );
 
 private:
-	GameWindow *m_progressBar;				///< Pointer to the Progress Bar on the window
-	GameWindow *m_percent;
+	GameWindow *m_progressBar {};				///< Pointer to the Progress Bar on the window
+	GameWindow *m_percent {};
 
-	GameWindow *m_objectiveWin;
+	GameWindow *m_objectiveWin {};
 	GameWindow *m_objectiveLines[MAX_OBJECTIVE_LINES];
 	GameWindow *m_unitDesc[MAX_DISPLAYED_UNITS];
-	GameWindow *m_location;
+	GameWindow *m_location {};
 	
-	Int m_currentObjectiveLine;
-	Int m_currentObjectiveLineCharacter;
-	Int m_currentObjectiveWidthOffset;
-	Bool m_finishedObjectiveText;
+	Int m_currentObjectiveLine {};
+	Int m_currentObjectiveLineCharacter {};
+	Int m_currentObjectiveWidthOffset {};
+	Bool m_finishedObjectiveText {};
 	
 	UnicodeString m_unicodeObjectiveLines[MAX_OBJECTIVE_LINES];
 
-	VideoBuffer *m_videoBuffer;
-	VideoStreamInterface *m_videoStream;
+	VideoBuffer *m_videoBuffer {};
+	VideoStreamInterface *m_videoStream {};
 
 	void moveWindows( Int frame );
 
-	AudioEventRTS m_ambientLoop;
-	AudioHandle m_ambientLoopHandle;
+	AudioEventRTS m_ambientLoop {};
+	AudioHandle m_ambientLoopHandle {};
 };
 
 
@@ -133,6 +141,10 @@ public:
 	ChallengeLoadScreen( void );
 	virtual ~ChallengeLoadScreen( void );
 
+	// No copies allowed!
+	ChallengeLoadScreen(const ChallengeLoadScreen&) = delete;
+	ChallengeLoadScreen& operator=(const ChallengeLoadScreen&) = delete;
+
 	virtual void init( GameInfo *game );		///< Init the loadscreen
 	virtual void reset( void );		///< Reset the system
 	virtual void update( void )
@@ -148,47 +160,47 @@ public:
 	virtual void setProgressRange( Int min, Int max );
 
 private:
-	GameWindow *m_progressBar;				///< Pointer to the Progress Bar on the window
+	GameWindow *m_progressBar {};				///< Pointer to the Progress Bar on the window
 
-	VideoBuffer *m_videoBuffer;
-	VideoStreamInterface *m_videoStream;
+	VideoBuffer *m_videoBuffer {};
+	VideoStreamInterface *m_videoStream {};
 
-	WindowVideoManager *m_wndVideoManager;
+	WindowVideoManager *m_wndVideoManager {};
 
-	AudioEventRTS m_ambientLoop;
-	AudioHandle m_ambientLoopHandle;
+	AudioEventRTS m_ambientLoop {};
+	AudioHandle m_ambientLoopHandle {};
 
-	GameWindow *m_bioNameLeft;
-	GameWindow *m_bioAgeLeft;
-	GameWindow *m_bioBirthplaceLeft;
-	GameWindow *m_bioStrategyLeft;
-	GameWindow *m_bioBigNameEntryLeft;
-	GameWindow *m_bioNameEntryLeft;
-	GameWindow *m_bioAgeEntryLeft;
-	GameWindow *m_bioBirthplaceEntryLeft;
-	GameWindow *m_bioStrategyEntryLeft;
-	GameWindow *m_bioNameRight;
-	GameWindow *m_bioAgeRight;
-	GameWindow *m_bioBirthplaceRight;
-	GameWindow *m_bioStrategyRight;
-	GameWindow *m_bioBigNameEntryRight;
-	GameWindow *m_bioNameEntryRight;
-	GameWindow *m_bioAgeEntryRight;
-	GameWindow *m_bioBirthplaceEntryRight;
-	GameWindow *m_bioStrategyEntryRight;
+	GameWindow *m_bioNameLeft {};
+	GameWindow *m_bioAgeLeft {};
+	GameWindow *m_bioBirthplaceLeft {};
+	GameWindow *m_bioStrategyLeft {};
+	GameWindow *m_bioBigNameEntryLeft {};
+	GameWindow *m_bioNameEntryLeft {};
+	GameWindow *m_bioAgeEntryLeft {};
+	GameWindow *m_bioBirthplaceEntryLeft {};
+	GameWindow *m_bioStrategyEntryLeft {};
+	GameWindow *m_bioNameRight {};
+	GameWindow *m_bioAgeRight {};
+	GameWindow *m_bioBirthplaceRight {};
+	GameWindow *m_bioStrategyRight {};
+	GameWindow *m_bioBigNameEntryRight {};
+	GameWindow *m_bioNameEntryRight {};
+	GameWindow *m_bioAgeEntryRight {};
+	GameWindow *m_bioBirthplaceEntryRight {};
+	GameWindow *m_bioStrategyEntryRight {};
 
-	GameWindow *m_portraitLeft;
-	GameWindow *m_portraitRight;
-	GameWindow *m_portraitMovieLeft;
-	GameWindow *m_portraitMovieRight;
+	GameWindow *m_portraitLeft {};
+	GameWindow *m_portraitRight {};
+	GameWindow *m_portraitMovieLeft {};
+	GameWindow *m_portraitMovieRight {};
 
 //	GameWindow *m_overlayReticleCrosshairs;
-	GameWindow *m_overlayReticleCircleLineOuter;
-	GameWindow *m_overlayReticleCircleLineInner;
-	GameWindow *m_overlayReticleCircleAlphaOuter;
-	GameWindow *m_overlayReticleCircleAlphaInner;
-	GameWindow *m_overlayVsBackdrop;
-	GameWindow *m_overlayVs;
+	GameWindow *m_overlayReticleCircleLineOuter {};
+	GameWindow *m_overlayReticleCircleLineInner {};
+	GameWindow *m_overlayReticleCircleAlphaOuter {};
+	GameWindow *m_overlayReticleCircleAlphaInner {};
+	GameWindow *m_overlayVsBackdrop {};
+	GameWindow *m_overlayVs {};
 
 	void activatePieces( Int frame, const GeneralPersona *generalPlayer, const GeneralPersona *generalOpponent );
 	void activatePiecesMinSpec(const GeneralPersona *generalPlayer, const GeneralPersona *generalOpponent);
@@ -198,12 +210,16 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // class ShellGameLoadScreen is to be used for the Shell Game loadscreen
-////	///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 class ShellGameLoadScreen : public LoadScreen
 {
 public:
 	ShellGameLoadScreen( void );
 	virtual ~ShellGameLoadScreen( void );
+
+	// No copies allowed!
+	ShellGameLoadScreen(const ShellGameLoadScreen&) = delete;
+	ShellGameLoadScreen& operator=(const ShellGameLoadScreen&) = delete;
 
 	virtual void init( GameInfo *game );		///< Init the loadscreen
 	virtual void reset( void );		///< Reset the system
@@ -219,19 +235,23 @@ public:
 	virtual void setProgressRange( Int min, Int max ) { }
 
 private:
-	GameWindow *m_progressBar	;				///< Pointer to the Progress Bar on the window
+	GameWindow *m_progressBar {};				///< Pointer to the Progress Bar on the window
 
 };
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // class MultiPlayerLoadScreen is to be used for multiplayer communication on the loadscreens
-////	///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 class MultiPlayerLoadScreen : public LoadScreen
 {
 public:
 	MultiPlayerLoadScreen( void );
 	virtual ~MultiPlayerLoadScreen( void );
+
+	// No copies allowed!
+	MultiPlayerLoadScreen(const MultiPlayerLoadScreen&) = delete;
+	MultiPlayerLoadScreen& operator=(const MultiPlayerLoadScreen&) = delete;
 
 	virtual void init( GameInfo *game );		///< Init the loadscreen
 	virtual void reset( void );		///< Reset the system
@@ -247,22 +267,26 @@ private:
 	GameWindow *m_playerNames[MAX_SLOTS];		///< pointer array to all the static text player names on the window
 	GameWindow *m_playerSide[MAX_SLOTS];		///< pointer array to all the static text player sides
 	Int m_playerLookup[MAX_SLOTS];					///< lookup table to translate network slot info screen slot (to account for holes in the slot list)
-	GameWindow *m_mapPreview;
+	GameWindow *m_mapPreview {};
 	GameWindow *m_buttonMapStartPosition[MAX_SLOTS];
-	GameWindow *m_portraitLocalGeneral;
-	GameWindow *m_featuresLocalGeneral;
-	GameWindow *m_nameLocalGeneral;
+	GameWindow *m_portraitLocalGeneral {};
+	GameWindow *m_featuresLocalGeneral {};
+	GameWindow *m_nameLocalGeneral {};
 
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // class MultiPlayerLoadScreen is to be used for multiplayer communication on the loadscreens
-////	///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 class GameSpyLoadScreen : public LoadScreen
 {
 public:
 	GameSpyLoadScreen( void );
 	virtual ~GameSpyLoadScreen( void );
+
+	// No copies allowed!
+	GameSpyLoadScreen(const GameSpyLoadScreen&) = delete;
+	GameSpyLoadScreen& operator=(const GameSpyLoadScreen&) = delete;
 
 	virtual void init( GameInfo *game );		///< Init the loadscreen
 	virtual void reset( void );		///< Reset the system
@@ -283,14 +307,14 @@ private:
 	GameWindow *m_playerWinLosses[MAX_SLOTS];		///< pointer array to all the static text player sides
 	GameWindow *m_playerRank[MAX_SLOTS];		///< pointer array to all the static text player sides
 	GameWindow *m_playerOfficerMedal[MAX_SLOTS];		///< pointer array to all the static text player munkees
-	GameWindow *m_mapPreview;
+	GameWindow *m_mapPreview {};
 	GameWindow *m_buttonMapStartPosition[MAX_SLOTS];
 
 	Int m_playerLookup[MAX_SLOTS];					///< lookup table to translate network slot info screen slot (to account for holes in the slot list)
 
-	GameWindow *m_portraitLocalGeneral;
-	GameWindow *m_featuresLocalGeneral;
-	GameWindow *m_nameLocalGeneral;
+	GameWindow *m_portraitLocalGeneral {};
+	GameWindow *m_featuresLocalGeneral {};
+	GameWindow *m_nameLocalGeneral {};
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,6 +325,10 @@ class MapTransferLoadScreen : public LoadScreen
 public:
 	MapTransferLoadScreen( void );
 	virtual ~MapTransferLoadScreen( void );
+
+	// No copies allowed!
+	MapTransferLoadScreen(const MapTransferLoadScreen&) = delete;
+	MapTransferLoadScreen& operator=(const MapTransferLoadScreen&) = delete;
 
 	virtual void init( GameInfo *game );		///< Init the loadscreen
 	virtual void reset( void );							///< Reset the system
@@ -323,9 +351,9 @@ private:
 	GameWindow *m_progressText[MAX_SLOTS];	///< pointer array to all the static text player sides
 	Int m_playerLookup[MAX_SLOTS];					///< lookup table to translate network slot info screen slot (to account for holes in the slot list)
 	Int m_oldProgress[MAX_SLOTS];						///< old vals, so we can call processProgress() every frame and not touch the GUI
-	GameWindow *m_fileNameText;
-	GameWindow *m_timeoutText;
-	Int m_oldTimeout;												///< old val, so we can call processTimeout() every frame and not touch the GUI
+	GameWindow *m_fileNameText {};
+	GameWindow *m_timeoutText {};
+	Int m_oldTimeout {};												///< old val, so we can call processTimeout() every frame and not touch the GUI
 };
 
 #endif //_LOADSCREEN_H_

@@ -40,50 +40,51 @@
 #include "Common/PlayerList.h"
 #include "Common/PlayerTemplate.h"
 #include "Common/MessageStream.h"
-#include "Common/MultiplayerSettings.h"
-#include "Common/Recorder.h"
-#include "Common/BuildAssistant.h"
-#include "Common/SpecialPower.h"
+// #include "Common/MultiplayerSettings.h"
+// #include "Common/Recorder.h"
+// #include "Common/BuildAssistant.h"
+// #include "Common/SpecialPower.h"
 #include "Common/ThingTemplate.h"
-#include "Common/Upgrade.h"
+// #include "Common/Upgrade.h"
 #include "Common/StatsCollector.h"
-#include "Common/Radar.h"
+// #include "Common/Radar.h"
 
-#include "GameLogic/AIPathfind.h"
+// #include "GameLogic/AIPathfind.h"
 #include "GameLogic/GameLogic.h"
-#include "GameLogic/Locomotor.h"
+// #include "GameLogic/Locomotor.h"
 #include "GameLogic/Object.h"
-#include "GameLogic/ObjectCreationList.h"
-#include "GameLogic/ObjectIter.h"
+// #include "GameLogic/ObjectCreationList.h"
+// #include "GameLogic/ObjectIter.h"
 //#include "GameLogic/PartitionManager.h"
-#include "GameLogic/AI.h"
-#include "GameLogic/Module/AIUpdate.h"
-#include "GameLogic/Module/BodyModule.h"
-#include "GameLogic/Module/OpenContain.h"
-#include "GameLogic/Module/ProductionUpdate.h"
-#include "GameLogic/Module/SpecialPowerModule.h"
-#include "GameLogic/ScriptActions.h"
-#include "GameLogic/ScriptEngine.h"
-#include "GameLogic/VictoryConditions.h"
+// #include "GameLogic/AI.h"
+// #include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/BodyModule.h"
+// #include "GameLogic/Module/OpenContain.h"
+// #include "GameLogic/Module/ProductionUpdate.h"
+// #include "GameLogic/Module/SpecialPowerModule.h"
+// #include "GameLogic/ScriptActions.h"
+// #include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/VictoryConditions.h"
 #include "GameLogic/Weapon.h"
 
-#include "GameClient/CommandXlat.h"
-#include "GameClient/ControlBar.h"
+// #include "GameClient/CommandXlat.h"
+// #include "GameClient/ControlBar.h"
+#include "GameClient/Display.h"
 #include "GameClient/Drawable.h"
-#include "GameClient/Eva.h"
+// #include "GameClient/Eva.h"
 #include "GameClient/GameText.h"
 #include "GameClient/GameWindowTransitions.h"
 #include "GameClient/GameWindowManager.h"
-#include "GameClient/GuiCallbacks.h"
-#include "GameClient/InGameUI.h"
-#include "GameClient/KeyDefs.h"
+#include "GameClient/GUICallbacks.h"
+// #include "GameClient/InGameUI.h"
+// #include "GameClient/KeyDefs.h"
 #include "GameClient/Mouse.h"
-#include "GameClient/ParticleSys.h"
+// #include "GameClient/ParticleSys.h"
 #include "GameClient/Shell.h"
-#include "GameClient/Module/BeaconClientUpdate.h"
-#include "GameClient/LookAtXlat.h"
+// #include "GameClient/Module/BeaconClientUpdate.h"
+// #include "GameClient/LookAtXlat.h"
 
-#include "GameNetwork/NetworkInterface.h"
+// #include "GameNetwork/NetworkInterface.h"
 
 
 #ifdef _INTERNAL
@@ -92,6 +93,7 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#if 0
 
 #define MAX_PATH_SUBJECTS 64
 static Bool theBuildPlan = false;
@@ -220,11 +222,14 @@ static Object * getSingleObjectFromSelection(const AIGroup *currentlySelectedGro
 	}
 	return NULL;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GameLogic::closeWindows( void )
 {
+DEBUG_CRASH(("GameLogic::closeWindows not yet implemented!"));
+#if 0
 	HideDiplomacy();
 	ResetDiplomacy();
 	HideInGameChat();
@@ -240,12 +245,16 @@ void GameLogic::closeWindows( void )
 	if(window)
 		TheWindowManager->winSendSystemMsg( window, GBM_SELECTED, 
 																			(WindowMsgData)button, buttonID );
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GameLogic::clearGameData( Bool showScoreScreen )
 {
+(void) showScoreScreen;
+DEBUG_LOG(("GameLogic::clearGameData not yet implemented!\n"));
+#if 0
 	if( !isInGame() )
 	{
 		DEBUG_CRASH(("We tried to clear the game data when we weren't in a game"));
@@ -264,10 +273,10 @@ void GameLogic::clearGameData( Bool showScoreScreen )
 
 	TheScriptActions->closeWindows(FALSE); // Close victory or defeat windows.
 
-	Bool shellGame = FALSE;
+	// Bool shellGame = FALSE;
 	if ((!isInShellGame() || !isInGame()) && showScoreScreen)
 	{
-		shellGame = TRUE;
+		// shellGame = TRUE;
 		TheTransitionHandler->setGroup("FadeWholeScreen");
 		TheShell->push("Menus/ScoreScreen.wnd");
 		TheShell->showShell(FALSE); // by passing in false, we don't want to run the Init on the shell screen we just pushed on
@@ -283,7 +292,7 @@ void GameLogic::clearGameData( Bool showScoreScreen )
 //	if(shellGame)
 
 	
-	if (TheGlobalData->m_initialFile.isEmpty() == FALSE)
+	if (TheGlobalData->m_data.m_initialFile.isEmpty() == FALSE)
 	{
 		TheGameEngine->setQuitting(TRUE);
 	}
@@ -302,6 +311,7 @@ void GameLogic::clearGameData( Bool showScoreScreen )
 
 	setClearingGameData( FALSE );
 	
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -316,7 +326,8 @@ void GameLogic::prepareNewGame( Int gameMode, GameDifficulty diff, Int rankPoint
 	//      nomenclature. Look for setLoadingMap() and setLoadingSave()
 	//setGameLoading(TRUE);
 
-	TheScriptEngine->setGlobalDifficulty(diff);
+	// FIXME: TheScriptEngine.
+	// TheScriptEngine->setGlobalDifficulty(diff);
 
 	if(!m_background)
 	{
@@ -327,10 +338,10 @@ void GameLogic::prepareNewGame( Int gameMode, GameDifficulty diff, Int rankPoint
 	}
 	m_background->getFirstWindow()->winClearStatus(WIN_STATUS_IMAGE);
 	TheGameLogic->setGameMode( gameMode );
-	if (!TheGlobalData->m_pendingFile.isEmpty())
+	if (!TheGlobalData->m_data.m_pendingFile.isEmpty())
 	{
-		TheWritableGlobalData->m_mapName = TheGlobalData->m_pendingFile;
-		TheWritableGlobalData->m_pendingFile.clear();
+		TheWritableGlobalData->m_data.m_mapName = TheGlobalData->m_data.m_pendingFile;
+		TheWritableGlobalData->m_data.m_pendingFile.clear();
 	}
 
 	m_rankPointsToAddAtGameStart = rankPoints;
@@ -359,6 +370,7 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 	DEBUG_ASSERTCRASH( thisPlayer, ("logicMessageDispatcher: Processing message from unknown player (player index '%d')\n", 
 																	msg->getPlayerIndex()) );
 	
+#if 0
 	AIGroup *currentlySelectedGroup = NULL;
 
 	if (isInGame())
@@ -390,6 +402,7 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 			}
 		}
 	}
+#endif // if 0
 
 #ifdef DEBUG_LOGGING
 	AsciiString commandName;
@@ -403,7 +416,7 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 	{
 		commandName = " (CRC message!)";
 	}
-#if 0
+#if 1
 	if (commandName.isNotEmpty() /*&& msg->getType() != GameMessage::MSG_FRAME_TICK*/)
 	{
 		DEBUG_LOG(("Frame %d: GameLogic::logicMessageDispatcher() saw a %s from player %d (%ls)\n", getFrame(), commandName.str(),
@@ -432,10 +445,10 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 			{
 				Int maxFPS = msg->getArgument( 3 )->integer;
 				if (maxFPS < 1 || maxFPS > 1000)
-					maxFPS = TheGlobalData->m_framesPerSecondLimit;
+					maxFPS = TheGlobalData->m_data.m_framesPerSecondLimit;
 				DEBUG_LOG(("Setting max FPS limit to %d FPS\n", maxFPS));
 				TheGameEngine->setFramesPerSecondLimit(maxFPS);
-				TheWritableGlobalData->m_useFpsLimit = true;
+				TheWritableGlobalData->m_data.m_useFpsLimit = true;
 			}
 
 			// prepare for new game
@@ -448,13 +461,14 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 
 		}  // end new game
 
+#if 0
 		//---------------------------------------------------------------------------------------------
 		case GameMessage::MSG_CLEAR_GAME_DATA:
 		{
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-			if (TheDisplay && TheGlobalData->m_dumpAssetUsage)
-				TheDisplay->dumpAssetUsage(TheGlobalData->m_mapName.str());
+			if (TheDisplay && TheGlobalData->m_data.m_dumpAssetUsage)
+				TheDisplay->dumpAssetUsage(TheGlobalData->m_data.m_mapName.str());
 #endif
 
 			if (currentlySelectedGroup)
@@ -1824,7 +1838,7 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 		// --------------------------------------------------------------------------------------------
 		case GameMessage::MSG_SET_REPLAY_CAMERA:
 		{
-			if (TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK && TheGlobalData->m_useCameraInReplay && TheControlBar->getObserverLookAtPlayer() == thisPlayer)
+			if (TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK && TheGlobalData->m_data.m_useCameraInReplay && TheControlBar->getObserverLookAtPlayer() == thisPlayer)
 			{
 				if (TheTacticalView->isCameraMovementFinished())
 				{
@@ -1987,11 +2001,14 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 			break;
 
 		}  // end pick specialized science
-
+#endif // if 0
+		default:
+			break;
 	}  // end switch
 
+#if 0
 	/**/ /// @todo: multiplayer semantics
-	if (currentlySelectedGroup && TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK && TheGlobalData->m_useCameraInReplay && TheControlBar->getObserverLookAtPlayer() == thisPlayer /*&& !TheRecorder->isMultiplayer()*/)
+	if (currentlySelectedGroup && TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK && TheGlobalData->m_data.m_useCameraInReplay && TheControlBar->getObserverLookAtPlayer() == thisPlayer /*&& !TheRecorder->isMultiplayer()*/)
 	{
 		const VecObjectID& selectedObjects = currentlySelectedGroup->getAllIDs();
 		TheInGameUI->deselectAllDrawables();
@@ -2012,5 +2029,6 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
 	{
 		TheAI->destroyGroup(currentlySelectedGroup);
 	}
+#endif // if 0
 
 }  // end logicMessageDispatches

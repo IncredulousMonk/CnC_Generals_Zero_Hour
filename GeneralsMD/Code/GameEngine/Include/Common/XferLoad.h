@@ -49,6 +49,10 @@ public:
 	XferLoad( void );
 	virtual ~XferLoad( void );
 
+	// No copies allowed!
+	XferLoad(const XferLoad&) = delete;
+	XferLoad& operator=(const XferLoad&) = delete;
+
 	virtual void open( AsciiString identifier );				///< open file for writing
 	virtual void close( void );													///< close file
 	virtual Int beginBlock( void );														///< read placeholder block size

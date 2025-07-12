@@ -37,7 +37,7 @@
 #include "Common/Snapshot.h"
 // #include "Common/STLTypedefs.h"
 #include "Common/ObjectStatusTypes.h"
-// #include "GameNetwork/NetworkDefs.h"
+#include "GameNetwork/NetworkDefs.h"
 // #include "Common/STLTypedefs.h"
 #include "GameLogic/Module/UpdateModule.h"	// needed for DIRECT_UPDATEMODULE_ACCESS
 
@@ -126,13 +126,13 @@ public:
 #if defined(_DEBUG) || defined(_INTERNAL)
 	Int getNumberSleepyUpdates() const {return m_sleepyUpdates.size();} //For profiling, so not in Release.
 #endif
+#endif // if 0
 	void processCommandList( CommandList *list );		///< process the command list
 
 	void prepareNewGame( Int gameMode, GameDifficulty diff, Int rankPoints );						///< prepare for new game 
 
 	void logicMessageDispatcher( GameMessage *msg, 
 																			 void *userData );	///< Logic command list processing
-#endif // if 0
 
 	void registerObject( Object *obj );							///< Given an object, register it with the GameLogic and give it a unique ID
 
@@ -173,20 +173,20 @@ public:
  	Object *getFirstObject( void );									///< Returns the "first" object in the world. When used with the object method "getNextObject()", all objects in the world can be iterated.
 	ObjectID allocateObjectID( void );							///< Returns a new unique object id
 
-#if 0
 	// super hack
 	void startNewGame( Bool loadSaveGame );
+#if 0
 	void loadMapINI( AsciiString mapName );
 
 	void updateLoadProgress( Int progress );
 	void deleteLoadScreen( void );
+#endif // if 0
 	
 	//Kris: Cut setGameLoading() and replaced with setLoadingMap() and setLoadingSave() -- reason: nomenclature
 	//void setGameLoading( Bool loading ) { m_loadingScene = loading; }
 	void setLoadingMap( Bool loading ) { m_loadingMap = loading; }
 	void setLoadingSave( Bool loading ) { m_loadingSave = loading; }
 	void setClearingGameData( Bool clearing ) { m_clearingGameData = clearing; }
-#endif // if 0
 	
 	void setGameMode( Int mode );
 	Int getGameMode( void );
@@ -229,10 +229,12 @@ public:
 
 	void updateObjectsChangedTriggerAreas(void) {m_frameObjectsChangedTriggerAreas = m_frame;}
 	UnsignedInt getFrameObjectsChangedTriggerAreas(void) {return m_frameObjectsChangedTriggerAreas;}
+#endif // if 0
 
 	void clearGameData(Bool showScoreScreen = TRUE);														///< Clear the game data
 	void closeWindows( void );
 
+#if 0
 	void sendObjectCreated( Object *obj );
 	void sendObjectDestroyed( Object *obj );
 
@@ -243,8 +245,10 @@ public:
 	Bool isGamePaused( void );
 #if 0
 	Bool getInputEnabledMemory( void ) { return m_inputEnabledMemory; }
+#endif // if 0
 
 	void processProgress(Int playerId, Int percentage);
+#if 0
 	void processProgressComplete(Int playerId);
 	Bool isProgressComplete( void );
 	void timeOutGameStart( void );
@@ -348,14 +352,12 @@ private:
 	Bool m_isScoringEnabled {};
 	Bool m_showBehindBuildingMarkers {};	//used by designers to override the user setting for cinematics
 	Bool m_drawIconUI {};
-#if 0
-	Bool m_showDynamicLOD;	//used by designers to override the user setting for cinematics
-	Int m_scriptHulkMaxLifetimeOverride;	///< Scripts can change the lifetime of a hulk -- defaults to off (-1) in frames.
+	Bool m_showDynamicLOD {};	//used by designers to override the user setting for cinematics
+	Int m_scriptHulkMaxLifetimeOverride {};	///< Scripts can change the lifetime of a hulk -- defaults to off (-1) in frames.
 
 	/// @todo remove this hack
-	Bool m_startNewGame;
-	WindowLayout *m_background;
-#endif // if 0
+	Bool m_startNewGame {};
+	WindowLayout *m_background {};
 
 	Object* m_objList {};																			///< All of the objects in the world.
 	//	ObjectPtrHash m_objHash;																///< Used for ObjectID lookups
@@ -393,20 +395,20 @@ private:
 	Int m_rankLevelLimit {};
 	UnsignedShort m_superweaponRestriction {};
 
-#if 0
 	LoadScreen *getLoadScreen( Bool loadSaveGame );
-	LoadScreen *m_loadScreen;
-#endif // if 0
+	LoadScreen *m_loadScreen {};
 	Bool m_gamePaused {};
 	Bool m_inputEnabledMemory {};// Latches used to remember what to restore to after we unpause
 	Bool m_mouseVisibleMemory {};
 
-#if 0
 	Bool m_progressComplete[MAX_SLOTS];
 	enum { PROGRESS_COMPLETE_TIMEOUT = 60000 };							///< Timeout we wait for when we've completed our Load
-	Int m_progressCompleteTimeout[MAX_SLOTS];
+	std::chrono::time_point<std::chrono::steady_clock> m_progressCompleteTimeout[MAX_SLOTS];
+#if 0
 	void testTimeOut( void );
+#endif // if 0
 	void lastHeardFrom( Int playerId );
+#if 0
 	Bool m_forceGameStartByTimeOut;													///< If we timeout someone we're waiting to load, set this flag to start the game
 
 #ifdef DUMP_PERF_STATS

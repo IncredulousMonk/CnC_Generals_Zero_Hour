@@ -256,8 +256,7 @@ public:
 	void initFromINI( void *what, const FieldParse* parseTable );
 	void initFromINIMulti( void *what, const MultiIniFieldParse& parseTableList );
 	void initFromINIMultiProc( void *what, BuildMultiIniFieldProc proc );
-	void skipToEnd(); // FIXME: Remove skipToEnd, as it's a bootstrap utility function.
-	
+
 	static void parseUnsignedByte( INI *ini, void *instance, void *store, const void* userData );
 	static void parseShort( INI *ini, void *instance, void *store, const void* userData );
 	static void parseUnsignedShort( INI *ini, void *instance, void *store, const void* userData );

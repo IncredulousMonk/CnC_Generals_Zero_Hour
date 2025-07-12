@@ -26,7 +26,7 @@
 // Implementation of the Game Engine singleton
 // Author: Michael S. Booth, April 2001
 
-// #include "PreRTS.h"	// This must go first in EVERY cpp file in the GameEngine
+#include "PreRTS.h"	// This must go first in EVERY cpp file in the GameEngine
 
 // #include "Common/ActionManager.h"
 #include "Common/AudioAffect.h"
@@ -53,7 +53,7 @@
 #include "Common/NameKeyGenerator.h"
 #include "Common/ModuleFactory.h"
 // #include "Common/Debug.h"
-// #include "Common/GameState.h"
+#include "Common/GameState.h"
 // #include "Common/GameStateMap.h"
 #include "Common/Science.h"
 #include "Common/FunctionLexicon.h"
@@ -108,9 +108,6 @@
 // #include "GameNetwork/GameSpy/GameResultsThread.h"
 
 #include "Common/Version.h"
-
-#include <chrono>
-#include <thread>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -552,7 +549,7 @@ void GameEngine::init( int argc, char *argv[] )
 		// initSubsystem(TheActionManager,"TheActionManager", MSGNEW("GameEngineSubsystem") ActionManager(), NULL);
 		// //initSubsystem((CComObject<WebBrowser> *)TheWebBrowser,"(CComObject<WebBrowser> *)TheWebBrowser", (CComObject<WebBrowser> *)createWebBrowser(), NULL);
 		// initSubsystem(TheGameStateMap,"TheGameStateMap", MSGNEW("GameEngineSubsystem") GameStateMap, NULL, NULL, NULL );
-		// initSubsystem(TheGameState,"TheGameState", MSGNEW("GameEngineSubsystem") GameState, NULL, NULL, NULL );
+		initSubsystem(TheGameState,"TheGameState", MSGNEW("GameEngineSubsystem") GameState, NULL, NULL, NULL );
 
 		// // Create the interface for sending game results
 		// initSubsystem(TheGameResultsQueue,"TheGameResultsQueue", GameResultsInterface::createNewGameResultsInterface(), NULL, NULL, NULL, NULL);

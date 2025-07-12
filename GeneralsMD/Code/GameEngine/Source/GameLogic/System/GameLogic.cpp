@@ -34,10 +34,10 @@
 // #include "Common/BuildAssistant.h"
 // #include "Common/CopyProtection.h"
 // #include "Common/CRCDebug.h"
-// #include "Common/GameAudio.h"
-// #include "Common/GameEngine.h"
+#include "Common/GameAudio.h"
+#include "Common/GameEngine.h"
 // #include "Common/GameLOD.h"
-// #include "Common/GameState.h"
+#include "Common/GameState.h"
 // #include "Common/INI.h"
 // #include "Common/LatchRestore.h"
 // #include "Common/MapObject.h"
@@ -65,9 +65,9 @@
 // #include "GameClient/Drawable.h"
 #include "GameClient/GameClient.h"
 // #include "GameClient/GameText.h"
-// #include "GameClient/GUICallbacks.h"
+#include "GameClient/GUICallbacks.h"
 // #include "GameClient/InGameUI.h"
-// #include "GameClient/LoadScreen.h"
+#include "GameClient/LoadScreen.h"
 // #include "GameClient/MapUtil.h"
 // #include "GameClient/Mouse.h"
 #include "GameClient/ParticleSys.h"
@@ -75,7 +75,8 @@
 // #include "GameClient/View.h"
 // #include "GameClient/ControlBar.h"
 // #include "GameClient/CampaignManager.h"
-// #include "GameClient/GameWindowTransitions.h"
+#include "GameClient/GameWindowTransitions.h"
+#include "GameClient/GameWindowManager.h"
 
 // #include "GameLogic/AI.h"
 // #include "GameLogic/AIPathfind.h"
@@ -636,6 +637,7 @@ static void placeNetworkBuildingsForPlayer(Int slotNum, const GameSlot *pSlot, P
 		}
 	}
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -651,7 +653,7 @@ LoadScreen *GameLogic::getLoadScreen( Bool loadingSaveGame )
 		Campaign* currentCampaign = TheCampaignManager->getCurrentCampaign();
 		if( currentCampaign && loadingSaveGame == FALSE )
 		{
-			if ( currentCampaign->m_isChallengeCampaign) 
+			if ( currentCampaign->m_ini.m_isChallengeCampaign) 
 			{
 				return NEW ChallengeLoadScreen;
 			}
@@ -680,6 +682,7 @@ LoadScreen *GameLogic::getLoadScreen( Bool loadingSaveGame )
 
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void handleNameChange( MapObject *mapObj )
@@ -1118,6 +1121,7 @@ void GameLogic::deleteLoadScreen( void )
 	}  // end if
 
 }  // end deleteLoadScreen
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Entry point for starting a new game, the engine is already in clean state at this
@@ -1139,13 +1143,13 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	{
 
 		// record pristine map name when we're loading from the map (not a save game)
-		TheGameState->setPristineMapName( TheGlobalData->m_mapName );
+		TheGameState->setPristineMapName( TheGlobalData->m_data.m_mapName );
 
 		//
 		// sanity, the pristine map should never start with "Save", otherwise that would be
 		// a map from the save directory
 		//
-		if (TheGameState->isInSaveDirectory(TheGlobalData->m_mapName))
+		if (TheGameState->isInSaveDirectory(TheGlobalData->m_data.m_mapName))
 		{
 
 			DEBUG_CRASH(( "FATAL SAVE/LOAD ERROR! - Setting a pristine map name that refers to a map in the save directory.  The pristine map should always refer to the ORIGINAL map in the Maps directory, if the pristine map string is corrupt then map.ini files will not load correctly.\n" ));
@@ -1169,7 +1173,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 				m_loadScreen = getLoadScreen( loadingSaveGame );
 				if(m_loadScreen)
 				{
-					TheWritableGlobalData->m_loadScreenRender = TRUE;	///< mark it so only a few select things are rendered during load
+					TheWritableGlobalData->m_data.m_loadScreenRender = TRUE;	///< mark it so only a few select things are rendered during load
 					m_loadScreen->init(NULL);
 				}
 
@@ -1182,6 +1186,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 
 	}  // end if
 
+#if 0
 	m_rankLevelLimit = 1000;	// this is reset every game.
 	setDefaults( loadingSaveGame );
 	TheWritableGlobalData->m_loadScreenRender = TRUE;	///< mark it so only a few select things are rendered during load	
@@ -2386,10 +2391,12 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
   {
 		TheInGameUI->message( TheGameText->fetch( "GUI:FastForwardInstructions" ) );
   }
+#endif // if 0
 
 
 }  // end startNewGame
 
+#if 0
 //-----------------------------------------------------------------------------------------
 static void findAndSelectCommandCenter(Object *obj, void* alreadyFound)
 {
@@ -2554,14 +2561,17 @@ void GameLogic::processDestroyList( void )
 	m_objectsToDestroy.clear();//list full of bad pointers now, clear it.  If anyone's deletion resulted
 	//in the request for a new deletion (sub-object), the new object was added to the end of this list.
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Process the command list passed to the logic from the network */
 //-------------------------------------------------------------------------------------------------
 void GameLogic::processCommandList( CommandList *list )
 {
+#if 0
 	m_cachedCRCs.clear();
 	m_shouldValidateCRCs = FALSE;
+#endif // if 0
 
 	GameMessage* msg;
 
@@ -2573,6 +2583,7 @@ void GameLogic::processCommandList( CommandList *list )
 		logicMessageDispatcher( msg, NULL );
 	}
 
+#if 0
 	if (m_shouldValidateCRCs && !TheNetwork->sawCRCMismatch())
 	{
 		Bool sawCRCMismatch = FALSE;
@@ -2624,9 +2635,11 @@ void GameLogic::processCommandList( CommandList *list )
 			TheNetwork->setSawCRCMismatch();
 		}
 	}
+#endif // if 0
 
 }  // end processCommandList
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Bool GameLogic::isIntroMoviePlaying()
@@ -3719,12 +3732,14 @@ void GameLogic::update( void )
 	{
 		TheRecorder->UPDATE();
 	}
+#endif // if 0
 
 	// process client commands
 	{
 		processCommandList( TheCommandList );
 	}
 
+#if 0
 #ifdef ALLOW_NONSLEEPY_UPDATES
 	{
 		for (std::list<UpdateModulePtr>::const_iterator it = m_normalUpdates.begin(); it != m_normalUpdates.end(); ++it)
@@ -3816,12 +3831,14 @@ void GameLogic::update( void )
 
 	// destroy all pending objects
 	processDestroyList();
+#endif // if 0
 
 	// reset the command list, destroying all messages
 	TheCommandList->reset();
 
-	TheWeaponStore->UPDATE();	
-	TheLocomotorStore->UPDATE();	
+#if 0
+	TheWeaponStore->UPDATE();
+	TheLocomotorStore->UPDATE();
 	TheVictoryConditions->UPDATE();
 
 #ifdef DO_COPY_PROTECTION
@@ -4298,7 +4315,6 @@ void GameLogic::setGamePaused( Bool paused, Bool pauseMusic )
 	}
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GameLogic::processProgress(Int playerId, Int percentage)
@@ -4308,6 +4324,7 @@ void GameLogic::processProgress(Int playerId, Int percentage)
 	lastHeardFrom(playerId);
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Whenever we get a progress complete packet for a Net Game,
 	* Set a flag that that player is ready */
@@ -4346,6 +4363,7 @@ Bool GameLogic::isProgressComplete( void )
 	}
 	return TRUE;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -4353,9 +4371,10 @@ void GameLogic::lastHeardFrom( Int playerId )
 {
 	if( playerId < 0 || playerId >= MAX_SLOTS)
 		return;
-	m_progressCompleteTimeout[playerId] = timeGetTime();
+	m_progressCompleteTimeout[playerId] = std::chrono::steady_clock::now();
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GameLogic::testTimeOut( void )

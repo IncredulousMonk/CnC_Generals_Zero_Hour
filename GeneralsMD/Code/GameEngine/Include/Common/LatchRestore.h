@@ -96,7 +96,7 @@ template <typename T>
 class LatchRestore
 {
 	protected:
-		T valueToRestore;
+		T valueToRestore {};
 		T& whereToRestore;
 
 	public:

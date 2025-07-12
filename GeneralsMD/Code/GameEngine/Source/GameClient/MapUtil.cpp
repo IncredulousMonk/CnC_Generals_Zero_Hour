@@ -69,7 +69,7 @@
 
 //-------------------------------------------------------------------------------
 // PRIVATE DATA ///////////////////////////////////////////////////////////////////////////////////
-static char *mapExtension = ".map";
+static const char *mapExtension = ".map";
 
 static Int m_width = 0;						///< Height map width.
 static Int m_height = 0;					///< Height map height (y size of array).
@@ -86,21 +86,20 @@ static Coord3DList	m_techPositions;
 static Int m_mapDX = 0;
 static Int m_mapDY = 0;
 
-static UnsignedInt calcCRC( AsciiString dirName, AsciiString fname )
+static UnsignedInt calcCRC( AsciiString /* dirName */, AsciiString fname )
 {
 	CRC theCRC;
 	theCRC.clear();
 
 	// Try the official map dir
 	AsciiString asciiFile;
-	char	tempBuf[_MAX_PATH];
-	char	filenameBuf[_MAX_PATH];
-	int length = 0;
+	char	tempBuf[PATH_MAX];
+	char	filenameBuf[PATH_MAX];
 	strcpy(tempBuf, fname.str());
-	length = strlen( tempBuf );
+	size_t length = strlen( tempBuf );
 	if( length >= 4 )
 	{
-		memset( filenameBuf, '\0', _MAX_PATH);
+		memset( filenameBuf, '\0', PATH_MAX);
 		strncpy( filenameBuf, tempBuf, length - 4);
 	}
 
@@ -126,7 +125,7 @@ static UnsignedInt calcCRC( AsciiString dirName, AsciiString fname )
 	return theCRC.get();
 }
 
-static Bool ParseObjectDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+static Bool ParseObjectDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /* userData */)
 {
 	Bool readDict = info->version >= K_OBJECTS_VERSION_2;
 
@@ -175,20 +174,20 @@ static Bool ParseObjectDataChunk(DataChunkInput &file, DataChunkInfo *info, void
 	return TRUE;
 }
 
-static Bool ParseObjectsDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+static Bool ParseObjectsDataChunk(DataChunkInput &file, DataChunkInfo * info, void *userData)
 {
 	file.m_currentObject = NULL;
 	file.registerParser( AsciiString("Object"), info->label, ParseObjectDataChunk );
 	return (file.parse(userData));
 }
 
-static Bool ParseWorldDictDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+static Bool ParseWorldDictDataChunk(DataChunkInput &file, DataChunkInfo * /* info */, void * /* userData */)
 {
 	worldDict = file.readDict();
 	return true;
 }
 
-static Bool ParseSizeOnly(DataChunkInput &file, DataChunkInfo *info, void *userData)
+static Bool ParseSizeOnly(DataChunkInput &file, DataChunkInfo *info, void * /* userData */)
 {
 	m_width = file.readInt();
 	m_height = file.readInt();
@@ -200,10 +199,10 @@ static Bool ParseSizeOnly(DataChunkInput &file, DataChunkInfo *info, void *userD
 
 	if (info->version >= K_HEIGHT_MAP_VERSION_4) {
 		Int numBorders = file.readInt();
-		m_boundaries.resize(numBorders);
+		m_boundaries.resize((size_t)numBorders);
 		for (int i = 0; i < numBorders; ++i) {
-			m_boundaries[i].x = file.readInt();
-			m_boundaries[i].y = file.readInt();
+			m_boundaries.data()[i].x = file.readInt();
+			m_boundaries.data()[i].y = file.readInt();
 		}
 	}
 	return true;
@@ -237,17 +236,16 @@ static Bool ParseSizeOnlyInChunk(DataChunkInput &file, DataChunkInfo *info, void
 
 static Bool loadMap( AsciiString filename )
 {
-	char	tempBuf[_MAX_PATH];
-	char	filenameBuf[_MAX_PATH];
+	char	tempBuf[PATH_MAX];
+	char	filenameBuf[PATH_MAX];
 	AsciiString asciiFile;
-	int length = 0;
 
 	strcpy(tempBuf, filename.str());
 
-	length = strlen( tempBuf );
+	size_t length = strlen( tempBuf );
 	if( length >= 4 )
 	{
-		memset( filenameBuf, '\0', _MAX_PATH);
+		memset( filenameBuf, '\0', PATH_MAX);
 		strncpy( filenameBuf, tempBuf, length - 4);
 	}
 
@@ -372,7 +370,7 @@ AsciiString MapCache::getMapExtension() const
 void MapCache::writeCacheINI( Bool userDir )
 {
 	AsciiString mapDir;
-	if (!userDir || TheGlobalData->m_buildMapCache)
+	if (!userDir || TheGlobalData->m_data.m_buildMapCache)
 	{
 		mapDir = getMapDir();
 	}
@@ -405,10 +403,9 @@ void MapCache::writeCacheINI( Bool userDir )
 		{
 			md = it->second;
 			fprintf(fp, "\nMapCache %s\n", AsciiStringToQuotedPrintable(it->first.str()).str());
-			fprintf(fp, "  fileSize = %u\n", md.m_filesize);
+			fprintf(fp, "  fileSize = %lu\n", md.m_filesize);
 			fprintf(fp, "  fileCRC = %u\n", md.m_CRC);
-			fprintf(fp, "  timestampLo = %d\n", md.m_timestamp.m_lowTimeStamp);
-			fprintf(fp, "  timestampHi = %d\n", md.m_timestamp.m_highTimeStamp);
+			fprintf(fp, "  timestamp = %lu\n", md.m_timestamp);
 			fprintf(fp, "  isOfficial = %s\n", (md.m_isOfficial)?"yes":"no");
 
 			fprintf(fp, "  isMultiplayer = %s\n", (md.m_isMultiplayer)?"yes":"no");
@@ -471,10 +468,10 @@ void MapCache::updateCache( void )
 	if (TheLocalFileSystem->doesFileExist(getMapDir().str()))
 	{
 		// only create the map cache file if "Maps" exist
-		Bool wasBuildMapCache = TheGlobalData->m_buildMapCache;
-		TheWritableGlobalData->m_buildMapCache = true;
+		Bool wasBuildMapCache = TheGlobalData->m_data.m_buildMapCache;
+		TheWritableGlobalData->m_data.m_buildMapCache = true;
 		loadUserMaps();
-		TheWritableGlobalData->m_buildMapCache = wasBuildMapCache;
+		TheWritableGlobalData->m_data.m_buildMapCache = wasBuildMapCache;
 		writeCacheINI( FALSE );
 	}
 #endif
@@ -523,7 +520,7 @@ Bool MapCache::loadUserMaps()
 {
 	// Read in map list from disk
 	AsciiString mapDir;
-	if (TheGlobalData->m_buildMapCache)
+	if (TheGlobalData->m_data.m_buildMapCache)
 	{
 		mapDir = getMapDir();
 	}
@@ -579,13 +576,13 @@ Bool MapCache::loadUserMaps()
 		{
 			AsciiString endingStr;
 			AsciiString fname = s+1;
-			for (Int i=0; i<strlen(mapExtension); ++i)
+			for (size_t i=0; i<strlen(mapExtension); ++i)
 				fname.removeLastChar();
 
 			endingStr.format("%s\\%s%s", fname.str(), fname.str(), mapExtension);
 
 			Bool skipMap = FALSE;
-			if (TheGlobalData->m_buildMapCache)
+			if (TheGlobalData->m_data.m_buildMapCache)
 			{
 				std::set<AsciiString>::const_iterator sit = m_allowedMaps.find(fname);
 				if (m_allowedMaps.size() != 0 && sit == m_allowedMaps.end())
@@ -608,19 +605,19 @@ Bool MapCache::loadUserMaps()
 				else
 				{
 					if (TheFileSystem->getFileInfo(tempfilename, &fileInfo)) {
-						char funk[_MAX_PATH];
+						char funk[PATH_MAX];
 						strcpy(funk, tempfilename.str());
-						char *filenameptr = funk;
+						// char *filenameptr = funk;
 						char *tempchar = funk;
 						while (*tempchar != 0) {
 							if ((*tempchar == '\\') || (*tempchar == '/')) {
-								filenameptr = tempchar+1;
+								// filenameptr = tempchar+1;
 							}
 							++tempchar;
 						}
 
 						m_seen[tempfilename] = TRUE;
-						parsedAMap |= addMap(mapDir, *iter, &fileInfo, TheGlobalData->m_buildMapCache);
+						parsedAMap |= addMap(mapDir, *iter, &fileInfo, TheGlobalData->m_data.m_buildMapCache);
 					} else {
 						DEBUG_CRASH(("Could not get file info for map %s", (*iter).str()));
 					}
@@ -650,7 +647,7 @@ Bool MapCache::addMap( AsciiString dirName, AsciiString fname, FileInfo *fileInf
 	MapCache::iterator it = find(lowerFname);
 
 	MapMetaData md;
-	UnsignedInt filesize = fileInfo->sizeLow;
+	UnsignedInt64 filesize = fileInfo->size;
 
 	if (it != end())
 	{
@@ -690,8 +687,7 @@ Bool MapCache::addMap( AsciiString dirName, AsciiString fname, FileInfo *fileInf
 		}
 		DEBUG_LOG(("%s didn't match file in MapCache\n", fname.str()));
 		DEBUG_LOG(("size: %d / %d\n", filesize, md.m_filesize));
-		DEBUG_LOG(("time1: %d / %d\n", fileInfo->timestampHigh, md.m_timestamp.m_highTimeStamp));
-		DEBUG_LOG(("time2: %d / %d\n", fileInfo->timestampLow, md.m_timestamp.m_lowTimeStamp));
+		DEBUG_LOG(("time: %d / %d\n", fileInfo->timestamp, md.m_timestamp));
 //		DEBUG_LOG(("size: %d / %d\n", filesize, md.m_filesize));
 //		DEBUG_LOG(("time1: %d / %d\n", timestamp.m_highTimeStamp, md.m_timestamp.m_highTimeStamp));
 //		DEBUG_LOG(("time2: %d / %d\n", timestamp.m_lowTimeStamp, md.m_timestamp.m_lowTimeStamp));
@@ -708,8 +704,7 @@ Bool MapCache::addMap( AsciiString dirName, AsciiString fname, FileInfo *fileInf
 	md.m_waypoints.update();
 	md.m_numPlayers = md.m_waypoints.m_numStartSpots;
 	md.m_isMultiplayer = (md.m_numPlayers >= 2);
-	md.m_timestamp.m_highTimeStamp = fileInfo->timestampHigh;
-	md.m_timestamp.m_lowTimeStamp = fileInfo->timestampLow;
+	md.m_timestamp = fileInfo->timestamp;
 	md.m_supplyPositions = m_supplyPositions;
 	md.m_techPositions = m_techPositions;
 	md.m_CRC = calcCRC(dirName, fname);
@@ -846,12 +841,12 @@ typedef std::set<UnicodeString, rts::less_than_nocase<UnicodeString> > MapNameLi
 typedef MapNameList::iterator MapNameListIter;
 
 typedef std::map<UnicodeString, AsciiString> MapDisplayToFileNameList;
-typedef MapDisplayToFileNameList::iterator MapDisplayToFileNameListIter;
+// typedef MapDisplayToFileNameList::iterator MapDisplayToFileNameListIter;
 
 	MapNameList tempCache;
 	MapDisplayToFileNameList filenameMap;
 	UnsignedInt numMapsListed = 0;
-	UnsignedInt curNumPlayersInMap = 0;
+	Int curNumPlayersInMap = 0;
 
 	while (numMapsListed < TheMapCache->size()) {
 
@@ -901,7 +896,7 @@ typedef MapDisplayToFileNameList::iterator MapDisplayToFileNameListIter;
 				/// @todo: mapDisplayName = TheGameText->fetch(it->second.m_displayName.str());
 				mapDisplayName = it->second.m_displayName;
 				Int index = -1;
-				Int imageItemData = -1;
+				intptr_t imageItemData = -1;
 				if (numColumns > 1 && it->second.m_isMultiplayer)
 				{
 					Int numEasy = battleHonors->getEnduranceMedal(it->first.str(), SLOT_EASY_AI);
@@ -1163,7 +1158,7 @@ Image *getMapPreviewImage( AsciiString mapName )
 
 	AsciiString portableName = TheGameState->realMapPathToPortableMapPath(name);
 	tempName.set(AsciiString::TheEmptyString);
-	for(Int i = 0; i < portableName.getLength(); ++i)
+	for(size_t i = 0; i < portableName.getLength(); ++i)
 	{
 		char c = portableName.getCharAt(i);
 		if (c == '\\' || c == ':')
@@ -1286,7 +1281,7 @@ Image *getMapPreviewImage( AsciiString mapName )
 	return NULL;
 }
 
-Bool parseMapPreviewChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+Bool parseMapPreviewChunk(DataChunkInput & /* file */, DataChunkInfo * /* info */, void * /* userData */)
 {
 /*
 	ICoord2D size;
@@ -1355,4 +1350,3 @@ void findDrawPositions( Int startX, Int startY, Int width, Int height, Region3D 
 	lr->y += startY;
 
 }  // end findDrawPositions
-

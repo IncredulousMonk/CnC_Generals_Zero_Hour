@@ -171,7 +171,9 @@
 #include "GameLogic/Module/SpecialAbilityUpdate.h"
 #include "GameLogic/Module/MissileLauncherBuildingUpdate.h"
 #include "GameLogic/Module/StealthDetectorUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/StealthUpdate.h"
+#if 0
 #include "GameLogic/Module/SpawnPointProductionExitUpdate.h"
 #include "GameLogic/Module/SpawnBehavior.h"
 #include "GameLogic/Module/SpyVisionUpdate.h"
@@ -401,7 +403,9 @@ void ModuleFactory::init( void )
 	addModule( AutoFindHealingUpdate );
 	addModule( BaseRegenerateUpdate );
 	addModule( StealthDetectorUpdate );
+#endif // if 0
 	addModule( StealthUpdate );
+#if 0
 	addModule( DeletionUpdate );
 	addModule( SmartBombTargetHomingUpdate );
 	addModule( DynamicShroudClearingRangeUpdate );

@@ -52,6 +52,10 @@ public:
 	XferSave( void );
 	virtual ~XferSave( void );
 
+	// No copies allowed!
+	XferSave(const XferSave&) = delete;
+	XferSave& operator=(const XferSave&) = delete;
+
 	// Xfer methods
 	virtual void open( AsciiString identifier );		///< open file for writing
 	virtual void close( void );											///< close file

@@ -41,13 +41,13 @@
 #include "Common/Radar.h"
 #include "Common/Team.h"
 #include "Common/WellKnownKeys.h"
-#include "Common/XferLoad.h"
-#include "Common/XferSave.h"
+// #include "Common/XferLoad.h"
+// #include "Common/XferSave.h"
 #include "GameClient/CampaignManager.h"
 #include "GameClient/GadgetListBox.h"
 #include "GameClient/GameClient.h"
 #include "GameClient/GameText.h"
-#include "GameClient/MapUtil.h"
+// #include "GameClient/MapUtil.h"
 #include "GameClient/MessageBox.h"
 #include "GameClient/InGameUI.h"
 #include "GameClient/ParticleSys.h"
@@ -55,9 +55,10 @@
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/GhostObject.h"
 #include "GameLogic/PartitionManager.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/SidesList.h"
 #include "GameLogic/TerrainLogic.h"
+#include <filesystem>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -210,6 +211,8 @@ GameState::SnapshotBlock *GameState::findBlockInfoByToken( AsciiString token, Sn
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+#if 0
+// https://en.cppreference.com/w/cpp/chrono/c/wcsftime x and X
 UnicodeString getUnicodeDateBuffer(std::tm timeVal) 
 {
 	// setup date buffer for local region date format
@@ -240,7 +243,7 @@ UnicodeString getUnicodeDateBuffer(std::tm timeVal)
 	displayDateBuffer.set(dateBuffer);
 	return displayDateBuffer;
 	//displayDateBuffer.format( L"%ls", dateBuffer );
-}															
+}
 
 UnicodeString getUnicodeTimeBuffer(std::tm timeVal) 
 {
@@ -274,6 +277,7 @@ UnicodeString getUnicodeTimeBuffer(std::tm timeVal)
 	displayTimeBuffer.set(timeBuffer);
 	return displayTimeBuffer;
 }
+#endif // if 0
 
 
 // ------------------------------------------------------------------------------------------------
@@ -309,32 +313,35 @@ GameState::~GameState( void )
 void GameState::init( void )
 {
 
+// FIXME: TheRadar, TheScriptEngine, etc.
+#if 0
 	// add all the snapshot objects to our list of data blocks for save game files
-	addSnapshotBlock( GAME_STATE_BLOCK_STRING,				TheGameState,							SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( CAMPAIGN_BLOCK_STRING,					TheCampaignManager,				SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_GameStateMap",						TheGameStateMap,					SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_TerrainLogic",						TheTerrainLogic,					SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_TeamFactory",						TheTeamFactory,						SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_Players",								ThePlayerList,						SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_GameLogic",							TheGameLogic,							SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_Radar",									TheRadar,									SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_ScriptEngine",						TheScriptEngine,					SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_SidesList",							TheSidesList,							SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_TacticalView",						TheTacticalView,					SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_GameClient",							TheGameClient,						SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_InGameUI",								TheInGameUI,							SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_Partition",							ThePartitionManager,			SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_ParticleSystem",					TheParticleSystemManager,	SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_TerrainVisual",					TheTerrainVisual,					SNAPSHOT_SAVELOAD );
-	addSnapshotBlock( "CHUNK_GhostObject",						TheGhostObjectManager,		SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( GAME_STATE_BLOCK_STRING,		TheGameState,				SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( CAMPAIGN_BLOCK_STRING,		TheCampaignManager,			SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_GameStateMap",			TheGameStateMap,			SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_TerrainLogic",			TheTerrainLogic,			SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_TeamFactory",			TheTeamFactory,				SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_Players",				ThePlayerList,				SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_GameLogic",			TheGameLogic,				SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_Radar",				TheRadar,					SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_ScriptEngine",			TheScriptEngine,			SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_SidesList",			TheSidesList,				SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_TacticalView",			TheTacticalView,			SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_GameClient",			TheGameClient,				SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_InGameUI",				TheInGameUI,				SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_Partition",			ThePartitionManager,		SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_ParticleSystem",		TheParticleSystemManager,	SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_TerrainVisual",		TheTerrainVisual,			SNAPSHOT_SAVELOAD );
+	addSnapshotBlock( "CHUNK_GhostObject",			TheGhostObjectManager,		SNAPSHOT_SAVELOAD );
 
 	// add all the snapshot objects to our list of data blocks for deep CRCs of logic
-	addSnapshotBlock( "CHUNK_TeamFactory",						TheTeamFactory,						SNAPSHOT_DEEPCRC_LOGICONLY );
-	addSnapshotBlock( "CHUNK_Players",								ThePlayerList,						SNAPSHOT_DEEPCRC_LOGICONLY );
-	addSnapshotBlock( "CHUNK_GameLogic",							TheGameLogic,							SNAPSHOT_DEEPCRC_LOGICONLY );
-	addSnapshotBlock( "CHUNK_ScriptEngine",						TheScriptEngine,					SNAPSHOT_DEEPCRC_LOGICONLY );
-	addSnapshotBlock( "CHUNK_SidesList",							TheSidesList,							SNAPSHOT_DEEPCRC_LOGICONLY );
-	addSnapshotBlock( "CHUNK_Partition",							ThePartitionManager,			SNAPSHOT_DEEPCRC_LOGICONLY );
+	addSnapshotBlock( "CHUNK_TeamFactory",			TheTeamFactory,				SNAPSHOT_DEEPCRC_LOGICONLY );
+	addSnapshotBlock( "CHUNK_Players",				ThePlayerList,				SNAPSHOT_DEEPCRC_LOGICONLY );
+	addSnapshotBlock( "CHUNK_GameLogic",			TheGameLogic,				SNAPSHOT_DEEPCRC_LOGICONLY );
+	addSnapshotBlock( "CHUNK_ScriptEngine",			TheScriptEngine,			SNAPSHOT_DEEPCRC_LOGICONLY );
+	addSnapshotBlock( "CHUNK_SidesList",			TheSidesList,				SNAPSHOT_DEEPCRC_LOGICONLY );
+	addSnapshotBlock( "CHUNK_Partition",			ThePartitionManager,		SNAPSHOT_DEEPCRC_LOGICONLY );
+#endif // if 0
 
 	m_isInLoadGame = FALSE;
 
@@ -413,7 +420,7 @@ static void findHighFileNumber( AsciiString filename, void *userData )
 
 	// strip off the extension at the end of the filename
 	AsciiString nameOnly = filename;
-	for( Int count = 0; count < strlen( SAVE_GAME_EXTENSION ); count++ )
+	for( size_t count = 0; count < strlen( SAVE_GAME_EXTENSION ); count++ )
 		nameOnly.removeLastChar();
 	
 	// convert filename (which is only numbers) to a number
@@ -508,7 +515,8 @@ AsciiString GameState::findNextSaveFilename( UnicodeString desc )
 			fullPath = getFilePathInSaveDirectory(filename);
 
 			// if file does not exist we're all good
-			if( _access( fullPath.str(), 0 ) == -1 )
+			const std::filesystem::path path{fullPath.str()};
+			if( !std::filesystem::exists(path) )
 				return filename;
 
 			// test the text filename
@@ -543,6 +551,13 @@ SaveCode GameState::saveGame( AsciiString filename, UnicodeString desc,
 															SaveFileType saveType, SnapshotType which )
 {
 
+(void) filename;
+(void) desc;
+(void) saveType;
+(void) which;
+DEBUG_CRASH(("GameState::saveGame not yet implemented!"));
+return SC_ERROR;
+#if 0
 	// if there is no filename, this is a new file being created, find an appropriate filename
 	if( filename.isEmpty() )
 		filename = findNextSaveFilename( desc );
@@ -555,7 +570,7 @@ SaveCode GameState::saveGame( AsciiString filename, UnicodeString desc,
 	}  // end if
 
 	// make absolutely sure the save directory exists
-	CreateDirectory( getSaveDirectory().str(), NULL );
+	TheFileSystem->createDirectory(getSaveDirectory());
 
 	// construct path to file
 	AsciiString filepath = getFilePathInSaveDirectory(filename);
@@ -622,6 +637,7 @@ SaveCode GameState::saveGame( AsciiString filename, UnicodeString desc,
 
 	return SC_OK;
 
+#endif // if 0
 }  // end saveGame
 
 // ------------------------------------------------------------------------------------------------
@@ -639,7 +655,7 @@ SaveCode GameState::missionSave( void )
 	// format a string for the mission save description
 	UnicodeString format = TheGameText->fetch( "GUI:MissionSave" );
 	UnicodeString desc;
-	desc.format( format, TheGameText->fetch( campaign->m_campaignNameLabel ).str(), missionNumber );
+	desc.format( format, TheGameText->fetch( campaign->m_ini.m_campaignNameLabel ).str(), missionNumber );
 
 	// do an automatic mission save
 	return TheGameState->saveGame( AsciiString(""), desc, SAVE_FILE_TYPE_MISSION );
@@ -652,6 +668,10 @@ SaveCode GameState::missionSave( void )
 SaveCode GameState::loadGame( AvailableGameInfo gameInfo )
 {
 
+(void) gameInfo;
+DEBUG_CRASH(("GameState::loadGame not yet implemented!"));
+return SC_ERROR;
+#if 0
 	// sanity check for file
 	if( doesSaveGameExist( gameInfo.filename ) == FALSE )
 		return SC_FILE_NOT_FOUND;
@@ -747,7 +767,7 @@ SaveCode GameState::loadGame( AvailableGameInfo gameInfo )
 
 		InitRandom(0);
 
-		TheWritableGlobalData->m_pendingFile = getSaveGameInfo()->missionMapName;
+		TheWritableGlobalData->m_data.m_pendingFile = getSaveGameInfo()->missionMapName;
 		GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_NEW_GAME );
 		msg->appendIntegerArgument(GAME_SINGLE_PLAYER);
 		msg->appendIntegerArgument(TheCampaignManager->getGameDifficulty());
@@ -762,6 +782,7 @@ SaveCode GameState::loadGame( AvailableGameInfo gameInfo )
 		
 	return SC_OK;
 
+#endif // if 0
 }  // end loadGame
 
 //-------------------------------------------------------------------------------------------------
@@ -789,7 +810,7 @@ Bool GameState::isInSaveDirectory(const AsciiString& path) const
 // ------------------------------------------------------------------------------------------------
 AsciiString GameState::getMapLeafName(const AsciiString& in) const
 {
-	char* p = strrchr(in.str(), '\\');
+	const char* p = strrchr(in.str(), '\\');
 	if (p)
 	{
 		//
@@ -808,6 +829,7 @@ AsciiString GameState::getMapLeafName(const AsciiString& in) const
 	}
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 static const char* findLastBackslashInRangeInclusive(const char* start, const char* end)
 {
@@ -862,10 +884,11 @@ static AsciiString removeExtension(const AsciiString& in)
 	}
 	return AsciiString(buf);
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
-const char* PORTABLE_SAVE				= "Save\\";
-const char* PORTABLE_MAPS				= "Maps\\";
+const char* PORTABLE_SAVE		= "Save\\";
+const char* PORTABLE_MAPS		= "Maps\\";
 const char* PORTABLE_USER_MAPS	= "UserData\\Maps\\";
 
 // ------------------------------------------------------------------------------------------------
@@ -877,16 +900,17 @@ AsciiString GameState::realMapPathToPortableMapPath(const AsciiString& in) const
 		prefix = PORTABLE_SAVE;
 		prefix.concat(getMapLeafName(in));
 	}
-	else if (in.startsWithNoCase(TheMapCache->getMapDir()))
-	{
-		prefix = PORTABLE_MAPS;
-		prefix.concat(getMapLeafAndDirName(in));
-	}
-	else if (in.startsWithNoCase(TheMapCache->getUserMapDir()))
-	{
-		prefix = PORTABLE_USER_MAPS;
-		prefix.concat(getMapLeafAndDirName(in));
-	}
+	// FIXME: TheMapCache
+	// else if (in.startsWithNoCase(TheMapCache->getMapDir()))
+	// {
+	// 	prefix = PORTABLE_MAPS;
+	// 	prefix.concat(getMapLeafAndDirName(in));
+	// }
+	// else if (in.startsWithNoCase(TheMapCache->getUserMapDir()))
+	// {
+	// 	prefix = PORTABLE_USER_MAPS;
+	// 	prefix.concat(getMapLeafAndDirName(in));
+	// }
 	else
 	{
 		DEBUG_CRASH(("Map file was not found in any of the expected directories; this is impossible"));
@@ -908,20 +932,21 @@ AsciiString GameState::portableMapPathToRealMapPath(const AsciiString& in) const
 		prefix = getSaveDirectory();
 		prefix.concat(getMapLeafName(in));
 	}
-	else if (in.startsWithNoCase(PORTABLE_MAPS))
-	{
-		// the map dir DOES NOT end with "\\", must add it
-		prefix = TheMapCache->getMapDir();
-		prefix.concat("\\");
-		prefix.concat(getMapLeafAndDirName(in));
-	}
-	else if (in.startsWithNoCase(PORTABLE_USER_MAPS))
-	{
-		// the map dir DOES NOT end with "\\", must add it
-		prefix = TheMapCache->getUserMapDir();
-		prefix.concat("\\");
-		prefix.concat(getMapLeafAndDirName(in));
-	}
+	// FIXME: TheMapCache
+	// else if (in.startsWithNoCase(PORTABLE_MAPS))
+	// {
+	// 	// the map dir DOES NOT end with "\\", must add it
+	// 	prefix = TheMapCache->getMapDir();
+	// 	prefix.concat("\\");
+	// 	prefix.concat(getMapLeafAndDirName(in));
+	// }
+	// else if (in.startsWithNoCase(PORTABLE_USER_MAPS))
+	// {
+	// 	// the map dir DOES NOT end with "\\", must add it
+	// 	prefix = TheMapCache->getUserMapDir();
+	// 	prefix.concat("\\");
+	// 	prefix.concat(getMapLeafAndDirName(in));
+	// }
 	else
 	{
 		DEBUG_CRASH(("Map file was not found in any of the expected directories; this is impossible"));
@@ -942,27 +967,31 @@ Bool GameState::doesSaveGameExist( AsciiString filename )
 	// construct full path to file
 	AsciiString filepath = getFilePathInSaveDirectory(filename);
 
-	// open file
-	XferLoad xfer;
-	try
-	{
+	const std::filesystem::path path{filepath.str()};
+	return std::filesystem::exists(path);
 
-		// try to open it
-		xfer.open( filepath );
+	// MG: Try to open the file, and catch the file-not-found exception?  Yuck!
+	// // open file
+	// XferLoad xfer;
+	// try
+	// {
 
-	}  // end try
-	catch( ... )
-	{
+	// 	// try to open it
+	// 	xfer.open( filepath );
 
-		// unable to open file, it must not be here
-		return FALSE;
+	// }  // end try
+	// catch( ... )
+	// {
 
-	}  // end catch
+	// 	// unable to open file, it must not be here
+	// 	return FALSE;
+
+	// }  // end catch
 	
-	// close the file, we don't want to to anything with it right now
-	xfer.close();
+	// // close the file, we don't want to to anything with it right now
+	// xfer.close();
 
-	return TRUE;
+	// return TRUE;
 
 }  // doesSaveGameExist
 
@@ -971,6 +1000,10 @@ Bool GameState::doesSaveGameExist( AsciiString filename )
 // ------------------------------------------------------------------------------------------------
 void GameState::getSaveGameInfoFromFile( AsciiString filename, SaveGameInfo *saveGameInfo )
 {
+(void) filename;
+(void) saveGameInfo;
+DEBUG_CRASH(("GameState::getSaveGameInfoFromFile not yet implemented!"));
+#if 0
 	AsciiString token;
 	Int blockSize;
 	Bool done = FALSE;
@@ -1023,7 +1056,7 @@ void GameState::getSaveGameInfoFromFile( AsciiString filename, SaveGameInfo *sav
 			blockSize = xferLoad.beginBlock();
 
 			// is this the block of game info data
-			if( stricmp( token.str(), GAME_STATE_BLOCK_STRING ) == 0 )
+			if( strcasecmp( token.str(), GAME_STATE_BLOCK_STRING ) == 0 )
 			{
 				GameState tempGameState;
 
@@ -1069,8 +1102,10 @@ void GameState::getSaveGameInfoFromFile( AsciiString filename, SaveGameInfo *sav
 	// close the file
 	xferLoad.close();
 
+#endif // if 0
 }  // end getSaveGameInfoFromFile
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Create game info and add to available list */
 // ------------------------------------------------------------------------------------------------
@@ -1144,12 +1179,17 @@ static void addGameToAvailableList( AsciiString filename, void *userData )
 
 
 }  // end addGameToAvailableList
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Populate the listbox passed in with a list of the save games present on the hard drive */
 // ------------------------------------------------------------------------------------------------
 void GameState::populateSaveGameListbox( GameWindow *listbox, SaveLoadLayoutType layoutType )
 {
+(void) listbox;
+(void) layoutType;
+DEBUG_CRASH(("GameState::populateSaveGameListbox not yet implemented!"));
+#if 0
 	Int index;
 
 	// sanity
@@ -1237,6 +1277,7 @@ void GameState::populateSaveGameListbox( GameWindow *listbox, SaveLoadLayoutType
 	// select the top "new game" entry
 	GadgetListBoxSetSelected( listbox, 0 );
 
+#endif // if 0
 }  // end pupulateSaveGameListbox
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1249,6 +1290,10 @@ void GameState::populateSaveGameListbox( GameWindow *listbox, SaveLoadLayoutType
 void GameState::iterateSaveFiles( IterateSaveFileCallback callback, void *userData )
 {
 
+(void) callback;
+(void) userData;
+DEBUG_CRASH(("GameState::iterateSaveFiles not yet implemented!"));
+#if 0
 	// sanity
 	if( callback == NULL )
 		return;
@@ -1314,6 +1359,7 @@ void GameState::iterateSaveFiles( IterateSaveFileCallback callback, void *userDa
 	// restore the current directory
 	SetCurrentDirectory( currentDirectory );
 
+#endif // if 0
 }  // end iterateSaveFiles
 
 // ------------------------------------------------------------------------------------------------
@@ -1409,7 +1455,6 @@ void GameState::xferSaveData( Xfer *xfer, SnapshotType which )
 	{
 		DEBUG_LOG(("GameState::xferSaveData() - not XFER_SAVE\n"));
 		AsciiString token;
-		Int blockSize;
 		Bool done = FALSE;
 		SnapshotBlock *blockInfo;
 
@@ -1455,7 +1500,7 @@ void GameState::xferSaveData( Xfer *xfer, SnapshotType which )
 				{
 
 					// read block start
-					blockSize = xfer->beginBlock();
+					xfer->beginBlock();
 				
 					// parse this data
 					xfer->xferSnapshot( blockInfo->snapshot );
@@ -1563,6 +1608,9 @@ void GameState::gameStatePostProcessLoad( void )
 void GameState::xfer( Xfer *xfer )
 {
 
+(void) xfer;
+DEBUG_CRASH(("GameState::xfer not yet implemented!"));
+#if 0
 	// version
 	XferVersion currentVersion = 2;
 	XferVersion version = currentVersion;
@@ -1663,4 +1711,5 @@ void GameState::xfer( Xfer *xfer )
 
 	}  // end else
 
+#endif // if 0
 }  // end xfer

@@ -51,22 +51,15 @@ typedef std::list <ICoord2D> ICoord2DList;
 class TechAndSupplyImages
 {
 public:
-	ICoord2DList m_techPosList;
-	ICoord2DList m_supplyPosList;
+	ICoord2DList m_techPosList {};
+	ICoord2DList m_supplyPosList {};
 };
-
-struct WinTimeStamp
-{
-	UnsignedInt m_lowTimeStamp;
-	UnsignedInt m_highTimeStamp;
-};
-
 
 class WaypointMap : public std::map<AsciiString, Coord3D>
 {
 public:
 	void update( void );	///< returns the number of multiplayer start spots found
-	Int m_numStartSpots;
+	Int m_numStartSpots {};
 };
 
 typedef std::list <Coord3D> Coord3DList;
@@ -81,10 +74,10 @@ public:
 	Bool m_isMultiplayer {};
 
 	Bool m_isOfficial {};
-	UnsignedInt m_filesize {};
+	UnsignedInt64 m_filesize {};
 	UnsignedInt m_CRC {};
 
-	WinTimeStamp m_timestamp {};
+	UnsignedInt64 m_timestamp {};
 
 	WaypointMap m_waypoints {};
 	Coord3DList m_supplyPositions {};

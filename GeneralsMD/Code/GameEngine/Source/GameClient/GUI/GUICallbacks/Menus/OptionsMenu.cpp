@@ -1118,8 +1118,7 @@ static void saveOptions( void )
 				if( TheShell )
 					TheShell->init();
 				
-				// FIXME: TheInGameUI
-				// TheInGameUI->recreateControlBar();
+				TheInGameUI->recreateControlBar();
 
 				TheShell->push( AsciiString("Menus/MainMenu.wnd") );
 			}
@@ -1740,31 +1739,30 @@ void OptionsMenuInit( WindowLayout *layout, void *userData )
 	}
 
 	//set scroll options
-	// FIXME: TheInGameUI
-	// AsciiString test = (*pref)["DrawScrollAnchor"];
-	// DEBUG_LOG(("DrawScrollAnchor == [%s]\n", test.str()));
-	// if (test == "Yes" || (test.isEmpty() && TheInGameUI->getDrawRMBScrollAnchor()))
-	// {
-	// 	GadgetCheckBoxSetChecked( checkDrawAnchor, true);
-	// 	TheInGameUI->setDrawRMBScrollAnchor(true);
-	// }
-	// else
-	// {
-	// 	GadgetCheckBoxSetChecked( checkDrawAnchor, false);
-	// 	TheInGameUI->setDrawRMBScrollAnchor(false);
-	// }
-	// test = (*pref)["MoveScrollAnchor"];
-	// DEBUG_LOG(("MoveScrollAnchor == [%s]\n", test.str()));
-	// if (test == "Yes" || (test.isEmpty() && TheInGameUI->getMoveRMBScrollAnchor()))
-	// {
-	// 	GadgetCheckBoxSetChecked( checkMoveAnchor, true);
-	// 	TheInGameUI->setMoveRMBScrollAnchor(true);
-	// }
-	// else
-	// {
-	// 	GadgetCheckBoxSetChecked( checkMoveAnchor, false);
-	// 	TheInGameUI->setMoveRMBScrollAnchor(false);
-	// }
+	AsciiString test = (*pref)["DrawScrollAnchor"];
+	DEBUG_LOG(("DrawScrollAnchor == [%s]\n", test.str()));
+	if (test == "Yes" || (test.isEmpty() && TheInGameUI->getDrawRMBScrollAnchor()))
+	{
+		GadgetCheckBoxSetChecked( checkDrawAnchor, true);
+		TheInGameUI->setDrawRMBScrollAnchor(true);
+	}
+	else
+	{
+		GadgetCheckBoxSetChecked( checkDrawAnchor, false);
+		TheInGameUI->setDrawRMBScrollAnchor(false);
+	}
+	test = (*pref)["MoveScrollAnchor"];
+	DEBUG_LOG(("MoveScrollAnchor == [%s]\n", test.str()));
+	if (test == "Yes" || (test.isEmpty() && TheInGameUI->getMoveRMBScrollAnchor()))
+	{
+		GadgetCheckBoxSetChecked( checkMoveAnchor, true);
+		TheInGameUI->setMoveRMBScrollAnchor(true);
+	}
+	else
+	{
+		GadgetCheckBoxSetChecked( checkMoveAnchor, false);
+		TheInGameUI->setMoveRMBScrollAnchor(false);
+	}
 
 //	// Audio Init shiznat
 //	GadgetCheckBoxSetChecked(checkAudioHardware, TheAudio->getHardwareAccelerated());
@@ -2069,13 +2067,12 @@ WindowMsgHandledType OptionsMenuSystem( GameWindow *window, UnsignedInt msg,
       {
         if( GadgetCheckBoxIsChecked( control ) )
         {
-			// FIXME: TheInGameUI
-          	// TheInGameUI->setDrawRMBScrollAnchor(true);
+          	TheInGameUI->setDrawRMBScrollAnchor(true);
           	(*pref)["DrawScrollAnchor"] = "Yes";
         }
 				else
         {
-          	// TheInGameUI->setDrawRMBScrollAnchor(false);
+          	TheInGameUI->setDrawRMBScrollAnchor(false);
           	(*pref)["DrawScrollAnchor"] = "No";
         }
       }
@@ -2083,12 +2080,12 @@ WindowMsgHandledType OptionsMenuSystem( GameWindow *window, UnsignedInt msg,
       {
         if( GadgetCheckBoxIsChecked( control ) )
         {
-          	// TheInGameUI->setMoveRMBScrollAnchor(true);
+          	TheInGameUI->setMoveRMBScrollAnchor(true);
           	(*pref)["MoveScrollAnchor"] = "Yes";
         }
 				else
         {
-          	// TheInGameUI->setMoveRMBScrollAnchor(false);
+          	TheInGameUI->setMoveRMBScrollAnchor(false);
           	(*pref)["MoveScrollAnchor"] = "No";
         }
       }

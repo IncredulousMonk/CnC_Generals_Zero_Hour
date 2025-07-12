@@ -70,6 +70,7 @@ void LinuxDisplay::init()
                texture.path = filename;
             } else {
                // Where are they?
+               DEBUG_LOG(("Image file not found: %s\n", image->getFilename().str()));
                texture.path = AsciiString::TheEmptyString;
             }
          }

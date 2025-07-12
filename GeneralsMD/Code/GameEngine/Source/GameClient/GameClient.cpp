@@ -44,7 +44,7 @@
 // #include "Common/Xfer.h"
 // #include "Common/GameLOD.h"
 #include "GameClient/Anim2D.h"
-// #include "GameClient/CampaignManager.h"
+#include "GameClient/CampaignManager.h"
 // #include "GameClient/ChallengeGenerals.h"
 // #include "GameClient/CommandXlat.h"
 // #include "GameClient/ControlBar.h"
@@ -151,9 +151,9 @@ GameClient::~GameClient()
 	// //	DEBUG_LOG(("%s\n", preloadTextureNamesGlobalHack[oog]));
 	// //}
 	// //DEBUG_LOG(("End Texture files ------------------------------------------------\n"));
-	// if(TheCampaignManager)
-	// 	delete TheCampaignManager;
-	// TheCampaignManager = NULL;
+	if(TheCampaignManager)
+		delete TheCampaignManager;
+	TheCampaignManager = NULL;
 
 	// // destroy all Drawables
 	// Drawable *draw, *nextDraw;
@@ -425,8 +425,8 @@ void GameClient::init( void )
  		TheLanguageFilter->setName("TheLanguageFilter");
 	}
 
-// 	TheCampaignManager = MSGNEW("GameClientSubsystem") CampaignManager;
-// 	TheCampaignManager->init();
+	TheCampaignManager = MSGNEW("GameClientSubsystem") CampaignManager;
+	TheCampaignManager->init();
 
 // 	TheEva = MSGNEW("GameClientSubsystem") Eva;
 // 	TheEva->init();

@@ -81,9 +81,9 @@
 #include "GameClient/ChallengeGenerals.h"
 #include "GameLogic/FPUControl.h"
 #include "GameLogic/GameLogic.h"
-#include "GameNetwork/GameSpy/PeerDefs.h"
-#include "GameNetwork/GameSpy/PersistentStorageThread.h"
-#include "GameNetwork/NetworkInterface.h"
+// #include "GameNetwork/GameSpy/PeerDefs.h"
+// #include "GameNetwork/GameSpy/PersistentStorageThread.h"
+// #include "GameNetwork/NetworkInterface.h"
 #include "GameNetwork/RankPointValue.h"
 
 //-----------------------------------------------------------------------------
@@ -124,19 +124,19 @@ void updateMapStartSpots( GameInfo *myGame, GameWindow *buttonMapStartPositions[
 void positionAdditionalImages( MapMetaData *mmd, GameWindow *mapWindow, Bool force);
 
 enum{
-FRAME_TITLES_START = 20,
-FRAME_TELETYPE_START = 24,
-FRAME_FUDGE_ADD = 30,
-FRAME_PORTRAITS_START = 35,
-FRAME_OUTER_CIRCLE_LINE_SHOW = 50,
-FRAME_INNER_CIRCLE_LINE_SHOW = 52,
-FRAME_OUTER_CIRCLE_ALPHA_SHOW = 63,
-FRAME_INNER_CIRCLE_ALPHA_SHOW = 74,
-FRAME_OUTER_CIRCLE_LINE_HIDE = 75,
-FRAME_INNER_BACKDROP_ALPHA_SHOW = 80,
-FRAME_INNER_CIRCLE_LINE_HIDE = 81,
-FRAME_VS_ANIM_START = 98,
-FRAME_RIGHT_VOICE = 140,
+	FRAME_TITLES_START = 20,
+	FRAME_TELETYPE_START = 24,
+	FRAME_FUDGE_ADD = 30,
+	FRAME_PORTRAITS_START = 35,
+	FRAME_OUTER_CIRCLE_LINE_SHOW = 50,
+	FRAME_INNER_CIRCLE_LINE_SHOW = 52,
+	FRAME_OUTER_CIRCLE_ALPHA_SHOW = 63,
+	FRAME_INNER_CIRCLE_ALPHA_SHOW = 74,
+	FRAME_OUTER_CIRCLE_LINE_HIDE = 75,
+	FRAME_INNER_BACKDROP_ALPHA_SHOW = 80,
+	FRAME_INNER_CIRCLE_LINE_HIDE = 81,
+	FRAME_VS_ANIM_START = 98,
+	FRAME_RIGHT_VOICE = 140,
 };
 
 static const Int TELETYPE_UPDATE_FREQ = 2; // how many frames between teletype updates
@@ -149,7 +149,7 @@ static const Int TELETYPE_UPDATE_FREQ = 2; // how many frames between teletype u
 
 LoadScreen::LoadScreen( void )
 {
-	m_loadScreen = NULL;		
+	m_loadScreen = NULL;
 }
 
 LoadScreen::~LoadScreen( void )
@@ -172,7 +172,7 @@ void LoadScreen::update( Int percent )
 	// redraw all views, update the GUI
 	TheDisplay->draw();
 
-	setFPMode();
+	// setFPMode();
 }
 
 
@@ -213,8 +213,8 @@ SinglePlayerLoadScreen::~SinglePlayerLoadScreen( void )
 	m_videoStream = NULL;
 	
 	TheAudio->removeAudioEvent( m_ambientLoopHandle );
-	m_ambientLoopHandle = NULL;
-	
+	m_ambientLoopHandle = 0;
+
 }
 
 void SinglePlayerLoadScreen::moveWindows( Int frame )
@@ -252,7 +252,7 @@ void SinglePlayerLoadScreen::moveWindows( Int frame )
 	
 	if( frame > STATE_BEGIN_ANIMATING_TEXT && frame <= STATE_END_ANIMATING_TEXT && !m_finishedObjectiveText)
 	{
-		if(m_currentObjectiveLineCharacter >= m_unicodeObjectiveLines[m_currentObjectiveLine].getLength() )
+		if(m_currentObjectiveLineCharacter >= (Int)m_unicodeObjectiveLines[m_currentObjectiveLine].getLength() )
 		{
 			m_currentObjectiveLine++;
 			m_currentObjectiveLineCharacter =0;
@@ -424,22 +424,22 @@ void SinglePlayerLoadScreen::init( GameInfo *game )
 		GadgetStaticTextSetText(m_objectiveLines[i],UnicodeString::TheEmptyString);
 
 		// translate the objective lines
-		if(mission->m_missionObjectivesLabel[i].isNotEmpty())
-			m_unicodeObjectiveLines[i] = TheGameText->fetch(mission->m_missionObjectivesLabel[i]);
+		if(mission->m_ini.m_missionObjectivesLabel[i].isNotEmpty())
+			m_unicodeObjectiveLines[i] = TheGameText->fetch(mission->m_ini.m_missionObjectivesLabel[i]);
 	}
 
-	for(i = 0; i < MAX_DISPLAYED_UNITS; ++i)
+	for(Int i = 0; i < MAX_DISPLAYED_UNITS; ++i)
 	{
 		lineName.format("SinglePlayerLoadScreen.wnd:StaticTextCameoText%d",i);
 		m_unitDesc[i] = TheWindowManager->winGetWindowFromId( m_loadScreen,TheNameKeyGenerator->nameToKey( lineName ));
 		DEBUG_ASSERTCRASH(m_unitDesc[i], ("Can't initialize the m_objectiveLines[%d] for the single player loadscreen", i));
-		GadgetStaticTextSetText(m_unitDesc[i],TheGameText->fetch(mission->m_unitNames[i]));
+		GadgetStaticTextSetText(m_unitDesc[i],TheGameText->fetch(mission->m_ini.m_unitNames[i]));
 		m_unitDesc[i]->winHide(TRUE);
 	}
 	m_location = TheWindowManager->winGetWindowFromId( m_loadScreen,TheNameKeyGenerator->nameToKey( AsciiString( "SinglePlayerLoadScreen.wnd:StaticTextCameoText3" ) ));
 	DEBUG_ASSERTCRASH(m_location, ("Can't initialize the m_objectiveWin for the single player loadscreen"));
 	m_location->winHide(TRUE);
-	GadgetStaticTextSetText(m_location, TheGameText->fetch(mission->m_locationNameLabel));
+	GadgetStaticTextSetText(m_location, TheGameText->fetch(mission->m_ini.m_locationNameLabel));
 	
 
 	
@@ -481,18 +481,18 @@ void SinglePlayerLoadScreen::init( GameInfo *game )
 */
 	m_ambientLoop.setEventName("LoadScreenAmbient");
 	// create the new stream
-	m_videoStream = TheVideoPlayer->open( TheCampaignManager->getCurrentMission()->m_movieLabel );
+	m_videoStream = TheVideoPlayer->open( TheCampaignManager->getCurrentMission()->m_ini.m_movieLabel );
 	if ( m_videoStream == NULL )
 	{
 		m_percent->winHide(TRUE);
 		return;
 	}
 
+#if 0 // Video buffer
 	// Create the new buffer
 	m_videoBuffer = TheDisplay->createVideoBuffer();
 	if (	m_videoBuffer == NULL || 
-				!m_videoBuffer->allocate(	m_videoStream->width(), 
-													m_videoStream->height())
+				!m_videoBuffer->allocate((UnsignedInt)m_videoStream->width(), (UnsignedInt)m_videoStream->height())
 		)
 	{
 		delete m_videoBuffer;
@@ -504,6 +504,7 @@ void SinglePlayerLoadScreen::init( GameInfo *game )
 
 		return;
 	}
+#endif // if 0
 
 	// format the progress bar: USA to blue, GLA to green, China to red
 	// and set the background image
@@ -527,7 +528,8 @@ void SinglePlayerLoadScreen::init( GameInfo *game )
 	// else leave the default background screen
 
 
-	if(TheGameLODManager && TheGameLODManager->didMemPass())
+	// if(TheGameLODManager && TheGameLODManager->didMemPass())
+	if (0)
 	{
 		Int progressUpdateCount = m_videoStream->frameCount() / FRAME_FUDGE_ADD;
 		Int shiftedPercent = -FRAME_FUDGE_ADD + 1;
@@ -537,7 +539,8 @@ void SinglePlayerLoadScreen::init( GameInfo *game )
 
 			if(!m_videoStream->isFrameReady())
 			{
-				Sleep(1);	
+				// Sleep(1);
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				continue;
 			}
 
@@ -589,27 +592,28 @@ void SinglePlayerLoadScreen::init( GameInfo *game )
 	{
 		// if we're min spec'ed don't play a movie
 		
-		Int delay = mission->m_voiceLength * 1000;
-		Int begin = timeGetTime();
-		Int currTime = begin;
+		Int delay = mission->m_ini.m_voiceLength * 1000;
+		auto begin {std::chrono::steady_clock::now()};
 		Int fudgeFactor = 0;
-		while(begin + delay > currTime )
-		{		
-			fudgeFactor = 30 * ((currTime - begin)/ INT_TO_REAL(delay ));
+		std::chrono::duration<double, std::milli> elapsed {std::chrono::steady_clock::now() - begin};
+		while (elapsed.count() < delay)
+		{
+			fudgeFactor = 30 * (elapsed.count() / INT_TO_REAL(delay));
 			GadgetProgressBarSetProgress(m_progressBar, fudgeFactor);
 
 			TheWindowManager->update();
 			TheDisplay->draw();
-			Sleep(100);
-			currTime = timeGetTime();
+			// Sleep(100);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			elapsed = std::chrono::steady_clock::now() - begin;
 		}
-		
+
 
 		TheWindowManager->update();
 		TheDisplay->draw();
 
 	}
-	setFPMode();
+	// setFPMode();
 	m_percent->winHide(TRUE);
 	m_ambientLoopHandle = TheAudio->addAudioEvent(&m_ambientLoop);
 	
@@ -728,7 +732,7 @@ ChallengeLoadScreen::~ChallengeLoadScreen( void )
 	m_wndVideoManager = NULL;
 
 	TheAudio->removeAudioEvent( m_ambientLoopHandle );
-	m_ambientLoopHandle = NULL;
+	m_ambientLoopHandle = 0;
 }
 
 // accepts the number of chars to advance, the window we're concerned with, the total text for final display, and the current position of the readout
@@ -740,7 +744,7 @@ Int updateTeletypeText( Int num_chars, GameWindow* window, UnicodeString full_te
 	WideChar wChar;
 	for (Int i = 0; i < num_chars; i++)
 	{
-		if (current_text_pos < full_text.getLength())
+		if (current_text_pos < (Int)full_text.getLength())
 		{
 			wChar = full_text.getCharAt(current_text_pos);
 			currentText.concat(wChar);
@@ -753,14 +757,19 @@ Int updateTeletypeText( Int num_chars, GameWindow* window, UnicodeString full_te
 
 void ChallengeLoadScreen::activatePieces( Int frame, const GeneralPersona *generalPlayer, const GeneralPersona *generalOpponent )
 {
+(void) frame;
+(void) generalPlayer;
+(void) generalOpponent;
+DEBUG_CRASH(("ChallengeLoadScreen::activatePieces not yet implemented!"));
+#if 0
 	static Int textPosBigNameRight = 0;
 	static Int textPosNameRight = 0;
-	static Int textPosAgeRight = 0;
+	// static Int textPosAgeRight = 0;
 	static Int textPosBirthplaceRight = 0;
 	static Int textPosStrategyRight = 0;
 	static Int textPosBigNameLeft = 0;
 	static Int textPosNameLeft = 0;
-	static Int textPosAgeLeft = 0;
+	// static Int textPosAgeLeft = 0;
 	static Int textPosBirthplaceLeft = 0;
 	static Int textPosStrategyLeft = 0;
 
@@ -785,12 +794,12 @@ void ChallengeLoadScreen::activatePieces( Int frame, const GeneralPersona *gener
 			// reinit the statics for each new load screen
 			textPosBigNameRight = 0;
 			textPosNameRight = 0;
-			textPosAgeRight = 0;
+			// textPosAgeRight = 0;
 			textPosBirthplaceRight = 0;
 			textPosStrategyRight = 0;
 			textPosBigNameLeft = 0;
 			textPosNameLeft = 0;
-			textPosAgeLeft = 0;
+			// textPosAgeLeft = 0;
 			textPosBirthplaceLeft = 0;
 			textPosStrategyLeft = 0;
 
@@ -879,10 +888,15 @@ void ChallengeLoadScreen::activatePieces( Int frame, const GeneralPersona *gener
 		textPosBirthplaceRight = updateTeletypeText( 1, m_bioBirthplaceEntryRight, TheGameText->fetch(generalOpponent->getBioRank()), textPosBirthplaceRight);
 		textPosStrategyRight = updateTeletypeText( 1, m_bioStrategyEntryRight, TheGameText->fetch(generalOpponent->getBioStrategy()), textPosStrategyRight);
 	}
+#endif // if 0
 }
- 
+
 void ChallengeLoadScreen::activatePiecesMinSpec(const GeneralPersona *generalPlayer, const GeneralPersona *generalOpponent)
 {
+(void) generalPlayer;
+(void) generalOpponent;
+DEBUG_CRASH(("ChallengeLoadScreen::activatePiecesMinSpec not yet implemented!"));
+#if 0
 	m_bioNameLeft->winHide(FALSE);
 //	m_bioAgeLeft->winHide(FALSE);
 	m_bioBirthplaceLeft->winHide(FALSE);
@@ -921,11 +935,15 @@ void ChallengeLoadScreen::activatePiecesMinSpec(const GeneralPersona *generalPla
 	m_overlayVsBackdrop->winHide(FALSE);
 	m_overlayVs->winHide(FALSE);
 	m_wndVideoManager->playMovie( m_overlayVs, AsciiString("VSSmall"), WINDOW_PLAY_MOVIE_SHOW_LAST_FRAME);
+#endif // if 0
 }
 
 
 void ChallengeLoadScreen::init( GameInfo *game )
 {
+(void) game;
+DEBUG_CRASH(("ChallengeLoadScreen::init not yet implemented!"));
+#if 0
 	const Campaign *campaign = TheCampaignManager->getCurrentCampaign();
 	const Mission *mission = TheCampaignManager->getCurrentMission();
 
@@ -933,8 +951,8 @@ void ChallengeLoadScreen::init( GameInfo *game )
 	const GeneralPersona* generalPlayer = TheChallengeGenerals->getPlayerGeneralByCampaignName( campaign->m_name );
 
 	// the opponent general is tied to the mission
-	DEBUG_ASSERTCRASH(mission->m_generalName.isNotEmpty(), ("No GeneralName associated with this mission, check Campaign.ini"));
-	const GeneralPersona* generalOpponent = TheChallengeGenerals->getGeneralByGeneralName( mission->m_generalName );
+	DEBUG_ASSERTCRASH(mission->m_ini.m_generalName.isNotEmpty(), ("No GeneralName associated with this mission, check Campaign.ini"));
+	const GeneralPersona* generalOpponent = TheChallengeGenerals->getGeneralByGeneralName( mission->m_ini.m_generalName );
 
 	// create the layout of the load screen
 	m_loadScreen = TheWindowManager->winCreateFromScript( AsciiString( "Menus/ChallengeLoadScreen.wnd" ) );
@@ -950,11 +968,11 @@ void ChallengeLoadScreen::init( GameInfo *game )
 	m_ambientLoop.setEventName("LoadScreenAmbient");
 
 	// create the new background video stream
-	m_videoStream = TheVideoPlayer->open( TheCampaignManager->getCurrentMission()->m_movieLabel );
+	m_videoStream = TheVideoPlayer->open( TheCampaignManager->getCurrentMission()->m_ini.m_movieLabel );
 
 	// Create the new buffer
 	m_videoBuffer = TheDisplay->createVideoBuffer();
-	if (m_videoBuffer == NULL || !m_videoBuffer->allocate(	m_videoStream->width(), m_videoStream->height() ))
+	if (m_videoBuffer == NULL || !m_videoBuffer->allocate((UnsignedInt)m_videoStream->width(), (UnsignedInt)m_videoStream->height() ))
 	{
 		delete m_videoBuffer;
 		m_videoBuffer = NULL;
@@ -1053,7 +1071,8 @@ void ChallengeLoadScreen::init( GameInfo *game )
 
 			if(!m_videoStream->isFrameReady())
 			{
-				Sleep(1);	
+				// Sleep(1);
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				continue;
 			}
 
@@ -1098,8 +1117,10 @@ void ChallengeLoadScreen::init( GameInfo *game )
 	{
 		// if we're min speced
 		m_videoStream->frameGoto(m_videoStream->frameCount()); // zero based
-		while(!m_videoStream->isFrameReady())
-			Sleep(1);
+		while(!m_videoStream->isFrameReady()) {
+			// Sleep(1);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
 		m_videoStream->frameDecompress();
 		m_videoStream->frameRender(m_videoBuffer);
 		if(m_videoBuffer)
@@ -1107,26 +1128,27 @@ void ChallengeLoadScreen::init( GameInfo *game )
 
 		activatePiecesMinSpec(generalPlayer, generalOpponent);
 
-		Int delay = mission->m_voiceLength * 1000;
-		Int begin = timeGetTime();
-		Int currTime = begin;
+		Int delay = mission->m_ini.m_voiceLength * 1000;
+		auto begin {std::chrono::steady_clock::now()};
 		Int fudgeFactor = 0;
-		while(begin + delay > currTime )
-		{		
-			fudgeFactor = 30 * ((currTime - begin)/ INT_TO_REAL(delay ));
+		std::chrono::duration<double, std::milli> elapsed {std::chrono::steady_clock::now() - begin};
+		while (elapsed.count() < delay)
+		{
+			fudgeFactor = 30 * (elapsed.count() / INT_TO_REAL(delay));
 			GadgetProgressBarSetProgress(m_progressBar, fudgeFactor);
 
 			TheWindowManager->update();
 			TheDisplay->draw();
-			Sleep(100);
-			currTime = timeGetTime();
+			// Sleep(100);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			elapsed = std::chrono::steady_clock::now() - begin;
 		}
 		
 		m_wndVideoManager->update();
 		TheWindowManager->update();
 		TheDisplay->draw();
 	}
-	setFPMode();
+	// setFPMode();
 
 	
 	AudioEventRTS event( generalOpponent->getRandomTauntSound() );
@@ -1134,6 +1156,7 @@ void ChallengeLoadScreen::init( GameInfo *game )
 
 	m_ambientLoopHandle = TheAudio->addAudioEvent(&m_ambientLoop);
 	TheAudio->update();
+#endif // if 0
 }
 
 void ChallengeLoadScreen::reset( void )
@@ -1174,7 +1197,7 @@ ShellGameLoadScreen::~ShellGameLoadScreen( void )
 
 void ShellGameLoadScreen::init( GameInfo *game )
 {
-	static BOOL firstLoad = TRUE;
+	static Bool firstLoad = TRUE;
 
 	
 	// create the layout of the load screen
@@ -1192,7 +1215,7 @@ void ShellGameLoadScreen::init( GameInfo *game )
 	if(m_loadScreen && firstLoad && TheGameLODManager && TheGameLODManager->didMemPass())
 	{
 		m_loadScreen->winSetEnabledImage(0, TheMappedImageCollection->findImageByName("TitleScreen"));
-		TheWritableGlobalData->m_breakTheMovie = FALSE;
+		TheWritableGlobalData->m_data.m_breakTheMovie = FALSE;
 
 //		m_videoStream = TheVideoPlayer->open( "Sizzle" );
 //		if ( m_videoStream == NULL )
@@ -1255,11 +1278,14 @@ void ShellGameLoadScreen::init( GameInfo *game )
 			win->winHide(FALSE);
 		firstLoad = FALSE;
 
-		UnsignedInt showTime = timeGetTime();
-		while(showTime + 3000 > timeGetTime())
+		auto showTime {std::chrono::steady_clock::now()};
+		std::chrono::duration<double, std::milli> elapsed {std::chrono::steady_clock::now() - showTime};
+		while (elapsed.count() < 3000)
 		{	
 			LoadScreen::update(0);
-			Sleep(100);
+			// Sleep(100);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			elapsed = std::chrono::steady_clock::now() - showTime;
 		}
 
 	}
@@ -1323,6 +1349,9 @@ MultiPlayerLoadScreen::~MultiPlayerLoadScreen( void )
 
 void MultiPlayerLoadScreen::init( GameInfo *game )
 {
+(void) game;
+DEBUG_CRASH(("MultiPlayerLoadScreen::init not yet implemented!"));
+#if 0
 	// create the layout of the load screen
 	m_loadScreen = TheWindowManager->winCreateFromScript( AsciiString( "Menus/MultiplayerLoadScreen.wnd" ) );
 	DEBUG_ASSERTCRASH(m_loadScreen, ("Can't initialize the Multiplayer loadscreen"));
@@ -1395,7 +1424,7 @@ void MultiPlayerLoadScreen::init( GameInfo *game )
 
 	Int netSlot = 0;
 	// Loop through and make the loadscreen look all good.
-	for (i = 0; i < MAX_SLOTS; ++i)
+	for (Int i = 0; i < MAX_SLOTS; ++i)
 	{
 		// Load the Progress Bar
 		AsciiString winName;
@@ -1462,7 +1491,7 @@ void MultiPlayerLoadScreen::init( GameInfo *game )
 		netSlot++;
 	}
 	
-	for(i = netSlot; i < MAX_SLOTS; ++i)
+	for(Int i = netSlot; i < MAX_SLOTS; ++i)
 	{
 		m_progressBars[i]->winHide(TRUE);
 		m_playerNames[i]->winHide(TRUE);
@@ -1492,6 +1521,7 @@ void MultiPlayerLoadScreen::init( GameInfo *game )
 
 	
 	TheGameLogic->initTimeOutValues();
+#endif // if 0
 }
 
 void MultiPlayerLoadScreen::reset( void )
@@ -1507,6 +1537,9 @@ void MultiPlayerLoadScreen::reset( void )
 
 void MultiPlayerLoadScreen::update( Int percent )
 {
+(void) percent;
+DEBUG_CRASH(("MultiPlayerLoadScreen::update not yet implemented!"));
+#if 0
 	if (TheNetwork)
 	{
 		if(percent <= 100)
@@ -1525,6 +1558,7 @@ void MultiPlayerLoadScreen::update( Int percent )
 
 	// Do this last!
 	LoadScreen::update( percent );
+#endif // if 0
 }
 
 void MultiPlayerLoadScreen::processProgress(Int playerId, Int percentage)
@@ -1589,6 +1623,9 @@ extern Int GetAdditionalDisconnectsFromUserFile(Int playerID);
 
 void GameSpyLoadScreen::init( GameInfo *game )
 {
+(void) game;
+DEBUG_CRASH(("GameSpyLoadScreen::init not yet implemented!"));
+#if 0
 	// create the layout of the load screen
 	m_loadScreen = TheWindowManager->winCreateFromScript( AsciiString( "Menus/GameSpyLoadScreen.wnd" ) );
 	DEBUG_ASSERTCRASH(m_loadScreen, ("Can't initialize the Multiplayer loadscreen"));
@@ -1597,7 +1634,7 @@ void GameSpyLoadScreen::init( GameInfo *game )
 	m_mapPreview = TheWindowManager->winGetWindowFromId( m_loadScreen,TheNameKeyGenerator->nameToKey( "GameSpyLoadScreen.wnd:WinMapPreview"));
 	DEBUG_ASSERTCRASH(TheNetwork, ("Where the Heck is the Network!!!!"));
 	DEBUG_LOG(("NumPlayers %d\n", TheNetwork->getNumPlayers()));
-GameSlot *lSlot = game->getSlot(game->getLocalSlotNum());
+	GameSlot *lSlot = game->getSlot(game->getLocalSlotNum());
 	const PlayerTemplate* pt;
 	if (lSlot->getPlayerTemplate() >= 0)
 		pt = ThePlayerTemplateStore->getNthPlayerTemplate(lSlot->getPlayerTemplate());
@@ -1647,7 +1684,7 @@ GameSlot *lSlot = game->getSlot(game->getLocalSlotNum());
 
 	Int netSlot = 0;
 	// Loop through and make the loadscreen look all good.
-	for (i = 0; i < MAX_SLOTS; ++i)
+	for (Int i = 0; i < MAX_SLOTS; ++i)
 	{
 		// Load the Progress Bar
 		AsciiString winName;
@@ -1861,6 +1898,7 @@ GameSlot *lSlot = game->getSlot(game->getLocalSlotNum());
 	}
 
 	TheGameLogic->initTimeOutValues();
+#endif // if 0
 }
 
 void GameSpyLoadScreen::reset( void )
@@ -1876,6 +1914,9 @@ void GameSpyLoadScreen::reset( void )
 
 void GameSpyLoadScreen::update( Int percent )
 {
+(void) percent;
+DEBUG_CRASH(("GameSpyLoadScreen::update not yet implemented!"));
+#if 0
 	if(percent <= 100)
 		TheNetwork->updateLoadProgress( percent );
 	TheNetwork->liteupdate();
@@ -1886,6 +1927,7 @@ void GameSpyLoadScreen::update( Int percent )
 
 	// Do this last!
 	LoadScreen::update( percent );
+#endif // if 0
 }
 
 void GameSpyLoadScreen::processProgress(Int playerId, Int percentage)
@@ -1936,6 +1978,9 @@ MapTransferLoadScreen::~MapTransferLoadScreen( void )
 
 void MapTransferLoadScreen::init( GameInfo *game )
 {
+(void) game;
+DEBUG_CRASH(("MapTransferLoadScreen::init not yet implemented!"));
+#if 0
 	// create the layout of the load screen
 	m_loadScreen = TheWindowManager->winCreateFromScript( AsciiString( "Menus/MapTransferScreen.wnd" ) );
 	DEBUG_ASSERTCRASH(m_loadScreen, ("Can't initialize the map transfer loadscreen"));
@@ -2010,6 +2055,7 @@ void MapTransferLoadScreen::init( GameInfo *game )
 		m_playerNames[i]->winHide(TRUE);
 		m_progressText[i]->winHide(TRUE);
 	}
+#endif // if 0
 }
 
 void MapTransferLoadScreen::reset( void )
@@ -2029,6 +2075,9 @@ void MapTransferLoadScreen::reset( void )
 
 void MapTransferLoadScreen::update( Int percent )
 {
+(void) percent;
+DEBUG_CRASH(("MapTransferLoadScreen::update not yet implemented!"));
+#if 0
 	if (TheNetwork)
 	{
 		TheNetwork->liteupdate();
@@ -2038,6 +2087,7 @@ void MapTransferLoadScreen::update( Int percent )
 
 	// Do this last!
 	LoadScreen::update( percent );
+#endif // if 0
 }
 
 void MapTransferLoadScreen::processProgress(Int playerId, Int percentage, AsciiString stateStr)

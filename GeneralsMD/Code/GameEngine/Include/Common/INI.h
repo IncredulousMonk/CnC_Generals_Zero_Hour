@@ -114,10 +114,10 @@ typedef const LookupListRec *ConstLookupListRecArray;
 //-------------------------------------------------------------------------------------------------
 struct FieldParse
 {
-	const char*					token;						///< token of the field
-	INIFieldParseProc		parse;						///< the parse function
-	const void*					userData;					///< field-specific data
-	Int									offset;						///< offset to data field
+	const char*			token;		///< token of the field
+	INIFieldParseProc	parse;		///< the parse function
+	const void*			userData;	///< field-specific data
+	Int					offset;		///< offset to data field
 
 	inline void set(const char* t, INIFieldParseProc p, const void* u, Int o)
 	{
@@ -134,9 +134,9 @@ class MultiIniFieldParse
 private:
 	enum { MAX_MULTI_FIELDS = 16 };
 
-	const FieldParse* m_fieldParse[MAX_MULTI_FIELDS];
-	UnsignedInt				m_extraOffset[MAX_MULTI_FIELDS];
-	Int								m_count;
+	const FieldParse*	m_fieldParse[MAX_MULTI_FIELDS];
+	UnsignedInt			m_extraOffset[MAX_MULTI_FIELDS];
+	Int					m_count;
 
 public:
 	MultiIniFieldParse() : m_count(0) 
@@ -160,7 +160,7 @@ public:
 /** Function typedef for parsing INI types blocks */
 //-------------------------------------------------------------------------------------------------
 typedef void (*INIBlockParse)( INI *ini );
-typedef void (*BuildMultiIniFieldProc)(MultiIniFieldParse& p);
+typedef void (*BuildMultiIniFieldProc)(void* what, MultiIniFieldParse& p);
 
 //-------------------------------------------------------------------------------------------------
 /** INI Reader interface */

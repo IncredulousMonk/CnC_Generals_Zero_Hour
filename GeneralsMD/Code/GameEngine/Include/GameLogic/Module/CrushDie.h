@@ -56,32 +56,41 @@ enum CrushEnum
 class CrushDieModuleData : public DieModuleData
 {
 public:
-	AudioEventRTS		m_crushSounds[CRUSH_COUNT];
-	Int							m_crushSoundPercent[CRUSH_COUNT];
+	// MG: Cannot apply offsetof to CrushDieModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int m_crushSoundPercent[CRUSH_COUNT];
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS m_crushSounds[CRUSH_COUNT];
 
 	CrushDieModuleData()
 	{
 		for (int i = 0; i < CRUSH_COUNT; i++)
 		{
-			m_crushSoundPercent[i] = 100;
+			m_ini.m_crushSoundPercent[i] = 100;
 		}
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p)
 	{
-    DieModuleData::buildFieldParse(p);
+		DieModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "TotalCrushSound",					INI::parseAudioEventRTS,			NULL, offsetof( CrushDieModuleData, m_crushSounds[TOTAL_CRUSH] ) },
-			{ "BackEndCrushSound",				INI::parseAudioEventRTS,			NULL, offsetof( CrushDieModuleData, m_crushSounds[BACK_END_CRUSH] ) },
-			{ "FrontEndCrushSound",				INI::parseAudioEventRTS,			NULL, offsetof( CrushDieModuleData, m_crushSounds[FRONT_END_CRUSH] ) },
-			{ "TotalCrushSoundPercent",		INI::parseInt,						NULL, offsetof( CrushDieModuleData, m_crushSoundPercent[TOTAL_CRUSH] ) },
-			{ "BackEndCrushSoundPercent",	INI::parseInt,						NULL, offsetof( CrushDieModuleData, m_crushSoundPercent[BACK_END_CRUSH] ) },
-			{ "FrontEndCrushSoundPercent",INI::parseInt,						NULL, offsetof( CrushDieModuleData, m_crushSoundPercent[FRONT_END_CRUSH] ) },
+			{ "TotalCrushSound",			INI::parseAudioEventRTS,	(void*)(intptr_t) TOTAL_CRUSH,		0 }, // FIXME: See ThingTemplate.cpp for how to parse.
+			{ "BackEndCrushSound",			INI::parseAudioEventRTS,	(void*)(intptr_t) BACK_END_CRUSH,	0 },
+			{ "FrontEndCrushSound",			INI::parseAudioEventRTS,	(void*)(intptr_t) FRONT_END_CRUSH,	0 },
+			{ "TotalCrushSoundPercent",		INI::parseInt,				NULL,								offsetof( CrushDieModuleData::IniData, m_crushSoundPercent[TOTAL_CRUSH] ) },
+			{ "BackEndCrushSoundPercent",	INI::parseInt,				NULL,								offsetof( CrushDieModuleData::IniData, m_crushSoundPercent[BACK_END_CRUSH] ) },
+			{ "FrontEndCrushSoundPercent",	INI::parseInt,				NULL,								offsetof( CrushDieModuleData::IniData, m_crushSoundPercent[FRONT_END_CRUSH] ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		CrushDieModuleData* self {static_cast<CrushDieModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 

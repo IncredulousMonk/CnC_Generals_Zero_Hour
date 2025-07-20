@@ -45,7 +45,7 @@ class SquishCollide : public CollideModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( SquishCollide, "SquishCollide" )
-	MAKE_STANDARD_MODULE_MACRO( SquishCollide );
+	MAKE_STANDARD_MODULE_MACRO( SquishCollide )
 
 public:
 

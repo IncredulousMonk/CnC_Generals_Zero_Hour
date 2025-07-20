@@ -70,6 +70,7 @@
 //-------------------------------------------------------------------------------------------------
 void parseUpgradeBoost( INI *ini, void *instance, void *store, const void *userData )
 {
+	DEBUG_CRASH(("May need to fix parseUpgradeBoost in AutoDepositUpdate\n"));
 	upgradePair info;
 	info.type = "";
 	info.amount = 0;
@@ -94,11 +95,12 @@ void parseUpgradeBoost( INI *ini, void *instance, void *store, const void *userD
 		throw INI_INVALID_DATA;
 
 	// Insert the info into the upgrade list
+	// FIXME: I don't think this is correct now!
 	AutoDepositUpdateModuleData::IniData* data = (AutoDepositUpdateModuleData::IniData*) instance;
 	AutoDepositUpdateModuleData* self = data->m_obj;
 	self->m_upgradeBoost.push_back(info);
 	
-}  // end parseFactionObjectCreationList
+}
 
 //-----------------------------------------------------------------------------
 // PUBLIC FUNCTIONS ///////////////////////////////////////////////////////////

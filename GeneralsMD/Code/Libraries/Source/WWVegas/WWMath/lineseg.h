@@ -82,11 +82,11 @@ protected:
 
 	void					recalculate(void) { DP = P1 - P0; Dir = DP; Dir.Normalize(); Length = DP.Length(); }
 
-	Vector3				P0;		// start point
-	Vector3				P1;		// end point
-	Vector3				DP;		// difference of the two points
-	Vector3				Dir;		// normalized direction.
-	float					Length;	// length of the segment
+	Vector3				P0 {};		// start point
+	Vector3				P1 {};		// end point
+	Vector3				DP {};		// difference of the two points
+	Vector3				Dir {};		// normalized direction.
+	float				Length {};	// length of the segment
 };
 
 

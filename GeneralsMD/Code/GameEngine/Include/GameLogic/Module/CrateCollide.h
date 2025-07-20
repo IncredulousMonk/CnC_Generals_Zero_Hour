@@ -45,21 +45,33 @@ enum ScienceType;
 class CrateCollideModuleData : public CollideModuleData 
 {
 public:
-	KindOfMaskType	m_kindof;				///< the kind(s) of units that can be collided with
-	KindOfMaskType	m_kindofnot;		///< the kind(s) of units that CANNOT be collided with
-	Bool m_isForbidOwnerPlayer;			///< This crate cannot be picked up by the player of the dead thing that made it.
-	Bool m_isBuildingPickup;			///< This crate can be picked up by a Building (bypassing AI requirement)
-	Bool m_isHumanOnlyPickup;				///< Can this crate only be picked up by a human player?  (Mission thing)
-	ScienceType m_pickupScience;		///< Can only be picked up by a unit whose player has this science
-	FXList *m_executeFX;						///< FXList to play when activated
-	
-	AsciiString m_executionAnimationTemplate;				///< Anim2D to play at crate location
-	Real m_executeAnimationDisplayTimeInSeconds;		///< time to play animation for
-	Real m_executeAnimationZRisePerSecond;					///< rise animation up while playing
-	Bool m_executeAnimationFades;										///< animation fades out
+	// MG: Cannot apply offsetof to CrateCollideModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		KindOfMaskType	m_kindof;				///< the kind(s) of units that can be collided with
+		KindOfMaskType	m_kindofnot;		///< the kind(s) of units that CANNOT be collided with
+		Bool m_isForbidOwnerPlayer;			///< This crate cannot be picked up by the player of the dead thing that made it.
+		Bool m_isBuildingPickup;			///< This crate can be picked up by a Building (bypassing AI requirement)
+		Bool m_isHumanOnlyPickup;				///< Can this crate only be picked up by a human player?  (Mission thing)
+		ScienceType m_pickupScience;		///< Can only be picked up by a unit whose player has this science
+		FXList *m_executeFX;						///< FXList to play when activated
+		
+		AsciiString m_executionAnimationTemplate;				///< Anim2D to play at crate location
+		Real m_executeAnimationDisplayTimeInSeconds;		///< time to play animation for
+		Real m_executeAnimationZRisePerSecond;					///< rise animation up while playing
+		Bool m_executeAnimationFades;										///< animation fades out
+	};
+
+	IniData m_ini {};
+
 
 	CrateCollideModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+
+	// No copies allowed!
+	CrateCollideModuleData(const CrateCollideModuleData&) = delete;
+	CrateCollideModuleData& operator=(const CrateCollideModuleData&) = delete;
+
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------

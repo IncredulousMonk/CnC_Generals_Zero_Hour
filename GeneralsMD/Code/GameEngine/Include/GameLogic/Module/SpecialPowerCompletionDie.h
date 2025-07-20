@@ -59,16 +59,18 @@ public:
 		m_ini.m_specialPowerTemplate = NULL;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-		DieModuleData::buildFieldParse(p);
+		DieModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
 			{ "SpecialPowerTemplate", INI::parseSpecialPowerTemplate,	NULL, offsetof( SpecialPowerCompletionDieModuleData::IniData, m_specialPowerTemplate ) },
 			{ 0, 0, 0, 0 }
 		};
-		p.add(dataFieldParse);
+		SpecialPowerCompletionDieModuleData* self {static_cast<SpecialPowerCompletionDieModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 };

@@ -72,11 +72,14 @@ public:
 	static ModuleType getModuleType() { return MODULETYPE_DRAW; }
 	static Int getInterfaceMask() { return MODULEINTERFACE_DRAW; }
 	
+// FIXME: Deal with this later!
+#if 0
 	virtual void doDrawModule(const Matrix3D* transformMtx) = 0;
 
 	virtual void setShadowsEnabled(Bool enable) = 0;
 	virtual void releaseShadows(void) = 0;	///< frees all shadow resources used by this module - used by Options screen.
 	virtual void allocateShadows(void) = 0; ///< create shadow resources if not already present. Used by Options screen.
+#endif // if 0
 
 #if defined(_DEBUG) || defined(_INTERNAL)	
 	virtual void getRenderCost(RenderCost & /*rc*/) const { };  ///< estimates the render cost of this draw module
@@ -86,12 +89,16 @@ public:
 	virtual void setTerrainDecalSize(Real /*x*/, Real /*y*/) {};
 	virtual void setTerrainDecalOpacity(Real /*o*/) {};
 
+#if 0
 	virtual void setFullyObscuredByShroud(Bool fullyObscured) = 0;
+#endif // if 0
 	
 	virtual Bool isVisible() const { return true; }	///< for limiting tree sway, etc to visible objects
 
+#if 0
 	virtual void reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle) = 0;
 	virtual void reactToGeometryChange() = 0;
+#endif // if 0
 	
 	virtual Bool isLaser() const { return false; }
 
@@ -159,8 +166,10 @@ public:
 class ObjectDrawInterface
 {
 public:
-	virtual ~ObjectDrawInterface();
+	virtual ~ObjectDrawInterface() {};
 
+// FIXME: Deal with this later!
+#if 0
 	// this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
 	virtual Bool clientOnly_getRenderObjInfo(Coord3D* pos, Real* boundingSphereRadius, Matrix3D* transform) const = 0;
 
@@ -230,6 +239,7 @@ public:
 // srj sez: not sure if this is a good idea, for net sync reasons...
 	virtual Real getAnimationScrubScalar( void ) const { return 0.0f;};
 #endif
+#endif // if 0
 };
 
 //-------------------------------------------------------------------------------------------------

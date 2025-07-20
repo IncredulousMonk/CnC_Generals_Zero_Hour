@@ -41,7 +41,7 @@ DeletionUpdate::DeletionUpdate( Thing *thing, const ModuleData* moduleData ) : U
 {
 	m_dieFrame = 0;
 	const DeletionUpdateModuleData* d = getDeletionUpdateModuleData();
-	UnsignedInt delay = calcSleepDelay(d->m_minFrames, d->m_maxFrames);
+	UnsignedInt delay = calcSleepDelay(d->m_ini.m_minFrames, d->m_ini.m_maxFrames);
 	setWakeFrame(getObject(), UPDATE_SLEEP(delay));
 }
 
@@ -71,7 +71,7 @@ void DeletionUpdate::setLifetimeRange( UnsignedInt minFrames, UnsignedInt maxFra
 //-------------------------------------------------------------------------------------------------
 UnsignedInt DeletionUpdate::calcSleepDelay(UnsignedInt minFrames, UnsignedInt maxFrames)
 {
-	UnsignedInt delay = GameLogicRandomValue( minFrames, maxFrames );
+	UnsignedInt delay = GameLogicRandomValueUnsigned( minFrames, maxFrames );
 	if (delay < 1) delay = 1;
 	m_dieFrame = TheGameLogic->getFrame() + delay;
 	return delay;

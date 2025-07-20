@@ -82,17 +82,17 @@ enum ModuleType
 //-------------------------------------------------------------------------------------------------
 enum ModuleInterfaceType 
 {
-	MODULEINTERFACE_UPDATE					= 0x00000001,
-	MODULEINTERFACE_DIE							= 0x00000002,
-	MODULEINTERFACE_DAMAGE					= 0x00000004,
-	MODULEINTERFACE_CREATE					= 0x00000008,
-	MODULEINTERFACE_COLLIDE					= 0x00000010,
-	MODULEINTERFACE_BODY						= 0x00000020,
-	MODULEINTERFACE_CONTAIN					= 0x00000040,
-	MODULEINTERFACE_UPGRADE					= 0x00000080,
+	MODULEINTERFACE_UPDATE				= 0x00000001,
+	MODULEINTERFACE_DIE					= 0x00000002,
+	MODULEINTERFACE_DAMAGE				= 0x00000004,
+	MODULEINTERFACE_CREATE				= 0x00000008,
+	MODULEINTERFACE_COLLIDE				= 0x00000010,
+	MODULEINTERFACE_BODY				= 0x00000020,
+	MODULEINTERFACE_CONTAIN				= 0x00000040,
+	MODULEINTERFACE_UPGRADE				= 0x00000080,
 	MODULEINTERFACE_SPECIAL_POWER		= 0x00000100,
-	MODULEINTERFACE_DESTROY					= 0x00000200,
-	MODULEINTERFACE_DRAW						= 0x00000400,
+	MODULEINTERFACE_DESTROY				= 0x00000200,
+	MODULEINTERFACE_DRAW				= 0x00000400,
 	MODULEINTERFACE_CLIENT_UPDATE		= 0x00000800
 };
 
@@ -117,7 +117,7 @@ public:
 	virtual const W3DTreeDrawModuleData* getAsW3DTreeDrawModuleData() const { return NULL; }
 	virtual StaticGameLODLevel getMinimumRequiredGameLOD() const { return (StaticGameLODLevel)0;}
 
-	static void buildFieldParse(MultiIniFieldParse&) 
+	static void buildFieldParse(void*, MultiIniFieldParse&) 
 	{
 		// nothing
 	}
@@ -162,8 +162,8 @@ private: \
 public: \
 	static ModuleData* friend_newModuleData(INI* ini) \
 	{ \
-		clsmd* data = MSGNEW( "AllModuleData" ) clsmd; \
-		if (ini) ini->initFromINIMultiProc(&data->m_ini, clsmd::buildFieldParse); \
+		clsmd* data = MSGNEW( "AllModuleData" ) clsmd(); \
+		if (ini) ini->initFromINIMultiProc(data, clsmd::buildFieldParse); \
 		return data; \
 	}
 

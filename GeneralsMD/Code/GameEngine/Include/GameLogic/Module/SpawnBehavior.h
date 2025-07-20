@@ -88,9 +88,9 @@ public:
 		m_ini.m_slavesHaveFreeWill = FALSE;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    BehaviorModuleData::buildFieldParse(p);
+		BehaviorModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
 			{ "SpawnNumber",								INI::parseInt,						NULL, offsetof( SpawnBehaviorModuleData::IniData, m_spawnNumberData ) },
@@ -107,8 +107,10 @@ public:
 			{ 0, 0, 0, 0 }
 			
 		};
-		p.add(dataFieldParse);
-		p.add(DieMuxData::getFieldParse(), offsetof( SpawnBehaviorModuleData::IniData, m_dieMuxData ));
+		SpawnBehaviorModuleData* self {static_cast<SpawnBehaviorModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
+		p.add(DieMuxData::getFieldParse(), offset + offsetof( SpawnBehaviorModuleData::IniData, m_dieMuxData ));
 	}
 };
 

@@ -236,6 +236,29 @@ DEBUG_LOG(( "%d: GetGameLogicRandomValue = %d (%d - %d), %s line %d\n",
 }
 
 //
+// Unsigned integer random value
+//
+UnsignedInt GetGameLogicRandomValueUnsigned( UnsignedInt lo, UnsignedInt hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )
+{
+	UnsignedInt delta = hi - lo + 1;
+	UnsignedInt rval;
+
+	if (delta == 0)
+		return hi;
+
+	rval = (randomValue(theGameLogicSeed) % delta) + lo;
+
+/**/
+#ifdef DEBUG_RANDOM_LOGIC
+DEBUG_LOG(( "%d: GetGameLogicRandomValueUnsigned = %d (%d - %d), %s line %d\n",
+				 TheGameLogic->getFrame(), rval, lo, hi, file, line ));
+#endif
+/**/
+
+	return rval;
+}
+
+//
 // Integer random value
 //
 Int GetGameClientRandomValue( int lo, int hi, [[maybe_unused]] const char *file, [[maybe_unused]] int line )

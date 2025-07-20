@@ -70,7 +70,7 @@ class GenericMultiListClass;
 ** MultiListObjectClass
 ** This is an object that can be linked into a MultiList.  The only overhead
 ** for this is a single pointer to a MultiListNode.
-** Objects that are linked into MulitLists must derive from this class.  
+** Objects that are linked into MulitLists must derive from this class.
 ** If you delete an instance of one of these objects while it is in one or more
 ** Multi-Lists, it will automatically remove itself from the lists.
 */
@@ -78,14 +78,18 @@ class MultiListObjectClass
 {
 public:
 
-	MultiListObjectClass(void) : ListNode(NULL)								{ }
+	MultiListObjectClass(void) : ListNode(NULL) { }
 	virtual ~MultiListObjectClass(void);
 
-	MultiListNodeClass *		Get_List_Node() const							{ return ListNode; }
-	void							Set_List_Node(MultiListNodeClass *node)	{ ListNode = node; }
+	// No copies allowed!
+	MultiListObjectClass(const MultiListObjectClass&) = delete;
+	MultiListObjectClass& operator=(const MultiListObjectClass&) = delete;
+
+	MultiListNodeClass *	Get_List_Node() const					{ return ListNode; }
+	void					Set_List_Node(MultiListNodeClass *node)	{ ListNode = node; }
 
 private:
-	MultiListNodeClass *		ListNode;
+	MultiListNodeClass *	ListNode;
 };
 
 
@@ -101,11 +105,11 @@ class MultiListNodeClass : public AutoPoolClass<MultiListNodeClass, 256>
 public:
 	MultiListNodeClass(void) { Prev = Next = NextList = 0; Object = 0; List = 0; }
 
-	MultiListNodeClass		*Prev;					// prev object in list
-	MultiListNodeClass		*Next;					// next object in list
-	MultiListNodeClass		*NextList;				// next list this object is in
-	MultiListObjectClass		*Object;					// pointer back to the object
-	GenericMultiListClass	*List;					// pointer to list for this node
+	MultiListNodeClass		*Prev {};					// prev object in list
+	MultiListNodeClass		*Next {};					// next object in list
+	MultiListNodeClass		*NextList {};				// next list this object is in
+	MultiListObjectClass	*Object {};					// pointer back to the object
+	GenericMultiListClass	*List {};					// pointer to list for this node
 };
 
 
@@ -124,26 +128,26 @@ public:
 	GenericMultiListClass(void)	{ Head.Next = Head.Prev = &Head; Head.Object = 0; Head.NextList = 0; }
 	virtual ~GenericMultiListClass(void);
 	
-	bool							Is_In_List(MultiListObjectClass *obj);
-	bool							Contains(MultiListObjectClass * obj);
-	bool							Is_Empty(void);
+	bool						Is_In_List(MultiListObjectClass *obj);
+	bool						Contains(MultiListObjectClass * obj);
+	bool						Is_Empty(void);
 	int							Count(void);
 
 protected:
 	
-	bool							Internal_Add(MultiListObjectClass *obj,bool onlyonce = true);
-	bool							Internal_Add_Tail(MultiListObjectClass * obj,bool onlyonce = true);
-	bool							Internal_Add_After(MultiListObjectClass * obj,const MultiListObjectClass * existing_list_member,bool onlyonce = true);
-	bool							Internal_Remove(MultiListObjectClass *obj);
+	bool						Internal_Add(MultiListObjectClass *obj,bool onlyonce = true);
+	bool						Internal_Add_Tail(MultiListObjectClass * obj,bool onlyonce = true);
+	bool						Internal_Add_After(MultiListObjectClass * obj,const MultiListObjectClass * existing_list_member,bool onlyonce = true);
+	bool						Internal_Remove(MultiListObjectClass *obj);
 
 	MultiListObjectClass	*	Internal_Get_List_Head(void);
 	MultiListObjectClass	*	Internal_Remove_List_Head(void);
 
 private:
 
-	MultiListNodeClass		Head;
-	friend class				GenericMultiListIterator;
-	friend class				MultiListObjectClass;
+	MultiListNodeClass		Head {};
+	friend class			GenericMultiListIterator;
+	friend class			MultiListObjectClass;
 };
 
 inline bool GenericMultiListClass::Is_In_List(MultiListObjectClass * obj)
@@ -180,20 +184,20 @@ public:
 	GenericMultiListIterator(GenericMultiListClass *list)	{ assert(list); First(list); }
 
 	void				First(GenericMultiListClass *list)		{ List = list; CurNode = List->Head.Next; }
-	void				First(void)										{ CurNode = List->Head.Next; }
+	void				First(void)								{ CurNode = List->Head.Next; }
 	void				Last(GenericMultiListClass *list)		{ List = list; CurNode = List->Head.Prev; }
-	void				Last(void)										{ CurNode = List->Head.Prev; }
+	void				Last(void)								{ CurNode = List->Head.Prev; }
 
-	void				Next(void)										{ CurNode = CurNode->Next; }
-	void				Prev(void)										{ CurNode = CurNode->Prev; }
-	bool				Is_Done(void)									{ return (CurNode == &(List->Head)); }
+	void				Next(void)								{ CurNode = CurNode->Next; }
+	void				Prev(void)								{ CurNode = CurNode->Prev; }
+	bool				Is_Done(void)							{ return (CurNode == &(List->Head)); }
 	
 protected:
 	
-	MultiListObjectClass	*		Current_Object(void)			{ return CurNode->Object; }
+	MultiListObjectClass	*	Current_Object(void)			{ return CurNode->Object; }
 
-	GenericMultiListClass *		List;				// list we're working in
-	MultiListNodeClass *			CurNode;			// node we're currently at.
+	GenericMultiListClass *		List {};		// list we're working in
+	MultiListNodeClass *		CurNode {};		// node we're currently at.
 
 };
 
@@ -308,7 +312,7 @@ public:
 		return (ObjectType*)Current_Object();
 	}
 
-	void				Remove_Current_Object(void)
+	void			Remove_Current_Object(void)
 	{
 		ObjectType * obj = Peek_Obj();
 		if (obj != NULL) {

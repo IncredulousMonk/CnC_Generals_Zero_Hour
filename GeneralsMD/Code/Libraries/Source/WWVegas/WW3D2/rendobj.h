@@ -56,7 +56,7 @@
 #include "robjlist.h"
 #include <float.h>
 
-class	Vector3;
+class Vector3;
 class Matrix3D;
 class MaterialInfoClass;
 class TextureClass;
@@ -75,15 +75,15 @@ class SphereClass;
 class AABoxClass;
 class RenderInfoClass;
 class SpecialRenderInfoClass;
-class	IntersectionClass;
-class	IntersectionResultClass;
+class IntersectionClass;
+class IntersectionResultClass;
 class DecalGeneratorClass;
 class RenderObjProxyClass;
 class StringClass;
 template<class T> class DynamicVectorClass;
 
 // "unreferenced formal parameter" 
-#pragma warning(disable : 4100)
+// #pragma warning(disable : 4100)
 
 #ifdef DEFINE_W3DANIMMODE_NAMES
 static const char* TheAnimModeNames[] =
@@ -405,7 +405,7 @@ public:
 	static const float	AT_MAX_LOD;
 
 	virtual void	Prepare_LOD(CameraClass &camera);
-   virtual void   Recalculate_Static_LOD_Factors(void)													{ }
+	virtual void   Recalculate_Static_LOD_Factors(void)													{ }
 	virtual void	Increment_LOD(void)																			{ }
 	virtual void	Decrement_LOD(void)																			{ }
 	virtual float	Get_Cost(void) const;
@@ -483,7 +483,7 @@ public:
 	virtual void					Set_Additive(int onoff)													{ if (onoff) { Bits |= IS_ADDITIVE; } else { Bits &= ~IS_ADDITIVE; } }
 	virtual int						Get_Collision_Type(void) const											{ return (Bits & COLL_TYPE_MASK); }
 	virtual void					Set_Collision_Type(int type)												{ Bits &= ~COLL_TYPE_MASK; Bits |= (type & COLL_TYPE_MASK) | COLL_TYPE_ALL; }
-   virtual bool					Is_Complete(void)																{ return false; }
+	virtual bool					Is_Complete(void)																{ return false; }
 	virtual bool					Is_In_Scene(void)																{ return Scene != NULL; }
 	virtual float					Get_Native_Screen_Size(void) const										{ return NativeScreenSize; }
 	virtual void					Set_Native_Screen_Size(float screensize)								{ NativeScreenSize = screensize; }
@@ -525,29 +525,29 @@ protected:
 
 	enum 
 	{
-		COLL_TYPE_MASK =		0x000000FF, 
+		COLL_TYPE_MASK =			0x000000FF, 
 
-		IS_VISIBLE =					0x00000100,
+		IS_VISIBLE =				0x00000100,
 		IS_NOT_HIDDEN =				0x00000200,
 		IS_NOT_ANIMATION_HIDDEN =	0x00000400,
 		IS_FORCE_VISIBLE =			0x00000800,
 		BOUNDING_VOLUMES_VALID =	0x00002000,		
-		IS_TRANSLUCENT =				0x00004000,			// is additive or alpha blended on any poly
-		IGNORE_LOD_COST =				0x00008000,			// used to define if we should ignore object from LOD calculations
+		IS_TRANSLUCENT =			0x00004000,			// is additive or alpha blended on any poly
+		IGNORE_LOD_COST =			0x00008000,			// used to define if we should ignore object from LOD calculations
 		SUBOBJS_MATCH_LOD =			0x00010000,			// force sub-objects to have same LOD level
 		SUBOBJ_TRANSFORMS_DIRTY =	0x00020000,			// my sub-objects need me to update their transform
-		IS_ALPHA = 0x00040000,	// added for Generals so we can default these meshes not to cast shadows. -MW
-		IS_ADDITIVE = 0x00100000,	//added for Generals so we quickly determine what type of blending is on the mesh. -MW
+		IS_ALPHA =					0x00040000,			// added for Generals so we can default these meshes not to cast shadows. -MW
+		IS_ADDITIVE =				0x00100000,			// added for Generals so we quickly determine what type of blending is on the mesh. -MW
 		IS_SELF_SHADOWED =			0x00080000,			// the mesh is self shadowed
-		IS_CHEATER =            0x00100000,// the new cheat spy code uses these bits, since nothing else now does
+		IS_CHEATER =				0x00100000,			// the new cheat spy code uses these bits, since nothing else now does
 		IS_REALLY_VISIBLE =			IS_VISIBLE | IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
-      IS_NOT_HIDDEN_AT_ALL =     IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
-		DEFAULT_BITS =					COLL_TYPE_ALL | IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
+		IS_NOT_HIDDEN_AT_ALL =		IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
+		DEFAULT_BITS =				COLL_TYPE_ALL | IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
 	};
 
 	mutable unsigned long		Bits;
 	Matrix3D							Transform;
- 	float						ObjectScale;					//user applied scaling factor inside Transform matrix.
+	float						ObjectScale;					//user applied scaling factor inside Transform matrix.
 	unsigned int				ObjectColor;					//user applied coloring to the asset/prototype used to make this robj. - For Generals -MW
 	mutable SphereClass			CachedBoundingSphere;
 	mutable AABoxClass			CachedBoundingBox;
@@ -651,8 +651,5 @@ WWINLINE bool RenderObjClass::Is_Transform_Identity_No_Validity_Check() const
 {
 	return IsTransformIdentity;
 }
-
-
-
 
 #endif

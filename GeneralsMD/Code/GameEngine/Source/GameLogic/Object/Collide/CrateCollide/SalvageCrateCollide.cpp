@@ -34,7 +34,7 @@
 
 #include "Common/AudioEventRTS.h"
 #include "Common/MiscAudio.h"
-#include "Common/Kindof.h"
+#include "Common/KindOf.h"
 #include "Common/RandomValue.h"
 #include "Common/Player.h"
 #include "Common/ThingTemplate.h"
@@ -170,11 +170,11 @@ Bool SalvageCrateCollide::eligibleForLevel( Object *other )
 Bool SalvageCrateCollide::testWeaponChance()
 {
 	const SalvageCrateCollideModuleData *md = getSalvageCrateCollideModuleData();
-	if( md->m_weaponChance == 1.0f )
+	if( md->m_ini.m_weaponChance == 1.0f )
 		return TRUE; // don't waste a random number for a 100%
 
 	Real randomNumber = GameLogicRandomValueReal( 0, 1 );
-	if( randomNumber < md->m_weaponChance )
+	if( randomNumber < md->m_ini.m_weaponChance )
 		return TRUE;
 
 	return FALSE;
@@ -184,11 +184,11 @@ Bool SalvageCrateCollide::testWeaponChance()
 Bool SalvageCrateCollide::testLevelChance()
 {
 	const SalvageCrateCollideModuleData *md = getSalvageCrateCollideModuleData();
-	if( md->m_levelChance == 1.0f )
+	if( md->m_ini.m_levelChance == 1.0f )
 		return TRUE; // don't waste a random number for a 100%
 
 	Real randomNumber = GameLogicRandomValueReal( 0, 1 );
-	if( randomNumber < md->m_levelChance )
+	if( randomNumber < md->m_ini.m_levelChance )
 		return TRUE;
 
 	return FALSE;
@@ -238,14 +238,14 @@ void SalvageCrateCollide::doMoney( Object *other )
 	const SalvageCrateCollideModuleData *md = getSalvageCrateCollideModuleData();
 
 	Int money;
-	if( md->m_minimumMoney != md->m_maximumMoney )// Random value doesn't like to get a constant range
-		money = GameLogicRandomValue( md->m_minimumMoney, md->m_maximumMoney );
+	if( md->m_ini.m_minimumMoney != md->m_ini.m_maximumMoney )// Random value doesn't like to get a constant range
+		money = GameLogicRandomValue( md->m_ini.m_minimumMoney, md->m_ini.m_maximumMoney );
 	else
-		money = md->m_minimumMoney;
+		money = md->m_ini.m_minimumMoney;
 
 	if( money > 0 )
 	{
-		other->getControllingPlayer()->getMoney()->deposit( money );
+		other->getControllingPlayer()->getMoney()->deposit( (UnsignedInt)money );
 		other->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( money );
 		
 		//Display cash income floating over the crate.  Position is me, everything else is them.

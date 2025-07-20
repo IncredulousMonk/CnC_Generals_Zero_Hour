@@ -113,7 +113,9 @@
 #include "GameLogic/Module/BoneFXUpdate.h"
 #include "GameLogic/Module/ChinookAIUpdate.h"
 #include "GameLogic/Module/DefaultProductionExitUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/DeletionUpdate.h"
+#if 0
 #include "GameLogic/Module/SmartBombTargetHomingUpdate.h"
 #include "GameLogic/Module/DeliverPayloadAIUpdate.h"
 #include "GameLogic/Module/DozerAIUpdate.h"
@@ -150,7 +152,9 @@
 #include "GameLogic/Module/MissileAIUpdate.h"
 #include "GameLogic/Module/NeutronMissileUpdate.h"
 #include "GameLogic/Module/OCLUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/PhysicsUpdate.h"
+#if 0
 #ifdef ALLOW_SURRENDER
 #include "GameLogic/Module/POWTruckAIUpdate.h"
 #endif
@@ -234,12 +238,16 @@
 
 // collide includes
 #include "GameLogic/Module/FireWeaponCollide.h"
+#endif // if 0
 #include "GameLogic/Module/SquishCollide.h"
 
+#if 0
 #include "GameLogic/Module/ConvertToCarBombCrateCollide.h"
 #include "GameLogic/Module/ConvertToHijackedVehicleCrateCollide.h"
 #include "GameLogic/Module/HealCrateCollide.h"
+#endif // if 0
 #include "GameLogic/Module/MoneyCrateCollide.h"
+#if 0
 #include "GameLogic/Module/SabotageCommandCenterCrateCollide.h"
 #include "GameLogic/Module/SabotageFakeBuildingCrateCollide.h"
 #include "GameLogic/Module/SabotageInternetCenterCrateCollide.h"
@@ -248,11 +256,13 @@
 #include "GameLogic/Module/SabotageSuperweaponCrateCollide.h"
 #include "GameLogic/Module/SabotageSupplyCenterCrateCollide.h"
 #include "GameLogic/Module/SabotageSupplyDropzoneCrateCollide.h"
+#endif // if 0
 #include "GameLogic/Module/SalvageCrateCollide.h"
+#if 0
 #include "GameLogic/Module/ShroudCrateCollide.h"
+#endif // if 0
 #include "GameLogic/Module/UnitCrateCollide.h"
 #include "GameLogic/Module/VeterancyCrateCollide.h"
-#endif // if 0
 
 // body includes
 #include "GameLogic/Module/InactiveBody.h"
@@ -342,7 +352,9 @@ void ModuleFactory::init( void )
 	addModule( BridgeTowerBehavior );
 	addModule( CountermeasuresBehavior );
 	addModule( DumbProjectileBehavior );
+#endif // if 0
 	addModule( PhysicsBehavior );
+#if 0
 	addModule( InstantDeathBehavior );
 	addModule( SlowDeathBehavior );
 	addModule( HelicopterSlowDeathBehavior );
@@ -405,8 +417,8 @@ void ModuleFactory::init( void )
 	addModule( StealthDetectorUpdate );
 #endif // if 0
 	addModule( StealthUpdate );
-#if 0
 	addModule( DeletionUpdate );
+#if 0
 	addModule( SmartBombTargetHomingUpdate );
 	addModule( DynamicShroudClearingRangeUpdate );
 	addModule( DeployStyleAIUpdate );
@@ -525,13 +537,19 @@ void ModuleFactory::init( void )
 
 	// collide modules
 	addModule( FireWeaponCollide );
+#endif // if 0
 	addModule( SquishCollide );
 
+#if 0
 	addModule( HealCrateCollide );
+#endif // if 0
 	addModule( MoneyCrateCollide );
+#if 0
 	addModule( ShroudCrateCollide );
+#endif // if 0
 	addModule( UnitCrateCollide );
 	addModule( VeterancyCrateCollide );
+#if 0
 	addModule( ConvertToCarBombCrateCollide );
 	addModule( ConvertToHijackedVehicleCrateCollide );
 	addModule( SabotageCommandCenterCrateCollide );
@@ -542,8 +560,8 @@ void ModuleFactory::init( void )
 	addModule( SabotageSuperweaponCrateCollide );
 	addModule( SabotageSupplyCenterCrateCollide );
 	addModule( SabotageSupplyDropzoneCrateCollide );
-	addModule( SalvageCrateCollide );
 #endif // if 0
+	addModule( SalvageCrateCollide );
 
 	// body modules
 	addModule( InactiveBody );
@@ -598,8 +616,7 @@ Int ModuleFactory::findModuleInterfaceMask(const AsciiString& name, ModuleType t
 }
 
 //-------------------------------------------------------------------------------------------------
-ModuleData* ModuleFactory::newModuleDataFromINI(INI* ini, const AsciiString& name, ModuleType type,
-																								const AsciiString& moduleTag)
+ModuleData* ModuleFactory::newModuleDataFromINI(INI* ini, const AsciiString& name, ModuleType type, const AsciiString& moduleTag)
 {
 	if (name.isEmpty())
 		return NULL;

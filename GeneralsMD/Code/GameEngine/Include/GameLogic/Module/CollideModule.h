@@ -63,16 +63,9 @@ class CollideModuleData : public BehaviorModuleData
 {
 public:
 
-	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
-	struct IniData
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-	};
-
-	IniData m_ini {};
-
-	static void buildFieldParse(MultiIniFieldParse& p) 
-	{
-		BehaviorModuleData::buildFieldParse(p);
+		BehaviorModuleData::buildFieldParse(what, p);
 	}
 };
 

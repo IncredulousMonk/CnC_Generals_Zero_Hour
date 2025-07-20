@@ -51,7 +51,7 @@
 
 // #include "GameLogic/ExperienceTracker.h"
 // #include "GameLogic/GameLogic.h"		// for logic frame count
-// #include "GameLogic/Object.h"
+#include "GameLogic/Object.h"
 // #include "GameLogic/Locomotor.h"
 // #include "GameLogic/Module/AIUpdate.h"
 // #include "GameLogic/Module/BodyModule.h"
@@ -319,6 +319,7 @@ const Int MAX_ENABLED_MODULES								= 16;
 		s_animationTemplates = NULL;
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::saturateRGB(RGBColor& color, Real factor)
@@ -340,7 +341,6 @@ void Drawable::saturateRGB(RGBColor& color, Real factor)
 //--- so that icons, emoticons, health bars, pips, etc, look reasonably solid and don't shimmer or tweed
 //#define CLAMP_ICON_ZOOM_FACTOR(n) (MAX(0.80f, MIN(1.00f, n)))
 #define CLAMP_ICON_ZOOM_FACTOR(n) (n)//nothing
-#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -1374,6 +1374,7 @@ void Drawable::onLevelStart()
     startAmbientSound();
   }
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::flashAsSelected( const RGBColor *color ) ///< drawable takes care of the details if you spec no color
@@ -1404,6 +1405,7 @@ void Drawable::flashAsSelected( const RGBColor *color ) ///< drawable takes care
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::applyPhysicsXform(Matrix3D* mtx)
 {
@@ -5551,16 +5553,15 @@ TintEnvelope::TintEnvelope(void)
 	m_affect = FALSE;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 const Real FADE_RATE_EPSILON = (0.001f);
 
 //-------------------------------------------------------------------------------------------------
-void TintEnvelope::play(const RGBColor *peak, UnsignedInt atackFrames, UnsignedInt decayFrames, UnsignedInt sustainAtPeak )    
+void TintEnvelope::play(const RGBColor *peak, UnsignedInt attackFrames, UnsignedInt decayFrames, UnsignedInt sustainAtPeak )    
 {
 	setPeakColor( peak );
 
-	setAttackFrames( atackFrames );
+	setAttackFrames( attackFrames );
 	setDecayFrames( decayFrames );
 
 	m_envState = ENVELOPE_STATE_ATTACK;
@@ -5591,7 +5592,6 @@ void TintEnvelope::setDecayFrames( UnsignedInt frames )
 	m_decayRate.Set( m_peakColor );
 	m_decayRate.Scale( Vector3(recipFrames, recipFrames, recipFrames) );
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void TintEnvelope::update(void)

@@ -68,16 +68,18 @@ public:
 
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-		OpenContainModuleData::buildFieldParse(p);
+		OpenContainModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
 			{ "TimeForFullHeal", INI::parseDurationReal, NULL, offsetof( TunnelContainModuleData::IniData, m_framesForFullHeal ) },
 			{ 0, 0, 0, 0 }
 		};
-		p.add(dataFieldParse);
+		TunnelContainModuleData* self {static_cast<TunnelContainModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 

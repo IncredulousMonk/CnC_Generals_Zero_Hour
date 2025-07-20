@@ -220,7 +220,7 @@ public:
 	/*
 	** Auxiliary Active Ref Data
 	*/
-	ActiveRefStruct					ActiveRefInfo;	
+	ActiveRefStruct					ActiveRefInfo {};
 
 	/*
 	** List of the active referenced objects

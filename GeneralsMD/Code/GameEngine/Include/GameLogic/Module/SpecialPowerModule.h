@@ -88,19 +88,13 @@ public:
 	SpecialPowerModuleData(const SpecialPowerModuleData&) = delete;
 	SpecialPowerModuleData& operator=(const SpecialPowerModuleData&) = delete;
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
-	struct IniData
-	{
-	};
-
-	IniData m_ini {};
-	const SpecialPowerTemplate *m_specialPowerTemplate;		///< pointer to the special power template
-	AudioEventRTS			m_initiateSound;
-	Bool							m_updateModuleStartsAttack;	///< update module determines when the special power actually starts! If true, update module is required.
-	Bool							m_startsPaused; ///< Paused on creation, someone else will have to unpause (like upgrade module, or script)
-	Bool							m_scriptedSpecialPowerOnly;
+	const SpecialPowerTemplate	*m_specialPowerTemplate;		///< pointer to the special power template
+	AudioEventRTS				m_initiateSound;
+	Bool						m_updateModuleStartsAttack;	///< update module determines when the special power actually starts! If true, update module is required.
+	Bool						m_startsPaused; ///< Paused on creation, someone else will have to unpause (like upgrade module, or script)
+	Bool						m_scriptedSpecialPowerOnly;
 };
 
 //-------------------------------------------------------------------------------------------------

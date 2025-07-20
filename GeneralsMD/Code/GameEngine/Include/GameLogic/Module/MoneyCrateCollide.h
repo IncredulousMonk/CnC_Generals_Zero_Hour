@@ -39,32 +39,42 @@
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Thing;
+void parseUpgradePair( INI *ini, void *instance, void *store, const void *userData );
 
 //-------------------------------------------------------------------------------------------------
 class MoneyCrateCollideModuleData : public CrateCollideModuleData
 {
 public:
-	UnsignedInt m_moneyProvided;
-	std::list<upgradePair> m_upgradeBoost;
+	// MG: Cannot apply offsetof to MoneyCrateCollideModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_moneyProvided;
+	};
+
+	IniData m_ini {};
+
+	std::list<upgradePair> m_upgradeBoost {};
 
 	MoneyCrateCollideModuleData()
 	{
-		m_moneyProvided = 0;
+		m_ini.m_moneyProvided = 0;
 		m_upgradeBoost.clear();
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    CrateCollideModuleData::buildFieldParse(p);
+		CrateCollideModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "MoneyProvided",	INI::parseUnsignedInt,	NULL, offsetof( MoneyCrateCollideModuleData, m_moneyProvided ) },
-			{ "UpgradedBoost",	parseUpgradePair,		NULL, offsetof( MoneyCrateCollideModuleData, m_upgradeBoost ) },
+			{ "MoneyProvided",	INI::parseUnsignedInt,	NULL, offsetof( MoneyCrateCollideModuleData::IniData, m_moneyProvided ) },
+			{ "UpgradedBoost",	parseUpgradePair,		NULL, 0 },
 
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		MoneyCrateCollideModuleData* self {static_cast<MoneyCrateCollideModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 };
@@ -74,7 +84,7 @@ class MoneyCrateCollide : public CrateCollide
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( MoneyCrateCollide, "MoneyCrateCollide" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( MoneyCrateCollide, MoneyCrateCollideModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( MoneyCrateCollide, MoneyCrateCollideModuleData )
 
 public:
 

@@ -110,15 +110,15 @@ class GenericNode {
 		bool Is_Valid(void) const {return(this != (GenericNode *)0 && NextNode != (GenericNode *)0 && PrevNode != (GenericNode *)0);}
 
 	protected:
-		GenericNode * NextNode;
-		GenericNode * PrevNode;
+		GenericNode * NextNode {};
+		GenericNode * PrevNode {};
 };
 
 
 /*
 **	This is a generic list handler. It manages N generic nodes. Use the interface class
 **	to the generic list for added convenience.
-*/											  
+*/
 class GenericList {
 	public:
 		GenericList(void) {
@@ -163,8 +163,8 @@ class GenericList {
 		}
 
 	protected:
-		GenericNode FirstNode;
-		GenericNode LastNode;
+		GenericNode FirstNode {};
+		GenericNode LastNode {};
 
 	private:
 		GenericList(GenericList & list);
@@ -217,7 +217,7 @@ class List : public GenericList {
 
 /*
 
-  The DataNode template class allows you to have a node with a peice of data associated with it.
+  The DataNode template class allows you to have a node with a piece of data associated with it.
   Commonly used to maintain a list of objects which are not derived from GenericNode.
 		- EHC
 */
@@ -228,6 +228,8 @@ class DataNode : public GenericNode {
 public:
 	DataNode() {};
 	DataNode(T value) { Set(value); };
+	DataNode(const DataNode&) = delete;
+	DataNode& operator=(const DataNode&) = delete;
 	void Set(T value) { Value = value; };
 	T Get() const { return Value; };
 

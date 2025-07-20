@@ -94,9 +94,9 @@ StealthUpdateModuleData::StealthUpdateModuleData()
 
 
 //-------------------------------------------------------------------------------------------------
-void StealthUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void StealthUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
@@ -126,7 +126,9 @@ void StealthUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
 
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	StealthUpdateModuleData* self {static_cast<StealthUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------

@@ -54,36 +54,41 @@ public:
 	PhysicsBehaviorModuleData(const PhysicsBehaviorModuleData&) = delete;
 	PhysicsBehaviorModuleData& operator=(const PhysicsBehaviorModuleData&) = delete;
 
-	Real	m_mass;
-	Real	m_shockResistance;
-	Real	m_shockMaxYaw;
-	Real	m_shockMaxPitch;
-	Real	m_shockMaxRoll;
-	Real	m_forwardFriction;
-	Real	m_lateralFriction;
-	Real	m_ZFriction;
-	Real	m_aerodynamicFriction;	// The percent of the wind resistance effect you suffer from
-	Real	m_centerOfMassOffset;	// Distance the center of mass is from the center of geometry, to control pitch rate
-	Bool	m_killWhenRestingOnGround;	// when airborne==false and vel==0, kill it.
-	Bool	m_allowBouncing;
-	Bool	m_allowCollideForce;
-	Real	m_minFallSpeedForDamage;
-	Real	m_fallHeightDamageFactor;
-	Real	m_pitchRollYawFactor;
-  
-	const WeaponTemplate* m_vehicleCrashesIntoBuildingWeaponTemplate;
-	const WeaponTemplate* m_vehicleCrashesIntoNonBuildingWeaponTemplate;
+	// MG: Cannot apply offsetof to PhysicsBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real	m_mass {};
+		Real	m_shockResistance {};
+		Real	m_shockMaxYaw {};
+		Real	m_shockMaxPitch {};
+		Real	m_shockMaxRoll {};
+		Real	m_forwardFriction {};
+		Real	m_lateralFriction {};
+		Real	m_ZFriction {};
+		Real	m_aerodynamicFriction {};		// The percent of the wind resistance effect you suffer from
+		Real	m_centerOfMassOffset {};		// Distance the center of mass is from the center of geometry, to control pitch rate
+		Bool	m_killWhenRestingOnGround {};	// when airborne==false and vel==0, kill it.
+		Bool	m_allowBouncing {};
+		Bool	m_allowCollideForce {};
+		Real	m_minFallSpeedForDamage {};
+		Real	m_fallHeightDamageFactor {};
+		Real	m_pitchRollYawFactor {};
+
+		const WeaponTemplate* m_vehicleCrashesIntoBuildingWeaponTemplate {};
+		const WeaponTemplate* m_vehicleCrashesIntoNonBuildingWeaponTemplate {};
+	};
+
+	IniData m_ini {};
 
 	PhysicsBehaviorModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------
 /** 
  * Simple rigid body physics update module
  */
-class PhysicsBehavior : public UpdateModule, 
-												public CollideModuleInterface
+class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( PhysicsBehavior, "PhysicsBehavior" )
@@ -144,7 +149,7 @@ public:
 	void setAngles( Real yaw, Real pitch, Real roll );
 	Real getMass() const;
 	void setMass( Real mass ) { m_mass = mass; }
-	Real getCenterOfMassOffset() const { return getPhysicsBehaviorModuleData()->m_centerOfMassOffset; }
+	Real getCenterOfMassOffset() const { return getPhysicsBehaviorModuleData()->m_ini.m_centerOfMassOffset; }
 
 	const Coord3D *getAcceleration() const { return &m_prevAccel; }		///< get last frame's acceleration
 	const Coord3D *getVelocity() const { return &m_vel; }			///< get current velocity
@@ -252,18 +257,18 @@ private:
 	enum PhysicsFlagsType
 	{
 		// Note - written out in save/load xfer; don't change these numbers.  
-		STICK_TO_GROUND									= 0x0001,
-		ALLOW_BOUNCE										= 0x0002,
+		STICK_TO_GROUND					= 0x0001,
+		ALLOW_BOUNCE					= 0x0002,
 		APPLY_FRICTION2D_WHEN_AIRBORNE	= 0x0004,
-		UPDATE_EVER_RUN									= 0x0008,
-		WAS_AIRBORNE_LAST_FRAME					= 0x0010,
-		ALLOW_COLLIDE_FORCE							= 0x0020,
-		ALLOW_TO_FALL										= 0x0040,
-		HAS_PITCHROLLYAW								= 0x0080,
-		IMMUNE_TO_FALLING_DAMAGE				= 0x0100,
-		IS_IN_FREEFALL									= 0x0200,
-		IS_IN_UPDATE										= 0x0400,
-		IS_STUNNED											= 0x0800,
+		UPDATE_EVER_RUN					= 0x0008,
+		WAS_AIRBORNE_LAST_FRAME			= 0x0010,
+		ALLOW_COLLIDE_FORCE				= 0x0020,
+		ALLOW_TO_FALL					= 0x0040,
+		HAS_PITCHROLLYAW				= 0x0080,
+		IMMUNE_TO_FALLING_DAMAGE		= 0x0100,
+		IS_IN_FREEFALL					= 0x0200,
+		IS_IN_UPDATE					= 0x0400,
+		IS_STUNNED						= 0x0800,
 	};
 
 	/*
@@ -271,27 +276,27 @@ private:
 		even if you are a subclass... if you want to change the acceleration, you
 		MUST call applyForce(). 
 	*/
-	Real												m_yawRate;								///< rate of rotation around up vector
-	Real												m_rollRate;								///< rate of rotation around forward vector
-	Real												m_pitchRate;							///< rate or rotation around side vector
-	DynamicAudioEventRTS*				m_bounceSound;						///< The sound for when this thing bounces, or NULL
-	Coord3D											m_accel;									///< current acceleration
-	Coord3D											m_prevAccel;							///< last frame's acceleration
-	Coord3D											m_vel;										///< current velocity
-	PhysicsTurningType					m_turning;								///< 0 = not turning, -1 = turn negative, 1 = turn positive.
-	ObjectID										m_ignoreCollisionsWith;
-	Int													m_flags;
-	Real												m_mass;
-	ObjectID										m_currentOverlap;					///< object(s) being overlapped, if any
-	ObjectID										m_previousOverlap;				///< last frame's object(s) being overlapped
-	ObjectID										m_lastCollidee;						///< ID of the last object I collided with, can be quite old.
-	UnsignedInt									m_motiveForceExpires;			///< frames at which "recent" applyMotiveForce is no longer considered
-	Real												m_extraBounciness;				///< modifier to ground stiffness
-	Real												m_extraFriction;					///< modifier to friction(s)
-	ProjectileUpdateInterface*	m_pui;
-	mutable Real								m_velMag;									///< magnitude of cur vel (recalced when m_vel changes)
+	Real						m_yawRate {};					///< rate of rotation around up vector
+	Real						m_rollRate {};					///< rate of rotation around forward vector
+	Real						m_pitchRate {};					///< rate or rotation around side vector
+	DynamicAudioEventRTS*		m_bounceSound {};				///< The sound for when this thing bounces, or NULL
+	Coord3D						m_accel {};						///< current acceleration
+	Coord3D						m_prevAccel {};					///< last frame's acceleration
+	Coord3D						m_vel {};						///< current velocity
+	PhysicsTurningType			m_turning {};					///< 0 = not turning, -1 = turn negative, 1 = turn positive.
+	ObjectID					m_ignoreCollisionsWith {};
+	Int							m_flags {};
+	Real						m_mass {};
+	ObjectID					m_currentOverlap {};			///< object(s) being overlapped, if any
+	ObjectID					m_previousOverlap {};			///< last frame's object(s) being overlapped
+	ObjectID					m_lastCollidee {};				///< ID of the last object I collided with, can be quite old.
+	UnsignedInt					m_motiveForceExpires {};		///< frames at which "recent" applyMotiveForce is no longer considered
+	Real						m_extraBounciness {};			///< modifier to ground stiffness
+	Real						m_extraFriction {};				///< modifier to friction(s)
+	ProjectileUpdateInterface*	m_pui {};
+	mutable Real				m_velMag {};					///< magnitude of cur vel (recalced when m_vel changes)
 
-	Bool												m_originalAllowBounce;		///< orignal state of allow bounce
+	Bool						m_originalAllowBounce {};		///< orignal state of allow bounce
 
 	inline void setFlag(PhysicsFlagsType f, Bool set) { if (set) m_flags |= f; else m_flags &= ~f; }
 	inline Bool getFlag(PhysicsFlagsType f) const { return (m_flags & f) != 0; }

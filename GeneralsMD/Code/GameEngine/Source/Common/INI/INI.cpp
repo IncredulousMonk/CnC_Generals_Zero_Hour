@@ -101,7 +101,7 @@ static const BlockParse theTypeTable[] =
 // 	{ "CommandSet",						INI::parseCommandSetDefinition },
 // 	{ "ControlBarScheme",				INI::parseControlBarSchemeDefinition },
 // 	{ "ControlBarResizer",				INI::parseControlBarResizerDefinition },
-// 	{ "CrateData",						INI::parseCrateTemplateDefinition },
+	{ "CrateData",						INI::parseCrateTemplateDefinition },
 	{ "Credits",						INI::parseCredits},
 	{ "WindowTransition",				INI::parseWindowTransitions},
 	{ "DamageFX",						INI::parseDamageFXDefinition },
@@ -1276,7 +1276,7 @@ void INI::parseFXList( INI* ini, void * /*instance*/, void *store, const void* /
 	const char *token = ini->getNextToken();
 
 	typedef const FXList *ConstFXListPtr;
-	ConstFXListPtr* theFXList = (ConstFXListPtr*)store;		
+	ConstFXListPtr* theFXList = (ConstFXListPtr*)store;
 
 	const FXList *fxl = TheFXListStore->findFXList(token);	// could be null!
 	DEBUG_ASSERTCRASH(fxl != NULL || strcasecmp(token, "None") == 0, ("FXList %s not found!\n",token));
@@ -1467,9 +1467,6 @@ void INI::parseLookupList( INI* ini, void * /*instance*/, void *store, const voi
 //-------------------------------------------------------------------------------------------------
 void MultiIniFieldParse::add(const FieldParse* f, UnsignedInt e)
 {
-	// MG: offsets are scary enough without adding extra displacements.
-	DEBUG_ASSERTCRASH(e == 0, ("MultiIniFieldParse::add extra offset is not zero"));
-
 	if (m_count < MAX_MULTI_FIELDS)
 	{
 		m_fieldParse[m_count] = f;
@@ -1495,7 +1492,7 @@ void INI::initFromINI( void *what, const FieldParse* parseTable )
 void INI::initFromINIMultiProc( void *what, BuildMultiIniFieldProc proc )
 {
 	MultiIniFieldParse p;
-	(*proc)(p);
+	(*proc)(what, p);
 	initFromINIMulti(what, p);
 }
 

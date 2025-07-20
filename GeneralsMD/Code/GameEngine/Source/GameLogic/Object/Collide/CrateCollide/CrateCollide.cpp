@@ -52,46 +52,48 @@
 //-------------------------------------------------------------------------------------------------
 CrateCollideModuleData::CrateCollideModuleData()
 {
-	m_isForbidOwnerPlayer = FALSE;
-	m_executeAnimationDisplayTimeInSeconds = 0.0f;
-	m_executeAnimationZRisePerSecond = 0.0f;
-	m_executeAnimationFades = TRUE;
-	m_isBuildingPickup = FALSE;
-	m_isHumanOnlyPickup = FALSE;
-	m_executeFX = NULL;
-	m_pickupScience = SCIENCE_INVALID;
+	m_ini.m_isForbidOwnerPlayer = FALSE;
+	m_ini.m_executeAnimationDisplayTimeInSeconds = 0.0f;
+	m_ini.m_executeAnimationZRisePerSecond = 0.0f;
+	m_ini.m_executeAnimationFades = TRUE;
+	m_ini.m_isBuildingPickup = FALSE;
+	m_ini.m_isHumanOnlyPickup = FALSE;
+	m_ini.m_executeFX = NULL;
+	m_ini.m_pickupScience = SCIENCE_INVALID;
 
 	// Added By Sadullah Nader
 	// Initializations missing and needed
 	
-	m_executionAnimationTemplate = AsciiString::TheEmptyString;
+	m_ini.m_executionAnimationTemplate = AsciiString::TheEmptyString;
 	
 	// End Add
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void CrateCollideModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void CrateCollideModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "RequiredKindOf", KindOfMaskType::parseFromINI, NULL, offsetof( CrateCollideModuleData, m_kindof ) },
-		{ "ForbiddenKindOf", KindOfMaskType::parseFromINI, NULL, offsetof( CrateCollideModuleData, m_kindofnot ) },
-		{ "ForbidOwnerPlayer", INI::parseBool,	NULL,	offsetof( CrateCollideModuleData, m_isForbidOwnerPlayer ) },
-		{ "BuildingPickup", INI::parseBool,	NULL,	offsetof( CrateCollideModuleData, m_isBuildingPickup ) },
-		{ "HumanOnly", INI::parseBool,	NULL,	offsetof( CrateCollideModuleData, m_isHumanOnlyPickup ) },
-		{ "PickupScience", INI::parseScience,	NULL,	offsetof( CrateCollideModuleData, m_pickupScience ) },
-		{ "ExecuteFX", INI::parseFXList, NULL, offsetof( CrateCollideModuleData, m_executeFX ) },
-		{ "ExecuteAnimation", INI::parseAsciiString, NULL, offsetof( CrateCollideModuleData, m_executionAnimationTemplate ) },
-		{ "ExecuteAnimationTime", INI::parseReal, NULL, offsetof( CrateCollideModuleData, m_executeAnimationDisplayTimeInSeconds ) },
-		{ "ExecuteAnimationZRise", INI::parseReal, NULL, offsetof( CrateCollideModuleData, m_executeAnimationZRisePerSecond ) },
-		{ "ExecuteAnimationFades", INI::parseBool, NULL, offsetof( CrateCollideModuleData, m_executeAnimationFades ) },
+		{ "RequiredKindOf",			KindOfMaskType::parseFromINI,	NULL, offsetof( CrateCollideModuleData::IniData, m_kindof ) },
+		{ "ForbiddenKindOf",		KindOfMaskType::parseFromINI,	NULL, offsetof( CrateCollideModuleData::IniData, m_kindofnot ) },
+		{ "ForbidOwnerPlayer",		INI::parseBool,					NULL, offsetof( CrateCollideModuleData::IniData, m_isForbidOwnerPlayer ) },
+		{ "BuildingPickup",			INI::parseBool,					NULL, offsetof( CrateCollideModuleData::IniData, m_isBuildingPickup ) },
+		{ "HumanOnly",				INI::parseBool,					NULL, offsetof( CrateCollideModuleData::IniData, m_isHumanOnlyPickup ) },
+		{ "PickupScience",			INI::parseScience,				NULL, offsetof( CrateCollideModuleData::IniData, m_pickupScience ) },
+		{ "ExecuteFX",				INI::parseFXList,				NULL, offsetof( CrateCollideModuleData::IniData, m_executeFX ) },
+		{ "ExecuteAnimation",		INI::parseAsciiString,			NULL, offsetof( CrateCollideModuleData::IniData, m_executionAnimationTemplate ) },
+		{ "ExecuteAnimationTime",	INI::parseReal,					NULL, offsetof( CrateCollideModuleData::IniData, m_executeAnimationDisplayTimeInSeconds ) },
+		{ "ExecuteAnimationZRise",	INI::parseReal,					NULL, offsetof( CrateCollideModuleData::IniData, m_executeAnimationZRisePerSecond ) },
+		{ "ExecuteAnimationFades",	INI::parseBool,					NULL, offsetof( CrateCollideModuleData::IniData, m_executeAnimationFades ) },
 
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	CrateCollideModuleData* self {static_cast<CrateCollideModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -99,14 +101,14 @@ void CrateCollideModuleData::buildFieldParse(MultiIniFieldParse& p)
 CrateCollide::CrateCollide( Thing *thing, const ModuleData* moduleData ) : CollideModule( thing, moduleData )
 {
 
-} 
+}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 CrateCollide::~CrateCollide( void )
 {
 
-}  
+}
 
 //-------------------------------------------------------------------------------------------------
 /** The collide event.
@@ -120,26 +122,26 @@ void CrateCollide::onCollide( Object *other, const Coord3D *, const Coord3D * )
 	{
 		if( executeCrateBehavior( other ) )
 		{
-			if( modData->m_executeFX != NULL )
+			if( modData->m_ini.m_executeFX != NULL )
 			{
 				// Note: We pass in other here, because the crate is owned by the neutral player, and 
 				// we want to do things that only the other person can see.
-				FXList::doFXObj( modData->m_executeFX, other );
+				FXList::doFXObj( modData->m_ini.m_executeFX, other );
 			}
 
 			TheGameLogic->destroyObject( getObject() );
 		}
 
 		// play animation in the world at this spot if there is one
-		if( TheAnim2DCollection && modData->m_executionAnimationTemplate.isEmpty() == FALSE && TheGameLogic->getDrawIconUI() )
+		if( TheAnim2DCollection && modData->m_ini.m_executionAnimationTemplate.isEmpty() == FALSE && TheGameLogic->getDrawIconUI() )
 		{
-			Anim2DTemplate *animTemplate = TheAnim2DCollection->findTemplate( modData->m_executionAnimationTemplate );
+			Anim2DTemplate *animTemplate = TheAnim2DCollection->findTemplate( modData->m_ini.m_executionAnimationTemplate );
 
 			TheInGameUI->addWorldAnimation( animTemplate,
 																			getObject()->getPosition(),
 																			WORLD_ANIM_FADE_ON_EXPIRE,
-																			modData->m_executeAnimationDisplayTimeInSeconds,
-																			modData->m_executeAnimationZRisePerSecond );
+																			modData->m_ini.m_executeAnimationDisplayTimeInSeconds,
+																			modData->m_ini.m_executeAnimationZRisePerSecond );
 
 		}
 
@@ -150,6 +152,10 @@ void CrateCollide::onCollide( Object *other, const Coord3D *, const Coord3D * )
 //-------------------------------------------------------------------------------------------------
 Bool CrateCollide::isValidToExecute( const Object *other ) const
 {
+(void) other;
+DEBUG_CRASH(("CrateCollide::isValidToExecute not yet implemented!"));
+return false;
+#if 0
 	//The ground never picks up a crate
 	if( other == NULL )
 		return FALSE;
@@ -159,14 +165,14 @@ Bool CrateCollide::isValidToExecute( const Object *other ) const
 		return FALSE;
 
 	const CrateCollideModuleData* md = getCrateCollideModuleData();
-	Bool validBuildingAttempt = md->m_isBuildingPickup && other->isKindOf( KINDOF_STRUCTURE );
+	Bool validBuildingAttempt = md->m_ini.m_isBuildingPickup && other->isKindOf( KINDOF_STRUCTURE );
 
 	// Must be a "Unit" type thing.  Real Game Object, not just Object
 	if( other->getAIUpdateInterface() == NULL  &&  !validBuildingAttempt )// Building exception flag for Drop Zone
 		return FALSE;
 
 	// must match our kindof flags (if any)
-	if (md && !other->isKindOfMulti(md->m_kindof, md->m_kindofnot))
+	if (md && !other->isKindOfMulti(md->m_ini.m_kindof, md->m_ini.m_kindofnot))
 		return FALSE;
 
 	if( other->isEffectivelyDead() )
@@ -176,19 +182,20 @@ Bool CrateCollide::isValidToExecute( const Object *other ) const
 	if( getObject()->isAboveTerrain() && !validBuildingAttempt )
 		return FALSE;
 
-	if( md->m_isForbidOwnerPlayer  &&  (getObject()->getControllingPlayer() == other->getControllingPlayer()) )
+	if( md->m_ini.m_isForbidOwnerPlayer  &&  (getObject()->getControllingPlayer() == other->getControllingPlayer()) )
 		return FALSE; // Design has decreed this to not be picked up by the dead guy's team.
 
-	if( md->m_isHumanOnlyPickup  &&  other->getControllingPlayer() && (other->getControllingPlayer()->getPlayerType() != PLAYER_HUMAN) )
+	if( md->m_ini.m_isHumanOnlyPickup  &&  other->getControllingPlayer() && (other->getControllingPlayer()->getPlayerType() != PLAYER_HUMAN) )
 		return FALSE; // Human only mission crate
 
-	if( (md->m_pickupScience != SCIENCE_INVALID)  &&  other->getControllingPlayer()  &&  !other->getControllingPlayer()->hasScience(md->m_pickupScience) )
+	if( (md->m_ini.m_pickupScience != SCIENCE_INVALID)  &&  other->getControllingPlayer()  &&  !other->getControllingPlayer()->hasScience(md->m_ini.m_pickupScience) )
 		return FALSE; // Science required to pick this up
 
 	if( other->isKindOf( KINDOF_PARACHUTE ) )
 		return FALSE;
 
 	return TRUE;
+#endif // if 0
 }
 
 

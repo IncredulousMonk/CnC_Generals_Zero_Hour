@@ -3,7 +3,8 @@ LDPATHS = -LGameEngineDevice/Lib -LGameEngine/Lib -LLibraries/Lib
 LDFLAGS = -lavutil -lavcodec -lswscale -lswresample
 CXXFLAGS += $(shell pkg-config sdl3 --cflags)
 LDFLAGS += $(shell pkg-config sdl3 --libs) $(shell pkg-config sdl3-ttf --libs) $(shell pkg-config sdl3-image --libs) $(shell pkg-config sdl3-sound --libs)
-INCS = -I. -ILibraries/Include -ILibraries/Source/WWVegas -ILibraries/Source/WWVegas/WWLib -ILibraries/Source/WWVegas/WWDebug -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
+INCS = -I. -ILibraries/Include -ILibraries/Source/WWVegas -ILibraries/Source/WWVegas/WWLib -ILibraries/Source/WWVegas/WWMath -ILibraries/Source/WWVegas/WWSaveLoad -ILibraries/Source/WWVegas/WWDebug \
+   -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
 PROG = ../Run/rts
 ENGINE_DEVICE_LIB = GameEngineDevice/Lib/GameEngineDevice.a
 ENGINE_LIB = GameEngine/Lib/GameEngine.a
@@ -52,7 +53,7 @@ $(GEDO)/LinuxFunctionLexicon.o \
 $(GEDO)/LinuxModuleFactory.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
 $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxParticleSys.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
-$(GEDO)/LinuxDefaultDraw.o \
+$(GEDO)/LinuxDefaultDraw.o $(GEDO)/LinuxModelDraw.o $(GEDO)/LinuxScienceModelDraw.o \
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
 $(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
    $(GEDO)/LinuxTextEntry.o $(GEDO)/LinuxVerticalSlider.o \
@@ -138,6 +139,12 @@ $(GEDO)/SdlMouse.o: $(GEDSLD)/GameClient/SdlMouse.cpp GameEngineDevice/Include/L
 $(GEDO)/LinuxDefaultDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxDefaultDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxDefaultDraw.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxDefaultDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxDefaultDraw.cpp
 
+$(GEDO)/LinuxModelDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxModelDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxModelDraw.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxModelDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxModelDraw.cpp
+
+$(GEDO)/LinuxScienceModelDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxScienceModelDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxScienceModelDraw.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxScienceModelDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxScienceModelDraw.cpp
+
 # --- GameEngineDevice/Source/LinuxDevice/GameClient/GUI ---
 $(GEDO)/LinuxGameFont.o: $(GEDSLD)/GameClient/GUI/LinuxGameFont.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGameFont.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameFont.o $(GEDSLD)/GameClient/GUI/LinuxGameFont.cpp
@@ -196,9 +203,9 @@ $(GEDO)/LinuxGameLogic.o: $(GEDSLD)/GameLogic/LinuxGameLogic.cpp GameEngineDevic
 ENGINE_OBJS = $(GEO)/BitFlags.o $(GEO)/CommandLine.o $(GEO)/DamageFX.o $(GEO)/Dict.o $(GEO)/DiscreteCircle.o $(GEO)/GameEngine.o $(GEO)/GameLOD.o $(GEO)/GameMain.o $(GEO)/GlobalData.o \
    $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/MultiplayerSettings.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o $(GEO)/TerrainTypes.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
 $(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
-$(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INIDamageFX.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o \
-   $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INISpecialPower.o $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIVideo.o \
-   $(GEO)/INIWater.o $(GEO)/INIWeapon.o \
+$(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAudioEventInfo.o $(GEO)/INICrate.o $(GEO)/INIDamageFX.o $(GEO)/INIDrawGroupInfo.o $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o \
+   $(GEO)/INIMiscAudio.o $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INISpecialPower.o $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o \
+   $(GEO)/INIVideo.o $(GEO)/INIWater.o $(GEO)/INIWeapon.o \
 $(GEO)/AcademyStats.o $(GEO)/Energy.o $(GEO)/Handicap.o $(GEO)/MissionStats.o $(GEO)/Money.o $(GEO)/ProductionPrerequisite.o $(GEO)/Player.o $(GEO)/PlayerList.o $(GEO)/PlayerTemplate.o \
    $(GEO)/Science.o $(GEO)/ScoreKeeper.o $(GEO)/SpecialPower.o $(GEO)/Team.o $(GEO)/TunnelTracker.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o $(GEO)/FileSystem.o \
@@ -221,15 +228,16 @@ $(GEO)/Anim2D.o $(GEO)/CampaignManager.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
 $(GEO)/TerrainRoads.o \
 $(GEO)/Squad.o \
 $(GEO)/PolygonTrigger.o $(GEO)/SidesList.o $(GEO)/TerrainLogic.o \
-$(GEO)/Armor.o $(GEO)/Object.o $(GEO)/PartitionManager.o $(GEO)/SimpleObjectIterator.o $(GEO)/Weapon.o $(GEO)/WeaponSet.o \
+$(GEO)/Armor.o $(GEO)/ExperienceTracker.o $(GEO)/Object.o $(GEO)/PartitionManager.o $(GEO)/SimpleObjectIterator.o $(GEO)/Weapon.o $(GEO)/WeaponSet.o \
 $(GEO)/AutoHealBehavior.o $(GEO)/BehaviorModule.o \
 $(GEO)/BodyModule.o $(GEO)/InactiveBody.o \
-$(GEO)/CollideModule.o \
+$(GEO)/CollideModule.o $(GEO)/SquishCollide.o \
+$(GEO)/CrateCollide.o $(GEO)/MoneyCrateCollide.o $(GEO)/SalvageCrateCollide.o $(GEO)/UnitCrateCollide.o $(GEO)/VeterancyCrateCollide.o \
 $(GEO)/DamageModule.o \
 $(GEO)/DestroyDie.o $(GEO)/DieModule.o \
-$(GEO)/StealthUpdate.o $(GEO)/UpdateModule.o \
+$(GEO)/DeletionUpdate.o $(GEO)/PhysicsUpdate.o $(GEO)/StealthUpdate.o $(GEO)/UpdateModule.o \
 $(GEO)/UpgradeModule.o \
-$(GEO)/CaveSystem.o $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/GameLogicDispatch.o $(GEO)/RankInfo.o \
+$(GEO)/CaveSystem.o $(GEO)/CrateSystem.o $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/GameLogicDispatch.o $(GEO)/RankInfo.o \
 $(GEO)/Chat.o
 
 $(ENGINE_LIB): $(ENGINE_OBJS)
@@ -312,6 +320,9 @@ $(GEO)/INIAnimation.o: $(GES)/Common/INI/INIAnimation.cpp
 
 $(GEO)/INIAudioEventInfo.o: $(GES)/Common/INI/INIAudioEventInfo.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIAudioEventInfo.o $(GES)/Common/INI/INIAudioEventInfo.cpp
+
+$(GEO)/INICrate.o: $(GES)/Common/INI/INICrate.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INICrate.o $(GES)/Common/INI/INICrate.cpp
 
 $(GEO)/INIDamageFX.o: $(GES)/Common/INI/INIDamageFX.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIDamageFX.o $(GES)/Common/INI/INIDamageFX.cpp
@@ -714,6 +725,9 @@ $(GEO)/TerrainLogic.o: $(GES)/GameLogic/Map/TerrainLogic.cpp GameEngine/Include/
 $(GEO)/Armor.o: $(GES)/GameLogic/Object/Armor.cpp GameEngine/Include/GameLogic/Armor.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Armor.o $(GES)/GameLogic/Object/Armor.cpp
 
+$(GEO)/ExperienceTracker.o: $(GES)/GameLogic/Object/ExperienceTracker.cpp GameEngine/Include/GameLogic/ExperienceTracker.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ExperienceTracker.o $(GES)/GameLogic/Object/ExperienceTracker.cpp
+
 $(GEO)/Object.o: $(GES)/GameLogic/Object/Object.cpp GameEngine/Include/GameLogic/Object.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Object.o $(GES)/GameLogic/Object/Object.cpp
 
@@ -747,6 +761,25 @@ $(GEO)/InactiveBody.o: $(GES)/GameLogic/Object/Body/InactiveBody.cpp GameEngine/
 $(GEO)/CollideModule.o: $(GES)/GameLogic/Object/Collide/CollideModule.cpp GameEngine/Include/GameLogic/Module/CollideModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CollideModule.o $(GES)/GameLogic/Object/Collide/CollideModule.cpp
 
+$(GEO)/SquishCollide.o: $(GES)/GameLogic/Object/Collide/SquishCollide.cpp GameEngine/Include/GameLogic/Module/SquishCollide.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SquishCollide.o $(GES)/GameLogic/Object/Collide/SquishCollide.cpp
+
+# --- GameEngine/Source/GameLogic/Object/Collide/CrateCollide ---
+$(GEO)/CrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/CrateCollide.cpp GameEngine/Include/GameLogic/Module/CrateCollide.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CrateCollide.o $(GES)/GameLogic/Object/Collide/CrateCollide/CrateCollide.cpp
+
+$(GEO)/MoneyCrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/MoneyCrateCollide.cpp GameEngine/Include/GameLogic/Module/MoneyCrateCollide.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MoneyCrateCollide.o $(GES)/GameLogic/Object/Collide/CrateCollide/MoneyCrateCollide.cpp
+
+$(GEO)/SalvageCrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/SalvageCrateCollide.cpp GameEngine/Include/GameLogic/Module/SalvageCrateCollide.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SalvageCrateCollide.o $(GES)/GameLogic/Object/Collide/CrateCollide/SalvageCrateCollide.cpp
+
+$(GEO)/UnitCrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/UnitCrateCollide.cpp GameEngine/Include/GameLogic/Module/UnitCrateCollide.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UnitCrateCollide.o $(GES)/GameLogic/Object/Collide/CrateCollide/UnitCrateCollide.cpp
+
+$(GEO)/VeterancyCrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/VeterancyCrateCollide.cpp GameEngine/Include/GameLogic/Module/VeterancyCrateCollide.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/VeterancyCrateCollide.o $(GES)/GameLogic/Object/Collide/CrateCollide/VeterancyCrateCollide.cpp
+
 # --- GameEngine/Source/GameLogic/Object/Damage ---
 $(GEO)/DamageModule.o: $(GES)/GameLogic/Object/Damage/DamageModule.cpp GameEngine/Include/GameLogic/Module/DamageModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DamageModule.o $(GES)/GameLogic/Object/Damage/DamageModule.cpp
@@ -759,6 +792,12 @@ $(GEO)/DieModule.o: $(GES)/GameLogic/Object/Die/DieModule.cpp GameEngine/Include
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DieModule.o $(GES)/GameLogic/Object/Die/DieModule.cpp
 
 # --- GameEngine/Source/GameLogic/Object/Update ---
+$(GEO)/DeletionUpdate.o: $(GES)/GameLogic/Object/Update/DeletionUpdate.cpp GameEngine/Include/GameLogic/Module/DeletionUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DeletionUpdate.o $(GES)/GameLogic/Object/Update/DeletionUpdate.cpp
+
+$(GEO)/PhysicsUpdate.o: $(GES)/GameLogic/Object/Update/PhysicsUpdate.cpp GameEngine/Include/GameLogic/Module/PhysicsUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PhysicsUpdate.o $(GES)/GameLogic/Object/Update/PhysicsUpdate.cpp
+
 $(GEO)/StealthUpdate.o: $(GES)/GameLogic/Object/Update/StealthUpdate.cpp GameEngine/Include/GameLogic/Module/StealthUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StealthUpdate.o $(GES)/GameLogic/Object/Update/StealthUpdate.cpp
 
@@ -772,6 +811,9 @@ $(GEO)/UpgradeModule.o: $(GES)/GameLogic/Object/Upgrade/UpgradeModule.cpp GameEn
 # --- GameEngine/Source/GameLogic/System ---
 $(GEO)/CaveSystem.o: $(GES)/GameLogic/System/CaveSystem.cpp GameEngine/Include/GameLogic/CaveSystem.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CaveSystem.o $(GES)/GameLogic/System/CaveSystem.cpp
+
+$(GEO)/CrateSystem.o: $(GES)/GameLogic/System/CrateSystem.cpp GameEngine/Include/GameLogic/CrateSystem.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CrateSystem.o $(GES)/GameLogic/System/CrateSystem.cpp
 
 $(GEO)/Damage.o: $(GES)/GameLogic/System/Damage.cpp GameEngine/Include/GameLogic/Damage.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Damage.o $(GES)/GameLogic/System/Damage.cpp

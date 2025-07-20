@@ -178,11 +178,11 @@ public:
 
 	TintEnvelope(void);
 	void update(void);  ///< does all the work
-#if 0
 	void play(const RGBColor *peak, 
 						UnsignedInt atackFrames = DEF_ATTACK_FRAMES, 
 						UnsignedInt decayFrames = DEF_DECAY_FRAMES, 
 						UnsignedInt sustainAtPeak = DEF_SUSTAIN_FRAMES ); // ask MLorenzen
+#if 0
 	void sustain(void) { m_envState = ENVELOPE_STATE_SUSTAIN; }
 	void release(void) { m_envState = ENVELOPE_STATE_DECAY; }
 	void rest(void)    { m_envState = ENVELOPE_STATE_REST; } // goes away now!
@@ -199,12 +199,10 @@ protected:
 
 private:
 
-#if 0
 	void setAttackFrames(UnsignedInt frames);
 	void setDecayFrames( UnsignedInt frames); 
 	void setPeakColor( const RGBColor *peak) {m_peakColor = Vector3( peak->red, peak->green, peak->blue );};
 	void setPeakColor( Real r, Real g, Real b ) {m_peakColor.Set( r, g, b );};
-#endif // if 0
 
 	enum EnvelopeStatesEnum
 	{
@@ -214,13 +212,13 @@ private:
 		ENVELOPE_STATE_SUSTAIN ///< RELEASE IS THE LOGICAL COMPLIMENT TO SUSTAIN								
 	};
 
-	Vector3							m_attackRate {};		 	///< step amount to make tint turn on slow or fast 
-	Vector3							m_decayRate {};			///< step amount to make tint turn off slow or fast
-	Vector3							m_peakColor {};			///< um, the peak color, what color we are headed toward during attack
-	Vector3							m_currentColor {};		///< um, the current color, how we are colored, now
-	UnsignedInt					m_sustainCounter {};
-	Byte								m_envState {};				///< a randomly switchable SUSTAIN state, release is compliment
-	Bool								m_affect {};         ///< set TRUE if this has any effect (has a non 0,0,0 color).
+	Vector3		m_attackRate {};		///< step amount to make tint turn on slow or fast 
+	Vector3		m_decayRate {};			///< step amount to make tint turn off slow or fast
+	Vector3		m_peakColor {};			///< um, the peak color, what color we are headed toward during attack
+	Vector3		m_currentColor {};		///< um, the current color, how we are colored, now
+	UnsignedInt	m_sustainCounter {};
+	Byte		m_envState {};			///< a randomly switchable SUSTAIN state, release is compliment
+	Bool		m_affect {};         	///< set TRUE if this has any effect (has a non 0,0,0 color).
 };
 EMPTY_DTOR(TintEnvelope)
 
@@ -415,8 +413,8 @@ public:
 	void colorTint( const RGBColor *color );	 ///< tint this drawable the color specified
 #if 0
 	void setTintEnvelope( const RGBColor *color, Real attack, Real decay );	 ///< how to transition color
-	void flashAsSelected( const RGBColor *color = NULL ); ///< drawable takes care of the details if you spec no color
 #endif // if 0
+	void flashAsSelected( const RGBColor *color = NULL ); ///< drawable takes care of the details if you spec no color
 	
 	/// Return true if drawable has been marked as "selected"
 	Bool isSelected( void ) const {	return m_selected; }
@@ -586,9 +584,11 @@ public:
 	Int getFlashCount( void ) { return m_flashCount; }
 	void setFlashCount( Int count ) { m_flashCount = count; }
 	void setFlashColor( Color color ) { m_flashColor = color; }
+#endif // if 0
 	void saturateRGB(RGBColor& color, Real factor);// not strictly for flash color, but it is the only practical use for this
 	//---------------------------------------------------------------------------------
 
+#if 0
 	// caption text methods -----------------------------------------------------------
 	void setCaptionText( const UnicodeString& captionText );
 	void clearCaptionText( void );

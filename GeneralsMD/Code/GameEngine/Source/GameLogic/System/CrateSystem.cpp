@@ -43,8 +43,8 @@ CrateSystem::CrateSystem()
 
 CrateSystem::~CrateSystem()
 {
-	Int count = m_crateTemplateVector.size();
-	for( Int templateIndex = 0; templateIndex < count; templateIndex ++ )
+	size_t count = m_crateTemplateVector.size();
+	for( size_t templateIndex = 0; templateIndex < count; templateIndex ++ )
 	{
 		CrateTemplate *currentTemplate = m_crateTemplateVector[templateIndex];
 		if( currentTemplate )
@@ -109,7 +109,7 @@ void CrateSystem::parseCrateTemplateDefinition(INI* ini)
 	}
 
 	// parse the ini weapon definition
-	ini->initFromINI(crateTemplate, crateTemplate->getFieldParse());
+	ini->initFromINI(&crateTemplate->m_ini, crateTemplate->getFieldParse());
 }
 
 CrateTemplate *CrateSystem::newCrateTemplate( AsciiString name )
@@ -152,7 +152,7 @@ CrateTemplate *CrateSystem::newCrateTemplateOverride( CrateTemplate *crateToOver
 const CrateTemplate *CrateSystem::findCrateTemplate(AsciiString name) const
 {
 	// search weapon list for name
-	for (Int i = 0; i < m_crateTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_crateTemplateVector.size(); i++)
 		if(m_crateTemplateVector[i]->getName() == name) {
 			CrateTemplateOverride overridable(m_crateTemplateVector[i]);
 			return overridable;
@@ -165,7 +165,7 @@ const CrateTemplate *CrateSystem::findCrateTemplate(AsciiString name) const
 CrateTemplate *CrateSystem::friend_findCrateTemplate(AsciiString name)
 {
 	// search weapon list for name
-	for (Int i = 0; i < m_crateTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_crateTemplateVector.size(); i++)
 		if(m_crateTemplateVector[i]->getName() == name) {
 			CrateTemplateOverride overridable(m_crateTemplateVector[i]);
 			return const_cast<CrateTemplate*>((const CrateTemplate *)overridable);
@@ -182,25 +182,26 @@ CrateTemplate *CrateSystem::friend_findCrateTemplate(AsciiString name)
 //--------------------------------------------------------------------------------
 const FieldParse CrateTemplate::TheCrateTemplateFieldParseTable[] = 
 {
-	{ "CreationChance",		INI::parseReal,													NULL,									offsetof( CrateTemplate, m_creationChance ) },
-	{ "VeterancyLevel",		INI::parseIndexList,										TheVeterancyNames,		offsetof( CrateTemplate, m_veterancyLevel ) },
-	{ "KilledByType",			KindOfMaskType::parseFromINI,												NULL,									offsetof( CrateTemplate, m_killedByTypeKindof) },
-	{ "CrateObject",			CrateTemplate::parseCrateCreationEntry,	NULL,									NULL },
-	{ "KillerScience",		INI::parseScience,											NULL,									offsetof( CrateTemplate, m_killerScience) },
-	{ "OwnedByMaker",			INI::parseBool,													NULL,									offsetof( CrateTemplate, m_isOwnedByMaker) },
-	{ NULL,								NULL,																		NULL,									NULL },		// keep this last!
+	{ "CreationChance",		INI::parseReal,							NULL,				offsetof( CrateTemplate::IniData, m_creationChance ) },
+	{ "VeterancyLevel",		INI::parseIndexList,					TheVeterancyNames,	offsetof( CrateTemplate::IniData, m_veterancyLevel ) },
+	{ "KilledByType",		KindOfMaskType::parseFromINI,			NULL,				offsetof( CrateTemplate::IniData, m_killedByTypeKindof) },
+	{ "CrateObject",		CrateTemplate::parseCrateCreationEntry,	NULL,				0 },
+	{ "KillerScience",		INI::parseScience,						NULL,				offsetof( CrateTemplate::IniData, m_killerScience) },
+	{ "OwnedByMaker",		INI::parseBool,							NULL,				offsetof( CrateTemplate::IniData, m_isOwnedByMaker) },
+	{ NULL,					NULL,									NULL,				0 },	// keep this last!
 };
 
 CrateTemplate::CrateTemplate()
 {
 	m_name = "";
 
-	m_creationChance = 0;
-	CLEAR_KINDOFMASK(m_killedByTypeKindof);
-	m_veterancyLevel = LEVEL_INVALID;
-	m_killerScience = SCIENCE_INVALID;
+	m_ini.m_creationChance = 0;
+	CLEAR_KINDOFMASK(m_ini.m_killedByTypeKindof);
+	m_ini.m_veterancyLevel = LEVEL_INVALID;
+	m_ini.m_killerScience = SCIENCE_INVALID;
 	m_possibleCrates.clear();
-	m_isOwnedByMaker = FALSE;
+	m_ini.m_isOwnedByMaker = FALSE;
+	m_ini.m_obj = this;
 }
 
 CrateTemplate::~CrateTemplate()
@@ -210,7 +211,8 @@ CrateTemplate::~CrateTemplate()
 
 void CrateTemplate::parseCrateCreationEntry( INI* ini, void *instance, void *, const void*  )
 {
-	CrateTemplate *self = (CrateTemplate *)instance;
+	CrateTemplate::IniData* data = (CrateTemplate::IniData*) instance;
+	CrateTemplate* self = data->m_obj;
 
 	const char *token = ini->getNextToken();
 	AsciiString crateName = token;

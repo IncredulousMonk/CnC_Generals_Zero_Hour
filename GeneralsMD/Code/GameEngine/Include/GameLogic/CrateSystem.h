@@ -32,7 +32,7 @@
 #ifndef CRATE_SYSTEM_H
 #define CRATE_SYSTEM_H
 
-#include "Common/Ini.h"
+#include "Common/INI.h"
 #include "Common/Overridable.h"
 #include "Common/Override.h"
 
@@ -40,13 +40,13 @@ enum ScienceType;
 
 struct crateCreationEntry
 {
-	AsciiString crateName;
-	Real crateChance;
+	AsciiString crateName {};
+	Real crateChance {};
 };
 
-typedef std::list< crateCreationEntry >											crateCreationEntryList;
-typedef std::list< crateCreationEntry >::iterator						crateCreationEntryIterator;
-typedef std::list< crateCreationEntry >::const_iterator			crateCreationEntryConstIterator;
+typedef std::list< crateCreationEntry >					crateCreationEntryList;
+typedef std::list< crateCreationEntry >::iterator		crateCreationEntryIterator;
+typedef std::list< crateCreationEntry >::const_iterator	crateCreationEntryConstIterator;
 
 /** 
 		A CrateTemplate is a ini defined set of conditions plus a ThingTemplate that is the Object
@@ -68,14 +68,22 @@ public:
 
 	static void parseCrateCreationEntry( INI* ini, void *instance, void *store, const void* /*userData*/ );
 
-	AsciiString m_name;													///< name for this CrateTemplate
+	AsciiString m_name {};							///< name for this CrateTemplate
+	crateCreationEntryList m_possibleCrates {};		///< CreationChance is for this CrateData to succeed, this list controls one-of-n crates created on success
 
-	Real m_creationChance;											///< Condition for random percentage chance of creating
-	VeterancyLevel m_veterancyLevel;						///< Condition specifing level of killed unit
-	KindOfMaskType m_killedByTypeKindof;				///< Must be killed by something with all these bits set
-	ScienceType m_killerScience;								///< Must be killed by something posessing this science
-	crateCreationEntryList m_possibleCrates;		///< CreationChance is for this CrateData to succeed, this list controls one-of-n crates created on success
-	Bool m_isOwnedByMaker;											///< Design needs crates to be owned sometimes.
+	// MG: Cannot apply offsetof to CrateTemplate, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_creationChance;						///< Condition for random percentage chance of creating
+		VeterancyLevel m_veterancyLevel;			///< Condition specifing level of killed unit
+		KindOfMaskType m_killedByTypeKindof;		///< Must be killed by something with all these bits set
+		ScienceType m_killerScience;				///< Must be killed by something posessing this science
+		Bool m_isOwnedByMaker;						///< Design needs crates to be owned sometimes.
+
+		CrateTemplate* m_obj;
+	};
+
+	IniData m_ini {};
 
 private:
 
@@ -108,7 +116,7 @@ public:
 	static void parseCrateTemplateDefinition(INI* ini);
 
 private:
-	std::vector<CrateTemplate *> m_crateTemplateVector;
+	std::vector<CrateTemplate *> m_crateTemplateVector {};
 
 };
 

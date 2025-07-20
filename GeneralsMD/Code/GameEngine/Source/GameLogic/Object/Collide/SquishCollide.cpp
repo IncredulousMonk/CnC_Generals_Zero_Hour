@@ -38,7 +38,7 @@
 #include "GameLogic/Module/PhysicsUpdate.h"
 #include "GameLogic/Module/HijackerUpdate.h"
 #include "GameLogic/Module/SpecialAbilityUpdate.h"
-#include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/PartitionManager.h"
 
 #ifdef _INTERNAL
@@ -66,6 +66,11 @@ SquishCollide::~SquishCollide( void )
 //-------------------------------------------------------------------------------------------------
 void SquishCollide::onCollide( Object *other, const Coord3D *loc, const Coord3D *normal )
 {
+(void) other;
+(void) loc;
+(void) normal;
+DEBUG_CRASH(("SquishCollide::onCollide not yet implemented!"));
+#if 0
 	// Note that other == null means "collide with ground"
 	if (other == NULL)
 		return;
@@ -131,7 +136,8 @@ void SquishCollide::onCollide( Object *other, const Coord3D *loc, const Coord3D 
 		}
 
 
-  }
+	}
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------

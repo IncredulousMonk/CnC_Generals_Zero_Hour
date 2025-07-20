@@ -43,21 +43,29 @@
 class HijackerUpdateModuleData : public UpdateModuleData
 {
 public:
-	AsciiString m_attachToBone;
-	AsciiString m_parachuteName;
+	// MG: Cannot apply offsetof to HijackerUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_attachToBone;
+		AsciiString m_parachuteName;
+	};
+
+	IniData m_ini {};
 
 	//StickBombUpdateModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "AttachToTargetBone",	INI::parseAsciiString,		NULL, offsetof( HijackerUpdateModuleData, m_attachToBone ) },
-			{ "ParachuteName",	INI::parseAsciiString,		NULL, offsetof( HijackerUpdateModuleData, m_parachuteName ) },
+			{ "AttachToTargetBone",	INI::parseAsciiString,		NULL, offsetof( HijackerUpdateModuleData::IniData, m_attachToBone ) },
+			{ "ParachuteName",		INI::parseAsciiString,		NULL, offsetof( HijackerUpdateModuleData::IniData, m_parachuteName ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		HijackerUpdateModuleData* self {static_cast<HijackerUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 

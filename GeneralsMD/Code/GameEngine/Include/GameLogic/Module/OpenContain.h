@@ -74,7 +74,7 @@ public:
  	Bool m_allowNeutralInside;			///< allow neutral inside us
 
 	OpenContainModuleData( void );
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------

@@ -27,7 +27,7 @@
 #endif
 
 #include "always.h"
-#include "vector.h"
+// #include "vector.h"
 
 struct _EXCEPTION_POINTERS;
 

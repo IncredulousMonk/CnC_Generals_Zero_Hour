@@ -55,15 +55,15 @@ UnitCrateCollide::~UnitCrateCollide( void )
 //-------------------------------------------------------------------------------------------------
 Bool UnitCrateCollide::executeCrateBehavior( Object *other )
 {
-	UnsignedInt unitCount = getUnitCrateCollideModuleData()->m_unitCount;
-	ThingTemplate const *unitType = TheThingFactory->findTemplate( getUnitCrateCollideModuleData()->m_unitType );
+	UnsignedInt unitCount = getUnitCrateCollideModuleData()->m_ini.m_unitCount;
+	ThingTemplate const *unitType = TheThingFactory->findTemplate( getUnitCrateCollideModuleData()->m_ini.m_unitType );
 
 	if( unitType == NULL )
 	{
 		return FALSE;
 	}
 
-	for( Int unitIndex = 0; unitIndex < unitCount; unitIndex++ )
+	for( UnsignedInt unitIndex = 0; unitIndex < unitCount; unitIndex++ )
 	{
 		Team *creationTeam = other->getControllingPlayer()->getDefaultTeam();
 		Object *newObj = TheThingFactory->newObject( unitType, creationTeam );
@@ -74,9 +74,7 @@ Bool UnitCrateCollide::executeCrateBehavior( Object *other )
 			FindPositionOptions fpOptions;
 			fpOptions.minRadius = 0.0f;
 			fpOptions.maxRadius = 20.0f;
-			ThePartitionManager->findPositionAround( &creationPoint,
-																							 &fpOptions,
-																							 &creationPoint );
+			ThePartitionManager->findPositionAround( &creationPoint, &fpOptions, &creationPoint );
 
 			newObj->setOrientation( other->getOrientation() );
 			newObj->setPosition( &creationPoint );

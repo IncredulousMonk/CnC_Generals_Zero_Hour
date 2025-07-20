@@ -49,13 +49,6 @@ enum  CommandOption;
 class BattlePlanUpdateModuleData : public ModuleData
 {
 public:
-	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
-	struct IniData
-	{
-	};
-
-	IniData m_ini {};
-
 	// No copies allowed!
 	BattlePlanUpdateModuleData(const BattlePlanUpdateModuleData&) = delete;
 	BattlePlanUpdateModuleData& operator=(const BattlePlanUpdateModuleData&) = delete;
@@ -95,7 +88,7 @@ public:
 	AsciiString m_visionObjectName;		///< name of object to create to reveal shroud to all players
 
 	BattlePlanUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private: 
 
@@ -140,7 +133,7 @@ class BattlePlanUpdate : public SpecialPowerUpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( BattlePlanUpdate, "BattlePlanUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( BattlePlanUpdate, BattlePlanUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( BattlePlanUpdate, BattlePlanUpdateModuleData )
 
 public:
 

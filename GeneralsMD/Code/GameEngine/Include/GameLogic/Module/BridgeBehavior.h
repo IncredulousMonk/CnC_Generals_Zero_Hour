@@ -101,7 +101,7 @@ public:
 	BridgeBehaviorModuleData( void );
 	~BridgeBehaviorModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse(void* what, MultiIniFieldParse &p);
 
 	// MG: Cannot apply offsetof to BridgeBehaviorModuleData, so had to move data into an embedded struct.
 	struct IniData
@@ -127,7 +127,7 @@ class BridgeBehavior : public UpdateModule,
 											 public DieModuleInterface
 {
 
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( BridgeBehavior, BridgeBehaviorModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( BridgeBehavior, BridgeBehaviorModuleData )
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( BridgeBehavior, "BridgeBehavior" )
 
 public:

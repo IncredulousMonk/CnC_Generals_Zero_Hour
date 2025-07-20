@@ -72,18 +72,20 @@ public:
 class DieModuleData : public BehaviorModuleData
 {
 public:
-	// MG: This has to go into an embedded struct too, to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	// MG: Cannot apply offsetof to DieModuleData, so had to move data into an embedded struct.
 	struct IniData
 	{
-		DieMuxData			m_dieMuxData;
+		DieMuxData m_dieMuxData;
 	};
 
 	IniData m_ini {};
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-		BehaviorModuleData::buildFieldParse(p);
-		p.add(DieMuxData::getFieldParse(), offsetof( DieModuleData::IniData, m_dieMuxData ));
+		BehaviorModuleData::buildFieldParse(what, p);
+		DieModuleData* self {static_cast<DieModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(DieMuxData::getFieldParse(), offset + offsetof( DieModuleData::IniData, m_dieMuxData ));
 	}
 
 	inline Bool isDieApplicable(const Object* obj, const DamageInfo *damageInfo) const { return m_ini.m_dieMuxData.isDieApplicable(obj, damageInfo); }

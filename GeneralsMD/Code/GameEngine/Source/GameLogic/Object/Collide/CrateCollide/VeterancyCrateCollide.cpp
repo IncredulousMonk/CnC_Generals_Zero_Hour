@@ -35,8 +35,8 @@
 #include "GameLogic/Object.h"
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/Module/VeterancyCrateCollide.h"
-#include "GameLogic/ScriptEngine.h"
-#include "GameLogic/Module/AIUpdate.h"
+// #include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/Module/AIUpdate.h"
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ VeterancyCrateCollide::~VeterancyCrateCollide( void )
 Int VeterancyCrateCollide::getLevelsToGain() const
 {
 	const VeterancyCrateCollideModuleData* d = getVeterancyCrateCollideModuleData();
-	if (!d || !d->m_addsOwnerVeterancy)
+	if (!d || !d->m_ini.m_addsOwnerVeterancy)
 		return 1;
 
 	// this requires that "regular" is 0, vet is 1, etc.
@@ -99,7 +99,7 @@ Bool VeterancyCrateCollide::isValidToExecute( const Object *other ) const
 	if (!et || !et->canGainExpForLevel(levelsToGain))
 		return false;
 
-	if( d->m_isPilot )
+	if( d->m_ini.m_isPilot )
 	{
 		if( other->getControllingPlayer() != getObject()->getControllingPlayer() )
 		{
@@ -124,9 +124,13 @@ Bool VeterancyCrateCollide::isValidToExecute( const Object *other ) const
 //-------------------------------------------------------------------------------------------------
 Bool VeterancyCrateCollide::executeCrateBehavior( Object *other )
 {
- 	//Make sure the pilot is actually *TRYING* to enter the object
- 	//unlike other crates 
- 	AIUpdateInterface *ai = (AIUpdateInterface*)getObject()->getAIUpdateInterface();
+(void) other;
+DEBUG_CRASH(("VeterancyCrateCollide::executeCrateBehavior not yet implemented!"));
+return false;
+#if 0
+	//Make sure the pilot is actually *TRYING* to enter the object
+	//unlike other crates 
+	AIUpdateInterface *ai = (AIUpdateInterface*)getObject()->getAIUpdateInterface();
 	const VeterancyCrateCollideModuleData *md = getVeterancyCrateCollideModuleData();
 
  	if( !ai || ai->getGoalObject() != other )
@@ -135,13 +139,13 @@ Bool VeterancyCrateCollide::executeCrateBehavior( Object *other )
  	}
 
 	Int levelsToGain = getLevelsToGain();
-	Real range = md->m_rangeOfEffect;
+	Real range = md->m_ini.m_rangeOfEffect;
 	if (range == 0)
 	{
 		// do just the collider
 		if (other != NULL)
 		{
-			other->getExperienceTracker()->gainExpForLevel( levelsToGain, ( ! md->m_isPilot) );
+			other->getExperienceTracker()->gainExpForLevel( levelsToGain, ( ! md->m_ini.m_isPilot) );
 		}
 	}
 	else
@@ -155,18 +159,19 @@ Bool VeterancyCrateCollide::executeCrateBehavior( Object *other )
 		for( Object *potentialObject = iter->first(); potentialObject; potentialObject = iter->next() )
 		{
 			// This function will give just enough exp for the Object to gain a level, if it can
-			potentialObject->getExperienceTracker()->gainExpForLevel( levelsToGain, ( ! md->m_isPilot) );
+			potentialObject->getExperienceTracker()->gainExpForLevel( levelsToGain, ( ! md->m_ini.m_isPilot) );
 		}
 	}
 	
 	//In order to make things easier for the designers, we are going to transfer the terrorist name
 	//to the car... so the designer can control the car with their scripts.
-	if( md->m_isPilot )
+	if( md->m_ini.m_isPilot )
 	{
 		TheScriptEngine->transferObjectName( getObject()->getName(), other );
 	}
 
 	return TRUE;
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------

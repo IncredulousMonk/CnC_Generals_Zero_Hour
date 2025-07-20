@@ -924,4 +924,6 @@ public:
 
 #define EMPTY_DTOR(CLASS) inline CLASS::~CLASS() { }
 
+#define MEMORY_OFFSET(FROM, TO) (intptr_t)TO - (intptr_t)FROM
+
 #endif // _GAME_MEMORY_H_

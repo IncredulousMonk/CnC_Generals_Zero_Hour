@@ -45,7 +45,7 @@ public:
 
   SupplyWarehouseDockUpdateModuleData( void );
 	
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 	Int m_startingBoxesData;
 	Bool m_deleteWhenEmpty;

@@ -251,8 +251,8 @@ public:
 	void doTempWeaponBonus( WeaponBonusConditionType status, UnsignedInt duration );///< At this level, we just pass this on to our helper
 
 	void scoreTheKill( const Object *victim );						///< I just killed this object.  
-	void onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback = TRUE );	///< I just achieved this level right this moment
 #endif // if 0
+	void onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback = TRUE );	///< I just achieved this level right this moment
 	ExperienceTracker* getExperienceTracker() {return m_experienceTracker;}
 	const ExperienceTracker* getExperienceTracker() const {return m_experienceTracker;}
 	VeterancyLevel getVeterancyLevel() const;
@@ -271,8 +271,8 @@ public:
 	Player* getControllingPlayer() const;
 	Relationship getRelationship(const Object *that) const;
 	
-#if 0
 	Color getIndicatorColor() const;
+#if 0
 	Color getNightIndicatorColor() const;
 	Bool hasCustomIndicatorColor() const { return m_indicatorColor != 0; }
 	void setCustomIndicatorColor(Color c);
@@ -416,12 +416,14 @@ public:
 #if 0
 	void markSingleUseCommandUsed() { m_singleUseCommandUsed = true; }
 	Bool hasSingleUseCommandBeenUsed() const { return m_singleUseCommandUsed; }
+#endif // if 0
 	
 	/// returns true iff the object can run over the other object. 
 	Bool canCrushOrSquish(Object *otherObj, CrushSquishTestType testType = TEST_CRUSH_OR_SQUISH) const;
 	UnsignedByte getCrusherLevel() const;
 	UnsignedByte getCrushableLevel() const;
 
+#if 0
 	Bool hasUpgrade( const UpgradeTemplate *upgradeT ) const ;			///< does this object already have this upgrade
 	Bool affectedByUpgrade( const UpgradeTemplate *upgradeT ) const ; ///< can the object even "have" this upgrade, will it do something?
 	void giveUpgrade( const UpgradeTemplate *upgradeT );		///< give upgrade to this object
@@ -438,8 +440,10 @@ public:
 	Real getConstructionPercent() const { return m_constructionPercent; }
 
 	void setLayer( PathfindLayerEnum layer );
+#endif // if 0
 	PathfindLayerEnum getLayer() const { return m_layer; }
 
+#if 0
 	void setDestinationLayer( PathfindLayerEnum layer );
 	PathfindLayerEnum getDestinationLayer() const { return m_destinationLayer; }
 #endif // if 0
@@ -575,12 +579,14 @@ public:
 		Note that this DOES take weapon attack range into account.
 	*/
 	Bool chooseBestWeaponForTarget(const Object* target, WeaponChoiceCriteria criteria, CommandSourceType cmdSource);
+#endif // if 0
 
 	// set and/or clear a single modelcondition flag
 	void setModelConditionState( ModelConditionFlagType a );
 	void clearModelConditionState( ModelConditionFlagType a );
 	void clearAndSetModelConditionState( ModelConditionFlagType clr, ModelConditionFlagType set );
 
+#if 0
 	//Special model states are states that are turned on for a period of time, and turned off
 	//automatically -- used for cheer, and scripted special moment animations. Setting a special
 	//state will automatically clear any other special states that may be turned on so you can only
@@ -602,11 +608,11 @@ public:
 	void releaseWeaponLock(WeaponLockType lockType){ m_weaponSet.releaseWeaponLock(lockType); }
 	Bool isCurWeaponLocked() const { return m_weaponSet.isCurWeaponLocked(); }
 
-#if 0
 	void setArmorSetFlag(ArmorSetType ast);
 	void clearArmorSetFlag(ArmorSetType ast);
 	Bool testArmorSetFlag(ArmorSetType ast) const;
 
+#if 0
 	/// return true if the template has the specified special power flag set
 	// @todo: inline
 	Bool hasSpecialPower( SpecialPowerType type ) const;
@@ -711,12 +717,14 @@ protected:
 	void handleShroud();
 	void handleValueMap();
 	void handleThreatMap();
+#endif // if 0
 
 	// NOTE NOTE NOTE -- this is a private method. Do Not Ever Make It Public.
 	// If you think you need to make it public, you are wrong. Don't do it.
 	// It will go away someday. Yeah, right. Just like GlobalData.
 	Module* findModule(NameKeyType key) const;
 
+#if 0
 	Bool didEnterOrExit() const;
 #endif // if 0
 

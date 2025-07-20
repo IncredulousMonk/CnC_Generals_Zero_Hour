@@ -82,6 +82,10 @@ public:
 	ObjectPoolClass(void);
 	~ObjectPoolClass(void);
 
+	// No copies allowed!
+	ObjectPoolClass(const ObjectPoolClass&) = delete;
+	ObjectPoolClass& operator=(const ObjectPoolClass&) = delete;
+
 	T *		Allocate_Object(void);
 	void		Free_Object(T * obj);
 
@@ -90,10 +94,10 @@ public:
 
 protected:
 
-	T	*		FreeListHead;			
-	uint32 *	BlockListHead;			
-	int		FreeObjectCount;
-	int		TotalObjectCount;
+	T	*		FreeListHead;
+	uint32 *	BlockListHead;
+	int			FreeObjectCount;
+	int			TotalObjectCount;
 	FastCriticalSectionClass ObjectPoolCS;
 
 };

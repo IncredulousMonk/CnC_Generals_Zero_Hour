@@ -74,7 +74,7 @@
 #include "GameLogic/Armor.h"
 // #include "GameLogic/AI.h"
 #include "GameLogic/CaveSystem.h"
-// #include "GameLogic/CrateSystem.h"
+#include "GameLogic/CrateSystem.h"
 // #include "GameLogic/Damage.h"
 // #include "GameLogic/VictoryConditions.h"
 // #include "GameLogic/ObjectCreationList.h"
@@ -517,7 +517,7 @@ void GameEngine::init( int argc, char *argv[] )
 		// initSubsystem(TheAI,"TheAI", MSGNEW("GameEngineSubsystem") AI(), &xferCRC,  "Data\\INI\\Default\\AIData.ini", "Data\\INI\\AIData.ini");
 		initSubsystem(TheGameLogic,"TheGameLogic", createGameLogic(), NULL);
 		initSubsystem(TheTeamFactory,"TheTeamFactory", MSGNEW("GameEngineSubsystem") TeamFactory(), NULL);
-		// initSubsystem(TheCrateSystem,"TheCrateSystem", MSGNEW("GameEngineSubsystem") CrateSystem(), &xferCRC, "Data\\INI\\Default\\Crate.ini", "Data\\INI\\Crate.ini");
+		initSubsystem(TheCrateSystem,"TheCrateSystem", MSGNEW("GameEngineSubsystem") CrateSystem(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Crate.ini", "Data\\INI\\Crate.ini");
 		initSubsystem(ThePlayerList,"ThePlayerList", MSGNEW("GameEngineSubsystem") PlayerList(), NULL);
 		// initSubsystem(TheRecorder,"TheRecorder", createRecorder(), NULL);
 		// initSubsystem(TheRadar,"TheRadar", createRadar(), NULL);

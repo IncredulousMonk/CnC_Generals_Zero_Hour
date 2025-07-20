@@ -140,7 +140,7 @@ public:
 	DisabledMaskType							m_disabledTypesToProcess;
 
 	ProductionUpdateModuleData( void );
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	static void parseAppendQuantityModifier( INI* ini, void *instance, void *store, const void *userData );
 };
 

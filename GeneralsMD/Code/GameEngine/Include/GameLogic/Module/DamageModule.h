@@ -62,13 +62,6 @@ public:
 class DamageModuleData : public BehaviorModuleData
 {
 public:
-	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
-	struct IniData
-	{
-	};
-
-	IniData m_ini {};
-
 //	DamageTypeFlags m_damageTypes;
 
 	DamageModuleData()
@@ -76,9 +69,9 @@ public:
 	{
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    BehaviorModuleData::buildFieldParse(p);
+		BehaviorModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
@@ -86,7 +79,7 @@ public:
 			{ 0, 0, 0, 0 }
 		};
 
-    p.add(dataFieldParse);
+		p.add(dataFieldParse);
 	}
 };
 

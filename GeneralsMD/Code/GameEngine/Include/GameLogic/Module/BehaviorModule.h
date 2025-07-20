@@ -91,9 +91,9 @@ public:
 	{
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    ModuleData::buildFieldParse(p);
+		ModuleData::buildFieldParse(what, p);
 	}
 };
 

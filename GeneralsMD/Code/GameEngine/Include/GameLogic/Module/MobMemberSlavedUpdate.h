@@ -69,9 +69,9 @@ public:
 		m_ini.m_catchUpCrisisBailTime = 999999;//default to very large number
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
 			{ "MustCatchUpRadius",		INI::parseInt,			NULL, offsetof( MobMemberSlavedUpdateModuleData::IniData, m_mustCatchUpRadius ) },
@@ -80,7 +80,9 @@ public:
 			{ "Squirrelliness",			INI::parseReal, 		NULL, offsetof( MobMemberSlavedUpdateModuleData::IniData, m_squirrellinessRatio ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		MobMemberSlavedUpdateModuleData* self {static_cast<MobMemberSlavedUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 

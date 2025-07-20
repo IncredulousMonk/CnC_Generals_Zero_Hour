@@ -24,7 +24,7 @@
 
 // FILE: ExperienceTracker.h //////////////////////////////////////////////////////////////////////
 // Author: Graham Smallwood, February 2002
-// Desc:   Keeps track of experience points so Veterance levels can be gained
+// Desc:   Keeps track of experience points so Veterancy levels can be gained
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -41,7 +41,7 @@ class Object;
 
 class ExperienceTracker : public MemoryPoolObject, public Snapshot
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ExperienceTracker, "ExperienceTrackerPool" )	
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ExperienceTracker, "ExperienceTrackerPool" )
 public:
 	ExperienceTracker(Object *parent);
 
@@ -72,11 +72,11 @@ public:
 	void loadPostProcess( void );
 
 private:
-	Object*						m_parent;														///< Object I am owned by
-	VeterancyLevel		m_currentLevel;											///< Level of experience
-	Int								m_currentExperience;								///< Number of experience points
-	ObjectID					m_experienceSink;										///< ID of object I have pledged my experience point gains to
-	Real							m_experienceScalar;									///< Scales any experience gained by this multiplier.
+	Object*				m_parent {};			///< Object I am owned by
+	VeterancyLevel		m_currentLevel {};		///< Level of experience
+	Int					m_currentExperience {};	///< Number of experience points
+	ObjectID			m_experienceSink {};	///< ID of object I have pledged my experience point gains to
+	Real				m_experienceScalar {};	///< Scales any experience gained by this multiplier.
 };
 
 #endif

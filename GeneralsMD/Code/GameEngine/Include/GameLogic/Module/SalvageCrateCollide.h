@@ -45,35 +45,43 @@ class Thing;
 class SalvageCrateCollideModuleData : public CrateCollideModuleData
 {
 public:
-	Real m_weaponChance;	///< Chance to get a weapon upgrade, if possible
-	Real m_levelChance;		///< Chance to get a level, if weaponChance fails
-	Real m_moneyChance;		///< Chance to get money, if weaponChance fails
-	Int m_minimumMoney;		///< How much, if we get money
-	Int m_maximumMoney;		///< How much, if we get money
+	// MG: Cannot apply offsetof to SalvageCrateCollideModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_weaponChance;	///< Chance to get a weapon upgrade, if possible
+		Real m_levelChance;		///< Chance to get a level, if weaponChance fails
+		Real m_moneyChance;		///< Chance to get money, if weaponChance fails
+		Int m_minimumMoney;		///< How much, if we get money
+		Int m_maximumMoney;		///< How much, if we get money
+	};
+
+	IniData m_ini {};
 
 	SalvageCrateCollideModuleData()
 	{
-		m_weaponChance = 1.0f;
-		m_levelChance = .25f;
-		m_moneyChance = .75f;
-		m_minimumMoney = 25;
-		m_maximumMoney = 75;
+		m_ini.m_weaponChance = 1.0f;
+		m_ini.m_levelChance = .25f;
+		m_ini.m_moneyChance = .75f;
+		m_ini.m_minimumMoney = 25;
+		m_ini.m_maximumMoney = 75;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    CrateCollideModuleData::buildFieldParse(p);
+		CrateCollideModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "WeaponChance",	INI::parsePercentToReal,	NULL, offsetof( SalvageCrateCollideModuleData, m_weaponChance ) },
-			{ "LevelChance",	INI::parsePercentToReal,	NULL, offsetof( SalvageCrateCollideModuleData, m_levelChance ) },
-			{ "MoneyChance",	INI::parsePercentToReal,	NULL, offsetof( SalvageCrateCollideModuleData, m_moneyChance ) },
-			{ "MinMoney",			INI::parseInt,						NULL, offsetof( SalvageCrateCollideModuleData, m_minimumMoney ) },
-			{ "MaxMoney",			INI::parseInt,						NULL, offsetof( SalvageCrateCollideModuleData, m_maximumMoney ) },
+			{ "WeaponChance",	INI::parsePercentToReal,	NULL, offsetof( SalvageCrateCollideModuleData::IniData, m_weaponChance ) },
+			{ "LevelChance",	INI::parsePercentToReal,	NULL, offsetof( SalvageCrateCollideModuleData::IniData, m_levelChance ) },
+			{ "MoneyChance",	INI::parsePercentToReal,	NULL, offsetof( SalvageCrateCollideModuleData::IniData, m_moneyChance ) },
+			{ "MinMoney",		INI::parseInt,				NULL, offsetof( SalvageCrateCollideModuleData::IniData, m_minimumMoney ) },
+			{ "MaxMoney",		INI::parseInt,				NULL, offsetof( SalvageCrateCollideModuleData::IniData, m_maximumMoney ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		SalvageCrateCollideModuleData* self {static_cast<SalvageCrateCollideModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 };
@@ -83,7 +91,7 @@ class SalvageCrateCollide : public CrateCollide
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( SalvageCrateCollide, "SalvageCrateCollide" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( SalvageCrateCollide, SalvageCrateCollideModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( SalvageCrateCollide, SalvageCrateCollideModuleData )
 
 public:
 

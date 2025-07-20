@@ -53,12 +53,12 @@ MoneyCrateCollide::~MoneyCrateCollide( void )
 //-------------------------------------------------------------------------------------------------
 Bool MoneyCrateCollide::executeCrateBehavior( Object *other )
 {
-	UnsignedInt money = getMoneyCrateCollideModuleData()->m_moneyProvided;
+	UnsignedInt money = getMoneyCrateCollideModuleData()->m_ini.m_moneyProvided;
 	
-	money += getUpgradedSupplyBoost(other);
+	money += (UnsignedInt)getUpgradedSupplyBoost(other);
 
 	other->getControllingPlayer()->getMoney()->deposit( money );
-	other->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( money );
+	other->getControllingPlayer()->getScoreKeeper()->addMoneyEarned((Int) money );
 
 	//Play a crate pickup sound.
 	AudioEventRTS soundToPlay = TheAudio->getMiscAudio()->m_crateMoney;
@@ -92,6 +92,39 @@ Int MoneyCrateCollide::getUpgradedSupplyBoost( Object *other ) const
 	}
 
 	return 0;
+}
+
+//-------------------------------------------------------------------------------------------------
+// MG: WTF?!  There is no definition of "parseUpgradePair" in the code base!  I'll have to create my own based on parseUpgradeBoost in AutoDepositUpdate.cpp
+void parseUpgradePair(INI* ini, void* instance, void* /* store */, const void* /* userData */)
+{
+	upgradePair info;
+	info.type = "";
+	info.amount = 0;
+
+	const char *token = ini->getNextToken( ini->getSepsColon() );
+
+	if ( strcasecmp(token, "UpgradeType") == 0 )
+	{
+		token = ini->getNextTokenOrNull( ini->getSepsColon() );
+		if (!token)	throw INI_INVALID_DATA;
+
+		info.type = token;
+	}
+	else
+		throw INI_INVALID_DATA;
+
+
+	token = ini->getNextTokenOrNull( ini->getSepsColon() );
+	if ( strcasecmp(token, "Boost") == 0 )
+		info.amount = INI::scanInt(ini->getNextToken( ini->getSepsColon() ));
+	else
+		throw INI_INVALID_DATA;
+
+	// Insert the info into the upgrade list
+	MoneyCrateCollideModuleData* self = (MoneyCrateCollideModuleData*) instance;
+	self->m_upgradeBoost.push_back(info);
+	
 }
 
 // ------------------------------------------------------------------------------------------------

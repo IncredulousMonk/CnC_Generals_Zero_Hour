@@ -56,7 +56,7 @@ public:
 	Bool m_isAllowPassthrough;
 
 	DockUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------

@@ -44,7 +44,7 @@ public:
 
 	HealContainModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 	UnsignedInt m_framesForFullHeal;			///< time (in frames) something becomes fully healed
 

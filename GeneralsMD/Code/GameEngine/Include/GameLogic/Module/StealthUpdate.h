@@ -113,7 +113,7 @@ public:
 	StealthUpdateModuleData(const StealthUpdateModuleData&) = delete;
 	StealthUpdateModuleData& operator=(const StealthUpdateModuleData&) = delete;
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 };
 
@@ -122,7 +122,7 @@ class StealthUpdate : public UpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( StealthUpdate, "StealthUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( StealthUpdate, StealthUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( StealthUpdate, StealthUpdateModuleData )
 
 public:
 

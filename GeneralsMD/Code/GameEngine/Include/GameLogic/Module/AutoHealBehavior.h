@@ -92,7 +92,7 @@ public:
 	AutoHealBehaviorModuleData(const AutoHealBehaviorModuleData&) = delete;
 	AutoHealBehaviorModuleData& operator=(const AutoHealBehaviorModuleData&) = delete;
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
 		static const FieldParse dataFieldParse[] = 
 		{
@@ -111,9 +111,11 @@ public:
 			{ 0, 0, 0, 0 }
 		};
 
-		UpdateModuleData::buildFieldParse(p);
-		p.add(dataFieldParse);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( AutoHealBehaviorModuleData::IniData, m_upgradeMuxData ));
+		UpdateModuleData::buildFieldParse(what, p);
+		AutoHealBehaviorModuleData* self {static_cast<AutoHealBehaviorModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
+		p.add(UpgradeMuxData::getFieldParse(), offset + offsetof( AutoHealBehaviorModuleData::IniData, m_upgradeMuxData ));
 	}
 
 };

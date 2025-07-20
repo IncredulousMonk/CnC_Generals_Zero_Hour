@@ -29,7 +29,7 @@
 // #include "LinuxDevice/GameClient/Module/LinuxDebrisDraw.h"
 #include "LinuxDevice/GameClient/Module/LinuxDefaultDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxDependencyModelDraw.h"
-// #include "LinuxDevice/GameClient/Module/LinuxModelDraw.h"
+#include "LinuxDevice/GameClient/Module/LinuxModelDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxLaserDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxOverlordTankDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxOverlordTruckDraw.h"
@@ -38,7 +38,7 @@
 // #include "LinuxDevice/GameClient/Module/LinuxProjectileStreamDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxRopeDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxSupplyDraw.h"
-// #include "LinuxDevice/GameClient/Module/LinuxScienceModelDraw.h"
+#include "LinuxDevice/GameClient/Module/LinuxScienceModelDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxTankDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxTruckDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxTankTruckDraw.h"
@@ -58,7 +58,7 @@ void LinuxModuleFactory::init()
    // add the specific module templates we need for the draw methods
    addModuleRename(LinuxDefaultDraw, W3DDefaultDraw);
    // addModule( LinuxDebrisDraw );
-   // addModule( LinuxModelDraw );
+   addModuleRename(LinuxModelDraw, W3DModelDraw);
    // addModule( LinuxLaserDraw );
    // addModule( LinuxOverlordTankDraw );
    // addModule( LinuxOverlordTruckDraw );
@@ -66,7 +66,7 @@ void LinuxModuleFactory::init()
    // addModule( LinuxProjectileStreamDraw );
    // addModule( LinuxPoliceCarDraw );
    // addModule( LinuxRopeDraw );
-   // addModule( LinuxScienceModelDraw );
+   addModuleRename(LinuxScienceModelDraw, W3DScienceModelDraw);
    // addModule( LinuxSupplyDraw );
    // addModule( LinuxDependencyModelDraw );
    // addModule( LinuxTankDraw );

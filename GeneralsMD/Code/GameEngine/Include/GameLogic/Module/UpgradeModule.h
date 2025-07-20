@@ -162,7 +162,7 @@ private:
 struct UpgradeModuleData : public BehaviorModuleData
 {
 public:
-	// MG: This has to go into an embedded struct too, to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
+	// MG: Cannot apply offsetof to UpgradeModuleData, so had to move data into an embedded struct.
 	struct IniData
 	{
 		UpgradeMuxData m_upgradeMuxData {};
@@ -170,10 +170,12 @@ public:
 
 	IniData m_ini {};
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-		ModuleData::buildFieldParse(p);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( UpgradeModuleData::IniData, m_upgradeMuxData ));
+		ModuleData::buildFieldParse(what, p);
+		UpgradeModuleData* self {static_cast<UpgradeModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(UpgradeMuxData::getFieldParse(), offset + offsetof( UpgradeModuleData::IniData, m_upgradeMuxData ));
 	}
 };
 

@@ -51,6 +51,10 @@ public:
 	MutexClass(const char* name = NULL);
 	~MutexClass();
 
+	// No copies allowed!
+	MutexClass(const MutexClass&) = delete;
+	MutexClass& operator=(const MutexClass&) = delete;
+
 	enum {
 		WAIT_INFINITE=-1
 	};
@@ -95,6 +99,10 @@ public:
 	CriticalSectionClass();
 	~CriticalSectionClass();
 
+	// No copies allowed!
+	CriticalSectionClass(const CriticalSectionClass&) = delete;
+	CriticalSectionClass& operator=(const CriticalSectionClass&) = delete;
+
 	class LockClass
 	{
 		CriticalSectionClass& CriticalSection;
@@ -115,6 +123,8 @@ public:
 //
 // ----------------------------------------------------------------------------
 
+#define FastCriticalSectionClass CriticalSectionClass
+#if 0
 class FastCriticalSectionClass
 {
 	unsigned Flag;
@@ -173,5 +183,6 @@ public:
 
   friend class LockClass;
 };
+#endif // if 0
 
 #endif

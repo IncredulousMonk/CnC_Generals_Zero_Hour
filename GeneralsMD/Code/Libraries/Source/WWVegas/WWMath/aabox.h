@@ -120,8 +120,8 @@ public:
 
 	static void	Transform(const Matrix3D & tm,const AABoxClass & in,AABoxClass * out);
 
-	Vector3	Center;			// world space center
-	Vector3	Extent;			// size of the box in the three directions
+	Vector3	Center {};			// world space center
+	Vector3	Extent {};			// size of the box in the three directions
 
 };
 
@@ -161,8 +161,8 @@ public:
 
 	WWINLINE float		Volume(void) const { Vector3 size = MaxCorner - MinCorner; return size.X*size.Y*size.Z; }
 
-	Vector3	MinCorner;
-	Vector3	MaxCorner;
+	Vector3	MinCorner {};
+	Vector3	MaxCorner {};
 };
 
 

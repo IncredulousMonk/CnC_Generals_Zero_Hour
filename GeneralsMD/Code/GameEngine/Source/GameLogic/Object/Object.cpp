@@ -1089,12 +1089,11 @@ void Object::setScriptStatus( ObjectScriptStatusBit bit, Bool set )
 		}
 	}
 }
+#endif // if 0
 
 //=============================================================================
 Bool Object::canCrushOrSquish(Object *otherObj, CrushSquishTestType testType ) const
 {
-	DEBUG_ASSERTCRASH(this, ("null this in canCrushOrSquish"));
-
 	if( !otherObj ) 
 	{
 		//Can't crush anything.
@@ -1182,7 +1181,7 @@ UnsignedByte Object::getCrushableLevel() const
 	return getTemplate()->getCrushableLevel();
 }
 
-
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Topple an object, if possible */
 // ------------------------------------------------------------------------------------------------
@@ -1200,6 +1199,7 @@ void Object::topple( const Coord3D *toppleDirection, Real toppleSpeed, UnsignedI
 	}  // end if
 
 }  // end topple
+#endif // if 0
 
 //=============================================================================
 void Object::setArmorSetFlag(ArmorSetType ast)
@@ -1219,6 +1219,7 @@ Bool Object::testArmorSetFlag(ArmorSetType ast) const
 	return m_body->testArmorSetFlag(ast); 
 }
 
+#if 0
 //=============================================================================
 void Object::reloadAllAmmo(Bool now)
 {
@@ -1288,6 +1289,7 @@ void Object::setFiringConditionForCurrentWeapon() const
 		m_drawable->clearAndSetModelConditionFlags(s_allWeaponFireFlags[wslot], c);
 	}
 }
+#endif // if 0
 
 //=============================================================================
 void Object::setModelConditionState( ModelConditionFlagType a )
@@ -1316,6 +1318,7 @@ void Object::clearAndSetModelConditionState( ModelConditionFlagType clr, ModelCo
 	}
 }
 
+#if 0
 //=============================================================================
 void Object::clearModelConditionFlags( const ModelConditionFlags& clr )
 {
@@ -1643,6 +1646,7 @@ void Object::removeCustomIndicatorColor()
 { 
 	setCustomIndicatorColor(0); 
 }
+#endif // if 0
 
 //=============================================================================
 // Object::getIndicatorColor
@@ -1668,6 +1672,7 @@ Color Object::getIndicatorColor() const
 	}
 }
 
+#if 0
 //=============================================================================
 // Object::getNightIndicatorColor - used to make blue/purple easier to see on night models.
 //=============================================================================
@@ -2904,6 +2909,7 @@ void Object::calcNaturalRallyPoint(Coord2D *pt)
 	pt->y = v.Y;
 
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Module* Object::findModule(NameKeyType key) const 
@@ -2933,6 +2939,7 @@ Module* Object::findModule(NameKeyType key) const
 	return m;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /**
  * Returns true if object is currently able to move.
@@ -3130,10 +3137,16 @@ Bool Object::hasAnySpecialPower() const
 {
   return SPECIALPOWERMASK_ANY_SET( m_specialPowerBits );
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback )
 {
+(void) oldLevel;
+(void) newLevel;
+(void) provideFeedback;
+DEBUG_CRASH(("Object::onVeterancyLevelChanged not yet implemented!"));
+#if 0
 	updateUpgradeModules();
 
 	const UpgradeTemplate* up = TheUpgradeCenter->findVeterancyUpgrade(newLevel);
@@ -3214,9 +3227,9 @@ void Object::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel ne
 		soundToPlay.setObjectID( getID() );
 		TheAudio->addAudioEvent( &soundToPlay );
 	}
+#endif // if 0
 
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /**

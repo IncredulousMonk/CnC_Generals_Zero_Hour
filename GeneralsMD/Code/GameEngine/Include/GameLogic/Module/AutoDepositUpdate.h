@@ -64,8 +64,8 @@ class Thing;
 void parseUpgradeBoost( INI *ini, void *instance, void *store, const void *userData );
 struct upgradePair
 {
-	std::string type;
-	Int         amount;
+	std::string type {};
+	Int         amount {};
 };
 
 //-----------------------------------------------------------------------------
@@ -99,9 +99,9 @@ public:
 		m_upgradeBoost.clear();
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
 			{ "DepositTiming",			INI::parseDurationUnsignedInt,	NULL, offsetof( AutoDepositUpdateModuleData::IniData, m_depositFrame ) },
@@ -111,7 +111,9 @@ public:
 			{ "UpgradedBoost",			parseUpgradeBoost,				NULL, 0 },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		AutoDepositUpdateModuleData* self {static_cast<AutoDepositUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 

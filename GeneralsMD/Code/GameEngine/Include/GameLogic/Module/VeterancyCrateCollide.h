@@ -43,29 +43,37 @@ class Thing;
 class VeterancyCrateCollideModuleData : public CrateCollideModuleData
 {
 public:
-	UnsignedInt m_rangeOfEffect;
-	Bool m_addsOwnerVeterancy;
-	Bool m_isPilot;
+	// MG: Cannot apply offsetof to VeterancyCrateCollideModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_rangeOfEffect;
+		Bool m_addsOwnerVeterancy;
+		Bool m_isPilot;
+	};
+
+	IniData m_ini {};
 
 	VeterancyCrateCollideModuleData()
 	{
-		m_rangeOfEffect = 0;
-		m_addsOwnerVeterancy = false;
-		m_isPilot = false;
+		m_ini.m_rangeOfEffect = 0;
+		m_ini.m_addsOwnerVeterancy = false;
+		m_ini.m_isPilot = false;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    CrateCollideModuleData::buildFieldParse(p);
+		CrateCollideModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "EffectRange",	INI::parseUnsignedInt,	NULL, offsetof( VeterancyCrateCollideModuleData, m_rangeOfEffect ) },
-			{ "AddsOwnerVeterancy",	INI::parseBool,	NULL, offsetof( VeterancyCrateCollideModuleData, m_addsOwnerVeterancy ) },
-			{ "IsPilot", INI::parseBool, NULL, offsetof( VeterancyCrateCollideModuleData, m_isPilot ) },
+			{ "EffectRange",		INI::parseUnsignedInt,	NULL, offsetof( VeterancyCrateCollideModuleData::IniData, m_rangeOfEffect ) },
+			{ "AddsOwnerVeterancy",	INI::parseBool,			NULL, offsetof( VeterancyCrateCollideModuleData::IniData, m_addsOwnerVeterancy ) },
+			{ "IsPilot",			INI::parseBool,			NULL, offsetof( VeterancyCrateCollideModuleData::IniData, m_isPilot ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		VeterancyCrateCollideModuleData* self {static_cast<VeterancyCrateCollideModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 };
@@ -75,7 +83,7 @@ class VeterancyCrateCollide : public CrateCollide
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( VeterancyCrateCollide, "VeterancyCrateCollide" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( VeterancyCrateCollide, VeterancyCrateCollideModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( VeterancyCrateCollide, VeterancyCrateCollideModuleData )
 
 public:
 

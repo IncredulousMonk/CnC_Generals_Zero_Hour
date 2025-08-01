@@ -42,7 +42,7 @@
 #include "GameLogic/AIPathfind.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/GameLogic.h"
-#include "GameLogic/ObjectCreationList.h"
+// #include "GameLogic/ObjectCreationList.h"
 #include "GameLogic/Module/BodyModule.h"
 #include "GameLogic/Module/BridgeBehavior.h"
 #include "GameLogic/Module/BridgeScaffoldBehavior.h"
@@ -59,8 +59,8 @@
 BridgeBehaviorModuleData::BridgeBehaviorModuleData( void )
 {
 
-	m_lateralScaffoldSpeed = 1.0f;
-	m_verticalScaffoldSpeed = 1.0f;
+	m_ini.m_lateralScaffoldSpeed = 1.0f;
+	m_ini.m_verticalScaffoldSpeed = 1.0f;
 
 }  // end BridgeBehaviorModuleData
 
@@ -79,20 +79,22 @@ BridgeBehaviorModuleData::~BridgeBehaviorModuleData( void )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void BridgeBehaviorModuleData::buildFieldParse( MultiIniFieldParse &p )
+/*static*/ void BridgeBehaviorModuleData::buildFieldParse( void* what, MultiIniFieldParse &p )
 {
-  BehaviorModuleData::buildFieldParse( p );
+	BehaviorModuleData::buildFieldParse( what, p );
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "LateralScaffoldSpeed",			INI::parseVelocityReal, NULL, offsetof( BridgeBehaviorModuleData, m_lateralScaffoldSpeed ) },
-		{ "VerticalScaffoldSpeed",		INI::parseVelocityReal, NULL, offsetof( BridgeBehaviorModuleData, m_verticalScaffoldSpeed ) },
-		{ "BridgeDieFX",		parseFX,		NULL,			offsetof( BridgeBehaviorModuleData, m_fx ) },
-		{ "BridgeDieOCL",		parseOCL,		NULL,			offsetof( BridgeBehaviorModuleData, m_ocl ) },
+		{ "LateralScaffoldSpeed",	INI::parseVelocityReal,	NULL,	offsetof( BridgeBehaviorModuleData::IniData, m_lateralScaffoldSpeed ) },
+		{ "VerticalScaffoldSpeed",	INI::parseVelocityReal,	NULL,	offsetof( BridgeBehaviorModuleData::IniData, m_verticalScaffoldSpeed ) },
+		{ "BridgeDieFX",			parseFX,				NULL,	0 },
+		{ "BridgeDieOCL",			parseOCL,				NULL,	0 },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add( dataFieldParse );
+	BridgeBehaviorModuleData* self {static_cast<BridgeBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -106,7 +108,7 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 
 	// delay label
 	const char *token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "Delay" ) != 0 )
+	if( strcasecmp( token, "Delay" ) != 0 )
 	{
 
 		DEBUG_CRASH(( "Expected 'Delay' token, found '%s'\n", token ));
@@ -123,7 +125,7 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 	{
 
 		// token must be a label for bone location
-		if( stricmp( token, "Bone" ) != 0 )
+		if( strcasecmp( token, "Bone" ) != 0 )
 		{
 
 			DEBUG_CRASH(( "Expected 'Bone' token, found '%s'\n", token ));
@@ -151,12 +153,9 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 	BridgeFXInfo item;
 	item.fx = NULL;
 
-	// get list to store at
-	BridgeFXList *bridgeFXList = (BridgeFXList *)store;
-
 	// fx list label
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "FX" ) != 0 )
+	if( strcasecmp( token, "FX" ) != 0 )
 	{
 
 		DEBUG_CRASH(( "Expected 'FX' token, found '%s'\n", token ));
@@ -175,7 +174,8 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 	parseTimeAndLocationInfo( ini, instance, &item.timeAndLocationInfo );
 
 	// put on list
-	bridgeFXList->push_back( item );
+	BridgeBehaviorModuleData* self {static_cast<BridgeBehaviorModuleData*>(instance)};
+	self->m_fx.push_back( item );
 
 }  // end parseFX
 
@@ -192,12 +192,9 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 	BridgeOCLInfo item;
 	item.ocl = NULL;
 
-	// get list to store at
-	BridgeOCLList *bridgeOCLList = (BridgeOCLList *)store;
-
 	// fx list label
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "OCL" ) != 0 )
+	if( strcasecmp( token, "OCL" ) != 0 )
 	{
 
 		DEBUG_CRASH(( "Expected 'OCL' token, found '%s'\n", token ));
@@ -216,7 +213,8 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 	parseTimeAndLocationInfo( ini, instance, &item.timeAndLocationInfo );
 
 	// put on list
-	bridgeOCLList->push_back( item );
+	BridgeBehaviorModuleData* self {static_cast<BridgeBehaviorModuleData*>(instance)};
+	self->m_ocl.push_back( item );
 
 }  // end parseOCL
 
@@ -324,6 +322,8 @@ void BridgeBehavior::onDelete( void )
 // ------------------------------------------------------------------------------------------------
 void BridgeBehavior::resolveFX( void )
 {
+DEBUG_CRASH(("BridgeBehavior::resolveFX not yet implemented!"));
+#if 0
 	Object *us = getObject();
 	Bridge *bridge = TheTerrainLogic->findBridgeAt( us->getPosition() );
 
@@ -385,6 +385,7 @@ void BridgeBehavior::resolveFX( void )
 	// fx are now "resolved"
 	m_fxResolved = TRUE;
 
+#endif // if 0
 }  // end resolveFX
 
 // ------------------------------------------------------------------------------------------------
@@ -567,6 +568,12 @@ void BridgeBehavior::doAreaEffects( TerrainRoadType *bridgeTemplate,
 																		const FXList *fx )
 {
 	
+(void) bridgeTemplate;
+(void) bridge;
+(void) ocl;
+(void) fx;
+DEBUG_CRASH(("BridgeBehavior::doAreaEffects not yet implemented!"));
+#if 0
 	// sanity
 	if( bridge == NULL )
 		return;
@@ -604,6 +611,7 @@ void BridgeBehavior::doAreaEffects( TerrainRoadType *bridgeTemplate,
 
 	}  // end for i
 
+#endif // if 0
 }  // end doAreaEffects
 
 // ------------------------------------------------------------------------------------------------
@@ -613,6 +621,11 @@ void BridgeBehavior::onBodyDamageStateChange( const DamageInfo* damageInfo,
 																							BodyDamageType newState )
 {
 
+(void) damageInfo;
+(void) oldState;
+(void) newState;
+DEBUG_CRASH(("BridgeBehavior::onBodyDamageStateChange not yet implemented!"));
+#if 0
 	//
 	// check for coming back from the dead, if our new state is not the rubble state, we can't
 	// possibly be dead
@@ -699,6 +712,7 @@ void BridgeBehavior::onBodyDamageStateChange( const DamageInfo* damageInfo,
 	if( oldState == BODY_RUBBLE || newState == BODY_RUBBLE )
 		TheRadar->queueTerrainRefresh();
 
+#endif // if 0
 }  // end onBodyDamageStateChange
 
 // ------------------------------------------------------------------------------------------------
@@ -706,6 +720,9 @@ void BridgeBehavior::onBodyDamageStateChange( const DamageInfo* damageInfo,
 UpdateSleepTime BridgeBehavior::update( void )
 {
 
+DEBUG_CRASH(("BridgeBehavior::update not yet implemented!"));
+return UPDATE_SLEEP_INVALID;
+#if 0
 	// if we're dead, we need to possibly throw off some effects
 	if( m_deathFrame != 0 )
 	{
@@ -839,6 +856,7 @@ UpdateSleepTime BridgeBehavior::update( void )
 
 	return UPDATE_SLEEP_NONE;
 
+#endif // if 0
 }  // end update
 
 // ------------------------------------------------------------------------------------------------
@@ -997,7 +1015,7 @@ void BridgeBehavior::setScaffoldData( Object *obj,
 	// all the scaffold objects have to traverse in order to meet up and be complete in
 	// the center of the bridge in an interesting way
 	//
-	Real lateralSpeed = modData->m_lateralScaffoldSpeed;
+	Real lateralSpeed = modData->m_ini.m_lateralScaffoldSpeed;
 	Coord3D buildUpPosToBridgeCenter, riseToPosToBridgeCenter;
 	buildUpPosToBridgeCenter.x = buildPos->x - riseToPos->x;
 	buildUpPosToBridgeCenter.y = buildPos->y - riseToPos->y;
@@ -1010,7 +1028,7 @@ void BridgeBehavior::setScaffoldData( Object *obj,
 	scaffoldBehavior->setLateralSpeed( lateralSpeed * (distBuildUpPosToBridgeCenter / distRiseToPosToBridgeCenter) );
 
 	// rising speed is always the same for all objects
-	Real verticalSpeed = modData->m_verticalScaffoldSpeed;
+	Real verticalSpeed = modData->m_ini.m_verticalScaffoldSpeed;
 	scaffoldBehavior->setVerticalSpeed( verticalSpeed );
 
 }  // end setScaffoldData

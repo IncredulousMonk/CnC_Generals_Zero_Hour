@@ -121,8 +121,7 @@ const FieldParse UpgradeTemplate::m_upgradeFieldParseTable[] =
 	{ "ButtonImage",		INI::parseAsciiString,		NULL, 								offsetof( UpgradeTemplate::IniData, m_buttonImageName ) },
 	{ "ResearchSound",		INI::parseAsciiString,		NULL, 								offsetof( UpgradeTemplate::IniData, m_researchSoundName ) }, 
 	{ "UnitSpecificSound",	INI::parseAsciiString,		NULL, 								offsetof( UpgradeTemplate::IniData, m_unitSpecificSoundName ) }, 
-	// FIXME: TheAcademyClassificationTypeNames
-	// { "AcademyClassify",	INI::parseIndexList,		TheAcademyClassificationTypeNames,	offsetof( UpgradeTemplate::IniData, m_academyClassificationType ) },
+	{ "AcademyClassify",	INI::parseIndexList,		TheAcademyClassificationTypeNames,	offsetof( UpgradeTemplate::IniData, m_academyClassificationType ) },
 	{ NULL,					NULL,						NULL, 0 }  // keep this last
 
 };
@@ -493,7 +492,7 @@ void UpgradeCenter::parseUpgradeDefinition( INI *ini )
 	DEBUG_ASSERTCRASH( upgrade, ("parseUpgradeDefinition: Unable to allocate upgrade '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( upgrade, upgrade->getFieldParse() );
+	ini->initFromINI( &upgrade->m_ini, upgrade->getFieldParse() );
 	TheAudio->setAudioEventNameAndInfo(&upgrade->m_researchSound, upgrade->m_ini.m_researchSoundName);
 	TheAudio->setAudioEventNameAndInfo(&upgrade->m_unitSpecificSound, upgrade->m_ini.m_unitSpecificSoundName);
 

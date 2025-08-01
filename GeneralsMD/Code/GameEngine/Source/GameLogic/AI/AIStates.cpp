@@ -28,7 +28,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 
-#include "Common/ActionManager.h"
+// #include "Common/ActionManager.h"
 #include "Common/AudioHandleSpecialValues.h"
 #include "Common/CRCDebug.h"
 #include "Common/GameAudio.h"
@@ -42,9 +42,9 @@
 #include "Common/ThingTemplate.h"
 #include "Common/ThingFactory.h"
 #include "Common/Xfer.h"
-#include "Common/XFerCRC.h"
+#include "Common/XferCRC.h"
 
-#include "GameClient/ControlBar.h"
+// #include "GameClient/ControlBar.h"
 #include "GameClient/FXList.h"
 #include "GameClient/InGameUI.h"
 
@@ -57,7 +57,7 @@
 #include "GameLogic/Locomotor.h"
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/PolygonTrigger.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Squad.h"
 #include "GameLogic/TurretAI.h"
 #include "GameLogic/Weapon.h"
@@ -90,24 +90,24 @@ AICommandParms::AICommandParms(AICommandType cmd, CommandSourceType cmdSource) :
 	m_commandButton(NULL),
 	m_path(NULL)
 { 
-		m_pos.zero();
-		m_coords.clear();
+	m_pos.zero();
+	m_coords.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------
 void AICommandParmsStorage::store(const AICommandParms& parms)
 {
 	m_cmd = parms.m_cmd;
-  m_cmdSource = parms.m_cmdSource;
-  m_pos = parms.m_pos;
-  m_obj = parms.m_obj ? parms.m_obj->getID() : INVALID_ID;
-  m_otherObj = parms.m_otherObj ? parms.m_otherObj->getID() : INVALID_ID;
-  m_teamName = parms.m_team ? parms.m_team->getName() : AsciiString::TheEmptyString;
+	m_cmdSource = parms.m_cmdSource;
+	m_pos = parms.m_pos;
+	m_obj = parms.m_obj ? parms.m_obj->getID() : INVALID_ID;
+	m_otherObj = parms.m_otherObj ? parms.m_otherObj->getID() : INVALID_ID;
+	m_teamName = parms.m_team ? parms.m_team->getName() : AsciiString::TheEmptyString;
 	m_coords = parms.m_coords;
-  m_waypoint = parms.m_waypoint; 
-  m_polygon = parms.m_polygon;     
-  m_intValue = parms.m_intValue;       /// misc usage
-  m_damage = parms.m_damage;
+	m_waypoint = parms.m_waypoint; 
+	m_polygon = parms.m_polygon;     
+	m_intValue = parms.m_intValue;       /// misc usage
+	m_damage = parms.m_damage;
 	m_commandButton = parms.m_commandButton;
 	m_path = parms.m_path;	/// @todo srj -- probably need a better way to safely save/restore this
 }
@@ -116,16 +116,16 @@ void AICommandParmsStorage::store(const AICommandParms& parms)
 void AICommandParmsStorage::reconstitute(AICommandParms& parms) const
 {
 	parms.m_cmd = m_cmd;
-  parms.m_cmdSource = m_cmdSource;
-  parms.m_pos = m_pos;
-  parms.m_obj = TheGameLogic->findObjectByID(m_obj);
-  parms.m_otherObj = TheGameLogic->findObjectByID(m_otherObj);
-  parms.m_team = TheTeamFactory->findTeam(m_teamName);
+	parms.m_cmdSource = m_cmdSource;
+	parms.m_pos = m_pos;
+	parms.m_obj = TheGameLogic->findObjectByID(m_obj);
+	parms.m_otherObj = TheGameLogic->findObjectByID(m_otherObj);
+	parms.m_team = TheTeamFactory->findTeam(m_teamName);
 	parms.m_coords = m_coords;
-  parms.m_waypoint = m_waypoint;
-  parms.m_polygon = m_polygon;
-  parms.m_intValue = m_intValue;
-  parms.m_damage = m_damage;
+	parms.m_waypoint = m_waypoint;
+	parms.m_polygon = m_polygon;
+	parms.m_intValue = m_intValue;
+	parms.m_damage = m_damage;
 	parms.m_commandButton = m_commandButton;
 	parms.m_path = m_path;	/// @todo srj -- probably need a better way to safely save/restore this
 }
@@ -133,30 +133,32 @@ void AICommandParmsStorage::reconstitute(AICommandParms& parms) const
 //----------------------------------------------------------------------------------------------------------
 void AICommandParmsStorage::doXfer(Xfer *xfer) 
 {
+(void) xfer;
+DEBUG_CRASH(("AICommandParmsStorage::doXfer not yet implemented!"));
+#if 0
 	xfer->xferUser(&m_cmd, sizeof(m_cmd));
 	xfer->xferUser(&m_cmd, sizeof(m_cmdSource));
 	xfer->xferCoord3D(&m_pos);
 	xfer->xferObjectID(&m_obj);
 	xfer->xferObjectID(&m_otherObj);
 	xfer->xferAsciiString(&m_teamName);
-	Int numCoords = m_coords.size();
-	xfer->xferInt(&numCoords);
-	Int i;
+	size_t numCoords = m_coords.size();
+	xfer->xferInt((Int*)&numCoords);
 	if (xfer->getXferMode() == XFER_LOAD)
 	{
-		for (i=0; i<numCoords; i++) {
+		for (size_t i=0; i<numCoords; i++) {
 			Coord3D pos;
 			xfer->xferCoord3D(&pos);
 			m_coords.push_back(pos);
 		}
 	} else {
-		for (i=0; i<numCoords; i++) {
+		for (size_t i=0; i<numCoords; i++) {
 			Coord3D pos = m_coords[i];
 			xfer->xferCoord3D(&pos);
 		}
 	}
 
- 	UnsignedInt id = INVALID_WAYPOINT_ID;
+	UnsignedInt id = INVALID_WAYPOINT_ID;
 	if (m_waypoint) {
 		id = m_waypoint->getID();
 	}
@@ -197,7 +199,7 @@ void AICommandParmsStorage::doXfer(Xfer *xfer)
 	if (hasPath) {
 		xfer->xferSnapshot(m_path);
 	}
-
+#endif // if 0
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -273,27 +275,27 @@ AttackStateMachine::AttackStateMachine( Object *obj, AIAttackState* att, AsciiSt
 	// we want to use the CONTINUE mode (not NEW) since we already have acquired the target.
 	static const StateConditionInfo objectConditionsNormal[] =
 	{
-		StateConditionInfo(outOfWeaponRangeObject, AttackStateMachine::CHASE_TARGET, NULL),
-		StateConditionInfo(wantToSquishTarget, AttackStateMachine::CHASE_TARGET, NULL),
-		StateConditionInfo(cannotPossiblyAttackObject, EXIT_MACHINE_WITH_FAILURE, (void*)ATTACK_CONTINUED_TARGET),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(outOfWeaponRangeObject, (StateID) AttackStateMachine::CHASE_TARGET, NULL),
+		StateConditionInfo(wantToSquishTarget, (StateID) AttackStateMachine::CHASE_TARGET, NULL),
+		StateConditionInfo(cannotPossiblyAttackObject, (StateID) EXIT_MACHINE_WITH_FAILURE, (void*)ATTACK_CONTINUED_TARGET),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	// we want to use the CONTINUE mode (not NEW) since we already have acquired the target.
 	static const StateConditionInfo objectConditionsForced[] =
 	{
-		StateConditionInfo(outOfWeaponRangeObject, AttackStateMachine::CHASE_TARGET, NULL),
-		StateConditionInfo(cannotPossiblyAttackObject, EXIT_MACHINE_WITH_FAILURE, (void*)ATTACK_CONTINUED_TARGET_FORCED),
-		StateConditionInfo(wantToSquishTarget, AttackStateMachine::CHASE_TARGET, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(outOfWeaponRangeObject, (StateID) AttackStateMachine::CHASE_TARGET, NULL),
+		StateConditionInfo(cannotPossiblyAttackObject, (StateID) EXIT_MACHINE_WITH_FAILURE, (void*)ATTACK_CONTINUED_TARGET_FORCED),
+		StateConditionInfo(wantToSquishTarget, (StateID) AttackStateMachine::CHASE_TARGET, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	const StateConditionInfo* objectConditions = forceAttacking ? objectConditionsForced : objectConditionsNormal;
 
 	static const StateConditionInfo positionConditions[] = 
 	{
-		StateConditionInfo(outOfWeaponRangePosition, AttackStateMachine::CHASE_TARGET, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(outOfWeaponRangePosition, (StateID) AttackStateMachine::CHASE_TARGET, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 #ifdef STATE_MACHINE_DEBUG
@@ -312,10 +314,10 @@ AttackStateMachine::AttackStateMachine( Object *obj, AIAttackState* att, AsciiSt
 		if the victim is dead. (Exception: if the weapon is on a turret, we don't leave this
 		state unless we get out of range.)
 	*/
-	defineState(	AttackStateMachine::AIM_AT_TARGET, 
+	defineState(	(StateID) AttackStateMachine::AIM_AT_TARGET, 
 								newInstance(AIAttackAimAtTargetState)( this, attackingObject, forceAttacking ), 
-								AttackStateMachine::FIRE_WEAPON, 
-								EXIT_MACHINE_WITH_FAILURE,
+								(StateID) AttackStateMachine::FIRE_WEAPON, 
+								(StateID) EXIT_MACHINE_WITH_FAILURE,
 								attackingObject ? objectConditions : positionConditions );
 
 	/*
@@ -323,10 +325,10 @@ AttackStateMachine::AttackStateMachine( Object *obj, AIAttackState* att, AsciiSt
 		if unable to fire. However, it may be unable to fire because the target object
 		is already dead.
 	*/
-	defineState( AttackStateMachine::FIRE_WEAPON, 
+	defineState( (StateID) AttackStateMachine::FIRE_WEAPON, 
 								newInstance(AIAttackFireWeaponState)( this, att ),
-								AttackStateMachine::AIM_AT_TARGET,
-								AttackStateMachine::AIM_AT_TARGET,
+								(StateID) AttackStateMachine::AIM_AT_TARGET,
+								(StateID) AttackStateMachine::AIM_AT_TARGET,
 								attackingObject ? objectConditions : positionConditions );
 
 
@@ -336,17 +338,17 @@ AttackStateMachine::AttackStateMachine( Object *obj, AIAttackState* att, AsciiSt
 		{
 			static const StateConditionInfo portableStructureChaseConditions[] =
 			{
-				StateConditionInfo(inWeaponRangeObject, AttackStateMachine::AIM_AT_TARGET, NULL),
-				StateConditionInfo(NULL, NULL, NULL)	// keep last
+				StateConditionInfo(inWeaponRangeObject, (StateID) AttackStateMachine::AIM_AT_TARGET, NULL),
+				StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 			};
 
 			/* we're a rider on a mobile object, so we can't control our motion. 
 				just make bogus states that always fall back into "aim".
 			*/
-			defineState(	AttackStateMachine::CHASE_TARGET, 
+			defineState(	(StateID) AttackStateMachine::CHASE_TARGET, 
 										newInstance(ContinueState)(this), 
-										EXIT_MACHINE_WITH_FAILURE, 
-										EXIT_MACHINE_WITH_FAILURE,
+										(StateID) EXIT_MACHINE_WITH_FAILURE, 
+										(StateID) EXIT_MACHINE_WITH_FAILURE,
 										portableStructureChaseConditions );
 		}
 		else if (attackingObject) 
@@ -355,19 +357,19 @@ AttackStateMachine::AttackStateMachine( Object *obj, AIAttackState* att, AsciiSt
 				This state will pursue a target that is moving away from it.  If it is not moving away, 
 				it will drop into the AIAttackApproachTarget state.
 			*/
-			defineState(	AttackStateMachine::CHASE_TARGET, 
+			defineState(	(StateID) AttackStateMachine::CHASE_TARGET, 
 										newInstance(AIAttackPursueTargetState)( this, follow, attackingObject, forceAttacking ), 
-										AttackStateMachine::APPROACH_TARGET, 
-										AttackStateMachine::APPROACH_TARGET );
+										(StateID) AttackStateMachine::APPROACH_TARGET, 
+										(StateID) AttackStateMachine::APPROACH_TARGET );
 
 			/*
 				This state will succeed when we have a useful weapon within range of victim, and fail 
 				if the victim is dead
 			*/
-			defineState(	AttackStateMachine::APPROACH_TARGET, 
+			defineState(	(StateID) AttackStateMachine::APPROACH_TARGET, 
 										newInstance(AIAttackApproachTargetState)( this, follow, attackingObject, forceAttacking ), 
-										AttackStateMachine::AIM_AT_TARGET, 
-										EXIT_MACHINE_WITH_FAILURE );
+										(StateID) AttackStateMachine::AIM_AT_TARGET, 
+										(StateID) EXIT_MACHINE_WITH_FAILURE );
 		}	
 		else 
 		{
@@ -375,19 +377,19 @@ AttackStateMachine::AttackStateMachine( Object *obj, AIAttackState* att, AsciiSt
 				This state will succeed when we have a useful weapon within range of victim, and fail 
 				if the victim is dead
 			*/
-			defineState(	AttackStateMachine::CHASE_TARGET, 
+			defineState(	(StateID) AttackStateMachine::CHASE_TARGET, 
 										newInstance(AIAttackApproachTargetState)( this, follow, attackingObject, forceAttacking ), 
-										AttackStateMachine::AIM_AT_TARGET, 
-										EXIT_MACHINE_WITH_FAILURE );
+										(StateID) AttackStateMachine::AIM_AT_TARGET, 
+										(StateID) EXIT_MACHINE_WITH_FAILURE );
 
 			/*
 				This state will succeed when we have a useful weapon within range of victim, and fail 
 				if the victim is dead
 			*/
-			defineState(	AttackStateMachine::APPROACH_TARGET, 
+			defineState(	(StateID) AttackStateMachine::APPROACH_TARGET, 
 										newInstance(AIAttackApproachTargetState)( this, follow, attackingObject, forceAttacking ), 
-										AttackStateMachine::AIM_AT_TARGET, 
-										EXIT_MACHINE_WITH_FAILURE );
+										(StateID) AttackStateMachine::AIM_AT_TARGET, 
+										(StateID) EXIT_MACHINE_WITH_FAILURE );
 		}
 
 	}
@@ -396,10 +398,10 @@ AttackStateMachine::AttackStateMachine( Object *obj, AIAttackState* att, AsciiSt
 		/*
 			This state always instantly fails, so when immobile things transition here, we bail.
 		*/
-		defineState(	AttackStateMachine::CHASE_TARGET, 
+		defineState(	(StateID) AttackStateMachine::CHASE_TARGET, 
 									newInstance(FailureState)(this), 
-									EXIT_MACHINE_WITH_FAILURE, 
-									EXIT_MACHINE_WITH_FAILURE );
+									(StateID) EXIT_MACHINE_WITH_FAILURE, 
+									(StateID) EXIT_MACHINE_WITH_FAILURE );
 	}
 
 };
@@ -409,6 +411,7 @@ AttackStateMachine::~AttackStateMachine()
 {
 }
 
+#if 0
 //-----------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------
@@ -465,6 +468,7 @@ static Int killEnemiesInContainer(Object* killer, Object* bldg, Int maxToKill)
 	}
 	return numKilled;
 }
+#endif // if 0
 
 //-----------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------
@@ -532,7 +536,7 @@ StateReturnType AIRappelState::onEnter()
 		obj->setLayer(layerAtDest);
 
 	AIUpdateInterface *ai = obj->getAI();
-	Real MAX_RAPPEL_RATE = fabs(TheGlobalData->m_gravity) * LOGICFRAMES_PER_SECOND * 2.5f;
+	Real MAX_RAPPEL_RATE = fabs(TheGlobalData->m_data.m_gravity) * (Real)LOGICFRAMES_PER_SECOND * 2.5f;
 	m_rappelRate = -min(ai->getDesiredSpeed(), MAX_RAPPEL_RATE);
 
 	return STATE_CONTINUE;
@@ -543,6 +547,9 @@ StateReturnType AIRappelState::onEnter()
 StateReturnType AIRappelState::update()
 {
 
+DEBUG_CRASH(("AIRappelState::update not yet implemented!"));
+return STATE_CONTINUE;
+#if 0
 	StateReturnType result = STATE_CONTINUE;
 	
 	Object* obj = getMachineOwner();
@@ -644,6 +651,7 @@ StateReturnType AIRappelState::update()
 	}
 
 	return result;
+#endif // if 0
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -687,50 +695,50 @@ AIStateMachine::AIStateMachine( Object *obj, AsciiString name ) : StateMachine( 
 	m_temporaryStateFramEnd = 0;
 
 	// order matters: first state is the default state.
-	defineState( AI_IDLE,																	newInstance(AIIdleState)( this, AIIdleState::LOOK_FOR_TARGETS), AI_IDLE, AI_IDLE );
-	defineState( AI_MOVE_TO,															newInstance(AIMoveToState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_MOVE_OUT_OF_THE_WAY,									newInstance(AIMoveOutOfTheWayState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_MOVE_AND_TIGHTEN,											newInstance(AIMoveAndTightenState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_MOVE_AWAY_FROM_REPULSORS,							newInstance(AIMoveAwayFromRepulsorsState)( this ), AI_WANDER_IN_PLACE, AI_WANDER_IN_PLACE );
-	defineState( AI_WANDER_IN_PLACE,											newInstance(AIWanderInPlaceState)( this ), AI_MOVE_AWAY_FROM_REPULSORS, AI_MOVE_AWAY_FROM_REPULSORS );
-	defineState( AI_ATTACK_MOVE_TO,												newInstance(AIAttackMoveToState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_ATTACKFOLLOW_WAYPOINT_PATH_AS_TEAM,					newInstance(AIAttackFollowWaypointPathState)( this, true ), AI_IDLE, AI_IDLE );
-	defineState( AI_ATTACKFOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS,	newInstance(AIAttackFollowWaypointPathState)( this, false ), AI_IDLE, AI_IDLE );
+	defineState( (StateID) AI_IDLE,											newInstance(AIIdleState)( this, AIIdleState::LOOK_FOR_TARGETS), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_MOVE_TO,										newInstance(AIMoveToState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_MOVE_OUT_OF_THE_WAY,							newInstance(AIMoveOutOfTheWayState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_MOVE_AND_TIGHTEN,								newInstance(AIMoveAndTightenState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_MOVE_AWAY_FROM_REPULSORS,						newInstance(AIMoveAwayFromRepulsorsState)( this ), (StateID) AI_WANDER_IN_PLACE, (StateID) AI_WANDER_IN_PLACE );
+	defineState( (StateID) AI_WANDER_IN_PLACE,								newInstance(AIWanderInPlaceState)( this ), (StateID) AI_MOVE_AWAY_FROM_REPULSORS, (StateID) AI_MOVE_AWAY_FROM_REPULSORS );
+	defineState( (StateID) AI_ATTACK_MOVE_TO,								newInstance(AIAttackMoveToState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ATTACKFOLLOW_WAYPOINT_PATH_AS_TEAM,			newInstance(AIAttackFollowWaypointPathState)( this, true ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ATTACKFOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS,	newInstance(AIAttackFollowWaypointPathState)( this, false ), (StateID) AI_IDLE, (StateID) AI_IDLE );
 	
-	defineState( AI_FOLLOW_WAYPOINT_PATH_AS_TEAM,					newInstance(AIFollowWaypointPathState)( this, true ), AI_IDLE, AI_IDLE );
-	defineState( AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS,	newInstance(AIFollowWaypointPathState)( this, false ), AI_IDLE, AI_IDLE );
-	defineState( AI_FOLLOW_WAYPOINT_PATH_AS_TEAM_EXACT,		newInstance(AIFollowWaypointPathExactState)( this, true ), AI_IDLE, AI_IDLE );
-	defineState( AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS_EXACT,newInstance(AIFollowWaypointPathExactState)( this, false ), AI_IDLE, AI_IDLE );
-	defineState( AI_FOLLOW_PATH,													newInstance(AIFollowPathState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_FOLLOW_EXITPRODUCTION_PATH,						newInstance(AIFollowPathState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_MOVE_AND_EVACUATE,					newInstance(AIMoveAndEvacuateState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_MOVE_AND_EVACUATE_AND_EXIT,	newInstance(AIMoveAndEvacuateState)( this ), AI_MOVE_AND_DELETE, AI_MOVE_AND_DELETE );
-	defineState( AI_MOVE_AND_DELETE,						newInstance(AIMoveAndDeleteState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_WAIT,												newInstance(AIWaitState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_ATTACK_POSITION,						newInstance(AIAttackState)( this, false, false, false,  NULL ), AI_IDLE, AI_IDLE );
-	defineState( AI_ATTACK_OBJECT,							newInstance(AIAttackState)( this, false, true, false, NULL ), AI_IDLE, AI_IDLE );
-	defineState( AI_FORCE_ATTACK_OBJECT,				newInstance(AIAttackState)( this, false, true, true, NULL ), AI_IDLE, AI_IDLE );
+	defineState( (StateID) AI_FOLLOW_WAYPOINT_PATH_AS_TEAM,					newInstance(AIFollowWaypointPathState)( this, true ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS,			newInstance(AIFollowWaypointPathState)( this, false ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FOLLOW_WAYPOINT_PATH_AS_TEAM_EXACT,			newInstance(AIFollowWaypointPathExactState)( this, true ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS_EXACT,	newInstance(AIFollowWaypointPathExactState)( this, false ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FOLLOW_PATH,									newInstance(AIFollowPathState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FOLLOW_EXITPRODUCTION_PATH,					newInstance(AIFollowPathState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_MOVE_AND_EVACUATE,							newInstance(AIMoveAndEvacuateState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_MOVE_AND_EVACUATE_AND_EXIT,					newInstance(AIMoveAndEvacuateState)( this ), (StateID) AI_MOVE_AND_DELETE, (StateID) AI_MOVE_AND_DELETE );
+	defineState( (StateID) AI_MOVE_AND_DELETE,								newInstance(AIMoveAndDeleteState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_WAIT,											newInstance(AIWaitState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ATTACK_POSITION,								newInstance(AIAttackState)( this, false, false, false,  NULL ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ATTACK_OBJECT,								newInstance(AIAttackState)( this, false, true, false, NULL ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FORCE_ATTACK_OBJECT,							newInstance(AIAttackState)( this, false, true, true, NULL ), (StateID) AI_IDLE, (StateID) AI_IDLE );
 
-	defineState( AI_ATTACK_AND_FOLLOW_OBJECT,		newInstance(AIAttackState)( this, true, true, false, NULL ), AI_IDLE, AI_IDLE );
-	defineState( AI_ATTACK_SQUAD,								newInstance(AIAttackSquadState)( this, NULL ), AI_IDLE, AI_IDLE );
-	defineState( AI_WANDER,											newInstance(AIWanderState)( this ), AI_IDLE, AI_MOVE_AWAY_FROM_REPULSORS );
-	defineState( AI_PANIC,											newInstance(AIPanicState)( this ), AI_IDLE, AI_MOVE_AWAY_FROM_REPULSORS );
-	defineState( AI_DEAD,												newInstance(AIDeadState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_DOCK,												newInstance(AIDockState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_ENTER,											newInstance(AIEnterState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_EXIT,												newInstance(AIExitState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_EXIT_INSTANTLY,							newInstance(AIExitInstantlyState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_GUARD,											newInstance(AIGuardState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_GUARD_TUNNEL_NETWORK,				newInstance(AITunnelNetworkGuardState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_GUARD_RETALIATE,						newInstance(AIGuardRetaliateState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_HUNT,												newInstance(AIHuntState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_ATTACK_AREA,								newInstance(AIAttackAreaState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_FACE_OBJECT,								newInstance(AIFaceState)( this, true ), AI_IDLE, AI_IDLE );
-	defineState( AI_FACE_POSITION,							newInstance(AIFaceState)( this, false ), AI_IDLE, AI_IDLE );
-	defineState( AI_PICK_UP_CRATE,							newInstance(AIPickUpCrateState)( this ), AI_IDLE, AI_IDLE );
+	defineState( (StateID) AI_ATTACK_AND_FOLLOW_OBJECT,						newInstance(AIAttackState)( this, true, true, false, NULL ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ATTACK_SQUAD,									newInstance(AIAttackSquadState)( this, NULL ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_WANDER,										newInstance(AIWanderState)( this ), (StateID) AI_IDLE, (StateID) AI_MOVE_AWAY_FROM_REPULSORS );
+	defineState( (StateID) AI_PANIC,										newInstance(AIPanicState)( this ), (StateID) AI_IDLE, (StateID) AI_MOVE_AWAY_FROM_REPULSORS );
+	defineState( (StateID) AI_DEAD,											newInstance(AIDeadState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_DOCK,											newInstance(AIDockState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ENTER,										newInstance(AIEnterState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_EXIT,											newInstance(AIExitState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_EXIT_INSTANTLY,								newInstance(AIExitInstantlyState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_GUARD,										newInstance(AIGuardState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_GUARD_TUNNEL_NETWORK,							newInstance(AITunnelNetworkGuardState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_GUARD_RETALIATE,								newInstance(AIGuardRetaliateState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_HUNT,											newInstance(AIHuntState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ATTACK_AREA,									newInstance(AIAttackAreaState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FACE_OBJECT,									newInstance(AIFaceState)( this, true ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_FACE_POSITION,								newInstance(AIFaceState)( this, false ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_PICK_UP_CRATE,								newInstance(AIPickUpCrateState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
 
-	defineState( AI_RAPPEL_INTO,								newInstance(AIRappelState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_BUSY,												newInstance(AIBusyState)( this ), AI_IDLE, AI_IDLE );
+	defineState( (StateID) AI_RAPPEL_INTO,									newInstance(AIRappelState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_BUSY,											newInstance(AIBusyState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -764,10 +772,9 @@ void AIStateMachine::xfer( Xfer *xfer )
  // extend base class
 	StateMachine::xfer(xfer);
 
-	Int i;
 	Int count = m_goalPath.size();
 	xfer->xferInt(&count);
-	for (i=0; i<count; i++) {
+	for (size_t i=0; i<(size_t)count; i++) {
 		Coord3D pos;
 		if (xfer->getXferMode() != XFER_LOAD)
 		{
@@ -806,7 +813,7 @@ void AIStateMachine::xfer( Xfer *xfer )
 		id = m_temporaryState->getID();
 		DEBUG_ASSERTCRASH(id!=INVALID_STATE_ID, ("State has invalid state id, no really. jba."));
 	}
-	xfer->xferUnsignedInt(&id);
+	xfer->xferUnsignedInt((UnsignedInt*)&id);
 	if (xfer->getXferMode() == XFER_LOAD && id != INVALID_STATE_ID) {
 		m_temporaryState = internalGetState( id );
 	}
@@ -860,7 +867,7 @@ StateReturnType AIStateMachine::updateStateMachine()
 	//-extraLogging
 	#if (defined(_DEBUG) || defined(_INTERNAL))
 		Bool idle = getOwner()->getAI()->isIdle();
-		if( !idle && TheGlobalData->m_extraLogging )
+		if( !idle && TheGlobalData->m_data.m_extraLogging )
 			DEBUG_LOG( ("%d - %s::update() start - %s", TheGameLogic->getFrame(), getCurrentStateName().str(), getOwner()->getTemplate()->getName().str() ) );
 	#endif
 	//end -extraLogging 
@@ -879,7 +886,7 @@ StateReturnType AIStateMachine::updateStateMachine()
 		{
 			//-extraLogging
 			#if (defined(_DEBUG) || defined(_INTERNAL))
-				if( !idle && TheGlobalData->m_extraLogging )
+				if( !idle && TheGlobalData->m_data.m_extraLogging )
 					DEBUG_LOG( (" - RETURN EARLY STATE_CONTINUE\n") );
 			#endif
 			//end -extraLogging 
@@ -894,7 +901,7 @@ StateReturnType AIStateMachine::updateStateMachine()
 	//-extraLogging 
 	#if (defined(_DEBUG) || defined(_INTERNAL))
 		AsciiString result;
-		if( TheGlobalData->m_extraLogging )
+		if( TheGlobalData->m_data.m_extraLogging )
 		{
 			switch( retType )
 			{
@@ -924,7 +931,7 @@ StateReturnType AIStateMachine::updateStateMachine()
 /**
  * Change the temporary state of the machine, and number of frames limit.th
  */
-StateReturnType AIStateMachine::setTemporaryState( StateID newStateID, Int frameLimitCoount )
+StateReturnType AIStateMachine::setTemporaryState( StateID newStateID, Int frameLimitCount )
 
 {
 	// extract the state associated with the given ID
@@ -932,10 +939,10 @@ StateReturnType AIStateMachine::setTemporaryState( StateID newStateID, Int frame
 #ifdef STATE_MACHINE_DEBUG
 	if (getWantsDebugOutput()) 
 	{
-		StateID curState = INVALID_STATE_ID;
-		if (m_temporaryState) {
-			curState = m_temporaryState->getID();
-		}
+		// StateID curState = INVALID_STATE_ID;
+		// if (m_temporaryState) {
+		// 	curState = m_temporaryState->getID();
+		// }
 		DEBUG_LOG(("%d '%s' -(TEMP)- '%s' %x exit ", TheGameLogic->getFrame(), getOwner()->getTemplate()->getName().str(), getName().str(), this));
 		if (m_temporaryState) {
 			DEBUG_LOG((" '%s' ", m_temporaryState->getName().str()));
@@ -963,11 +970,11 @@ StateReturnType AIStateMachine::setTemporaryState( StateID newStateID, Int frame
 		}
 		enum {FRAME_COUNT_MAX = 60*LOGICFRAMES_PER_SECOND};
 		// If you need to up this check, ok, but 1 minute seems overly long for a temporary state override.  jba.
-		DEBUG_ASSERTCRASH(frameLimitCoount<=FRAME_COUNT_MAX, ("Unusually long time to set temporary state."));
-		if (frameLimitCoount>FRAME_COUNT_MAX) {
-			frameLimitCoount = FRAME_COUNT_MAX;
+		DEBUG_ASSERTCRASH(frameLimitCount<=FRAME_COUNT_MAX, ("Unusually long time to set temporary state."));
+		if (frameLimitCount>FRAME_COUNT_MAX) {
+			frameLimitCount = FRAME_COUNT_MAX;
 		}
-		m_temporaryStateFramEnd = TheGameLogic->getFrame()+frameLimitCoount; 
+		m_temporaryStateFramEnd = TheGameLogic->getFrame() + (UnsignedInt)frameLimitCount; 
 		return ret;
 	}
 	return STATE_FAILURE;
@@ -996,10 +1003,10 @@ void AIStateMachine::addToGoalPath( const Coord3D *pathPoint)
  */
 const Coord3D *AIStateMachine::getGoalPathPosition( Int i ) const
 {
-	if (i < 0 || i >= m_goalPath.size())
+	if (i < 0 || i >= (Int)m_goalPath.size())
 		return NULL;
 
-	return &m_goalPath[i];
+	return &m_goalPath.data()[i];
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -1174,7 +1181,7 @@ Bool wantToSquishTarget( State *thisState, void* userData )
 		if( obj->getAI() && (obj->getAI()->getWhichTurretForCurWeapon() != TURRET_INVALID) )
 		{
 			// I can only decide to crush-attack if I am attacking with a turreted weapon.
-			if (TheAI->getAiData()->m_aiCrushesInfantry) {
+			if (TheAI->getAiData()->m_ini.m_aiCrushesInfantry) {
 				if (obj && obj->getControllingPlayer() && 
 					obj->getControllingPlayer()->getPlayerType()==PLAYER_COMPUTER) {
 					if (obj->canCrushOrSquish(victim)) {
@@ -1242,7 +1249,7 @@ Bool outOfWeaponRangePosition( State *thisState, void* userData )
  */
 static Bool cannotPossiblyAttackObject( State *thisState, void* userData )
 {
-	AbleToAttackType attackType = (AbleToAttackType)(UnsignedInt)userData;
+	AbleToAttackType attackType = (AbleToAttackType)(intptr_t)userData;
 	Object *obj = thisState->getMachineOwner();
 	Object *victim = thisState->getMachineGoalObject();
 
@@ -1275,7 +1282,7 @@ AIIdleState::AIIdleState( StateMachine *machine, AIIdleState::AIIdleTargetingTyp
 	m_shouldLookForTargets(shouldLookForTargets == AIIdleState::LOOK_FOR_TARGETS)
 {
 		m_inited = FALSE;
-		m_initialSleepOffset = -1;
+		m_initialSleepOffset = 0;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -1414,7 +1421,7 @@ StateReturnType AIIdleState::update()
 			Object* enemy = TheAI->findClosestRepulsor(obj, obj->getVisionRange());
 			if (enemy) 
 			{
-				getMachine()->setState(AI_MOVE_AWAY_FROM_REPULSORS);
+				getMachine()->setState((StateID) AI_MOVE_AWAY_FROM_REPULSORS);
 				// since we just changed the state, it doesn't really matter what we return here.
 				return STATE_CONTINUE;
 			}
@@ -1476,6 +1483,9 @@ StateReturnType AIIdleState::update()
  */
 StateReturnType AIDeadState::onEnter()
 {
+DEBUG_CRASH(("AIDeadState::onEnter not yet implemented!"));
+return STATE_CONTINUE;
+#if 0
 	Object *obj = getMachineOwner();
 
 	// How can an object be NULL here? I don't think it actually can, but this check must be 
@@ -1509,6 +1519,7 @@ StateReturnType AIDeadState::onEnter()
 	}
 
 	return STATE_CONTINUE;
+#endif // if 0
 }
 
 
@@ -1615,6 +1626,9 @@ Bool AIInternalMoveToState::computePath()
  */
 StateReturnType AIInternalMoveToState::onEnter()
 {
+DEBUG_CRASH(("AIInternalMoveToState::onEnter not yet implemented!"));
+return STATE_CONTINUE;
+#if 0
 	m_ambientPlayingHandle = AHSV_Error;
 	Object *obj = getMachineOwner();
 	AIUpdateInterface *ai = obj->getAI();
@@ -1682,6 +1696,7 @@ StateReturnType AIInternalMoveToState::onEnter()
 
 	startMoveSound();
 	return STATE_CONTINUE;
+#endif // if 0
 }
 
 /**
@@ -1817,10 +1832,10 @@ StateReturnType AIInternalMoveToState::update()
 	if (thePath==NULL) {
 		forceRecompute = true;
 	}
-	Bool blocked=false;
+	// Bool blocked=false;
 	if (ai->isBlockedAndStuck() || ai->getNumFramesBlocked()>2*LOGICFRAMES_PER_SECOND) {
 		forceRecompute = true;
-		blocked = true;
+		// blocked = true;
 		m_blockedRepathTimestamp = TheGameLogic->getFrame();
 		// Intense debug logging jba.
 		//DEBUG_LOG(("Info - Blocked - recomputing.\n"));
@@ -1995,9 +2010,9 @@ void AIAttackMoveStateMachine::loadPostProcess( void )
 AIAttackMoveStateMachine::AIAttackMoveStateMachine(Object *owner, AsciiString name) : StateMachine(owner, name)
 {
 	// order matters: first state is the default state.
-	defineState( AI_IDLE, newInstance(AIIdleState)( this, AIIdleState::DO_NOT_LOOK_FOR_TARGETS ), AI_IDLE, AI_IDLE );
-	defineState( AI_PICK_UP_CRATE, newInstance(AIPickUpCrateState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_ATTACK_OBJECT,	newInstance(AIAttackState)(this, false, true, false, NULL ), AI_IDLE, AI_IDLE);
+	defineState( (StateID) AI_IDLE, newInstance(AIIdleState)( this, AIIdleState::DO_NOT_LOOK_FOR_TARGETS ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_PICK_UP_CRATE, newInstance(AIPickUpCrateState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_ATTACK_OBJECT,	newInstance(AIAttackState)(this, false, true, false, NULL ), (StateID) AI_IDLE, (StateID) AI_IDLE);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -2013,7 +2028,7 @@ AIAttackMoveStateMachine::~AIAttackMoveStateMachine()
 // note - has no crc/xfer as has no member vars. jba.
 
 //-------------------------------------------------------------------------------------------------
-AIMoveToState::AIMoveToState(StateMachine *machine) : m_isMoveTo(true), AIInternalMoveToState( machine, "AIMoveToState" )
+AIMoveToState::AIMoveToState(StateMachine *machine) : AIInternalMoveToState( machine, "AIMoveToState" ), m_isMoveTo(true)
 {
 	// m_isMoveTo is a boolean that specifies that this thing is ACTUALLY A MOVE TO.
 	// child classes should set it false. (We don't have or want RTTI, so...)
@@ -2371,7 +2386,7 @@ static Bool canPursue(Object *source, Weapon *weapon, Object *victim)
 		return false;
 	}
 
-	if (TheAI->getAiData()->m_aiCrushesInfantry) {
+	if (TheAI->getAiData()->m_ini.m_aiCrushesInfantry) {
 		if ( source->getControllingPlayer() && 
 			(source->getControllingPlayer()->getPlayerType() == PLAYER_COMPUTER) &&
 			source->canCrushOrSquish(victim) ) {
@@ -2580,7 +2595,7 @@ StateReturnType AIAttackApproachTargetState::onEnter()
 	m_prevVictimPos.y = 0.0f;
 	m_prevVictimPos.z = 0.0f;
 
-	m_approachTimestamp = -MIN_RECOMPUTE_TIME;
+	m_approachTimestamp = 0; // -MIN_RECOMPUTE_TIME;
 
 	// See if we're close enough.
 	Object *victim = getMachineGoalObject();
@@ -2607,7 +2622,7 @@ StateReturnType AIAttackApproachTargetState::onEnter()
 		// Check here:  If we are a player, and we got to this state via an ai command (ie we auto-acquired), 
 		// we don't want to chase the unit. isAllowedToChase is set when we are in a deploy and attack state (troop crawler).
 		// Kris (July 2003): If we are retaliating... don't fail out!
-		if( ai->getCurrentStateID() != AI_GUARD_RETALIATE )
+		if( ai->getCurrentStateID() != (StateID) AI_GUARD_RETALIATE )
 		{
 			if (source->getControllingPlayer()->getPlayerType() == PLAYER_HUMAN) 
 			{
@@ -2620,7 +2635,7 @@ StateReturnType AIAttackApproachTargetState::onEnter()
 				}
 			} else {
 				// Computer player.  Don't chase aircraft, unless we're hunting. jba [8/27/2003]
-				Bool hunt = ai->getCurrentStateID() == AI_HUNT;
+				Bool hunt = ai->getCurrentStateID() == (StateID) AI_HUNT;
 				if (!hunt && victim->isKindOf(KINDOF_AIRCRAFT) && victim->isAirborneTarget()) 
 				{
 					return STATE_FAILURE; 
@@ -2681,7 +2696,7 @@ StateReturnType AIAttackApproachTargetState::updateInternal()
 	{ 
  		if (source->getControllingPlayer()->getPlayerType() == PLAYER_COMPUTER) 
 		{
-			Bool hunt = ai->getCurrentStateID() == AI_HUNT;
+			Bool hunt = ai->getCurrentStateID() == (StateID) AI_HUNT;
 			// Computer player.  Don't chase aircraft unless hunting. jba [8/27/2003]
 			if (!hunt && victim->isKindOf(KINDOF_AIRCRAFT) && victim->isAirborneTarget()) 
 			{
@@ -2969,7 +2984,7 @@ StateReturnType AIAttackPursueTargetState::onEnter()
 	// Check here:  If we are a player, and we got to this state via an ai command (ie we auto-acquired), 
 	// we don't want to chase the unit. 
 	// Kris (July 2003): If we are retaliating... don't succeed out!
-	if( ai->getCurrentStateID() != AI_GUARD_RETALIATE )
+	if( ai->getCurrentStateID() != (StateID) AI_GUARD_RETALIATE )
 	{
 		if (source->getControllingPlayer()->getPlayerType() == PLAYER_HUMAN) 
 		{
@@ -2985,7 +3000,7 @@ StateReturnType AIAttackPursueTargetState::onEnter()
 	m_prevVictimPos.y = 0.0f;
 	m_prevVictimPos.z = 0.0f;
 
-	m_approachTimestamp = -MIN_RECOMPUTE_TIME;
+	m_approachTimestamp = 0; //-MIN_RECOMPUTE_TIME;
 
 	// See if we're close enough.
 	Object *victim = getMachineGoalObject();
@@ -3271,7 +3286,7 @@ StateReturnType AIFollowPathState::onEnter()
 	ai->friend_setCurrentGoalPathIndex( m_index ); 
 
 
- 	if (getID() == AI_FOLLOW_EXITPRODUCTION_PATH) {
+ 	if (getID() == (StateID) AI_FOLLOW_EXITPRODUCTION_PATH) {
 		ai->setCanPathThroughUnits(true);
 		setAdjustsDestination(false);
 		m_adjustFinal = true;
@@ -3577,7 +3592,7 @@ StateReturnType AIAttackMoveToState::onEnter()
 	Object *owner = getMachineOwner();
 	AIUpdateInterface *ai = owner->getAI();
 	m_attackMoveMachine->clear();
-	m_attackMoveMachine->setState( AI_IDLE );	
+	m_attackMoveMachine->setState( (StateID) AI_IDLE );
 	m_commandSrc = ai->getLastCommandSource();
 	m_retryCount = ATTACK_RETRY_COUNT;
 	m_frameToSleepUntil = 0;
@@ -3588,7 +3603,7 @@ StateReturnType AIAttackMoveToState::onEnter()
 //----------------------------------------------------------------------------------------------------------
 void AIAttackMoveToState::onExit( StateExitType status )
 {
-	m_attackMoveMachine->setState(AI_IDLE);
+	m_attackMoveMachine->setState((StateID) AI_IDLE);
 	AIMoveToState::onExit(status);
 }
 
@@ -3633,7 +3648,7 @@ StateReturnType AIAttackMoveToState::update()
 		if (crate)
 		{
 			m_attackMoveMachine->setGoalObject(crate);
-			m_attackMoveMachine->setState( AI_PICK_UP_CRATE );
+			m_attackMoveMachine->setState( (StateID) AI_PICK_UP_CRATE );
 			return STATE_CONTINUE;
 		}
 		
@@ -3643,7 +3658,7 @@ StateReturnType AIAttackMoveToState::update()
 		{
 			ai->friend_endingMove();
 			m_attackMoveMachine->setGoalObject(nextObjectToAttack);
-			m_attackMoveMachine->setState( AI_ATTACK_OBJECT );
+			m_attackMoveMachine->setState( (StateID) AI_ATTACK_OBJECT );
 			shouldRepathThisFrame = false;	// we're about to drop out of this function, but this is semantic emphasis.
 			// Note that we picked up this command from the ai.
 			ai->friend_setLastCommandSource(CMD_FROM_AI);
@@ -3669,7 +3684,7 @@ StateReturnType AIAttackMoveToState::update()
 		if (m_retryCount<1) return ret;
 		/* check for close enough. */
 		Real distSqr = sqr(owner->getPosition()->x - m_pathGoalPosition.x) + sqr(owner->getPosition()->y-m_pathGoalPosition.y);
-		if (distSqr < sqr(ATTACK_CLOSE_ENOUGH_CELLS*PATHFIND_CELL_SIZE_F)) {
+		if (distSqr < sqr((Real)ATTACK_CLOSE_ENOUGH_CELLS * PATHFIND_CELL_SIZE_F)) {
 			return ret;
 		}
 		DEBUG_LOG(("AIAttackMoveToState::update Distance from goal %f, retrying.\n", sqrt(distSqr)));
@@ -4182,7 +4197,7 @@ StateReturnType AIFollowWaypointPathState::update()
 			pos.z = 0;
 
 			Int numInGroup = group->getCount();
-			if (pos.length() <= (numInGroup * TheAI->getAiData()->m_skirmishGroupFudgeValue)) {
+			if (pos.length() <= (numInGroup * TheAI->getAiData()->m_ini.m_skirmishGroupFudgeValue)) {
 				// Consider ourselves close enough.
 				status = STATE_SUCCESS;
 			}
@@ -4426,7 +4441,7 @@ AsciiString AIAttackFollowWaypointPathState::getName(  ) const
 StateReturnType AIAttackFollowWaypointPathState ::onEnter()
 {
 	m_attackFollowMachine->clear();
-	m_attackFollowMachine->setState( AI_IDLE );	
+	m_attackFollowMachine->setState( (StateID) AI_IDLE );
 
 	return AIFollowWaypointPathState::onEnter();
 }
@@ -4465,7 +4480,7 @@ StateReturnType AIAttackFollowWaypointPathState::update()
 		if (crate)
 		{
 			m_attackFollowMachine->setGoalObject(crate);
-			m_attackFollowMachine->setState( AI_PICK_UP_CRATE );
+			m_attackFollowMachine->setState( (StateID) AI_PICK_UP_CRATE );
 			return STATE_CONTINUE;
 		}
 
@@ -4477,7 +4492,7 @@ StateReturnType AIAttackFollowWaypointPathState::update()
 		if (nextObjectToAttack != NULL)
 		{
 			m_attackFollowMachine->setGoalObject(nextObjectToAttack);
-			m_attackFollowMachine->setState( AI_ATTACK_OBJECT );
+			m_attackFollowMachine->setState( (StateID) AI_ATTACK_OBJECT );
 			shouldRepathThisFrame = false;	// we're about to drop out of this function, but this is semantic emphasis.
 
 			// we don't want an update to take place 'till next frame.
@@ -4498,7 +4513,7 @@ StateReturnType AIAttackFollowWaypointPathState::update()
 //-------------------------------------------------------------------------------------------------
 void AIAttackFollowWaypointPathState ::onExit( StateExitType status )
 {
-	m_attackFollowMachine->setState(AI_IDLE);
+	m_attackFollowMachine->setState((StateID) AI_IDLE);
 	AIFollowWaypointPathState::onExit(status);
 }
 
@@ -5236,10 +5251,10 @@ StateReturnType AIAttackFireWeaponState::update()
 
 	if (m_att->isAttackingObject())
 	{
-    // Since it is very late in the project, and there is no call for such code...
-    // there is currently no support here for linked turrets, as regards Attacking Objects (victims)
-    // If the concept of linked turrets is further developed then God help you, and put more code right here
-    // that lookl like the //LINKED TURRETS// block, below
+		// Since it is very late in the project, and there is no call for such code...
+		// there is currently no support here for linked turrets, as regards Attacking Objects (victims)
+		// If the concept of linked turrets is further developed then God help you, and put more code right here
+		// that looks like the //LINKED TURRETS// block, below
 
 
 		obj->fireCurrentWeapon(victim);
@@ -5288,23 +5303,23 @@ StateReturnType AIAttackFireWeaponState::update()
 	}
 	else
 	{
-    
-    if( getMachineOwner()->getAI()->areTurretsLinked() ) //LINKED TURRETS
-    {// it doesn;t matter which weapon slot is locked, current or whatever
-      for ( Int slot = PRIMARY_WEAPON; slot < WEAPONSLOT_COUNT ; slot++ )
-      {// were firing with all barrels
-        Weapon *weapon = obj->getWeaponInWeaponSlot( (WeaponSlotType)slot );
-        if ( weapon )
-        {
-          if ( weapon->fireWeapon(obj, getMachineGoalPosition()) ) //fire() returns 'reloaded'
-            obj->releaseWeaponLock(LOCKED_TEMPORARILY);// unlock, 'cause we're loaded
 
-	  	    obj->notifyFiringTrackerShotFired(weapon, INVALID_ID);
-        }
-      }
-    }
-    else
-		obj->fireCurrentWeapon(getMachineGoalPosition());
+		if( getMachineOwner()->getAI()->areTurretsLinked() ) //LINKED TURRETS
+		{// it doesn;t matter which weapon slot is locked, current or whatever
+			for ( Int slot = PRIMARY_WEAPON; slot < WEAPONSLOT_COUNT ; slot++ )
+			{// were firing with all barrels
+				Weapon *weapon = obj->getWeaponInWeaponSlot( (WeaponSlotType)slot );
+				if ( weapon )
+				{
+					if ( weapon->fireWeapon(obj, getMachineGoalPosition()) ) //fire() returns 'reloaded'
+						obj->releaseWeaponLock(LOCKED_TEMPORARILY);// unlock, 'cause we're loaded
+
+					obj->notifyFiringTrackerShotFired(weapon, INVALID_ID);
+				}
+			}
+		}
+		else
+			obj->fireCurrentWeapon(getMachineGoalPosition());
 		// clear this, just in case.
 		obj->clearStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_IGNORING_STEALTH ) );
 	}
@@ -5359,11 +5374,11 @@ AIAttackState::AIAttackState( StateMachine *machine, Bool follow, Bool attacking
 	State( machine , "AIAttackState"), 
 	m_attackMachine(NULL),
 	m_attackParameters(attackParameters), 
+	m_victimTeam( NULL ),
 	m_lockedWeaponOnEnter(NULL), 
 	m_follow(follow),
 	m_isAttackingObject(attackingObject),
-	m_isForceAttacking(forceAttacking),
-	m_victimTeam( NULL )
+	m_isForceAttacking(forceAttacking)
 {
 	m_originalVictimPos.zero();
 #ifdef STATE_MACHINE_DEBUG
@@ -5775,9 +5790,9 @@ void AIAttackThenIdleStateMachine::loadPostProcess( void )
 AIAttackThenIdleStateMachine::AIAttackThenIdleStateMachine(Object *owner, AsciiString name) : StateMachine(owner, name)
 {
 	// order matters: first state is the default state.
-	defineState( AI_ATTACK_OBJECT,	newInstance(AIAttackState)(this, false, true, false, NULL ), AI_IDLE, AI_IDLE );
-	defineState( AI_PICK_UP_CRATE, newInstance(AIPickUpCrateState)( this ), AI_IDLE, AI_IDLE );
-	defineState( AI_IDLE, newInstance(AIIdleState)( this, AIIdleState::DO_NOT_LOOK_FOR_TARGETS ), AI_IDLE, AI_IDLE );
+	defineState( (StateID) AI_ATTACK_OBJECT,	newInstance(AIAttackState)(this, false, true, false, NULL ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_PICK_UP_CRATE, newInstance(AIPickUpCrateState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
+	defineState( (StateID) AI_IDLE, newInstance(AIIdleState)( this, AIIdleState::DO_NOT_LOOK_FOR_TARGETS ), (StateID) AI_IDLE, (StateID) AI_IDLE );
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -5886,7 +5901,7 @@ StateReturnType AIAttackSquadState::update( void )
 	StateReturnType attackStatus = CONVERT_SLEEP_TO_CONTINUE(m_attackSquadMachine->updateStateMachine());
 
 	// if we're in attack state, 
-	if (m_attackSquadMachine->getCurrentStateID() != AI_IDLE) 
+	if (m_attackSquadMachine->getCurrentStateID() != (StateID) AI_IDLE) 
 	{
 		return attackStatus;
 	}
@@ -5897,7 +5912,7 @@ StateReturnType AIAttackSquadState::update( void )
 	if (crate)
 	{
 		m_attackSquadMachine->setGoalObject(crate);
-		m_attackSquadMachine->setState( AI_PICK_UP_CRATE );
+		m_attackSquadMachine->setState( (StateID) AI_PICK_UP_CRATE );
 		return STATE_CONTINUE;
 	}
 
@@ -5909,7 +5924,7 @@ StateReturnType AIAttackSquadState::update( void )
 	}
 
 	m_attackSquadMachine->setGoalObject( victim );
-	m_attackSquadMachine->setState(AI_ATTACK_OBJECT);
+	m_attackSquadMachine->setState((StateID) AI_ATTACK_OBJECT);
 	return STATE_CONTINUE;
 }
 
@@ -5927,6 +5942,9 @@ void AIAttackSquadState::onExit( StateExitType status )
 //----------------------------------------------------------------------------------------------------------
 Object *AIAttackSquadState::chooseVictim(void)
 {
+DEBUG_CRASH(("AIAttackSquadState::chooseVictim not yet implemented!"));
+return nullptr;
+#if 0
 	Squad *victimSquad = ((AIStateMachine*)getMachine())->getGoalSquad();
 	if (!victimSquad) 
 	{
@@ -5981,13 +5999,13 @@ Object *AIAttackSquadState::chooseVictim(void)
 		{
 			// pick a random unit
 			VecObjectPtr objects = victimSquad->getLiveObjects();
-			Int numUnits = objects.size();
+			size_t numUnits = objects.size();
 			if (numUnits == 0) 
 			{
 				return NULL;
 			}
 
-			Int unitToAttack = GameLogicRandomValue(0, numUnits - 1);
+			UnsignedInt unitToAttack = GameLogicRandomValueUnsigned(0, numUnits - 1);
 			return objects[unitToAttack];
 			break;
 		}
@@ -6017,9 +6035,13 @@ Object *AIAttackSquadState::chooseVictim(void)
 			return NULL;
 			break;
 		}
+
+		default:
+			break;
 	};
 
 	return NULL;
+#endif // if 0
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -6101,7 +6123,7 @@ StateReturnType AIDockState::onEnter()
 		DEBUG_LOG(("No goal in AIDockState::onEnter - exiting.\n"));
 		return STATE_FAILURE;
 	}
-  DockUpdateInterface *dock = NULL;
+	DockUpdateInterface *dock = NULL;
 	dock = dockWithMe->getDockUpdateInterface();
 
 	// if we have nothing to dock with, fail
@@ -6220,6 +6242,9 @@ void AIEnterState::loadPostProcess( void )
 //----------------------------------------------------------------------------------------------------------
 StateReturnType AIEnterState::onEnter()
 {
+DEBUG_CRASH(("AIEnterState::onEnter not yet implemented!"));
+return STATE_CONTINUE;
+#if 0
 	m_entryToClear = INVALID_ID;
 
 	Object* obj = getMachineOwner();
@@ -6252,6 +6277,7 @@ StateReturnType AIEnterState::onEnter()
 	}
 	setAdjustsDestination(false);
 	return AIInternalMoveToState::onEnter();
+#endif // if 0
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -6292,6 +6318,9 @@ void AIEnterState::onExit( StateExitType status )
 StateReturnType AIEnterState::update()
 {
 
+DEBUG_CRASH(("AIEnterState::update not yet implemented!"));
+return STATE_CONTINUE;
+#if 0
 	// update the goal position to coincide with the GoalObject
 	Object* obj = getMachineOwner();
 	Object* goal = getMachineGoalObject();
@@ -6389,6 +6418,7 @@ StateReturnType AIEnterState::update()
 	}
 
 	return code;
+#endif // if 0
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -6707,13 +6737,14 @@ StateReturnType AIGuardState::onEnter()
 		case GUARDTARGET_LOCATION: m_guardMachine->setTargetPositionToGuard( ai->getGuardLocation() ); break;
 		case GUARDTARGET_OBJECT: m_guardMachine->setTargetToGuard( TheGameLogic->findObjectByID(ai->getGuardObject()) ); break;
 		case GUARDTARGET_AREA: m_guardMachine->setAreaToGuard( ai->getAreaToGuard() ); break;
+		default: break;
 	}
 	m_guardMachine->setGuardMode(ai->getGuardMode());
 
 	// now that essential parameters are set, set the machine's initial state
 	if (m_guardMachine->initDefaultState() == STATE_FAILURE) 
 		return STATE_FAILURE;
-	return m_guardMachine->setState(AI_GUARD_RETURN);
+	return m_guardMachine->setState((StateID) AI_GUARD_RETURN);
 	
 	obj->getControllingPlayer()->getAcademyStats()->recordGuardAbilityUsed();
 }
@@ -6993,7 +7024,7 @@ StateReturnType AITunnelNetworkGuardState::onEnter()
 	// now that essential parameters are set, set the machine's initial state
 	if (m_guardMachine->initDefaultState() == STATE_FAILURE) 
 		return STATE_FAILURE;
-	return m_guardMachine->setState(AI_GUARD_RETURN);
+	return m_guardMachine->setState((StateID) AI_GUARD_RETURN);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -7111,7 +7142,7 @@ StateReturnType AIHuntState::onEnter()
 
 	// first time thru, use a random amount so that everyone doesn't scan on the same frame,
 	// to avoid "spikes". 
-	UnsignedInt sleepTime = GameLogicRandomValue(0, ENEMY_SCAN_RATE);
+	UnsignedInt sleepTime = GameLogicRandomValueUnsigned(0, ENEMY_SCAN_RATE);
 	UnsignedInt now = TheGameLogic->getFrame();
 	m_nextEnemyScanTime = now + sleepTime;
 
@@ -7149,6 +7180,9 @@ AsciiString AIHuntState::getName(  ) const
 StateReturnType AIHuntState::update()
 {
 
+DEBUG_CRASH(("AIHuntState::update not yet implemented!"));
+return STATE_CONTINUE;
+#if 0
 	// look around for better victims every so often
 	UnsignedInt now = TheGameLogic->getFrame();
 	if (now >= m_nextEnemyScanTime)
@@ -7166,7 +7200,7 @@ StateReturnType AIHuntState::update()
 		if (crate)
 		{
 			m_huntMachine->setGoalObject(crate);
-			m_huntMachine->setState( AI_PICK_UP_CRATE );
+			m_huntMachine->setState( (StateID) AI_PICK_UP_CRATE );
 			return STATE_CONTINUE;
 		}
 
@@ -7218,13 +7252,13 @@ StateReturnType AIHuntState::update()
 		}
 		m_huntMachine->setGoalObject( victim );
 
-		if (m_huntMachine->getCurrentStateID() == AI_IDLE && victim)	
+		if (m_huntMachine->getCurrentStateID() == (StateID) AI_IDLE && victim)	
 		{
-			m_huntMachine->setState( AI_ATTACK_OBJECT );
+			m_huntMachine->setState( (StateID) AI_ATTACK_OBJECT );
 		}
 		if (owner->getControllingPlayer() && owner->getControllingPlayer()->getUnitsShouldHunt()==FALSE) {
 			// If we are not doing an all hunt, then exit hunt state - no more victims.
-			if (m_huntMachine->getCurrentStateID() == AI_IDLE && victim==NULL) {
+			if (m_huntMachine->getCurrentStateID() == (StateID) AI_IDLE && victim==NULL) {
 				return STATE_SUCCESS; // we killed everything :) jba.
 			}
 		}
@@ -7240,6 +7274,7 @@ StateReturnType AIHuntState::update()
 	StateReturnType ret = CONVERT_SLEEP_TO_CONTINUE(m_huntMachine->updateStateMachine());
 	getMachine()->unlock();
 	return ret;
+#endif // if 0
 }
 
 
@@ -7317,7 +7352,7 @@ StateReturnType AIAttackAreaState::onEnter()
 	// first time thru, use a random amount so that everyone doesn't scan on the same frame,
 	// to avoid "spikes". 
 	UnsignedInt now = TheGameLogic->getFrame();
-	m_nextEnemyScanTime = now + GameLogicRandomValue(0, ENEMY_SCAN_RATE);
+	m_nextEnemyScanTime = now + GameLogicRandomValueUnsigned(0, ENEMY_SCAN_RATE);
 
 	// initial state of hunt state machine
 	return m_attackMachine->initDefaultState();
@@ -7363,9 +7398,9 @@ StateReturnType AIAttackAreaState::update()
 		Object *victim = TheAI->findClosestEnemy( owner, 9999.9f, AI::CAN_ATTACK, info, &polyFilter );
 		m_attackMachine->setGoalObject( victim );
 
-		if (m_attackMachine->getCurrentStateID() == AI_IDLE && victim)	
+		if (m_attackMachine->getCurrentStateID() == (StateID) AI_IDLE && victim)	
 		{
-			m_attackMachine->setState( AI_ATTACK_OBJECT );
+			m_attackMachine->setState( (StateID) AI_ATTACK_OBJECT );
 		}
 		if (victim==NULL) {
 			return STATE_SUCCESS;

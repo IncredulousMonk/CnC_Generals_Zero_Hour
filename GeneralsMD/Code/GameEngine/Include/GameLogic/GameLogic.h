@@ -149,9 +149,9 @@ public:
 
 	Bool isInGameLogicUpdate( void ) const { return m_isInUpdate; }
 	UnsignedInt getFrame( void );										///< Returns the current simulation frame number
-#if 0
 	UnsignedInt getCRC( Int mode = CRC_CACHED, AsciiString deepCRCFileName = AsciiString::TheEmptyString );		///< Returns the CRC
 
+#if 0
 	void setObjectIDCounter( ObjectID nextObjID ) { m_nextObjID = nextObjID; }
 	ObjectID getObjectIDCounter( void ) { return m_nextObjID; }
 
@@ -226,10 +226,10 @@ public:
 	Int getHulkMaxLifetimeOverride() const { return m_scriptHulkMaxLifetimeOverride; }
 
 	Bool isIntroMoviePlaying();
+#endif // if 0
 
 	void updateObjectsChangedTriggerAreas(void) {m_frameObjectsChangedTriggerAreas = m_frame;}
 	UnsignedInt getFrameObjectsChangedTriggerAreas(void) {return m_frameObjectsChangedTriggerAreas;}
-#endif // if 0
 
 	void clearGameData(Bool showScoreScreen = TRUE);														///< Clear the game data
 	void closeWindows( void );
@@ -414,9 +414,11 @@ private:
 #ifdef DUMP_PERF_STATS
 	UnsignedInt m_overallFailedPathfinds;
 #endif
+#endif // if 0
 
-	UnsignedInt m_frameObjectsChangedTriggerAreas;					///< Last frame objects moved into/outof trigger areas, or were created/destroyed. jba.
+	UnsignedInt m_frameObjectsChangedTriggerAreas {};					///< Last frame objects moved into/outof trigger areas, or were created/destroyed. jba.
 
+#if 0
 	// ----------------------------------------------------------------------------------------------
 	struct ObjectTOCEntry
 	{

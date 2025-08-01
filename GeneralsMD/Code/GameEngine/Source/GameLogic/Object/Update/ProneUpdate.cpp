@@ -41,22 +41,24 @@
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-ProneUpdateModuleData::ProneUpdateModuleData() :
-  m_damageToFramesRatio(1.0f)
+ProneUpdateModuleData::ProneUpdateModuleData()
 {
+	m_ini.m_damageToFramesRatio = 1.0f;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void ProneUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void ProneUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "DamageToFramesRatio", INI::parseReal, NULL, offsetof(ProneUpdateModuleData, m_damageToFramesRatio) },
+		{ "DamageToFramesRatio", INI::parseReal, NULL, offsetof(ProneUpdateModuleData::IniData, m_damageToFramesRatio) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	ProneUpdateModuleData* self {static_cast<ProneUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -94,7 +96,7 @@ void ProneUpdate::goProne( const DamageInfo *damageInfo )
 	//add to the prone time
 	Bool wasProne = (m_proneFrames > 0);
 	Int damageTaken = damageInfo->out.m_actualDamageDealt;
-	m_proneFrames += damageTaken * getProneUpdateModuleData()->m_damageToFramesRatio;
+	m_proneFrames += damageTaken * getProneUpdateModuleData()->m_ini.m_damageToFramesRatio;
 
 	if( !wasProne && (m_proneFrames > 0) )
 		startProneEffects();

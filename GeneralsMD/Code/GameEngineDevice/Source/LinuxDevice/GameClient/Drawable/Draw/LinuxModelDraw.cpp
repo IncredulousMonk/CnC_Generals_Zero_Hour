@@ -3972,6 +3972,7 @@ void LinuxModelDraw::updateProjectileClipStatus( UnsignedInt shotsRemaining, Uns
 
    doHideShowProjectileObjects( shotsRemaining, maxShots, slot );// Means effectively, show m of n.
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::updateDrawModuleSupplyStatus( Int , Int currentSupply )
@@ -3987,6 +3988,7 @@ void LinuxModelDraw::updateDrawModuleSupplyStatus( Int , Int currentSupply )
    }
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::doHideShowProjectileObjects( UnsignedInt showCount, UnsignedInt maxCount, WeaponSlotType slot )
 {

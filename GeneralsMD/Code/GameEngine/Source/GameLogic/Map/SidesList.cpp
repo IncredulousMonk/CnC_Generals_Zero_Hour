@@ -995,9 +995,7 @@ void BuildListInfo::parseStructure(INI *ini, void *instance, void* /*store*/, co
 	BuildListInfo *buildInfo = newInstance( BuildListInfo );
 	buildInfo->setTemplateName(tTemplateName);
 	ini->initFromINI(&buildInfo->m_ini, myFieldParse);
-	// FIXME: AISideBuildList
-	(void) instance;
-	// ((AISideBuildList*)instance)->addInfo(buildInfo);
+	((AISideBuildList*)instance)->addInfo(buildInfo);
 }
 
 

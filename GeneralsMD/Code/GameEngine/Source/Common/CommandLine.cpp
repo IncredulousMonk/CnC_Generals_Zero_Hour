@@ -47,7 +47,7 @@ namespace fs = std::filesystem;
 Bool TheDebugIgnoreSyncErrors = FALSE;
 // extern Int DX8Wrapper_PreserveFPU;
 
-#ifdef DEBUG_CRC
+//#ifdef DEBUG_CRC
 Int TheCRCFirstFrameToLog = -1;
 UnsignedInt TheCRCLastFrameToLog = 0xffffffff;
 Bool g_keepCRCSaves = FALSE;
@@ -56,7 +56,7 @@ Bool g_crcModuleDataFromClient = FALSE;
 Bool g_verifyClientCRC = FALSE; // verify that GameLogic CRC doesn't change from client
 Bool g_clientDeepCRC = FALSE;
 Bool g_logObjectCRCs = FALSE;
-#endif
+//#endif
 
 #if defined(_DEBUG) || defined(_INTERNAL)
 extern Bool g_useStringFile;

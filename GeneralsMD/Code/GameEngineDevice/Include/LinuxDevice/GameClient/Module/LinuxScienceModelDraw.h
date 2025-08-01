@@ -37,13 +37,13 @@ enum ScienceType;
 class LinuxScienceModelDrawModuleData: public LinuxModelDrawModuleData
 {
 public:
-	// MG: Cannot apply offsetof to LinuxScienceModelDrawModuleData, so had to move data into an embedded struct.
-	struct IniData
-	{
+   // MG: Cannot apply offsetof to LinuxScienceModelDrawModuleData, so had to move data into an embedded struct.
+   struct IniData
+   {
       ScienceType m_requiredScience {}; ///< Local player must have this science for me to ever draw
-	};
+   };
 
-	IniData m_ini {};
+   IniData m_ini {};
 
    LinuxScienceModelDrawModuleData();
    ~LinuxScienceModelDrawModuleData();

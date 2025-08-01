@@ -94,26 +94,26 @@ static const char *TheWeaponPrefireNames[] =
 #endif
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponAntiMaskType: UnsignedInt
+enum WeaponAntiMaskType: Int
 {
 	WEAPON_ANTI_AIRBORNE_VEHICLE	= 0x01,
-	WEAPON_ANTI_GROUND						= 0x02,
-	WEAPON_ANTI_PROJECTILE				= 0x04,
-	WEAPON_ANTI_SMALL_MISSILE			= 0x08, // All missiles are also projectiles (but not all projectiles are missiles)
-	WEAPON_ANTI_MINE							= 0x10,
+	WEAPON_ANTI_GROUND				= 0x02,
+	WEAPON_ANTI_PROJECTILE			= 0x04,
+	WEAPON_ANTI_SMALL_MISSILE		= 0x08, // All missiles are also projectiles (but not all projectiles are missiles)
+	WEAPON_ANTI_MINE				= 0x10,
 	WEAPON_ANTI_AIRBORNE_INFANTRY	= 0x20, // When set, anti-air weapons will not target infantry paratroopers.
 	WEAPON_ANTI_BALLISTIC_MISSILE	= 0x40, // Specifically large missiles that are vulnerable to base defenses
-	WEAPON_ANTI_PARACHUTE					= 0x80, // Parachutes can be targeted directly
+	WEAPON_ANTI_PARACHUTE			= 0x80, // Parachutes can be targeted directly
 };
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponAffectsMaskType: UnsignedInt
+enum WeaponAffectsMaskType: Int
 {
-	WEAPON_AFFECTS_SELF						= 0x01,
-	WEAPON_AFFECTS_ALLIES					= 0x02,
-	WEAPON_AFFECTS_ENEMIES				= 0x04,	// that is, enemies that aren't the primary target
-	WEAPON_AFFECTS_NEUTRALS				= 0x08,	// ditto
-	WEAPON_KILLS_SELF							= 0x10,	// ensures that it's not possible to survive self damage
+	WEAPON_AFFECTS_SELF				= 0x01,
+	WEAPON_AFFECTS_ALLIES			= 0x02,
+	WEAPON_AFFECTS_ENEMIES			= 0x04,	// that is, enemies that aren't the primary target
+	WEAPON_AFFECTS_NEUTRALS			= 0x08,	// ditto
+	WEAPON_KILLS_SELF				= 0x10,	// ensures that it's not possible to survive self damage
 	WEAPON_DOESNT_AFFECT_SIMILAR	= 0x20, // Doesn't affect others that are the same as us (like other terrorists for a terrorist bomb to prevent chain reaction)
 	WEAPON_DOESNT_AFFECT_AIRBORNE	= 0x40, // Radius damage doesn't affect airborne units, unless they are the primary target. (used for poison fields.)
 };
@@ -135,7 +135,7 @@ static const char *TheWeaponAffectsMaskNames[] =
 #endif
 
 //-------------------------------------------------------------------------------------------------
-enum WeaponCollideMaskType: UnsignedInt
+enum WeaponCollideMaskType: Int
 {
 	// all of these apply to *nontargeted* things that might just happen to get in the way...
 	// the target can always be collided with, regardless of flags

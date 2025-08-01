@@ -28,8 +28,8 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 
-#include "Common/ActionManager.h"
-#include "Common/BuildAssistant.h"
+// #include "Common/ActionManager.h"
+// #include "Common/BuildAssistant.h"
 #include "Common/CRCDebug.h"
 #include "Common/Player.h"
 #include "Common/SpecialPower.h"
@@ -38,7 +38,7 @@
 #include "Common/Xfer.h"
 #include "Common/XferCRC.h"
 
-#include "GameClient/ControlBar.h"
+// #include "GameClient/ControlBar.h"
 #include "GameClient/Drawable.h"
 #include "GameClient/Line2D.h"
 
@@ -49,7 +49,7 @@
 #include "GameLogic/Module/BodyModule.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/Module/OverchargeBehavior.h"
-#include "GameLogic/Module/ProductionUpdate.h"
+// #include "GameLogic/Module/ProductionUpdate.h"
 #include "GameLogic/Module/SpawnBehavior.h"
 #include "GameLogic/Module/SpecialPowerModule.h"
 #include "GameLogic/Module/StealthUpdate.h"
@@ -439,7 +439,7 @@ void AIGroup::recompute( void )
 			//
 			Real maxSpeed = ai->getCurLocomotorSpeed();
 			if( m_speed > maxSpeed &&
-				  IS_CONDITION_BETTER( obj->getBodyModule()->getDamageState(), TheGlobalData->m_movementPenaltyDamageState ) )
+				  IS_CONDITION_BETTER( obj->getBodyModule()->getDamageState(), TheGlobalData->m_data.m_movementPenaltyDamageState ) )
 				m_speed = maxSpeed;
 
 			// leader is closest to the group's center
@@ -462,7 +462,7 @@ void AIGroup::recompute( void )
  */
 Int AIGroup::getCount( void )
 {
-	return m_memberListSize;
+	return (Int)m_memberListSize;
 }
 
 /**
@@ -525,7 +525,7 @@ static const Int PATH_DIAMETER_IN_CELLS = 6;
 /**
  * Move to given position(s)
  */
-Bool AIGroup::friend_computeGroundPath( const Coord3D *pos, CommandSourceType cmdSource )
+Bool AIGroup::friend_computeGroundPath( const Coord3D *pos, CommandSourceType /* cmdSource */ )
 
 {
 
@@ -539,11 +539,11 @@ Bool AIGroup::friend_computeGroundPath( const Coord3D *pos, CommandSourceType cm
 	Coord2D max;
 	Real dx, dy;
 
-	if (TheGlobalData->m_debugAI==AI_DEBUG_TERRAIN) return false;
+	if (TheGlobalData->m_data.m_debugAI==AI_DEBUG_TERRAIN) return false;
 
 	Bool closeEnough = false;
 	getMinMaxAndCenter( &min, &max, &center );
-	Real distSqr = 4*sqr(TheAI->getAiData()->m_distanceRequiresGroup);
+	Real distSqr = 4*sqr(TheAI->getAiData()->m_ini.m_distanceRequiresGroup);
 
 	Int numInfantry = 0;
 	Int numVehicles = 0; 
@@ -595,13 +595,13 @@ Bool AIGroup::friend_computeGroundPath( const Coord3D *pos, CommandSourceType cm
 
 	dx = max.x - min.x;
 	dy = max.y - min.y;
-	if (dx*dx + dy*dy > sqr(TheAI->getAiData()->m_distanceRequiresGroup)) {
+	if (dx*dx + dy*dy > sqr(TheAI->getAiData()->m_ini.m_distanceRequiresGroup)) {
 		distSqr = dx*dx+dy*dy;
 	}
-	if (distSqr < sqr(TheAI->getAiData()->m_minDistanceForGroup)) {
+	if (distSqr < sqr(TheAI->getAiData()->m_ini.m_minDistanceForGroup)) {
 		return false;
 	}
-	if (distSqr>sqr(TheAI->getAiData()->m_distanceRequiresGroup)) {
+	if (distSqr>sqr(TheAI->getAiData()->m_ini.m_distanceRequiresGroup)) {
 		closeEnough = true;
 	}
 	if (numInfantry>6) {
@@ -794,7 +794,7 @@ Bool AIGroup::friend_moveInfantryToPos( const Coord3D *pos, CommandSourceType cm
 		}
 
 	}
-	if (unitsToPath<TheAI->getAiData()->m_minInfantryForGroup) {
+	if (unitsToPath<TheAI->getAiData()->m_ini.m_minInfantryForGroup) {
 		return false;
 	}
 
@@ -836,7 +836,7 @@ Bool AIGroup::friend_moveInfantryToPos( const Coord3D *pos, CommandSourceType cm
 
 		ai->setTmpValue( (fiveColumnDelta<<16)|(columnDelta&0x00ffff));
 		// Sort next pass by the dot product of start vector.
-		dx, dy;
+		Real dx, dy;
 		dx = theUnit->getPosition()->x - center.x;
 		dy = theUnit->getPosition()->y - center.y;
 		Int adjust = 0;
@@ -1263,7 +1263,7 @@ Bool AIGroup::friend_moveVehicleToPos( const Coord3D *pos, CommandSourceType cmd
 		}
 	}
 
-	if (unitsToPath<TheAI->getAiData()->m_minVehiclesForGroup) {
+	if (unitsToPath<TheAI->getAiData()->m_ini.m_minVehiclesForGroup) {
 		return false;
 	}
 
@@ -1580,9 +1580,9 @@ void AIGroup::groupMoveToPosition( const Coord3D *p_posIn, Bool addWaypoint, Com
 		recompute();
 
 	std::list<Object *>::iterator i;
-	if( !isFormation && cmdSource == CMD_FROM_PLAYER && TheGlobalData->m_groupMoveClickToGatherFactor > 0.0f )
+	if( !isFormation && cmdSource == CMD_FROM_PLAYER && TheGlobalData->m_data.m_groupMoveClickToGatherFactor > 0.0f )
 	{
-		ScaleRect2D( &min, &max, TheGlobalData->m_groupMoveClickToGatherFactor );
+		ScaleRect2D( &min, &max, TheGlobalData->m_data.m_groupMoveClickToGatherFactor );
 
 		if( Coord3DInsideRect2D( pos, &min, &max ) )
 		{
@@ -1734,7 +1734,7 @@ void AIGroup::groupMoveToPosition( const Coord3D *p_posIn, Bool addWaypoint, Com
 						//Delay the mood check time (for autoacquire) until after the unit can stealth again.
 						UnsignedInt stealthFrames = stealth->getStealthDelay();
 						//Skew it a little due to having a large group selected.
-						UnsignedInt randomFrames = GameLogicRandomValue( 0, LOGICFRAMES_PER_SECOND );
+						UnsignedInt randomFrames = GameLogicRandomValueUnsigned( 0, LOGICFRAMES_PER_SECOND );
 						ai->setNextMoodCheckTime( TheGameLogic->getFrame() + stealthFrames + randomFrames );
 					}
 				}
@@ -1860,7 +1860,7 @@ void AIGroup::groupTightenToPosition( const Coord3D *pos, Bool addWaypoint, Comm
 	Coord3D center;
 	Coord2D min;
 	Coord2D max;
-	if( cmdSource == CMD_FROM_PLAYER && TheGlobalData->m_groupMoveClickToGatherFactor > 0.0f )
+	if( cmdSource == CMD_FROM_PLAYER && TheGlobalData->m_data.m_groupMoveClickToGatherFactor > 0.0f )
 	{
 		getMinMaxAndCenter( &min, &max, &center );
 		//Kris: Disabled (because its not used to make a logical difference)
@@ -2074,13 +2074,13 @@ void AIGroup::groupIdle(CommandSourceType cmdSource)
 					//Not stealthed, not detected -- so do auto-acquire while stealthed?
 					if( !ai->canAutoAcquireWhileStealthed() )
 					{
-            StealthUpdate *stealth = obj->getStealth();
+						StealthUpdate *stealth = obj->getStealth();
 						if( stealth )
 						{
 							//Delay the mood check time (for autoacquire) until after the unit can stealth again.
 							UnsignedInt stealthFrames = stealth->getStealthDelay();
 							//Skew it a little due to having a large group selected.
-							UnsignedInt randomFrames = GameLogicRandomValue( 0, LOGICFRAMES_PER_SECOND );
+							UnsignedInt randomFrames = GameLogicRandomValueUnsigned( 0, LOGICFRAMES_PER_SECOND );
 							ai->setNextMoodCheckTime( TheGameLogic->getFrame() + stealthFrames + randomFrames );
 						}
 					}
@@ -2111,7 +2111,7 @@ void AIGroup::groupIdle(CommandSourceType cmdSource)
 /**
  * Follow the path defined by the given array of points
  */
-void AIGroup::groupFollowPath( const std::vector<Coord3D>* path, Object *ignoreObject, CommandSourceType cmdSource )
+void AIGroup::groupFollowPath(const std::vector<Coord3D>* /* path */, Object* /* ignoreObject */, CommandSourceType /* cmdSource */ )
 {
 }
 
@@ -2590,7 +2590,7 @@ void AIGroup::groupHackInternet( CommandSourceType cmdSource )				///< Begin hac
 }
 
 
-void AIGroup::groupCreateFormation( CommandSourceType cmdSource )				///< Create a formation.
+void AIGroup::groupCreateFormation( CommandSourceType /* cmdSource */ )				///< Create a formation.
 {
 	Coord3D center;
 	Coord2D min;
@@ -2637,6 +2637,10 @@ void AIGroup::groupCreateFormation( CommandSourceType cmdSource )				///< Create
  */
 void AIGroup::groupDoSpecialPower( UnsignedInt specialPowerID, UnsignedInt commandOptions )
 {
+(void) specialPowerID;
+(void) commandOptions;
+DEBUG_CRASH(("AIGroup::groupDoSpecialPower not yet implemented!"));
+#if 0
 	//This is the no target, no position version.
 	std::list<Object *>::iterator i;
 	for( i = m_memberList.begin(); i != m_memberList.end(); ++i )
@@ -2666,6 +2670,7 @@ void AIGroup::groupDoSpecialPower( UnsignedInt specialPowerID, UnsignedInt comma
 			}
 		}
 	}
+#endif // if 0
 }
 
 /**
@@ -2675,8 +2680,14 @@ void AIGroup::groupDoSpecialPower( UnsignedInt specialPowerID, UnsignedInt comma
  */
 void AIGroup::groupDoSpecialPowerAtLocation( UnsignedInt specialPowerID, const Coord3D *location, Real angle, const Object *objectInWay, UnsignedInt commandOptions )
 {
-  
 
+(void) specialPowerID;
+(void) location;
+(void) angle;
+(void) objectInWay;
+(void) commandOptions;
+DEBUG_CRASH(("AIGroup::groupDoSpecialPowerAtLocation not yet implemented!"));
+#if 0
 	//This one requires a position
 	std::list<Object *>::iterator i;
 	for( i = m_memberList.begin(); i != m_memberList.end(); )
@@ -2686,13 +2697,13 @@ void AIGroup::groupDoSpecialPowerAtLocation( UnsignedInt specialPowerID, const C
 
 		Object *object = (*i);
 
-    ++i; // just in case the act of specialpowering changes this list,
-         // like when the rebelambush happens over the ocean, and all the rebels drown
-         // and, of course, their slowdeath behavior calls deselect(), which naturally
-         // destroys the AIGroup list, in order to keep the selection sync'ed with the group.
-         // M Lorenzen... 8/23/03
-    
-    const SpecialPowerTemplate *spTemplate = TheSpecialPowerStore->findSpecialPowerTemplateByID( specialPowerID );
+		++i; // just in case the act of specialpowering changes this list,
+				// like when the rebelambush happens over the ocean, and all the rebels drown
+				// and, of course, their slowdeath behavior calls deselect(), which naturally
+				// destroys the AIGroup list, in order to keep the selection sync'ed with the group.
+				// M Lorenzen... 8/23/03
+
+		const SpecialPowerTemplate *spTemplate = TheSpecialPowerStore->findSpecialPowerTemplateByID( specialPowerID );
 		if( spTemplate )
 		{
 			// Have to justify the execution in case someone changed their button
@@ -2715,6 +2726,7 @@ void AIGroup::groupDoSpecialPowerAtLocation( UnsignedInt specialPowerID, const C
 		}
 
 	}
+#endif // if 0
 }
 
 /**
@@ -2724,6 +2736,11 @@ void AIGroup::groupDoSpecialPowerAtLocation( UnsignedInt specialPowerID, const C
  */
 void AIGroup::groupDoSpecialPowerAtObject( UnsignedInt specialPowerID, Object *target, UnsignedInt commandOptions )
 {
+(void) specialPowerID;
+(void) target;
+(void) commandOptions;
+DEBUG_CRASH(("AIGroup::groupDoSpecialPowerAtObject not yet implemented!"));
+#if 0
 	//This one requires a target
 	std::list<Object *>::iterator i;
 	for( i = m_memberList.begin(); i != m_memberList.end(); ++i )
@@ -2754,6 +2771,7 @@ void AIGroup::groupDoSpecialPowerAtObject( UnsignedInt specialPowerID, Object *t
 			}
 		}
 	}
+#endif // if 0
 }
 
 #ifdef ALLOW_SURRENDER
@@ -2772,7 +2790,7 @@ void AIGroup::groupSurrender( const Object *objWeSurrenderedTo, Bool surrender, 
 }
 #endif
 
-void AIGroup::groupCheer( CommandSourceType cmdSource )
+void AIGroup::groupCheer( CommandSourceType /* cmdSource */ )
 {
 	//This is currently only activated via test key
 	std::list<Object *>::iterator i;
@@ -2788,8 +2806,10 @@ void AIGroup::groupCheer( CommandSourceType cmdSource )
 /**
 	* Sell all things in the group ... if possible 
 	*/
-void AIGroup::groupSell( CommandSourceType cmdSource )
+void AIGroup::groupSell( CommandSourceType /* cmdSource */ )
 {
+DEBUG_CRASH(("AIGroup::groupSell not yet implemented!"));
+#if 0
 	std::list<Object *>::iterator i, thisIterator;
 	Object *obj;
 
@@ -2808,12 +2828,13 @@ void AIGroup::groupSell( CommandSourceType cmdSource )
 
 	}  // end for, i
 
+#endif // if 0
 }
 
 /**
 	* Tell all things in the group to toggle overcharge ... if possible 
 	*/
-void AIGroup::groupToggleOvercharge( CommandSourceType cmdSource )
+void AIGroup::groupToggleOvercharge( CommandSourceType /* cmdSource */ )
 {
 	std::list<Object *>::iterator i;
 	Object *obj;
@@ -3067,6 +3088,9 @@ void AIGroup::setWeaponSetFlag( WeaponSetType wst )
 
 void AIGroup::queueUpgrade( const UpgradeTemplate *upgrade )
 {
+(void) upgrade;
+DEBUG_CRASH(("AIGroup::queueUpgrade not yet implemented!"));
+#if 0
 	if (!upgrade)
 		return;
 
@@ -3104,6 +3128,7 @@ void AIGroup::queueUpgrade( const UpgradeTemplate *upgrade )
 		// queue the upgrade "research"
 		pu->queueUpgrade( upgrade );
 	}
+#endif // if 0
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -3212,6 +3237,10 @@ Object *AIGroup::getSpecialPowerSourceObject( UnsignedInt specialPowerID )
 //------------------------------------------------------------------------------------------------------------
 Object *AIGroup::getCommandButtonSourceObject( GUICommandType type )
 {
+(void) type;
+DEBUG_CRASH(("AIGroup::getCommandButtonSourceObject not yet implemented!"));
+return nullptr;
+#if 0
 	std::list<Object *>::iterator it;
 	
 	for( it = m_memberList.begin(); it != m_memberList.end(); ++it )
@@ -3237,6 +3266,7 @@ Object *AIGroup::getCommandButtonSourceObject( GUICommandType type )
 	}
 
 	return NULL;
+#endif // if 0
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -3255,7 +3285,7 @@ void AIGroup::groupSetEmoticon( const AsciiString &name, Int duration )
 }
 
 //-----------------------------------------------------------------------------
-void AIGroup::groupOverrideSpecialPowerDestination( SpecialPowerType spType, const Coord3D *loc, CommandSourceType cmdSource )
+void AIGroup::groupOverrideSpecialPowerDestination( SpecialPowerType spType, const Coord3D *loc, CommandSourceType /* cmdSource */ )
 {
 	std::list<Object *>::iterator i;
 	for( i = m_memberList.begin(); i != m_memberList.end(); ++i )

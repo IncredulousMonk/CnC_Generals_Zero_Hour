@@ -39,16 +39,25 @@
 class ParachuteContainModuleData : public OpenContainModuleData
 {
 public:
-	Real m_pitchRateMax;
-	Real m_rollRateMax;
-	Real m_lowAltitudeDamping;
-	Real m_paraOpenDist;		///< deploy the parachute when we have traveled this far
-	Real m_freeFallDamagePercent;
-	Real m_killWhenLandingInWaterSlop;
-	AudioEventRTS m_parachuteOpenSound;
+	// MG: Cannot apply offsetof to ParachuteContainModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_pitchRateMax;
+		Real m_rollRateMax;
+		Real m_lowAltitudeDamping;
+		Real m_paraOpenDist;		///< deploy the parachute when we have traveled this far
+		Real m_freeFallDamagePercent;
+		Real m_killWhenLandingInWaterSlop;
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS m_parachuteOpenSound {};
 
 	ParachuteContainModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
+	// Proxy parse function to avoid offset problems:
+	static void parseAudioEventRTS(INI* ini, void *instance, void* store, const void* userData);
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -94,24 +103,24 @@ private:
 	void calcSwayMtx(const Coord3D* offset, Matrix3D* mtx);
 	void setSwayMatrices();
 
-	Real m_pitch;
-	Real m_roll;
-	Real m_pitchRate;
-	Real m_rollRate;
-	Real m_startZ;
-	Bool m_isLandingOverrideSet;
-	Coord3D m_landingOverride;
-	Coord3D m_riderAttachBone;
-	Coord3D m_riderSwayBone;
-	Coord3D m_paraAttachBone;
-	Coord3D m_paraSwayBone;
-	Coord3D m_riderAttachOffset;
-	Coord3D m_riderSwayOffset;
-	Coord3D m_paraAttachOffset;
-	Coord3D m_paraSwayOffset;
-	Bool m_needToUpdateRiderBones;
-	Bool m_needToUpdateParaBones;
-	Bool m_opened;
+	Real m_pitch {};
+	Real m_roll {};
+	Real m_pitchRate {};
+	Real m_rollRate {};
+	Real m_startZ {};
+	Bool m_isLandingOverrideSet {};
+	Coord3D m_landingOverride {};
+	Coord3D m_riderAttachBone {};
+	Coord3D m_riderSwayBone {};
+	Coord3D m_paraAttachBone {};
+	Coord3D m_paraSwayBone {};
+	Coord3D m_riderAttachOffset {};
+	Coord3D m_riderSwayOffset {};
+	Coord3D m_paraAttachOffset {};
+	Coord3D m_paraSwayOffset {};
+	Bool m_needToUpdateRiderBones {};
+	Bool m_needToUpdateParaBones {};
+	Bool m_opened {};
 };
 
 #endif // __ParachuteContain_H_

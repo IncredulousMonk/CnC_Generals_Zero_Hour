@@ -58,54 +58,54 @@ class Squad;
  * Each of these constants will be associated with an instance of a State class
  * in a given StateMachine.
  */
-enum AIStateType
+enum AIStateType: UnsignedInt
 {
 	AI_IDLE,
-	AI_MOVE_TO,																///< move to the GoalObject or GoalPosition
-	AI_FOLLOW_WAYPOINT_PATH_AS_TEAM,					///< follow a waypoint path as a team
-	AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS,		///< follow a waypoint path
-	AI_FOLLOW_WAYPOINT_PATH_AS_TEAM_EXACT,		///< follow a waypoint path as a team
-	AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS_EXACT,///< follow a waypoint path
-	AI_FOLLOW_PATH,														///< follow a simple list of points
-	AI_FOLLOW_EXITPRODUCTION_PATH,						///< the same, but only when exiting production facility
+	AI_MOVE_TO,										///< move to the GoalObject or GoalPosition
+	AI_FOLLOW_WAYPOINT_PATH_AS_TEAM,				///< follow a waypoint path as a team
+	AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS,			///< follow a waypoint path
+	AI_FOLLOW_WAYPOINT_PATH_AS_TEAM_EXACT,			///< follow a waypoint path as a team
+	AI_FOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS_EXACT,	///< follow a waypoint path
+	AI_FOLLOW_PATH,									///< follow a simple list of points
+	AI_FOLLOW_EXITPRODUCTION_PATH,					///< the same, but only when exiting production facility
 	AI_WAIT,
-	AI_ATTACK_POSITION,												///< attempt to kill GoalPosition
-	AI_ATTACK_OBJECT,													///< attempt to kill GoalObject
-	AI_FORCE_ATTACK_OBJECT,										///< attempt to kill GoalObject, force fire on it.
-	AI_ATTACK_AND_FOLLOW_OBJECT,							///< attempt to kill GoalObject, following it if necessary (and possible)
+	AI_ATTACK_POSITION,								///< attempt to kill GoalPosition
+	AI_ATTACK_OBJECT,								///< attempt to kill GoalObject
+	AI_FORCE_ATTACK_OBJECT,							///< attempt to kill GoalObject, force fire on it.
+	AI_ATTACK_AND_FOLLOW_OBJECT,					///< attempt to kill GoalObject, following it if necessary (and possible)
 	AI_DEAD,
-	AI_DOCK,																	///< dock with GoalObject, if GoalObject has a DockUpdate module
-	AI_ENTER,																	///< move to GoalObject and "enter" it when close
-	AI_GUARD,																	///< guard your current location
-	AI_HUNT,																	///< seek and destroy behavior
-	AI_WANDER,																///< Wander around following a waypoint path.
-	AI_PANIC,																	///< Run around screaming following a waypoint path.
-	AI_ATTACK_SQUAD,													///< Set the unit to attempt to kill all objects in goalSquad.
-	AI_GUARD_TUNNEL_NETWORK,									///< Guard from inside a tunnel network.
-	AI_GET_REPAIRED,													///< Get repaired at a repair depot
-	AI_MOVE_OUT_OF_THE_WAY,										///< Move out of the way of another unit.
-	AI_MOVE_AND_TIGHTEN,											///< Move in order to tighten up a formation.
-	AI_MOVE_AND_EVACUATE,											///< Move to, then empty transport.
-	AI_MOVE_AND_EVACUATE_AND_EXIT,						///< Move to, then empty transport.
-	AI_MOVE_AND_DELETE,												///< Move to, then delete self.
-	AI_ATTACK_AREA,														///< Attack units in an area.
-	AI_HACK_INTERNET,													///< Hack internet for free money (no target required).
-	AI_ATTACK_MOVE_TO,												///< Attack-move to a location
+	AI_DOCK,										///< dock with GoalObject, if GoalObject has a DockUpdate module
+	AI_ENTER,										///< move to GoalObject and "enter" it when close
+	AI_GUARD,										///< guard your current location
+	AI_HUNT,										///< seek and destroy behavior
+	AI_WANDER,										///< Wander around following a waypoint path.
+	AI_PANIC,										///< Run around screaming following a waypoint path.
+	AI_ATTACK_SQUAD,								///< Set the unit to attempt to kill all objects in goalSquad.
+	AI_GUARD_TUNNEL_NETWORK,						///< Guard from inside a tunnel network.
+	AI_GET_REPAIRED,								///< Get repaired at a repair depot
+	AI_MOVE_OUT_OF_THE_WAY,							///< Move out of the way of another unit.
+	AI_MOVE_AND_TIGHTEN,							///< Move in order to tighten up a formation.
+	AI_MOVE_AND_EVACUATE,							///< Move to, then empty transport.
+	AI_MOVE_AND_EVACUATE_AND_EXIT,					///< Move to, then empty transport.
+	AI_MOVE_AND_DELETE,								///< Move to, then delete self.
+	AI_ATTACK_AREA,									///< Attack units in an area.
+	AI_HACK_INTERNET,								///< Hack internet for free money (no target required).
+	AI_ATTACK_MOVE_TO,								///< Attack-move to a location
 	AI_ATTACKFOLLOW_WAYPOINT_PATH_AS_INDIVIDUALS,	///< Attack-Follow down a waypoint path as individuals
-	AI_ATTACKFOLLOW_WAYPOINT_PATH_AS_TEAM,				///< Attack-Follow down a waypoint path as a team
+	AI_ATTACKFOLLOW_WAYPOINT_PATH_AS_TEAM,			///< Attack-Follow down a waypoint path as a team
 	AI_FACE_OBJECT,
 	AI_FACE_POSITION,
-	AI_RAPPEL_INTO,														/**< rappel from current pos down to target object.
-																								if target is building, will enter and kill lots of folks.
-																								if target is null, will rappel to ground. */
-	AI_COMBATDROP,														/**< attempt to send AI_RAPPEL_INTO to contents. */
-	AI_EXIT,																	///< exit the obj, waiting if necessary
-	AI_PICK_UP_CRATE,													///< Pick up a crate created by a kill.  jba.
-	AI_MOVE_AWAY_FROM_REPULSORS,							///< Civilians are running away from repulsors. (enemies or dead civs, usually) jba
-	AI_WANDER_IN_PLACE,												///< Civilians just wander around a spot, rather than along a path.
-	AI_BUSY,																	///< This is a state that things will be in when they are busy doing random stuff that doesn't require AI interaction.
-	AI_EXIT_INSTANTLY,												///< exit this obj, without waiting -- do it in the onEnter! This frame!
-	AI_GUARD_RETALIATE,												///< attacks attacker but with restrictions (hybrid of attack and guard).
+	AI_RAPPEL_INTO,									/**< rappel from current pos down to target object.
+														if target is building, will enter and kill lots of folks.
+														if target is null, will rappel to ground. */
+	AI_COMBATDROP,									/**< attempt to send AI_RAPPEL_INTO to contents. */
+	AI_EXIT,										///< exit the obj, waiting if necessary
+	AI_PICK_UP_CRATE,								///< Pick up a crate created by a kill.  jba.
+	AI_MOVE_AWAY_FROM_REPULSORS,					///< Civilians are running away from repulsors. (enemies or dead civs, usually) jba
+	AI_WANDER_IN_PLACE,								///< Civilians just wander around a spot, rather than along a path.
+	AI_BUSY,										///< This is a state that things will be in when they are busy doing random stuff that doesn't require AI interaction.
+	AI_EXIT_INSTANTLY,								///< exit this obj, without waiting -- do it in the onEnter! This frame!
+	AI_GUARD_RETALIATE,								///< attacks attacker but with restrictions (hybrid of attack and guard).
 
 	NUM_AI_STATES
 };
@@ -182,14 +182,14 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	std::vector<Coord3D>	m_goalPath;					///< defines a simple path to follow
-	const Waypoint *			m_goalWaypoint;
-	Squad *								m_goalSquad;
+	std::vector<Coord3D>	m_goalPath {};					///< defines a simple path to follow
+	const Waypoint *		m_goalWaypoint {};
+	Squad *					m_goalSquad {};
 
 	/** A temporary state to run for a while (usually AI_MOVE_OUT_OF_THE_WAY).  
 	Doesn't clear or reset the state machine, so it goes back to doing what it was doing.  jba. */
-	State									*m_temporaryState;			 
-	UnsignedInt						m_temporaryStateFramEnd; ///< Last frame to run m_temporaryState.
+	State					*m_temporaryState {};
+	UnsignedInt				m_temporaryStateFramEnd {}; ///< Last frame to run m_temporaryState.
 };
 
 
@@ -223,9 +223,9 @@ class AIIdleState : public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIIdleState, "AIIdleState")		
 private:
 
-	UnsignedShort m_initialSleepOffset;
-	Bool m_shouldLookForTargets;
-	Bool m_inited;
+	UnsignedShort m_initialSleepOffset {};
+	Bool m_shouldLookForTargets {};
+	Bool m_inited {};
 
 	void doInitIdleState();
 
@@ -300,18 +300,18 @@ protected:
 private:
 	enum { MIN_REPATH_TIME = 10 };										///< minimum # of frames must elapse before re-pathing
 protected:
-	Coord3D							m_goalPosition {};											///< the goal position to move to
-	PathfindLayerEnum		m_goalLayer {};										///< The layer we are moving towards.
+	Coord3D				m_goalPosition {};											///< the goal position to move to
+	PathfindLayerEnum	m_goalLayer {};										///< The layer we are moving towards.
 	Coord3D				m_pathGoalPosition {};									///< the position our current path leads to
 private:
-	AudioHandle		m_ambientPlayingHandle {};							///< Audio handle for the looping sound that we may play.
-	UnsignedInt		m_pathTimestamp {};										///< time of last pathfind
-	UnsignedInt		m_blockedRepathTimestamp {};						///< time of last blocked pathfind
-	Bool					m_adjustDestinations {};								///< Adjust destinations to avoid stacking units on top of each other.  Normally true, but 
-																										//   occasionally false for things like car bombs.
+	AudioHandle			m_ambientPlayingHandle {};							///< Audio handle for the looping sound that we may play.
+	UnsignedInt			m_pathTimestamp {};										///< time of last pathfind
+	UnsignedInt			m_blockedRepathTimestamp {};						///< time of last blocked pathfind
+	Bool				m_adjustDestinations {};								///< Adjust destinations to avoid stacking units on top of each other.  Normally true, but 
+																				//   occasionally false for things like car bombs.
 protected:
-	Bool					m_waitingForPath {};										///< If we are waiting for a path.
-	Bool					m_tryOneMoreRepath {};									///< If true, after we complete movement do another compute path.
+	Bool				m_waitingForPath {};										///< If we are waiting for a path.
+	Bool				m_tryOneMoreRepath {};									///< If true, after we complete movement do another compute path.
 };
 EMPTY_DTOR(AIInternalMoveToState)
 
@@ -323,9 +323,9 @@ class AIRappelState : public State
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIRappelState, "AIRappelState")		
 protected:
-	Real m_rappelRate;
-	Real m_destZ;
-	Bool m_targetIsBldg;
+	Real m_rappelRate {};
+	Real m_destZ {};
+	Bool m_targetIsBldg {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -368,7 +368,7 @@ EMPTY_DTOR(AIBusyState)
  */
 class AIMoveToState : public AIInternalMoveToState
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIMoveToState, "AIMoveToState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIMoveToState, "AIMoveToState")
 protected:
 	Bool m_isMoveTo;
 public:
@@ -385,7 +385,7 @@ EMPTY_DTOR(AIMoveToState)
  */
 class AIMoveOutOfTheWayState : public AIInternalMoveToState
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIMoveOutOfTheWayState, "AIMoveOutOfTheWayState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIMoveOutOfTheWayState, "AIMoveOutOfTheWayState")
 public:
 	AIMoveOutOfTheWayState( StateMachine *machine ) : AIInternalMoveToState( machine, "AIMoveOutOfTheWayState" ) { }
 	virtual StateReturnType onEnter();
@@ -403,7 +403,7 @@ EMPTY_DTOR(AIMoveOutOfTheWayState)
  */
 class AIMoveAndTightenState : public AIInternalMoveToState
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIMoveAndTightenState, "AIMoveAndTightenState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIMoveAndTightenState, "AIMoveAndTightenState")
 public:
 	AIMoveAndTightenState( StateMachine *machine ) : AIInternalMoveToState( machine, "AIMoveAndTightenState" ) 
 	{
@@ -484,13 +484,13 @@ private:
 
 	StateReturnType updateInternal( void );
 
-	Coord3D				m_prevVictimPos {};									///< Where we think our victim is
+	Coord3D			m_prevVictimPos {};									///< Where we think our victim is
 	UnsignedInt		m_approachTimestamp {};							///< When we last computed an approach goal
-	Bool					m_follow {};													///< If true, follow object until it dies
-	Bool					m_isAttackingObject {};							///< If false, attacking position
-	Bool					m_stopIfInRange {};									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
-	Bool					m_isInitialApproach {};							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
-	Bool					m_isForceAttacking {};
+	Bool			m_follow {};													///< If true, follow object until it dies
+	Bool			m_isAttackingObject {};							///< If false, attacking position
+	Bool			m_stopIfInRange {};									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
+	Bool			m_isInitialApproach {};							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
+	Bool			m_isForceAttacking {};
 };
 EMPTY_DTOR(AIAttackApproachTargetState)
 
@@ -533,13 +533,13 @@ private:
 
 	StateReturnType updateInternal( void );
 
-	Coord3D				m_prevVictimPos {};									///< Where we think our victim is
+	Coord3D			m_prevVictimPos {};									///< Where we think our victim is
 	UnsignedInt		m_approachTimestamp {};							///< When we last computed an approach goal
-	Bool					m_follow {};													///< If true, follow object until it dies
-	Bool					m_isAttackingObject {};							///< If false, attacking position
-	Bool					m_stopIfInRange {};									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
-	Bool					m_isInitialApproach {};							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
-	Bool					m_isForceAttacking {};
+	Bool			m_follow {};													///< If true, follow object until it dies
+	Bool			m_isAttackingObject {};							///< If false, attacking position
+	Bool			m_stopIfInRange {};									///< If true, we check and stop as soon we can fire.  Used when we have to path to the object instead of to a firing position.
+	Bool			m_isInitialApproach {};							///< If true, we can attack other units along the way. We will check for them every N frames (N specified in AI.ini)
+	Bool			m_isForceAttacking {};
 };
 EMPTY_DTOR(AIAttackPursueTargetState)
 
@@ -599,10 +599,10 @@ public:
 protected:
 	enum {ATTACK_RETRY_COUNT=5};
 	enum {ATTACK_CLOSE_ENOUGH_CELLS=8};
-	CommandSourceType	m_commandSrc;		// Original command source.  We switch to CMD_FROM_AI when auto-acquiring.
-	StateMachine *m_attackMoveMachine;
-	UnsignedInt		m_frameToSleepUntil;
-	Int						m_retryCount;
+	CommandSourceType	m_commandSrc {};		// Original command source.  We switch to CMD_FROM_AI when auto-acquiring.
+	StateMachine		*m_attackMoveMachine {};
+	UnsignedInt			m_frameToSleepUntil {};
+	Int					m_retryCount {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -616,7 +616,7 @@ protected:
  */
 class AIFollowWaypointPathState : public AIInternalMoveToState
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIFollowWaypointPathState, "AIFollowWaypointPathState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIFollowWaypointPathState, "AIFollowWaypointPathState")
 public:
 	AIFollowWaypointPathState( StateMachine *machine, Bool asGroup ) : 
 		AIInternalMoveToState( machine, "AIFollowWaypointPathState" ), m_moveAsGroup(asGroup), m_isFollowWaypointPathState(true)
@@ -645,8 +645,8 @@ protected:
 
 protected:
 	Coord2D m_groupOffset {};
-	Real		m_angle {};
-	Int  m_framesSleeping {};
+	Real m_angle {};
+	Int m_framesSleeping {};
 	const Waypoint *m_currentWaypoint {};
 	const Waypoint *m_priorWaypoint {};
 	Bool m_appendGoalPosition {};
@@ -654,7 +654,7 @@ protected:
 	const Bool m_moveAsGroup {};
 	// this is necessary because we derive from FollowWaypointPathState, but we do not want to incur the 
 	// expense of checking RTTI to determine whether we are actually a FollowWaypointPathState or not
-	const Bool m_isFollowWaypointPathState;	// derived classes should set this false.
+	const Bool m_isFollowWaypointPathState {};	// derived classes should set this false.
 
 protected:
 	void computeGoal(Bool useGroupOffsets);
@@ -724,7 +724,7 @@ public:
 
 protected:
 	// We can (and want to) use the attack-move-to logic for when to attack and when to do a normal attack.
-	StateMachine *m_attackFollowMachine;
+	StateMachine *m_attackFollowMachine {};
 protected:
 	// snapshot interface
 	virtual void crc( Xfer *xfer );
@@ -966,7 +966,7 @@ EMPTY_DTOR(AIWaitState)
 class NotifyWeaponFiredInterface	// an ABC
 {
 public:
-	virtual ~NotifyWeaponFiredInterface();
+	virtual ~NotifyWeaponFiredInterface() {};
 	virtual void notifyFired() = 0;
 	virtual void notifyNewVictimChosen(Object* victim) = 0;
 	virtual Bool isWeaponSlotOkToFire(WeaponSlotType wslot) const = 0;
@@ -977,7 +977,7 @@ public:
 //-----------------------------------------------------------------------------------------------------------
 class AIAttackFireWeaponState : public State
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIAttackFireWeaponState, "AIAttackFireWeaponState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIAttackFireWeaponState, "AIAttackFireWeaponState")
 public:
 	AIAttackFireWeaponState( StateMachine *machine, NotifyWeaponFiredInterface* att ) : 
 		State( machine, "AIAttackFireWeaponState" ), 
@@ -1007,14 +1007,14 @@ EMPTY_DTOR(AIAttackFireWeaponState)
 class AttackExitConditionsInterface
 {
 public:
-	virtual ~AttackExitConditionsInterface();
+	virtual ~AttackExitConditionsInterface() {};
 	virtual Bool shouldExit(const StateMachine* machine) const = 0;
 };
 
 //-----------------------------------------------------------------------------------------------------------
 class AIAttackState : public State, public NotifyWeaponFiredInterface
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIAttackState, "AIAttackState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AIAttackState, "AIAttackState")
 public:
 
 	AIAttackState( StateMachine *machine, Bool follow, Bool attackingObject, Bool forceAttacking, AttackExitConditionsInterface* attackParameters);
@@ -1049,14 +1049,14 @@ private:
 
 	Bool chooseWeapon();
 
-	AttackStateMachine*							m_attackMachine;						///< state sub-machine for attack behavior
-	AttackExitConditionsInterface*	m_attackParameters;					///< these are not owned by this, and will not be deleted on destruction
-	Team*														m_victimTeam;								///< recorded onEnter because if it changes during attack , it may no longer be a valid target.
-	Coord3D													m_originalVictimPos;				///< position of first obj/pos attacked... used for ContinueAttackRange.
-	const Weapon*						m_lockedWeaponOnEnter;
-	const Bool							m_follow;
-	const Bool							m_isAttackingObject;								// if false, attacking position
-	const Bool							m_isForceAttacking;
+	AttackStateMachine*				m_attackMachine {};						///< state sub-machine for attack behavior
+	AttackExitConditionsInterface*	m_attackParameters {};					///< these are not owned by this, and will not be deleted on destruction
+	Team*							m_victimTeam {};								///< recorded onEnter because if it changes during attack , it may no longer be a valid target.
+	Coord3D							m_originalVictimPos {};				///< position of first obj/pos attacked... used for ContinueAttackRange.
+	const Weapon*					m_lockedWeaponOnEnter {};
+	const Bool						m_follow {};
+	const Bool						m_isAttackingObject {};								// if false, attacking position
+	const Bool						m_isForceAttacking {};
 };
 
 //-----------------------------------------------------------------------------------------------------------

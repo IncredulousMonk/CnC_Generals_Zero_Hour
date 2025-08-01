@@ -39,22 +39,30 @@
 class SmartBombTargetHomingUpdateModuleData : public UpdateModuleData
 {
 public:
-	Real m_courseCorrectionScalar;
+	// MG: Cannot apply offsetof to SmartBombTargetHomingUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_courseCorrectionScalar;
+	};
+
+	IniData m_ini {};
 
 	SmartBombTargetHomingUpdateModuleData()
 	{
-		m_courseCorrectionScalar = 0.99f;
+		m_ini.m_courseCorrectionScalar = 0.99f;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "CourseCorrectionScalar",	INI::parseReal,		NULL, offsetof( SmartBombTargetHomingUpdateModuleData, m_courseCorrectionScalar ) },
+			{ "CourseCorrectionScalar", INI::parseReal, NULL, offsetof( SmartBombTargetHomingUpdateModuleData::IniData, m_courseCorrectionScalar ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		SmartBombTargetHomingUpdateModuleData* self {static_cast<SmartBombTargetHomingUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -71,18 +79,16 @@ public:
 	SmartBombTargetHomingUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
-  void SetTargetPosition( const Coord3D& target );
+	void SetTargetPosition( const Coord3D& target );
 
 	virtual UpdateSleepTime update( void );
 
 protected:
 
 
-  Bool      m_targetReceived;
-  Coord3D   m_target;
-
+	Bool	m_targetReceived {};
+	Coord3D	m_target {};
 
 };
 
 #endif // __SMARTBOMB_UPDATE_H_
-

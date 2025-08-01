@@ -131,12 +131,12 @@ StateReturnType State::friend_checkForTransitions( StateReturnType status )
 	{
 		case STATE_SUCCESS:
 			// check if machine should exit
-			if (m_successStateID == EXIT_MACHINE_WITH_SUCCESS)
+			if (m_successStateID == (StateID) EXIT_MACHINE_WITH_SUCCESS)
 			{
 				getMachine()->internalSetState( MACHINE_DONE_STATE_ID );
 				return STATE_SUCCESS;
 			}
-			else if (m_successStateID == EXIT_MACHINE_WITH_FAILURE)
+			else if (m_successStateID == (StateID) EXIT_MACHINE_WITH_FAILURE)
 			{
 				getMachine()->internalSetState( MACHINE_DONE_STATE_ID );
 				return STATE_FAILURE;
@@ -147,12 +147,12 @@ StateReturnType State::friend_checkForTransitions( StateReturnType status )
 
 		case STATE_FAILURE:
 			// check if machine should exit
-			if (m_failureStateID == EXIT_MACHINE_WITH_SUCCESS)
+			if (m_failureStateID == (StateID) EXIT_MACHINE_WITH_SUCCESS)
 			{
 				getMachine()->internalSetState( MACHINE_DONE_STATE_ID );
 				return STATE_SUCCESS;
 			}
-			else if (m_failureStateID == EXIT_MACHINE_WITH_FAILURE)
+			else if (m_failureStateID == (StateID) EXIT_MACHINE_WITH_FAILURE)
 			{
 				getMachine()->internalSetState( MACHINE_DONE_STATE_ID );
 				return STATE_FAILURE;
@@ -181,11 +181,11 @@ StateReturnType State::friend_checkForTransitions( StateReturnType status )
 	#endif
 
 						// check if machine should exit
-						if (it->toStateID == EXIT_MACHINE_WITH_SUCCESS)
+						if (it->toStateID == (StateID) EXIT_MACHINE_WITH_SUCCESS)
 						{
 							return STATE_SUCCESS;
 						}
-						else if (it->toStateID == EXIT_MACHINE_WITH_FAILURE)
+						else if (it->toStateID == (StateID) EXIT_MACHINE_WITH_FAILURE)
 						{
 							return STATE_FAILURE;//Lorenzen wants to know why...
 						}
@@ -239,11 +239,11 @@ StateReturnType State::friend_checkForSleepTransitions( StateReturnType status )
 #endif
 
 		// check if machine should exit
-		if (it->toStateID == EXIT_MACHINE_WITH_SUCCESS)
+		if (it->toStateID == (StateID) EXIT_MACHINE_WITH_SUCCESS)
 		{
 			return STATE_SUCCESS;
 		}
-		else if (it->toStateID == EXIT_MACHINE_WITH_FAILURE)
+		else if (it->toStateID == (StateID) EXIT_MACHINE_WITH_FAILURE)
 		{
 			return STATE_FAILURE;
 		}
@@ -310,7 +310,7 @@ Bool StateMachine::getWantsDebugOutput() const
 		return true;
 	}
 
-	if (TheGlobalData->m_stateMachineDebug)
+	if (TheGlobalData->m_data.m_stateMachineDebug)
 	{
 		return true;
 	}
@@ -587,10 +587,10 @@ StateReturnType StateMachine::internalSetState( StateID newStateID )
 #ifdef STATE_MACHINE_DEBUG
 		if (getWantsDebugOutput()) 
 		{
-			StateID curState = INVALID_STATE_ID;
-			if (m_currentState) {
-				curState = m_currentState->getID();
-			}
+			// StateID curState = INVALID_STATE_ID;
+			// if (m_currentState) {
+			// 	curState = m_currentState->getID();
+			// }
 			DEBUG_LOG(("%d '%s'%x -- '%s' %x exit ", TheGameLogic->getFrame(), m_owner->getTemplate()->getName().str(), m_owner, m_name.str(), this));
 			if (m_currentState) {
 				DEBUG_LOG((" '%s' ", m_currentState->getName().str()));
@@ -687,11 +687,11 @@ StateReturnType StateMachine::initDefaultState()
 					REALLY_VERBOSE_LOG(("INVALID_STATE_ID', "));
 					continue;
 				}
-				if (curID == EXIT_MACHINE_WITH_SUCCESS) {
+				if (curID == (StateID) EXIT_MACHINE_WITH_SUCCESS) {
 					REALLY_VERBOSE_LOG(("EXIT_MACHINE_WITH_SUCCESS', "));
 					continue;
 				}
-				if (curID == EXIT_MACHINE_WITH_FAILURE) {
+				if (curID == (StateID) EXIT_MACHINE_WITH_FAILURE) {
 					REALLY_VERBOSE_LOG(("EXIT_MACHINE_WITH_FAILURE', "));
 					continue;
 				}
@@ -809,7 +809,7 @@ void StateMachine::internalSetGoalPosition( const Coord3D *pos )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void StateMachine::crc( Xfer *xfer )
+void StateMachine::crc( Xfer * /* xfer */ )
 {
 
 }  // end crc
@@ -829,9 +829,9 @@ void StateMachine::xfer( Xfer *xfer )
 	xfer->xferVersion( &version, currentVersion );
 
 	xfer->xferUnsignedInt(&m_sleepTill);
-	xfer->xferUnsignedInt(&m_defaultStateID);
+	xfer->xferUnsignedInt((UnsignedInt*)&m_defaultStateID);
 	StateID curStateID = getCurrentStateID();
-	xfer->xferUnsignedInt(&curStateID);
+	xfer->xferUnsignedInt((UnsignedInt*)&curStateID);
 	if (xfer->getXferMode() == XFER_LOAD)	{
 		// We are going to jump into the current state.	We don't call onEnter or onExit, because the 
 		// state was already active when we saved.
@@ -858,7 +858,7 @@ void StateMachine::xfer( Xfer *xfer )
 		for( i = m_stateMap.begin(); i != m_stateMap.end(); ++i ) {
 			State *state = (*i).second;
 			StateID id = state->getID();
-			xfer->xferUnsignedInt(&id);
+			xfer->xferUnsignedInt((UnsignedInt*)&id);
 			if (id!=state->getID()) {
 				DEBUG_CRASH(("State ID mismatch - %d expected, %d read", state->getID(), id));
 				throw SC_INVALID_DATA;

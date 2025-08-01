@@ -45,7 +45,7 @@ public:
 //-------------------------------------------------------------------------------------------------
 class HackInternetState :  public State
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(HackInternetState, "HackInternetState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(HackInternetState, "HackInternetState")
 public:
 	HackInternetState( StateMachine *machine ) :State( machine, "HackInternetState" )
 	{
@@ -65,7 +65,7 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	UnsignedInt m_framesRemaining; //frames till next cash update
+	UnsignedInt m_framesRemaining {}; //frames till next cash update
 };
 EMPTY_DTOR(HackInternetState)
 
@@ -91,7 +91,7 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	UnsignedInt m_framesRemaining; //frames till packing animation complete
+	UnsignedInt m_framesRemaining {}; //frames till packing animation complete
 };
 EMPTY_DTOR(PackingState)
 
@@ -114,7 +114,7 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	UnsignedInt m_framesRemaining; //frames till unpacking animation complete
+	UnsignedInt m_framesRemaining {}; //frames till unpacking animation complete
 };
 EMPTY_DTOR(UnpackingState)
 
@@ -122,59 +122,67 @@ EMPTY_DTOR(UnpackingState)
 //-------------------------------------------------------------------------------------------------
 enum
 {
-	UNPACKING = 1000,						///< Kneel down and set up internet satellite link
-	HACK_INTERNET,							///< Once set up, start hacking for cash.
-	PACKING,						///< Pack up before moving.
+	UNPACKING = 1000,	///< Kneel down and set up internet satellite link
+	HACK_INTERNET,		///< Once set up, start hacking for cash.
+	PACKING,			///< Pack up before moving.
 };
 
 //-------------------------------------------------------------------------------------------------
 class HackInternetAIUpdateModuleData : public AIUpdateModuleData
 {
 public:
-	UnsignedInt		m_unpackTime;
-	UnsignedInt		m_packTime;				
-	UnsignedInt		m_cashUpdateDelay;
-	UnsignedInt		m_cashUpdateDelayFast;
-	UnsignedInt		m_regularCashAmount;
-	UnsignedInt		m_veteranCashAmount;
-	UnsignedInt		m_eliteCashAmount;
-	UnsignedInt		m_heroicCashAmount;
-	UnsignedInt		m_xpPerCashUpdate;
-	Real					m_packUnpackVariationFactor;
+	// MG: Cannot apply offsetof to HackInternetAIUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt		m_unpackTime;
+		UnsignedInt		m_packTime;
+		UnsignedInt		m_cashUpdateDelay;
+		UnsignedInt		m_cashUpdateDelayFast;
+		UnsignedInt		m_regularCashAmount;
+		UnsignedInt		m_veteranCashAmount;
+		UnsignedInt		m_eliteCashAmount;
+		UnsignedInt		m_heroicCashAmount;
+		UnsignedInt		m_xpPerCashUpdate;
+		Real			m_packUnpackVariationFactor;
+	};
+
+	IniData m_ini {};
 
 	HackInternetAIUpdateModuleData()
 	{
-		m_unpackTime = 0;
-		m_packTime = 0;
-		m_cashUpdateDelay = 0;
-		m_cashUpdateDelayFast = 0;
-		m_regularCashAmount = 0;
-		m_veteranCashAmount = 0;
-		m_eliteCashAmount = 0;
-		m_heroicCashAmount = 0;
-		m_xpPerCashUpdate = 0;
-		m_packUnpackVariationFactor = 0.0f;
+		m_ini.m_unpackTime = 0;
+		m_ini.m_packTime = 0;
+		m_ini.m_cashUpdateDelay = 0;
+		m_ini.m_cashUpdateDelayFast = 0;
+		m_ini.m_regularCashAmount = 0;
+		m_ini.m_veteranCashAmount = 0;
+		m_ini.m_eliteCashAmount = 0;
+		m_ini.m_heroicCashAmount = 0;
+		m_ini.m_xpPerCashUpdate = 0;
+		m_ini.m_packUnpackVariationFactor = 0.0f;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    AIUpdateModuleData::buildFieldParse(p);
+		AIUpdateModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "UnpackTime",					INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_unpackTime ) },
-			{ "PackTime",						INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_packTime ) },
-			{ "PackUnpackVariationFactor", INI::parseReal,					NULL, offsetof( HackInternetAIUpdateModuleData, m_packUnpackVariationFactor ) },
-			{ "CashUpdateDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_cashUpdateDelay ) },
-			{ "CashUpdateDelayFast",INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_cashUpdateDelayFast ) },
-			{ "RegularCashAmount",	INI::parseUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_regularCashAmount ) },
-			{ "VeteranCashAmount",	INI::parseUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_veteranCashAmount ) },
-			{ "EliteCashAmount",		INI::parseUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_eliteCashAmount ) },
-			{ "HeroicCashAmount",		INI::parseUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_heroicCashAmount ) },
-			{ "XpPerCashUpdate",		INI::parseUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData, m_xpPerCashUpdate ) },
+			{ "UnpackTime",					INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_unpackTime ) },
+			{ "PackTime",					INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_packTime ) },
+			{ "PackUnpackVariationFactor",	INI::parseReal,					NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_packUnpackVariationFactor ) },
+			{ "CashUpdateDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_cashUpdateDelay ) },
+			{ "CashUpdateDelayFast",		INI::parseDurationUnsignedInt,	NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_cashUpdateDelayFast ) },
+			{ "VeteranCashAmount",			INI::parseUnsignedInt,			NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_veteranCashAmount ) },
+			{ "EliteCashAmount",			INI::parseUnsignedInt,			NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_eliteCashAmount ) },
+			{ "RegularCashAmount",			INI::parseUnsignedInt,			NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_regularCashAmount ) },
+			{ "HeroicCashAmount",			INI::parseUnsignedInt,			NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_heroicCashAmount ) },
+			{ "XpPerCashUpdate",			INI::parseUnsignedInt,			NULL, offsetof( HackInternetAIUpdateModuleData::IniData, m_xpPerCashUpdate ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		HackInternetAIUpdateModuleData* self {static_cast<HackInternetAIUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 };
@@ -182,6 +190,7 @@ public:
 class HackInternetAIInterface
 {
 public:
+	virtual ~HackInternetAIInterface() {}
 	virtual Bool isHacking() const = 0;
 	virtual Bool isHackingPackingOrUnpacking() const = 0;
 };
@@ -198,17 +207,17 @@ public:
 	HackInternetAIUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
- 	virtual void aiDoCommand(const AICommandParms* parms);
+	virtual void aiDoCommand(const AICommandParms* parms);
 
-	Real getPackUnpackVariationFactor() const { return getHackInternetAIUpdateModuleData()->m_packUnpackVariationFactor; }
-	UnsignedInt getUnpackTime()					const;
-	UnsignedInt getPackTime()						const;
-	UnsignedInt getCashUpdateDelay()		const;
-	UnsignedInt getRegularCashAmount()	const { return getHackInternetAIUpdateModuleData()->m_regularCashAmount; }
-	UnsignedInt getVeteranCashAmount()	const { return getHackInternetAIUpdateModuleData()->m_veteranCashAmount; }
-	UnsignedInt getEliteCashAmount()		const { return getHackInternetAIUpdateModuleData()->m_eliteCashAmount; }
-	UnsignedInt getHeroicCashAmount()		const { return getHackInternetAIUpdateModuleData()->m_heroicCashAmount; }
-	UnsignedInt getXpPerCashUpdate()		const { return getHackInternetAIUpdateModuleData()->m_xpPerCashUpdate; }
+	Real getPackUnpackVariationFactor()	const { return getHackInternetAIUpdateModuleData()->m_ini.m_packUnpackVariationFactor; }
+	UnsignedInt getUnpackTime()			const;
+	UnsignedInt getPackTime()			const;
+	UnsignedInt getCashUpdateDelay()	const;
+	UnsignedInt getRegularCashAmount()	const { return getHackInternetAIUpdateModuleData()->m_ini.m_regularCashAmount; }
+	UnsignedInt getVeteranCashAmount()	const { return getHackInternetAIUpdateModuleData()->m_ini.m_veteranCashAmount; }
+	UnsignedInt getEliteCashAmount()	const { return getHackInternetAIUpdateModuleData()->m_ini.m_eliteCashAmount; }
+	UnsignedInt getHeroicCashAmount()	const { return getHackInternetAIUpdateModuleData()->m_ini.m_heroicCashAmount; }
+	UnsignedInt getXpPerCashUpdate()	const { return getHackInternetAIUpdateModuleData()->m_ini.m_xpPerCashUpdate; }
 
 	void hackInternet();
 	virtual UpdateSleepTime update();
@@ -225,9 +234,8 @@ protected:
 
 	virtual AIStateMachine* makeStateMachine();
 	
-	AICommandParmsStorage		m_pendingCommand;
-	Bool m_hasPendingCommand;	
+	AICommandParmsStorage m_pendingCommand {};
+	Bool m_hasPendingCommand {};
 };
 
 #endif
-

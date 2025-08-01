@@ -45,19 +45,19 @@ AIDockMachine::AIDockMachine( Object *obj ) : StateMachine( obj, "AIDockMachine"
 {
 	static const StateConditionInfo waitForClearanceConditions[] = 
 	{
-		StateConditionInfo(ableToAdvance, AI_DOCK_ADVANCE_POSITION, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(ableToAdvance, (StateID) AI_DOCK_ADVANCE_POSITION, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	// order matters: first state is the default state.
-	defineState( AI_DOCK_APPROACH,						newInstance(AIDockApproachState)( this ), AI_DOCK_WAIT_FOR_CLEARANCE, EXIT_MACHINE_WITH_FAILURE );
-	defineState( AI_DOCK_WAIT_FOR_CLEARANCE,	newInstance(AIDockWaitForClearanceState)( this ), AI_DOCK_MOVE_TO_ENTRY, EXIT_MACHINE_WITH_FAILURE, waitForClearanceConditions );
-	defineState( AI_DOCK_ADVANCE_POSITION,		newInstance(AIDockAdvancePositionState)( this ), AI_DOCK_WAIT_FOR_CLEARANCE, EXIT_MACHINE_WITH_FAILURE );
-	defineState( AI_DOCK_MOVE_TO_ENTRY,				newInstance(AIDockMoveToEntryState)( this ), AI_DOCK_MOVE_TO_DOCK, AI_DOCK_MOVE_TO_EXIT );
-	defineState( AI_DOCK_MOVE_TO_DOCK,				newInstance(AIDockMoveToDockState)( this ), AI_DOCK_PROCESS_DOCK, AI_DOCK_MOVE_TO_EXIT );
-	defineState( AI_DOCK_PROCESS_DOCK,				newInstance(AIDockProcessDockState)( this ), AI_DOCK_MOVE_TO_EXIT, AI_DOCK_MOVE_TO_EXIT );
-	defineState( AI_DOCK_MOVE_TO_EXIT,				newInstance(AIDockMoveToExitState)( this ), AI_DOCK_MOVE_TO_RALLY, EXIT_MACHINE_WITH_FAILURE );
-	defineState( AI_DOCK_MOVE_TO_RALLY,				newInstance(AIDockMoveToRallyState)( this ), EXIT_MACHINE_WITH_SUCCESS, EXIT_MACHINE_WITH_FAILURE );
+	defineState( (StateID) AI_DOCK_APPROACH,			newInstance(AIDockApproachState)( this ), (StateID) AI_DOCK_WAIT_FOR_CLEARANCE, (StateID) EXIT_MACHINE_WITH_FAILURE );
+	defineState( (StateID) AI_DOCK_WAIT_FOR_CLEARANCE,	newInstance(AIDockWaitForClearanceState)( this ), (StateID) AI_DOCK_MOVE_TO_ENTRY, (StateID) EXIT_MACHINE_WITH_FAILURE, waitForClearanceConditions );
+	defineState( (StateID) AI_DOCK_ADVANCE_POSITION,	newInstance(AIDockAdvancePositionState)( this ), (StateID) AI_DOCK_WAIT_FOR_CLEARANCE, (StateID) EXIT_MACHINE_WITH_FAILURE );
+	defineState( (StateID) AI_DOCK_MOVE_TO_ENTRY,		newInstance(AIDockMoveToEntryState)( this ), (StateID) AI_DOCK_MOVE_TO_DOCK, (StateID) AI_DOCK_MOVE_TO_EXIT );
+	defineState( (StateID) AI_DOCK_MOVE_TO_DOCK,		newInstance(AIDockMoveToDockState)( this ), (StateID) AI_DOCK_PROCESS_DOCK, (StateID) AI_DOCK_MOVE_TO_EXIT );
+	defineState( (StateID) AI_DOCK_PROCESS_DOCK,		newInstance(AIDockProcessDockState)( this ), (StateID) AI_DOCK_MOVE_TO_EXIT, (StateID) AI_DOCK_MOVE_TO_EXIT );
+	defineState( (StateID) AI_DOCK_MOVE_TO_EXIT,		newInstance(AIDockMoveToExitState)( this ), (StateID) AI_DOCK_MOVE_TO_RALLY, (StateID) EXIT_MACHINE_WITH_FAILURE );
+	defineState( (StateID) AI_DOCK_MOVE_TO_RALLY,		newInstance(AIDockMoveToRallyState)( this ), (StateID) EXIT_MACHINE_WITH_SUCCESS, (StateID) EXIT_MACHINE_WITH_FAILURE );
 
 	m_approachPosition = -1;
 }
@@ -117,7 +117,7 @@ void AIDockMachine::loadPostProcess( void )
 
 // State transition conditions ----------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool AIDockMachine::ableToAdvance( State *thisState, void* userData )
+/* static */ Bool AIDockMachine::ableToAdvance( State *thisState, void* /* userData */ )
 {
 	Object *goalObject = thisState->getMachineGoalObject();
 	AIDockMachine *myMachine = (AIDockMachine *)thisState->getMachine();
@@ -691,7 +691,7 @@ Object* AIDockProcessDockState::findMyDrone()
 }
 
 //----------------------------------------------------------------------------------------------
-void AIDockProcessDockState::onExit( StateExitType status )
+void AIDockProcessDockState::onExit( StateExitType /* status */ )
 {
 	// unlock the machine
 	getMachine()->unlock();

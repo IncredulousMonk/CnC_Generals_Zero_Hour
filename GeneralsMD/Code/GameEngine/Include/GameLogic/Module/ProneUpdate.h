@@ -44,10 +44,16 @@ class DamageInfo;
 class ProneUpdateModuleData : public ModuleData
 {
 public:
-  Real		m_damageToFramesRatio;      ///< Conversion from damage dealt to number of frames we cower
+	// MG: Cannot apply offsetof to ProneUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_damageToFramesRatio;	///< Conversion from damage dealt to number of frames we cower
+	};
+
+	IniData m_ini {};
 
 	ProneUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private: 
 
@@ -60,7 +66,7 @@ class ProneUpdate : public UpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ProneUpdate, "ProneUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ProneUpdate, ProneUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ProneUpdate, ProneUpdateModuleData )
 
 public:
 
@@ -76,7 +82,7 @@ protected:
 	void startProneEffects();
 	void stopProneEffects();
 
-	Int m_proneFrames;
+	Int m_proneFrames {};
 };
 
 

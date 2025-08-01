@@ -35,7 +35,7 @@
 // #include "Common/BitFlagsIO.h"
 // #include "Common/BuildAssistant.h"
 // #include "Common/ClientUpdateModule.h"
-// #include "Common/DrawModule.h"
+#include "Common/DrawModule.h"
 // #include "Common/GameAudio.h"
 // #include "Common/GameEngine.h"
 // #include "Common/GameLOD.h"
@@ -50,7 +50,7 @@
 // #include "Common/Xfer.h"
 
 // #include "GameLogic/ExperienceTracker.h"
-// #include "GameLogic/GameLogic.h"		// for logic frame count
+#include "GameLogic/GameLogic.h"		// for logic frame count
 #include "GameLogic/Object.h"
 // #include "GameLogic/Locomotor.h"
 // #include "GameLogic/Module/AIUpdate.h"
@@ -695,18 +695,24 @@ Bool Drawable::getProjectileLaunchOffset(WeaponSlotType wslot, Int specificBarre
 	}
 	return false;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::setAnimationLoopDuration(UnsignedInt numFrames)
 {
+(void) numFrames;
+DEBUG_CRASH(("Drawable::setAnimationLoopDuration not yet implemented!"));
+#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
 		if (di)
 			di->setAnimationLoopDuration(numFrames);
 	}
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::setAnimationCompletionTime(UnsignedInt numFrames)
 {
@@ -729,21 +735,29 @@ void Drawable::setAnimationFrame( int frame )
 			di->setAnimationFrame( frame );
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::updateSubObjects()
 {
+DEBUG_CRASH(("Drawable::updateSubObjects not yet implemented!"));
+#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
 		if (di)
 			di->updateSubObjects();
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::showSubObject( const AsciiString& name, Bool show )
 {
+(void) name;
+(void) show;
+DEBUG_CRASH(("Drawable::showSubObject not yet implemented!"));
+#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
@@ -752,8 +766,10 @@ void Drawable::showSubObject( const AsciiString& name, Bool show )
 			di->showSubObject( name, show );
 		}
 	}
+#endif // if 0
 }
 
+#if 0
 #ifdef ALLOW_ANIM_INQUIRIES
 // srj sez: not sure if this is a good idea, for net sync reasons...
 //-------------------------------------------------------------------------------------------------
@@ -775,10 +791,19 @@ Real Drawable::getAnimationScrubScalar( void ) const // lorenzen
 
 }
 #endif
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Int Drawable::getPristineBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const
 {
+(void) boneNamePrefix;
+(void) startIndex;
+(void) positions;
+(void) transforms;
+(void) maxBones;
+DEBUG_CRASH(("Drawable::getPristineBonePositions not yet implemented!"));
+return 0;
+#if 0
 	Int count = 0;
 	for (const DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
@@ -803,8 +828,10 @@ Int Drawable::getPristineBonePositions(const char* boneNamePrefix, Int startInde
 		}
 	}
 	return count;
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Int Drawable::getCurrentClientBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const
 {
@@ -2853,10 +2880,15 @@ void Drawable::clearEmoticon()
 
 	killIcon(ICON_EMOTICON);
 }
+#endif // if 0
 
 //------------------------------------------------------------------------------------------------
 void Drawable::setEmoticon( const AsciiString &name, Int duration )
 {
+(void) name;
+(void) duration;
+DEBUG_CRASH(("Drawable::setEmoticon not yet implemented!"));
+#if 0
 	//A duration of -1 means FOREVER
 	clearEmoticon();
 	Anim2DTemplate *animTemplate = TheAnim2DCollection->findTemplate( name );
@@ -2869,8 +2901,10 @@ void Drawable::setEmoticon( const AsciiString &name, Int duration )
 			getIconInfo()->m_keepTillFrame[ ICON_EMOTICON ] = duration >= 0 ? TheGameLogic->getFrame() + static_cast<UnsignedInt>(duration) : FOREVER;
 		}
 	}
+#endif // if 0
 }
 
+#if 0
 //------------------------------------------------------------------------------------------------
 void Drawable::drawEmoticon( const IRegion2D *healthBarRegion )
 {
@@ -4000,7 +4034,6 @@ void Drawable::clearAndSetModelConditionState( ModelConditionFlagType clr, Model
 	clearAndSetModelConditionFlags(c, s);
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 DrawModule** Drawable::getDrawModulesNonDirty() 
 { 
@@ -4066,7 +4099,6 @@ DrawModule const** Drawable::getDrawModules() const
 #endif
 	return dm;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -4744,6 +4776,7 @@ void Drawable::updateDrawableClipStatus( UnsignedInt shotsRemaining, UnsignedInt
 			di->updateProjectileClipStatus(shotsRemaining, maxShots, slot);
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::updateDrawableSupplyStatus( Int maxSupply, Int currentSupply )
@@ -4756,6 +4789,7 @@ void Drawable::updateDrawableSupplyStatus( Int maxSupply, Int currentSupply )
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::notifyDrawableDependencyCleared()
 {

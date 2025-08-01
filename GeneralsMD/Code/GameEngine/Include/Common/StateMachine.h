@@ -69,13 +69,14 @@ enum StateReturnType
 	// note that all positive values are reserved for STATE_SLEEP!
 
 	STATE_CONTINUE	= 0,						///< stay in this state (only for update method)
-	STATE_SUCCESS		= -1,						///< state finished successfully, go to next state
-	STATE_FAILURE		= -2,						///< state finished abnormally, go to next state
+	STATE_SUCCESS	= -1,						///< state finished successfully, go to next state
+	STATE_FAILURE	= -2,						///< state finished abnormally, go to next state
 };
 
-#define STATE_SLEEP(numFrames)				((StateReturnType)(numFrames))
-#define IS_STATE_SLEEP(ret)						((Int)(ret) > 0)
-#define GET_STATE_SLEEP_FRAMES(ret)		((UnsignedInt)(ret))
+#define STATE_SLEEP(numFrames)			((StateReturnType)(numFrames))
+#define IS_STATE_SLEEP(ret)				((Int)(ret) > 0)
+#define GET_STATE_SLEEP_INT(ret)		((Int)(ret))
+#define GET_STATE_SLEEP_FRAMES(ret)		((UnsignedInt)(ret)) // MG: Casting negative values to UnsignedInt is just asking for trouble!
 
 // (we use 0x3fffffff so that we can add offsets and not overflow...
 //		at 30fps that's around ~414 days!)
@@ -97,7 +98,7 @@ inline StateReturnType MIN_SLEEP(UnsignedInt encloserSleep, StateReturnType encl
 	if (IS_STATE_SLEEP(encloseeResult))
 	{
 		UnsignedInt encloseeSleep = GET_STATE_SLEEP_FRAMES(encloseeResult);
-		return STATE_SLEEP(min(encloserSleep, encloseeSleep));
+		return STATE_SLEEP(std::min(encloserSleep, encloseeSleep));
 	}
 	else
 	{
@@ -128,9 +129,9 @@ enum StateExitType
 
 struct StateConditionInfo
 {
-	StateTransFuncPtr	test;
-	StateID						toStateID;
-	void*							userData;
+	StateTransFuncPtr	test {};
+	StateID				toStateID {};
+	void*				userData {};
 
 	StateConditionInfo(StateTransFuncPtr t, StateID id, void* ud) : test(t), toStateID(id), userData(ud) { }
 };
@@ -205,10 +206,10 @@ private:
 	struct TransitionInfo
 	{
 		StateTransFuncPtr		test;											///< the condition evaluation function
-		StateID							toStateID;								///< the state to transition to
-		void*								userData;									///< data passed to transFuncPtr.
+		StateID					toStateID;								///< the state to transition to
+		void*					userData;									///< data passed to transFuncPtr.
 #ifdef STATE_MACHINE_DEBUG
-		const char*					description;							///< description (for debugging purposes)
+		const char*				description;							///< description (for debugging purposes)
 #endif
 
 		TransitionInfo(StateTransFuncPtr t, StateID id, void* ud, const char* desc) : 
@@ -221,15 +222,15 @@ private:
 		{ }
 	};
 
-	StateID m_ID;																///< this state's ID
-	StateID m_successStateID;										///< state to move to upon success
-	StateID m_failureStateID;										///< state to move to upon failure
-	std::vector<TransitionInfo> m_transitions;	///< possible transitions from this state
+	StateID m_ID {};																///< this state's ID
+	StateID m_successStateID {};										///< state to move to upon success
+	StateID m_failureStateID {};										///< state to move to upon failure
+	std::vector<TransitionInfo> m_transitions {};	///< possible transitions from this state
 
-	StateMachine *m_machine;										///< the state machine this state is part of
+	StateMachine *m_machine {};										///< the state machine this state is part of
 protected:
 #ifdef STATE_MACHINE_DEBUG
-	AsciiString m_name;													///< Human readable name of this state - for debugging.  jba.
+	AsciiString m_name {};													///< Human readable name of this state - for debugging.  jba.
 #endif
 };
 inline State::~State() { }
@@ -372,24 +373,24 @@ private:
 	void internalSetGoalPosition( const Coord3D *pos);
 
 
-	std::map<StateID, State *>	m_stateMap;			///< the mapping of ids to states
-	Object*											m_owner;				///< object that "owns" this machine 
+	std::map<StateID, State *>	m_stateMap {};			///< the mapping of ids to states
+	Object*			m_owner {};				///< object that "owns" this machine 
 
-	UnsignedInt		m_sleepTill;									///< if nonzero, we are sleeping 'till this frame
+	UnsignedInt		m_sleepTill {};									///< if nonzero, we are sleeping 'till this frame
 
-	StateID				m_defaultStateID;									///< the default state of the machine
-	State*				m_currentState;
+	StateID			m_defaultStateID {};									///< the default state of the machine
+	State*			m_currentState {};
 
-	ObjectID			m_goalObjectID;										///< the object of interest for this state
-	Coord3D				m_goalPosition;										///< the position of interest for this state
+	ObjectID		m_goalObjectID {};										///< the object of interest for this state
+	Coord3D			m_goalPosition {};										///< the position of interest for this state
 
-	Bool					m_locked;													///< whether this machine is locked or not
-	Bool					m_defaultStateInited;							///< if initDefaultState has been called
+	Bool			m_locked {};													///< whether this machine is locked or not
+	Bool			m_defaultStateInited {};							///< if initDefaultState has been called
 
 #ifdef STATE_MACHINE_DEBUG
-	Bool					m_debugOutput;
-	AsciiString		m_name;													///< Human readable name of this state - for debugging.  jba.
-	const char*		m_lockedby;
+	Bool			m_debugOutput {};
+	AsciiString		m_name {};													///< Human readable name of this state - for debugging.  jba.
+	const char*		m_lockedby {};
 #endif
 };
 

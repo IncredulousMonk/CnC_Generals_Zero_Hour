@@ -48,10 +48,10 @@ public:
 
 	OverchargeBehaviorModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse( void* what, MultiIniFieldParse &p );
 
-	Real m_healthPercentToDrainPerSecond;			///< when active, this much health is drained
-	Real m_notAllowedWhenHealthBelowPercent;	///< you cannot overcharge when object is below this health %
+	Real m_healthPercentToDrainPerSecond {};			///< when active, this much health is drained
+	Real m_notAllowedWhenHealthBelowPercent {};	///< you cannot overcharge when object is below this health %
 
 };
 
@@ -96,10 +96,8 @@ public:
 
 	// DamageModuleInterface
 	virtual void onDamage( DamageInfo *damageInfo );
-	virtual void onHealing( DamageInfo *damageInfo ) { }
-	virtual void onBodyDamageStateChange( const DamageInfo *damageInfo, 
-																				BodyDamageType oldState, 
-																				BodyDamageType newState ) { }
+	virtual void onHealing( DamageInfo * /* damageInfo */ ) { }
+	virtual void onBodyDamageStateChange( const DamageInfo * /* damageInfo */, BodyDamageType /* oldState */, BodyDamageType /* newState */ ) { }
 
 
 	// specific methods
@@ -112,7 +110,7 @@ public:
 
 protected:
 
-	Bool m_overchargeActive;				///< Overcharge is currently on/off for this object
+	Bool m_overchargeActive {};				///< Overcharge is currently on/off for this object
 
 };
 

@@ -80,9 +80,9 @@ typedef std::vector< Locomotor* > LocomotorVector;
 class LocomotorSet : public Snapshot
 {
 private:
-	LocomotorVector						m_locomotors;
-	LocomotorSurfaceTypeMask	m_validLocomotorSurfaces;
-	Bool											m_downhillOnly;
+	LocomotorVector				m_locomotors {};
+	LocomotorSurfaceTypeMask	m_validLocomotorSurfaces {};
+	Bool						m_downhillOnly {};
 	
 	LocomotorSet(const LocomotorSet& that);
 	LocomotorSet& operator=(const LocomotorSet& that);

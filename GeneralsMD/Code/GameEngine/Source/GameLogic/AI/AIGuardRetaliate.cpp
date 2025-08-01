@@ -181,19 +181,19 @@ AIGuardRetaliateMachine::AIGuardRetaliateMachine( Object *owner ) :
 	
 	static const StateConditionInfo attackAggressors[] =
 	{
-		StateConditionInfo(hasAttackedMeAndICanReturnFire, AI_GUARD_RETALIATE_ATTACK_AGGRESSOR, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(hasAttackedMeAndICanReturnFire, (StateID) AI_GUARD_RETALIATE_ATTACK_AGGRESSOR, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	// order matters: first state is the default state.
 // srj sez: I made "return" the start state, so that if ordered to guard a position
 // that isn't the unit's current position, it moves to that position first.
-	defineState( AI_GUARD_RETALIATE_ATTACK_AGGRESSOR, newInstance(AIGuardRetaliateAttackAggressorState)( this ), AI_GUARD_RETALIATE_RETURN, AI_GUARD_RETALIATE_RETURN );
-	defineState( AI_GUARD_RETALIATE_RETURN,						newInstance(AIGuardRetaliateReturnState)( this ), AI_GUARD_RETALIATE_IDLE, AI_GUARD_RETALIATE_INNER, attackAggressors );
-	defineState( AI_GUARD_RETALIATE_IDLE,							newInstance(AIGuardRetaliateIdleState)( this ), AI_GUARD_RETALIATE_INNER, EXIT_MACHINE_WITH_SUCCESS, attackAggressors );
-	defineState( AI_GUARD_RETALIATE_INNER,						newInstance(AIGuardRetaliateInnerState)( this ), AI_GUARD_RETALIATE_OUTER, AI_GUARD_RETALIATE_OUTER );
-	defineState( AI_GUARD_RETALIATE_OUTER,						newInstance(AIGuardRetaliateOuterState)( this ), AI_GUARD_RETALIATE_GET_CRATE, AI_GUARD_RETALIATE_GET_CRATE );
-	defineState( AI_GUARD_RETALIATE_GET_CRATE,				newInstance(AIGuardRetaliatePickUpCrateState)( this ), AI_GUARD_RETALIATE_RETURN, AI_GUARD_RETALIATE_RETURN );
+	defineState( (StateID) AI_GUARD_RETALIATE_ATTACK_AGGRESSOR,	newInstance(AIGuardRetaliateAttackAggressorState)( this ), (StateID) AI_GUARD_RETALIATE_RETURN, (StateID) AI_GUARD_RETALIATE_RETURN );
+	defineState( (StateID) AI_GUARD_RETALIATE_RETURN,			newInstance(AIGuardRetaliateReturnState)( this ), (StateID) AI_GUARD_RETALIATE_IDLE, (StateID) AI_GUARD_RETALIATE_INNER, attackAggressors );
+	defineState( (StateID) AI_GUARD_RETALIATE_IDLE,				newInstance(AIGuardRetaliateIdleState)( this ), (StateID) AI_GUARD_RETALIATE_INNER, (StateID) EXIT_MACHINE_WITH_SUCCESS, attackAggressors );
+	defineState( (StateID) AI_GUARD_RETALIATE_INNER,			newInstance(AIGuardRetaliateInnerState)( this ), (StateID) AI_GUARD_RETALIATE_OUTER, (StateID) AI_GUARD_RETALIATE_OUTER );
+	defineState( (StateID) AI_GUARD_RETALIATE_OUTER,			newInstance(AIGuardRetaliateOuterState)( this ), (StateID) AI_GUARD_RETALIATE_GET_CRATE, (StateID) AI_GUARD_RETALIATE_GET_CRATE );
+	defineState( (StateID) AI_GUARD_RETALIATE_GET_CRATE,		newInstance(AIGuardRetaliatePickUpCrateState)( this ), (StateID) AI_GUARD_RETALIATE_RETURN, (StateID) AI_GUARD_RETALIATE_RETURN );
 }
 
 //--------------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ AIGuardRetaliateMachine::~AIGuardRetaliateMachine()
 
 Bool AIGuardRetaliateMachine::isIdle() const
 {
-	if( getCurrentStateID() == AI_IDLE )
+	if( getCurrentStateID() == (StateID) AI_IDLE )
 	{
 		return TRUE;
 	}
@@ -476,7 +476,7 @@ void AIGuardRetaliateOuterState::xfer( Xfer *xfer )
 /** Load post process */
 // ------------------------------------------------------------------------------------------------
 void AIGuardRetaliateOuterState::loadPostProcess( void )
-{						 AIGuardRetaliateOuterState
+{
 	onEnter();
 }  // end loadPostProcess
 
@@ -503,7 +503,7 @@ StateReturnType AIGuardRetaliateOuterState::onEnter( void )
 
 	m_exitConditions.m_center = pos;
 	m_exitConditions.m_radiusSqr = sqr( 0.67f * (range + AIGuardRetaliateMachine::getStdGuardRange( getMachineOwner() )) );
-	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 	m_exitConditions.m_conditionsToConsider = (GuardRetaliateExitConditions::ATTACK_ExitIfExpiredDuration | 
 																								GuardRetaliateExitConditions::ATTACK_ExitIfOutsideRadius | 
 																								GuardRetaliateExitConditions::ATTACK_ExitIfNoUnitFound);
@@ -536,7 +536,7 @@ StateReturnType AIGuardRetaliateOuterState::update( void )
 		if (deltaAggr.lengthSqr() <= visionSqr) 
 		{
 			// reset the counter
-			m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+			m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 		}
 	}
 	
@@ -586,7 +586,7 @@ void AIGuardRetaliateReturnState::loadPostProcess( void )
 StateReturnType AIGuardRetaliateReturnState::onEnter( void )
 {
 	UnsignedInt now = TheGameLogic->getFrame();
-	m_nextReturnScanTime = now + GameLogicRandomValue(0, TheAI->getAiData()->m_guardEnemyReturnScanRate);
+	m_nextReturnScanTime = now + GameLogicRandomValueUnsigned(0, TheAI->getAiData()->m_ini.m_guardEnemyReturnScanRate);
 
 // no, no, no, don't do this in onEnter, unless you like really slow maps. (srj)
 //	if (getGuardMachine()->lookForInnerTarget()) 
@@ -609,7 +609,7 @@ StateReturnType AIGuardRetaliateReturnState::update( void )
 	UnsignedInt now = TheGameLogic->getFrame();
 	if (now >= m_nextReturnScanTime)
 	{
-		m_nextReturnScanTime = now + TheAI->getAiData()->m_guardEnemyReturnScanRate;
+		m_nextReturnScanTime = now + TheAI->getAiData()->m_ini.m_guardEnemyReturnScanRate;
 		if (getGuardMachine()->lookForInnerTarget()) 
 			return STATE_FAILURE; // early termination because we found a target.
 	}
@@ -658,7 +658,7 @@ StateReturnType AIGuardRetaliateIdleState::onEnter( void )
 	// first time thru, use a random amount so that everyone doesn't scan on the same frame,
 	// to avoid "spikes". 
 	UnsignedInt now = TheGameLogic->getFrame();
-	m_nextEnemyScanTime = now + GameLogicRandomValue(0, TheAI->getAiData()->m_guardEnemyScanRate);
+	m_nextEnemyScanTime = now + GameLogicRandomValueUnsigned(0, TheAI->getAiData()->m_ini.m_guardEnemyScanRate);
 
 	return STATE_CONTINUE;
 }
@@ -672,7 +672,7 @@ StateReturnType AIGuardRetaliateIdleState::update( void )
 	if (now < m_nextEnemyScanTime)
 		return STATE_SLEEP(m_nextEnemyScanTime - now);
 
-	m_nextEnemyScanTime = now + TheAI->getAiData()->m_guardEnemyScanRate;
+	m_nextEnemyScanTime = now + TheAI->getAiData()->m_ini.m_guardEnemyScanRate;
 
 #ifdef STATE_MACHINE_DEBUG
 	//getMachine()->setDebugOutput(true);
@@ -682,7 +682,7 @@ StateReturnType AIGuardRetaliateIdleState::update( void )
 	// Check to see if we have created a crate we need to pick up.
 	if (ai->getCrateID() != INVALID_ID) 
 	{
-		getMachine()->setState(AI_GUARD_RETALIATE_GET_CRATE);
+		getMachine()->setState((StateID) AI_GUARD_RETALIATE_GET_CRATE);
 		return STATE_SLEEP(m_nextEnemyScanTime - now);
 	}
 
@@ -793,7 +793,7 @@ StateReturnType AIGuardRetaliateAttackAggressorState::onEnter( void )
 	Real range = TheAI->getAdjustedVisionRangeForObject(obj, AI_VISIONFACTOR_OWNERTYPE | AI_VISIONFACTOR_MOOD);
 
 	m_exitConditions.m_center = pos;
-	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 	m_exitConditions.m_radiusSqr = sqr( range + AIGuardRetaliateMachine::getStdGuardRange( obj ) );
 	m_exitConditions.m_conditionsToConsider = ( GuardRetaliateExitConditions::ATTACK_ExitIfExpiredDuration | 
 																						  GuardRetaliateExitConditions::ATTACK_ExitIfOutsideRadius |

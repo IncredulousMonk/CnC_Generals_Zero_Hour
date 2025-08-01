@@ -50,7 +50,7 @@ static Int numDebugStrings = 0;
 //static Int numDumpStrings = 0;
 
 #define IS_FRAME_OK_TO_LOG TheGameLogic->isInGame() && !TheGameLogic->isInShellGame() && !TheDebugIgnoreSyncErrors && \
-	TheCRCFirstFrameToLog >= 0 && TheCRCFirstFrameToLog <= TheGameLogic->getFrame() \
+	TheCRCFirstFrameToLog >= 0 && TheCRCFirstFrameToLog <= (Int)TheGameLogic->getFrame() \
 	&& TheGameLogic->getFrame() <= TheCRCLastFrameToLog
 
 CRCVerification::CRCVerification()
@@ -94,6 +94,8 @@ CRCVerification::~CRCVerification()
 static Bool dumped = FALSE;
 void outputCRCDebugLines( void )
 {
+DEBUG_CRASH(("outputCRCDebugLines not yet implemented!\n"));
+#if 0
 	if (dumped)
 		return;
 	dumped = TRUE;
@@ -114,6 +116,7 @@ void outputCRCDebugLines( void )
 	}
 
 	if (fp) fclose(fp);
+#endif // if 0
 }
 
 void outputCRCDumpLines( void )
@@ -137,7 +140,7 @@ static AsciiString getFname(AsciiString path)
 	return path.reverseFind('\\') + 1;
 }
 
-Int lastCRCDebugFrame = 0;
+UnsignedInt lastCRCDebugFrame = 0;
 Int lastCRCDebugIndex = 0;
 extern Bool inCRCGen;
 void addCRCDebugLine(const char *fmt, ...)
@@ -156,11 +159,11 @@ void addCRCDebugLine(const char *fmt, ...)
 
 		sprintf(DebugStrings[nextDebugString], "%d:%d ",  TheGameLogic->getFrame(), lastCRCDebugIndex++);
 		//DebugStrings[nextDebugString][0] = 0;
-		Int len = strlen(DebugStrings[nextDebugString]);
+		size_t len = strlen(DebugStrings[nextDebugString]);
 
 		va_list va;
 		va_start( va, fmt );
-		_vsnprintf(DebugStrings[nextDebugString]+len, 1024-len, fmt, va );
+		vsnprintf(DebugStrings[nextDebugString]+len, 1024-len, fmt, va );
 		DebugStrings[nextDebugString][1023] = 0;
 		va_end( va );
 
@@ -192,7 +195,7 @@ void addCRCGenLine(const char *fmt, ...)
 	static char buf[1024];
 	va_list va;
 	va_start( va, fmt );
-	_vsnprintf(buf, 1024, fmt, va );
+	vsnprintf(buf, 1024, fmt, va );
 	va_end( va );
 	buf[1023] = 0;
 	addCRCDebugLine("%s", buf);

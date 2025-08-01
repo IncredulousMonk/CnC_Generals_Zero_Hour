@@ -43,7 +43,7 @@
 #include "GameClient/Color.h"
 
 #include "GameLogic/Damage.h" //for kill()
-// #include "GameLogic/WeaponBonusConditionFlags.h"
+#include "GameLogic/WeaponBonusConditionFlags.h"
 #include "GameLogic/WeaponSet.h"
 #include "GameLogic/WeaponSetFlags.h"
 #include "GameLogic/Module/StealthUpdate.h"
@@ -180,12 +180,10 @@ public:
 
 	void onDestroy();																							///< run during TheGameLogic::destroyObject
 
-#if 0
 	Object* getNextObject() { return m_next; }
 	const Object* getNextObject() const { return m_next; }
 
 	void updateObjValuesFromMapProperties(Dict* properties);			///< Brings in properties set in the editor.
-#endif // if 0
 
 	// ids and binding
 	ObjectID getID() const { return m_id; }												///< this object's unique ID
@@ -193,9 +191,9 @@ public:
 	Drawable* getDrawable() const { return m_drawable; }					///< drawable (if any) bound to obj
 
 	ObjectID getProducerID() const { return m_producerID; }
-#if 0
 	void setProducer(const Object* obj);
 
+#if 0
 	ObjectID getBuilderID() const { return m_builderID; }
 	void setBuilder( const Object *obj );
 #endif // if 0
@@ -204,10 +202,8 @@ public:
 	void leaveGroup( void );												///< leave our current AIGroup
 	AIGroup *getGroup(void);
 
-#if 0
 	// physical properties
 	Bool isMobile() const;																	///< returns true if object is currently able to move
-#endif // if 0
 	Bool isAbleToAttack() const;														///< returns true if object currently has some kind of attack capability
 
 #if 0
@@ -249,9 +245,9 @@ public:
 	void notifySubdualDamage( Real amount );///< At this level, we just pass this on to our helper and do a special tint
 	void doStatusDamage( ObjectStatusTypes status, Real duration );///< At this level, we just pass this on to our helper
 	void doTempWeaponBonus( WeaponBonusConditionType status, UnsignedInt duration );///< At this level, we just pass this on to our helper
+#endif // if 0
 
 	void scoreTheKill( const Object *victim );						///< I just killed this object.  
-#endif // if 0
 	void onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback = TRUE );	///< I just achieved this level right this moment
 	ExperienceTracker* getExperienceTracker() {return m_experienceTracker;}
 	const ExperienceTracker* getExperienceTracker() const {return m_experienceTracker;}
@@ -296,8 +292,10 @@ public:
 	void setGeometryInfoZ( Real newZ );
 
 	void onCollide( Object *other, const Coord3D *loc, const Coord3D *normal );
+#endif // if 0
 	
 	Real getCarrierDeckHeight() const;
+#if 0
 	// access to modules
 	//-----------------------------------------------------------------------------
 	
@@ -312,7 +310,6 @@ public:
 	BodyModuleInterface* getBodyModule() const { return m_body; }
 	ContainModuleInterface* getContain() const { return m_contain; }
 	StealthUpdate*          getStealth() const { return m_stealth; }
-#if 0
 	SpawnBehaviorInterface* getSpawnBehaviorInterface() const;
 	ProjectileUpdateInterface* getProjectileUpdateInterface() const;
 
@@ -323,16 +320,17 @@ public:
 
 	inline AIUpdateInterface *getAI() { return m_ai; }
 	inline const AIUpdateInterface* getAI() const { return m_ai; }
-#endif // if 0
 
 	inline PhysicsBehavior* getPhysics() { return m_physics; }
 	inline const PhysicsBehavior* getPhysics() const { return m_physics; }
 #if 0
 	void topple( const Coord3D *toppleDirection, Real toppleSpeed, UnsignedInt options );
+#endif // if 0
 
 	UpdateModule* findUpdateModule(NameKeyType key) const { return (UpdateModule*)findModule(key); }
 	DamageModule* findDamageModule(NameKeyType key) const { return (DamageModule*)findModule(key); }
 
+#if 0
 	Bool isSalvageCrate() const;
 #endif // if 0
 
@@ -342,19 +340,21 @@ public:
 	//
 	ProductionUpdateInterface* getProductionUpdateInterface( void );
 
-#if 0
 	//
 	// Find us our dock update interface if we have one.  Again, this method exists simple
 	// because we want to do this in a lot of places throughout the code
 	//
 	DockUpdateInterface *getDockUpdateInterface( void );
 
+#if 0
 	// Ditto for special powers -- Kris
 	SpecialPowerModuleInterface* findSpecialPowerModuleInterface( SpecialPowerType type ) const;
 	SpecialPowerModuleInterface* findAnyShortcutSpecialPowerModuleInterface() const;
 	SpecialAbilityUpdate* findSpecialAbilityUpdate( SpecialPowerType type ) const;
 	SpecialPowerCompletionDie* findSpecialPowerCompletionDie() const;
+#endif // if 0
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestinationActive( SpecialPowerType type = SPECIAL_INVALID ) const;
+#if 0
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestination( SpecialPowerType type = SPECIAL_INVALID ) const;
 
 	CountermeasuresBehaviorInterface* getCountermeasuresBehaviorInterface();
@@ -365,10 +365,10 @@ public:
 	inline Bool testStatus( ObjectStatusTypes bit ) const { return m_status.test( bit ); }
 	void setStatus( ObjectStatusMaskType objectStatus, Bool set = true );
 	inline void clearStatus( ObjectStatusMaskType objectStatus ) { setStatus( objectStatus, false ); }
-#if 0
 	void updateUpgradeModules();	///< We need to go through our Upgrade Modules and see which should be activated
 	UpgradeMaskType getObjectCompletedUpgradeMask() const { return m_objectUpgradesCompleted; } ///< Upgrades I complete locally
 
+#if 0
 	//This function sucks.
 	//It was added for objects that can disguise as other objects and contain upgraded subobject overrides. 
 	//A concrete example is the bomb truck. Different payloads are displayed based on which upgrades have been
@@ -394,14 +394,14 @@ public:
 	
 	Bool isMassSelectable() const;
 
-#if 0
 	// User specified formation.
 	void setFormationID(enum FormationID id) {m_formationID = id;}
 	enum FormationID getFormationID(void) const {return m_formationID;}
 	void setFormationOffset(const Coord2D& offset) {m_formationOffset = offset;}
 	void getFormationOffset(Coord2D* offset) const {*offset = m_formationOffset;}
-		
 
+
+#if 0
 //THIS FUNCTION BELONGS AT THE OBJECT LEVEL BECAUSE THERE IS AT LEAST ONE SPECIAL UNIT
 //(ANGRY MOB) WHICH NEEDS LOGIC-SIDE POSITION CALC'S...
 //IT WOULD PROBABLY BE WISE TO MOVE ALL THE HARD-CODED DEFAULTS BELOW
@@ -423,11 +423,9 @@ public:
 	UnsignedByte getCrusherLevel() const;
 	UnsignedByte getCrushableLevel() const;
 
-#if 0
 	Bool hasUpgrade( const UpgradeTemplate *upgradeT ) const ;			///< does this object already have this upgrade
 	Bool affectedByUpgrade( const UpgradeTemplate *upgradeT ) const ; ///< can the object even "have" this upgrade, will it do something?
 	void giveUpgrade( const UpgradeTemplate *upgradeT );		///< give upgrade to this object
-#endif // if 0
 	void removeUpgrade( const UpgradeTemplate *upgradeT );	///< remove upgrade from this object
 #if 0
 
@@ -438,15 +436,13 @@ public:
 	void calcNaturalRallyPoint(Coord2D *pt); ///< calc the "natural" starting rally point
 	void setConstructionPercent( Real percent ) { m_constructionPercent = percent; }
 	Real getConstructionPercent() const { return m_constructionPercent; }
+#endif // if 0
 
 	void setLayer( PathfindLayerEnum layer );
-#endif // if 0
 	PathfindLayerEnum getLayer() const { return m_layer; }
 
-#if 0
 	void setDestinationLayer( PathfindLayerEnum layer );
 	PathfindLayerEnum getDestinationLayer() const { return m_destinationLayer; }
-#endif // if 0
 
 	void prependToList(Object **pListHead);
 	void removeFromList(Object **pListHead);
@@ -465,8 +461,8 @@ public:
 	void onPartitionCellChange();///< We have moved a 'significant' amount, so do maintenence that can be considered 'cell-based'
 	void handlePartitionCellMaintenance();					///< Undo and redo all shroud actions.  Call when something has changed, like position or ownership or Death
 
-#if 0
 	Real getVisionRange() const;				///< How far can you see?  This is dynamic so it is in Object.
+#if 0
 	void setVisionRange( Real newVisionRange );	///< Access to setting someone's Vision distance
 	Real getShroudRange() const;				///< How far can you shroud?  Even more dynamic since it'll start at zero for everyone.
 	void setShroudRange( Real newShroudRange );	///< Access to setting someone's shrouding distance
@@ -500,7 +496,6 @@ public:
 
 	// Special Powers -------------------------------------------------------------------------------
 	SpecialPowerModuleInterface *getSpecialPowerModule( const SpecialPowerTemplate *specialPowerTemplate ) const;
-#if 0
 	void doSpecialPower( const SpecialPowerTemplate *specialPowerTemplate, UnsignedInt commandOptions, Bool forced = false );	///< execute power
 	void doSpecialPowerAtObject( const SpecialPowerTemplate *specialPowerTemplate, Object *obj, UnsignedInt commandOptions, Bool forced = false );	///< execute power
 	void doSpecialPowerAtLocation( const SpecialPowerTemplate *specialPowerTemplate, const Coord3D *loc, Real angle, UnsignedInt commandOptions, Bool forced = false );	///< execute power
@@ -510,7 +505,6 @@ public:
 	void doCommandButtonAtObject( const CommandButton *commandButton, Object *obj, CommandSourceType cmdSource );
 	void doCommandButtonAtPosition( const CommandButton *commandButton, const Coord3D *pos, CommandSourceType cmdSource );
 	void doCommandButtonUsingWaypoints( const CommandButton *commandButton, const Waypoint *way, CommandSourceType cmdSource );
-#endif // if 0
 	
 	/**
 		 For Object specific dynamic command sets.  Different from the Science specific ones handled in ThingTemplate
@@ -518,6 +512,7 @@ public:
 	const AsciiString& getCommandSetString() const;
 #if 0
 	void setCommandSetStringOverride( AsciiString newCommandSetString ) { m_commandSetStringOverride = newCommandSetString; }
+#endif // if 0
 
 	/// People are faking their commandsets, and, Surprise!, they are authoritative.  Challenge everything.
 	Bool canProduceUpgrade( const UpgradeTemplate *upgrade ); 
@@ -531,7 +526,6 @@ public:
 	Bool hasWeaponToDealDamageType(DamageType typeToDeal) const;
 	Real getLargestWeaponRange() const;
 	UnsignedInt getMostPercentReadyToFireAnyWeapon() const;
-#endif // if 0
 
 	Weapon* getWeaponInWeaponSlot(WeaponSlotType wslot) const { return m_weaponSet.getWeaponInWeaponSlot(wslot); }
 	UnsignedInt getWeaponInWeaponSlotCommandSourceMask( WeaponSlotType wSlot ) const { return m_weaponSet.getNthCommandSourceMask( wSlot ); }
@@ -539,7 +533,6 @@ public:
 	// see if this current weapon set's weapons has shared reload times
 	Bool isReloadTimeShared() const { return m_weaponSet.isSharedReloadTime(); }
 
-#if 0
 	Weapon* getCurrentWeapon(WeaponSlotType* wslot = NULL);
 	const Weapon* getCurrentWeapon(WeaponSlotType* wslot = NULL) const;
 	void setFiringConditionForCurrentWeapon() const;
@@ -547,13 +540,14 @@ public:
 	void fireCurrentWeapon(Object *target);
 	void fireCurrentWeapon(const Coord3D* pos);
 	void preFireCurrentWeapon( const Object *victim );
+#if 0
 	UnsignedInt getLastShotFiredFrame() const;					///< Get the frame a shot was last fired on
 	ObjectID getLastVictimID() const;						///< Get the last victim we shot at
 	Weapon* findWaypointFollowingCapableWeapon();
 	Bool getAmmoPipShowingInfo(Int& numTotal, Int& numFull) const;
+#endif // if 0
 
 	void notifyFiringTrackerShotFired( const Weapon* weaponFired, ObjectID victimID ) ;
-#endif // if 0
 
 	/**
 		Determines if the unit has any weapon that could conceivably
@@ -569,7 +563,6 @@ public:
 	*/
 	CanAttackResult getAbleToAttackSpecificObject( AbleToAttackType t, const Object* target, CommandSourceType commandSource, WeaponSlotType specificSlot = (WeaponSlotType)-1 ) const;
 
-#if 0
 	//Used for base defenses and otherwise stationary units to see if you can attack a position potentially out of range.
 	CanAttackResult getAbleToUseWeaponAgainstTarget( AbleToAttackType attackType, const Object *victim, const Coord3D *pos, CommandSourceType commandSource, WeaponSlotType specificSlot = (WeaponSlotType)-1 ) const;
 
@@ -579,14 +572,12 @@ public:
 		Note that this DOES take weapon attack range into account.
 	*/
 	Bool chooseBestWeaponForTarget(const Object* target, WeaponChoiceCriteria criteria, CommandSourceType cmdSource);
-#endif // if 0
 
 	// set and/or clear a single modelcondition flag
 	void setModelConditionState( ModelConditionFlagType a );
 	void clearModelConditionState( ModelConditionFlagType a );
 	void clearAndSetModelConditionState( ModelConditionFlagType clr, ModelConditionFlagType set );
 
-#if 0
 	//Special model states are states that are turned on for a period of time, and turned off
 	//automatically -- used for cheer, and scripted special moment animations. Setting a special
 	//state will automatically clear any other special states that may be turned on so you can only
@@ -598,7 +589,6 @@ public:
 	void clearModelConditionFlags( const ModelConditionFlags& clr );
 	void setModelConditionFlags( const ModelConditionFlags& set );
 	void clearAndSetModelConditionFlags( const ModelConditionFlags& clr, const ModelConditionFlags& set );
-#endif // if 0
 
 	void setWeaponSetFlag(WeaponSetType wst);
 	void clearWeaponSetFlag(WeaponSetType wst);
@@ -617,15 +607,19 @@ public:
 	// @todo: inline
 	Bool hasSpecialPower( SpecialPowerType type ) const;
 	Bool hasAnySpecialPower() const;
+#endif // if 0
 
 	void setWeaponBonusCondition(WeaponBonusConditionType wst);
 	void clearWeaponBonusCondition(WeaponBonusConditionType wst);
 	
+#if 0
 	// note, the !=0 at the end is important, to convert this into a boolean type! (srj)
 	Bool testWeaponBonusCondition(WeaponBonusConditionType wst) const { return (m_weaponBonusCondition & (1 << wst)) != 0; }
 	inline WeaponBonusConditionFlags getWeaponBonusCondition() const { return m_weaponBonusCondition; }
+#endif // if 0
 
 	Bool getSingleLogicalBonePosition(const char* boneName, Coord3D* position, Matrix3D* transform) const;
+#if 0
 	Bool getSingleLogicalBonePositionOnTurret(WhichTurretType whichTurret, const char* boneName, Coord3D* position, Matrix3D* transform) const;
 	Int getMultiLogicalBonePosition(const char* boneNamePrefix, Int maxBones, Coord3D* positions, Matrix3D* transforms, Bool convertToWorld = TRUE ) const;
 	
@@ -633,18 +627,16 @@ public:
 	Bool didEnter(const PolygonTrigger *pTrigger) const;
 	Bool didExit(const PolygonTrigger *pTrigger) const;
 	Bool isInside(const PolygonTrigger *pTrigger) const;
+#endif // if 0
 
 	// exiting of any kind
 	ExitInterface *getObjectExitInterface() const;  ///< get exit interface is present
 	Bool hasExitInterface() const { return getObjectExitInterface() != 0; }
-#endif // if 0
 
 	ObjectShroudStatus getShroudedStatus(Int playerIndex) const;
 
-#if 0
 	DisabledMaskType getDisabledFlags() const { return m_disabledMask; }
 	Bool isDisabled() const { return m_disabledMask.any(); }
-#endif // if 0
 	Bool clearDisabled( DisabledType type );
 
 	void setDisabled( DisabledType type );
@@ -658,22 +650,24 @@ public:
 	
 	//Checks any timers and clears disabled statii that have expired.
 	void checkDisabledStatus();
+#endif // if 0
 	
 	//When an AIAttackState is over, it needs to clean up any weapons that might be in leech range mode
 	//or else those weapons will have unlimited range!
 	void clearLeechRangeModeForAllWeapons();
 	
+#if 0
 	Int getNumConsecutiveShotsFiredAtTarget( const Object *victim) const;
 
 	void setHealthBoxOffset( const Coord3D& offset ) { m_healthBoxOffset = offset; } ///< for special amorphous like angry mob
 
 	void defect( Team *newTeam, UnsignedInt detectionTime );
 	void goInvulnerable( UnsignedInt time );
+#endif // if 0
 	
 	// This is public, since there is no Thing level master setting of Turret stuff.  It is all done in a sleepy hamlet
 	// of a module called TurretAI.
 	virtual void reactToTurretChange( WhichTurretType turret, Real oldRotation, Real oldPitch );
-#endif // if 0
 
 	// Convenience function for checking certain kindof bits
 	Bool isStructure(void) const;
@@ -844,10 +838,10 @@ private:
 	// Weapons & Damage -------------------------------------------------------------------------------------------------
 	WeaponSet							m_weaponSet {};
 	WeaponSetFlags						m_curWeaponSetFlags {};
-#if 0
 	WeaponBonusConditionFlags			m_weaponBonusCondition {};
 	Byte								m_lastWeaponCondition[WEAPONSLOT_COUNT] {};
 
+#if 0
 	SpecialPowerMaskType				m_specialPowerBits {}; ///< bits determining what kind of special abilities this object has access to.
 #endif // if 0
 

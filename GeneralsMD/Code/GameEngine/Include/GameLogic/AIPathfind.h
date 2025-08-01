@@ -29,7 +29,7 @@
 #pragma once
 
 #ifndef _PATHFIND_H_
-#define _PATHFIND_H_												 
+#define _PATHFIND_H_
 
 #include "Common/GameType.h"
 #include "Common/GameMemory.h"
@@ -118,20 +118,20 @@ public:
 	void append( PathNode *list );
 	
 public:
-	mutable Int					m_id; // Used in Path::xfer() to save & recreate the path list.
+	mutable Int				m_id {}; // Used in Path::xfer() to save & recreate the path list.
 
 private:
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( PathNode, "PathNodePool"  );		///< @todo Set real numbers for mem alloc
 
-	PathNode*						m_nextOpti;													///< next node in the optimized path
-	PathNode*						m_next;															///< next node in the path
-	PathNode*						m_prev;															///< previous node in the path
-	Coord3D							m_pos;															///< position of node in space
-	PathfindLayerEnum		m_layer;														///< Layer for this section.
-	Bool								m_canOptimize;											///< True if this cell can be optimized out.
+	PathNode*				m_nextOpti {};													///< next node in the optimized path
+	PathNode*				m_next {};															///< next node in the path
+	PathNode*				m_prev {};															///< previous node in the path
+	Coord3D					m_pos {};															///< position of node in space
+	PathfindLayerEnum		m_layer {};														///< Layer for this section.
+	Bool					m_canOptimize {};											///< True if this cell can be optimized out.
 
-	Real								m_nextOptiDist2D;										///< if nextOpti is nonnull, the dist to it.
-	Coord2D							m_nextOptiDirNorm2D;								///< if nextOpti is nonnull, normalized dir vec towards it.
+	Real					m_nextOptiDist2D {};										///< if nextOpti is nonnull, the dist to it.
+	Coord2D					m_nextOptiDirNorm2D {};								///< if nextOpti is nonnull, normalized dir vec towards it.
 
 };
 
@@ -141,9 +141,9 @@ private:
 
 struct ClosestPointOnPathInfo
 {
-	Real								distAlongPath;
-	Coord3D							posOnPath;
-	PathfindLayerEnum		layer;
+	Real					distAlongPath {};
+	Coord3D					posOnPath {};
+	PathfindLayerEnum		layer {};
 };
 
 /**
@@ -193,16 +193,16 @@ protected:
 	enum {MAX_CPOP=20};			///< Max times we will return the cached cpop.
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( Path, "PathPool" );							///< @todo Set real numbers for mem alloc
 
-	PathNode*		m_path;															///< The list of PathNode objects that define the path
-	PathNode*		m_pathTail;
-	Bool				m_isOptimized;											///< True if the path has been optimized
-	Bool				m_blockedByAlly;										///< An ally needs to move off of this path.
+	PathNode*				m_path {};															///< The list of PathNode objects that define the path
+	PathNode*				m_pathTail {};
+	Bool					m_isOptimized {};											///< True if the path has been optimized
+	Bool					m_blockedByAlly {};										///< An ally needs to move off of this path.
 	// caching info for computePointOnPath.
-	Bool										m_cpopValid;
-	Int											m_cpopCountdown;				///< We only return the same cpop MAX_CPOP times.  It is occasionally possible to get stuck.
-	Coord3D									m_cpopIn;
-	ClosestPointOnPathInfo	m_cpopOut;
-	const PathNode*					m_cpopRecentStart;
+	Bool					m_cpopValid {};
+	Int						m_cpopCountdown {};				///< We only return the same cpop MAX_CPOP times.  It is occasionally possible to get stuck.
+	Coord3D					m_cpopIn {};
+	ClosestPointOnPathInfo	m_cpopOut {};
+	const PathNode*			m_cpopRecentStart {};
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -228,29 +228,29 @@ protected:
 	static PathfindCellInfo *s_firstFree;							///< 
 
 
-	PathfindCellInfo *m_nextOpen, *m_prevOpen;						///< for A* "open" list, shared by closed list
+	PathfindCellInfo *m_nextOpen {}, *m_prevOpen {};						///< for A* "open" list, shared by closed list
 
-	PathfindCellInfo *m_pathParent;												///< "parent" cell from pathfinder
-	PathfindCell *m_cell;															///< Cell this info belongs to currently.
+	PathfindCellInfo *m_pathParent {};												///< "parent" cell from pathfinder
+	PathfindCell *m_cell {};															///< Cell this info belongs to currently.
 
-	UnsignedShort m_totalCost, m_costSoFar;	///< cost estimates for A* search
+	UnsignedShort m_totalCost {}, m_costSoFar {};	///< cost estimates for A* search
 
 	/// have to include cell's coordinates, since cells are often accessed via pointer only
-	ICoord2D m_pos;
+	ICoord2D m_pos {};
 	
-	ObjectID m_goalUnitID; ///< The objectID of the ground unit whose goal this is.
-	ObjectID m_posUnitID;  ///< The objectID of the ground unit that is occupying this cell.
-	ObjectID m_goalAircraftID; ///< The objectID of the aircraft whose goal this is.
+	ObjectID m_goalUnitID {}; ///< The objectID of the ground unit whose goal this is.
+	ObjectID m_posUnitID {};  ///< The objectID of the ground unit that is occupying this cell.
+	ObjectID m_goalAircraftID {}; ///< The objectID of the aircraft whose goal this is.
 
-	ObjectID m_obstacleID;	///< the object ID who overlaps this cell
+	ObjectID m_obstacleID {};	///< the object ID who overlaps this cell
 	
-	UnsignedInt m_isFree:1;
-	UnsignedInt m_blockedByAlly:1;///< True if this cell is blocked by an allied unit.
-	UnsignedInt m_obstacleIsFence:1;///< True if occupied by a fence.
-	UnsignedInt m_obstacleIsTransparent:1;///< True if obstacle is transparent (undefined if obstacleid is invalid)
+	UnsignedInt m_isFree:1 {};
+	UnsignedInt m_blockedByAlly:1 {};///< True if this cell is blocked by an allied unit.
+	UnsignedInt m_obstacleIsFence:1 {};///< True if occupied by a fence.
+	UnsignedInt m_obstacleIsTransparent:1 {};///< True if obstacle is transparent (undefined if obstacleid is invalid)
 	/// @todo Do we need both mark values in this cell?  Can't store a single value and compare it?
-	UnsignedInt m_open:1;													///< place for marking this cell as on the open list
-	UnsignedInt m_closed:1;												///< place for marking this cell as on the closed list
+	UnsignedInt m_open:1 {};													///< place for marking this cell as on the open list
+	UnsignedInt m_closed:1 {};												///< place for marking this cell as on the closed list
 };
 
 /**
@@ -265,21 +265,21 @@ public:
 
 	enum CellType
 	{
-		CELL_CLEAR		= 0x00,									///< clear, unobstructed ground
-		CELL_WATER		= 0x01,									///< water area
-		CELL_CLIFF		= 0x02,									///< steep altitude change
-		CELL_RUBBLE		= 0x03,									///< Cell is occupied by rubble.
-		CELL_OBSTACLE	= 0x04,									///< Occupied by a structure
-		CELL_BRIDGE_IMPASSABLE = 0x05,				///< Piece of a bridge that is impassable.
-		CELL_IMPASSABLE = 0x06								///< Just plain impassable except for aircraft.
+		CELL_CLEAR				= 0x00,		///< clear, unobstructed ground
+		CELL_WATER				= 0x01,		///< water area
+		CELL_CLIFF				= 0x02,		///< steep altitude change
+		CELL_RUBBLE				= 0x03,		///< Cell is occupied by rubble.
+		CELL_OBSTACLE			= 0x04,		///< Occupied by a structure
+		CELL_BRIDGE_IMPASSABLE	= 0x05,		///< Piece of a bridge that is impassable.
+		CELL_IMPASSABLE			= 0x06		///< Just plain impassable except for aircraft.
 	};
 
 	enum CellFlags
 	{
-		NO_UNITS		= 0x00,						///< No units in this cell.
-		UNIT_GOAL		= 0x01,						///< A unit is heading to this cell.
-		UNIT_PRESENT_MOVING	= 0x02,		///< A unit is moving through this cell.
-		UNIT_PRESENT_FIXED	= 0x03,		///< A unit is stationary in this cell.
+		NO_UNITS				= 0x00,		///< No units in this cell.
+		UNIT_GOAL				= 0x01,		///< A unit is heading to this cell.
+		UNIT_PRESENT_MOVING		= 0x02,		///< A unit is moving through this cell.
+		UNIT_PRESENT_FIXED		= 0x03,		///< A unit is stationary in this cell.
 		UNIT_GOAL_OTHER_MOVING	= 0x05		///< A unit is moving through this cell, and another unit has this as it's goal.
 	};
 
@@ -377,15 +377,15 @@ public:
 	PathfindLayerEnum getConnectLayer( void ) const { return (PathfindLayerEnum)m_connectsToLayer; }				///< get the cell layer connect id
 
 private:
-	PathfindCellInfo *m_info;
-	zoneStorageType m_zone:14;			///< Zone. Each zone is a set of adjacent terrain type.  If from & to in the same zone, you can successfully pathfind.  If not,
+	PathfindCellInfo *m_info {};
+	zoneStorageType m_zone:14 {};			///< Zone. Each zone is a set of adjacent terrain type.  If from & to in the same zone, you can successfully pathfind.  If not,
 														// you still may be able to if you can cross multiple terrain types.
-	UnsignedShort m_aircraftGoal:1; //< This is an aircraft goal cell.
-	UnsignedShort m_pinched:1; //< This cell is surrounded by obstacle cells.
-	UnsignedByte m_type:4;			///< what type of cell terrain this is.  
-	UnsignedByte m_flags:4;			///< what type of units are in or moving through this cell.
-	UnsignedByte m_connectsToLayer:4;	///< This cell can pathfind onto this layer, if > LAYER_TOP.
-  UnsignedByte m_layer:4;					 ///< Layer of this cell.
+	UnsignedShort m_aircraftGoal:1 {}; //< This is an aircraft goal cell.
+	UnsignedShort m_pinched:1 {}; //< This cell is surrounded by obstacle cells.
+	UnsignedByte m_type:4 {};			///< what type of cell terrain this is.  
+	UnsignedByte m_flags:4 {};			///< what type of units are in or moving through this cell.
+	UnsignedByte m_connectsToLayer:4 {};	///< This cell can pathfind onto this layer, if > LAYER_TOP.
+	UnsignedByte m_layer:4 {};					 ///< Layer of this cell.
 };
 
 typedef PathfindCell *PathfindCellP;
@@ -435,20 +435,19 @@ protected:
 	void classifyWallMapCell( Int i, Int j, PathfindCell *cell , ObjectID *wallPieces, Int numPieces);
 
 private:
-	PathfindCell *m_blockOfMapCells;		///< Pathfinding map - contains iconic representation of the map
-	PathfindCell **m_layerCells;		///< Pathfinding map indexes - contains matrix indexing into the map.
-	Int m_width;		// Number of cells in x
-	Int m_height;		// Number of cells in y
-	Int m_xOrigin;	// Index of first cell in x
-	Int m_yOrigin;	// Index of first cell in y
-	ICoord2D m_startCell; // pathfind cell indexes for center cell on the from side.
-	ICoord2D m_endCell; // pathfind cell indexes for center cell on the to side.
+	PathfindCell *m_blockOfMapCells {};		///< Pathfinding map - contains iconic representation of the map
+	PathfindCell **m_layerCells {};		///< Pathfinding map indexes - contains matrix indexing into the map.
+	Int m_width {};		// Number of cells in x
+	Int m_height {};		// Number of cells in y
+	Int m_xOrigin {};	// Index of first cell in x
+	Int m_yOrigin {};	// Index of first cell in y
+	ICoord2D m_startCell {}; // pathfind cell indexes for center cell on the from side.
+	ICoord2D m_endCell {}; // pathfind cell indexes for center cell on the to side.
 
-	PathfindLayerEnum m_layer;
-	Int m_zone;			// Whole bridge is in same zone.
-	Bridge *m_bridge; // Corresponding bridge in TerrainLogic.
-	Bool m_destroyed;
-
+	PathfindLayerEnum m_layer {};
+	Int m_zone {};			// Whole bridge is in same zone.
+	Bridge *m_bridge {}; // Corresponding bridge in TerrainLogic.
+	Bool m_destroyed {};
 
 };
 
@@ -492,20 +491,20 @@ protected:
 	void freeZones(void);
 
 protected:
-	ICoord2D		m_cellOrigin;
+	ICoord2D m_cellOrigin {};
 
-	zoneStorageType m_firstZone; // First zone in this block.
-	UnsignedShort m_numZones;	 // Number of zones in this block.  If == 1, there is only one zone, and 
+	zoneStorageType m_firstZone {}; // First zone in this block.
+	UnsignedShort m_numZones {};	 // Number of zones in this block.  If == 1, there is only one zone, and 
 														 // no zone equivalency arrays will be allocated.
 
 
-	UnsignedShort m_zonesAllocated;
-	zoneStorageType *m_groundCliffZones;
-	zoneStorageType *m_groundWaterZones;
-	zoneStorageType *m_groundRubbleZones;
-	zoneStorageType *m_crusherZones;
-	Bool					m_interactsWithBridge;
-	Bool					m_markedPassable;
+	UnsignedShort m_zonesAllocated {};
+	zoneStorageType *m_groundCliffZones {};
+	zoneStorageType *m_groundWaterZones {};
+	zoneStorageType *m_groundRubbleZones {};
+	zoneStorageType *m_crusherZones {};
+	Bool m_interactsWithBridge {};
+	Bool m_markedPassable {};
 };
 typedef ZoneBlock *ZoneBlockP;
 
@@ -564,19 +563,19 @@ private:
 	void freeBlocks(void);
 
 private:
-	ZoneBlock			*m_blockOfZoneBlocks;			///< Zone blocks - Info for hierarchical pathfinding at a "blocky" level.
-	ZoneBlock			**m_zoneBlocks;						///< Zone blocks as a matrix - contains matrix indexing into the map.
-	ICoord2D			m_zoneBlockExtent;				///< Zone block extents. Not the same scale as the pathfind extents.
+	ZoneBlock			*m_blockOfZoneBlocks {};			///< Zone blocks - Info for hierarchical pathfinding at a "blocky" level.
+	ZoneBlock			**m_zoneBlocks {};						///< Zone blocks as a matrix - contains matrix indexing into the map.
+	ICoord2D			m_zoneBlockExtent {};				///< Zone block extents. Not the same scale as the pathfind extents.
 
-	UnsignedShort m_maxZone;								///< Max zone used.
-	UnsignedInt		m_nextFrameToCalculateZones;		///< WHen should I recalculate, next?.
-	UnsignedShort m_zonesAllocated;
-	zoneStorageType *m_groundCliffZones;
-	zoneStorageType *m_groundWaterZones;
-	zoneStorageType *m_groundRubbleZones;
-	zoneStorageType *m_terrainZones;
-	zoneStorageType *m_crusherZones;
-	zoneStorageType *m_hierarchicalZones;
+	UnsignedShort m_maxZone {};								///< Max zone used.
+	UnsignedInt m_nextFrameToCalculateZones {};		///< WHen should I recalculate, next?.
+	UnsignedShort m_zonesAllocated {};
+	zoneStorageType *m_groundCliffZones {};
+	zoneStorageType *m_groundWaterZones {};
+	zoneStorageType *m_groundRubbleZones {};
+	zoneStorageType *m_terrainZones {};
+	zoneStorageType *m_crusherZones {};
+	zoneStorageType *m_hierarchicalZones {};
 };
 
 /** 
@@ -603,7 +602,7 @@ public:
 		const Object *victim, const Coord3D* victimPos, const Weapon *weapon )=0;	
 
 	/** Patch to the exiting path from the current position, either because we became blocked, 
-  or because we had to move off the path to avoid other units. */
+		or because we had to move off the path to avoid other units. */
 	virtual Path *patchPath( const Object *obj, const LocomotorSet& locomotorSet, 
 		Path *originalPath, Bool blocked ) = 0;
 
@@ -636,7 +635,7 @@ private:
 		const Coord3D *from, const Coord3D* repulsorPos1, const Coord3D* repulsorPos2, Real repulsorRadius );	
 
 	/** Patch to the exiting path from the current position, either because we became blocked, 
-  or because we had to move off the path to avoid other units. */
+		or because we had to move off the path to avoid other units. */
 	virtual Path *patchPath( const Object *obj, const LocomotorSet& locomotorSet, 
 		Path *originalPath, Bool blocked );
 
@@ -793,7 +792,7 @@ protected:
 	Int examineNeighboringCells(PathfindCell *parentCell, PathfindCell *goalCell,
 										const LocomotorSet& locomotorSet, Bool isHumanPlayer, 
 										Bool centerInCell, Int radius, const ICoord2D &startCellNdx,
-										const Object *obj, Int attackDistance);
+										const Object *obj, UnsignedInt attackDistance);
 
  	Bool pathDestination( Object *obj, const LocomotorSet& locomotorSet, Coord3D *dest, 
 		PathfindLayerEnum layer, const Coord3D *groupDest);	///< Checks cost between given locations
@@ -864,40 +863,40 @@ protected:
 
 private:
 	/// This uses WAY too much memory.  Should at least be array of pointers to cells w/ many fewer cells
-	PathfindCell *m_blockOfMapCells;		///< Pathfinding map - contains iconic representation of the map
-	PathfindCell **m_map;		///< Pathfinding map indexes - contains matrix indexing into the map.
-	IRegion2D m_extent;														///< Grid extent limits
-	IRegion2D m_logicalExtent;										///< Logical grid extent limits
+	PathfindCell *m_blockOfMapCells {};		///< Pathfinding map - contains iconic representation of the map
+	PathfindCell **m_map {};		///< Pathfinding map indexes - contains matrix indexing into the map.
+	IRegion2D m_extent {};														///< Grid extent limits
+	IRegion2D m_logicalExtent {};										///< Logical grid extent limits
 
-	PathfindCell *m_openList;											///< Cells ready to be explored
-	PathfindCell *m_closedList;										///< Cells already explored
+	PathfindCell *m_openList {};											///< Cells ready to be explored
+	PathfindCell *m_closedList {};										///< Cells already explored
 
-	Bool m_isMapReady;														///< True if all cells of map have been classified
-	Bool m_isTunneling;														///< True if path started in an obstacle
+	Bool m_isMapReady {};														///< True if all cells of map have been classified
+	Bool m_isTunneling {};														///< True if path started in an obstacle
 
-	Int m_frameToShowObstacles;										///< Time to redraw obstacles.  For debug output.
+	Int m_frameToShowObstacles {};										///< Time to redraw obstacles.  For debug output.
 
-	Coord3D debugPathPos;													///< Used for visual debugging
-	Path *debugPath;															///< Used for visual debugging
+	Coord3D debugPathPos {};													///< Used for visual debugging
+	Path *debugPath {};															///< Used for visual debugging
 
-	ObjectID m_ignoreObstacleID;									///< Ignore the given obstacle
+	ObjectID m_ignoreObstacleID {};									///< Ignore the given obstacle
 
-	PathfindZoneManager m_zoneManager;						///< Handles the pathfind zones.
+	PathfindZoneManager m_zoneManager {};						///< Handles the pathfind zones.
 
 	PathfindLayer m_layers[LAYER_LAST+1];
 
 	ObjectID			m_wallPieces[MAX_WALL_PIECES];
-	Int						m_numWallPieces;
-	Real					m_wallHeight;
+	Int						m_numWallPieces {};
+	Real					m_wallHeight {};
 
-	Int						m_moveAlliesDepth;
+	Int						m_moveAlliesDepth {};
 
 
 	// Pathfind queue
 	ObjectID			m_queuedPathfindRequests[PATHFIND_QUEUE_LEN];
-	Int						m_queuePRHead;
-	Int						m_queuePRTail;
-	Int						m_cumulativeCellsAllocated;
+	Int					m_queuePRHead {};
+	Int					m_queuePRTail {};
+	Int					m_cumulativeCellsAllocated {};
 };
 
 

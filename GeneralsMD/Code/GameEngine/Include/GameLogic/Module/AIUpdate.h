@@ -80,7 +80,7 @@ enum LocomotorSetType
 	LOCOMOTORSET_FREEFALL,
 	LOCOMOTORSET_WANDER,
 	LOCOMOTORSET_PANIC,
-	LOCOMOTORSET_TAXIING,			// set used for normally-airborne items while taxiing on ground
+	LOCOMOTORSET_TAXIING,		// set used for normally-airborne items while taxiing on ground
 	LOCOMOTORSET_SUPERSONIC,	// set used for high-speed attacks
 	LOCOMOTORSET_SLUGGISH,		// set used for abnormally slow (but not damaged) speeds
 
@@ -92,8 +92,8 @@ enum GuardTargetType
 { 
 	GUARDTARGET_LOCATION,	// Guard a coord3d
 	GUARDTARGET_OBJECT,		// Guard an object
-	GUARDTARGET_AREA,			// Guard a Polygon trigger
-	GUARDTARGET_NONE				// Currently not guarding
+	GUARDTARGET_AREA,		// Guard a Polygon trigger
+	GUARDTARGET_NONE		// Currently not guarding
 };
 
 #ifdef DEFINE_LOCOMOTORSET_NAMES
@@ -114,11 +114,11 @@ static const char *TheLocomotorSetNames[] =
 
 enum AutoAcquireStates
 {
-	AAS_Idle											= 0x01,
-	AAS_Idle_Stealthed						= 0x02,
-	AAS_Idle_No										= 0x04,
+	AAS_Idle						= 0x01,
+	AAS_Idle_Stealthed				= 0x02,
+	AAS_Idle_No						= 0x04,
 	AAS_Idle_Not_While_Attacking	= 0x08,
-	AAS_Idle_Attack_Buildings			= 0x10,
+	AAS_Idle_Attack_Buildings		= 0x10,
 };
 
 #ifdef DEFINE_AUTOACQUIRE_NAMES
@@ -140,23 +140,23 @@ enum MoodMatrixParameters
 {
 	// Controller_Player and Controller_AI are mutually exclusive
 	MM_Controller_Player		= 0x00000001,
-	MM_Controller_AI				= 0x00000002,
+	MM_Controller_AI			= 0x00000002,
 	MM_Controller_Bitmask		= (MM_Controller_Player | MM_Controller_AI),
 	
 	// UnitTypes are mutually exclusive, ie: you cannot be turreted and air at the same time (we do
 	// not make such a distinction, so air takes precedence over turretedness)
-	MM_UnitType_NonTurreted = 0x00000010,
+	MM_UnitType_NonTurreted		= 0x00000010,
 	MM_UnitType_Turreted		= 0x00000020,
-	MM_UnitType_Air					= 0x00000040,
+	MM_UnitType_Air				= 0x00000040,
 	MM_UnitType_Bitmask			= (MM_UnitType_NonTurreted | MM_UnitType_Turreted | MM_UnitType_Air),
 	
 	// A unit can be in only one mood at a time.
-	MM_Mood_Sleep						= 0x00000100,
-	MM_Mood_Passive					= 0x00000200,
-	MM_Mood_Normal					= 0x00000400,
-	MM_Mood_Alert						= 0x00000800,
+	MM_Mood_Sleep				= 0x00000100,
+	MM_Mood_Passive				= 0x00000200,
+	MM_Mood_Normal				= 0x00000400,
+	MM_Mood_Alert				= 0x00000800,
 	MM_Mood_Aggressive			= 0x00001000,
-	MM_Mood_Bitmask					= (MM_Mood_Sleep | MM_Mood_Passive | MM_Mood_Normal | MM_Mood_Alert | MM_Mood_Aggressive) 
+	MM_Mood_Bitmask				= (MM_Mood_Sleep | MM_Mood_Passive | MM_Mood_Normal | MM_Mood_Alert | MM_Mood_Aggressive) 
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -171,17 +171,17 @@ enum MoodMatrixAction
 //-------------------------------------------------------------------------------------------------
 enum MoodActionAdjustment
 {
-	MAA_Action_Ok										= 0x00000001,
-	MAA_Action_To_Idle							= 0x00000002,
-	MAA_Action_To_AttackMove				= 0x00000004,
-	MAA_Action_To_Bitmask						= (MAA_Action_Ok | MAA_Action_To_Idle | MAA_Action_To_AttackMove),
+	MAA_Action_Ok					= 0x00000001,
+	MAA_Action_To_Idle				= 0x00000002,
+	MAA_Action_To_AttackMove		= 0x00000004,
+	MAA_Action_To_Bitmask			= (MAA_Action_Ok | MAA_Action_To_Idle | MAA_Action_To_AttackMove),
 
-	MAA_Affect_Range_IgnoreAll			= 0x00000010,
+	MAA_Affect_Range_IgnoreAll		= 0x00000010,
 	MAA_Affect_Range_WaitForAttack	= 0x00000020,
 	// Normal doesn't affect ranges.
-	MAA_Affect_Range_Alert					= 0x00000040,
-	MAA_Affect_Range_Aggressive			= 0x00000080,
-	MAA_Affect_Range_Bitmask				= (MAA_Affect_Range_IgnoreAll | MAA_Affect_Range_WaitForAttack | MAA_Affect_Range_Alert | MAA_Affect_Range_Aggressive)
+	MAA_Affect_Range_Alert			= 0x00000040,
+	MAA_Affect_Range_Aggressive		= 0x00000080,
+	MAA_Affect_Range_Bitmask		= (MAA_Affect_Range_IgnoreAll | MAA_Affect_Range_WaitForAttack | MAA_Affect_Range_Alert | MAA_Affect_Range_Aggressive)
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -192,18 +192,24 @@ typedef std::map< LocomotorSetType, LocomotorTemplateVector, std::less<Locomotor
 class AIUpdateModuleData : public UpdateModuleData
 {
 public:
-	LocomotorTemplateMap	m_locomotorTemplates;					///< locomotors for object
-	const TurretAIData*		m_turretData[MAX_TURRETS];
-	UnsignedInt						m_moodAttackCheckRate;				///< how frequently we should recheck for enemies due to moods, when idle
-  Bool        m_forbidPlayerCommands;     ///< Should isAllowedToRespondToAiCommands() filter out commands from the player, thus making it ai-controllable only?
-  Bool        m_turretsLinked;						///< Turrets are linked together and attack together.
-	UnsignedInt						m_autoAcquireEnemiesWhenIdle;
+	// MG: Cannot apply offsetof to AIUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const TurretAIData*		m_turretData[MAX_TURRETS];
+		UnsignedInt				m_moodAttackCheckRate {};			///< how frequently we should recheck for enemies due to moods, when idle
+		Bool					m_forbidPlayerCommands {};			///< Should isAllowedToRespondToAiCommands() filter out commands from the player, thus making it ai-controllable only?
+		Bool					m_turretsLinked {};					///< Turrets are linked together and attack together.
+		UnsignedInt				m_autoAcquireEnemiesWhenIdle {};
 #ifdef ALLOW_SURRENDER
- 	UnsignedInt						m_surrenderDuration;					///< when we surrender, how long we stay surrendered.
+		UnsignedInt				m_surrenderDuration {};				///< when we surrender, how long we stay surrendered.
 #endif
+	};
 
+	IniData m_ini {};
+
+	LocomotorTemplateMap		m_locomotorTemplates {};			///< locomotors for object
 	
-  AIUpdateModuleData();
+	AIUpdateModuleData();
 	virtual ~AIUpdateModuleData();
 
 	// No copies allowed!
@@ -213,7 +219,7 @@ public:
 	virtual Bool isAiModuleData() const { return true; }
 
 	const LocomotorTemplateVector* findLocomotorTemplateVector(LocomotorSetType t) const;
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	static void parseLocomotorSet( INI* ini, void *instance, void *store, const void* /*userData*/ );
 
 private:
@@ -338,7 +344,7 @@ public:
 
 	virtual void joinTeam( void );			///< This unit just got added to a team & needs to catch up.
 	
-	Bool areTurretsLinked() const { return getAIUpdateModuleData()->m_turretsLinked; }
+	Bool areTurretsLinked() const { return getAIUpdateModuleData()->m_ini.m_turretsLinked; }
 
 	// this is present solely for some transports to override, so that they can land before 
 	// allowing people to exit...
@@ -594,7 +600,7 @@ public:
 	// while the move is the original command source.  John A.
 	void friend_setLastCommandSource( CommandSourceType source ) {m_lastCommandSource = source;}
 
-	Bool canAutoAcquire() const { return getAIUpdateModuleData()->m_autoAcquireEnemiesWhenIdle; }
+	Bool canAutoAcquire() const { return getAIUpdateModuleData()->m_ini.m_autoAcquireEnemiesWhenIdle; }
 
   Bool canAutoAcquireWhileStealthed() const ;
 
@@ -688,49 +694,49 @@ private:
 	Bool chooseLocomotorSetExplicit(LocomotorSetType wst);
 
 private:
-	UnsignedInt					m_priorWaypointID;						///< ID of the path we follwed to before the most recent one
-	UnsignedInt					m_currentWaypointID;					///< ID of the most recent one...
+	UnsignedInt					m_priorWaypointID {};						///< ID of the path we follwed to before the most recent one
+	UnsignedInt					m_currentWaypointID {};					///< ID of the most recent one...
 
-	AIStateMachine*			m_stateMachine;							///< the state machine
-	UnsignedInt					m_nextEnemyScanTime;				///< how long until the next enemy scan
-	ObjectID						m_currentVictimID;					///< if not INVALID_ID, this agent's current victim.
-	Real								m_desiredSpeed;							///< the desired speed of the tank
-	CommandSourceType		m_lastCommandSource;			/**< Keep track of the source of the last command we got.
+	AIStateMachine*				m_stateMachine {};							///< the state machine
+	UnsignedInt					m_nextEnemyScanTime {};				///< how long until the next enemy scan
+	ObjectID					m_currentVictimID {};					///< if not INVALID_ID, this agent's current victim.
+	Real						m_desiredSpeed {};							///< the desired speed of the tank
+	CommandSourceType			m_lastCommandSource {};			/**< Keep track of the source of the last command we got.
 																									This is set immediately before the SetState that goes
 																									to the state machine, so onEnter in there can know where
 																									the command came from.
 																								*/
 
-	GuardMode							m_guardMode;
+	GuardMode					m_guardMode {};
 	GuardTargetType				m_guardTargetType[2];
-	Coord3D								m_locationToGuard;
-	ObjectID							m_objectToGuard;
-	const PolygonTrigger*	m_areaToGuard;
+	Coord3D						m_locationToGuard {};
+	ObjectID					m_objectToGuard {};
+	const PolygonTrigger*		m_areaToGuard {};
 
 	// Attack Info --------------------------------------------------------------------------------------------
-	const AttackPriorityInfo*	m_attackInfo;
+	const AttackPriorityInfo*	m_attackInfo {};
 
 	// "Planning Mode" -----------------------------------------------------------------------------------------
 	enum { MAX_WAYPOINTS = 16 };
 	Coord3D						m_waypointQueue[ MAX_WAYPOINTS ];		///< the waypoint queue
-	Int								m_waypointCount;										///< number of waypoints in the queue
-	Int								m_waypointIndex;										///< current waypoint we are moving to
-	const Waypoint*		m_completedWaypoint;								///< Set to the last waypoint in a path when the FollowWaypointPath is complete.
+	Int							m_waypointCount {};										///< number of waypoints in the queue
+	Int							m_waypointIndex {};										///< current waypoint we are moving to
+	const Waypoint*				m_completedWaypoint {};								///< Set to the last waypoint in a path when the FollowWaypointPath is complete.
 
 	// Pathfinding ---------------------------------------------------------------------------------------------
-	Path*				m_path;											///< current path to follow (for moving)
-	ObjectID		m_requestedVictimID;
-	Coord3D			m_requestedDestination;
-	Coord3D			m_requestedDestination2;							
-	UnsignedInt	m_pathTimestamp;						///< time of path construction
-	ObjectID		m_ignoreObstacleID;					///< ignore this obstacle when pathfinding
-	Real				m_pathExtraDistance;				///< If we are following a waypoint path, there will be extra distance beyond the current path.
-	ICoord2D		m_pathfindGoalCell;					///< Cell we are moving towards.
-	ICoord2D		m_pathfindCurCell;					///< Cell we are currently occupying.
-	Int					m_blockedFrames;						///< Number of frames we've been blocked.
-	Real				m_curMaxBlockedSpeed;				///< Max speed we can have and not run into blocking things.
-	Real				m_bumpSpeedLimit;						///< Max speed after bumping a unit.
-	UnsignedInt	m_ignoreCollisionsUntil;		///< Timer to cheat if we get stuck.
+	Path*						m_path {};											///< current path to follow (for moving)
+	ObjectID					m_requestedVictimID {};
+	Coord3D						m_requestedDestination {};
+	Coord3D						m_requestedDestination2 {};
+	UnsignedInt					m_pathTimestamp {};						///< time of path construction
+	ObjectID					m_ignoreObstacleID {};					///< ignore this obstacle when pathfinding
+	Real						m_pathExtraDistance {};				///< If we are following a waypoint path, there will be extra distance beyond the current path.
+	ICoord2D					m_pathfindGoalCell {};					///< Cell we are moving towards.
+	ICoord2D					m_pathfindCurCell {};					///< Cell we are currently occupying.
+	Int							m_blockedFrames {};						///< Number of frames we've been blocked.
+	Real						m_curMaxBlockedSpeed {};				///< Max speed we can have and not run into blocking things.
+	Real						m_bumpSpeedLimit {};						///< Max speed after bumping a unit.
+	UnsignedInt					m_ignoreCollisionsUntil {};		///< Timer to cheat if we get stuck.
 	/**
 		If nonzero and >= now, frame when we should queueForPath.
 
@@ -739,13 +745,13 @@ private:
 		NEVER EVER EVER set this directly. you must call setQueueForPathTime() in ALL CASES.
 		NEVER EVER EVER set this directly. you must call setQueueForPathTime() in ALL CASES.
 	*/
-	UnsignedInt	m_queueForPathFrame;
-	Coord3D			m_finalPosition;						///< Final position for the moveto states.
-	ObjectID		m_repulsor1;								///< First object we are running away from.
-	ObjectID		m_repulsor2;								///< Second object we are running away from.
-	Int					m_nextGoalPathIndex;				///< The simple goal path index we are moving to next.
-	ObjectID		m_moveOutOfWay1;
-	ObjectID		m_moveOutOfWay2;
+	UnsignedInt					m_queueForPathFrame {};
+	Coord3D						m_finalPosition {};						///< Final position for the moveto states.
+	ObjectID					m_repulsor1 {};								///< First object we are running away from.
+	ObjectID					m_repulsor2 {};								///< Second object we are running away from.
+	Int							m_nextGoalPathIndex {};				///< The simple goal path index we are moving to next.
+	ObjectID					m_moveOutOfWay1 {};
+	ObjectID					m_moveOutOfWay2 {};
 
 	// Locomotors -------------------------------------------------------------------------------------------------
 	enum LocoGoalType	 // Note - written out in save/load xfer, don't change these numbers.  jba.
@@ -755,55 +761,55 @@ private:
 		POSITION_EXPLICIT = 2,
 		ANGLE = 3
 	};
-	LocomotorSet			m_locomotorSet;
-	Locomotor*				m_curLocomotor;
-	LocomotorSetType	m_curLocomotorSet;
-	LocoGoalType			m_locomotorGoalType;
-	Coord3D						m_locomotorGoalData;
+	LocomotorSet				m_locomotorSet {};
+	Locomotor*					m_curLocomotor {};
+	LocomotorSetType			m_curLocomotorSet {};
+	LocoGoalType				m_locomotorGoalType {};
+	Coord3D						m_locomotorGoalData {};
 
 	// Turrets -------------------------------------------------------------------------------------------------
 	TurretAI*					m_turretAI[MAX_TURRETS];		// ai for our turret (or null if no turret)
-	WhichTurretType		m_turretSyncFlag;						///< for private use by multiturreted units where the turrets must sync with each other
+	WhichTurretType				m_turretSyncFlag {};						///< for private use by multiturreted units where the turrets must sync with each other
 
 	// AI -------------------------------------------------------------------------------------------
-	AttitudeType	m_attitude;
-	UnsignedInt		m_nextMoodCheckTime;
+	AttitudeType				m_attitude {};
+	UnsignedInt					m_nextMoodCheckTime {};
 
 	// Common AI "status" effects -------------------------------------------------------------------
 #ifdef ALLOW_DEMORALIZE
-	UnsignedInt   m_demoralizedFramesLeft;
+	UnsignedInt   m_demoralizedFramesLeft {};
 #endif
 #ifdef ALLOW_SURRENDER
-	UnsignedInt		m_surrenderedFramesLeft;				///< Non-zero when in a surrendered state
-	Int						m_surrenderedPlayerIndex;				///< if surrendered, the playerindex to whom we are surrendered, or -1 if available for everyone
+	UnsignedInt					m_surrenderedFramesLeft {};				///< Non-zero when in a surrendered state
+	Int							m_surrenderedPlayerIndex {};				///< if surrendered, the playerindex to whom we are surrendered, or -1 if available for everyone
 #endif
 
 	// Note the id of a crate we caused to be created.
-	ObjectID			m_crateCreated;
+	ObjectID					m_crateCreated {};
 
-	Int						m_tmpInt;
+	Int							m_tmpInt {};
 
 	// -------------------------------------------------------------------
-	Bool				m_doFinalPosition;					///< True if we are moving towards final position in a non-physics kind of way. 
-	Bool				m_waitingForPath;						///< True if we have a pathfind request outstanding.
-	Bool				m_isAttackPath;							///< True if we have an attack path.
-	Bool				m_isFinalGoal;							///< True if this path ends at our destination (as opposed to an intermediate point on a waypoint path).
-	Bool				m_isApproachPath;						///< True if we are just approaching to tighten.
-	Bool				m_isSafePath;								///< True if we are just approaching to tighten.
-	Bool				m_movementComplete;					///< True if we finished an AIInternalMoveToState.
-	Bool				m_isMoving;									///< True if we are in an AIInternalMoveToState.
-	Bool				m_isBlocked;
-	Bool				m_isBlockedAndStuck;				///< True if we are stuck & need to recompute path.
-	Bool				m_upgradedLocomotors;
-	Bool				m_canPathThroughUnits;			///< Can path through units.
-	Bool				m_randomlyOffsetMoodCheck;	///< If true, randomly offset the mood check rate next time, to avoid "spiking" of ai checks
-	Bool				m_isAiDead;									///< TRUE if dead
-	Bool				m_isRecruitable;						///< TRUE if recruitable by the ai.
-	Bool				m_executingWaypointQueue;						///< if true, we are moving thru the waypoints
-	Bool				m_retryPath;								///< If true, we need to try the path a second time.  jba.
-	Bool				m_allowedToChase;						///< Allowed to pursue targets.
-	Bool				m_isInUpdate;								///< If true, we are inside our update method.
-	Bool				m_fixLocoInPostProcess;		
+	Bool						m_doFinalPosition {};			///< True if we are moving towards final position in a non-physics kind of way. 
+	Bool						m_waitingForPath {};			///< True if we have a pathfind request outstanding.
+	Bool						m_isAttackPath {};				///< True if we have an attack path.
+	Bool						m_isFinalGoal {};				///< True if this path ends at our destination (as opposed to an intermediate point on a waypoint path).
+	Bool						m_isApproachPath {};			///< True if we are just approaching to tighten.
+	Bool						m_isSafePath {};				///< True if we are just approaching to tighten.
+	Bool						m_movementComplete {};			///< True if we finished an AIInternalMoveToState.
+	Bool						m_isMoving {};					///< True if we are in an AIInternalMoveToState.
+	Bool						m_isBlocked {};
+	Bool						m_isBlockedAndStuck {};			///< True if we are stuck & need to recompute path.
+	Bool						m_upgradedLocomotors {};
+	Bool						m_canPathThroughUnits {};		///< Can path through units.
+	Bool						m_randomlyOffsetMoodCheck {};	///< If true, randomly offset the mood check rate next time, to avoid "spiking" of ai checks
+	Bool						m_isAiDead {};					///< TRUE if dead
+	Bool						m_isRecruitable {};				///< TRUE if recruitable by the ai.
+	Bool						m_executingWaypointQueue {};	///< if true, we are moving thru the waypoints
+	Bool						m_retryPath {};					///< If true, we need to try the path a second time.  jba.
+	Bool						m_allowedToChase {};			///< Allowed to pursue targets.
+	Bool						m_isInUpdate {};				///< If true, we are inside our update method.
+	Bool						m_fixLocoInPostProcess {};		
 };
 
 //------------------------------------------------------------------------------------------------------------

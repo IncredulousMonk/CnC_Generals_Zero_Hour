@@ -42,8 +42,8 @@
 class SupplyCenterDockUpdateModuleData : public DockUpdateModuleData
 {
 public:
-  SupplyCenterDockUpdateModuleData( void );
-	static void buildFieldParse(MultiIniFieldParse& p);
+	SupplyCenterDockUpdateModuleData( void );
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 	UnsignedInt m_grantTemporaryStealthFrames;
 };

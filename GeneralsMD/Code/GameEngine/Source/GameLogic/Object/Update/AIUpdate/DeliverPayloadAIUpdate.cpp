@@ -27,7 +27,7 @@
 // Desc:   State machine that controls the approach and deployment of airborne cargo
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_WEAPONSLOTTYPE_NAMES
+#define DEFINE_WEAPONSLOTTYPE_NAMES_LOOKUP
 
 #include "Common/Player.h"
 #include "Common/RandomValue.h"
@@ -62,39 +62,39 @@ const FieldParse* DeliverPayloadData::getFieldParse()
 	static const FieldParse dataFieldParse[] = 
 	{
 
-		{ "DeliveryDistance",								INI::parseReal,								NULL, offsetof( DeliverPayloadData, m_distToTarget) },
-		{ "PreOpenDistance",								INI::parseReal,								NULL, offsetof( DeliverPayloadData, m_preOpenDistance) },
-		{ "MaxAttempts",										INI::parseInt,								NULL, offsetof( DeliverPayloadData, m_maxAttempts) },
+		{ "DeliveryDistance",				INI::parseReal,									NULL,								offsetof( DeliverPayloadData, m_distToTarget) },
+		{ "PreOpenDistance",				INI::parseReal,									NULL,								offsetof( DeliverPayloadData, m_preOpenDistance) },
+		{ "MaxAttempts",					INI::parseInt,									NULL,								offsetof( DeliverPayloadData, m_maxAttempts) },
 
 		//Drop information
-		{ "DropDelay",											INI::parseDurationUnsignedInt,NULL, offsetof( DeliverPayloadData, m_dropDelay ) },
-		{ "DropOffset",											INI::parseCoord3D,						NULL, offsetof( DeliverPayloadData, m_dropOffset ) },
-		{ "DropVariance",										INI::parseCoord3D,						NULL, offsetof( DeliverPayloadData, m_dropVariance ) },
-		{ "InheritTransportVelocity",				INI::parseBool,								NULL, offsetof( DeliverPayloadData, m_inheritTransportVelocity ) },
-		{ "ExitPitchRate",									INI::parseAngularVelocityReal,NULL, offsetof( DeliverPayloadData, m_exitPitchRate ) },
-		{ "ParachuteDirectly",							INI::parseBool,								NULL, offsetof( DeliverPayloadData, m_isParachuteDirectly) },
+		{ "DropDelay",						INI::parseDurationUnsignedInt,					NULL,								offsetof( DeliverPayloadData, m_dropDelay ) },
+		{ "DropOffset",						INI::parseCoord3D,								NULL,								offsetof( DeliverPayloadData, m_dropOffset ) },
+		{ "DropVariance",					INI::parseCoord3D,								NULL,								offsetof( DeliverPayloadData, m_dropVariance ) },
+		{ "InheritTransportVelocity",		INI::parseBool,									NULL,								offsetof( DeliverPayloadData, m_inheritTransportVelocity ) },
+		{ "ExitPitchRate",					INI::parseAngularVelocityReal,					NULL,								offsetof( DeliverPayloadData, m_exitPitchRate ) },
+		{ "ParachuteDirectly",				INI::parseBool,									NULL,								offsetof( DeliverPayloadData, m_isParachuteDirectly) },
 
 		//Visible payload information (payload assumed to be show visibly and it's created only when dropped)
-		{ "VisibleItemsDroppedPerInterval",	INI::parseInt,								NULL, offsetof( DeliverPayloadData, m_visibleItemsDroppedPerInterval ) },
-		{ "VisibleDropBoneBaseName",				INI::parseAsciiString,				NULL, offsetof( DeliverPayloadData, m_visibleDropBoneName ) },
-		{ "VisibleSubObjectBaseName",				INI::parseAsciiString,				NULL, offsetof( DeliverPayloadData, m_visibleSubObjectName ) },
-		{ "VisibleNumBones",								INI::parseInt,								NULL, offsetof( DeliverPayloadData, m_visibleNumBones ) },
-		{ "VisiblePayloadTemplateName",			INI::parseAsciiString,				NULL, offsetof( DeliverPayloadData, m_visiblePayloadTemplateName ) },
-		{ "VisiblePayloadWeaponTemplate",		INI::parseWeaponTemplate,			NULL, offsetof( DeliverPayloadData, m_visiblePayloadWeaponTemplate ) },
-		{ "SelfDestructObject",		          INI::parseBool,		           	NULL, offsetof( DeliverPayloadData, m_selfDestructObject ) },
+		{ "VisibleItemsDroppedPerInterval",	INI::parseInt,									NULL,								offsetof( DeliverPayloadData, m_visibleItemsDroppedPerInterval ) },
+		{ "VisibleDropBoneBaseName",		INI::parseAsciiString,							NULL,								offsetof( DeliverPayloadData, m_visibleDropBoneName ) },
+		{ "VisibleSubObjectBaseName",		INI::parseAsciiString,							NULL,								offsetof( DeliverPayloadData, m_visibleSubObjectName ) },
+		{ "VisibleNumBones",				INI::parseInt,									NULL,								offsetof( DeliverPayloadData, m_visibleNumBones ) },
+		{ "VisiblePayloadTemplateName",		INI::parseAsciiString,							NULL,								offsetof( DeliverPayloadData, m_visiblePayloadTemplateName ) },
+		{ "VisiblePayloadWeaponTemplate",	INI::parseWeaponTemplate,						NULL,								offsetof( DeliverPayloadData, m_visiblePayloadWeaponTemplate ) },
+		{ "SelfDestructObject",				INI::parseBool,									NULL,								offsetof( DeliverPayloadData, m_selfDestructObject ) },
 		
 		//Weapon based payload 
-		{ "FireWeapon",											INI::parseBool,								NULL, offsetof( DeliverPayloadData, m_fireWeapon ) },
+		{ "FireWeapon",						INI::parseBool,									NULL,								offsetof( DeliverPayloadData, m_fireWeapon ) },
 		
 		//Specify an additional weaponslot to be fired while strafing
-		{ "DiveStartDistance",							INI::parseReal,								NULL, offsetof( DeliverPayloadData, m_diveStartDistance ) },
-		{ "DiveEndDistance",								INI::parseReal,								NULL, offsetof( DeliverPayloadData, m_diveEndDistance ) },
-		{ "StrafingWeaponSlot",							INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DeliverPayloadData, m_strafingWeaponSlot ) },
-		{ "StrafeWeaponFX",									INI::parseFXList,							NULL, offsetof( DeliverPayloadData, m_strafeFX ) },
-		{ "StrafeLength",										INI::parseReal,								NULL, offsetof( DeliverPayloadData, m_strafeLength ) },
+		{ "DiveStartDistance",				INI::parseReal,									NULL,								offsetof( DeliverPayloadData, m_diveStartDistance ) },
+		{ "DiveEndDistance",				INI::parseReal,									NULL,								offsetof( DeliverPayloadData, m_diveEndDistance ) },
+		{ "StrafingWeaponSlot",				INI::parseLookupList,							TheWeaponSlotTypeNamesLookupList,	offsetof( DeliverPayloadData, m_strafingWeaponSlot ) },
+		{ "StrafeWeaponFX",					INI::parseFXList,								NULL,								offsetof( DeliverPayloadData, m_strafeFX ) },
+		{ "StrafeLength",					INI::parseReal,									NULL,								offsetof( DeliverPayloadData, m_strafeLength ) },
 
-		{ "DeliveryDecal",									RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( DeliverPayloadData, m_deliveryDecalTemplate ) },
-		{ "DeliveryDecalRadius",						INI::parseReal, NULL, offsetof(DeliverPayloadData, m_deliveryDecalRadius) },
+		{ "DeliveryDecal",					RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL,								offsetof( DeliverPayloadData, m_deliveryDecalTemplate ) },
+		{ "DeliveryDecalRadius",			INI::parseReal, 								NULL,								offsetof(DeliverPayloadData, m_deliveryDecalRadius) },
 
 		{ 0, 0, 0, 0 }
 	};
@@ -267,7 +267,7 @@ void DeliverPayloadAIUpdate::deliverPayload(
 
 	m_moveToPos = *moveToPos;
 	m_targetPos = *targetPos;
-	m_data			= *data;
+	m_data		= *data;
 	
 	m_deliveryDecal.clear();
 	m_data.m_deliveryDecalTemplate.createRadiusDecal(*targetPos, 
@@ -321,13 +321,13 @@ void DeliverPayloadAIUpdate::deliverPayloadViaModuleData( const Coord3D *moveToP
 	//****************************************************
 
 	DeliverPayloadData dpData;
-	dpData.m_dropOffset.set( &data->m_dropOffset );
-	dpData.m_dropVariance.set( &data->m_dropVariance );
-	dpData.m_distToTarget						= data->m_maxDistanceToTarget;
-	dpData.m_maxAttempts						= data->m_maxNumberAttempts;
-	dpData.m_dropDelay							= data->m_dropDelay;
-	dpData.m_deliveryDecalTemplate	= data->m_deliveryDecalTemplate;
-	dpData.m_deliveryDecalRadius		= data->m_deliveryDecalRadius;
+	dpData.m_dropOffset.set( &data->m_ini.m_dropOffset );
+	dpData.m_dropVariance.set( &data->m_ini.m_dropVariance );
+	dpData.m_distToTarget = data->m_ini.m_maxDistanceToTarget;
+	dpData.m_maxAttempts = data->m_ini.m_maxNumberAttempts;
+	dpData.m_dropDelay = data->m_ini.m_dropDelay;
+	dpData.m_deliveryDecalTemplate = data->m_ini.m_deliveryDecalTemplate;
+	dpData.m_deliveryDecalRadius = data->m_ini.m_deliveryDecalRadius;
 
 	deliverPayload( moveToPos, moveToPos, &dpData );
 }
@@ -335,7 +335,7 @@ void DeliverPayloadAIUpdate::deliverPayloadViaModuleData( const Coord3D *moveToP
 //-------------------------------------------------------------------------------------------------
 const ThingTemplate* DeliverPayloadAIUpdate::getPutInContainerTemplateViaModuleData() const
 {
-	AsciiString name = getDeliverPayloadAIUpdateModuleData()->m_putInContainerName;
+	AsciiString name = getDeliverPayloadAIUpdateModuleData()->m_ini.m_putInContainerName;
 	return name.isEmpty() ? NULL : TheThingFactory->findTemplate( name );
 }
 
@@ -523,17 +523,17 @@ DeliverPayloadStateMachine::DeliverPayloadStateMachine( Object *owner ) : StateM
 
 	static const StateConditionInfo considerConditions[] = 
 	{
-		StateConditionInfo(DeliverPayloadStateMachine::isOffMap, RECOVER_FROM_OFF_MAP, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(DeliverPayloadStateMachine::isOffMap, (StateID) RECOVER_FROM_OFF_MAP, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	// order matters: first state is the default state.
-	defineState( APPROACH,								newInstance(ApproachState)( this ), DELIVERING, CONSIDER_NEW_APPROACH );
-	defineState( DELIVERING,							newInstance(DeliveringState)( this ), HEAD_OFF_MAP, CONSIDER_NEW_APPROACH );
-	defineState( CONSIDER_NEW_APPROACH,		newInstance(ConsiderNewApproachState)( this ), APPROACH, HEAD_OFF_MAP, considerConditions );
-	defineState( RECOVER_FROM_OFF_MAP,		newInstance(RecoverFromOffMapState)( this ), APPROACH, APPROACH );
-	defineState( HEAD_OFF_MAP,						newInstance(HeadOffMapState)( this ), CLEAN_UP, CLEAN_UP );
-	defineState( CLEAN_UP,								newInstance(CleanUpState)( this ), INVALID_STATE_ID, INVALID_STATE_ID );
+	defineState( (StateID) APPROACH,								newInstance(ApproachState)( this ), (StateID) DELIVERING, (StateID) CONSIDER_NEW_APPROACH );
+	defineState( (StateID) DELIVERING,							newInstance(DeliveringState)( this ), (StateID) HEAD_OFF_MAP, (StateID) CONSIDER_NEW_APPROACH );
+	defineState( (StateID) CONSIDER_NEW_APPROACH,		newInstance(ConsiderNewApproachState)( this ), (StateID) APPROACH, (StateID) HEAD_OFF_MAP, considerConditions );
+	defineState( (StateID) RECOVER_FROM_OFF_MAP,		newInstance(RecoverFromOffMapState)( this ), (StateID) APPROACH, (StateID) APPROACH );
+	defineState( (StateID) HEAD_OFF_MAP,						newInstance(HeadOffMapState)( this ), (StateID) CLEAN_UP, (StateID) CLEAN_UP );
+	defineState( (StateID) CLEAN_UP,								newInstance(CleanUpState)( this ), INVALID_STATE_ID, INVALID_STATE_ID );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -623,14 +623,14 @@ StateReturnType ApproachState::update()
 
 	if (ai->getAIStateType() != AI_MOVE_TO)
 	{
-    if ( ai->getAIStateType() == AI_IDLE )
-    // Because something outside us has told us to IDLE, so geez, ignore it and try our approach again
-      return STATE_FAILURE;
-    else
-    {
-		  DEBUG_CRASH(("hmm, bailed from moveto state early... should this be possible?"));
-		  ai->aiMoveToPosition( ai->getMoveToPos(), CMD_FROM_AI );
-    }
+		if ( ai->getAIStateType() == AI_IDLE )
+		// Because something outside us has told us to IDLE, so geez, ignore it and try our approach again
+			return STATE_FAILURE;
+		else
+		{
+			DEBUG_CRASH(("hmm, bailed from moveto state early... should this be possible?"));
+			ai->aiMoveToPosition( ai->getMoveToPos(), CMD_FROM_AI );
+		}
 
 	}
 
@@ -934,7 +934,7 @@ void DeliveringState::onExit( StateExitType ) // Close the doors
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ConsiderNewApproachState::crc( Xfer *xfer )
+void ConsiderNewApproachState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -1243,4 +1243,3 @@ StateReturnType CleanUpState::onEnter() // Delete my successful butt
 
 	return STATE_CONTINUE;
 }
-

@@ -31,7 +31,7 @@
 
 #include "Common/ResourceGatheringManager.h"
 
-#include "Common/ActionManager.h"
+// #include "Common/ActionManager.h"
 #include "Common/Xfer.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Object.h"
@@ -107,6 +107,12 @@ void ResourceGatheringManager::removeSupplyWarehouse( Object *oldWarehouse )
 
 static Real computeRelativeCost( Object *queryObject, Object *destObject, Real *pureDistanceSquared )
 {
+(void) queryObject;
+(void) destObject;
+(void) pureDistanceSquared;
+DEBUG_CRASH(("ResourceGatheringManager computeRelativeCost not yet implemented!"));
+return 0.0;
+#if 0
 	/** @todo This gets filled with Pathfinding computations, analysis of Boxes remaining,
 			Threat calculations, paths of other trucks, and other fancy stuff. 
 	*/
@@ -134,6 +140,7 @@ static Real computeRelativeCost( Object *queryObject, Object *destObject, Real *
 		*pureDistanceSquared = distSquared;
 
 	return distSquared;
+#endif // if 0
 }
 
 Object *ResourceGatheringManager::findBestSupplyWarehouse( Object *queryObject )

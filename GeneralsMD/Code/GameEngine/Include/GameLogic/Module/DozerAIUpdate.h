@@ -183,7 +183,7 @@ public:
 	Real m_boredTime;											///< after this many frames, a dozer will try to find something to do on its own
 	Real m_boredRange;										///< range the dozers try to auto repair when they're bored
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse( void* what, MultiIniFieldParse &p );
 
 };
 
@@ -311,4 +311,3 @@ private:
 
 
 #endif // __DOZERAIUPDATE_H_
-

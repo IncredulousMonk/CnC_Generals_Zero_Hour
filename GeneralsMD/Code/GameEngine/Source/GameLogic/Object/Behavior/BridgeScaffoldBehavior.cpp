@@ -101,6 +101,9 @@ void BridgeScaffoldBehavior::setMotion( ScaffoldTargetMotion targetMotion )
 			m_targetPos = m_createPos;
 			break;
 
+		case STM_STILL:
+			break;
+
 	}  // end switch
 
 }  // end setMotion
@@ -192,6 +195,9 @@ UpdateSleepTime BridgeScaffoldBehavior::update( void )
 			end = &m_riseToPos;
 			break;
 
+		case STM_STILL:
+			break;
+
 	}  // end switch
 
 	// adjust speed so it's slower at the end of motion
@@ -259,6 +265,9 @@ UpdateSleepTime BridgeScaffoldBehavior::update( void )
 				break;
 
 			}  // end case
+
+			case STM_STILL:
+				break;
 
 		}  // end switch
 

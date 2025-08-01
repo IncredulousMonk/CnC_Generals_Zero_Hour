@@ -4061,12 +4061,14 @@ void GameLogic::destroyObject( Object *obj )
 
 }  // end destroyObject
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Bool inCRCGen = FALSE;
 UnsignedInt GameLogic::getCRC( Int mode, AsciiString deepCRCFileName )
 {
+DEBUG_CRASH(("GameLogic::getCRC not yet implemented!"));
+return false;
+#if 0
 	if (mode != CRC_RECALC)
 		return m_CRC;
 
@@ -4184,8 +4186,10 @@ UnsignedInt GameLogic::getCRC( Int mode, AsciiString deepCRCFileName )
 		CRCGEN_LOG(("CRC for frame %d is 0x%8.8X\n", m_frame, theCRC));
 	}
 	return theCRC;
+#endif // if 0
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** A new GameLogic object has been constructed, therefore create
  * a corresponding drawable and bind them together. */

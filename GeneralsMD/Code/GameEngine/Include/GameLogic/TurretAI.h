@@ -65,7 +65,7 @@ class TurretAI;
  */
 class TurretStateMachine : public StateMachine
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( TurretStateMachine, "TurretStateMachine" );
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( TurretStateMachine, "TurretStateMachine" )
 
 public:
 	/** 
@@ -73,7 +73,11 @@ public:
 	 * used by this machine.
 	 */
 	TurretStateMachine( TurretAI* tai, Object* owner, AsciiString name );
-	
+
+	// No copies allowed!
+	TurretStateMachine(const TurretStateMachine&) = delete;
+	TurretStateMachine& operator=(const TurretStateMachine&) = delete;
+
 	TurretAI* getTurretAI() const { return m_turretAI; }
 
 	virtual void clear();
@@ -93,7 +97,7 @@ protected:
 //-----------------------------------------------------------------------------------------------------------
 class TurretState : public State
 {
-	MEMORY_POOL_GLUE_ABC(TurretState)		
+	MEMORY_POOL_GLUE_ABC(TurretState)
 protected:
 	TurretState( TurretStateMachine* machine, AsciiString name ) : State( machine, name) { }
 	TurretAI* getTurretAI() { return ((TurretStateMachine*)getMachine())->getTurretAI(); }
@@ -103,7 +107,7 @@ EMPTY_DTOR(TurretState)
 //-----------------------------------------------------------------------------------------------------------
 class TurretAIIdleState : public TurretState
 {	
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIIdleState, "TurretAIIdleState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIIdleState, "TurretAIIdleState")
 public:
 	TurretAIIdleState( TurretStateMachine* machine ) : TurretState( machine, "TurretAIIdleState"), m_nextIdleScan(0) { }
 	virtual StateReturnType onEnter();
@@ -123,7 +127,7 @@ EMPTY_DTOR(TurretAIIdleState)
 //-----------------------------------------------------------------------------------------------------------
 class TurretAIIdleScanState : public TurretState
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIIdleScanState, "TurretAIIdleScanState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIIdleScanState, "TurretAIIdleScanState")
 public:
 	TurretAIIdleScanState( TurretStateMachine* machine ) : TurretState( machine, "TurretAIIdleScanState"), m_desiredAngle(0) { }
 	virtual StateReturnType onEnter();
@@ -146,7 +150,7 @@ EMPTY_DTOR(TurretAIIdleScanState)
  */
 class TurretAIAimTurretState : public TurretState
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIAimTurretState, "TurretAIAimTurretState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIAimTurretState, "TurretAIAimTurretState")
 private:
 #ifdef INTER_TURRET_DELAY
 	UnsignedInt m_extraDelay;
@@ -173,7 +177,7 @@ EMPTY_DTOR(TurretAIAimTurretState)
  */
 class TurretAIRecenterTurretState : public TurretState
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIRecenterTurretState, "TurretAIRecenterTurretState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIRecenterTurretState, "TurretAIRecenterTurretState")
 public:
 	TurretAIRecenterTurretState( TurretStateMachine* machine ) : TurretState( machine, "TurretAIRecenterTurretState" ) { }
 	virtual StateReturnType onEnter();
@@ -195,7 +199,7 @@ class TurretAIHoldTurretState : public TurretState
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIHoldTurretState, "TurretAIHoldTurretState")		
 private:
-	UnsignedInt m_timestamp;										///< frame this state was last entered
+	UnsignedInt m_timestamp {};										///< frame this state was last entered
 public:
 	TurretAIHoldTurretState( TurretStateMachine* machine ) : TurretState( machine , "AIHoldTurretState") 
 	{
@@ -215,32 +219,38 @@ EMPTY_DTOR(TurretAIHoldTurretState)
 //-------------------------------------------------------------------------------------------------
 class TurretAIData : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIData, "TurretAIData")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TurretAIData, "TurretAIData")
 public:
-	Real						m_turnRate;
-	Real						m_pitchRate;
-	Real						m_naturalTurretAngle;
-	Real						m_naturalTurretPitch;
-	Real						m_turretFireAngleSweep[WEAPONSLOT_COUNT];	///< if nonzero, sweep within +/- this angle range while firing
-	Real						m_turretSweepSpeedModifier[WEAPONSLOT_COUNT];	///< While sweeping, change your speed by this
-	Real						m_firePitch;						///< if nonzero, I am on target at this fixed pitch, not when pointing at target
-	Real						m_minPitch;							///< dependent on allowspitch. defaults to 0 (horizontal). The lowest pitch allowed (negative to allow pointing down of a high turret)
-	Real						m_groundUnitPitch;			///< dependent on allowspitch. defaults to 0 (horizontal). The lowest pitch allowed when firing at ground units to give the weapon an arc.  jba
-	UnsignedInt			m_turretWeaponSlots;		///< which WeaponSlots are controlled by this turret
-#ifdef INTER_TURRET_DELAY
-	UnsignedInt			m_interTurretDelay;			///< special-case for multiturret battleships
-#endif
-	Real						m_minIdleScanAngle;			///< max angle the turret can turn while idling
-	Real						m_maxIdleScanAngle;			///< max angle the turret can turn while idling
-	UnsignedInt			m_minIdleScanInterval;	///< min interval between idle scans
-	UnsignedInt			m_maxIdleScanInterval;	///< max interval between idle scans
-	UnsignedInt			m_recenterTime;					///< time to wait before recentering turret
-	Bool						m_initiallyDisabled;		///< manually controlled and disabled.
-	Bool						m_firesWhileTurning;    ///< so the firing state does not instantly expire the turning state
-	Bool						m_isAllowsPitch;				///< This type of turret can pitch up and down as well as spin
+	// MG: Cannot apply offsetof to AIUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real				m_turnRate {};
+		Real				m_pitchRate {};
+		Real				m_naturalTurretAngle {};
+		Real				m_naturalTurretPitch {};
+		Real				m_turretFireAngleSweep[WEAPONSLOT_COUNT];	///< if nonzero, sweep within +/- this angle range while firing
+		Real				m_turretSweepSpeedModifier[WEAPONSLOT_COUNT];	///< While sweeping, change your speed by this
+		Real				m_firePitch {};						///< if nonzero, I am on target at this fixed pitch, not when pointing at target
+		Real				m_minPitch {};							///< dependent on allowspitch. defaults to 0 (horizontal). The lowest pitch allowed (negative to allow pointing down of a high turret)
+		Real				m_groundUnitPitch {};			///< dependent on allowspitch. defaults to 0 (horizontal). The lowest pitch allowed when firing at ground units to give the weapon an arc.  jba
+		UnsignedInt			m_turretWeaponSlots {};		///< which WeaponSlots are controlled by this turret
+	#ifdef INTER_TURRET_DELAY
+		UnsignedInt			m_interTurretDelay {};			///< special-case for multiturret battleships
+	#endif
+		Real				m_minIdleScanAngle {};			///< max angle the turret can turn while idling
+		Real				m_maxIdleScanAngle {};			///< max angle the turret can turn while idling
+		UnsignedInt			m_minIdleScanInterval {};	///< min interval between idle scans
+		UnsignedInt			m_maxIdleScanInterval {};	///< max interval between idle scans
+		UnsignedInt			m_recenterTime {};					///< time to wait before recentering turret
+		Bool				m_initiallyDisabled {};		///< manually controlled and disabled.
+		Bool				m_firesWhileTurning {};    ///< so the firing state does not instantly expire the turning state
+		Bool				m_isAllowsPitch {};				///< This type of turret can pitch up and down as well as spin
+	};
+
+	IniData m_ini {};
 
 	TurretAIData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 	static void parseTurretSweep(INI* ini, void *instance, void *store, const void* userData);
 	static void parseTurretSweepSpeed(INI* ini, void *instance, void *store, const void* userData);
@@ -267,23 +277,27 @@ public:
 	TurretAI(Object* owner, const TurretAIData* data, WhichTurretType tur);
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	TurretAI(const TurretAI&) = delete;
+	TurretAI& operator=(const TurretAI&) = delete;
+
 	Real getTurretAngle() const { return m_angle; }
 	Real getTurretPitch() const { return m_pitch; }
-	Real getMinPitch() const { return m_data->m_minPitch; }
-	Bool isAllowsPitch() const { return m_data->m_isAllowsPitch; }
-	Real getTurnRate() const { return m_data->m_turnRate; }
-	Real getNaturalTurretAngle() const { return m_data->m_naturalTurretAngle; }
-	Real getPitchRate() const { return m_data->m_pitchRate; }
-	Real getFirePitch() const { return m_data->m_firePitch; }
-	Real getGroundUnitPitch() const { return m_data->m_groundUnitPitch; }
-	Real getNaturalTurretPitch() const { return m_data->m_naturalTurretPitch;	}
+	Real getMinPitch() const { return m_data->m_ini.m_minPitch; }
+	Bool isAllowsPitch() const { return m_data->m_ini.m_isAllowsPitch; }
+	Real getTurnRate() const { return m_data->m_ini.m_turnRate; }
+	Real getNaturalTurretAngle() const { return m_data->m_ini.m_naturalTurretAngle; }
+	Real getPitchRate() const { return m_data->m_ini.m_pitchRate; }
+	Real getFirePitch() const { return m_data->m_ini.m_firePitch; }
+	Real getGroundUnitPitch() const { return m_data->m_ini.m_groundUnitPitch; }
+	Real getNaturalTurretPitch() const { return m_data->m_ini.m_naturalTurretPitch;	}
 	Real getTurretFireAngleSweepForWeaponSlot( WeaponSlotType slot ) const;
 	Real getTurretSweepSpeedModifierForWeaponSlot( WeaponSlotType slot ) const;
-	Real getMinIdleScanAngle() const { return m_data->m_minIdleScanAngle;	}
-	Real getMaxIdleScanAngle() const { return m_data->m_maxIdleScanAngle;	}
-	UnsignedInt getMinIdleScanInterval() const { return m_data->m_minIdleScanInterval;	}
-	UnsignedInt getMaxIdleScanInterval() const { return m_data->m_maxIdleScanInterval;	}
-	UnsignedInt getRecenterTime() const { return m_data->m_recenterTime;	}
+	Real getMinIdleScanAngle() const { return m_data->m_ini.m_minIdleScanAngle;	}
+	Real getMaxIdleScanAngle() const { return m_data->m_ini.m_maxIdleScanAngle;	}
+	UnsignedInt getMinIdleScanInterval() const { return m_data->m_ini.m_minIdleScanInterval;	}
+	UnsignedInt getMaxIdleScanInterval() const { return m_data->m_ini.m_maxIdleScanInterval;	}
+	UnsignedInt getRecenterTime() const { return m_data->m_ini.m_recenterTime;	}
 	Object* getOwner() { return m_owner; }
 	const Object* getOwner() const { return m_owner; }
 
@@ -350,27 +364,27 @@ private:
 	void getOtherTurretWeaponInfo(Int& numSelf, Int& numSelfReloading, Int& numSelfReady, Int& numOther, Int& numOtherReloading, Int& numOtherReady) const;
 #endif
 
-	const TurretAIData*				m_data;
-	const WhichTurretType			m_whichTurret;
-	Object*										m_owner;
-	TurretStateMachine*				m_turretStateMachine;							///< the state machine
-	Real											m_angle;										///< angle of the turret
-	Real											m_pitch;										///< pitch angle, if this supports it
-	AudioEventRTS							m_turretRotOrPitchSound;		///< Sound of turret rotation
-	UnsignedInt								m_enableSweepUntil;
-	Team*											m_victimInitialTeam; // The team of the victim at the BEGINNING of the attack. If it changes, we may need to stop the attack.
-	mutable TurretTargetType	m_target;
-	UnsignedInt								m_continuousFireExpirationFrame;
-	UnsignedInt								m_sleepUntil;
+	const TurretAIData*			m_data {};
+	const WhichTurretType		m_whichTurret {};
+	Object*						m_owner {};
+	TurretStateMachine*			m_turretStateMachine {};						///< the state machine
+	Real						m_angle {};										///< angle of the turret
+	Real						m_pitch {};										///< pitch angle, if this supports it
+	AudioEventRTS				m_turretRotOrPitchSound {};		///< Sound of turret rotation
+	UnsignedInt					m_enableSweepUntil {};
+	Team*						m_victimInitialTeam {}; // The team of the victim at the BEGINNING of the attack. If it changes, we may need to stop the attack.
+	mutable TurretTargetType	m_target {};
+	UnsignedInt					m_continuousFireExpirationFrame {};
+	UnsignedInt					m_sleepUntil {};
 
-	Bool										m_playRotSound : 1;
-	Bool										m_playPitchSound : 1;
-	Bool										m_positiveSweep : 1;
-	Bool										m_didFire : 1;
-	Bool										m_enabled : 1;
-	Bool										m_firesWhileTurning : 1;
-	Bool										m_isForceAttacking : 1;
-	mutable Bool						m_targetWasSetByIdleMood : 1;
+	Bool						m_playRotSound : 1 {};
+	Bool						m_playPitchSound : 1 {};
+	Bool						m_positiveSweep : 1 {};
+	Bool						m_didFire : 1 {};
+	Bool						m_enabled : 1 {};
+	Bool						m_firesWhileTurning : 1 {};
+	Bool						m_isForceAttacking : 1 {};
+	mutable Bool				m_targetWasSetByIdleMood : 1 {};
 
 };
 

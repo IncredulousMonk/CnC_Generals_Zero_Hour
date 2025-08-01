@@ -31,7 +31,6 @@
 #ifndef _AI_H_
 #define _AI_H_
 
-#if 0
 #include "Common/Snapshot.h"
 #include "Common/SubsystemInterface.h"
 #include "Common/GameMemory.h"
@@ -41,9 +40,7 @@
 
 class AIGroup;
 class AttackPriorityInfo;
-#endif // if 0
 class BuildListInfo;
-#if 0
 class CommandButton;
 class Object;
 class PartitionFilter;
@@ -97,32 +94,40 @@ typedef struct {
 
 class AISideInfo : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AISideInfo, "AISideInfo")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AISideInfo, "AISideInfo")
 public:
-	AISideInfo( void ) : m_easy(0), m_normal(1), m_hard(2), m_next(NULL)
+	AISideInfo() : m_next(NULL)
 	{
-		m_side.clear();
-		m_baseDefenseStructure1.clear();
+		m_ini.m_easy = 0;
+		m_ini.m_normal = 1;
+		m_ini.m_hard = 2;
+		m_ini.m_side.clear();
+		m_ini.m_baseDefenseStructure1.clear();
 	}
 
-	// No copies allowed!
 	AISideInfo(const AISideInfo&) = delete;
-	AISideInfo& operator=(const AISideInfo&) = delete;
+	AISideInfo& operator=(const AISideInfo&) = default;
 
-	AsciiString m_side {};						///< Name of the side
-	Int					m_easy {};						///< Number of gatherers to use in easy, normal & hard
-	Int					m_normal {};	
-	Int					m_hard {};
-	TSkillSet		m_skillSet1 {};
-	TSkillSet		m_skillSet2 {};
-	TSkillSet		m_skillSet3 {};
-	TSkillSet		m_skillSet4 {};
-	TSkillSet		m_skillSet5 {};
-	AsciiString m_baseDefenseStructure1 {};
-	AISideInfo *m_next {};
+	// MG: Cannot apply offsetof to AISideInfo, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString		m_side {};						///< Name of the side
+		Int				m_easy {};						///< Number of gatherers to use in easy, normal & hard
+		Int				m_normal {};	
+		Int				m_hard {};
+		TSkillSet		m_skillSet1 {};
+		TSkillSet		m_skillSet2 {};
+		TSkillSet		m_skillSet3 {};
+		TSkillSet		m_skillSet4 {};
+		TSkillSet		m_skillSet5 {};
+		AsciiString		m_baseDefenseStructure1 {};
+	};
+
+	IniData m_ini {};
+
+	AISideInfo* m_next {};
 };
 EMPTY_DTOR(AISideInfo)
-#endif // if 0
 
 class AISideBuildList : public MemoryPoolObject
 {
@@ -144,16 +149,14 @@ public:
 };
 
 
-#if 0
 class TAiData : public Snapshot
 {
 public:
 	TAiData();
 	~TAiData();
 
-	// No copies allowed!
 	TAiData(const TAiData&) = delete;
-	TAiData& operator=(const TAiData&) = delete;
+	TAiData& operator=(const TAiData&) = default;
 
 	void addSideInfo(AISideInfo *info);
 	void addFactionBuildList(AISideBuildList *buildList);
@@ -163,90 +166,96 @@ public:
 	void xfer( Xfer *xfer );
 	void loadPostProcess( void );
 
-	Real m_structureSeconds;		// Try to build a structure every N seconds.
-	Real m_teamSeconds;					// Try to build a team every N seconds.
-	Int m_resourcesWealthy;		// How many resources to be wealthy.
-	Int m_resourcesPoor;			// How few resources to be poor.
-	UnsignedInt m_forceIdleFramesCount;	// How many frames does a unit need to be Idle before it can begin looking for enemies?
-	Real m_structuresWealthyMod; // Factor to multiply m_structurFrames by if we are wealthy.
-	Real m_teamWealthyMod;		// Factor to multiply m_teamFrames by if we are wealthy.
-	Real m_structuresPoorMod; // Factor to multiply m_structureFrames by if we are poor.
-	Real m_teamPoorMod;				// Factor to multiply m_teamFrames if we are poor.
-	Real m_teamResourcesToBuild; // Amount of the resources needed to build a team required before we start.
-	Real m_guardInnerModifierAI;	// Multiply the AI unit's vision by this much == guard inner circle.
-	Real m_guardOuterModifierAI;	// Multiply the AI unit's vision by this much == guard outer circle.
-	Real m_guardInnerModifierHuman;	// Multiply the human unit's vision by this much == guard inner circle
-	Real m_guardOuterModifierHuman;	// Multiply the human unit's vision by this much == guard outer circle
-	UnsignedInt m_guardChaseUnitFrames;		// Number of frames for which a unit should 
-	UnsignedInt m_guardEnemyScanRate;		// rate to scan for enemies while guarding
-	UnsignedInt m_guardEnemyReturnScanRate;		// rate to scan for enemies while guarding but returning
+	// MG: Cannot apply offsetof to TAiData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_structureSeconds;		// Try to build a structure every N seconds.
+		Real m_teamSeconds;					// Try to build a team every N seconds.
+		Int m_resourcesWealthy;		// How many resources to be wealthy.
+		Int m_resourcesPoor;			// How few resources to be poor.
+		UnsignedInt m_forceIdleFramesCount;	// How many frames does a unit need to be Idle before it can begin looking for enemies?
+		Real m_structuresWealthyMod; // Factor to multiply m_structurFrames by if we are wealthy.
+		Real m_teamWealthyMod;		// Factor to multiply m_teamFrames by if we are wealthy.
+		Real m_structuresPoorMod; // Factor to multiply m_structureFrames by if we are poor.
+		Real m_teamPoorMod;				// Factor to multiply m_teamFrames if we are poor.
+		Real m_teamResourcesToBuild; // Amount of the resources needed to build a team required before we start.
+		Real m_guardInnerModifierAI;	// Multiply the AI unit's vision by this much == guard inner circle.
+		Real m_guardOuterModifierAI;	// Multiply the AI unit's vision by this much == guard outer circle.
+		Real m_guardInnerModifierHuman;	// Multiply the human unit's vision by this much == guard inner circle
+		Real m_guardOuterModifierHuman;	// Multiply the human unit's vision by this much == guard outer circle
+		UnsignedInt m_guardChaseUnitFrames;		// Number of frames for which a unit should 
+		UnsignedInt m_guardEnemyScanRate;		// rate to scan for enemies while guarding
+		UnsignedInt m_guardEnemyReturnScanRate;		// rate to scan for enemies while guarding but returning
 
-	Real m_wallHeight;				// Height of special wall units can walk on top of.
-	
-	Real m_alertRangeModifier;			// When a unit is alert, its range will be modified by this value
-	Real m_aggressiveRangeModifier;	// When a unit is aggressive, its range will be modified by this value
-
-	/* The attack priority distance modifier changes relative values.  The relative priority
-	   is reduced by the distance away, divided by the modifier.
-		 Example: tanks are priority 10, powerplants priority 15, and modifier = 100.0
-		 If a powerplant is 700 feet away from the attacker, and the tank is 
-		 100 feet, the effective priority for tank is 9 (10-(100/100), and the
-		 effective priority for powerplant is 8 (15 -(700/100).  So the tanks
-		 would be attacked first because their distance weighted priority is greater. */
-	Real m_attackPriorityDistanceModifier; // Distance to reduce a relative AttackPriority by 1.
-	
-	
-	/* 
-		How close to a waypoint does a group of units have to be to consider itself at the waypoint?
-		m_skirmishGroupFudgeValue is multiplied by the number of the units in the group asking if its
-		close enough to determine this.
+		Real m_wallHeight;				// Height of special wall units can walk on top of.
 		
-		So for instance (if m_skirmishGroupFudgeValue was 5), if 2 units are walking along a path, 
-		they would check to see if they were less than 10 feet away from the waypoint in order 
-		to say they were close enough. A group of 10 units would consider themselves close enough 
-		if they were within 50 feet of the waypoint.
-	*/
-	Real m_skirmishGroupFudgeValue;	
+		Real m_alertRangeModifier;			// When a unit is alert, its range will be modified by this value
+		Real m_aggressiveRangeModifier;	// When a unit is aggressive, its range will be modified by this value
 
-	Real m_maxRecruitDistance; // Maximum distance away that units can be recruited.
-	Real m_skirmishBaseDefenseExtraDistance; ///< instead of building base defenses right on the template bounding circle, push them out this much.
-	Real m_repulsedDistance; // How far a repulsed unit will run past vision range before stopping.
-	Bool m_enableRepulsors; // Is repulsion enabled?
+		/* The attack priority distance modifier changes relative values.  The relative priority
+		is reduced by the distance away, divided by the modifier.
+			Example: tanks are priority 10, powerplants priority 15, and modifier = 100.0
+			If a powerplant is 700 feet away from the attacker, and the tank is 
+			100 feet, the effective priority for tank is 9 (10-(100/100), and the
+			effective priority for powerplant is 8 (15 -(700/100).  So the tanks
+			would be attacked first because their distance weighted priority is greater. */
+		Real m_attackPriorityDistanceModifier; // Distance to reduce a relative AttackPriority by 1.
 
-	Bool m_forceSkirmishAI; // If true, forces skirmish ai instead of solo ai for development until the skirmish ui is done.  jba.
-	Bool m_rotateSkirmishBases; // If true, rotates skirmish ai bases to face the center of the map. jba.
+		/*
+			How close to a waypoint does a group of units have to be to consider itself at the waypoint?
+			m_skirmishGroupFudgeValue is multiplied by the number of the units in the group asking if its
+			close enough to determine this.
+			
+			So for instance (if m_skirmishGroupFudgeValue was 5), if 2 units are walking along a path, 
+			they would check to see if they were less than 10 feet away from the waypoint in order 
+			to say they were close enough. A group of 10 units would consider themselves close enough 
+			if they were within 50 feet of the waypoint.
+		*/
+		Real m_skirmishGroupFudgeValue;	
 
-	Bool m_attackUsesLineOfSight; // If true, attack for units with KINDOF_ATTACK_NEEDS_LINE_OF_SIGHT  uses line of sight. jba.
+		Real m_maxRecruitDistance; // Maximum distance away that units can be recruited.
+		Real m_skirmishBaseDefenseExtraDistance; ///< instead of building base defenses right on the template bounding circle, push them out this much.
+		Real m_repulsedDistance; // How far a repulsed unit will run past vision range before stopping.
+		Bool m_enableRepulsors; // Is repulsion enabled?
 
-	Bool m_attackIgnoreInsignificantBuildings; // If true, attack for ALL UNITS ignores buildings that are hostile that are not significant. jkmcd
+		Bool m_forceSkirmishAI; // If true, forces skirmish ai instead of solo ai for development until the skirmish ui is done.  jba.
+		Bool m_rotateSkirmishBases; // If true, rotates skirmish ai bases to face the center of the map. jba.
 
-	// Group pathfind info.
-	Int	 m_minInfantryForGroup;		// We need at least this many to do it.
-	Int	 m_minVehiclesForGroup;		// We need at least this many vehicles to do it.
-	Real m_minDistanceForGroup;		// We need to move at least this far to do it.
-	Real m_distanceRequiresGroup; // If we are moving this far or farther, force group moving.
-	Real m_minClumpDensity;				// What density constitues a clump.  .5 means units occupying 1/2 of their bounding area.
+		Bool m_attackUsesLineOfSight; // If true, attack for units with KINDOF_ATTACK_NEEDS_LINE_OF_SIGHT  uses line of sight. jba.
 
-	Int	 m_infantryPathfindDiameter; // Diameter of path in cells for infantry.
-	Int  m_vehiclePathfindDiameter;  // Diameter of path in cells for vehicles.
+		Bool m_attackIgnoreInsignificantBuildings; // If true, attack for ALL UNITS ignores buildings that are hostile that are not significant. jkmcd
 
-	Int  m_rebuildDelaySeconds;  // Seconds to delay rebuilding after a base building is destroyed or captured.
+		// Group pathfind info.
+		Int	 m_minInfantryForGroup;		// We need at least this many to do it.
+		Int	 m_minVehiclesForGroup;		// We need at least this many vehicles to do it.
+		Real m_minDistanceForGroup;		// We need to move at least this far to do it.
+		Real m_distanceRequiresGroup; // If we are moving this far or farther, force group moving.
+		Real m_minClumpDensity;				// What density constitues a clump.  .5 means units occupying 1/2 of their bounding area.
 
-	Real  m_supplyCenterSafeRadius;  // Radius to scan for enemies to determine safety.
+		Int	 m_infantryPathfindDiameter; // Diameter of path in cells for infantry.
+		Int  m_vehiclePathfindDiameter;  // Diameter of path in cells for vehicles.
 
-	Real  m_aiDozerBoredRadiusModifier;  // Modifies ai dozers scan range so the move out farther than human ones.
-	Bool	m_aiCrushesInfantry; // If true, AI vehicles will attempt to crush infantry.
+		Int  m_rebuildDelaySeconds;  // Seconds to delay rebuilding after a base building is destroyed or captured.
 
-	// Retaliate params. [8/25/2003]
-	Real	m_maxRetaliateDistance; // If attacker is > this distance, don't retaliate. [8/25/2003]
-	Real	m_retaliateFriendsRadius; // If we have friends within this radius, get them to help retaliate. [8/25/2003]
+		Real  m_supplyCenterSafeRadius;  // Radius to scan for enemies to determine safety.
 
+		Real  m_aiDozerBoredRadiusModifier;  // Modifies ai dozers scan range so the move out farther than human ones.
+		Bool	m_aiCrushesInfantry; // If true, AI vehicles will attempt to crush infantry.
 
-	AISideInfo *m_sideInfo;
+		// Retaliate params. [8/25/2003]
+		Real	m_maxRetaliateDistance; // If attacker is > this distance, don't retaliate. [8/25/2003]
+		Real	m_retaliateFriendsRadius; // If we have friends within this radius, get them to help retaliate. [8/25/2003]
 
-	AISideBuildList *m_sideBuildLists;
+		TAiData* m_obj {};	///< pointer to the parent object
+	};
 
-	TAiData *m_next;
+	IniData m_ini {};
+
+	AISideInfo *m_sideInfo {};
+
+	AISideBuildList *m_sideBuildLists {};
+
+	TAiData *m_next {};
 } ;
 
 //------------------------------------------------------------------------------------------------------------
@@ -314,14 +323,14 @@ public:
 	inline UnsignedInt getNextGroupID( void ) { return ++m_nextGroupID; }
 
 protected:
-	Pathfinder *m_pathfinder;							///< the pathfinding system
-	std::list<AIGroup *> m_groupList;			///< the list of AIGroups
-	TAiData *m_aiData;
+	Pathfinder *m_pathfinder {};							///< the pathfinding system
+	std::list<AIGroup *> m_groupList {};			///< the list of AIGroups
+	TAiData *m_aiData {};
 	void newOverride(void);
 	void addSideInfo(AISideInfo *info);
 	
-	UnsignedInt m_nextGroupID;
-	FormationID m_nextFormationID;
+	UnsignedInt m_nextGroupID {};
+	FormationID m_nextFormationID {};
 };
 
 extern AI *TheAI;												///< the Artificial Intelligence singleton
@@ -330,7 +339,6 @@ extern AI *TheAI;												///< the Artificial Intelligence singleton
 class Waypoint;
 class Team;
 class Weapon;
-#endif // if 0
 
 // Note - written out in save/load xfer and .map files, don't change these numbers.  
 enum AttitudeType: int { AI_SLEEP = -2, AI_PASSIVE=-1, AI_NORMAL=0, AI_ALERT=1, AI_AGGRESSIVE=2, AI_INVALID=3 };		///< AI "attitude" behavior modifiers
@@ -352,7 +360,6 @@ static const char *TheCommandSourceMaskNames[] =
 };
 #endif
 
-#if 0
 //------------------------------------------------------------------------------------------------------------
 
 enum AICommandType	// Stored in save file, do not reorder/renumber.  jba.
@@ -423,19 +430,19 @@ enum AICommandType	// Stored in save file, do not reorder/renumber.  jba.
 
 struct AICommandParms
 {
-	AICommandType						m_cmd;
-  CommandSourceType				m_cmdSource;
-  Coord3D									m_pos;
-  Object*									m_obj;
-  Object*									m_otherObj;
-  const Team*							m_team;
-	std::vector<Coord3D>		m_coords;
-  const Waypoint*         m_waypoint; 
-  const PolygonTrigger*   m_polygon;     
-  Int											m_intValue;       /// misc usage
-  DamageInfo							m_damage;
-	const CommandButton*		m_commandButton;
-	Path*										m_path;
+	AICommandType			m_cmd {};
+	CommandSourceType		m_cmdSource {};
+	Coord3D					m_pos {};
+	Object*					m_obj {};
+	Object*					m_otherObj {};
+	const Team*				m_team {};
+	std::vector<Coord3D>	m_coords {};
+	const Waypoint*			m_waypoint {};
+	const PolygonTrigger*	m_polygon {};
+	Int						m_intValue {};       /// misc usage
+	DamageInfo				m_damage {};
+	const CommandButton*	m_commandButton {};
+	Path*					m_path {};
 
 	AICommandParms(AICommandType cmd, CommandSourceType cmdSource);
 
@@ -447,19 +454,19 @@ struct AICommandParms
 class AICommandParmsStorage
 {
 private:
-	AICommandType						m_cmd;
-  CommandSourceType				m_cmdSource;
-  Coord3D									m_pos;
-  ObjectID								m_obj;
-  ObjectID								m_otherObj;
-  AsciiString							m_teamName;
-	std::vector<Coord3D>		m_coords;
-  const Waypoint*         m_waypoint; 
-  const PolygonTrigger*   m_polygon;     
-  Int											m_intValue;       /// misc usage
-  DamageInfo							m_damage;
-	const CommandButton*  	m_commandButton;
-	Path*										m_path;
+	AICommandType			m_cmd {};
+	CommandSourceType		m_cmdSource {};
+	Coord3D					m_pos {};
+	ObjectID				m_obj {};
+	ObjectID				m_otherObj {};
+	AsciiString				m_teamName {};
+	std::vector<Coord3D>	m_coords {};
+	const Waypoint*			m_waypoint {};
+	const PolygonTrigger*	m_polygon {};
+	Int						m_intValue {};		/// misc usage
+	DamageInfo				m_damage {};
+	const CommandButton*	m_commandButton {};
+	Path*					m_path {};
 
 public:
 	void store(const AICommandParms& parms);
@@ -1039,18 +1046,17 @@ private:
 
 	void recompute( void );									///< recompute various group info, such as speed, leader, etc
 
-	ListObjectPtr m_memberList;							///< the list of member Objects
-	UnsignedInt	m_memberListSize;	 					///< the size of the list of member Objects
+	ListObjectPtr m_memberList {};							///< the list of member Objects
+	UnsignedInt	m_memberListSize {};	 					///< the size of the list of member Objects
 
-	Real m_speed;														///< maximum speed of group (slowest member)
-	Bool m_dirty;														///< "dirty bit" - if true then group speed, leader, needs recompute
+	Real m_speed {};														///< maximum speed of group (slowest member)
+	Bool m_dirty {};														///< "dirty bit" - if true then group speed, leader, needs recompute
 
-	UnsignedInt m_id;												///< the unique ID of this group
-	Path *m_groundPath;											///< Group ground path.
+	UnsignedInt m_id {};												///< the unique ID of this group
+	Path *m_groundPath {};											///< Group ground path.
 	
-	mutable VecObjectID	m_lastRequestedIDList;			///< this is used so we can return by reference, saving a copy
+	mutable VecObjectID	m_lastRequestedIDList {};			///< this is used so we can return by reference, saving a copy
 };
-#endif // if 0
 
 
 #endif // _AI_H_

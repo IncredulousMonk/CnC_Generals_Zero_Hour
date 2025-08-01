@@ -63,19 +63,19 @@ static const char *TheHordeActionTypeNames[] =
 class HordeUpdateModuleData : public ModuleData
 {
 public:
-  UnsignedInt								m_updateRate;   ///< how often to recheck our horde status
-	KindOfMaskType						m_kindof;				///< the kind(s) of units that count towards horde-ness
-	Int												m_minCount;		  ///< min count to get "horde" status
-  Real											m_minDist;      ///< min dist to contribute to horde-ness
-	Bool											m_alliesOnly;		///< if true, only allied units count towards hordeness
-	Bool											m_exactMatch;		///< if true, only exact same type of units count towards hordeness
-	Real											m_rubOffRadius;///< If I am this close to another guy who is a true hordesman, it'll rub off on me
-	HordeActionType						m_action;				///< what to do if we get horde-ness
-	Bool											m_allowedNationalism; ///< Nationalism is hard ocded.  Yeah!  Add to the goodness with this flag instead of rewriting after Alpha.
-	std::vector<AsciiString>	m_flagSubObjNames;		///< name(s) of the flag subobj
+	UnsignedInt					m_updateRate {};			///< how often to recheck our horde status
+	KindOfMaskType				m_kindof {};				///< the kind(s) of units that count towards horde-ness
+	Int							m_minCount {};				///< min count to get "horde" status
+	Real						m_minDist {};				///< min dist to contribute to horde-ness
+	Bool						m_alliesOnly {};			///< if true, only allied units count towards hordeness
+	Bool						m_exactMatch {};			///< if true, only exact same type of units count towards hordeness
+	Real						m_rubOffRadius {};			///< If I am this close to another guy who is a true hordesman, it'll rub off on me
+	HordeActionType				m_action {};				///< what to do if we get horde-ness
+	Bool						m_allowedNationalism {};	///< Nationalism is hard ocded.  Yeah!  Add to the goodness with this flag instead of rewriting after Alpha.
+	std::vector<AsciiString>	m_flagSubObjNames {};		///< name(s) of the flag subobj
 
 	HordeUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private: 
 
@@ -85,6 +85,7 @@ private:
 class HordeUpdateInterface
 {
 public:
+	virtual ~HordeUpdateInterface() {}
 	virtual Bool isInHorde() const = 0;
 	virtual Bool hasFlag() const = 0;
 	virtual Bool isTrueHordeMember() const = 0; 
@@ -118,10 +119,10 @@ protected:
 	void joinOrLeaveHorde(SimpleObjectIterator *iter, Bool join);
 
 private:
-	UnsignedInt m_lastHordeRefreshFrame; //Just like it sounds
-	Bool				m_inHorde;				 //I amy be a trueMember, or I may merely inherit hordehood from a neighbor who is
-	Bool				m_trueHordeMember; //meaning, I have enough hordesman near me to qualify
-	Bool				m_hasFlag;
+	UnsignedInt m_lastHordeRefreshFrame {};	//Just like it sounds
+	Bool		m_inHorde {};				//I amy be a trueMember, or I may merely inherit hordehood from a neighbor who is
+	Bool		m_trueHordeMember {};		//meaning, I have enough hordesman near me to qualify
+	Bool		m_hasFlag {};
 
 };
 

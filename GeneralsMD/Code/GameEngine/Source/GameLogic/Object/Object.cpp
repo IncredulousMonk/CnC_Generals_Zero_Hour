@@ -50,25 +50,25 @@
 #include "Common/PerfTimer.h"
 
 // #include "GameClient/Anim2D.h"
-// #include "GameClient/ControlBar.h"
+#include "GameClient/ControlBar.h"
 // #include "GameClient/Drawable.h"
 // #include "GameClient/Eva.h"
 // #include "GameClient/GameClient.h"
-// #include "GameClient/InGameUI.h"
+#include "GameClient/InGameUI.h"
 
-// #include "GameLogic/AI.h"
-// #include "GameLogic/AIPathfind.h"
+#include "GameLogic/AI.h"
+#include "GameLogic/AIPathfind.h"
 // #include "GameLogic/ExperienceTracker.h"
-// #include "GameLogic/FiringTracker.h"
+#include "GameLogic/FiringTracker.h"
 #include "GameLogic/GameLogic.h"
 // #include "GameLogic/Locomotor.h"
 
-// #include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/AIUpdate.h"
 // #include "GameLogic/Module/AutoHealBehavior.h"
 // #include "GameLogic/Module/BehaviorModule.h"
 #include "GameLogic/Module/BodyModule.h"
 // #include "GameLogic/Module/CollideModule.h"
-// #include "GameLogic/Module/ContainModule.h"
+#include "GameLogic/Module/ContainModule.h"
 // #include "GameLogic/Module/CountermeasuresBehavior.h"
 // #include "GameLogic/Module/CreateModule.h"
 // #include "GameLogic/Module/DamageModule.h"
@@ -78,30 +78,30 @@
 // #include "GameLogic/Module/DozerAIUpdate.h"
 // #include "GameLogic/Module/ObjectDefectionHelper.h"
 // #include "GameLogic/Module/ObjectRepulsorHelper.h"
-// #include "GameLogic/Module/ObjectSMCHelper.h"
+#include "GameLogic/Module/ObjectSMCHelper.h"
 // #include "GameLogic/Module/ObjectWeaponStatusHelper.h"
 // #include "GameLogic/Module/OverchargeBehavior.h"
 // #include "GameLogic/Module/PhysicsUpdate.h"
 // #include "GameLogic/Module/PowerPlantUpgrade.h"
-// #include "GameLogic/Module/ProductionUpdate.h"
+#include "GameLogic/Module/ProductionUpdate.h"
 // #include "GameLogic/Module/RadarUpgrade.h"
 // #include "GameLogic/Module/RebuildHoleBehavior.h"
 // #include "GameLogic/Module/SpawnBehavior.h"
 #include "GameLogic/Module/SpecialPowerModule.h"
-// #include "GameLogic/Module/SpecialAbilityUpdate.h"
+#include "GameLogic/Module/SpecialAbilityUpdate.h"
 // #include "GameLogic/Module/StatusDamageHelper.h"
 // #include "GameLogic/Module/StickyBombUpdate.h"
 // #include "GameLogic/Module/SubdualDamageHelper.h"
 // #include "GameLogic/Module/TempWeaponBonusHelper.h"
 // #include "GameLogic/Module/ToppleUpdate.h"
-// #include "GameLogic/Module/UpdateModule.h"
-// #include "GameLogic/Module/UpgradeModule.h"
+#include "GameLogic/Module/UpdateModule.h"
+#include "GameLogic/Module/UpgradeModule.h"
 
 #include "GameLogic/Object.h"
 // #include "GameLogic/PartitionManager.h"
 // #include "GameLogic/PolygonTrigger.h"
 // #include "GameLogic/ScriptEngine.h"
-// #include "GameLogic/Weapon.h"
+#include "GameLogic/Weapon.h"
 // #include "GameLogic/WeaponSet.h"
 // #include "GameLogic/Module/RadarUpdate.h"
 // #include "GameLogic/Module/PowerPlantUpdate.h"
@@ -774,6 +774,7 @@ void Object::setGeometryInfoZ( Real newZ )
 	if (m_drawable)
 		m_drawable->reactToGeometryChange();
 }
+#endif // if 0
 
 //=============================================================================
 void Object::friend_setUndetectedDefector( Bool status )
@@ -783,7 +784,6 @@ void Object::friend_setUndetectedDefector( Bool status )
 	else
 		m_privateStatus &= ~UNDETECTED_DEFECTOR;
 }
-#endif // if 0
 
 //=============================================================================
 void Object::restoreOriginalTeam()
@@ -1219,7 +1219,6 @@ Bool Object::testArmorSetFlag(ArmorSetType ast) const
 	return m_body->testArmorSetFlag(ast); 
 }
 
-#if 0
 //=============================================================================
 void Object::reloadAllAmmo(Bool now)
 {
@@ -1289,7 +1288,6 @@ void Object::setFiringConditionForCurrentWeapon() const
 		m_drawable->clearAndSetModelConditionFlags(s_allWeaponFireFlags[wslot], c);
 	}
 }
-#endif // if 0
 
 //=============================================================================
 void Object::setModelConditionState( ModelConditionFlagType a )
@@ -1318,7 +1316,6 @@ void Object::clearAndSetModelConditionState( ModelConditionFlagType clr, ModelCo
 	}
 }
 
-#if 0
 //=============================================================================
 void Object::clearModelConditionFlags( const ModelConditionFlags& clr )
 {
@@ -1374,6 +1371,7 @@ void Object::clearSpecialModelConditionStates()
 	m_smcUntil = NEVER;
 }
 
+#if 0
 // Lorenzen has some interest in this, ask before deleting
 //=============================================================================
 //const ModelConditionFlags& Object::getModelConditionFlags() const
@@ -1389,6 +1387,7 @@ void Object::clearSpecialModelConditionStates()
 //		return noFlags;
 //	}
 //}
+#endif // if 0
 
 //=============================================================================
 Weapon* Object::getCurrentWeapon(WeaponSlotType* wslot)
@@ -1412,6 +1411,7 @@ const Weapon* Object::getCurrentWeapon(WeaponSlotType* wslot) const
 	return m_weaponSet.getCurWeapon();
 }
 
+#if 0
 //=============================================================================
 Weapon* Object::findWaypointFollowingCapableWeapon()
 {
@@ -1454,7 +1454,6 @@ CanAttackResult Object::getAbleToAttackSpecificObject( AbleToAttackType t, const
 	return m_weaponSet.getAbleToAttackSpecificObject( t, this, target, commandSource, specificSlot );
 }
 
-#if 0
 //=============================================================================
 //Used for base defenses and otherwise stationary units to see if you can attack a position potentially out of range.
 CanAttackResult Object::getAbleToUseWeaponAgainstTarget( AbleToAttackType attackType, const Object *victim, const Coord3D *pos, CommandSourceType commandSource, WeaponSlotType specificSlot ) const
@@ -1473,6 +1472,9 @@ Bool Object::chooseBestWeaponForTarget(const Object* target, WeaponChoiceCriteri
 //=============================================================================
 void Object::fireCurrentWeapon(Object *target)
 {
+DEBUG_CRASH(("Object::fireCurrentWeapon not yet implemented!"));
+(void) target;
+#if 0
 	//USE_PERF_TIMER(fireCurrentWeapon)
 
 	// victim may have already been destroyed
@@ -1491,11 +1493,15 @@ void Object::fireCurrentWeapon(Object *target)
 
 		friend_setUndetectedDefector( FALSE );// My secret is out
 	}
+#endif // if 0
 }
 
 //=============================================================================
 void Object::fireCurrentWeapon(const Coord3D* pos)
 { 
+DEBUG_CRASH(("Object::fireCurrentWeapon not yet implemented!"));
+(void) pos;
+#if 0
 	//USE_PERF_TIMER(fireCurrentWeapon)
 
 	if (pos == NULL)
@@ -1513,13 +1519,19 @@ void Object::fireCurrentWeapon(const Coord3D* pos)
 
 		friend_setUndetectedDefector( FALSE );// My secret is out
 	}
+#endif // if 0
 }
 
 //==============================================================================
 void Object::notifyFiringTrackerShotFired( const Weapon* weaponFired, ObjectID victimID ) 
 {
-  if ( m_firingTracker )
-    m_firingTracker->shotFired( weaponFired, victimID );
+DEBUG_CRASH(("Object::notifyFiringTrackerShotFired not yet implemented!"));
+(void) weaponFired;
+(void) victimID;
+#if 0
+	if ( m_firingTracker )
+		m_firingTracker->shotFired( weaponFired, victimID );
+#endif // if 0
 }
 
 
@@ -1538,6 +1550,7 @@ void Object::preFireCurrentWeapon( const Object *victim )
 	}
 }
 
+#if 0
 // ============================================================================
 /** Using the firing tracker, return the frame a shot was last fired on */
 // ============================================================================
@@ -1603,6 +1616,7 @@ return NEUTRAL;
 //=============================================================================
 Player * Object::getControllingPlayer() const
 { 
+DEBUG_CRASH(("Object::getControllingPlayer not yet implemented!"));
 #if 0
 	const Team* myTeam = this->getTeam();	
 	if (myTeam)
@@ -1612,7 +1626,6 @@ Player * Object::getControllingPlayer() const
 	return NULL;
 }
 
-#if 0
 //=============================================================================
 void Object::setProducer(const Object* obj)
 {
@@ -1622,6 +1635,7 @@ void Object::setProducer(const Object* obj)
 //		m_indicatorColor = obj->m_indicatorColor;
 }
 
+#if 0
 //=============================================================================
 void Object::setBuilder( const Object *obj )
 {
@@ -1751,6 +1765,7 @@ inline Bool isAngleDifferent(Real a, Real b)
 
 	return false;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real oldPitch )
@@ -1770,7 +1785,6 @@ void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real
 			getContain()->containReactToTransformChange();
 	}
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //DECLARE_PERF_TIMER(Object_reactToTransformChange)
@@ -2464,6 +2478,7 @@ Bool Object::isSalvageCrate() const
 	}
 	return false;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** 
@@ -2500,6 +2515,7 @@ void Object::updateUpgradeModules()
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 //This function sucks.
 //It was added for objects that can disguise as other objects and contain upgraded subobject overrides. 
@@ -2590,6 +2606,7 @@ Bool Object::isInside(const PolygonTrigger *pTrigger) const
 	}
 	return false;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Get production exit interface in object is present */
@@ -2619,6 +2636,7 @@ ExitInterface *Object::getObjectExitInterface() const
 
 }  // end getObjectExitInterface
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Checks the object against trigger areas when the position changes. */
 //-------------------------------------------------------------------------------------------------
@@ -2773,7 +2791,6 @@ void Object::removeFromList(Object **pListHead)
 	m_next = NULL;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void Object::setLayer(PathfindLayerEnum layer)
@@ -2802,7 +2819,6 @@ void Object::setDestinationLayer(PathfindLayerEnum layer)
 		m_destinationLayer = layer;
 	}
 }
-#endif // if 0
 
 
 // ------------------------------------------------------------------------------------------------
@@ -2939,7 +2955,6 @@ Module* Object::findModule(NameKeyType key) const
 	return m;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /**
  * Returns true if object is currently able to move.
@@ -2958,6 +2973,9 @@ Bool Object::isMobile() const
 //-------------------------------------------------------------------------------------------------
 void Object::scoreTheKill( const Object *victim )
 {
+(void) victim;
+DEBUG_CRASH(("Object::scoreTheKill not yet implemented!"));
+#if 0
 	// Do stuff that has nothing to do with experience points here, like tell our Player we killed something
 	/// @todo Multiplayer score hook location?
 
@@ -3008,8 +3026,8 @@ void Object::scoreTheKill( const Object *victim )
 			getExperienceTracker()->addExperiencePoints( experienceValue );
 		}
 	}
-}
 #endif // if 0
+}
 
 //-------------------------------------------------------------------------------------------------
 VeterancyLevel Object::getVeterancyLevel() const 
@@ -3509,7 +3527,7 @@ Bool Object::getHealthBoxDimensions(Real &healthBoxHeight, Real &healthBoxWidth)
 #endif
 
 }
-
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /**
@@ -3518,6 +3536,9 @@ Bool Object::getHealthBoxDimensions(Real &healthBoxHeight, Real &healthBoxWidth)
  */
 void Object::updateObjValuesFromMapProperties(Dict* properties)
 {
+(void) properties;
+DEBUG_CRASH(("Object::updateObjValuesFromMapProperties not yet implemented!"));
+#if 0
 	Bool exists;
 
 	AsciiString valStr;
@@ -3858,8 +3879,10 @@ void Object::updateObjValuesFromMapProperties(Dict* properties)
       }      
     } 
   }
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::friend_adjustPowerForPlayer( Bool incoming )
 {
@@ -4516,7 +4539,6 @@ void Object::loadPostProcess()
 
 }  // end loadPostProcess
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Does this object have this upgrade */
 //-------------------------------------------------------------------------------------------------
@@ -4575,7 +4597,6 @@ void Object::giveUpgrade( const UpgradeTemplate *upgradeT )
 		updateUpgradeModules();
 	}
 }  // end giveUpgrade
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Remove this upgrade from this object */
@@ -4747,7 +4768,6 @@ DEBUG_CRASH(("Object::onDie not yet implemented!"));
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::setWeaponBonusCondition(WeaponBonusConditionType wst) 
 {
@@ -4765,7 +4785,7 @@ void Object::setWeaponBonusCondition(WeaponBonusConditionType wst)
 void Object::clearWeaponBonusCondition(WeaponBonusConditionType wst) 
 {
 	WeaponBonusConditionFlags oldCondition = m_weaponBonusCondition;
-	m_weaponBonusCondition &= ~(1 << wst); 
+	m_weaponBonusCondition &= ~(1u << wst); 
 
 	if( oldCondition != m_weaponBonusCondition )
 	{
@@ -4784,6 +4804,8 @@ void Object::clearWeaponBonusCondition(WeaponBonusConditionType wst)
 //-------------------------------------------------------------------------------------------------
 void Object::adjustModelConditionForWeaponStatus()
 {
+DEBUG_CRASH(("Object::adjustModelConditionForWeaponStatus not yet implemented!"));
+#if 0
 	UnsignedInt now = TheGameLogic->getFrame();
 
 	for (int i = 0; i < WEAPONSLOT_COUNT; ++i)
@@ -4860,8 +4882,8 @@ void Object::adjustModelConditionForWeaponStatus()
 			}
 		}
 	}
-}
 #endif // if 0
+}
 
 //-------------------------------------------------------------------------------------------------
 /// We have moved a 'significant' amount, so do maintenence that can be considered 'cell-based'
@@ -5202,6 +5224,7 @@ void Object::unshroud()
 
 	m_partitionLastShroud->reset();
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Real Object::getVisionRange() const
@@ -5224,6 +5247,7 @@ Real Object::getVisionRange() const
 	return m_visionRange;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::setVisionRange( Real newVisionRange )
 {
@@ -5423,7 +5447,6 @@ SpecialPowerModuleInterface *Object::getSpecialPowerModule( const SpecialPowerTe
 
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Execute special power */
 //-------------------------------------------------------------------------------------------------
@@ -5509,6 +5532,10 @@ void Object::doSpecialPowerUsingWaypoints( const SpecialPowerTemplate *specialPo
 //-------------------------------------------------------------------------------------------------
 void Object::doCommandButton( const CommandButton *commandButton, CommandSourceType cmdSource )
 {
+(void) commandButton;
+(void) cmdSource;
+DEBUG_CRASH(("Object::doCommandButton not yet implemented!"));
+#if 0
 	if (isDisabled())
 		return;
 	
@@ -5631,6 +5658,7 @@ void Object::doCommandButton( const CommandButton *commandButton, CommandSourceT
 		}
 		DEBUG_CRASH( ("WARNING: Script doCommandButton for button %s not implemented. Doing nothing.", commandButton->getName().str()) );
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -5638,6 +5666,11 @@ void Object::doCommandButton( const CommandButton *commandButton, CommandSourceT
 //-------------------------------------------------------------------------------------------------
 void Object::doCommandButtonAtObject( const CommandButton *commandButton, Object *obj, CommandSourceType cmdSource )
 {
+(void) commandButton;
+(void) obj;
+(void) cmdSource;
+DEBUG_CRASH(("Object::doCommandButtonAtObject not yet implemented!"));
+#if 0
 	if (isDisabled())
 		return;
 	
@@ -5746,6 +5779,7 @@ void Object::doCommandButtonAtObject( const CommandButton *commandButton, Object
 		}
 		DEBUG_CRASH( ("WARNING: Script doCommandButtonAtObject for button %s not implemented. Doing nothing.", commandButton->getName().str()) );
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -5753,6 +5787,11 @@ void Object::doCommandButtonAtObject( const CommandButton *commandButton, Object
 //-------------------------------------------------------------------------------------------------
 void Object::doCommandButtonAtPosition( const CommandButton *commandButton, const Coord3D *pos, CommandSourceType cmdSource )
 {
+(void) commandButton;
+(void) pos;
+(void) cmdSource;
+DEBUG_CRASH(("Object::doCommandButtonAtPosition not yet implemented!"));
+#if 0
 	if (isDisabled())
 		return;
 	
@@ -5844,6 +5883,7 @@ void Object::doCommandButtonAtPosition( const CommandButton *commandButton, cons
 		}
 		DEBUG_CRASH( ("WARNING: Script doCommandButtonAtPosition for button %s not implemented. Doing nothing.", commandButton->getName().str()) );
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -5919,7 +5959,6 @@ void Object::clearLeechRangeModeForAllWeapons()
 {
 	m_weaponSet.clearLeechRangeModeForAllWeapons();
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Search our update modules for a production update interface and return it if one is found */
@@ -5942,7 +5981,6 @@ ProductionUpdateInterface* Object::getProductionUpdateInterface( void )
 
 }  // end getProductionUpdateInterface
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 DockUpdateInterface *Object::getDockUpdateInterface( void )
@@ -5959,6 +5997,7 @@ DockUpdateInterface *Object::getDockUpdateInterface( void )
 
 }  // end getDockUpdateInterface
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // Search our special power modules for a specific one.
 // ------------------------------------------------------------------------------------------------
@@ -5998,6 +6037,7 @@ SpecialPowerModuleInterface* Object::findAnyShortcutSpecialPowerModuleInterface(
 	}
 	return NULL;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Get spawn behavior interface from object */
@@ -6048,6 +6088,7 @@ SpecialPowerUpdateInterface* Object::findSpecialPowerWithOverridableDestinationA
 	return NULL;
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // Simply find the special power module that is potentially allowed to plot positions to target.
 // ------------------------------------------------------------------------------------------------
@@ -6101,6 +6142,7 @@ Int Object::getNumConsecutiveShotsFiredAtTarget( const Object *victim ) const
 {
 	return m_firingTracker ? m_firingTracker->getNumConsecutiveShotsAtVictim( victim ) : 0;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -6121,6 +6163,7 @@ Bool Object::getSingleLogicalBonePosition(const char* boneName, Coord3D* positio
 	}
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Bool Object::getSingleLogicalBonePositionOnTurret( WhichTurretType whichTurret, const char* boneName, Coord3D* position, Matrix3D* transform ) const
@@ -6207,10 +6250,13 @@ const AsciiString& Object::getCommandSetString() const
 	return getTemplate()->friend_getCommandSetString();
 }
 
-#if 0
 //=============================================================================
 Bool Object::canProduceUpgrade( const UpgradeTemplate *upgrade )
 {
+(void) upgrade;
+DEBUG_CRASH(("Object::canProduceUpgrade not yet implemented!"));
+return false;
+#if 0
 	// We need to have the button to make the upgrade.  CommandSets are a weird Logic/Client hybrid.
 	const CommandSet *set = TheControlBar->findCommandSet(getCommandSetString());
 
@@ -6222,8 +6268,10 @@ Bool Object::canProduceUpgrade( const UpgradeTemplate *upgrade )
 	}
 
 	return FALSE;// Cheatin' punk.
+#endif // if 0
 }
 
+#if 0
 //=============================================================================
 // Object::defect, and related methods                                        =
 //=============================================================================
@@ -6433,7 +6481,6 @@ DEBUG_CRASH(("Object::leaveGroup not yet implemented!"));
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 Real Object::getCarrierDeckHeight() const
 {
@@ -6453,6 +6500,7 @@ Real Object::getCarrierDeckHeight() const
 	return 0.0f;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 CountermeasuresBehaviorInterface* Object::getCountermeasuresBehaviorInterface()
 {

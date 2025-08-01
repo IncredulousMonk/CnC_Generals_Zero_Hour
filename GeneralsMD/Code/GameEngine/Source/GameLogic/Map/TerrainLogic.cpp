@@ -71,21 +71,20 @@ TerrainLogic *TheTerrainLogic = NULL;
 // STATIC /////////////////////////////////////////////////////////////////////////////////////////
 WaterHandle TerrainLogic::m_gridWaterHandle;
 
-#if 0
 // Waypoint ///////////////////////////////////////////////////////////////////////////////////////
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Waypoint::Waypoint(WaypointID id, AsciiString name, const Coord3D *pLoc, AsciiString label1, AsciiString label2, 
 									 AsciiString label3, Bool biDirectional) :
-m_name(name),
-m_pNext(NULL),
-m_location(*pLoc),
 m_id(id),
+m_name(name),
+m_location(*pLoc),
+m_pNext(NULL),
+m_numLinks(0),
 m_pathLabel1(label1),
 m_pathLabel2(label2),
 m_pathLabel3(label3),
-m_numLinks(0),
 m_biDirectional(biDirectional)
 {
 	Int i;
@@ -428,6 +427,8 @@ Bridge::Bridge(Object *bridgeObj)
 				pos.x -= v.x*offset;
 				pos.y -= v.y*offset;
 				break;
+			default:
+				break;
 
 		}  // end switch
 		tower = createTower( &pos, type, towerTemplate, bridgeObj );
@@ -634,6 +635,7 @@ Bool LineInRegion( const Coord2D *p1, const Coord2D *p2, const Region2D *clipReg
 
 }  // end LineInRegion
 
+#if 0
 static Bool PointInRegion2D( const Coord3D *pt, const Region2D *clipRegion )
 {
 	return (pt->x>=clipRegion->lo.x && 
@@ -641,7 +643,7 @@ static Bool PointInRegion2D( const Coord3D *pt, const Region2D *clipRegion )
 					pt->x<=clipRegion->hi.x && 
 					pt->y<=clipRegion->hi.y);
 }
-
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** isCellOnEnd - see if cell is on the end of the bridge. */
@@ -958,7 +960,6 @@ Real Bridge::getBridgeHeight(const Coord3D *pLoc, Coord3D* normal)
 
 	return t*factor;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -1454,7 +1455,6 @@ Real TerrainLogic::getGroundHeight( Real x, Real y, Coord3D* normal ) const
 
 }  // end getHight
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** default get height for terrain logic */
 //-------------------------------------------------------------------------------------------------
@@ -1477,6 +1477,7 @@ Bool TerrainLogic::isCliffCell( Real x, Real y) const
 
 }  // end isCliffCell
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void makeAlignToNormalMatrix( Real angle, const Coord3D& pos, const Coord3D& normal, Matrix3D& mtx)
 {
@@ -1646,6 +1647,7 @@ Bool TerrainLogic::isPurposeOfPath( Waypoint *pWay, AsciiString label )
 
 	return match;
 }
+#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -1678,6 +1680,7 @@ Bridge * TerrainLogic::findBridgeAt( const Coord3D *pLoc) const
 	return(NULL);
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Finds the bridge at a given x/y coordinate.  On a layer. */
 //-------------------------------------------------------------------------------------------------
@@ -1697,6 +1700,7 @@ Bridge * TerrainLogic::findBridgeLayerAt( const Coord3D *pLoc, PathfindLayerEnum
 	}
 	return(NULL);
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Returns the layer id for the bridge, if any, at this destination.  Otherwisee
@@ -1886,6 +1890,7 @@ void TerrainLogic::updateBridgeDamageStates( void )
 	m_bridgeDamageStatesChanged = true;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Checks if a bridge is repaired. */
 //-------------------------------------------------------------------------------------------------
@@ -1935,6 +1940,7 @@ Bool TerrainLogic::isBridgeBroken( const Object *bridge )
 	}
 	return false;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Gets the attack points for a bridge. */
@@ -1974,6 +1980,7 @@ void TerrainLogic::getBridgeAttackPoints(const Object *bridge, TBridgeAttackInfo
 	attackInfo->attackPoint2 = *bridge->getPosition();
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Picks a bridge, and returns it's drawable. */
 //-------------------------------------------------------------------------------------------------
@@ -2066,6 +2073,7 @@ void TerrainLogic::deleteBridge( Bridge *bridge )
 	bridge->deleteInstance();
 
 }  // end deleteBridge
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Returns the ground aligned point on the bounding box closest to the given point*/
@@ -2115,9 +2123,6 @@ Coord3D TerrainLogic::findClosestEdgePoint ( const Coord3D *closestTo ) const
 
 }
 
-
-
-
 //-------------------------------------------------------------------------------------------------
 /** Returns the ground aligned point on the bounding box farthest from the given point*/
 //-------------------------------------------------------------------------------------------------
@@ -2146,27 +2151,30 @@ Coord3D TerrainLogic::findFarthestEdgePoint( const Coord3D *farthestFrom ) const
 
 }
 
-
-
-
-
 //-------------------------------------------------------------------------------------------------
 /** See if a location is underwater, and what the water height is. */
 //-------------------------------------------------------------------------------------------------
 Bool TerrainLogic::isUnderwater( Real x, Real y, Real *waterZ, Real *terrainZ )
 {
 
+(void) x;
+(void) y;
+(void) waterZ;
+(void) terrainZ;
+DEBUG_CRASH(("TerrainLogic::isUnderwater not yet implemented!"));
+return false;
+#if 0
 	// get the water handle at this location
 	const WaterHandle *waterHandle = getWaterHandle( x, y );
 
 	// if no water here, no height, no nuttin
 	if( waterHandle == NULL )
-  {
-    // but we have to return the terrain Z if requested!
-    if (terrainZ)
-      *terrainZ=getGroundHeight(x,y);
+	{
+		// but we have to return the terrain Z if requested!
+		if (terrainZ)
+			*terrainZ=getGroundHeight(x,y);
 		return FALSE;
-  }
+	}
 
 	//
 	// if this water handle is a grid water use the grid height function, otherwise look into
@@ -2189,6 +2197,7 @@ Bool TerrainLogic::isUnderwater( Real x, Real y, Real *waterZ, Real *terrainZ )
 
 	return terrainHeight < wZ;
 
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -2196,6 +2205,11 @@ Bool TerrainLogic::isUnderwater( Real x, Real y, Real *waterZ, Real *terrainZ )
 // ------------------------------------------------------------------------------------------------
 const WaterHandle* TerrainLogic::getWaterHandle( Real x, Real y )
 {
+(void) x;
+(void) y;
+DEBUG_CRASH(("TerrainLogic::getWaterHandle not yet implemented!"));
+return nullptr;
+#if 0
 	const WaterHandle *waterHandle = NULL;
 	Real waterZ = 0.0f;
 	ICoord3D iLoc;
@@ -2251,6 +2265,7 @@ const WaterHandle* TerrainLogic::getWaterHandle( Real x, Real y )
 
 	return waterHandle;
 
+#endif // if 0
 }  // end getWaterHandle
 
 // ------------------------------------------------------------------------------------------------
@@ -2302,6 +2317,7 @@ Real TerrainLogic::getWaterHeight( const WaterHandle *water )
 
 }  // end getWaterHeight
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Set the water height.  If the water rises, then any objects that now find themselves
 	* underwater will be damaged by the amount provided in the parameter 'damageAmount' */

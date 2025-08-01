@@ -25,6 +25,10 @@
 #include "LinuxDevice/GameClient/SdlKeyboard.h"
 #include "LinuxDevice/GameClient/SdlMouse.h"
 
+// FIXME: Dummy global function to keep the linker happy.
+void addIcon(const Coord3D *pos, Real width, Int numFramesDuration, RGBColor color) {
+}
+
 LinuxGameClient::LinuxGameClient() {
 }
 

@@ -60,33 +60,41 @@ const Real NO_START_Z = 1e10;
 // PRIVATE ////////////////////////////////////////////////////////////////////////////////////////
 
 //-------------------------------------------------------------------------------------------------
-ParachuteContainModuleData::ParachuteContainModuleData() : 
-	m_pitchRateMax(0),
-	m_rollRateMax(0),
-	m_lowAltitudeDamping(0.2f),
-	m_paraOpenDist(0.0f),
-	m_freeFallDamagePercent(0.5f),
-	m_killWhenLandingInWaterSlop(10.0f)
+ParachuteContainModuleData::ParachuteContainModuleData()
 {
+	m_ini.m_pitchRateMax = 0;
+	m_ini.m_rollRateMax = 0;
+	m_ini.m_lowAltitudeDamping = 0.2f;
+	m_ini.m_paraOpenDist = 0.0f;
+	m_ini.m_freeFallDamagePercent = 0.5f;
+	m_ini.m_killWhenLandingInWaterSlop = 10.0f;
 }
 
 //-------------------------------------------------------------------------------------------------
-void ParachuteContainModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void ParachuteContainModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  OpenContainModuleData::buildFieldParse(p);
+	OpenContainModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "PitchRateMax",	INI::parseAngularVelocityReal,		NULL, offsetof( ParachuteContainModuleData, m_pitchRateMax ) },
-		{ "RollRateMax",	INI::parseAngularVelocityReal,		NULL, offsetof( ParachuteContainModuleData, m_rollRateMax ) },
-		{ "LowAltitudeDamping",	INI::parseReal,		NULL, offsetof( ParachuteContainModuleData, m_lowAltitudeDamping ) },
-		{ "ParachuteOpenDist",	INI::parseReal,		NULL, offsetof( ParachuteContainModuleData, m_paraOpenDist ) },
-		{ "KillWhenLandingInWaterSlop",	INI::parseReal,		NULL, offsetof( ParachuteContainModuleData, m_killWhenLandingInWaterSlop ) },
-		{ "FreeFallDamagePercent",	INI::parsePercentToReal,		NULL, offsetof( ParachuteContainModuleData, m_freeFallDamagePercent ) },
-		{ "ParachuteOpenSound", INI::parseAudioEventRTS, NULL, offsetof( ParachuteContainModuleData, m_parachuteOpenSound ) },
+		{ "PitchRateMax",				INI::parseAngularVelocityReal,		NULL, offsetof( ParachuteContainModuleData::IniData, m_pitchRateMax ) },
+		{ "RollRateMax",				INI::parseAngularVelocityReal,		NULL, offsetof( ParachuteContainModuleData::IniData, m_rollRateMax ) },
+		{ "LowAltitudeDamping",			INI::parseReal,						NULL, offsetof( ParachuteContainModuleData::IniData, m_lowAltitudeDamping ) },
+		{ "ParachuteOpenDist",			INI::parseReal,						NULL, offsetof( ParachuteContainModuleData::IniData, m_paraOpenDist ) },
+		{ "KillWhenLandingInWaterSlop",	INI::parseReal,						NULL, offsetof( ParachuteContainModuleData::IniData, m_killWhenLandingInWaterSlop ) },
+		{ "FreeFallDamagePercent",		INI::parsePercentToReal,			NULL, offsetof( ParachuteContainModuleData::IniData, m_freeFallDamagePercent ) },
+		{ "ParachuteOpenSound",			parseAudioEventRTS, 				NULL, 0 },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	ParachuteContainModuleData* self {static_cast<ParachuteContainModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
+}
+
+void ParachuteContainModuleData::parseAudioEventRTS(INI* ini, void* instance, void* /* store */, const void* /* userData */)
+{
+	ParachuteContainModuleData* self = (ParachuteContainModuleData*) instance;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_parachuteOpenSound);
 }
 
 // PUBLIC /////////////////////////////////////////////////////////////////////////////////////////

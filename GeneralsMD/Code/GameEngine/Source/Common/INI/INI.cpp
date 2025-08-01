@@ -88,7 +88,7 @@ struct BlockParse
 static const BlockParse theTypeTable[] =
 {
 	// FIXME: Uncomment these as they are added.
-// 	{ "AIData",							INI::parseAIDataDefinition },
+	{ "AIData",							INI::parseAIDataDefinition },
 	{ "Animation",						INI::parseAnim2DDefinition },
 	{ "Armor",							INI::parseArmorDefinition },
 	{ "AudioEvent",						INI::parseAudioEventDefinition },
@@ -111,7 +111,7 @@ static const BlockParse theTypeTable[] =
 	{ "FXList",							INI::parseFXListDefinition },
 	{ "GameData",						INI::parseGameDataDefinition },
 // 	{ "InGameUI",						INI::parseInGameUIDefinition },
-// 	{ "Locomotor",						INI::parseLocomotorTemplateDefinition },
+	{ "Locomotor",						INI::parseLocomotorTemplateDefinition },
 	{ "Language",						INI::parseLanguageDefinition },
 // 	{ "MapCache",						INI::parseMapCacheDefinition },
 // 	{ "MapData",						INI::parseMapDataDefinition },
@@ -135,7 +135,7 @@ static const BlockParse theTypeTable[] =
 	{ "SpecialPower",					INI::parseSpecialPowerDefinition },
 	{ "ShellMenuScheme",				INI::parseShellMenuSchemeDefinition },
 	{ "Terrain",						INI::parseTerrainDefinition },
-// 	{ "Upgrade",						INI::parseUpgradeDefinition },
+	{ "Upgrade",						INI::parseUpgradeDefinition },
 	{ "Video",							INI::parseVideoDefinition },
 	{ "WaterSet",						INI::parseWaterSettingDefinition },
 	{ "WaterTransparency",				INI::parseWaterTransparencyDefinition},

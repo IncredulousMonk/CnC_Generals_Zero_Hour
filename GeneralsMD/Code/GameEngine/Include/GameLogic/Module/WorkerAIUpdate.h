@@ -66,55 +66,71 @@ class WorkerAIUpdateModuleData : public AIUpdateModuleData
 
 public:
 
-	// !!!
-	// !!! NOTE: If you edit module data you must do it in both the Dozer *AND* the Worker !!!
-	// !!!
-	Int m_maxBoxesData;
-	Real m_repairHealthPercentPerSecond;	///< how many health points per second the dozer repairs at
-	Real m_boredTime;											///< after this many frames, a dozer will try to find something to do on its own
-	Real m_boredRange;										///< range the dozers try to auto repair when they're bored
-	UnsignedInt m_centerDelay;
-	UnsignedInt m_warehouseDelay;
-	Real m_warehouseScanDistance;
- 	AudioEventRTS m_suppliesDepletedVoice;						///< Sound played when I take the last box.
-	Int m_upgradedSupplyBoost;
+	// MG: Cannot apply offsetof to WorkerAIUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		// !!!
+		// !!! NOTE: If you edit module data you must do it in both the Dozer *AND* the Worker !!!
+		// !!!
+		Int m_maxBoxesData;
+		Real m_repairHealthPercentPerSecond;	///< how many health points per second the dozer repairs at
+		Real m_boredTime;											///< after this many frames, a dozer will try to find something to do on its own
+		Real m_boredRange;										///< range the dozers try to auto repair when they're bored
+		UnsignedInt m_centerDelay;
+		UnsignedInt m_warehouseDelay;
+		Real m_warehouseScanDistance;
+		Int m_upgradedSupplyBoost;
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS m_suppliesDepletedVoice {};						///< Sound played when I take the last box.
 
 	WorkerAIUpdateModuleData()
 	{
-		m_maxBoxesData = 0;
-		m_repairHealthPercentPerSecond = 0.0f;
-		m_boredTime = 0.0f;
-		m_boredRange = 0.0f;
-		m_centerDelay = 0;
-		m_warehouseDelay = 0;
-		m_warehouseScanDistance = 100;
-		m_upgradedSupplyBoost = 0;
+		m_ini.m_maxBoxesData = 0;
+		m_ini.m_repairHealthPercentPerSecond = 0.0f;
+		m_ini.m_boredTime = 0.0f;
+		m_ini.m_boredRange = 0.0f;
+		m_ini.m_centerDelay = 0;
+		m_ini.m_warehouseDelay = 0;
+		m_ini.m_warehouseScanDistance = 100;
+		m_ini.m_upgradedSupplyBoost = 0;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    AIUpdateModuleData::buildFieldParse(p);
+		AIUpdateModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "MaxBoxes",					INI::parseInt,		NULL, offsetof( WorkerAIUpdateModuleData, m_maxBoxesData ) },
-			{ "RepairHealthPercentPerSecond",	INI::parsePercentToReal,	NULL, offsetof( WorkerAIUpdateModuleData, m_repairHealthPercentPerSecond ) },
-			{ "BoredTime",										INI::parseDurationReal,		NULL, offsetof( WorkerAIUpdateModuleData, m_boredTime ) },
-			{ "BoredRange",										INI::parseReal,						NULL, offsetof( WorkerAIUpdateModuleData, m_boredRange ) },
-			{ "SupplyCenterActionDelay", INI::parseDurationUnsignedInt, NULL, offsetof( WorkerAIUpdateModuleData, m_centerDelay ) },
-			{ "SupplyWarehouseActionDelay", INI::parseDurationUnsignedInt, NULL, offsetof( WorkerAIUpdateModuleData, m_warehouseDelay ) },
-			{ "SupplyWarehouseScanDistance", INI::parseReal, NULL, offsetof( WorkerAIUpdateModuleData, m_warehouseScanDistance ) },
- 			{ "SuppliesDepletedVoice", INI::parseAudioEventRTS, NULL, offsetof( WorkerAIUpdateModuleData, m_suppliesDepletedVoice) },
- 			{ "UpgradedSupplyBoost", INI::parseInt, NULL, offsetof( WorkerAIUpdateModuleData, m_upgradedSupplyBoost) },
+			{ "MaxBoxes",						INI::parseInt,					NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_maxBoxesData ) },
+			{ "RepairHealthPercentPerSecond",	INI::parsePercentToReal,		NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_repairHealthPercentPerSecond ) },
+			{ "BoredTime",						INI::parseDurationReal,			NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_boredTime ) },
+			{ "BoredRange",						INI::parseReal,					NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_boredRange ) },
+			{ "SupplyCenterActionDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_centerDelay ) },
+			{ "SupplyWarehouseActionDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_warehouseDelay ) },
+			{ "SupplyWarehouseScanDistance",	INI::parseReal,					NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_warehouseScanDistance ) },
+			{ "UpgradedSupplyBoost",			INI::parseInt,					NULL, offsetof( WorkerAIUpdateModuleData::IniData, m_upgradedSupplyBoost) },
+			{ "SuppliesDepletedVoice",			parseAudioEventRTS,				NULL, 0 },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		WorkerAIUpdateModuleData* self {static_cast<WorkerAIUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
+	}
+	
+	static void parseAudioEventRTS(INI* ini, void* instance, void* /* store */, const void* /* userData */)
+	{
+		WorkerAIUpdateModuleData* self = (WorkerAIUpdateModuleData*) instance;
+		INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_suppliesDepletedVoice);
 	}
 };
 
 class WorkerAIInterface
 {
 	public:
+		virtual ~WorkerAIInterface() {}
 		virtual void exitingSupplyTruckState() = 0; ///< This worker is leaving a supply truck task and should go back to Dozer mode.
 };
 
@@ -128,6 +144,10 @@ public:
 
 	WorkerAIUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	WorkerAIUpdate(const WorkerAIUpdate&) = delete;
+	WorkerAIUpdate& operator=(const WorkerAIUpdate&) = delete;
 
 	virtual DozerAIInterface* getDozerAIInterface() {return this;}
 	virtual const DozerAIInterface* getDozerAIInterface() const {return this;}
@@ -220,12 +240,12 @@ protected:
 // Dozer data
 	struct DozerTaskInfo
 	{
-		ObjectID m_targetObjectID;				///< target object ID of task
-		UnsignedInt m_taskOrderFrame;			///< logic frame we decided we wanted to do this task	
+		ObjectID m_targetObjectID {};			///< target object ID of task
+		UnsignedInt m_taskOrderFrame {};		///< logic frame we decided we wanted to do this task	
 	} m_task[ DOZER_NUM_TASKS ];				///< tasks we want to do indexed by DozerTask
 
 
-	DozerTask m_currentTask;						///< current task the dozer is attending to (if any)
+	DozerTask m_currentTask {};						///< current task the dozer is attending to (if any)
 
 	//
 	// the following info array can be used if we want to have more complicated approaches
@@ -233,28 +253,28 @@ protected:
 	//
 	struct DozerDockPointInfo
 	{
-		Bool valid;						///< this point has been set and is valid
-		Coord3D location;			///< WORLD location
+		Bool valid {};				///< this point has been set and is valid
+		Coord3D location {};		///< WORLD location
 	} m_dockPoint[ DOZER_NUM_TASKS ][ DOZER_NUM_DOCK_POINTS ];
 
-	DozerBuildSubTask m_buildSubTask;		///< for building and actually docking for the build
+	DozerBuildSubTask m_buildSubTask {};		///< for building and actually docking for the build
 
 // Supply Truck data
-	Int m_numberBoxes;
-	ObjectID									m_preferredDock;			///< Instead of searching, try this one first
-	Bool m_forcePending; // To prevent a function from doing a setState, forceWanting will latch into here until serviced.
-	Bool m_isRebuild;	// is our current construction task a rebuild?
-	Bool m_forcedBusyPending;	// A supply truck can't tell the difference between Idle since
+	Int m_numberBoxes {};
+	ObjectID m_preferredDock {};			///< Instead of searching, try this one first
+	Bool m_forcePending {}; // To prevent a function from doing a setState, forceWanting will latch into here until serviced.
+	Bool m_isRebuild {};	// is our current construction task a rebuild?
+	Bool m_forcedBusyPending {};	// A supply truck can't tell the difference between Idle since
 														// I'm between docking states, or a Stop command without help.
 
 
-	WorkerStateMachine *m_workerMachine;
+	WorkerStateMachine *m_workerMachine {};
 	// The two state machines are not in Worker's machine because I need to be able to accept
 	// Dozer like commands while acting as a Supply Truck - that's how I switch.
-	DozerPrimaryStateMachine *m_dozerMachine;  ///< the custom state machine for Dozer behavior
-	SupplyTruckStateMachine *m_supplyTruckStateMachine;
+	DozerPrimaryStateMachine *m_dozerMachine {};  ///< the custom state machine for Dozer behavior
+	SupplyTruckStateMachine *m_supplyTruckStateMachine {};
 
-	AudioEventRTS	m_buildingSound;			///< sound is pulled from the object we are building!
+	AudioEventRTS	m_buildingSound {};			///< sound is pulled from the object we are building!
 
 protected:
 	virtual void privateRepair( Object *obj, CommandSourceType cmdSource );	///< repair the target
@@ -265,10 +285,9 @@ protected:
 private:
 
 	void createMachines( void );		///< create our behavior machines we need
- 	AudioEventRTS m_suppliesDepletedVoice;						///< Sound played when I take the last box.
+ 	AudioEventRTS m_suppliesDepletedVoice {};						///< Sound played when I take the last box.
 
 };
 
 
 #endif // __WORKER_AI_UPDATE_H_
-

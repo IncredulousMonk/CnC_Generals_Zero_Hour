@@ -83,7 +83,7 @@ Bool HackInternetAIUpdate::isIdle() const
 //-------------------------------------------------------------------------------------------------
 Bool HackInternetAIUpdate::isHacking() const
 {
-	if( getStateMachine()->getCurrentStateID() == HACK_INTERNET )
+	if( getStateMachine()->getCurrentStateID() == (StateID) HACK_INTERNET )
 	{
 		return true;
 	}
@@ -93,9 +93,9 @@ Bool HackInternetAIUpdate::isHacking() const
 //-------------------------------------------------------------------------------------------------
 Bool HackInternetAIUpdate::isHackingPackingOrUnpacking() const
 {
-	if( getStateMachine()->getCurrentStateID() == HACK_INTERNET || 
-			getStateMachine()->getCurrentStateID() == PACKING ||
-			getStateMachine()->getCurrentStateID() == UNPACKING )
+	if( getStateMachine()->getCurrentStateID() == (StateID) HACK_INTERNET || 
+			getStateMachine()->getCurrentStateID() == (StateID) PACKING ||
+			getStateMachine()->getCurrentStateID() == (StateID) UNPACKING )
 	{
 		return true;
 	}
@@ -134,17 +134,17 @@ void HackInternetAIUpdate::aiDoCommand(const AICommandParms* parms)
 	//If our hacker is currently packing up his gear, we need to prevent him
 	//from moving until completed. In order to accomplish this, we'll detect,
 	//then 
-	if( getStateMachine()->getCurrentStateID() == HACK_INTERNET || getStateMachine()->getCurrentStateID() == PACKING )
+	if( getStateMachine()->getCurrentStateID() == (StateID) HACK_INTERNET || getStateMachine()->getCurrentStateID() == (StateID) PACKING )
 	{
 		// nuke any existing pending cmd
 		m_pendingCommand.store(*parms);
 		m_hasPendingCommand = true;
 
-		if( getStateMachine()->getCurrentStateID() == HACK_INTERNET )
+		if( getStateMachine()->getCurrentStateID() == (StateID) HACK_INTERNET )
 		{
 			getStateMachine()->clear();
 			setLastCommandSource( CMD_FROM_AI );
-			getStateMachine()->setState( PACKING );
+			getStateMachine()->setState( (StateID) PACKING );
 		}
 		return;
 	}
@@ -167,14 +167,14 @@ void HackInternetAIUpdate::hackInternet()
 #ifdef _DEBUG
 	//m_hackInternetStateMachine->setName("HackInternetSpecificAI");
 #endif
-		getStateMachine()->setState(UNPACKING);
+		getStateMachine()->setState((StateID) UNPACKING);
 }
 
 // ------------------------------------------------------------------------------------------------
 UnsignedInt HackInternetAIUpdate::getUnpackTime() const
 {
 	// Not yet contained at the time this is queried
-	return getHackInternetAIUpdateModuleData()->m_unpackTime;
+	return getHackInternetAIUpdateModuleData()->m_ini.m_unpackTime;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -183,16 +183,16 @@ UnsignedInt HackInternetAIUpdate::getPackTime() const
 	if( getObject()->getContainedBy() != NULL )
 		return 0; //We don't need to pack if exiting a building
 
-	return getHackInternetAIUpdateModuleData()->m_packTime; 
+	return getHackInternetAIUpdateModuleData()->m_ini.m_packTime; 
 }
 
 // ------------------------------------------------------------------------------------------------
 UnsignedInt HackInternetAIUpdate::getCashUpdateDelay() const
 {
 	if( getObject()->getContainedBy() != NULL )
-		return getHackInternetAIUpdateModuleData()->m_cashUpdateDelayFast; 
+		return getHackInternetAIUpdateModuleData()->m_ini.m_cashUpdateDelayFast; 
 	else
-		return getHackInternetAIUpdateModuleData()->m_cashUpdateDelay; 
+		return getHackInternetAIUpdateModuleData()->m_ini.m_cashUpdateDelay; 
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -244,9 +244,9 @@ HackInternetStateMachine::HackInternetStateMachine( Object *owner, AsciiString n
 	//HackInternetAIUpdate *ai = (HackInternetAIUpdate*)owner->getAIUpdateInterface();
 
 	// order matters: first state is the default state.
-	defineState( UNPACKING,						newInstance(UnpackingState)( this ), HACK_INTERNET, HACK_INTERNET );
-	defineState( HACK_INTERNET,				newInstance(HackInternetState)( this ), PACKING, PACKING );
-	defineState( PACKING,							newInstance(PackingState)( this ), AI_IDLE, AI_IDLE );
+	defineState( (StateID) UNPACKING,					newInstance(UnpackingState)( this ), (StateID) HACK_INTERNET, (StateID) HACK_INTERNET );
+	defineState( (StateID) HACK_INTERNET,				newInstance(HackInternetState)( this ), (StateID) PACKING, (StateID) PACKING );
+	defineState( (StateID) PACKING,						newInstance(PackingState)( this ), (StateID) AI_IDLE, (StateID) AI_IDLE );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -507,6 +507,7 @@ StateReturnType HackInternetState::update()
 							break;
 						}
 						//If entry missing, fall through!
+						[[fallthrough]];
 					case LEVEL_ELITE:
 						amount = ai->getEliteCashAmount();
 						if( amount )
@@ -514,6 +515,7 @@ StateReturnType HackInternetState::update()
 							break;
 						}
 						//If entry missing, fall through!
+						[[fallthrough]];
 					case LEVEL_VETERAN:
 						amount = ai->getVeteranCashAmount();
 						if( amount )
@@ -521,6 +523,7 @@ StateReturnType HackInternetState::update()
 							break;
 						}
 						//If entry missing, fall through!
+						[[fallthrough]];
 					case LEVEL_REGULAR:
 						amount = ai->getRegularCashAmount();
 						if( amount )
@@ -528,15 +531,16 @@ StateReturnType HackInternetState::update()
 							break;
 						}
 						//If entry missing, fall through!
+						[[fallthrough]];
 					default:
 						amount = 1;
 						break;
 				}
 				money->deposit( amount );
-				owner->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( amount );
+				owner->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( (Int)amount );
 
 				//Grant the unit some experience for a successful hack.
-				xp->addExperiencePoints( ai->getXpPerCashUpdate() );
+				xp->addExperiencePoints( (Int)ai->getXpPerCashUpdate() );
 
 				Bool displayMoney = TRUE;
 				if( owner->testStatus(OBJECT_STATUS_STEALTHED) )

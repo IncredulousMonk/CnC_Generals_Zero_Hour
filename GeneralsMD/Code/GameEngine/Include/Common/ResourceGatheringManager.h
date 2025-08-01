@@ -68,8 +68,8 @@ private:
 	typedef std::list<ObjectID> objectIDList;
 	typedef std::list<ObjectID>::iterator objectIDListIterator;
 
-	objectIDList m_supplyWarehouses;
-	objectIDList m_supplyCenters;
+	objectIDList m_supplyWarehouses {};
+	objectIDList m_supplyCenters {};
 
 };
 

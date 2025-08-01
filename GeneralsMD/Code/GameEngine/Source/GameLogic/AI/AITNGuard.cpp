@@ -156,19 +156,19 @@ AITNGuardMachine::AITNGuardMachine( Object *owner ) :
 	
 	static const StateConditionInfo attackAggressors[] =
 	{
-		StateConditionInfo(hasAttackedMeAndICanReturnFire, AI_TN_GUARD_ATTACK_AGGRESSOR, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(hasAttackedMeAndICanReturnFire, (StateID) AI_TN_GUARD_ATTACK_AGGRESSOR, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	// order matters: first state is the default state.
 // srj sez: I made "return" the start state, so that if ordered to guard a position
 // that isn't the unit's current position, it moves to that position first.
-	defineState( AI_TN_GUARD_RETURN,						newInstance(AITNGuardReturnState)( this ), AI_TN_GUARD_IDLE, AI_TN_GUARD_INNER, attackAggressors );
-	defineState( AI_TN_GUARD_IDLE,							newInstance(AITNGuardIdleState)( this ), AI_TN_GUARD_INNER, AI_TN_GUARD_RETURN );
-	defineState( AI_TN_GUARD_INNER,						newInstance(AITNGuardInnerState)( this ), AI_TN_GUARD_OUTER, AI_TN_GUARD_OUTER , attackAggressors);
-	defineState( AI_TN_GUARD_OUTER,						newInstance(AITNGuardOuterState)( this ), AI_TN_GUARD_GET_CRATE, AI_TN_GUARD_GET_CRATE );
-	defineState( AI_TN_GUARD_GET_CRATE,				newInstance(AITNGuardPickUpCrateState)( this ), AI_TN_GUARD_RETURN, AI_TN_GUARD_RETURN );
-	defineState( AI_TN_GUARD_ATTACK_AGGRESSOR, newInstance(AITNGuardAttackAggressorState)( this ), AI_TN_GUARD_RETURN, AI_TN_GUARD_RETURN  );
+	defineState( (StateID) AI_TN_GUARD_RETURN,				newInstance(AITNGuardReturnState)( this ), (StateID) AI_TN_GUARD_IDLE, (StateID) AI_TN_GUARD_INNER, attackAggressors );
+	defineState( (StateID) AI_TN_GUARD_IDLE,				newInstance(AITNGuardIdleState)( this ), (StateID) AI_TN_GUARD_INNER, (StateID) AI_TN_GUARD_RETURN );
+	defineState( (StateID) AI_TN_GUARD_INNER,				newInstance(AITNGuardInnerState)( this ), (StateID) AI_TN_GUARD_OUTER, (StateID) AI_TN_GUARD_OUTER , attackAggressors);
+	defineState( (StateID) AI_TN_GUARD_OUTER,				newInstance(AITNGuardOuterState)( this ), (StateID) AI_TN_GUARD_GET_CRATE, (StateID) AI_TN_GUARD_GET_CRATE );
+	defineState( (StateID) AI_TN_GUARD_GET_CRATE,			newInstance(AITNGuardPickUpCrateState)( this ), (StateID) AI_TN_GUARD_RETURN, (StateID) AI_TN_GUARD_RETURN );
+	defineState( (StateID) AI_TN_GUARD_ATTACK_AGGRESSOR,	newInstance(AITNGuardAttackAggressorState)( this ), (StateID) AI_TN_GUARD_RETURN, (StateID) AI_TN_GUARD_RETURN  );
 #ifdef STATE_MACHINE_DEBUG
 	setDebugOutput(true);
 #endif
@@ -235,7 +235,7 @@ Bool AITNGuardMachine::lookForInnerTarget(void)
 					if (info->out.m_noEffect) {
 						continue;
 					}
-					if (body->getLastDamageTimestamp() + TheAI->getAiData()->m_guardEnemyScanRate > TheGameLogic->getFrame()) {
+					if (body->getLastDamageTimestamp() + TheAI->getAiData()->m_ini.m_guardEnemyScanRate > TheGameLogic->getFrame()) {
 						// winner.
 						ObjectID attackerID = info->in.m_sourceID;
 						Object *attacker = TheGameLogic->findObjectByID(attackerID);
@@ -333,7 +333,7 @@ StateReturnType AITNGuardInnerState::onEnter( void )
 		DEBUG_LOG(("Unexpected NULL nemesis in AITNGuardInnerState.\n"));
 		return STATE_SUCCESS;
 	}
-	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 
 	m_attackState = newInstance(AIAttackState)(getMachine(), false, true, false, &m_exitConditions);
 
@@ -387,7 +387,7 @@ StateReturnType AITNGuardInnerState::update( void )
 		if (teamVictim) 
 		{
 			getGuardMachine()->setNemesisID(teamVictim->getID());
-			m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+			m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 			return STATE_CONTINUE;	
 		}
 
@@ -396,7 +396,7 @@ StateReturnType AITNGuardInnerState::update( void )
 			nemesis = tunnels->getCurNemesis();
 			if (nemesis) {
 				getGuardMachine()->setNemesisID(nemesis->getID());
-				m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+				m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 				return STATE_CONTINUE;	
 			}
 		}
@@ -458,7 +458,7 @@ void AITNGuardOuterState::xfer( Xfer *xfer )
 /** Load post process */
 // ------------------------------------------------------------------------------------------------
 void AITNGuardOuterState::loadPostProcess( void )
-{						 AITNGuardOuterState
+{
 	onEnter();
 }  // end loadPostProcess
 
@@ -478,7 +478,7 @@ StateReturnType AITNGuardOuterState::onEnter( void )
 		return STATE_SUCCESS;
 	}
 
-	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 	m_attackState = newInstance(AIAttackState)(getMachine(), false, true, false, &m_exitConditions);
 	m_attackState->getMachine()->setGoalObject(nemesis);
 
@@ -567,7 +567,7 @@ void AITNGuardReturnState::loadPostProcess( void )
 StateReturnType AITNGuardReturnState::onEnter( void )
 {
 	UnsignedInt now = TheGameLogic->getFrame();
-	m_nextReturnScanTime = now + GameLogicRandomValue(0, TheAI->getAiData()->m_guardEnemyReturnScanRate);
+	m_nextReturnScanTime = now + GameLogicRandomValueUnsigned(0, TheAI->getAiData()->m_ini.m_guardEnemyReturnScanRate);
 
 	if (getMachineOwner()->getContainedBy()) {
 		// we are already inside our tunnel.  Return success. jba [8/24/2003]
@@ -672,7 +672,7 @@ StateReturnType AITNGuardIdleState::onEnter( void )
 	// first time thru, use a random amount so that everyone doesn't scan on the same frame,
 	// to avoid "spikes". 
 	UnsignedInt now = TheGameLogic->getFrame();
-	m_nextEnemyScanTime = now + GameLogicRandomValue(0, TheAI->getAiData()->m_guardEnemyScanRate);
+	m_nextEnemyScanTime = now + GameLogicRandomValueUnsigned(0, TheAI->getAiData()->m_ini.m_guardEnemyScanRate);
 
 	getMachineOwner()->getAI()->friend_setGoalObject(NULL);
 	return STATE_CONTINUE;
@@ -687,7 +687,7 @@ StateReturnType AITNGuardIdleState::update( void )
 	if (now < m_nextEnemyScanTime)
 		return STATE_SLEEP(m_nextEnemyScanTime - now);
 
-	m_nextEnemyScanTime = now + TheAI->getAiData()->m_guardEnemyScanRate;
+	m_nextEnemyScanTime = now + TheAI->getAiData()->m_ini.m_guardEnemyScanRate;
 
 	getMachineOwner()->getAI()->friend_setGoalObject(NULL);
 
@@ -699,7 +699,7 @@ StateReturnType AITNGuardIdleState::update( void )
 	// Check to see if we have created a crate we need to pick up.
 	if (ai->getCrateID() != INVALID_ID) 
 	{
-		getMachine()->setState(AI_TN_GUARD_GET_CRATE);
+		getMachine()->setState((StateID) AI_TN_GUARD_GET_CRATE);
 		return STATE_SLEEP(m_nextEnemyScanTime - now);
 	}
 
@@ -809,7 +809,7 @@ StateReturnType AITNGuardAttackAggressorState::onEnter( void )
 	}
 	if (tunnels) tunnels->updateNemesis(nemesis);
 
-	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_guardChaseUnitFrames;
+	m_exitConditions.m_attackGiveUpFrame = TheGameLogic->getFrame() + TheAI->getAiData()->m_ini.m_guardChaseUnitFrames;
 	m_attackState = newInstance(AIAttackState)(getMachine(), true, true, false, &m_exitConditions);
 	m_attackState->getMachine()->setGoalObject(nemesis);
 
@@ -825,7 +825,7 @@ StateReturnType AITNGuardAttackAggressorState::onEnter( void )
 //-------------------------------------------------------------------------------------------------
 StateReturnType AITNGuardAttackAggressorState::update( void )
 {	
-	if (m_attackState->getMachine()->getCurrentStateID() == AttackStateMachine::FIRE_WEAPON) {
+	if (m_attackState->getMachine()->getCurrentStateID() == (StateID) AttackStateMachine::FIRE_WEAPON) {
 		Object *nemesis = TheGameLogic->findObjectByID(getGuardMachine()->getNemesisID());
 		Player *ownerPlayer = getMachineOwner()->getControllingPlayer();
 		TunnelTracker *tunnels = NULL;

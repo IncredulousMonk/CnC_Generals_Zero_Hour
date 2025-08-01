@@ -39,14 +39,14 @@
  */
 enum
 {
-	AI_DOCK_APPROACH,									///< given a queue pos, move to it
+	AI_DOCK_APPROACH,						///< given a queue pos, move to it
 	AI_DOCK_WAIT_FOR_CLEARANCE,				///< wait for dock to give us enter clearance
-	AI_DOCK_ADVANCE_POSITION,					///< Advance in approach position as line moves forward
-	AI_DOCK_MOVE_TO_ENTRY,						///< move to the dock entrance
-	AI_DOCK_MOVE_TO_DOCK,							///< move to the actual dock position
-	AI_DOCK_PROCESS_DOCK,							///< invoke the dock's action until it is done
-	AI_DOCK_MOVE_TO_EXIT,							///< move to the dock exit, can exit the dock machine
-	AI_DOCK_MOVE_TO_RALLY						  ///< Move to rally if desired, exit the dock machine no matter what
+	AI_DOCK_ADVANCE_POSITION,				///< Advance in approach position as line moves forward
+	AI_DOCK_MOVE_TO_ENTRY,					///< move to the dock entrance
+	AI_DOCK_MOVE_TO_DOCK,					///< move to the actual dock position
+	AI_DOCK_PROCESS_DOCK,					///< invoke the dock's action until it is done
+	AI_DOCK_MOVE_TO_EXIT,					///< move to the dock exit, can exit the dock machine
+	AI_DOCK_MOVE_TO_RALLY					///< Move to rally if desired, exit the dock machine no matter what
 };
 
 //-----------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ public:
 	static Bool ableToAdvance( State *thisState, void* userData ); // Condition for scooting forward in line while waiting
 	virtual void halt(void); ///< Stops the state machine & disables it in preparation for deleting it.
 
-	Int m_approachPosition;	///< The Approach Position I am holding, to make scoot forward checks quicker.
+	Int m_approachPosition {};	///< The Approach Position I am holding, to make scoot forward checks quicker.
 
 protected:
 	// snapshot interface
@@ -90,7 +90,7 @@ public:
 	virtual StateReturnType update( void );
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess(){};
 };
@@ -106,10 +106,10 @@ public:
 	virtual StateReturnType update( void );
 	virtual void onExit( StateExitType status );
 protected:
-	UnsignedInt m_enterFrame;
+	UnsignedInt m_enterFrame {};
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess(){};
 };
@@ -174,18 +174,18 @@ public:
 	virtual StateReturnType update( void );
 
 	void setNextDockActionFrame();//This puts a delay between callings of Action to tweak the speed of docking.
-	UnsignedInt m_nextDockActionFrame;// In the unlikely event of saving a game in the middle of docking, you may
+	UnsignedInt m_nextDockActionFrame {};// In the unlikely event of saving a game in the middle of docking, you may
 	// complete a Action a few frames sooner than you would have: It does not need to be saved.
 	Object* findMyDrone();
 
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 
 private:
-	ObjectID m_droneID;			///< If I have a drone, the drone will get repaired too.
+	ObjectID m_droneID {};			///< If I have a drone, the drone will get repaired too.
 
 };
 EMPTY_DTOR(AIDockProcessDockState)

@@ -47,9 +47,11 @@
 #include "GameLogic/Module/GrantStealthBehavior.h"
 #include "GameLogic/Module/NeutronBlastBehavior.h"
 #include "GameLogic/Module/BehaviorModule.h"
+#endif // if 0
 #include "GameLogic/Module/BridgeBehavior.h"
 #include "GameLogic/Module/BridgeScaffoldBehavior.h"
 #include "GameLogic/Module/BridgeTowerBehavior.h"
+#if 0
 #include "GameLogic/Module/CountermeasuresBehavior.h"
 #include "GameLogic/Module/DumbProjectileBehavior.h"
 #include "GameLogic/Module/InstantDeathBehavior.h"
@@ -79,7 +81,9 @@
 #include "GameLogic/Module/BunkerBusterBehavior.h"
 #include "GameLogic/Module/FireWeaponWhenDamagedBehavior.h"
 #include "GameLogic/Module/FireWeaponWhenDeadBehavior.h"
+#endif // if 0
 #include "GameLogic/Module/GenerateMinefieldBehavior.h"
+#if 0
 #include "GameLogic/Module/ParkingPlaceBehavior.h"
 #include "GameLogic/Module/FlightDeckBehavior.h"
 #include "GameLogic/Module/PoisonedBehavior.h"
@@ -115,9 +119,9 @@
 #include "GameLogic/Module/DefaultProductionExitUpdate.h"
 #endif // if 0
 #include "GameLogic/Module/DeletionUpdate.h"
-#if 0
 #include "GameLogic/Module/SmartBombTargetHomingUpdate.h"
 #include "GameLogic/Module/DeliverPayloadAIUpdate.h"
+#if 0
 #include "GameLogic/Module/DozerAIUpdate.h"
 #include "GameLogic/Module/DynamicGeometryInfoUpdate.h"
 #include "GameLogic/Module/DynamicShroudClearingRangeUpdate.h"
@@ -128,7 +132,9 @@
 #include "GameLogic/Module/FlammableUpdate.h"
 #include "GameLogic/Module/FloatUpdate.h"
 #include "GameLogic/Module/TensileFormationUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/HackInternetAIUpdate.h"
+#if 0
 #include "GameLogic/Module/DeployStyleAIUpdate.h"
 #include "GameLogic/Module/AssaultTransportAIUpdate.h"
 #include "GameLogic/Module/HeightDieUpdate.h"
@@ -160,7 +166,9 @@
 #endif
 #include "GameLogic/Module/ProductionUpdate.h"
 #include "GameLogic/Module/ProjectileStreamUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/ProneUpdate.h"
+#if 0
 #include "GameLogic/Module/QueueProductionExitUpdate.h"
 #include "GameLogic/Module/RadarUpdate.h"
 #include "GameLogic/Module/RepairDockUpdate.h"
@@ -188,7 +196,9 @@
 #include "GameLogic/Module/StructureToppleUpdate.h"
 #include "GameLogic/Module/SupplyCenterDockUpdate.h"
 #include "GameLogic/Module/SupplyCenterProductionExitUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/SupplyTruckAIUpdate.h"
+#if 0
 #include "GameLogic/Module/SupplyWarehouseDockUpdate.h"
 #include "GameLogic/Module/ToppleUpdate.h"
 #include "GameLogic/Module/TransportAIUpdate.h"
@@ -347,9 +357,11 @@ void ModuleFactory::init( void )
 #if 0
 	addModule( GrantStealthBehavior );
 	addModule( NeutronBlastBehavior );
+#endif // if 0
 	addModule( BridgeBehavior );
 	addModule( BridgeScaffoldBehavior );
 	addModule( BridgeTowerBehavior );
+#if 0
 	addModule( CountermeasuresBehavior );
 	addModule( DumbProjectileBehavior );
 #endif // if 0
@@ -382,7 +394,9 @@ void ModuleFactory::init( void )
 	addModule( BunkerBusterBehavior );
 	addModule( FireWeaponWhenDamagedBehavior );
 	addModule( FireWeaponWhenDeadBehavior );
+#endif // if 0
 	addModule( GenerateMinefieldBehavior );
+#if 0
 	addModule( ParkingPlaceBehavior );
 	addModule( FlightDeckBehavior );
 	addModule( PoisonedBehavior );
@@ -418,8 +432,8 @@ void ModuleFactory::init( void )
 #endif // if 0
 	addModule( StealthUpdate );
 	addModule( DeletionUpdate );
-#if 0
 	addModule( SmartBombTargetHomingUpdate );
+#if 0
 	addModule( DynamicShroudClearingRangeUpdate );
 	addModule( DeployStyleAIUpdate );
 	addModule( AssaultTransportAIUpdate );
@@ -442,10 +456,12 @@ void ModuleFactory::init( void )
 	addModule( HeightDieUpdate );
 	addModule( ChinookAIUpdate );
 	addModule( JetAIUpdate );
+#endif // if 0
 	addModule( AIUpdateInterface );
 	addModule( SupplyTruckAIUpdate );
 	addModule( DeliverPayloadAIUpdate );
 	addModule( HackInternetAIUpdate );
+#if 0
 	addModule( DynamicGeometryInfoUpdate );
 	addModule( FirestormDynamicGeometryInfoUpdate );
 	addModule( LaserUpdate );
@@ -483,7 +499,9 @@ void ModuleFactory::init( void )
 #endif
 	addModule( RailedTransportAIUpdate );
 	addModule( ProductionUpdate );
+#endif // if 0
 	addModule( ProneUpdate );
+#if 0
 	addModule( StickyBombUpdate );
 	addModule( FireOCLAfterWeaponCooldownUpdate );
 	addModule( HijackerUpdate );

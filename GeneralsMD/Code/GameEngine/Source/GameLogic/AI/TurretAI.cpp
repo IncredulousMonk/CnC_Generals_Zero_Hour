@@ -86,21 +86,21 @@ static StateReturnType frameToSleepTime(
  * Create a TurretAI state machine. Define all of the states the machine 
  * can possibly be in, and set the initial (default) state.
  */
-TurretStateMachine::TurretStateMachine( TurretAI* tai, Object *obj, AsciiString name ) : m_turretAI(tai), StateMachine( obj, name )
+TurretStateMachine::TurretStateMachine( TurretAI* tai, Object *obj, AsciiString name ) : StateMachine( obj, name ), m_turretAI(tai)
 {
 	static const StateConditionInfo fireConditions[] = 
 	{
-		StateConditionInfo(outOfWeaponRangeObject, TURRETAI_AIM, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(outOfWeaponRangeObject, (StateID) TURRETAI_AIM, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	// order matters: first state is the default state.
-	defineState( TURRETAI_IDLE,					newInstance(TurretAIIdleState)( this ), TURRETAI_IDLE, TURRETAI_IDLESCAN );
-	defineState( TURRETAI_IDLESCAN,			newInstance(TurretAIIdleScanState)( this ), TURRETAI_HOLD, TURRETAI_HOLD );
-	defineState( TURRETAI_AIM,					newInstance(TurretAIAimTurretState)( this ), TURRETAI_FIRE, TURRETAI_HOLD );
-	defineState( TURRETAI_FIRE,					newInstance(AIAttackFireWeaponState)( this, tai ), TURRETAI_AIM, TURRETAI_AIM, fireConditions );
-	defineState( TURRETAI_RECENTER,			newInstance(TurretAIRecenterTurretState)( this ), TURRETAI_IDLE, TURRETAI_IDLE );
-	defineState( TURRETAI_HOLD,					newInstance(TurretAIHoldTurretState)( this ), TURRETAI_RECENTER, TURRETAI_RECENTER );
+	defineState( (StateID) TURRETAI_IDLE,		newInstance(TurretAIIdleState)( this ), (StateID) TURRETAI_IDLE, (StateID) TURRETAI_IDLESCAN );
+	defineState( (StateID) TURRETAI_IDLESCAN,	newInstance(TurretAIIdleScanState)( this ), (StateID) TURRETAI_HOLD, (StateID) TURRETAI_HOLD );
+	defineState( (StateID) TURRETAI_AIM,		newInstance(TurretAIAimTurretState)( this ), (StateID) TURRETAI_FIRE, (StateID) TURRETAI_HOLD );
+	defineState( (StateID) TURRETAI_FIRE,		newInstance(AIAttackFireWeaponState)( this, tai ), (StateID) TURRETAI_AIM, (StateID) TURRETAI_AIM, fireConditions );
+	defineState( (StateID) TURRETAI_RECENTER,	newInstance(TurretAIRecenterTurretState)( this ), (StateID) TURRETAI_IDLE, (StateID) TURRETAI_IDLE );
+	defineState( (StateID) TURRETAI_HOLD,		newInstance(TurretAIHoldTurretState)( this ), (StateID) TURRETAI_RECENTER, (StateID) TURRETAI_RECENTER );
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -175,32 +175,32 @@ void TurretStateMachine::loadPostProcess( void )
 //----------------------------------------------------------------------------------------------------------
 TurretAIData::TurretAIData()
 {
-	m_turnRate = DEFAULT_TURN_RATE;
-	m_pitchRate = DEFAULT_PITCH_RATE;
-	m_naturalTurretAngle = 0.0f;
-	m_naturalTurretPitch = 0.0f;
+	m_ini.m_turnRate = DEFAULT_TURN_RATE;
+	m_ini.m_pitchRate = DEFAULT_PITCH_RATE;
+	m_ini.m_naturalTurretAngle = 0.0f;
+	m_ini.m_naturalTurretPitch = 0.0f;
 	for( Int slotIndex = 0; slotIndex < WEAPONSLOT_COUNT; ++slotIndex )
 	{
-		m_turretFireAngleSweep[slotIndex] = 0.0f;
-		m_turretSweepSpeedModifier[slotIndex] = 1.0f;
+		m_ini.m_turretFireAngleSweep[slotIndex] = 0.0f;
+		m_ini.m_turretSweepSpeedModifier[slotIndex] = 1.0f;
 	}
-	m_firePitch = 0.0f;
-	m_minPitch = 0.0f;
-	m_groundUnitPitch = 0;
-	m_turretWeaponSlots = 0;
+	m_ini.m_firePitch = 0.0f;
+	m_ini.m_minPitch = 0.0f;
+	m_ini.m_groundUnitPitch = 0;
+	m_ini.m_turretWeaponSlots = 0;
 #ifdef INTER_TURRET_DELAY
-	m_interTurretDelay = 0;
+	m_ini.m_interTurretDelay = 0;
 #endif
-	m_minIdleScanAngle = 0.0f;
-	m_maxIdleScanAngle = 0.0f;
-	m_groundUnitPitch = 0.0f;
+	m_ini.m_minIdleScanAngle = 0.0f;
+	m_ini.m_maxIdleScanAngle = 0.0f;
+	m_ini.m_groundUnitPitch = 0.0f;
 
-	m_minIdleScanInterval = 9999999;
-	m_maxIdleScanInterval = 9999999;
-	m_recenterTime = 2*LOGICFRAMES_PER_SECOND;
-	m_initiallyDisabled = false;
-	m_firesWhileTurning = FALSE;
-	m_isAllowsPitch = false;
+	m_ini.m_minIdleScanInterval = 9999999;
+	m_ini.m_maxIdleScanInterval = 9999999;
+	m_ini.m_recenterTime = 2*LOGICFRAMES_PER_SECOND;
+	m_ini.m_initiallyDisabled = false;
+	m_ini.m_firesWhileTurning = FALSE;
+	m_ini.m_isAllowsPitch = false;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -221,7 +221,7 @@ void TurretAIData::parseTurretSweep(INI* ini, void *instance, void * /*store*/, 
 {
 	TurretAIData* self = (TurretAIData*)instance;
 	WeaponSlotType wslot = (WeaponSlotType)INI::scanIndexList(ini->getNextToken(), TheWeaponSlotTypeNames);
-	INI::parseAngleReal( ini, instance, &self->m_turretFireAngleSweep[wslot], NULL );
+	INI::parseAngleReal( ini, instance, &self->m_ini.m_turretFireAngleSweep[wslot], NULL );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -229,38 +229,40 @@ void TurretAIData::parseTurretSweepSpeed(INI* ini, void *instance, void * /*stor
 {
 	TurretAIData* self = (TurretAIData*)instance;
 	WeaponSlotType wslot = (WeaponSlotType)INI::scanIndexList(ini->getNextToken(), TheWeaponSlotTypeNames);
-	INI::parseReal( ini, instance, &self->m_turretSweepSpeedModifier[wslot], NULL );
+	INI::parseReal( ini, instance, &self->m_ini.m_turretSweepSpeedModifier[wslot], NULL );
 }
 
 //----------------------------------------------------------------------------------------------------------
-void TurretAIData::buildFieldParse(MultiIniFieldParse& p) 
+void TurretAIData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "TurretTurnRate",					INI::parseAngularVelocityReal,				NULL, offsetof( TurretAIData, m_turnRate ) },
-		{ "TurretPitchRate",				INI::parseAngularVelocityReal,				NULL, offsetof( TurretAIData, m_pitchRate ) },
-		{ "NaturalTurretAngle",			INI::parseAngleReal,									NULL, offsetof( TurretAIData, m_naturalTurretAngle ) },
-		{ "NaturalTurretPitch",			INI::parseAngleReal,									NULL, offsetof( TurretAIData, m_naturalTurretPitch ) },
-		{ "FirePitch",							INI::parseAngleReal,									NULL, offsetof( TurretAIData, m_firePitch ) },
-		{ "MinPhysicalPitch",				INI::parseAngleReal,									NULL, offsetof( TurretAIData, m_minPitch ) },
-		{ "GroundUnitPitch",				INI::parseAngleReal,									NULL, offsetof( TurretAIData, m_groundUnitPitch ) },
-		{ "TurretFireAngleSweep",		TurretAIData::parseTurretSweep,				NULL, NULL },
-		{ "TurretSweepSpeedModifier",TurretAIData::parseTurretSweepSpeed,	NULL, NULL },
-		{ "ControlledWeaponSlots",	parseTWS,															NULL, offsetof( TurretAIData, m_turretWeaponSlots ) },
-		{ "AllowsPitch",						INI::parseBool,												NULL, offsetof( TurretAIData, m_isAllowsPitch ) },
+		{ "TurretTurnRate",				INI::parseAngularVelocityReal,			NULL, offsetof( TurretAIData::IniData, m_turnRate ) },
+		{ "TurretPitchRate",			INI::parseAngularVelocityReal,			NULL, offsetof( TurretAIData::IniData, m_pitchRate ) },
+		{ "NaturalTurretAngle",			INI::parseAngleReal,					NULL, offsetof( TurretAIData::IniData, m_naturalTurretAngle ) },
+		{ "NaturalTurretPitch",			INI::parseAngleReal,					NULL, offsetof( TurretAIData::IniData, m_naturalTurretPitch ) },
+		{ "FirePitch",					INI::parseAngleReal,					NULL, offsetof( TurretAIData::IniData, m_firePitch ) },
+		{ "MinPhysicalPitch",			INI::parseAngleReal,					NULL, offsetof( TurretAIData::IniData, m_minPitch ) },
+		{ "GroundUnitPitch",			INI::parseAngleReal,					NULL, offsetof( TurretAIData::IniData, m_groundUnitPitch ) },
+		{ "TurretFireAngleSweep",		TurretAIData::parseTurretSweep,			NULL, 0 },
+		{ "TurretSweepSpeedModifier",	TurretAIData::parseTurretSweepSpeed,	NULL, 0 },
+		{ "ControlledWeaponSlots",		parseTWS,								NULL, offsetof( TurretAIData::IniData, m_turretWeaponSlots ) },
+		{ "AllowsPitch",				INI::parseBool,							NULL, offsetof( TurretAIData::IniData, m_isAllowsPitch ) },
 #ifdef INTER_TURRET_DELAY
-		{ "InterTurretDelay",				INI::parseDurationUnsignedInt,				NULL, offsetof( TurretAIData, m_interTurretDelay ) },
+		{ "InterTurretDelay",			INI::parseDurationUnsignedInt,			NULL, offsetof( TurretAIData::IniData, m_interTurretDelay ) },
 #endif
-		{ "MinIdleScanAngle",				INI::parseAngleReal,									NULL, offsetof( TurretAIData, m_minIdleScanAngle ) },
-		{ "MaxIdleScanAngle",				INI::parseAngleReal,									NULL, offsetof( TurretAIData, m_maxIdleScanAngle ) },
-		{ "MinIdleScanInterval",		INI::parseDurationUnsignedInt,				NULL, offsetof( TurretAIData, m_minIdleScanInterval ) },
-		{ "MaxIdleScanInterval",		INI::parseDurationUnsignedInt,				NULL, offsetof( TurretAIData, m_maxIdleScanInterval ) },
-		{ "RecenterTime",						INI::parseDurationUnsignedInt,				NULL, offsetof( TurretAIData, m_recenterTime ) },
-		{ "InitiallyDisabled",			INI::parseBool,												NULL, offsetof( TurretAIData, m_initiallyDisabled ) },
-		{ "FiresWhileTurning",			INI::parseBool,												NULL, offsetof( TurretAIData, m_firesWhileTurning ) },
+		{ "MinIdleScanAngle",			INI::parseAngleReal,					NULL, offsetof( TurretAIData::IniData, m_minIdleScanAngle ) },
+		{ "MaxIdleScanAngle",			INI::parseAngleReal,					NULL, offsetof( TurretAIData::IniData, m_maxIdleScanAngle ) },
+		{ "MinIdleScanInterval",		INI::parseDurationUnsignedInt,			NULL, offsetof( TurretAIData::IniData, m_minIdleScanInterval ) },
+		{ "MaxIdleScanInterval",		INI::parseDurationUnsignedInt,			NULL, offsetof( TurretAIData::IniData, m_maxIdleScanInterval ) },
+		{ "RecenterTime",				INI::parseDurationUnsignedInt,			NULL, offsetof( TurretAIData::IniData, m_recenterTime ) },
+		{ "InitiallyDisabled",			INI::parseBool,							NULL, offsetof( TurretAIData::IniData, m_initiallyDisabled ) },
+		{ "FiresWhileTurning",			INI::parseBool,							NULL, offsetof( TurretAIData::IniData, m_firesWhileTurning ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	TurretAIData* self {static_cast<TurretAIData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }
 
@@ -270,29 +272,26 @@ void TurretAIData::buildFieldParse(MultiIniFieldParse& p)
 
 //----------------------------------------------------------------------------------------------------------
 TurretAI::TurretAI(Object* owner, const TurretAIData* data, WhichTurretType tur) : 
-	m_owner(owner),
-	m_whichTurret(tur),
 	m_data(data),
+	m_whichTurret(tur),
+	m_owner(owner),
 	m_turretStateMachine(NULL),
+	m_enableSweepUntil(0),
+	m_victimInitialTeam(NULL),
+	m_target(TARGET_NONE),
+	m_sleepUntil(0),
 	m_playRotSound(false),
 	m_playPitchSound(false),
 	m_positiveSweep(true),
-	m_enableSweepUntil(0),
-	m_sleepUntil(0),
 	m_didFire(false),
-	m_target(TARGET_NONE),
-	m_targetWasSetByIdleMood(false),
-	m_enabled(!data->m_initiallyDisabled),
-	m_firesWhileTurning(data->m_firesWhileTurning),
+	m_enabled(!data->m_ini.m_initiallyDisabled),
+	m_firesWhileTurning(data->m_ini.m_firesWhileTurning),
 	m_isForceAttacking(false),
-	//Added By Sadullah Nader
-	//Initialization(s) inserted
-	m_victimInitialTeam(NULL)
-	//
+	m_targetWasSetByIdleMood(false)
 {
 	//Added By Sadullah Nader
 	//Initialization(s) inserted
-	m_continuousFireExpirationFrame = -1;
+	m_continuousFireExpirationFrame = 0;
 	//
 	if (!m_data)
 	{
@@ -300,7 +299,7 @@ TurretAI::TurretAI(Object* owner, const TurretAIData* data, WhichTurretType tur)
 		throw INI_INVALID_DATA;
 	}
 
-	if (m_data->m_turretWeaponSlots == 0)
+	if (m_data->m_ini.m_turretWeaponSlots == 0)
 	{
 		DEBUG_CRASH(("TurretAI MUST specify controlled weapon slots!"));
 		throw INI_INVALID_DATA;
@@ -310,7 +309,7 @@ TurretAI::TurretAI(Object* owner, const TurretAIData* data, WhichTurretType tur)
 
 #ifdef _DEBUG
 	char smbuf[256];
-	sprintf(smbuf, "TurretStateMachine for tur %08lx slot %d",this,tur);
+	sprintf(smbuf, "TurretStateMachine for tur %08lx slot %d", reinterpret_cast<intptr_t>(this), tur);
 	const char* smname = smbuf;
 #else
 	const char* smname = "TurretStateMachine";
@@ -349,9 +348,9 @@ void TurretAI::xfer( Xfer *xfer )
 
 /* These 4 are loaded on creation, and don't change. jba. 
 	const TurretAIData*				m_data;
-	WhichTurretType						m_whichTurret;
-	Object*										m_owner;								
-	AudioEventRTS							m_turretRotOrPitchSound;		///< Sound of turret rotation
+	WhichTurretType					m_whichTurret;
+	Object*							m_owner;								
+	AudioEventRTS					m_turretRotOrPitchSound;		///< Sound of turret rotation
 	*/
 	xfer->xferSnapshot(m_turretStateMachine);
 
@@ -473,13 +472,13 @@ Bool TurretAI::isWeaponSlotOkToFire(WeaponSlotType wslot) const
 //----------------------------------------------------------------------------------------------------------
 Real TurretAI::getTurretFireAngleSweepForWeaponSlot( WeaponSlotType slot ) const
 {
-	return m_data->m_turretFireAngleSweep[slot];	
+	return m_data->m_ini.m_turretFireAngleSweep[slot];	
 }
 
 //----------------------------------------------------------------------------------------------------------
 Real TurretAI::getTurretSweepSpeedModifierForWeaponSlot( WeaponSlotType slot ) const
 {
-	return m_data->m_turretSweepSpeedModifier[slot];
+	return m_data->m_ini.m_turretSweepSpeedModifier[slot];
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -501,7 +500,7 @@ Bool TurretAI::isTryingToAimAtTarget(const Object* victim) const
 
 	Object* obj;
 	Coord3D pos;
-	return (sid == TURRETAI_AIM && friend_getTurretTarget(obj, pos) == TARGET_OBJECT && obj == victim);
+	return (sid == (StateID) TURRETAI_AIM && friend_getTurretTarget(obj, pos) == TARGET_OBJECT && obj == victim);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -515,7 +514,7 @@ Bool TurretAI::isOwnersCurWeaponOnTurret() const
 //----------------------------------------------------------------------------------------------------------
 Bool TurretAI::isWeaponSlotOnTurret(WeaponSlotType wslot) const
 {
-	return (m_data->m_turretWeaponSlots & (1 << wslot)) != 0;
+	return (m_data->m_ini.m_turretWeaponSlots & (1 << wslot)) != 0;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -596,15 +595,15 @@ void TurretAI::setTurretTargetObject( Object *victim, Bool forceAttacking )
 		// if we're already in the aim state, don't call setState, since
 		// it would go thru the exit/enter stuff, which we don't really want
 		// to do... 
-		if (sid != TURRETAI_AIM && sid != TURRETAI_FIRE)
-			m_turretStateMachine->setState( TURRETAI_AIM );
+		if (sid != (StateID) TURRETAI_AIM && sid != (StateID) TURRETAI_FIRE)
+			m_turretStateMachine->setState((StateID) TURRETAI_AIM);
 		m_victimInitialTeam = victim->getTeam();
 	}
 	else
 	{
 		// only change states if we are aiming.
-		if (sid == TURRETAI_AIM || sid == TURRETAI_FIRE)
-			m_turretStateMachine->setState(TURRETAI_HOLD);
+		if (sid == (StateID) TURRETAI_AIM || sid == (StateID) TURRETAI_FIRE)
+			m_turretStateMachine->setState((StateID) TURRETAI_HOLD);
 		m_victimInitialTeam = NULL;
 	}
 }
@@ -636,15 +635,15 @@ void TurretAI::setTurretTargetPosition( const Coord3D* pos )
 		// if we're already in the aim state, don't call setState, since
 		// it would go thru the exit/enter stuff, which we don't really want
 		// to do... 
-		if (sid != TURRETAI_AIM && sid != TURRETAI_FIRE)
-			m_turretStateMachine->setState( TURRETAI_AIM );
+		if (sid != (StateID) TURRETAI_AIM && sid != (StateID) TURRETAI_FIRE)
+			m_turretStateMachine->setState( (StateID) TURRETAI_AIM );
 		m_victimInitialTeam = NULL;
 	}
 	else
 	{
 		// only change states if we are aiming.
-		if (sid == TURRETAI_AIM || sid == TURRETAI_FIRE)
-			m_turretStateMachine->setState(TURRETAI_HOLD);
+		if (sid == (StateID) TURRETAI_AIM || sid == (StateID) TURRETAI_FIRE)
+			m_turretStateMachine->setState((StateID) TURRETAI_HOLD);
 		m_victimInitialTeam = NULL;
 	}
 }
@@ -652,7 +651,7 @@ void TurretAI::setTurretTargetPosition( const Coord3D* pos )
 //----------------------------------------------------------------------------------------------------------
 void TurretAI::recenterTurret()
 {
-	m_turretStateMachine->setState( TURRETAI_RECENTER );
+	m_turretStateMachine->setState( (StateID) TURRETAI_RECENTER );
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -711,7 +710,7 @@ UpdateSleepTime TurretAI::updateTurretAI()
 		m_playPitchSound = false;
 	}
 
-	if (m_enabled || m_turretStateMachine->getCurrentStateID() == TURRETAI_RECENTER)
+	if (m_enabled || m_turretStateMachine->getCurrentStateID() == (StateID) TURRETAI_RECENTER)
 	{
 		m_didFire = false;
 
@@ -721,7 +720,7 @@ UpdateSleepTime TurretAI::updateTurretAI()
 		if (m_didFire)
 		{
 			// if we fired, enable sweeping for a few frames.
-			const ENABLE_SWEEP_FRAME_COUNT = 3;
+			const UnsignedInt ENABLE_SWEEP_FRAME_COUNT = 3;
 			m_enableSweepUntil = now + ENABLE_SWEEP_FRAME_COUNT;
 			m_continuousFireExpirationFrame = now + ENABLE_SWEEP_FRAME_COUNT;// so the recent firing will not interrupt the moving sound
 		}
@@ -733,7 +732,7 @@ UpdateSleepTime TurretAI::updateTurretAI()
 
 		if (IS_STATE_SLEEP(stRet))
 		{
-			Int frames = GET_STATE_SLEEP_FRAMES(stRet);
+			UnsignedInt frames = GET_STATE_SLEEP_FRAMES(stRet);
 			if (frames < subMachineSleep)
 				subMachineSleep = UPDATE_SLEEP(frames);
 		}
@@ -1285,7 +1284,7 @@ void TurretAIIdleState::loadPostProcess( void )
 void TurretAIIdleState::resetIdleScan()
 {
 	UnsignedInt now = TheGameLogic->getFrame();
-	UnsignedInt delay = GameLogicRandomValue(getTurretAI()->getMinIdleScanInterval(), getTurretAI()->getMaxIdleScanInterval());
+	UnsignedInt delay = GameLogicRandomValueUnsigned(getTurretAI()->getMinIdleScanInterval(), getTurretAI()->getMaxIdleScanInterval());
 	m_nextIdleScan = now + delay;
 }
 

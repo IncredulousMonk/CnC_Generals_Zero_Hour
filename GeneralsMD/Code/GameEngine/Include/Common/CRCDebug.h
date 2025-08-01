@@ -83,11 +83,11 @@
 		CRCVerification();
 		~CRCVerification();
 	protected:
-		UnsignedInt m_startCRC;
+		UnsignedInt m_startCRC {};
 	};
 	#define VERIFY_CRC CRCVerification crcVerification;
 
-	extern Int lastCRCDebugFrame;
+	// extern Int lastCRCDebugFrame;
 	extern Int lastCRCDebugIndex;
 	
 	extern Bool g_verifyClientCRC;

@@ -79,16 +79,16 @@ public:
 	enum {MAX_LINKS=8};
 
 protected:
-	WaypointID	m_id;								///< Unique integer identifier.
-	AsciiString m_name;							///< Name.
-	Coord3D			m_location;					///< Location.
-	Waypoint*		m_pNext;						///< Linked list of all waypoints.
-	Waypoint*		m_links[MAX_LINKS]; ///< Directed graph of waypoints.
-	Int					m_numLinks;					///< Number of links in m_links.
+	WaypointID	m_id;					///< Unique integer identifier.
+	AsciiString	m_name;					///< Name.
+	Coord3D		m_location;				///< Location.
+	Waypoint*	m_pNext;				///< Linked list of all waypoints.
+	Waypoint*	m_links[MAX_LINKS];		///< Directed graph of waypoints.
+	Int			m_numLinks;				///< Number of links in m_links.
 	AsciiString m_pathLabel1;
 	AsciiString m_pathLabel2;
 	AsciiString m_pathLabel3;
-	Bool				m_biDirectional;
+	Bool		m_biDirectional;
 
 public:
 	// should be protected, but friendly access needed (srj)
@@ -141,14 +141,14 @@ public:
 	BridgeInfo();
 
 public:
-	Coord3D					from, to; /// The points that the bridge was drawn using.
-	Real						bridgeWidth; /// Width of the bridge.
-	Coord3D					fromLeft, fromRight, toLeft, toRight; /// The 4 corners of the rectangle that the bridge covers.
-	Int							bridgeIndex;	///< The index to the drawable bridges.
-	BodyDamageType	curDamageState;
-	ObjectID				bridgeObjectID;
-	ObjectID				towerObjectID[ BRIDGE_MAX_TOWERS ];
-	Bool						damageStateChanged;
+	Coord3D			from {}, to {}; /// The points that the bridge was drawn using.
+	Real			bridgeWidth {}; /// Width of the bridge.
+	Coord3D			fromLeft {}, fromRight {}, toLeft {}, toRight {}; /// The 4 corners of the rectangle that the bridge covers.
+	Int				bridgeIndex {};	///< The index to the drawable bridges.
+	BodyDamageType	curDamageState {};
+	ObjectID		bridgeObjectID {};
+	ObjectID		towerObjectID[ BRIDGE_MAX_TOWERS ];
+	Bool			damageStateChanged {};
 
 };
 
@@ -159,7 +159,7 @@ public:
 struct TBridgeAttackInfo 
 {
 public:
-	Coord3D attackPoint1, attackPoint2; /// The points that can be attacked..
+	Coord3D attackPoint1 {}, attackPoint2 {}; /// The points that can be attacked..
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -181,11 +181,11 @@ public: // ctor/dtor.
 	Bridge& operator=(const Bridge&) = delete;
 
 protected:
-	Bridge*						m_next;		///< Link for traversing all bridges in the current map.
-	AsciiString				m_templateName;			///< bridge template name
-	BridgeInfo				m_bridgeInfo;
-	Region2D					m_bounds; /// 2d bounds for quick screening.
-	PathfindLayerEnum	m_layer;  ///< Pathfind layer for this bridge.
+	Bridge*				m_next {};		///< Link for traversing all bridges in the current map.
+	AsciiString			m_templateName {};			///< bridge template name
+	BridgeInfo			m_bridgeInfo {};
+	Region2D			m_bounds {}; /// 2d bounds for quick screening.
+	PathfindLayerEnum	m_layer {};  ///< Pathfind layer for this bridge.
 
 public:
 	// should be protected, but friendly access needed (srj)
@@ -245,28 +245,26 @@ public:
 #endif // if 0
 
 	virtual Real getGroundHeight( Real x, Real y, Coord3D* normal = NULL )  const;
-#if 0
 	virtual Real getLayerHeight(Real x, Real y, PathfindLayerEnum layer, Coord3D* normal = NULL, Bool clip = true) const;
-#endif // if 0
 	virtual void getExtent( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
 	virtual void getExtentIncludingBorder( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
 	virtual void getMaximumPathfindExtent( Region3D */*extent*/ ) const { DEBUG_CRASH(("not implemented"));  }		///< @todo This should not be a stub - this should own this functionality
-#if 0
 	virtual Coord3D findClosestEdgePoint( const Coord3D *closestTo ) const ;
 	virtual Coord3D findFarthestEdgePoint( const Coord3D *farthestFrom ) const ;
-#endif // if 0
 	virtual Bool isClearLineOfSight(const Coord3D& pos, const Coord3D& posOther) const;
 
 #if 0
 	virtual AsciiString getSourceFilename( void ) { return m_filenameString; }
 
 	virtual PathfindLayerEnum alignOnTerrain( Real angle, const Coord3D& pos, Bool stickToGround, Matrix3D& mtx);
+#endif // if 0
 
 	virtual Bool isUnderwater( Real x, Real y, Real *waterZ = NULL, Real *terrainZ = NULL );			///< is point under water
 	virtual Bool isCliffCell( Real x, Real y) const;			///< is point cliff cell
 	virtual const WaterHandle* getWaterHandle( Real x, Real y );					///< get water handle at this location
 	virtual const WaterHandle* getWaterHandleByName( AsciiString name );	///< get water handle by name
 	virtual Real getWaterHeight( const WaterHandle *water );							///< get height of water table
+#if 0
 	virtual void setWaterHeight( const WaterHandle *water, 
 															 Real height, 
 															 Real damageAmount,
@@ -291,6 +289,7 @@ public:
 
 	/// Return true if the waypoint path containint pWay is labeled with the label.
 	virtual Bool isPurposeOfPath( Waypoint *pWay, AsciiString label );
+#endif // if 0
 
 	/// Return the trigger area with the given name
 	virtual PolygonTrigger *getTriggerAreaByName( AsciiString name );
@@ -301,8 +300,10 @@ public:
 	/// Find the bridge at a location.  NULL means no bridge.
 	virtual Bridge *findBridgeAt(const Coord3D *pLoc) const;
 
+#if 0
 	/// Find the bridge at a location.  NULL means no bridge. Note that the layer value will be used to resolve crossing bridges.
 	virtual Bridge *findBridgeLayerAt(const Coord3D *pLoc, PathfindLayerEnum layer, Bool clip = true) const;
+#endif // if 0
 
 	///  Returns true if the object is close enough to interact with the bridge for pathfinding.
 	virtual Bool objectInteractsWithBridgeLayer(Object *obj, Int layer, Bool considerBridgeHealth = true) const;
@@ -310,17 +311,21 @@ public:
 	///  Returns true if the object is close to one or the other end of the bridge.
 	virtual Bool objectInteractsWithBridgeEnd(Object *obj, Int layer) const;
 
+#if 0
 	virtual Drawable *pickBridge(const Vector3 &from, const Vector3 &to, Vector3 *pos);
 
 	virtual void addBridgeToLogic(BridgeInfo *pInfo, Dict *props, AsciiString bridgeTemplateName); ///< Adds a bridge's logical info.
 	virtual void addLandmarkBridgeToLogic(Object *bridgeObj); ///< Adds a bridge's logical info.
 	virtual void deleteBridge( Bridge *bridge );	///< remove a bridge
+#endif // if 0
 
 	virtual void updateBridgeDamageStates(void); ///< Updates bridge's damage info.
 
+#if 0
 	Bool anyBridgesDamageStatesChanged(void) {return m_bridgeDamageStatesChanged; } ///< Bridge damage states updated.
 	Bool isBridgeRepaired(const Object *bridge); ///< Is bridge repaired?
 	Bool isBridgeBroken(const Object *bridge); ///< Is bridge Broken?
+#endif // if 0
 	void getBridgeAttackPoints(const Object *bridge, TBridgeAttackInfo *info); ///< Get bridge attack points.
 
 	PathfindLayerEnum getLayerForDestination(const Coord3D *pos);
@@ -329,6 +334,7 @@ public:
 	// (unlike getLayerForDestination, which will return the closest layer)
 	PathfindLayerEnum getHighestLayerForDestination(const Coord3D *pos, Bool onlyHealthyBridges = false);
 
+#if 0
 	void enableWaterGrid( Bool enable );			///< enable/disable the water grid
 
 	// This is stuff to get the currently active boundary information

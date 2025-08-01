@@ -66,7 +66,7 @@ class TunnelNetworkExitConditions : public AttackExitConditionsInterface
 {
 public:
 
-	UnsignedInt			m_attackGiveUpFrame;		// frame at which we give up (if using)
+	UnsignedInt m_attackGiveUpFrame;		// frame at which we give up (if using)
 
 	TunnelNetworkExitConditions() : m_attackGiveUpFrame(0)
 	{
@@ -84,9 +84,9 @@ class AITNGuardMachine : public StateMachine
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( AITNGuardMachine, "AITNGuardMachinePool" );
 
 private:
-	Coord3D									m_positionToGuard;
-	ObjectID								m_nemesisToAttack;
-	GuardMode								m_guardMode;
+	Coord3D		m_positionToGuard {};
+	ObjectID	m_nemesisToAttack {};
+	GuardMode	m_guardMode {};
 
 protected:
 	// snapshot interface
@@ -118,9 +118,14 @@ public:
 //--------------------------------------------------------------------------------------
 class AITNGuardInnerState : public State
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AITNGuardInnerState, "AITNGuardInnerState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AITNGuardInnerState, "AITNGuardInnerState")
 public:
 	AITNGuardInnerState( StateMachine *machine ) : State( machine, "AITNGuardInner" ) { }
+
+	// No copies allowed!
+	AITNGuardInnerState(const AITNGuardInnerState&) = delete;
+	AITNGuardInnerState& operator=(const AITNGuardInnerState&) = delete;
+
 	virtual StateReturnType onEnter( void );
 	virtual StateReturnType update( void );
 	virtual void onExit( StateExitType status );
@@ -132,9 +137,9 @@ protected:
 private:
 	AITNGuardMachine* getGuardMachine() { return (AITNGuardMachine*)getMachine(); }
 
-	TunnelNetworkExitConditions m_exitConditions; 
-	Bool			m_scanForEnemy;
-	AIAttackState *m_attackState;
+	TunnelNetworkExitConditions m_exitConditions {};
+	Bool			m_scanForEnemy {};
+	AIAttackState *m_attackState {};
 };
 EMPTY_DTOR(AITNGuardInnerState)
 
@@ -155,20 +160,25 @@ protected:
 private:
 	AITNGuardMachine* getGuardMachine() { return (AITNGuardMachine*)getMachine(); }
 
-	UnsignedInt m_nextEnemyScanTime;
-	Coord3D			m_guardeePos;						///< Where the object we are guarding was last.
+	UnsignedInt m_nextEnemyScanTime {};
+	Coord3D			m_guardeePos {};						///< Where the object we are guarding was last.
 };
 EMPTY_DTOR(AITNGuardIdleState)
 
 //--------------------------------------------------------------------------------------
 class AITNGuardOuterState : public State
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AITNGuardOuterState, "AITNGuardOuterState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AITNGuardOuterState, "AITNGuardOuterState")
 public:
-	AITNGuardOuterState( StateMachine *machine ) : State( machine, "AITNGuardOuter" ) 
+	AITNGuardOuterState( StateMachine *machine ) : State( machine, "AITNGuardOuter" )
 	{
 		m_attackState = NULL;
 	}
+
+	// No copies allowed!
+	AITNGuardOuterState(const AITNGuardOuterState&) = delete;
+	AITNGuardOuterState& operator=(const AITNGuardOuterState&) = delete;
+
 	virtual StateReturnType onEnter( void );
 	virtual StateReturnType update( void );
 	virtual void onExit( StateExitType status );
@@ -180,8 +190,8 @@ protected:
 private:
 	AITNGuardMachine* getGuardMachine() { return (AITNGuardMachine*)getMachine(); }
 
-	TunnelNetworkExitConditions m_exitConditions; 
-	AIAttackState *m_attackState;
+	TunnelNetworkExitConditions m_exitConditions {};
+	AIAttackState *m_attackState {};
 };
 EMPTY_DTOR(AITNGuardOuterState)
 
@@ -201,7 +211,7 @@ public:
 	virtual void onExit( StateExitType status );
 
 protected:
-	UnsignedInt m_nextReturnScanTime;
+	UnsignedInt m_nextReturnScanTime {};
 
 protected:
 	// snapshot interface
@@ -230,6 +240,11 @@ class AITNGuardAttackAggressorState : public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(AITNGuardAttackAggressorState, "AITNGuardAttackAggressorState")		
 public:
 	AITNGuardAttackAggressorState( StateMachine *machine );
+
+	// No copies allowed!
+	AITNGuardAttackAggressorState(const AITNGuardAttackAggressorState&) = delete;
+	AITNGuardAttackAggressorState& operator=(const AITNGuardAttackAggressorState&) = delete;
+
 	virtual StateReturnType onEnter( void );
 	virtual StateReturnType update( void );
 	virtual void onExit( StateExitType status );
@@ -240,8 +255,8 @@ protected:
 	virtual void loadPostProcess();
 private:
 	AITNGuardMachine* getGuardMachine() { return (AITNGuardMachine*)getMachine(); }
-	TunnelNetworkExitConditions m_exitConditions; 
-	AIAttackState *m_attackState;
+	TunnelNetworkExitConditions m_exitConditions {};
+	AIAttackState *m_attackState {};
 };
 
 EMPTY_DTOR(AITNGuardAttackAggressorState)

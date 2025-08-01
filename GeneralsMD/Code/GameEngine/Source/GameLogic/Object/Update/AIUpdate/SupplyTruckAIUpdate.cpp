@@ -116,7 +116,7 @@ Bool SupplyTruckAIUpdate::isCurrentlyFerryingSupplies() const
 {
 	if (m_supplyTruckStateMachine)
 	{
-		switch (m_supplyTruckStateMachine->getCurrentStateID())
+		switch ((SupplyTruckState)m_supplyTruckStateMachine->getCurrentStateID())
 		{
 			case ST_IDLE:
 			case ST_BUSY:
@@ -146,7 +146,7 @@ Bool SupplyTruckAIUpdate::loseOneBox()
 	Drawable *draw = getObject()->getDrawable();
 	if( draw )
 	{
-		draw->updateDrawableSupplyStatus( getSupplyTruckAIUpdateModuleData()->m_maxBoxesData, m_numberBoxes );
+		draw->updateDrawableSupplyStatus( getSupplyTruckAIUpdateModuleData()->m_ini.m_maxBoxesData, m_numberBoxes );
 	}
 
 	return TRUE;
@@ -155,7 +155,7 @@ Bool SupplyTruckAIUpdate::loseOneBox()
 //-------------------------------------------------------------------------------------------------
 Bool SupplyTruckAIUpdate::gainOneBox( Int remainingStock )
 {
-	if( getSupplyTruckAIUpdateModuleData() && m_numberBoxes >= getSupplyTruckAIUpdateModuleData()->m_maxBoxesData )
+	if( getSupplyTruckAIUpdateModuleData() && m_numberBoxes >= getSupplyTruckAIUpdateModuleData()->m_ini.m_maxBoxesData )
 		return FALSE;
 	++m_numberBoxes;
 
@@ -188,7 +188,7 @@ Bool SupplyTruckAIUpdate::gainOneBox( Int remainingStock )
 	Drawable *draw = getObject()->getDrawable();
 	if( draw )
 	{
-		draw->updateDrawableSupplyStatus( getSupplyTruckAIUpdateModuleData()->m_maxBoxesData, m_numberBoxes );
+		draw->updateDrawableSupplyStatus( getSupplyTruckAIUpdateModuleData()->m_ini.m_maxBoxesData, m_numberBoxes );
 	}
 
 	return TRUE;
@@ -227,12 +227,12 @@ UnsignedInt SupplyTruckAIUpdate::getActionDelayForDock( Object *dock )
 	static const NameKeyType key_warehouseUpdate = NAMEKEY("SupplyWarehouseDockUpdate");
 	SupplyWarehouseDockUpdate *warehouseModule = (SupplyWarehouseDockUpdate*) dock->findUpdateModule( key_warehouseUpdate );
 	if (warehouseModule) {
-		return getSupplyTruckAIUpdateModuleData()->m_warehouseDelay;
+		return getSupplyTruckAIUpdateModuleData()->m_ini.m_warehouseDelay;
 	}
 	static const NameKeyType key_centerUpdate = NAMEKEY("SupplyCenterDockUpdate");
 	SupplyCenterDockUpdate *centerModule = (SupplyCenterDockUpdate*) dock->findUpdateModule( key_centerUpdate );
 	if (centerModule) {
-		return getSupplyTruckAIUpdateModuleData()->m_centerDelay;
+		return getSupplyTruckAIUpdateModuleData()->m_ini.m_centerDelay;
 	}
 
 	return 0;
@@ -244,9 +244,9 @@ Real SupplyTruckAIUpdate::getWarehouseScanDistance() const
 {
 	// Ai players get larger scan range.  jba.
 	if (getObject()->getControllingPlayer()->getPlayerType() == PLAYER_COMPUTER) {
-		return 2 * getSupplyTruckAIUpdateModuleData()->m_warehouseScanDistance;
+		return 2 * getSupplyTruckAIUpdateModuleData()->m_ini.m_warehouseScanDistance;
 	}
-	return getSupplyTruckAIUpdateModuleData()->m_warehouseScanDistance;
+	return getSupplyTruckAIUpdateModuleData()->m_ini.m_warehouseScanDistance;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -399,47 +399,47 @@ SupplyTruckStateMachine::SupplyTruckStateMachine( Object *owner ) : StateMachine
 {
 	static const StateConditionInfo busyConditions[] = 
 	{
-		StateConditionInfo(ownerIdle, ST_IDLE, NULL),
-		StateConditionInfo(ownerDocking, ST_DOCKING, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(ownerIdle, (StateID) ST_IDLE, NULL),
+		StateConditionInfo(ownerDocking, (StateID) ST_DOCKING, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	static const StateConditionInfo idleConditions[] = 
 	{
-		StateConditionInfo(isForcedIntoBusyState, ST_BUSY, NULL),
-		StateConditionInfo(isForcedIntoWantingState, ST_WANTING, NULL),
-		StateConditionInfo(ownerDocking, ST_DOCKING, NULL),
-		StateConditionInfo(ownerNotDockingOrIdle, ST_BUSY, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(isForcedIntoBusyState, (StateID) ST_BUSY, NULL),
+		StateConditionInfo(isForcedIntoWantingState, (StateID) ST_WANTING, NULL),
+		StateConditionInfo(ownerDocking, (StateID) ST_DOCKING, NULL),
+		StateConditionInfo(ownerNotDockingOrIdle, (StateID) ST_BUSY, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	static const StateConditionInfo wantingConditions[] = 
 	{
-		StateConditionInfo(ownerDocking, ST_DOCKING, NULL),
-		StateConditionInfo(ownerNotDockingOrIdle, ST_BUSY, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(ownerDocking, (StateID) ST_DOCKING, NULL),
+		StateConditionInfo(ownerNotDockingOrIdle, (StateID) ST_BUSY, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	static const StateConditionInfo regroupingConditions[] = 
 	{
-		StateConditionInfo(ownerPlayerCommanded, ST_BUSY, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(ownerPlayerCommanded, (StateID) ST_BUSY, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	static const StateConditionInfo dockingConditions[] = 
 	{
-		StateConditionInfo(isForcedIntoBusyState, ST_BUSY, NULL),
-		StateConditionInfo(ownerAvailableForSupplying, ST_WANTING, NULL),
-		StateConditionInfo(ownerNotDockingOrIdle, ST_BUSY, NULL),
-		StateConditionInfo(NULL, NULL, NULL)	// keep last
+		StateConditionInfo(isForcedIntoBusyState, (StateID) ST_BUSY, NULL),
+		StateConditionInfo(ownerAvailableForSupplying, (StateID) ST_WANTING, NULL),
+		StateConditionInfo(ownerNotDockingOrIdle, (StateID) ST_BUSY, NULL),
+		StateConditionInfo(NULL, (StateID) NULL, NULL)	// keep last
 	};
 
 	// order matters: first state is the default state.
-	defineState( ST_BUSY,							newInstance(SupplyTruckBusyState)( this ),												ST_BUSY,		ST_BUSY,					busyConditions );
-	defineState( ST_IDLE,							newInstance(SupplyTruckIdleState)( this ),												ST_BUSY,		ST_BUSY,					idleConditions );
-	defineState( ST_WANTING,					newInstance(SupplyTruckWantsToPickUpOrDeliverBoxesState)( this ),	ST_BUSY,		ST_REGROUPING,		wantingConditions );
-	defineState( ST_REGROUPING,				newInstance(RegroupingState)( this ),															ST_WANTING, ST_BUSY,					regroupingConditions );
-	defineState( ST_DOCKING,					newInstance(DockingState)( this ),																ST_BUSY,		ST_BUSY,					dockingConditions );
+	defineState( (StateID) ST_BUSY,			newInstance(SupplyTruckBusyState)( this ),							(StateID) ST_BUSY,		(StateID) ST_BUSY,			busyConditions );
+	defineState( (StateID) ST_IDLE,			newInstance(SupplyTruckIdleState)( this ),							(StateID) ST_BUSY,		(StateID) ST_BUSY,			idleConditions );
+	defineState( (StateID) ST_WANTING,		newInstance(SupplyTruckWantsToPickUpOrDeliverBoxesState)( this ),	(StateID) ST_BUSY,		(StateID) ST_REGROUPING,	wantingConditions );
+	defineState( (StateID) ST_REGROUPING,	newInstance(RegroupingState)( this ),								(StateID) ST_WANTING,	(StateID) ST_BUSY,			regroupingConditions );
+	defineState( (StateID) ST_DOCKING,		newInstance(DockingState)( this ),									(StateID) ST_BUSY,		(StateID) ST_BUSY,			dockingConditions );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -603,7 +603,7 @@ TheInGameUI->DEBUG_addFloatingText("entering regrouping state", getMachineOwner(
 		return STATE_FAILURE;
 	}
 
-	if( ThePartitionManager->getDistanceSquared(owner, destinationObject, FROM_BOUNDINGSPHERE_2D) < REGROUP_SUCCESS_DISTANCE_SQUARED )
+	if( ThePartitionManager->getDistanceSquared(owner, destinationObject, FROM_BOUNDINGSPHERE_2D) < (Real)REGROUP_SUCCESS_DISTANCE_SQUARED )
 		return STATE_CONTINUE; // Don't say Success so we don't spin the machine.  After one update we'll go back.
 	
 	Coord3D destination;

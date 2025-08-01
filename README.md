@@ -31,7 +31,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheGlobalLanguageData
   - TheAudio
   - TheFunctionLexicon
-  - TheModuleFactory (13 out of 218 modules implemented)
+  - TheModuleFactory (24 out of 218 modules implemented)
   - TheParticleSystemManager (minimal)
   - TheMessageStream
   - TheSidesList
@@ -40,10 +40,12 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - ThePlayerTemplateStore
   - TheFXListStore
   - TheWeaponStore
+  - TheLocomotorStore
   - TheSpecialPowerStore
   - TheDamageFXStore
   - TheArmorStore
   - TheThingFactory
+  - TheUpgradeCenter
   - TheGameClient (partial)
     - TheDrawGroupInfo
     - TheDisplayStringManager
@@ -61,6 +63,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheIMEManager
     - TheShell
     - TheInGameUI
+  - TheAI
   - TheGameLogic (minimal)
     - ThePartitionManager
   - TheTeamFactory

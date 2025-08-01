@@ -359,8 +359,10 @@ public:
 	StealthLookType getStealthLook() const { return m_stealthLook; }
 
 	void updateDrawableClipStatus( UnsignedInt shotsRemaining, UnsignedInt maxShots, WeaponSlotType slot ); ///< This will do the show/hide work if ProjectileBoneFeedbackEnabled is set.
+#endif // if 0
 	void updateDrawableSupplyStatus( Int maxSupply, Int currentSupply ); ///< This will do visual feedback on Supplies carried
 	
+#if 0
 	void notifyDrawableDependencyCleared();///< If any of your draw modules were waiting for something, it's ready now.
 
 	// Override.
@@ -379,11 +381,13 @@ public:
 	ClientUpdateModule** getClientUpdateModules() { return (ClientUpdateModule**)getModuleList(MODULETYPE_CLIENT_UPDATE); }
 	ClientUpdateModule const** getClientUpdateModules() const { return (ClientUpdateModule const**)getModuleList(MODULETYPE_CLIENT_UPDATE); }
 	ClientUpdateModule* findClientUpdateModule( NameKeyType key );
+#endif // if 0
 
 	DrawModule** getDrawModulesNonDirty();
 	DrawModule** getDrawModules();
 	DrawModule const** getDrawModules() const;
 
+#if 0
 	//---------------------------------------------------------------------------
 	void setDrawableStatus( DrawableStatus bit )  { BitSet( m_status, bit ); }
 	void clearDrawableStatus( DrawableStatus bit ) { BitClear( m_status, bit ); }
@@ -492,6 +496,7 @@ public:
 
 	// this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
 	Bool clientOnly_getFirstRenderObjInfo(Coord3D* pos, Real* boundingSphereRadius, Matrix3D* transform);
+#endif // if 0
 
 	/**
 		Find the bone(s) with the given name and return their positions and/or transforms in the given arrays.
@@ -507,12 +512,14 @@ public:
 		NOTE: this isn't very fast. Please call it sparingly and cache the result.
 	*/
 	Int getPristineBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
+#if 0
 	Int getCurrentClientBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
 	
 	// this is a special-purpose call for W3DModelDraw. (srj)
 	Bool getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const;
 
 	Bool getProjectileLaunchOffset(WeaponSlotType wslot, Int specificBarrelToUse, Matrix3D* launchPos, WhichTurretType tur, Coord3D* turretRotPos, Coord3D* turretPitchPos = NULL) const;
+#endif // if 0
 
 	/**
 		This call says, "I want the current animation (if any) to take n frames to complete a single cycle". 
@@ -526,14 +533,17 @@ public:
 		and is smart about transition states... if there is a transition state 
 		"inbetween", it is included in the completion time.
 	*/
+#if 0
 	void setAnimationCompletionTime(UnsignedInt numFrames);
 	
 	//Kris: Manually set a drawable's current animation to specific frame.
 	virtual void setAnimationFrame( int frame );
+#endif // if 0
 
 	void updateSubObjects();
 	void showSubObject( const AsciiString& name, Bool show );
 
+#if 0
 #ifdef ALLOW_ANIM_INQUIRIES
 // srj sez: not sure if this is a good idea, for net sync reasons...
 	Real getAnimationScrubScalar( void ) const; // lorenzen // returns 0 to 1... where are we between start and finish?
@@ -633,6 +643,7 @@ protected:
 
 	Drawable *asDrawableMeth() { return this; }
 	const Drawable *asDrawableMeth() const { return this; }
+#endif // if 0
 
 	inline Module** getModuleList(ModuleType i)
 	{
@@ -646,6 +657,7 @@ protected:
 		return m;
 	}
 
+#if 0
 	void applyPhysicsXform(Matrix3D* mtx);
 
 	struct PhysicsXformInfo
@@ -728,9 +740,11 @@ private:
 	DrawableLocoInfo*	m_locoInfo {};	// lazily allocated
 
 	DynamicAudioEventRTS*	m_ambientSound {};		///< sound module for ambient sound (lazily allocated)
+#endif // if 0
 
 	Module** m_modules[NUM_DRAWABLE_MODULE_TYPES] {};
 
+#if 0
 	StealthLookType m_stealthLook {};
 
 	Int m_flashCount {};           ///< number of times to flash the drawable
@@ -768,9 +782,11 @@ private:
 	mutable Bool m_isModelDirty {};				///< if true, must call replaceModelConditionState() before drawing or accessing drawmodule info
 #endif
 
+#endif // if 0
 	//*******************************************
 	//Perhaps we can move this out of Drawable???
 public:
+#if 0
 	static void killStaticImages();
 	
 #ifdef DIRTY_CONDITION_FLAGS
@@ -781,7 +797,9 @@ public:
 
 	//For now, you can only have one emoticon at a time. Changing it will clear the previous one.
 	void clearEmoticon();
+#endif // if 0
 	void setEmoticon( const AsciiString &name, Int duration );
+#if 0
 	void drawUIText( void );				///< draw the group number of this unit // public so gameclient can call
 private:
 	// "icon" drawing methods **************

@@ -64,7 +64,7 @@ class SupplyTruckWantsToPickUpOrDeliverBoxesState :  public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(SupplyTruckWantsToPickUpOrDeliverBoxesState, "SupplyTruckWantsToPickUpOrDeliverBoxesState")		
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 
@@ -82,7 +82,7 @@ class RegroupingState :  public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(RegroupingState, "RegroupingState")		
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 public:
@@ -99,7 +99,7 @@ class DockingState :  public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(DockingState, "DockingState")		
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 public:
@@ -111,48 +111,63 @@ public:
 EMPTY_DTOR(DockingState)
 
 //-------------------------------------------------------------------------------------------------
-enum
+enum SupplyTruckState
 {
-	ST_IDLE,						///< Not doing anything.  Should I autopilot?
-	ST_BUSY,						///< Direct player involvement (move) has taken me off autopilot
-	ST_WANTING,					///< Search for warehouse or center and dock with it
+	ST_IDLE,				///< Not doing anything.  Should I autopilot?
+	ST_BUSY,				///< Direct player involvement (move) has taken me off autopilot
+	ST_WANTING,				///< Search for warehouse or center and dock with it
 	ST_REGROUPING,			///< Wanting failed, so hang out at base until something changes.  Autopilot will turn off.
-	ST_DOCKING					///< Docking substates are running, wait for them to finish
+	ST_DOCKING				///< Docking substates are running, wait for them to finish
 };
 
 //-------------------------------------------------------------------------------------------------
 class SupplyTruckAIUpdateModuleData : public AIUpdateModuleData
 {
 public:
-	Int m_maxBoxesData;
-	UnsignedInt m_centerDelay;
-	UnsignedInt m_warehouseDelay;
-	Real m_warehouseScanDistance;
- 	AudioEventRTS m_suppliesDepletedVoice;						///< Sound played when I take the last box.
+	// MG: Cannot apply offsetof to SupplyTruckAIUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int m_maxBoxesData;
+		UnsignedInt m_centerDelay;
+		UnsignedInt m_warehouseDelay;
+		Real m_warehouseScanDistance;
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS m_suppliesDepletedVoice {};	///< Sound played when I take the last box.
 
 	SupplyTruckAIUpdateModuleData()
 	{
-		m_maxBoxesData = 0;
-		m_centerDelay = 0;
-		m_warehouseDelay = 0;
-		m_warehouseScanDistance = 100;
+		m_ini.m_maxBoxesData = 0;
+		m_ini.m_centerDelay = 0;
+		m_ini.m_warehouseDelay = 0;
+		m_ini.m_warehouseScanDistance = 100;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    AIUpdateModuleData::buildFieldParse(p);
+		AIUpdateModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "MaxBoxes",					INI::parseInt,		NULL, offsetof( SupplyTruckAIUpdateModuleData, m_maxBoxesData ) },
-			{ "SupplyCenterActionDelay", INI::parseDurationUnsignedInt, NULL, offsetof( SupplyTruckAIUpdateModuleData, m_centerDelay ) },
-			{ "SupplyWarehouseActionDelay", INI::parseDurationUnsignedInt, NULL, offsetof( SupplyTruckAIUpdateModuleData, m_warehouseDelay ) },
-			{ "SupplyWarehouseScanDistance", INI::parseReal, NULL, offsetof( SupplyTruckAIUpdateModuleData, m_warehouseScanDistance ) },
- 			{ "SuppliesDepletedVoice", INI::parseAudioEventRTS, NULL, offsetof( SupplyTruckAIUpdateModuleData, m_suppliesDepletedVoice) },
+			{ "MaxBoxes",						INI::parseInt,					NULL, offsetof( SupplyTruckAIUpdateModuleData::IniData, m_maxBoxesData ) },
+			{ "SupplyCenterActionDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( SupplyTruckAIUpdateModuleData::IniData, m_centerDelay ) },
+			{ "SupplyWarehouseActionDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( SupplyTruckAIUpdateModuleData::IniData, m_warehouseDelay ) },
+			{ "SupplyWarehouseScanDistance",	INI::parseReal,					NULL, offsetof( SupplyTruckAIUpdateModuleData::IniData, m_warehouseScanDistance ) },
+			{ "SuppliesDepletedVoice",			parseAudioEventRTS,				NULL, 0 },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		SupplyTruckAIUpdateModuleData* self {static_cast<SupplyTruckAIUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
+	}
+	
+	static void parseAudioEventRTS(INI* ini, void* instance, void* /* store */, const void* /* userData */)
+	{
+		SupplyTruckAIUpdateModuleData* self = (SupplyTruckAIUpdateModuleData*) instance;
+		INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_suppliesDepletedVoice);
 	}
 };
 
@@ -163,6 +178,7 @@ class SupplyTruckAIInterface
 	// with another major AIUpdate.  So provide an interface to satisfy the people
 	// who look this up by name.
 public:
+	virtual ~SupplyTruckAIInterface() {}
 	virtual Int getNumberBoxes() const = 0;
 	virtual Bool loseOneBox() = 0;
 	virtual Bool gainOneBox( Int remainingStock ) = 0;
@@ -196,6 +212,10 @@ public:
 	SupplyTruckAIUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	SupplyTruckAIUpdate(const SupplyTruckAIUpdate&) = delete;
+	SupplyTruckAIUpdate& operator=(const SupplyTruckAIUpdate&) = delete;
+
 	virtual SupplyTruckAIInterface* getSupplyTruckAIInterface() {return this;}
 	virtual const SupplyTruckAIInterface* getSupplyTruckAIInterface() const {return this;}
 
@@ -228,14 +248,14 @@ protected:
 	virtual void privateIdle(CommandSourceType cmdSource);						///< Enter idle state.	
 
 private:
-	SupplyTruckStateMachine*	m_supplyTruckStateMachine;
-	ObjectID									m_preferredDock;			///< Instead of searching, try this one first
-	Int												m_numberBoxes;
-	Bool											m_forcePending;				// To prevent a function from doing a setState, 
-																									// forceWanting will latch into here until serviced.
-	Bool											m_forcedBusyPending;	// A supply truck can't tell the difference between Idle since
-																									// I'm between docking states, or a Stop command without help.
- 	AudioEventRTS m_suppliesDepletedVoice;						///< Sound played when I take the last box.
+	SupplyTruckStateMachine*	m_supplyTruckStateMachine {};
+	ObjectID					m_preferredDock {};			///< Instead of searching, try this one first
+	Int							m_numberBoxes {};
+	Bool						m_forcePending {};			// To prevent a function from doing a setState, 
+															// forceWanting will latch into here until serviced.
+	Bool						m_forcedBusyPending {};		// A supply truck can't tell the difference between Idle since
+															// I'm between docking states, or a Stop command without help.
+	AudioEventRTS				m_suppliesDepletedVoice {};	///< Sound played when I take the last box.
 
 };
 

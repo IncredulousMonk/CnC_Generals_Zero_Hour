@@ -40,7 +40,7 @@ class DeliverPayloadData;
 //-------------------------------------------------------------------------------------------------
 class DeliverPayloadStateMachine : public StateMachine
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( DeliverPayloadStateMachine, "DeliverPayloadStateMachine" );
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( DeliverPayloadStateMachine, "DeliverPayloadStateMachine" )
 public:
 	DeliverPayloadStateMachine( Object *owner );
 
@@ -56,7 +56,7 @@ protected:
 //-------------------------------------------------------------------------------------------------
 class ApproachState :  public State
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ApproachState, "ApproachState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ApproachState, "ApproachState")
 	//Approaching the drop zone
 public:
 	ApproachState( StateMachine *machine ) :State( machine, "ApproachState" ) {}
@@ -64,7 +64,7 @@ public:
 	virtual StateReturnType onEnter();
 protected:
 	// snapshot interface	STUBBED - no member vars to save. jba.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };
@@ -91,8 +91,8 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	UnsignedInt m_dropDelayLeft;
-	Bool m_didOpen;
+	UnsignedInt m_dropDelayLeft {};
+	Bool m_didOpen {};
 };
 EMPTY_DTOR(DeliveringState)
 
@@ -113,14 +113,14 @@ protected:
 	virtual void loadPostProcess();
 
 private:
-	Int m_numberEntriesToState;
+	Int m_numberEntriesToState {};
 };
 EMPTY_DTOR(ConsiderNewApproachState)
 
 //-------------------------------------------------------------------------------------------------
 class RecoverFromOffMapState :  public State
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(RecoverFromOffMapState, "RecoverFromOffMapState")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(RecoverFromOffMapState, "RecoverFromOffMapState")
 public:
 	RecoverFromOffMapState( StateMachine *machine ) : State( machine, "RecoverFromOffMapState" ), m_reEntryFrame(0) { }
 	virtual StateReturnType update();
@@ -147,11 +147,11 @@ public:
 	virtual StateReturnType onEnter();
 protected:
 	// snapshot interface	STUBBED - no member vars to save. jba.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
-  
-  Coord3D facingDirectionUponDelivery;
+
+	Coord3D facingDirectionUponDelivery {};
 };
 EMPTY_DTOR(HeadOffMapState)
 
@@ -166,7 +166,7 @@ public:
 	virtual StateReturnType onEnter();
 protected:
 	// snapshot interface	STUBBED - no member vars to save. jba.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };
@@ -176,47 +176,53 @@ EMPTY_DTOR(CleanUpState)
 //-------------------------------------------------------------------------------------------------
 enum
 {
-	APPROACH,								///< Flying towards target
-	DELIVERING,							///< Delivering the payload to the target
-	CONSIDER_NEW_APPROACH,	///< Deciding if I should reapproach to deliver more payload or go home
+	APPROACH,					///< Flying towards target
+	DELIVERING,					///< Delivering the payload to the target
+	CONSIDER_NEW_APPROACH,		///< Deciding if I should reapproach to deliver more payload or go home
 	RECOVER_FROM_OFF_MAP,		///< oops, went off the map, special recovery needed
-	HEAD_OFF_MAP,						///< We're all done here, take off into the sunset
-	CLEAN_UP,								///< Made it to the sunset. Delete peacefully, don't kill
+	HEAD_OFF_MAP,				///< We're all done here, take off into the sunset
+	CLEAN_UP,					///< Made it to the sunset. Delete peacefully, don't kill
 };
 
 //-------------------------------------------------------------------------------------------------
 class DeliverPayloadAIUpdateModuleData : public AIUpdateModuleData
 {
 public:
-	UnsignedInt		m_doorDelay;
-	Real					m_maxDistanceToTarget;				///< How far away from target I can unload, plus how far after target I need to turn around at
-	Int						m_maxNumberAttempts;					///< How many times I can re-approach
-	UnsignedInt		m_dropDelay;									///< How long to wait after entering Deliver state (to allow for doors opening)
-	Coord3D				m_dropOffset;									///< where to disgorge the guys, relative to me
-	Coord3D				m_dropVariance;								///< variance in dropping position among guys that I am dropping
-	AsciiString		m_putInContainerName;
-	RadiusDecalTemplate	m_deliveryDecalTemplate;
-	Real					m_deliveryDecalRadius;
+	// MG: Cannot apply offsetof to DeliverPayloadAIUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt			m_doorDelay;
+		Real				m_maxDistanceToTarget;				///< How far away from target I can unload, plus how far after target I need to turn around at
+		Int					m_maxNumberAttempts;					///< How many times I can re-approach
+		UnsignedInt			m_dropDelay;									///< How long to wait after entering Deliver state (to allow for doors opening)
+		Coord3D				m_dropOffset;									///< where to disgorge the guys, relative to me
+		Coord3D				m_dropVariance;								///< variance in dropping position among guys that I am dropping
+		AsciiString			m_putInContainerName;
+		RadiusDecalTemplate	m_deliveryDecalTemplate;
+		Real				m_deliveryDecalRadius;
+	};
+
+	IniData m_ini {};
 
 	DeliverPayloadAIUpdateModuleData()
 	{
-		m_doorDelay = 0;
-		m_maxDistanceToTarget = 0.0f;
-		m_maxNumberAttempts = 0;
-		m_dropDelay = 0;
-		m_dropOffset.zero();
-		m_dropVariance.zero();
-		m_deliveryDecalRadius = 0;
+		m_ini.m_doorDelay = 0;
+		m_ini.m_maxDistanceToTarget = 0.0f;
+		m_ini.m_maxNumberAttempts = 0;
+		m_ini.m_dropDelay = 0;
+		m_ini.m_dropOffset.zero();
+		m_ini.m_dropVariance.zero();
+		m_ini.m_deliveryDecalRadius = 0;
 		// Added By Sadullah Nader
 		// Initialization missing and needed
 
-		m_putInContainerName.clear();
+		m_ini.m_putInContainerName.clear();
 		// End Add
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    AIUpdateModuleData::buildFieldParse(p);
+		AIUpdateModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
@@ -225,18 +231,20 @@ public:
 			//DO NOT ADD DATA HERE UNLESS YOU ARE SUPPORTING SCRIPTED TEAM REINFORCEMENT DELIVERY
 			//THESE DATA VALUES ARE SPECIFIED ONLY BY FACTIONUNIT.INI
 			//***********************************************************************************
-			{ "DoorDelay",								INI::parseDurationUnsignedInt,	NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_doorDelay ) },
-			{ "PutInContainer",						INI::parseAsciiString,					NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_putInContainerName ) },
-			{ "DeliveryDistance",					INI::parseReal,									NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_maxDistanceToTarget ) },
-			{ "MaxAttempts",							INI::parseInt,									NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_maxNumberAttempts ) },
-			{ "DropDelay",								INI::parseDurationUnsignedInt,	NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_dropDelay ) },
-			{ "DropOffset",								INI::parseCoord3D,							NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_dropOffset ) },
-			{ "DropVariance",							INI::parseCoord3D,							NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_dropVariance ) },
-			{ "DeliveryDecal",						RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( DeliverPayloadAIUpdateModuleData, m_deliveryDecalTemplate ) },
-			{ "DeliveryDecalRadius",			INI::parseReal,									NULL,	offsetof( DeliverPayloadAIUpdateModuleData, m_deliveryDecalRadius ) },
+			{ "DoorDelay",				INI::parseDurationUnsignedInt,					NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_doorDelay ) },
+			{ "PutInContainer",			INI::parseAsciiString,							NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_putInContainerName ) },
+			{ "DeliveryDistance",		INI::parseReal,									NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_maxDistanceToTarget ) },
+			{ "MaxAttempts",			INI::parseInt,									NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_maxNumberAttempts ) },
+			{ "DropDelay",				INI::parseDurationUnsignedInt,					NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_dropDelay ) },
+			{ "DropOffset",				INI::parseCoord3D,								NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_dropOffset ) },
+			{ "DropVariance",			INI::parseCoord3D,								NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_dropVariance ) },
+			{ "DeliveryDecal",			RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_deliveryDecalTemplate ) },
+			{ "DeliveryDecalRadius",	INI::parseReal,									NULL, offsetof( DeliverPayloadAIUpdateModuleData::IniData, m_deliveryDecalRadius ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		DeliverPayloadAIUpdateModuleData* self {static_cast<DeliverPayloadAIUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 };
@@ -251,30 +259,30 @@ public:
 class DeliverPayloadData
 {
 public:
-	AsciiString						m_visibleDropBoneName;				///< Where the payload is created (offset by current bone number 01-xx)
-	AsciiString						m_visibleSubObjectName;				///< Visible subobject to show or hide (offset by current drop number 01-xx)
-	AsciiString						m_visiblePayloadTemplateName;
-  Real                  m_distToTarget;
-	Real									m_preOpenDistance;
-	Int										m_maxAttempts;
-	Coord3D								m_dropOffset;
-	Coord3D								m_dropVariance;
-	UnsignedInt						m_dropDelay;
-	Bool									m_fireWeapon;
-	Bool									m_selfDestructObject;
-	Int										m_visibleNumBones;						///< The number of visible bones to process.
-	Real									m_diveStartDistance;
-	Real									m_diveEndDistance;
-	WeaponSlotType				m_strafingWeaponSlot;
-	Int										m_visibleItemsDroppedPerInterval;
-	Bool									m_inheritTransportVelocity;
-	Bool									m_isParachuteDirectly;		///< Instead of parachuting to below the point of exit, go ahead and bunch up on the target
-	Real									m_exitPitchRate;
-	const FXList					*m_strafeFX;
-	Real									m_strafeLength;
-	const WeaponTemplate	*m_visiblePayloadWeaponTemplate;
-	RadiusDecalTemplate		m_deliveryDecalTemplate;
-	Real									m_deliveryDecalRadius;
+	AsciiString				m_visibleDropBoneName {};				///< Where the payload is created (offset by current bone number 01-xx)
+	AsciiString				m_visibleSubObjectName {};				///< Visible subobject to show or hide (offset by current drop number 01-xx)
+	AsciiString				m_visiblePayloadTemplateName {};
+	Real					m_distToTarget {};
+	Real					m_preOpenDistance {};
+	Int						m_maxAttempts {};
+	Coord3D					m_dropOffset {};
+	Coord3D					m_dropVariance {};
+	UnsignedInt				m_dropDelay {};
+	Bool					m_fireWeapon {};
+	Bool					m_selfDestructObject {};
+	Int						m_visibleNumBones {};						///< The number of visible bones to process.
+	Real					m_diveStartDistance {};
+	Real					m_diveEndDistance {};
+	WeaponSlotType			m_strafingWeaponSlot {};
+	Int						m_visibleItemsDroppedPerInterval {};
+	Bool					m_inheritTransportVelocity {};
+	Bool					m_isParachuteDirectly {};		///< Instead of parachuting to below the point of exit, go ahead and bunch up on the target
+	Real					m_exitPitchRate {};
+	const FXList			*m_strafeFX {};
+	Real					m_strafeLength {};
+	const WeaponTemplate	*m_visiblePayloadWeaponTemplate {};
+	RadiusDecalTemplate		m_deliveryDecalTemplate {};
+	Real					m_deliveryDecalRadius {};
 
 	DeliverPayloadData()
 	{
@@ -308,6 +316,9 @@ public:
 		// End Add
 	}
 
+	DeliverPayloadData(const DeliverPayloadData&) = default;
+	DeliverPayloadData& operator=(const DeliverPayloadData&) = default;
+
 	static const FieldParse* getFieldParse();
 };
 
@@ -323,11 +334,15 @@ public:
 	DeliverPayloadAIUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	DeliverPayloadAIUpdate(const DeliverPayloadAIUpdate&) = delete;
+	DeliverPayloadAIUpdate& operator=(const DeliverPayloadAIUpdate&) = delete;
+
 	virtual AIFreeToExitType getAiFreeToExit(const Object* exiter) const;
 
 	const Coord3D* getTargetPos() const { return &m_targetPos; }
 	const Coord3D* getMoveToPos() const { return &m_moveToPos; }
-	UnsignedInt getDoorDelay() const { return getDeliverPayloadAIUpdateModuleData()->m_doorDelay; }
+	UnsignedInt getDoorDelay() const { return getDeliverPayloadAIUpdateModuleData()->m_ini.m_doorDelay; }
 	Bool isDeliveringPayload() const { return m_deliverPayloadStateMachine != NULL; }
 	const ThingTemplate* getPutInContainerTemplateViaModuleData() const;
 
@@ -362,25 +377,23 @@ protected:
 	virtual AIStateMachine* makeStateMachine();
 	virtual Bool isAllowedToRespondToAiCommands(const AICommandParms* parms) const;
 
-	DeliverPayloadStateMachine*		m_deliverPayloadStateMachine;	///< Controls my special logic
-	Coord3D												m_targetPos;									///< Where I plan to deliver my little friends, if obj is null
-	Coord3D												m_moveToPos;									///< Where I am moving to.
-	DeliverPayloadData						m_data;
-	Int														m_visibleItemsDelivered;
-	RadiusDecal										m_deliveryDecal;
-	Real													m_previousDistanceSqr;
-	Bool													m_freeToExit;
-	Bool													m_acceptingCommands;
+	DeliverPayloadStateMachine*		m_deliverPayloadStateMachine {};	///< Controls my special logic
+	Coord3D							m_targetPos {};									///< Where I plan to deliver my little friends, if obj is null
+	Coord3D							m_moveToPos {};									///< Where I am moving to.
+	DeliverPayloadData				m_data {};
+	Int								m_visibleItemsDelivered {};
+	RadiusDecal						m_deliveryDecal {};
+	Real							m_previousDistanceSqr {};
+	Bool							m_freeToExit {};
+	Bool							m_acceptingCommands {};
 
-	enum DiveState	// Stored in save file as int, don't renumber!  jba.
+	enum DiveState: Int	// Stored in save file as int, don't renumber!  jba.
 	{
-		DIVESTATE_PREDIVE=0,
-		DIVESTATE_DIVING=1,
-		DIVESTATE_POSTDIVE=2,
+		DIVESTATE_PREDIVE = 0,
+		DIVESTATE_DIVING = 1,
+		DIVESTATE_POSTDIVE = 2,
 	};
-	DiveState											m_diveState;
-
-
+	DiveState						m_diveState {};
 
 };
 

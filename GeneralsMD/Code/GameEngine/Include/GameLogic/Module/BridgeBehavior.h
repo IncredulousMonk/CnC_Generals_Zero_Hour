@@ -57,15 +57,15 @@ struct TimeAndLocationInfo
 // ------------------------------------------------------------------------------------------------
 struct BridgeFXInfo
 {
-	const FXList *fx;
-	TimeAndLocationInfo timeAndLocationInfo;
+	const FXList *fx {};
+	TimeAndLocationInfo timeAndLocationInfo {};
 };
 
 // ------------------------------------------------------------------------------------------------
 struct BridgeOCLInfo
 {
-	const ObjectCreationList *ocl;
-	TimeAndLocationInfo timeAndLocationInfo;
+	const ObjectCreationList *ocl {};
+	TimeAndLocationInfo timeAndLocationInfo {};
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -108,11 +108,12 @@ public:
 	{
 		Real m_lateralScaffoldSpeed;
 		Real m_verticalScaffoldSpeed;
-		BridgeFXList m_fx;							///< list of FX lists to execute
-		BridgeOCLList m_ocl;						///< list of OCL to execute
 	};
 
 	IniData m_ini {};
+
+	BridgeFXList m_fx {};		///< list of FX lists to execute
+	BridgeOCLList m_ocl {};		///< list of OCL to execute
 
 	static void parseFX( INI *ini, void *instance, void *store, const void* userData );
 	static void parseOCL( INI *ini, void *instance, void *store, const void* userData );
@@ -200,12 +201,12 @@ protected:
 	const FXList *m_repairToFX[ BODYDAMAGETYPE_COUNT ][ MAX_BRIDGE_BODY_FX ];
 	AudioEventRTS m_repairToSound[ BODYDAMAGETYPE_COUNT ];
 
-	Bool m_fxResolved;		///< TRUE until we've loaded our fx pointers and sounds
+	Bool m_fxResolved {};		///< TRUE until we've loaded our fx pointers and sounds
 
-	Bool m_scaffoldPresent;									///< TRUE when we have repair scaffolding visible
-	ObjectIDList m_scaffoldObjectIDList;		///< list of scaffold object IDs
+	Bool m_scaffoldPresent {};									///< TRUE when we have repair scaffolding visible
+	ObjectIDList m_scaffoldObjectIDList {};		///< list of scaffold object IDs
 
-	UnsignedInt m_deathFrame;								///< frame we died on
+	UnsignedInt m_deathFrame {};								///< frame we died on
 
 };
 

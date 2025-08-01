@@ -42,25 +42,31 @@
 class GenerateMinefieldBehaviorModuleData : public BehaviorModuleData
 {
 public:
-	UpgradeMuxData				m_upgradeMuxData;
-	AsciiString						m_mineName;
-	AsciiString						m_mineNameUpgraded;
-	AsciiString						m_mineUpgradeTrigger;
-	const FXList*					m_genFX;
-	Real									m_distanceAroundObject;
-	Real									m_minesPerSquareFoot;
-	Real									m_randomJitter;
-	Real									m_skipIfThisMuchUnderStructure;
-	Bool									m_onDeath;
-	Bool									m_borderOnly;
-	Bool									m_alwaysCircular;
-	Bool									m_upgradable;
-	Bool									m_smartBorder;
-	Bool									m_smartBorderSkipInterior;
+	// MG: Cannot apply offsetof to GenerateMinefieldBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UpgradeMuxData	m_upgradeMuxData;
+		AsciiString		m_mineName;
+		AsciiString		m_mineNameUpgraded;
+		AsciiString		m_mineUpgradeTrigger;
+		const FXList*	m_genFX;
+		Real			m_distanceAroundObject;
+		Real			m_minesPerSquareFoot;
+		Real			m_randomJitter;
+		Real			m_skipIfThisMuchUnderStructure;
+		Bool			m_onDeath;
+		Bool			m_borderOnly;
+		Bool			m_alwaysCircular;
+		Bool			m_upgradable;
+		Bool			m_smartBorder;
+		Bool			m_smartBorderSkipInterior;
+	};
+
+	IniData m_ini {};
 
 	GenerateMinefieldBehaviorModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 
@@ -101,30 +107,30 @@ protected:
 
 	virtual void getUpgradeActivationMasks(UpgradeMaskType& activation, UpgradeMaskType& conflicting) const
 	{
-		getGenerateMinefieldBehaviorModuleData()->m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
+		getGenerateMinefieldBehaviorModuleData()->m_ini.m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
 	}
 	virtual void performUpgradeFX()
 	{
-		getGenerateMinefieldBehaviorModuleData()->m_upgradeMuxData.performUpgradeFX(getObject());
+		getGenerateMinefieldBehaviorModuleData()->m_ini.m_upgradeMuxData.performUpgradeFX(getObject());
 	}
 	virtual void processUpgradeRemoval()
 	{
 		// I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP.
-		getGenerateMinefieldBehaviorModuleData()->m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
+		getGenerateMinefieldBehaviorModuleData()->m_ini.m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
 	}
 
 	virtual Bool requiresAllActivationUpgrades() const
 	{
-		return getGenerateMinefieldBehaviorModuleData()->m_upgradeMuxData.m_requiresAllTriggers;
+		return getGenerateMinefieldBehaviorModuleData()->m_ini.m_upgradeMuxData.m_requiresAllTriggers;
 	}
 
 
 private:
-	Coord3D							m_target;
-	Bool								m_hasTarget;
-	Bool								m_generated;
-	Bool								m_upgraded;
-	std::list<ObjectID> m_mineList;
+	Coord3D				m_target {};
+	Bool				m_hasTarget {};
+	Bool				m_generated {};
+	Bool				m_upgraded {};
+	std::list<ObjectID>	m_mineList {};
 
 	const Coord3D* getMinefieldTarget() const;
 	void placeMines();

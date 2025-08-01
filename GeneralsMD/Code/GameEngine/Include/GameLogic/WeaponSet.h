@@ -62,17 +62,18 @@ static const char *TheWeaponSlotTypeNames[] =
 
 	NULL
 };
+#endif
 
+#ifdef DEFINE_WEAPONSLOTTYPE_NAMES_LOOKUP
 static const LookupListRec TheWeaponSlotTypeNamesLookupList[] = 
 {
-	{ "PRIMARY",		PRIMARY_WEAPON },
+	{ "PRIMARY",	PRIMARY_WEAPON },
 	{ "SECONDARY",	SECONDARY_WEAPON },
-	{ "TERTIARY",		TERTIARY_WEAPON },
+	{ "TERTIARY",	TERTIARY_WEAPON },
 	
 	{ NULL, 0	}// keep this last!
 };
-
-#endif  
+#endif
 
 //-------------------------------------------------------------------------------------------------
 #ifdef DEFINE_WEAPONCONDITIONMAP

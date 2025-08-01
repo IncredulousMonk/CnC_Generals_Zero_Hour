@@ -40,12 +40,6 @@
 class ObjectSMCHelperModuleData : public ModuleData
 {
 public:
-	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
-	struct IniData
-	{
-	};
-
-	IniData m_ini {};
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -54,7 +48,7 @@ class ObjectSMCHelper : public ObjectHelper
 {
 
 	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ObjectSMCHelper, ObjectSMCHelperModuleData )
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ObjectSMCHelper, "ObjectSMCHelperPool" )	
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ObjectSMCHelper, "ObjectSMCHelperPool" )
 
 public:
 

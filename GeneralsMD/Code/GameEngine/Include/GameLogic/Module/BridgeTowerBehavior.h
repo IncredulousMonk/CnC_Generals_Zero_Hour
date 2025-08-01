@@ -96,8 +96,8 @@ public:
 
 protected:
 
-	ObjectID m_bridgeID;					///< the bridge we're a part of
-	BridgeTowerType m_type;				///< type of tower (positioning) we are
+	ObjectID m_bridgeID {};					///< the bridge we're a part of
+	BridgeTowerType m_type {};				///< type of tower (positioning) we are
 
 };
 

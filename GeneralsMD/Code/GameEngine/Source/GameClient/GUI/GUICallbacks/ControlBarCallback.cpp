@@ -37,8 +37,9 @@
 #include "Common/MessageStream.h"
 #include "Common/ThingFactory.h"
 #include "Common/ThingTemplate.h"
-#include "Common/Radar.h"
+// #include "Common/Radar.h"
 #include "GameClient/AnimateWindowManager.h"
+#include "GameClient/Display.h"
 #include "GameClient/Drawable.h"
 #include "GameClient/GameWindow.h"
 #include "GameClient/Gadget.h"
@@ -52,7 +53,7 @@
 #include "GameClient/CommandXlat.h"
 
 #include "GameLogic/GameLogic.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 
 //external declarations of the Gadgets the callbacks can use
 WindowLayout *popupCommunicatorLayout = NULL;
@@ -61,10 +62,15 @@ WindowLayout *popupCommunicatorLayout = NULL;
 //-------------------------------------------------------------------------------------------------
 /** Input procedure for the left HUD */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType LeftHUDInput( GameWindow *window, UnsignedInt msg,
-																	 WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType LeftHUDInput( GameWindow *window, UnsignedInt msg, WindowMsgData mData1, WindowMsgData /* mData2 */ )
 {
-	
+
+(void) window;
+(void) msg;
+(void) mData1;
+DEBUG_CRASH(("ControlBarCallback: LeftHUDInput not yet implemented!"));
+return MSG_IGNORED;
+#if 0
 	// get player
 	Player *player = ThePlayerList->getLocalPlayer();
 
@@ -265,8 +271,8 @@ WindowMsgHandledType LeftHUDInput( GameWindow *window, UnsignedInt msg,
 				
 				// see if the user wants to move the tactical view
 				if (	drawableList->empty() 
-					||	(! TheGlobalData->m_useAlternateMouse && msg == GWM_RIGHT_DOWN)
-					||	(TheGlobalData->m_useAlternateMouse && msg == GWM_LEFT_DOWN)	)
+					||	(! TheGlobalData->m_data.m_useAlternateMouse && msg == GWM_RIGHT_DOWN)
+					||	(TheGlobalData->m_data.m_useAlternateMouse && msg == GWM_LEFT_DOWN)	)
 				{
 					TheTacticalView->lookAt( &world );
 					break;
@@ -333,13 +339,13 @@ WindowMsgHandledType LeftHUDInput( GameWindow *window, UnsignedInt msg,
 	TheInGameUI->clearAttackMoveToMode();
 	return MSG_HANDLED;
 
+#endif // if 0
 }  // end LeftHUDInput
 
 //-------------------------------------------------------------------------------------------------
 /** Input procedure for the control bar */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType ControlBarInput( GameWindow *window, UnsignedInt msg,
-																			WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType ControlBarInput( GameWindow* /* window */, UnsignedInt /* msg */, WindowMsgData /* mData1 */, WindowMsgData /* mData2 */ )
 {
 
 	return MSG_IGNORED;
@@ -349,9 +355,13 @@ void ToggleQuitMenu(void);
 //-------------------------------------------------------------------------------------------------
 /** System callback for the control bar parent */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType ControlBarSystem( GameWindow *window, UnsignedInt msg, 
-																			 WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType ControlBarSystem( GameWindow* /* window */, UnsignedInt msg, WindowMsgData mData1, WindowMsgData /* mData2 */ )
 {
+(void) msg;
+(void) mData1;
+DEBUG_CRASH(("ControlBarCallback: ControlBarSystem not yet implemented!"));
+return MSG_IGNORED;
+#if 0
 	static NameKeyType buttonCommunicator = NAMEKEY_INVALID;
 	if(TheScriptEngine && TheScriptEngine->isGameEnding())
 		return MSG_IGNORED;
@@ -489,6 +499,7 @@ WindowMsgHandledType ControlBarSystem( GameWindow *window, UnsignedInt msg,
 
 	return MSG_HANDLED;
 
+#endif // if 0
 }  // end ControlBarSystem
 
 extern void showReplayControls( void );
@@ -500,6 +511,10 @@ extern void toggleReplayControls( void );
 //-------------------------------------------------------------------------------------------------
 void ShowControlBar( Bool immediate )
 {
+// FIXME: TheTacticalView
+(void) immediate;
+DEBUG_CRASH(("ControlBarCallback: ShowControlBar not yet implemented!"));
+#if 0
 	showReplayControls();
 	if(TheControlBar)
 		TheControlBar->showSpecialPowerShortcut();
@@ -516,7 +531,7 @@ void ShowControlBar( Bool immediate )
 			{
 				TheControlBar->m_animateWindowManager->reset();
 				//TheControlBar->m_animateWindowManager->registerGameWindow(window, WIN_ANIMATION_SLIDE_BOTTOM_TIMED, TRUE, 1000, 0);
-				TheControlBar->m_animateWindowManager->registerGameWindow(window, WIN_ANIMATION_SLIDE_BOTTOM, TRUE, 500, 0);
+				TheControlBar->m_animateWindowManager->registerGameWindow(window, WIN_ANIMATION_SLIDE_BOTTOM, TRUE, Millis{500}, Millis{0});
 				TheControlBar->animateSpecialPowerShortcut(TRUE);
 			}
 			window->winHide(FALSE);
@@ -527,6 +542,7 @@ void ShowControlBar( Bool immediate )
 	// We want to get everything recalced since this is a major state change.
 	if(TheControlBar)
 		TheControlBar->markUIDirty();
+#endif // if 0
 
 }// void ShowControlBar(void)
 
@@ -535,6 +551,9 @@ void ShowControlBar( Bool immediate )
 //-------------------------------------------------------------------------------------------------
 void HideControlBar( Bool immediate )
 {
+(void) immediate;
+DEBUG_CRASH(("ControlBarCallback: HideControlBar not yet implemented!"));
+#if 0
 	hideReplayControls();
 	if(TheControlBar)
 		TheControlBar->hideSpecialPowerShortcut();
@@ -548,7 +567,7 @@ void HideControlBar( Bool immediate )
 #ifdef SLIDE_LETTERBOX
 				TheTacticalView->setHeight((Int)(TheDisplay->getHeight() * 0.80f)); 
 #else
-				TheTacticalView->setHeight(TheDisplay->getHeight());
+				TheTacticalView->setHeight((Int)TheDisplay->getHeight());
 #endif
 		}
 		if (immediate)
@@ -569,7 +588,8 @@ void HideControlBar( Bool immediate )
 		{
 			TheControlBar->hidePurchaseScience();
 		}
-	}  
+	}
+#endif // if 0
 }//void HideControlBar( void )
 
 //-------------------------------------------------------------------------------------------------
@@ -577,6 +597,9 @@ void HideControlBar( Bool immediate )
 //-------------------------------------------------------------------------------------------------
 void ToggleControlBar( Bool immediate )
 {
+(void) immediate;
+DEBUG_CRASH(("ControlBarCallback: HideControlBar not yet implemented!"));
+#if 0
 	toggleReplayControls();
 
 	if (TheWindowManager)
@@ -599,7 +622,7 @@ void ToggleControlBar( Bool immediate )
 				{
 					TheControlBar->m_animateWindowManager->reset();
 					//TheControlBar->m_animateWindowManager->registerGameWindow(window, WIN_ANIMATION_SLIDE_BOTTOM_TIMED, FALSE, 500, 0);
-					TheControlBar->m_animateWindowManager->registerGameWindow(window, WIN_ANIMATION_SLIDE_BOTTOM, TRUE, 500, 0);
+					TheControlBar->m_animateWindowManager->registerGameWindow(window, WIN_ANIMATION_SLIDE_BOTTOM, TRUE, Millis{500}, Millis{0});
 					TheControlBar->animateSpecialPowerShortcut(TRUE);
 				}
 			}
@@ -607,13 +630,14 @@ void ToggleControlBar( Bool immediate )
 			{
 				if(TheControlBar)
 					TheControlBar->hideSpecialPowerShortcut();
-				TheTacticalView->setHeight(TheDisplay->getHeight());
+				TheTacticalView->setHeight((Int)TheDisplay->getHeight());
 				window->winHide(!window->winIsHidden());
 			}
 			
 		}
 
 	}
+#endif // if 0
 }// end void ToggleControlBar( void )
 
 //-------------------------------------------------------------------------------------------------

@@ -32,10 +32,10 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 #define DEFINE_GUI_COMMMAND_NAMES
 #define DEFINE_COMMAND_OPTION_NAMES
-#define DEFINE_WEAPONSLOTTYPE_NAMES
+#define DEFINE_WEAPONSLOTTYPE_NAMES_LOOKUP
 #define DEFINE_RADIUSCURSOR_NAMES
 
-#include "Common/ActionManager.h"
+// #include "Common/ActionManager.h"
 #include "Common/GameType.h"
 #include "Common/MultiplayerSettings.h"
 #include "Common/NameKeyGenerator.h"
@@ -48,7 +48,7 @@
 #include "Common/ThingTemplate.h"
 #include "Common/ThingFactory.h"
 #include "Common/Upgrade.h"
-#include "Common/Recorder.h"
+// #include "Common/Recorder.h"
 
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Object.h"
@@ -58,7 +58,7 @@
 #include "GameLogic/Module/SpecialPowerModule.h"
 #include "GameLogic/Module/StealthUpdate.h"
 #include "GameLogic/Module/RebuildHoleBehavior.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 
 #include "GameClient/AnimateWindowManager.h"
 #include "GameClient/ControlBar.h"
@@ -77,11 +77,11 @@
 #include "GameClient/WindowVideoManager.h"
 #include "GameClient/ControlBarResizer.h"
 #include "GameClient/GadgetListBox.h"
-#include "GameClient/HotKey.h"
+// #include "GameClient/HotKey.h"
 #include "GameClient/GameWindowTransitions.h"
 #include "GameClient/GUICallbacks.h"
 
-#include "GameNetwork/GameInfo.h"
+// #include "GameNetwork/GameInfo.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -93,8 +93,8 @@
 ControlBar *TheControlBar = NULL;
 
 const Image* ControlBar::m_rankVeteranIcon	= NULL;
-const Image* ControlBar::m_rankEliteIcon		= NULL;
-const Image* ControlBar::m_rankHeroicIcon		= NULL;
+const Image* ControlBar::m_rankEliteIcon	= NULL;
+const Image* ControlBar::m_rankHeroicIcon	= NULL;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // CommandButton //////////////////////////////////////////////////////////////////////////////////
@@ -105,31 +105,29 @@ const Image* ControlBar::m_rankHeroicIcon		= NULL;
 const FieldParse CommandButton::s_commandButtonFieldParseTable[] = 
 {
 
-	{ "Command",							CommandButton::parseCommand, NULL, offsetof( CommandButton, m_command ) },
-	{ "Options",							INI::parseBitString32,		   TheCommandOptionNames, offsetof( CommandButton, m_options ) },
-	{ "Object",								INI::parseThingTemplate,		 NULL, offsetof( CommandButton, m_thingTemplate ) },
-	{ "Upgrade",							INI::parseUpgradeTemplate,	 NULL, offsetof( CommandButton, m_upgradeTemplate ) },
-	{ "WeaponSlot",						INI::parseLookupList,				 TheWeaponSlotTypeNamesLookupList, offsetof( CommandButton, m_weaponSlot ) },
-	{ "MaxShotsToFire",				INI::parseInt,							 NULL, offsetof( CommandButton, m_maxShotsToFire ) },
-	{ "Science",							INI::parseScienceVector,					 NULL, offsetof( CommandButton, m_science ) },
-	{ "SpecialPower",					INI::parseSpecialPowerTemplate,			 NULL, offsetof( CommandButton, m_specialPower ) },
-	{ "TextLabel",						INI::parseAsciiString,			 NULL, offsetof( CommandButton, m_textLabel ) },
-	{ "DescriptLabel",				INI::parseAsciiString,			 NULL, offsetof( CommandButton, m_descriptionLabel ) },
-	{ "PurchasedLabel",				INI::parseAsciiString,			 NULL, offsetof( CommandButton, m_purchasedLabel ) },
-	{ "ConflictingLabel",			INI::parseAsciiString,			 NULL, offsetof( CommandButton, m_conflictingLabel ) },
-	{ "ButtonImage",					INI::parseAsciiString,			 NULL, offsetof( CommandButton, m_buttonImageName ) },
-	{ "CursorName",						INI::parseAsciiString,			 NULL, offsetof( CommandButton, m_cursorName ) },
-	{ "InvalidCursorName",		INI::parseAsciiString,       NULL, offsetof( CommandButton, m_invalidCursorName ) },
-	{ "ButtonBorderType",			INI::parseLookupList,				 CommandButtonMappedBorderTypeNames, offsetof( CommandButton, m_commandButtonBorder ) },
-	{ "RadiusCursorType",			INI::parseIndexList,				 TheRadiusCursorNames, offsetof( CommandButton, m_radiusCursor ) },
-	{ "UnitSpecificSound",		INI::parseAudioEventRTS,		 NULL, offsetof( CommandButton, m_unitSpecificSound ) }, 
+	{ "Command",				CommandButton::parseCommand,		NULL,									offsetof( CommandButton::IniData, m_command ) },
+	{ "Options",				INI::parseBitString32,				TheCommandOptionNames,					offsetof( CommandButton::IniData, m_options ) },
+	{ "Object",					INI::parseThingTemplate,			NULL,									offsetof( CommandButton::IniData, m_thingTemplate ) },
+	{ "Upgrade",				INI::parseUpgradeTemplate,			NULL,									offsetof( CommandButton::IniData, m_upgradeTemplate ) },
+	{ "WeaponSlot",				INI::parseLookupList,				TheWeaponSlotTypeNamesLookupList,		offsetof( CommandButton::IniData, m_weaponSlot ) },
+	{ "MaxShotsToFire",			INI::parseInt,						NULL,									offsetof( CommandButton::IniData, m_maxShotsToFire ) },
+	{ "Science",				INI::parseScienceVector,			NULL,									offsetof( CommandButton::IniData, m_science ) },
+	{ "SpecialPower",			INI::parseSpecialPowerTemplate,		NULL,									offsetof( CommandButton::IniData, m_specialPower ) },
+	{ "TextLabel",				INI::parseAsciiString,				NULL,									offsetof( CommandButton::IniData, m_textLabel ) },
+	{ "DescriptLabel",			INI::parseAsciiString,				NULL,									offsetof( CommandButton::IniData, m_descriptionLabel ) },
+	{ "PurchasedLabel",			INI::parseAsciiString,				NULL,									offsetof( CommandButton::IniData, m_purchasedLabel ) },
+	{ "ConflictingLabel",		INI::parseAsciiString,				NULL,									offsetof( CommandButton::IniData, m_conflictingLabel ) },
+	{ "ButtonImage",			INI::parseAsciiString,				NULL,									offsetof( CommandButton::IniData, m_buttonImageName ) },
+	{ "CursorName",				INI::parseAsciiString,				NULL,									offsetof( CommandButton::IniData, m_cursorName ) },
+	{ "InvalidCursorName",		INI::parseAsciiString,				NULL,									offsetof( CommandButton::IniData, m_invalidCursorName ) },
+	{ "ButtonBorderType",		INI::parseLookupList,				CommandButtonMappedBorderTypeNames,		offsetof( CommandButton::IniData, m_commandButtonBorder ) },
+	{ "RadiusCursorType",		INI::parseIndexList,				TheRadiusCursorNames,					offsetof( CommandButton::IniData, m_radiusCursor ) },
+	{ "UnitSpecificSound",		parseAudioEventRTS,					NULL,									0 }, 
 
-	{ NULL,						NULL,												 NULL, 0 }  // keep this last
+	{ NULL,						NULL,								NULL, 0 }  // keep this last
 
 };
-static void commandButtonTooltip(GameWindow *window,
-													WinInstanceData *instData,
-													UnsignedInt mouse)
+static void commandButtonTooltip(GameWindow* window, WinInstanceData* /* instData */, UnsignedInt /* mouse */)
 {
 	TheControlBar->showBuildTooltipLayout(window);
 }
@@ -166,6 +164,9 @@ void ControlBar::markUIDirty( void )
 
 void ControlBar::populatePurchaseScience( Player* player )
 {
+(void) player;
+DEBUG_CRASH(("ControlBar::populatePurchaseScience not yet implemented!"));
+#if 0
 //	TheInGameUI->deselectAllDrawables();
 
 	const CommandSet *commandSet1;
@@ -451,6 +452,7 @@ void ControlBar::populatePurchaseScience( Player* player )
 	}
 	GadgetListBoxAddEntryText(win, UnicodeString(L"Cancel"), color, -1, -1);*/
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -511,7 +513,7 @@ void ControlBar::updateContextPurchaseScience( void )
 //-------------------------------------------------------------------------------------------------
 /** parse command definition */
 //-------------------------------------------------------------------------------------------------
-void CommandButton::parseCommand( INI* ini, void *instance, void *store, const void *userData )
+void CommandButton::parseCommand( INI* ini, void* /* instance */, void* store, const void* /* userData */ )
 {
 	const char *token = ini->getNextToken();
 	Int i;
@@ -536,17 +538,25 @@ void CommandButton::parseCommand( INI* ini, void *instance, void *store, const v
 }  // end parseCommand
 
 //-------------------------------------------------------------------------------------------------
+void CommandButton::parseAudioEventRTS(INI* ini, void* instance, void* /* store */, const void* /* userData */)
+{
+	CommandButton::IniData* data = (CommandButton::IniData*) instance;
+	CommandButton* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_unitSpecificSound);
+}
+
+//-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 CommandButton::CommandButton( void )
 {
 
-	m_command = GUI_COMMAND_NONE;
-	m_thingTemplate = NULL;
-	m_upgradeTemplate = NULL;
-	m_weaponSlot = PRIMARY_WEAPON;
-	m_maxShotsToFire = 0x7fffffff;	// huge number
-	m_science.clear();
-	m_specialPower = NULL;
+	m_ini.m_command = GUI_COMMAND_NONE;
+	m_ini.m_thingTemplate = NULL;
+	m_ini.m_upgradeTemplate = NULL;
+	m_ini.m_weaponSlot = PRIMARY_WEAPON;
+	m_ini.m_maxShotsToFire = 0x7fffffff;	// huge number
+	m_ini.m_science.clear();
+	m_ini.m_specialPower = NULL;
 	m_buttonImage = NULL;
 
 	//Code renderer handles these states now.
@@ -559,23 +569,23 @@ CommandButton::CommandButton( void )
 	// Added by Sadullah Nader
 	// The purpose is to initialize these variable to values that are zero or empty
 
-	m_conflictingLabel.clear();
-	m_cursorName.clear();
-	m_descriptionLabel.clear();
-	m_invalidCursorName.clear();
+	m_ini.m_conflictingLabel.clear();
+	m_ini.m_cursorName.clear();
+	m_ini.m_descriptionLabel.clear();
+	m_ini.m_invalidCursorName.clear();
 	m_name.clear();
-	m_options = 0;
-	m_purchasedLabel.clear();
-	m_textLabel.clear();
+	m_ini.m_options = 0;
+	m_ini.m_purchasedLabel.clear();
+	m_ini.m_textLabel.clear();
 
 	// End Add
 	
 	m_window = NULL;
-	m_commandButtonBorder = COMMAND_BUTTON_BORDER_NONE;
+	m_ini.m_commandButtonBorder = COMMAND_BUTTON_BORDER_NONE;
 	//m_prev = NULL;
 	m_next = NULL;			
-	m_radiusCursor = RADIUSCURSOR_NONE;													
-	
+	m_ini.m_radiusCursor = RADIUSCURSOR_NONE;													
+	m_ini.m_obj = this;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -593,7 +603,7 @@ Bool CommandButton::isValidRelationshipTarget(Relationship r) const
 	else if (r == ALLIES) mask |= NEED_TARGET_ALLY_OBJECT;
 	else if (r == NEUTRAL) mask |= NEED_TARGET_NEUTRAL_OBJECT;
 
-	return (m_options & mask) != 0;
+	return (m_ini.m_options & mask) != 0;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -621,7 +631,14 @@ Bool CommandButton::isValidObjectTarget(const Object* sourceObj, const Object* t
 //-------------------------------------------------------------------------------------------------
 Bool CommandButton::isValidToUseOn(const Object *sourceObj, const Object *targetObj, const Coord3D *targetLocation, CommandSourceType commandSource) const
 {
-	if (m_upgradeTemplate) {
+(void) sourceObj;
+(void) targetObj;
+(void) targetLocation;
+(void) commandSource;
+DEBUG_CRASH(("ControlBar::isValidToUseOn not yet implemented!"));
+return false;
+#if 0
+	if (m_ini.m_upgradeTemplate) {
 		// @todo: Make a const version of pui. We're not altering the production queue, so this const-cast
 		// is okay.
 		ProductionUpdateInterface *pui = const_cast<Object*>(sourceObj)->getProductionUpdateInterface();
@@ -632,13 +649,13 @@ Bool CommandButton::isValidToUseOn(const Object *sourceObj, const Object *target
 					return false;
 				pe = pui->nextProduction(pe);
 			}
-			return sourceObj->affectedByUpgrade(m_upgradeTemplate) && !sourceObj->hasUpgrade(m_upgradeTemplate);
+			return sourceObj->affectedByUpgrade(m_ini.m_upgradeTemplate) && !sourceObj->hasUpgrade(m_ini.m_upgradeTemplate);
 		}
 		// No ProductionUpdateInterface means we can't do this.
 		return false;
 	}
 
-	if( BitTest( m_options, COMMAND_OPTION_NEED_OBJECT_TARGET ) && !targetObj ) 
+	if( BitTest( m_ini.m_options, COMMAND_OPTION_NEED_OBJECT_TARGET ) && !targetObj ) 
 	{
 		return false;
 	}
@@ -649,7 +666,7 @@ Bool CommandButton::isValidToUseOn(const Object *sourceObj, const Object *target
 		pos.set( targetLocation );
 	}
 
-	if( BitTest( m_options, NEED_TARGET_POS ) && !targetLocation ) 
+	if( BitTest( m_ini.m_options, NEED_TARGET_POS ) && !targetLocation ) 
 	{
 		if( targetObj )
 		{
@@ -661,27 +678,28 @@ Bool CommandButton::isValidToUseOn(const Object *sourceObj, const Object *target
 		}
 	}
 	
-	if( BitTest( m_options, COMMAND_OPTION_NEED_OBJECT_TARGET ) ) 
+	if( BitTest( m_ini.m_options, COMMAND_OPTION_NEED_OBJECT_TARGET ) ) 
 	{
-		return TheActionManager->canDoSpecialPowerAtObject( sourceObj, targetObj, commandSource, m_specialPower, m_options, false );
+		return TheActionManager->canDoSpecialPowerAtObject( sourceObj, targetObj, commandSource, m_ini.m_specialPower, m_ini.m_options, false );
 	}
 
-	if( BitTest( m_options, NEED_TARGET_POS ) ) 
+	if( BitTest( m_ini.m_options, NEED_TARGET_POS ) ) 
 	{
-		return TheActionManager->canDoSpecialPowerAtLocation( sourceObj, &pos, commandSource, m_specialPower, NULL, m_options, false );
+		return TheActionManager->canDoSpecialPowerAtLocation( sourceObj, &pos, commandSource, m_ini.m_specialPower, NULL, m_ini.m_options, false );
 	}
 
-	return TheActionManager->canDoSpecialPower( sourceObj, m_specialPower, commandSource, m_options, false );
+	return TheActionManager->canDoSpecialPower( sourceObj, m_ini.m_specialPower, commandSource, m_ini.m_options, false );
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool CommandButton::isReady(const Object *sourceObj) const
 {
-	SpecialPowerModuleInterface *mod = sourceObj->getSpecialPowerModule( m_specialPower );
+	SpecialPowerModuleInterface *mod = sourceObj->getSpecialPowerModule( m_ini.m_specialPower );
 	if( mod && mod->getPercentReady() == 1.0f ) 
 		return true;
 	
-	if (m_upgradeTemplate && sourceObj->affectedByUpgrade(m_upgradeTemplate) && !sourceObj->hasUpgrade(m_upgradeTemplate))
+	if (m_ini.m_upgradeTemplate && sourceObj->affectedByUpgrade(m_ini.m_upgradeTemplate) && !sourceObj->hasUpgrade(m_ini.m_upgradeTemplate))
 		return true;
 
 	return false;
@@ -704,32 +722,32 @@ Bool CommandButton::isValidObjectTarget(const Drawable* source, const Drawable* 
 const FieldParse CommandSet::m_commandSetFieldParseTable[] = 
 {
 	
-	{ "1",			CommandSet::parseCommandButton, (void *)0,		offsetof( CommandSet, m_command ) },
-	{ "2",			CommandSet::parseCommandButton, (void *)1,		offsetof( CommandSet, m_command ) },
-	{ "3",			CommandSet::parseCommandButton, (void *)2,		offsetof( CommandSet, m_command ) },
-	{ "4",			CommandSet::parseCommandButton, (void *)3,		offsetof( CommandSet, m_command ) },
-	{ "5",			CommandSet::parseCommandButton, (void *)4,		offsetof( CommandSet, m_command ) },
-	{ "6",			CommandSet::parseCommandButton, (void *)5,		offsetof( CommandSet, m_command ) },
-	{ "7",			CommandSet::parseCommandButton, (void *)6,		offsetof( CommandSet, m_command ) },
-	{ "8",			CommandSet::parseCommandButton, (void *)7,		offsetof( CommandSet, m_command ) },
-	{ "9",			CommandSet::parseCommandButton, (void *)8,		offsetof( CommandSet, m_command ) },
-	{ "10",			CommandSet::parseCommandButton, (void *)9,		offsetof( CommandSet, m_command ) },
-	{ "11",			CommandSet::parseCommandButton, (void *)10,		offsetof( CommandSet, m_command ) },
-	{ "12",			CommandSet::parseCommandButton, (void *)11,		offsetof( CommandSet, m_command ) },
-	{ "13",			CommandSet::parseCommandButton, (void *)12,		offsetof( CommandSet, m_command ) },
-	{ "14",			CommandSet::parseCommandButton, (void *)13,		offsetof( CommandSet, m_command ) },
-	{ "15",			CommandSet::parseCommandButton, (void *)14,		offsetof( CommandSet, m_command ) },
-	{ "16",			CommandSet::parseCommandButton, (void *)15,		offsetof( CommandSet, m_command ) },
-	{ "17",			CommandSet::parseCommandButton, (void *)16,		offsetof( CommandSet, m_command ) },
-	{ "18",			CommandSet::parseCommandButton, (void *)17,		offsetof( CommandSet, m_command ) },
-	{ NULL,			NULL,														 NULL,				0	}  // keep this last
+	{ "1",			CommandSet::parseCommandButton, (void *)0,		offsetof( CommandSet::IniData, m_command ) },
+	{ "2",			CommandSet::parseCommandButton, (void *)1,		offsetof( CommandSet::IniData, m_command ) },
+	{ "3",			CommandSet::parseCommandButton, (void *)2,		offsetof( CommandSet::IniData, m_command ) },
+	{ "4",			CommandSet::parseCommandButton, (void *)3,		offsetof( CommandSet::IniData, m_command ) },
+	{ "5",			CommandSet::parseCommandButton, (void *)4,		offsetof( CommandSet::IniData, m_command ) },
+	{ "6",			CommandSet::parseCommandButton, (void *)5,		offsetof( CommandSet::IniData, m_command ) },
+	{ "7",			CommandSet::parseCommandButton, (void *)6,		offsetof( CommandSet::IniData, m_command ) },
+	{ "8",			CommandSet::parseCommandButton, (void *)7,		offsetof( CommandSet::IniData, m_command ) },
+	{ "9",			CommandSet::parseCommandButton, (void *)8,		offsetof( CommandSet::IniData, m_command ) },
+	{ "10",			CommandSet::parseCommandButton, (void *)9,		offsetof( CommandSet::IniData, m_command ) },
+	{ "11",			CommandSet::parseCommandButton, (void *)10,		offsetof( CommandSet::IniData, m_command ) },
+	{ "12",			CommandSet::parseCommandButton, (void *)11,		offsetof( CommandSet::IniData, m_command ) },
+	{ "13",			CommandSet::parseCommandButton, (void *)12,		offsetof( CommandSet::IniData, m_command ) },
+	{ "14",			CommandSet::parseCommandButton, (void *)13,		offsetof( CommandSet::IniData, m_command ) },
+	{ "15",			CommandSet::parseCommandButton, (void *)14,		offsetof( CommandSet::IniData, m_command ) },
+	{ "16",			CommandSet::parseCommandButton, (void *)15,		offsetof( CommandSet::IniData, m_command ) },
+	{ "17",			CommandSet::parseCommandButton, (void *)16,		offsetof( CommandSet::IniData, m_command ) },
+	{ "18",			CommandSet::parseCommandButton, (void *)17,		offsetof( CommandSet::IniData, m_command ) },
+	{ NULL,			NULL,							NULL,			0	}  // keep this last
 
 };
 
 //-------------------------------------------------------------------------------------------------
 Bool CommandButton::isContextCommand() const
 {
-	return BitTest( m_options, CONTEXTMODE_COMMAND );
+	return BitTest( m_ini.m_options, CONTEXTMODE_COMMAND );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -762,24 +780,24 @@ void CommandButton::copyButtonTextFrom( const CommandButton *button, Bool shortc
 	if( shortcutButton )
 	{
 		//Not the best code, but conflicting label means shortcut label (most won't have any string specified).
-		if( button->getConflictingLabel().isNotEmpty() && m_textLabel.compare( button->getConflictingLabel() ) )
+		if( button->getConflictingLabel().isNotEmpty() && m_ini.m_textLabel.compare( button->getConflictingLabel() ) )
 		{
-			m_textLabel = button->getConflictingLabel();
+			m_ini.m_textLabel = button->getConflictingLabel();
 			change = TRUE;
 		}
 	}
 	else
 	{	
 		//Copy the text from the purchase science button if it exists (most won't).
-		if( button->getTextLabel().isNotEmpty() && m_textLabel.compare( button->getTextLabel() ) )
+		if( button->getTextLabel().isNotEmpty() && m_ini.m_textLabel.compare( button->getTextLabel() ) )
 		{
-			m_textLabel = button->getTextLabel();
+			m_ini.m_textLabel = button->getTextLabel();
 			change = TRUE;
 		}
 	}
-	if( button->getDescriptionLabel().isNotEmpty() && m_descriptionLabel.compare( button->getDescriptionLabel() ) )
+	if( button->getDescriptionLabel().isNotEmpty() && m_ini.m_descriptionLabel.compare( button->getDescriptionLabel() ) )
 	{
-		m_descriptionLabel = button->getDescriptionLabel();
+		m_ini.m_descriptionLabel = button->getDescriptionLabel();
 		change = TRUE;
 	}
 	if( markUIDirtyIfChanged && change )
@@ -791,7 +809,7 @@ void CommandButton::copyButtonTextFrom( const CommandButton *button, Bool shortc
 //-------------------------------------------------------------------------------------------------
 /** Parse a single command button definition */
 //-------------------------------------------------------------------------------------------------
-void CommandSet::parseCommandButton( INI* ini, void *instance, void *store, const void *userData )
+void CommandSet::parseCommandButton( INI* ini, void* /* instance */, void* store, const void* userData )
 {
 	const char *token = ini->getNextToken();
 
@@ -808,7 +826,7 @@ void CommandSet::parseCommandButton( INI* ini, void *instance, void *store, cons
 
 	// get the index to store the command at, and the command array itself
 	const CommandButton **buttonArray = (const CommandButton **)store;
-	Int buttonIndex = (Int)userData;
+	Int buttonIndex = (Int)(intptr_t)userData;
 
 	// sanity
 	DEBUG_ASSERTCRASH( buttonIndex < MAX_COMMANDS_PER_SET, ("parseCommandButton: button index '%d' out of range\n", 
@@ -826,7 +844,7 @@ CommandSet::CommandSet(const AsciiString& name) :
 	m_next(NULL)
 {
 	for( Int i = 0; i < MAX_COMMANDS_PER_SET; i++ )
-		m_command[ i ] = NULL;
+		m_ini.m_command[ i ] = NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -834,11 +852,11 @@ CommandSet::CommandSet(const AsciiString& name) :
 const CommandButton* CommandSet::getCommandButton(Int i) const 
 { 
 	const CommandButton* button;
-  // Check for TheGameLogic == null, cause it is in Worldbuilder, and wb gets command bar info. jba.
+	// Check for TheGameLogic == null, cause it is in Worldbuilder, and wb gets command bar info. jba.
 	if (TheGameLogic && TheGameLogic->findControlBarOverride(m_name, i, button))
 		return button;
 
-	return m_command[i]; 
+	return m_ini.m_command[i]; 
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -891,7 +909,7 @@ ControlBar::ControlBar( void )
 	m_currContext = CB_CONTEXT_NONE;
 	m_defaultControlBarPosition.x = m_defaultControlBarPosition.y = 0;
 	m_genStarFlash = FALSE;
-  m_genStarOff = NULL;
+	m_genStarOff = NULL;
 	m_genStarOn  = NULL;
 	m_UIDirty    = FALSE;
 	//
@@ -926,7 +944,7 @@ ControlBar::ControlBar( void )
 	m_rightHUDWindow = NULL;
 	m_rightHUDCameoWindow = NULL;
 	for( i = 0; i < MAX_RIGHT_HUD_UPGRADE_CAMEOS; i++ )
-		m_rightHUDUpgradeCameos[i];
+		m_rightHUDUpgradeCameos[i] = NULL;
 	m_rightHUDUnitSelectParent = NULL;
 	m_communicatorButton = NULL;
 	m_currentSelectedDrawable = NULL;
@@ -1038,14 +1056,16 @@ ControlBar::~ControlBar( void )
 
 	m_radarAttackGlowWindow = NULL;
 
-	if (m_rightHUDCameoWindow && m_rightHUDCameoWindow->winGetUserData())
-		delete m_rightHUDCameoWindow->winGetUserData();
+	if (m_rightHUDCameoWindow && m_rightHUDCameoWindow->winGetUserData()) {
+		DEBUG_LOG(("!!!!! ~ControlBar: Trying to delete a void pointer !!!!!\n"));
+		// delete m_rightHUDCameoWindow->winGetUserData();
+	}
 
 }  // end ~ControlBar
 void ControlBarPopupDescriptionUpdateFunc( WindowLayout *layout, void *param );
 
 //-------------------------------------------------------------------------------------------------
-/** Initialzie the control bar, this is our interface to the context sinsitive GUI */
+/** Initialzie the control bar, this is our interface to the context sensitive GUI */
 //-------------------------------------------------------------------------------------------------
 void ControlBar::init( void )
 {
@@ -1437,7 +1457,7 @@ void ControlBar::update( void )
 			populateObserverInfoWindow();
 
 		Drawable *drawToEvaluateFor = NULL;
-		Bool multiSelect = FALSE;
+		// Bool multiSelect = FALSE;
 		if( TheInGameUI->getSelectCount() > 1 )
 		{
 			// Attempt to isolate a Drawable here to evaluate
@@ -1446,7 +1466,7 @@ void ControlBar::update( void )
 			// but is represented in the UI as a single unit,
 			// so we must isolate and evaluate only the Nexus 
 			drawToEvaluateFor = TheGameClient->findDrawableByID( TheInGameUI->getSoloNexusSelectedDrawableID() ) ;
-			multiSelect = ( drawToEvaluateFor == NULL );
+			// multiSelect = ( drawToEvaluateFor == NULL );
 
 		}  
 		else // get the first and only drawble in the selection list
@@ -1597,6 +1617,10 @@ void ControlBar::update( void )
 			updateContextOCLTimer();
 			break;
 
+		//---------------------------------------------------------------------------------------------
+		default:
+			break;
+
 	}  // end switch
 
 
@@ -1605,7 +1629,7 @@ void ControlBar::update( void )
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void ControlBar::onDrawableSelected( Drawable *draw )
+void ControlBar::onDrawableSelected( Drawable* /* draw */ )
 {
 
 	// set a dirty flag so next time we update we can reconstruct the UI
@@ -1619,7 +1643,7 @@ void ControlBar::onDrawableSelected( Drawable *draw )
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void ControlBar::onDrawableDeselected( Drawable *draw )
+void ControlBar::onDrawableDeselected( Drawable* /* draw */ )
 {
 
 	// set a dirty flag so next time we update we can reconstruct the UI
@@ -2010,7 +2034,7 @@ CommandButton *ControlBar::newCommandButtonOverride( CommandButton *buttonToOver
 	DEBUG_ASSERTCRASH( commandSet, ("parseCommandSetDefinition: Unable to allocate set '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( commandSet, commandSet->friend_getFieldParse() );
+	ini->initFromINI( &commandSet->m_ini, commandSet->friend_getFieldParse() );
 
 }  // end parseCommandSetDefinition
 
@@ -2122,6 +2146,10 @@ CBCommandStatus ControlBar::processContextSensitiveButtonTransition( GameWindow 
 void ControlBar::switchToContext( ControlBarContext context, Drawable *draw )
 {
 
+(void) context;
+(void) draw;
+DEBUG_CRASH(("ControlBar::switchToContext not yet implemented!"));
+#if 0
 	// restore the right hud to a plain window
 	setPortraitByObject( NULL );
 
@@ -2173,18 +2201,18 @@ void ControlBar::switchToContext( ControlBarContext context, Drawable *draw )
 			if( draw )
 			{
 				//Get the current thing template.
-				const ThingTemplate *thing = draw->getTemplate();
+				// const ThingTemplate *thing = draw->getTemplate();
 
 				//Special case -- if we are a GLA hole, then get the rebuild building template
 				Object *obj = draw->getObject();
-				if( obj && obj->isKindOf( KINDOF_REBUILD_HOLE ) )
-				{
-					RebuildHoleBehaviorInterface *rhbi = RebuildHoleBehavior::getRebuildHoleBehaviorInterfaceFromObject( obj );
-					if( rhbi )
-					{
-						thing = rhbi->getRebuildTemplate();
-					}
-				}
+				// if( obj && obj->isKindOf( KINDOF_REBUILD_HOLE ) )
+				// {
+				// 	RebuildHoleBehaviorInterface *rhbi = RebuildHoleBehavior::getRebuildHoleBehaviorInterfaceFromObject( obj );
+				// 	if( rhbi )
+				// 	{
+				// 		thing = rhbi->getRebuildTemplate();
+				// 	}
+				// }
 
 				//Set the correct portrait.
 				setPortraitByObject( obj );
@@ -2380,6 +2408,7 @@ void ControlBar::switchToContext( ControlBarContext context, Drawable *draw )
 	// save our context
 	m_currContext = context;
 
+#endif // if 0
 }  // end switchToContext
 
 void ControlBar::setCommandBarBorder( GameWindow *button, CommandButtonMappedBorderType type)
@@ -2427,6 +2456,10 @@ void ControlBar::setCommandBarBorder( GameWindow *button, CommandButtonMappedBor
 void ControlBar::setControlCommand( GameWindow *button, const CommandButton *commandButton )
 {
 
+(void) button;
+(void) commandButton;
+DEBUG_CRASH(("ControlBar::setControlCommand not yet implemented!"));
+#if 0
 	// the window must be a gadget button
 	if( button->winGetInputFunc() != GadgetPushButtonInput )
 	{
@@ -2501,6 +2534,7 @@ void ControlBar::setControlCommand( GameWindow *button, const CommandButton *com
 	}
 	GadgetButtonSetAltSound(button, "GUICommandBarClick");
 
+#endif // if 0
 }  // end setControlCommand
 
 //-------------------------------------------------------------------------------------------------
@@ -2509,11 +2543,11 @@ void CommandButton::cacheButtonImage()
 	if (!TheMappedImageCollection) {
 		return;
 	}
-	if( m_buttonImageName.isNotEmpty() )
+	if( m_ini.m_buttonImageName.isNotEmpty() )
 	{
-		m_buttonImage = TheMappedImageCollection->findImageByName( m_buttonImageName );
-		DEBUG_ASSERTCRASH( m_buttonImage, ("CommandButton: %s is looking for button image %s but can't find it. Skipping...", m_name.str(), m_buttonImageName.str() ) );
-		m_buttonImageName.clear();	// we're done with this, so nuke it
+		m_buttonImage = TheMappedImageCollection->findImageByName( m_ini.m_buttonImageName );
+		DEBUG_ASSERTCRASH( m_buttonImage, ("CommandButton: %s is looking for button image %s but can't find it. Skipping...", m_name.str(), m_ini.m_buttonImageName.str() ) );
+		m_ini.m_buttonImageName.clear();	// we're done with this, so nuke it
 	}
 }
 
@@ -2536,7 +2570,7 @@ void ControlBar::postProcessCommands( void )
 void ControlBar::setControlCommand( const AsciiString& buttonWindowName, GameWindow *parent,
 																		const CommandButton *commandButton )
 {
-	UnsignedInt winID = TheNameKeyGenerator->nameToKey( buttonWindowName );
+	Int winID = TheNameKeyGenerator->nameToKey( buttonWindowName );
 	GameWindow *win = TheWindowManager->winGetWindowFromId( parent, winID );
 
 	if( win == NULL )
@@ -2749,6 +2783,9 @@ void ControlBar::showRallyPoint( const Coord3D *loc )
 // ------------------------------------------------------------------------------------------------
 void ControlBar::setControlBarSchemeByPlayer(Player *p)
 {
+(void) p;
+DEBUG_CRASH(("ControlBar::setControlBarSchemeByPlayer not yet implemented!"));
+#if 0
 	if(m_controlBarSchemeManager)
 		m_controlBarSchemeManager->setControlBarSchemeByPlayer(p);
 
@@ -2790,10 +2827,14 @@ void ControlBar::setControlBarSchemeByPlayer(Player *p)
 		}
 	}
 	switchControlBarStage(CONTROL_BAR_STAGE_DEFAULT);
+#endif // if 0
 }
 
 void ControlBar::setControlBarSchemeByPlayerTemplate( const PlayerTemplate *pt)
 {
+(void) pt;
+DEBUG_CRASH(("ControlBar::setControlBarSchemeByPlayerTemplate not yet implemented!"));
+#if 0
 	if(m_controlBarSchemeManager)
 		m_controlBarSchemeManager->setControlBarSchemeByPlayerTemplate(pt);
 
@@ -2837,13 +2878,14 @@ void ControlBar::setControlBarSchemeByPlayerTemplate( const PlayerTemplate *pt)
 	switchControlBarStage(CONTROL_BAR_STAGE_DEFAULT);
 
 	hidePurchaseScience();
+#endif // if 0
 }
 
 void ControlBar::setControlBarSchemeByName(const AsciiString& name)
 {
 	if(m_controlBarSchemeManager)
 		m_controlBarSchemeManager->setControlBarScheme( name );
-		switchControlBarStage(CONTROL_BAR_STAGE_DEFAULT);
+	switchControlBarStage(CONTROL_BAR_STAGE_DEFAULT);
 
 }
 
@@ -2941,7 +2983,9 @@ void ControlBar::updatePurchaseScience( void )
 
 void ControlBar::showPurchaseScience( void )
 {
-	
+
+DEBUG_CRASH(("ControlBar::showPurchaseScience not yet implemented!"));
+#if 0
 	if(TheScriptEngine->isGameEnding())
 		return;
 	populatePurchaseScience(ThePlayerList->getLocalPlayer());
@@ -2954,6 +2998,7 @@ void ControlBar::showPurchaseScience( void )
 		TheTransitionHandler->setGroup("GenExpFade");
 		//m_generalsScreenAnimate->registerGameWindow( m_contextParent[ CP_PURCHASE_SCIENCE ], WIN_ANIMATION_SLIDE_TOP, TRUE, 200 );
 
+#endif // if 0
 }
 
 void ControlBar::hidePurchaseScience( void )
@@ -3000,6 +3045,9 @@ void ControlBar::toggleControlBarStage( void )
 // Functions for repositioning/resizing the control bar
 void ControlBar::switchControlBarStage( ControlBarStages stage )
 {
+(void) stage;
+DEBUG_CRASH(("ControlBar::switchControlBarStage not yet implemented!"));
+#if 0
 	if(stage < CONTROL_BAR_STAGE_DEFAULT || stage >= MAX_CONTROL_BAR_STAGES)
 		return;
 	if (TheRecorder && TheRecorder->getMode() == RECORDERMODETYPE_PLAYBACK)
@@ -3020,10 +3068,13 @@ void ControlBar::switchControlBarStage( ControlBarStages stage )
 	default:
 		DEBUG_ASSERTCRASH(FALSE,("ControlBar::switchControlBarStage we were passed in a stage that's not supported %d", stage));
 	}
-	
+
+#endif // if 0
 }
 void ControlBar::setDefaultControlBarConfig( void )
 {
+DEBUG_CRASH(("ControlBar::setDefaultControlBarConfig not yet implemented!"));
+#if 0
 //	if(m_currentControlBarStage == CONTROL_BAR_STAGE_SQUISHED)
 //	{
 //		m_controlBarResizer->sizeWindowsDefault();
@@ -3036,10 +3087,13 @@ void ControlBar::setDefaultControlBarConfig( void )
 	repopulateBuildTooltipLayout();
 	setUpDownImages();
 
+#endif // if 0
 }
 
 void ControlBar::setSquishedControlBarConfig( void )
 {
+DEBUG_CRASH(("ControlBar::setSquishedControlBarConfig not yet implemented!"));
+#if 0
 	if(m_currentControlBarStage == CONTROL_BAR_STAGE_SQUISHED)
 		return;
 	m_currentControlBarStage = CONTROL_BAR_STAGE_SQUISHED;
@@ -3049,10 +3103,13 @@ void ControlBar::setSquishedControlBarConfig( void )
 	repopulateBuildTooltipLayout();	
 	TheTacticalView->setHeight((Int)(TheDisplay->getHeight())); 
 	m_controlBarSchemeManager->setControlBarSchemeByPlayerTemplate(ThePlayerList->getLocalPlayer()->getPlayerTemplate(), TRUE);
+#endif // if 0
 }
 
 void ControlBar::setLowControlBarConfig( void )
 {
+DEBUG_CRASH(("ControlBar::setLowControlBarConfig not yet implemented!"));
+#if 0
 //	if(m_currentControlBarStage == CONTROL_BAR_STAGE_SQUISHED)
 //	{
 //		m_controlBarResizer->sizeWindowsDefault();
@@ -3068,6 +3125,7 @@ void ControlBar::setLowControlBarConfig( void )
 	m_contextParent[ CP_MASTER ]->winHide(FALSE);
 	setUpDownImages();
 
+#endif // if 0
 }
 
 void ControlBar::setHiddenControlBar( void )
@@ -3087,7 +3145,7 @@ void ControlBar::setHiddenControlBar( void )
 //	}
 //}
 //
-void ControlBar::updateCommandMarkerImage( const Image *image )
+void ControlBar::updateCommandMarkerImage( const Image* /* image */ )
 {
 	// removed from multiplayer branch
 
@@ -3368,14 +3426,14 @@ void ControlBar::populateSpecialPowerShortcut( Player *player)
 						//button specifying a vector of sciences in the command button.
 						Int bestIndex = -1;
 						ScienceType science;
-						for( Int scienceIndex = 0; scienceIndex < commandButton->getScienceVec().size(); ++scienceIndex )
+						for( size_t scienceIndex = 0; scienceIndex < commandButton->getScienceVec().size(); ++scienceIndex )
 						{
 							science = commandButton->getScienceVec()[ scienceIndex ];
 							
 							//Keep going until we reach the end or don't have the required science!
 							if( player->hasScience( science ) )
 							{
-								bestIndex = scienceIndex;
+								bestIndex = (Int)scienceIndex;
 							}
 							else
 							{
@@ -3386,7 +3444,7 @@ void ControlBar::populateSpecialPowerShortcut( Player *player)
 						if( bestIndex != -1 )
 						{
 							//Now get the best sciencetype.
-							science = commandButton->getScienceVec()[ bestIndex ];
+							science = commandButton->getScienceVec().data()[ bestIndex ];
 
 							const CommandSet *commandSet1;
 							const CommandSet *commandSet3;
@@ -3732,7 +3790,7 @@ void ControlBar::animateSpecialPowerShortcut( Bool isOn )
 	if(isOn)
 	{	
 		m_animateWindowManagerForGenShortcuts->reset();
-		m_animateWindowManagerForGenShortcuts->registerGameWindow(m_specialPowerShortcutParent,WIN_ANIMATION_SLIDE_RIGHT,TRUE,500,0);
+		m_animateWindowManagerForGenShortcuts->registerGameWindow(m_specialPowerShortcutParent, WIN_ANIMATION_SLIDE_RIGHT, TRUE, Millis{500}, Millis{0});
 	}
 	else
 	{
@@ -3742,6 +3800,8 @@ void ControlBar::animateSpecialPowerShortcut( Bool isOn )
 
 void ControlBar::showSpecialPowerShortcut( void )
 {
+DEBUG_CRASH(("ControlBar::showSpecialPowerShortcut not yet implemented!"));
+#if 0
 	if(TheScriptEngine->isGameEnding() || !m_specialPowerShortcutParent 
 		||!m_specialPowerShortcutButtons || !ThePlayerList || !ThePlayerList->getLocalPlayer())
 		return;
@@ -3758,7 +3818,8 @@ void ControlBar::showSpecialPowerShortcut( void )
 		return;
 	m_specialPowerShortcutParent->winHide(FALSE);
 	populateSpecialPowerShortcut(ThePlayerList->getLocalPlayer());
-		
+
+#endif // if 0
 }
 
 void ControlBar::hideSpecialPowerShortcut( void )
@@ -3767,5 +3828,5 @@ void ControlBar::hideSpecialPowerShortcut( void )
 		return;
 	
 	m_specialPowerShortcutParent->winHide(TRUE);
-		
+
 }

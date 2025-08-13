@@ -748,7 +748,7 @@ Locomotor::~Locomotor()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Locomotor::crc( Xfer *xfer )
+void Locomotor::crc( Xfer * /* xfer */ )
 {
 
 }  // end crc
@@ -2058,7 +2058,7 @@ Real Locomotor::getSurfaceHtAtPt(Real x, Real y)
 }
 
 //-------------------------------------------------------------------------------------------------
-Real Locomotor::calcLiftToUseAtPt(Object* obj, PhysicsBehavior *physics, Real curZ, Real surfaceAtPt, Real preferredHeight)
+Real Locomotor::calcLiftToUseAtPt(Object* obj, PhysicsBehavior *physics, Real curZ, Real /* surfaceAtPt */, Real preferredHeight)
 {
 	/*
 		take the classic equation:
@@ -2615,7 +2615,7 @@ void Locomotor::maintainCurrentPositionHover(Object* obj, PhysicsBehavior *physi
 }
 
 //-------------------------------------------------------------------------------------------------
-void Locomotor::maintainCurrentPositionOther(Object* obj, PhysicsBehavior *physics)
+void Locomotor::maintainCurrentPositionOther(Object* /* obj */, PhysicsBehavior *physics)
 {
 
 	physics->setTurning(TURN_NONE);
@@ -2641,7 +2641,7 @@ LocomotorSet::LocomotorSet()
 }
 
 //-------------------------------------------------------------------------------------------------
-LocomotorSet::LocomotorSet(const LocomotorSet& that)
+LocomotorSet::LocomotorSet(const LocomotorSet& /* that */)
 {
 	DEBUG_CRASH(("unimplemented"));
 }
@@ -2665,7 +2665,7 @@ LocomotorSet::~LocomotorSet()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void LocomotorSet::crc( Xfer *xfer )
+void LocomotorSet::crc( Xfer * /* xfer */ )
 {
 
 }  // end crc

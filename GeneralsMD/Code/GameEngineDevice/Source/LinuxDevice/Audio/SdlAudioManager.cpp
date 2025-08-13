@@ -114,6 +114,8 @@ AudioHandle SdlAudioManager::addAudioEvent( const AudioEventRTS *eventToAdd )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::audioDebugDisplay(DebugDisplayInterface *dd, void *, FILE *fp )
 {
+   (void) dd;
+   (void) fp;
    DEBUG_LOG(("### SdlAudioManager::audioDebugDisplay\n"));
    // std::list<PlayingAudio *>::iterator it;
 
@@ -516,6 +518,7 @@ void SdlAudioManager::stopAudio(AudioAffect which)
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::pauseAudio( AudioAffect which )
 {
+   (void) which;
    DEBUG_LOG(("### SdlAudioManager::pauseAudio\n"));
    // std::list<PlayingAudio *>::iterator it;
 
@@ -578,6 +581,7 @@ void SdlAudioManager::pauseAudio( AudioAffect which )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::resumeAudio( AudioAffect which )
 {
+   (void) which;
    DEBUG_LOG(("### SdlAudioManager::resumeAudio\n"));
    // std::list<PlayingAudio *>::iterator it;
 
@@ -622,6 +626,7 @@ void SdlAudioManager::resumeAudio( AudioAffect which )
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::pauseAmbient(Bool shouldPause)
 {
+   (void) shouldPause;
    DEBUG_LOG(("### SdlAudioManager::pauseAmbient\n"));
 
 }
@@ -999,6 +1004,7 @@ void SdlAudioManager::killAudioEventImmediately(AudioHandle audioEvent)
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::pauseAudioEvent(AudioHandle handle)
 {
+   (void) handle;
    DEBUG_LOG(("### SdlAudioManager::pauseAudioEvent\n"));
    // pause audio
 }
@@ -1182,7 +1188,7 @@ void SdlAudioManager::freeAllHandles()
 }
 
 //-------------------------------------------------------------------------------------------------
-HSAMPLE SdlAudioManager::getFirst2DSample(AudioEventRTS* event)
+HSAMPLE SdlAudioManager::getFirst2DSample(AudioEventRTS* /* event */)
 {
    if (m_availableSamples.begin() != m_availableSamples.end()) {
       HSAMPLE retSample = *m_availableSamples.begin();
@@ -1198,6 +1204,7 @@ HSAMPLE SdlAudioManager::getFirst2DSample(AudioEventRTS* event)
 //-------------------------------------------------------------------------------------------------
 H3DSAMPLE SdlAudioManager::getFirst3DSample( AudioEventRTS *event )
 {
+   (void) event;
    DEBUG_LOG(("### SdlAudioManager::getFirst3DSample\n"));
    // if (m_available3DSamples.begin() != m_available3DSamples.end()) {
    //    H3DSAMPLE retSample = *m_available3DSamples.begin();
@@ -1301,6 +1308,9 @@ void SdlAudioManager::initFilters(PlayingAudio* playing, const AudioEventRTS* ev
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::initFilters3D( H3DSAMPLE sample, const AudioEventRTS *event, const Coord3D *pos )
 {
+   (void) sample;
+   (void) event;
+   (void) pos;
    DEBUG_LOG(("### SdlAudioManager::initFilters3D\n"));
    // // set the sample volume
    // Real volume = event->getVolume() * event->getVolumeShift() * m_sound3DVolume;
@@ -1389,6 +1399,8 @@ Bool SdlAudioManager::isMusicPlaying() const
 //-------------------------------------------------------------------------------------------------
 Bool SdlAudioManager::hasMusicTrackCompleted(const AsciiString& trackName, Int numberOfTimes) const
 {
+   (void) trackName;
+   (void) numberOfTimes;
    DEBUG_LOG(("### SdlAudioManager::hasMusicTrackCompleted\n"));
    // std::list<PlayingAudio *>::const_iterator it;
    // PlayingAudio *playing;
@@ -1695,6 +1707,7 @@ UnsignedInt SdlAudioManager::getProviderIndex( AsciiString providerName ) const
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::selectProvider( UnsignedInt providerNdx )
 {
+   (void) providerNdx;
 #ifdef INTENSIVE_AUDIO_DEBUG
    DEBUG_LOG(("### SdlAudioManager::selectProvider\n"));
 #endif
@@ -1831,6 +1844,7 @@ UnsignedInt SdlAudioManager::getSelectedProvider( void ) const
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::setSpeakerType( UnsignedInt speakerType )
 {
+   (void) speakerType;
 #ifdef INTENSIVE_AUDIO_DEBUG
    DEBUG_LOG(("### SdlAudioManager::setSpeakerType\n"));
 #endif
@@ -2631,6 +2645,7 @@ Bool SdlAudioManager::checkForSample(AudioRequest* req)
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::setHardwareAccelerated(Bool accel)
 {
+   (void) accel;
    DEBUG_LOG(("### SdlAudioManager::setHardwareAccelerated\n"));
    // // Extends
    // Bool retEarly = (accel == m_hardwareAccel);
@@ -2659,6 +2674,7 @@ void SdlAudioManager::setHardwareAccelerated(Bool accel)
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::setSpeakerSurround(Bool surround)
 {
+   (void) surround;
    DEBUG_LOG(("### SdlAudioManager::setSpeakerSurround\n"));
    // // Extends
    // Bool retEarly = (surround == m_surroundSpeakers);
@@ -2681,6 +2697,7 @@ void SdlAudioManager::setSpeakerSurround(Bool surround)
 //-------------------------------------------------------------------------------------------------
 Real SdlAudioManager::getFileLengthMS(AsciiString strToLoad) const
 {
+   (void) strToLoad;
    DEBUG_LOG(("### SdlAudioManager::getFileLengthMS\n"));
    // if (strToLoad.isEmpty()) {
    //    return 0.0f;
@@ -2704,6 +2721,7 @@ Real SdlAudioManager::getFileLengthMS(AsciiString strToLoad) const
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::closeAnySamplesUsingFile(const void *fileToClose)
 {
+   (void) fileToClose;
    DEBUG_LOG(("### SdlAudioManager::closeAnySamplesUsingFile\n"));
    // std::list<PlayingAudio *>::iterator it;
    // PlayingAudio *playing;
@@ -2754,6 +2772,7 @@ void SdlAudioManager::setDeviceListenerPosition()
 //-------------------------------------------------------------------------------------------------
 const Coord3D *SdlAudioManager::getCurrentPositionFromEvent(AudioEventRTS *event)
 {
+   (void) event;
    DEBUG_LOG(("### SdlAudioManager::getCurrentPositionFromEvent\n"));
    // if (!event->isPositionalAudio()) {
    //    return NULL;
@@ -2766,6 +2785,7 @@ const Coord3D *SdlAudioManager::getCurrentPositionFromEvent(AudioEventRTS *event
 //-------------------------------------------------------------------------------------------------
 Bool SdlAudioManager::isOnScreen(const Coord3D *pos) const
 {
+   (void) pos;
    DEBUG_LOG(("### SdlAudioManager::isOnScreen\n"));
    // static ICoord2D dummy;
    // // WorldToScreen will return True if the point is onscreen and false if it is offscreen.
@@ -2837,6 +2857,7 @@ Real SdlAudioManager::getEffectiveVolume(AudioEventRTS *event) const
 //-------------------------------------------------------------------------------------------------
 Bool SdlAudioManager::startNextLoop( PlayingAudio *looping )
 {
+   (void) looping;
    DEBUG_LOG(("### SdlAudioManager::startNextLoop\n"));
    // closeFile(looping->m_file);
    // looping->m_file = NULL;
@@ -2956,6 +2977,8 @@ void SdlAudioManager::playSample(AudioEventRTS *event, PlayingAudio* audio)
 //-------------------------------------------------------------------------------------------------
 void *SdlAudioManager::playSample3D( AudioEventRTS *event, H3DSAMPLE sample3D )
 {
+   (void) event;
+   (void) sample3D;
    DEBUG_LOG(("### SdlAudioManager::playSample3D\n"));
    // const Coord3D *pos = getCurrentPositionFromEvent(event);
    // if (pos) {
@@ -3148,6 +3171,7 @@ void SdlAudioManager::releaseHandleForBink()
 //-------------------------------------------------------------------------------------------------
 void SdlAudioManager::friend_forcePlayAudioEventRTS(const AudioEventRTS* eventToPlay)
 {
+   (void) eventToPlay;
    DEBUG_LOG(("### SdlAudioManager::friend_forcePlayAudioEventRTS\n"));
    // if (!eventToPlay->getAudioEventInfo()) {
    //    getInfoForAudioEvent(eventToPlay);

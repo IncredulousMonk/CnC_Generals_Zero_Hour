@@ -86,7 +86,7 @@ TeamRelationMap::~TeamRelationMap( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TeamRelationMap::crc( Xfer *xfer )
+void TeamRelationMap::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -431,7 +431,7 @@ void TeamFactory::teamAboutToBeDeleted(Team* team)
 // ------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------
-void TeamFactory::crc( Xfer *xfer )
+void TeamFactory::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -775,7 +775,7 @@ TeamTemplateInfo::TeamTemplateInfo(Dict *d) :
 // ------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------
-void TeamTemplateInfo::crc( Xfer *xfer )
+void TeamTemplateInfo::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -938,6 +938,7 @@ void TeamPrototype::teamAboutToBeDeleted(Team* team)
 // ------------------------------------------------------------------------
 Script *TeamPrototype::getGenericScript(Int scriptToRetrieve)
 {
+(void) scriptToRetrieve;
 DEBUG_CRASH(("TeamPrototype::getGenericScript not yet implemented!"));
 return nullptr;
 #if 0
@@ -1212,7 +1213,7 @@ return false;
 // ------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------
-void TeamPrototype::crc( Xfer *xfer )
+void TeamPrototype::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -2596,7 +2597,7 @@ Bool Team::damageTeamMembers(Real amount)
 
 // ------------------------------------------------------------------------
 /// @todo This should give a "team move" command, not individual move orders (MSB)
-void Team::moveTeamTo(Coord3D destination) 
+void Team::moveTeamTo(Coord3D /* destination */) 
 {
 	for (DLINK_ITERATOR<Object> iter = iterate_TeamMemberList(); !iter.done(); iter.advance())
 	{
@@ -2656,7 +2657,7 @@ DEBUG_CRASH(("Team::updateGenericScripts not yet implemented!"));
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Team::crc( Xfer *xfer )
+void Team::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc

@@ -98,7 +98,7 @@ const FieldParse Anim2DTemplate::s_anim2DFieldParseTable[] =
 // ------------------------------------------------------------------------------------------------
 /** Parse the number of images we will have in this animation and allocate the array for them */
 // ------------------------------------------------------------------------------------------------
-void Anim2DTemplate::parseNumImages( INI *ini, void *instance, void *store, const void *userData )
+void Anim2DTemplate::parseNumImages( INI* ini, void* instance, void* /* store */, const void* userData )
 {
 
 	// parse the integer data from the file
@@ -147,7 +147,7 @@ void Anim2DTemplate::allocateImages( UnsignedShort numFrames )
 // ------------------------------------------------------------------------------------------------
 /** Parsing a single image definition for an animation */
 // ------------------------------------------------------------------------------------------------
-void Anim2DTemplate::parseImage( INI *ini, void *instance, void *store, const void *userData )
+void Anim2DTemplate::parseImage( INI* ini, void* instance, void* /* store */, const void* userData )
 {
 
 	// parse the image name from the file and store as an image pointer
@@ -185,7 +185,7 @@ void Anim2DTemplate::parseImage( INI *ini, void *instance, void *store, const vo
 	* animation.  NOTE: That the number images *must* have already been specified before
 	* we can parse this entry so we know how many images to allocate and look for */
 // ------------------------------------------------------------------------------------------------
-/*static*/ void Anim2DTemplate::parseImageSequence( INI *ini, void *instance, void *store, const void *userData )
+/*static*/ void Anim2DTemplate::parseImageSequence( INI* ini, void* instance, void* /* store */, const void* /* userData */ )
 {
 	
 	// get the animation template 
@@ -690,7 +690,8 @@ void Anim2D::draw( Int x, Int y, Int width, Int height )
 // ------------------------------------------------------------------------------------------------
 void Anim2D::xfer( Xfer *xfer )
 {
-	
+	(void) xfer;
+
 	// // version
 	// XferVersion currentVersion = 1;
 	// XferVersion version = currentVersion;

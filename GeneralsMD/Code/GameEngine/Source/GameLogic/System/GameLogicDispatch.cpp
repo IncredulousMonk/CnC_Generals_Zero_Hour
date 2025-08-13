@@ -319,6 +319,7 @@ DEBUG_LOG(("GameLogic::clearGameData not yet implemented!\n"));
 // ------------------------------------------------------------------------------------------------
 void GameLogic::prepareNewGame( Int gameMode, GameDifficulty diff, Int rankPoints )
 {
+(void) diff;
 	//Added By Sadullah Nader
 	//Fix for loading game scene
 
@@ -360,7 +361,7 @@ void GameLogic::prepareNewGame( Int gameMode, GameDifficulty diff, Int rankPoint
   * appropriate objects.
 	* @todo Rename this to "CommandProcessor", or similiar. */
 //-------------------------------------------------------------------------------------------------
-void GameLogic::logicMessageDispatcher( GameMessage *msg, void *userData )
+void GameLogic::logicMessageDispatcher( GameMessage *msg, void* /* userData */ )
 {
 #ifdef _DEBUG
 	DEBUG_ASSERTCRASH(msg != NULL && msg != (GameMessage*)0xdeadbeef, ("bad msg"));

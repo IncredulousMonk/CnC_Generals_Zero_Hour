@@ -85,7 +85,7 @@ void GameWindowManager::winDrawImage( const Image *image, Int startX, Int startY
 // GameWindowManager::winFillRect =============================================
 /** draw filled rect, coords are absolute screen coords */
 //=============================================================================
-void GameWindowManager::winFillRect( Color color, Real width, 
+void GameWindowManager::winFillRect( Color color, Real /* width */, 
 																		 Int startX, Int startY, 
 																		 Int endX, Int endY )
 {
@@ -155,8 +155,7 @@ Color GameWindowManager::winMakeColor( UnsignedByte red,
 // GameWindowManager::winFormatText ===========================================
 /** draw text to the screen */
 //=============================================================================
-void GameWindowManager::winFormatText( GameFont *font, UnicodeString text, Color color,
-																			 Int x, Int y, Int width, Int height )
+void GameWindowManager::winFormatText( GameFont* /* font */, UnicodeString /* text */, Color /* color */, Int /* x */, Int /* y */, Int /* width */, Int /* height */ )
 {
 
 	/// @todo make all display string rendering go through here!
@@ -166,8 +165,7 @@ void GameWindowManager::winFormatText( GameFont *font, UnicodeString text, Color
 // GameWindowManager::winGetTextSize ==========================================
 /** get the extent size of text */
 //=============================================================================
-void GameWindowManager::winGetTextSize( GameFont *font, UnicodeString text, 
-																				Int *width, Int *height, Int maxWidth )
+void GameWindowManager::winGetTextSize( GameFont* /* font */, UnicodeString /* text */, Int* width, Int* height, Int /* maxWidth */ )
 {
 
 	/// @todo make display string size stuff go through here

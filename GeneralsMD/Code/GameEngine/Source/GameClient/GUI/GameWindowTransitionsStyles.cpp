@@ -1631,7 +1631,7 @@ ScreenFadeTransition::~ScreenFadeTransition( void )
 	
 }
 
-void ScreenFadeTransition::init( GameWindow *win )
+void ScreenFadeTransition::init( GameWindow* /* win */ )
 {
 	m_isForward = FALSE;
 	update(SCREENFADETRANSITION_START);
@@ -1709,6 +1709,7 @@ ControlBarArrowTransition::~ControlBarArrowTransition( void )
 
 void ControlBarArrowTransition::init( GameWindow *win )
 {
+	(void) win;
 	DEBUG_CRASH(("ControlBarArrowTransition::init."));
 	// m_isForward = FALSE;
 	// update(CONTROLBARARROWTRANSITION_START);
@@ -2005,7 +2006,7 @@ ReverseSoundTransition::~ReverseSoundTransition( void )
 	
 }
 
-void ReverseSoundTransition::init( GameWindow *win )
+void ReverseSoundTransition::init( GameWindow* /* win */ )
 {
 	m_isFinished = TRUE;
 	m_isForward = TRUE;

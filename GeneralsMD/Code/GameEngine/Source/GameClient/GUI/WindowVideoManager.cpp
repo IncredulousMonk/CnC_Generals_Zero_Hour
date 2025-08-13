@@ -267,10 +267,7 @@ void WindowVideoManager::playMovie( GameWindow *win, AsciiString movieName, Wind
 
 	// Create the new buffer
 	VideoBuffer *videoBuffer = TheDisplay->createVideoBuffer();
-	if (	videoBuffer == NULL || 
-				!videoBuffer->allocate(	videoStream->width(), 
-													videoStream->height())
-		)
+	if (videoBuffer == NULL || !videoBuffer->allocate((UnsignedInt)videoStream->width(), (UnsignedInt)videoStream->height()))
 	{
 		// If we failed to create the buffer...
 		delete videoBuffer;

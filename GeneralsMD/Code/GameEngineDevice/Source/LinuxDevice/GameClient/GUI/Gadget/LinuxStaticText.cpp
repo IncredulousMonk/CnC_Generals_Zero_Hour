@@ -54,7 +54,7 @@
 // drawStaticTextText =========================================================
 /** Draw the text for a static text window */
 //=============================================================================
-static void drawStaticTextText( GameWindow *window, WinInstanceData *instData, Color textColor, Color textDropColor )
+static void drawStaticTextText( GameWindow* window, WinInstanceData* /* instData */, Color textColor, Color textDropColor )
 {
    TextData *tData = (TextData *)window->winGetUserData();
    Int textWidth, textHeight, wordWrap;

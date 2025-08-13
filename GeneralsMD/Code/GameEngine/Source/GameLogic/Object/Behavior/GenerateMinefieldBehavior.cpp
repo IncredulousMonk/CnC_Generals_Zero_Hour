@@ -137,7 +137,7 @@ void GenerateMinefieldBehavior::upgradeImplementation()
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void GenerateMinefieldBehavior::onDie( const DamageInfo *damageInfo )
+void GenerateMinefieldBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 	const GenerateMinefieldBehaviorModuleData* d = getGenerateMinefieldBehaviorModuleData();
 
@@ -277,7 +277,7 @@ void GenerateMinefieldBehavior::placeMinesAlongLine(const Coord3D& posStart, con
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-static void makeCorner(const Coord3D& pos, Real majorRadius, Real minorRadius, const Matrix3D& mtx, Coord3D& corner)
+static void makeCorner(const Coord3D& /* pos */, Real majorRadius, Real minorRadius, const Matrix3D& mtx, Coord3D& corner)
 {
 	Vector3 tmp;
 	tmp.X = majorRadius;

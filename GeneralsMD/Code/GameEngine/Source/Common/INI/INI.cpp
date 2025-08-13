@@ -40,7 +40,7 @@
 #include "Common/GameAudio.h"
 #include "Common/AudioEventRTS.h"
 #include "Common/Science.h"
-// #include "Common/SpecialPower.h"
+#include "Common/SpecialPower.h"
 #include "Common/ThingFactory.h"
 #include "Common/ThingTemplate.h"
 // #include "Common/Upgrade.h"
@@ -96,7 +96,7 @@ static const BlockParse theTypeTable[] =
 	{ "Bridge",							INI::parseTerrainBridgeDefinition },
 	{ "Campaign",						INI::parseCampaignDefinition },
 //  	{ "ChallengeGenerals",			INI::parseChallengeModeDefinition },
-// 	{ "CommandButton",					INI::parseCommandButtonDefinition },
+	{ "CommandButton",					INI::parseCommandButtonDefinition },
 // 	{ "CommandMap",						INI::parseMetaMapDefinition },
 // 	{ "CommandSet",						INI::parseCommandSetDefinition },
 // 	{ "ControlBarScheme",				INI::parseControlBarSchemeDefinition },
@@ -110,7 +110,7 @@ static const BlockParse theTypeTable[] =
 // 	{ "EvaEvent",						INI::parseEvaEvent },
 	{ "FXList",							INI::parseFXListDefinition },
 	{ "GameData",						INI::parseGameDataDefinition },
-// 	{ "InGameUI",						INI::parseInGameUIDefinition },
+	{ "InGameUI",						INI::parseInGameUIDefinition },
 	{ "Locomotor",						INI::parseLocomotorTemplateDefinition },
 	{ "Language",						INI::parseLanguageDefinition },
 // 	{ "MapCache",						INI::parseMapCacheDefinition },
@@ -1351,23 +1351,20 @@ void INI::parseObjectCreationList( INI* ini, void * /*instance*/, void *store, c
 //-------------------------------------------------------------------------------------------------
 void INI::parseUpgradeTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseUpgradeTemplate not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// if (!TheUpgradeCenter)
-	// {
-	// 	DEBUG_CRASH(("TheUpgradeCenter not inited yet"));
-	// 	throw ERROR_BUG;
-	// }
+	if (!TheUpgradeCenter)
+	{
+		DEBUG_CRASH(("TheUpgradeCenter not inited yet"));
+		throw ERROR_BUG;
+	}
 
-	// const UpgradeTemplate *uu = TheUpgradeCenter->findUpgrade( AsciiString( token ) );
-	// DEBUG_ASSERTCRASH( uu || strcasecmp( token, "None" ) == 0, ("Upgrade %s not found!\n",token) );
+	const UpgradeTemplate *uu = TheUpgradeCenter->findUpgrade( AsciiString( token ) );
+	DEBUG_ASSERTCRASH( uu || strcasecmp( token, "None" ) == 0, ("Upgrade %s not found!\n",token) );
 
-	// typedef const UpgradeTemplate* ConstUpgradeTemplatePtr;
-	// ConstUpgradeTemplatePtr* theUpgradeTemplate = (ConstUpgradeTemplatePtr *)store;		
-	// *theUpgradeTemplate = uu;
+	typedef const UpgradeTemplate* ConstUpgradeTemplatePtr;
+	ConstUpgradeTemplatePtr* theUpgradeTemplate = (ConstUpgradeTemplatePtr *)store;		
+	*theUpgradeTemplate = uu;
 } 
 
 //-------------------------------------------------------------------------------------------------
@@ -1375,26 +1372,23 @@ void INI::parseUpgradeTemplate( INI* ini, void * /*instance*/, void *store, cons
 //-------------------------------------------------------------------------------------------------
 void INI::parseSpecialPowerTemplate( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseSpecialPowerTemplate not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// if (!TheSpecialPowerStore)
-	// {
-	// 	DEBUG_CRASH(("TheSpecialPowerStore not inited yet"));
-	// 	throw ERROR_BUG;
-	// }
+	if (!TheSpecialPowerStore)
+	{
+		DEBUG_CRASH(("TheSpecialPowerStore not inited yet"));
+		throw ERROR_BUG;
+	}
 
-	// const SpecialPowerTemplate *sPowerT = TheSpecialPowerStore->findSpecialPowerTemplate( AsciiString( token ) );
-	// if( !sPowerT && strcasecmp( token, "None" ) != 0 )
-	// {
-	// 	DEBUG_CRASH( ("[LINE: %d in '%s'] Specialpower %s not found!\n", ini->getLineNum(), ini->getFilename().str(), token) );
-	// }
+	const SpecialPowerTemplate *sPowerT = TheSpecialPowerStore->findSpecialPowerTemplate( AsciiString( token ) );
+	if( !sPowerT && strcasecmp( token, "None" ) != 0 )
+	{
+		DEBUG_CRASH( ("[LINE: %d in '%s'] Specialpower %s not found!\n", ini->getLineNum(), ini->getFilename().str(), token) );
+	}
 
-	// typedef const SpecialPowerTemplate* ConstSpecialPowerTemplatePtr;
-	// ConstSpecialPowerTemplatePtr* theSpecialPowerTemplate = (ConstSpecialPowerTemplatePtr *)store;		
-	// *theSpecialPowerTemplate = sPowerT;
+	typedef const SpecialPowerTemplate* ConstSpecialPowerTemplatePtr;
+	ConstSpecialPowerTemplatePtr* theSpecialPowerTemplate = (ConstSpecialPowerTemplatePtr *)store;		
+	*theSpecialPowerTemplate = sPowerT;
 } 
 
 //-------------------------------------------------------------------------------------------------

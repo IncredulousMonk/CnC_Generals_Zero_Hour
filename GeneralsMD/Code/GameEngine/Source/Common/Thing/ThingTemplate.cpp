@@ -620,7 +620,7 @@ void ThingTemplate::parseModuleName(INI* ini, void *instance, void* store, const
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseIntList(INI* ini, void *instance, void* store, const void* userData)
+void ThingTemplate::parseIntList(INI* ini, void* /* instance */, void* store, const void* userData)
 {
 	Int numberEntries = (intptr_t)userData;
 	Int *intList = (Int*)store;
@@ -660,7 +660,7 @@ static void parsePrerequisiteScience( INI* ini, void *instance, void * /*store*/
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parsePrerequisites( INI* ini, void *instance, void *store, const void* userData )
+void ThingTemplate::parsePrerequisites( INI* ini, void *instance, void* /* store */, const void* /* userData */ )
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 
@@ -691,7 +691,7 @@ static void parseArbitraryFXIntoMap( INI* ini, void *instance, void* /* store */
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parsePerUnitFX( INI* ini, void *instance, void *store, const void *userData )
+void ThingTemplate::parsePerUnitFX( INI* ini, void *instance, void* /* store */, const void* /* userData */ )
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -724,7 +724,7 @@ static void parseArbitrarySoundsIntoMap( INI* ini, void *instance, void* /* stor
 //-------------------------------------------------------------------------------------------------
 /** Parse Additional per unit sounds such as TankTurretMove and TankTurretMoveLoop. */
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parsePerUnitSounds(INI* ini, void *instance, void *store, const void *userData)
+void ThingTemplate::parsePerUnitSounds(INI* ini, void *instance, void* /* store */, const void* /* userData */)
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -743,12 +743,17 @@ void ThingTemplate::parsePerUnitSounds(INI* ini, void *instance, void *store, co
 //-------------------------------------------------------------------------------------------------
 void ThingTemplate::parseLocomotorSet(INI* ini, void *instance, void *store, const void *userData)
 {
+	(void) ini;
+	(void) instance;
+	(void) store;
+	(void) userData;
 	// FIXME: Remove this dummy parse function once AIUpdateModuleData is implemented.
+	DEBUG_LOG(("$$$ Dummy parseLocomotorSet!\n"));
 	ini->getNextToken();
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseDynamicAudioEventRTS(INI* ini, void *instance, void *store, const void *userData)
+void ThingTemplate::parseDynamicAudioEventRTS(INI* ini, void *instance, void* /* store */, const void *userData)
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -757,7 +762,7 @@ void ThingTemplate::parseDynamicAudioEventRTS(INI* ini, void *instance, void *st
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseGeometryType( INI* ini, void *instance, void *store, const void *userData )
+void ThingTemplate::parseGeometryType( INI* ini, void *instance, void* /* store */, const void *userData )
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -765,7 +770,7 @@ void ThingTemplate::parseGeometryType( INI* ini, void *instance, void *store, co
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseGeometryMajorRadius( INI* ini, void *instance, void *store, const void *userData )
+void ThingTemplate::parseGeometryMajorRadius( INI* ini, void *instance, void* /* store */, const void *userData )
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -773,7 +778,7 @@ void ThingTemplate::parseGeometryMajorRadius( INI* ini, void *instance, void *st
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseGeometryMinorRadius( INI* ini, void *instance, void *store, const void *userData )
+void ThingTemplate::parseGeometryMinorRadius( INI* ini, void *instance, void* /* store */, const void *userData )
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -781,7 +786,7 @@ void ThingTemplate::parseGeometryMinorRadius( INI* ini, void *instance, void *st
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseGeometryHeight( INI* ini, void *instance, void *store, const void *userData )
+void ThingTemplate::parseGeometryHeight( INI* ini, void *instance, void* /* store */, const void *userData )
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -789,7 +794,7 @@ void ThingTemplate::parseGeometryHeight( INI* ini, void *instance, void *store, 
 }
 
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseGeometryIsSmall( INI* ini, void *instance, void *store, const void *userData )
+void ThingTemplate::parseGeometryIsSmall( INI* ini, void *instance, void* /* store */, const void *userData )
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -799,7 +804,7 @@ void ThingTemplate::parseGeometryIsSmall( INI* ini, void *instance, void *store,
 //-------------------------------------------------------------------------------------------------
 /** Parse modules to add to the existing set of modules. */
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseAddModule(INI *ini, void *instance, void *store, const void *userData)
+void ThingTemplate::parseAddModule(INI *ini, void *instance, void* /* store */, const void* /* userData */)
 {
 	// don't care about the result.
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
@@ -819,7 +824,7 @@ void ThingTemplate::parseAddModule(INI *ini, void *instance, void *store, const 
 //-------------------------------------------------------------------------------------------------
 /** Parse modules to remove from the existing set of modules. */
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseRemoveModule(INI *ini, void *instance, void *store, const void *userData)
+void ThingTemplate::parseRemoveModule(INI *ini, void *instance, void* /* store */, const void* /* userData */)
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -845,7 +850,7 @@ void ThingTemplate::parseRemoveModule(INI *ini, void *instance, void *store, con
 //-------------------------------------------------------------------------------------------------
 /** Replace the existing tagged modules with the new modules. */
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseReplaceModule(INI *ini, void *instance, void *store, const void *userData)
+void ThingTemplate::parseReplaceModule(INI *ini, void *instance, void* /* store */, const void* /* userData */)
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -878,7 +883,7 @@ void ThingTemplate::parseReplaceModule(INI *ini, void *instance, void *store, co
 //-------------------------------------------------------------------------------------------------
 /** mark the module(s) as being "Inheritable". */
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseInheritableModule(INI *ini, void *instance, void *store, const void *userData)
+void ThingTemplate::parseInheritableModule(INI *ini, void *instance, void* /* store */, const void* /* userData */)
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -898,7 +903,7 @@ void ThingTemplate::parseInheritableModule(INI *ini, void *instance, void *store
 //-------------------------------------------------------------------------------------------------
 /** mark the module(s) as being "OverrideableByLikeKind". default module will be replaced by any of the exact same class */
 //-------------------------------------------------------------------------------------------------
-void ThingTemplate::OverrideableByLikeKind(INI *ini, void *instance, void *store, const void *userData)
+void ThingTemplate::OverrideableByLikeKind(INI *ini, void *instance, void* /* store */, const void* /* userData */)
 {
 	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
 	ThingTemplate* self = data->m_obj;
@@ -913,9 +918,6 @@ void ThingTemplate::OverrideableByLikeKind(INI *ini, void *instance, void *store
 
 	data->m_moduleParsingMode = oldMode;
 }
-
-
-
 
 
 
@@ -1026,7 +1028,7 @@ void ThingTemplate::parseWeaponTemplateSet( INI* ini, void *instance, void * /*s
 
 //-------------------------------------------------------------------------------------------------
 // Parse the "maxSimultaneousOfType" keyword
-void ThingTemplate::parseMaxSimultaneous(INI *ini, void *instance, void *store, const void *userData)
+void ThingTemplate::parseMaxSimultaneous(INI *ini, void *instance, void *store, const void* /* userData */)
 {
 	// Most of the time, this is an UnsignedShort, but sometimes this is the keyword
 	// "DeterminedBySuperweaponRestriction"

@@ -64,8 +64,8 @@
 // #include "GameLogic/Weapon.h"
 
 #include "GameClient/Anim2D.h"
-// #include "GameClient/Display.h"
-// #include "GameClient/DisplayStringManager.h"
+#include "GameClient/Display.h"
+#include "GameClient/DisplayStringManager.h"
 #include "GameClient/Drawable.h"
 // #include "GameClient/DrawGroupInfo.h"
 // #include "GameClient/GameClient.h"
@@ -4436,6 +4436,7 @@ void Drawable::clearCaptionText( void )
 		TheDisplayStringManager->freeDisplayString(m_captionDisplayString);
 	m_captionDisplayString = NULL;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 UnicodeString Drawable::getCaptionText( void )
@@ -4446,6 +4447,7 @@ UnicodeString Drawable::getCaptionText( void )
 	return UnicodeString::TheEmptyString;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Attach and start playing an ambient sound to this drawable */
 //-------------------------------------------------------------------------------------------------

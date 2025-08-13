@@ -146,7 +146,7 @@ StateReturnType TurretStateMachine::setState(StateID newStateID)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TurretStateMachine::crc( Xfer *xfer )
+void TurretStateMachine::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -217,7 +217,7 @@ static void parseTWS(INI* ini, void * /*instance*/, void * store, const void* /*
 }
 
 //-------------------------------------------------------------------------------------------------
-void TurretAIData::parseTurretSweep(INI* ini, void *instance, void * /*store*/, const void* userData)
+void TurretAIData::parseTurretSweep(INI* ini, void *instance, void * /*store*/, const void* /* userData */)
 {
 	TurretAIData* self = (TurretAIData*)instance;
 	WeaponSlotType wslot = (WeaponSlotType)INI::scanIndexList(ini->getNextToken(), TheWeaponSlotTypeNames);
@@ -225,7 +225,7 @@ void TurretAIData::parseTurretSweep(INI* ini, void *instance, void * /*store*/, 
 }
 
 //-------------------------------------------------------------------------------------------------
-void TurretAIData::parseTurretSweepSpeed(INI* ini, void *instance, void * /*store*/, const void* userData)
+void TurretAIData::parseTurretSweepSpeed(INI* ini, void *instance, void * /*store*/, const void* /* userData */)
 {
 	TurretAIData* self = (TurretAIData*)instance;
 	WeaponSlotType wslot = (WeaponSlotType)INI::scanIndexList(ini->getNextToken(), TheWeaponSlotTypeNames);
@@ -332,7 +332,7 @@ TurretAI::~TurretAI()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TurretAI::crc( Xfer *xfer )
+void TurretAI::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -1203,7 +1203,7 @@ StateReturnType TurretAIAimTurretState::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-void TurretAIAimTurretState::onExit( StateExitType status )
+void TurretAIAimTurretState::onExit( StateExitType /* status */ )
 {
 }
 
@@ -1245,7 +1245,7 @@ StateReturnType TurretAIRecenterTurretState::update()
 /**
  * Stop rotation sound
  */
-void TurretAIRecenterTurretState::onExit( StateExitType status )
+void TurretAIRecenterTurretState::onExit( StateExitType /* status */ )
 {
 }
 
@@ -1256,7 +1256,7 @@ void TurretAIRecenterTurretState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TurretAIIdleState::crc( Xfer *xfer )
+void TurretAIIdleState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -1333,7 +1333,7 @@ StateReturnType TurretAIIdleState::update()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TurretAIIdleScanState::crc( Xfer *xfer )
+void TurretAIIdleScanState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -1397,7 +1397,7 @@ StateReturnType TurretAIIdleScanState::update()
 /**
  * Stop rotation sound
  */
-void TurretAIIdleScanState::onExit( StateExitType status )
+void TurretAIIdleScanState::onExit( StateExitType /* status */ )
 {
 }
 
@@ -1408,7 +1408,7 @@ void TurretAIIdleScanState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TurretAIHoldTurretState::crc( Xfer *xfer )
+void TurretAIHoldTurretState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -1442,7 +1442,7 @@ StateReturnType TurretAIHoldTurretState::onEnter()
 }
 
 //-------------------------------------------------------------------------------------------------
-void TurretAIHoldTurretState::onExit( StateExitType status )
+void TurretAIHoldTurretState::onExit( StateExitType /* status */ )
 {
 }
 

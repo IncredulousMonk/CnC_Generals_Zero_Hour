@@ -113,9 +113,7 @@ public:
 
 	virtual Drawable *firstDrawable( void ) { return m_drawableList; }
 
-	// virtual GameMessage::Type evaluateContextCommand( Drawable *draw, 
-	// 																									const Coord3D *pos, 
-	// 																									CommandTranslator::CommandEvaluateType cmdType );
+	virtual GameMessage::Type evaluateContextCommand( Drawable *draw, const Coord3D *pos, CommandTranslator::CommandEvaluateType cmdType );
 	void addTextBearingDrawable( Drawable *tbd );
 	void flushTextBearingDrawables( void);
 	void updateFakeDrawables(void);

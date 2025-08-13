@@ -150,7 +150,7 @@ const LocomotorTemplateVector* AIUpdateModuleData::findLocomotorTemplateVector(L
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void AIUpdateModuleData::parseTurret(INI* ini, void *instance, void * store, const void* /*userData*/)
+/*static*/ void AIUpdateModuleData::parseTurret(INI* ini, void* /* instance */, void* store, const void* /*userData*/)
 {
 	if (*(TurretAIData**)store)
 	{
@@ -1315,6 +1315,7 @@ Real AIUpdateInterface::calculateMaxBlockedSpeed(Object *other) const
 Bool AIUpdateInterface::blockedBy(Object *other)
 /* Returns TRUE if we are blocked from moving by the other object.*/
 {
+(void) other;
 DEBUG_CRASH(("AIUpdateInterface::blockedBy not yet implemented!"));
 return false;
 #if 0
@@ -1458,7 +1459,7 @@ return false;
 //-------------------------------------------------------------------------------------------------
 /* Returns TRUE if the physics collide should apply the force.  Normally not.  
 Also determines whether objects are blocked, and if so, if they are stuck.  jba.*/
-Bool AIUpdateInterface::processCollision(PhysicsBehavior *physics, Object *other)
+Bool AIUpdateInterface::processCollision(PhysicsBehavior* /* physics */, Object *other)
 {
 
 #ifdef DO_UNIT_TIMINGS
@@ -3266,7 +3267,7 @@ Bool AIUpdateInterface::isMoving() const
 /**
  * Move out of the way of another unit.
  */
-void AIUpdateInterface::privateMoveAwayFromUnit( Object *unit, CommandSourceType cmdSource )
+void AIUpdateInterface::privateMoveAwayFromUnit( Object *unit, CommandSourceType /* cmdSource */ )
 {
 	// the dead don't listen very well
 	if (isAiInDeadState() || (getObject()->isMobile() == FALSE) || !isAllowedToMoveAwayFromUnit()) 
@@ -3738,12 +3739,12 @@ void AIUpdateInterface::privateAttackArea( const PolygonTrigger *areaToGuard, Co
 /**
  * Repair the given object
  */
-void AIUpdateInterface::privateRepair( Object *obj, CommandSourceType cmdSource )
+void AIUpdateInterface::privateRepair( Object* /* obj */, CommandSourceType /* cmdSource */ )
 {
 
 	// there is no "default" way for generic objects to repair each other
 	return;
-				
+
 }
 
 #ifdef ALLOW_SURRENDER
@@ -3778,7 +3779,7 @@ void AIUpdateInterface::privateReturnPrisoners( Object *prison, CommandSourceTyp
 /**
 	* Resume construction of object
 	*/
-void AIUpdateInterface::privateResumeConstruction( Object *obj, CommandSourceType cmdSource )
+void AIUpdateInterface::privateResumeConstruction( Object* /* obj */, CommandSourceType /* cmdSource */ )
 {
 
 	// there is no "default" way for generic objects to resume construction
@@ -3874,7 +3875,7 @@ void AIUpdateInterface::privateDock( Object *obj, CommandSourceType cmdSource )
 }
 
 //----------------------------------------------------------------------------------------
-void AIUpdateInterface::privateCombatDrop( Object *target, const Coord3D& pos, CommandSourceType cmdSource )
+void AIUpdateInterface::privateCombatDrop( Object* /* target */, const Coord3D& /* pos */, CommandSourceType /* cmdSource */ )
 {
 	DEBUG_CRASH(("default implementation, should never be called"));
 	if( getObject()->getContain() )
@@ -4005,7 +4006,7 @@ void AIUpdateInterface::privateEvacuateInstantly( Int exposeStealthUnits, Comman
 }
 
 // ------------------------------------------------------------------------------------------------
-void AIUpdateInterface::privateExecuteRailedTransport( CommandSourceType cmdSource )
+void AIUpdateInterface::privateExecuteRailedTransport( CommandSourceType /* cmdSource */ )
 {
 
 	// there is no default implementation for this
@@ -5388,6 +5389,7 @@ Int AIUpdateInterface::friend_getWaypointGoalPathSize() const
 // ------------------------------------------------------------------------------------------------
 Bool AIUpdateInterface::hasLocomotorForSurface(LocomotorSurfaceType surfaceType)
 {
+(void) surfaceType;
 DEBUG_CRASH(("AIUpdateInterface::hasLocomotorForSurface not yet implemented!"));
 return false;
 #if 0

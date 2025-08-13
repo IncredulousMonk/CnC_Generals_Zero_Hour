@@ -245,7 +245,7 @@ void AI::parseSideInfo(INI *ini, void *instance, void* /*store*/, const void* /*
 
 }
 
-void AI::parseSkillSet(INI *ini, void *instance, void* store, const void* /*userData*/)
+void AI::parseSkillSet(INI* ini, void* /* instance */, void* store, const void* /*userData*/)
 {
 	static const FieldParse myFieldParse[] = 
 		{

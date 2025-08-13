@@ -85,6 +85,7 @@ void LinuxDisplay::init()
 //-------------------------------------------------------------------------------------------------
 void LinuxDisplay::doSmartAssetPurgeAndPreload(const char* usageFileName)
 {
+   (void) usageFileName;
    DEBUG_CRASH(("LinuxDisplay::doSmartAssetPurgeAndPreload not yet implemented."));
 }
 
@@ -93,6 +94,7 @@ void LinuxDisplay::doSmartAssetPurgeAndPreload(const char* usageFileName)
 #if defined(_DEBUG) || defined(_INTERNAL)
 void LinuxDisplay::dumpAssetUsage(const char* mapname)
 {
+   (void) mapname;
    DEBUG_CRASH(("LinuxDisplay::dumpAssetUsage not yet implemented."));
 }
 #endif
@@ -124,6 +126,7 @@ void LinuxDisplay::setClipRegion( IRegion2D *region )
 //=============================================================================
 void LinuxDisplay::setTimeOfDay(TimeOfDay tod)
 {
+   (void) tod;
    DEBUG_CRASH(("LinuxDisplay::setTimeOfDay not yet implemented."));
 }
 
@@ -134,6 +137,12 @@ void LinuxDisplay::setTimeOfDay(TimeOfDay tod)
 void LinuxDisplay::createLightPulse(const Coord3D *pos, const RGBColor *color, 
    Real innerRadius, Real attenuationWidth, UnsignedInt increaseFrameTime, UnsignedInt decayFrameTime)
 {
+   (void) pos;
+   (void) color;
+   (void) innerRadius;
+   (void) attenuationWidth;
+   (void) increaseFrameTime;
+   (void) decayFrameTime;
    DEBUG_CRASH(("LinuxDisplay::createLightPulse not yet implemented."));
 }
 
@@ -159,6 +168,13 @@ void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY,
 void LinuxDisplay::drawLine(Int startX, Int startY, Int endX, Int endY, 
    Real lineWidth, Color lineColor1,Color lineColor2)
 {
+   (void) startX;
+   (void) startY;
+   (void) endX;
+   (void) endY;
+   (void) lineWidth;
+   (void) lineColor1;
+   (void) lineColor2;
    DEBUG_CRASH(("LinuxDisplay::drawLine two colours not yet implemented."));
 }  // end drawLine
 
@@ -202,6 +218,12 @@ void LinuxDisplay::drawFillRect(Int startX, Int startY, Int width, Int height, C
 
 void LinuxDisplay::drawRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color)
 {
+   (void) startX;
+   (void) startY;
+   (void) width;
+   (void) height;
+   (void) percent;
+   (void) color;
    DEBUG_CRASH(("LinuxDisplay::drawRectClock not yet implemented."));
 }
 
@@ -213,6 +235,12 @@ void LinuxDisplay::drawRectClock(Int startX, Int startY, Int width, Int height, 
 //--------------------------------------------------------------------------------------------------------------------
 void LinuxDisplay::drawRemainingRectClock(Int startX, Int startY, Int width, Int height, Int percent, Color color)
 {
+   (void) startX;
+   (void) startY;
+   (void) width;
+   (void) height;
+   (void) percent;
+   (void) color;
    DEBUG_CRASH(("LinuxDisplay::drawRemainingRectClock not yet implemented."));
 }
 
@@ -222,6 +250,8 @@ void LinuxDisplay::drawRemainingRectClock(Int startX, Int startY, Int width, Int
 //=============================================================================
 void LinuxDisplay::drawImage( const Image *image, Int startX, Int startY, Int endX, Int endY, Color color, DrawImageMode mode)
 {
+   (void) color;
+   (void) mode;
    if (!image) {
       return;
    }
@@ -261,12 +291,20 @@ void LinuxDisplay::drawImage( const Image *image, Int startX, Int startY, Int en
 
 void LinuxDisplay::drawVideoBuffer(VideoBuffer *buffer, Int startX, Int startY, Int endX, Int endY)
 {
+   (void) buffer;
+   (void) startX;
+   (void) startY;
+   (void) endX;
+   (void) endY;
    DEBUG_CRASH(("LinuxDisplay::drawVideoBuffer not yet implemented."));
 }
 
 //=============================================================================
 void LinuxDisplay::setShroudLevel(Int x, Int y, CellShroudStatus setting)
 {
+   (void) x;
+   (void) y;
+   (void) setting;
    DEBUG_CRASH(("LinuxDisplay::setShroudLevel not yet implemented."));
 }
 
@@ -282,6 +320,7 @@ void LinuxDisplay::clearShroud()
 //=============================================================================
 void LinuxDisplay::setBorderShroudLevel(UnsignedByte level)
 {
+   (void) level;
    DEBUG_CRASH(("LinuxDisplay::setBorderShroudLevel not yet implemented."));
 }
 
@@ -292,6 +331,7 @@ void LinuxDisplay::setBorderShroudLevel(UnsignedByte level)
 //-------------------------------------------------------------------------------------------------
 void LinuxDisplay::dumpModelAssets(const char *path)
 {
+   (void) path;
    DEBUG_CRASH(("LinuxDisplay::dumpModelAssets not yet implemented."));
 }
 
@@ -302,6 +342,7 @@ void LinuxDisplay::dumpModelAssets(const char *path)
 //-------------------------------------------------------------------------------------------------
 void LinuxDisplay::preloadModelAssets( AsciiString model )
 {
+   (void) model;
    DEBUG_CRASH(("LinuxDisplay::preloadModelAssets not yet implemented."));
 }  // end preloadModelAssets
 
@@ -310,6 +351,7 @@ void LinuxDisplay::preloadModelAssets( AsciiString model )
 //-------------------------------------------------------------------------------------------------
 void LinuxDisplay::preloadTextureAssets( AsciiString texture )
 {
+   (void) texture;
    DEBUG_CRASH(("LinuxDisplay::preloadTextureAssets not yet implemented."));
 }  // end preloadModelAssets
 
@@ -332,6 +374,7 @@ void LinuxDisplay::toggleLetterBox(void)
 
 void LinuxDisplay::enableLetterBox(Bool enable)
 {
+   (void) enable;
    DEBUG_CRASH(("LinuxDisplay::enableLetterBox not yet implemented."));
 }
 

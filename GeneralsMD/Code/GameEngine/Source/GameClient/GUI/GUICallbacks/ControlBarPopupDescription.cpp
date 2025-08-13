@@ -68,14 +68,14 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "Common/GlobalData.h"
-#include "Common/BuildAssistant.h"
+// #include "Common/BuildAssistant.h"
 #include "Common/Player.h"
 #include "Common/PlayerList.h"
 #include "Common/ProductionPrerequisite.h"
 #include "Common/ThingTemplate.h"
 #include "Common/Upgrade.h"
 #include "GameClient/AnimateWindowManager.h"
-#include "GameClient/DisconnectMenu.h"
+// #include "GameClient/DisconnectMenu.h"
 #include "GameClient/GameWindow.h"
 #include "GameClient/Gadget.h"
 #include "GameClient/GadgetTextEntry.h"
@@ -85,37 +85,39 @@
 #include "GameClient/GameText.h"
 #include "GameClient/GUICallbacks.h"
 #include "GameClient/InGameUI.h"
-#include "GameClient/Controlbar.h"
+#include "GameClient/ControlBar.h"
 #include "GameClient/DisplayStringManager.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Module/OverchargeBehavior.h"
 #include "GameLogic/Module/ProductionUpdate.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 
-#include "GameNetwork/NetworkInterface.h"
+// #include "GameNetwork/NetworkInterface.h"
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
-static WindowLayout *theLayout = NULL;
-static GameWindow *theWindow = NULL;
 static AnimateWindowManager *theAnimateWindowManager = NULL;
 static GameWindow *prevWindow = NULL;
 static Bool useAnimation = FALSE;
 void ControlBarPopupDescriptionUpdateFunc( WindowLayout *layout, void *param )
 {
+(void) layout;
+(void) param;
+DEBUG_CRASH(("ControlBarPopupDescriptionUpdateFunc not yet implemented!"));
+#if 0
 	if(TheScriptEngine->isGameEnding())
 		TheControlBar->hideBuildTooltipLayout();
 	
 	if(theAnimateWindowManager && !TheControlBar->getShowBuildTooltipLayout() && !theAnimateWindowManager->isReversed())
 		theAnimateWindowManager->reverseAnimateWindow();
-	else if(!TheControlBar->getShowBuildTooltipLayout() && (!TheGlobalData->m_animateWindows || !useAnimation))
+	else if(!TheControlBar->getShowBuildTooltipLayout() && (!TheGlobalData->m_data.m_animateWindows || !useAnimation))
 		TheControlBar->deleteBuildTooltipLayout();
 		
 
-	if ( useAnimation && theAnimateWindowManager && TheGlobalData->m_animateWindows)
+	if ( useAnimation && theAnimateWindowManager && TheGlobalData->m_data.m_animateWindows)
 	{
 		Bool wasFinished = theAnimateWindowManager->isFinished();
 		theAnimateWindowManager->update();
@@ -126,24 +128,29 @@ void ControlBarPopupDescriptionUpdateFunc( WindowLayout *layout, void *param )
 			TheControlBar->deleteBuildTooltipLayout();
 		}
 	}
-	
+#endif // if 0
 }
 
 // ---------------------------------------------------------------------------------------
 void ControlBar::showBuildTooltipLayout( GameWindow *cmdButton )
 {
-	if (TheInGameUI->areTooltipsDisabled() 	|| TheScriptEngine->isGameEnding())
+(void) cmdButton;
+DEBUG_CRASH(("ControlBar::showSpecialPowerShortcut not yet implemented!"));
+#if 0
+	if (TheInGameUI->areTooltipsDisabled() || TheScriptEngine->isGameEnding())
 	{
 		return;
 	}
 
 	Bool passedWaitTime = FALSE;
 	static Bool isInitialized = FALSE;
-	static UnsignedInt beginWaitTime;
-	if(prevWindow == cmdButton)	
+	static TimePoint beginWaitTime {};
+	if(prevWindow == cmdButton)
 	{
 		m_showBuildToolTipLayout = TRUE;
-		if(!isInitialized &&  beginWaitTime + cmdButton->getTooltipDelay() < timeGetTime())
+		auto now {std::chrono::steady_clock::now()};
+		Duration elapsed {now - beginWaitTime};
+		if(!isInitialized && elapsed.count() > cmdButton->getTooltipDelay())
 		{
 			//DEBUG_LOG(("%d beginwaittime, %d tooltipdelay, %dtimegettime\n", beginWaitTime, cmdButton->getTooltipDelay(), timeGetTime()));
 			passedWaitTime = TRUE;
@@ -154,9 +161,9 @@ void ControlBar::showBuildTooltipLayout( GameWindow *cmdButton )
 	}
 	else if( !m_buildToolTipLayout->isHidden() )
 	{
-		if(useAnimation && TheGlobalData->m_animateWindows && !theAnimateWindowManager->isReversed())
+		if(useAnimation && TheGlobalData->m_data.m_animateWindows && !theAnimateWindowManager->isReversed())
 			theAnimateWindowManager->reverseAnimateWindow();
-		else if( useAnimation && TheGlobalData->m_animateWindows && theAnimateWindowManager->isReversed())
+		else if( useAnimation && TheGlobalData->m_data.m_animateWindows && theAnimateWindowManager->isReversed())
 		{
 			return;
 		}
@@ -176,7 +183,7 @@ void ControlBar::showBuildTooltipLayout( GameWindow *cmdButton )
 	if(!passedWaitTime)
 	{
 		prevWindow = cmdButton;
-		beginWaitTime = timeGetTime();
+		beginWaitTime = std::chrono::steady_clock::now();
 		isInitialized = FALSE;
 		return;
 	}
@@ -225,14 +232,14 @@ void ControlBar::showBuildTooltipLayout( GameWindow *cmdButton )
 	}
 	m_buildToolTipLayout->hide(FALSE);
 
-	if (useAnimation && TheGlobalData->m_animateWindows)
+	if (useAnimation && TheGlobalData->m_data.m_animateWindows)
 	{
 		theAnimateWindowManager = NEW AnimateWindowManager;	
 		theAnimateWindowManager->reset();
-		theAnimateWindowManager->registerGameWindow( m_buildToolTipLayout->getFirstWindow(), WIN_ANIMATION_SLIDE_RIGHT_FAST, TRUE, 200 );
+		theAnimateWindowManager->registerGameWindow( m_buildToolTipLayout->getFirstWindow(), WIN_ANIMATION_SLIDE_RIGHT_FAST, TRUE, Millis{200} );
 	}
 	
-	
+#endif // if 0
 }
 
 
@@ -248,16 +255,20 @@ void ControlBar::repopulateBuildTooltipLayout( void )
 
 void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton, GameWindow *tooltipWin)
 {
+(void) commandButton;
+(void) tooltipWin;
+DEBUG_CRASH(("ControlBar::populateBuildTooltipLayout not yet implemented!"));
+#if 0
 	if(!m_buildToolTipLayout)
 		return;
 
 	Player *player = ThePlayerList->getLocalPlayer();
 	UnicodeString name, cost, descrip;
-	UnicodeString requires = UnicodeString::TheEmptyString, requiresList;
+	UnicodeString require = UnicodeString::TheEmptyString, requiresList;
 	Bool firstRequirement = true;
 	const ProductionPrerequisite *prereq;
 	Bool fireScienceButton = false;
-	UnsignedInt costToBuild = 0;
+	Int costToBuild = 0;
 
 	if(commandButton)
 	{
@@ -268,9 +279,9 @@ void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton,
 		if( commandButton->getCommandType() != GUI_COMMAND_PLAYER_UPGRADE &&
 				commandButton->getCommandType() != GUI_COMMAND_OBJECT_UPGRADE ) 
 		{
-			if( commandButton->getScienceVec().size() > 1 ) 						
+			if( commandButton->getScienceVec().size() > 1 )
 			{
-				for(Int j = 0; j < commandButton->getScienceVec().size(); ++j)
+				for(size_t j = 0; j < commandButton->getScienceVec().size(); ++j)
 				{
 					st = commandButton->getScienceVec()[ j ];
 					
@@ -359,19 +370,21 @@ void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton,
 							break;
 						case CANMAKE_MAXED_OUT_FOR_PLAYER:
 							descrip.concat( L"\n\n" );
-              if ( thingTemplate->isKindOf( KINDOF_STRUCTURE ) )
-              {
-                descrip.concat( TheGameText->fetch( "TOOLTIP:TooltipCannotBuildBuildingBecauseMaximumNumber" ) );
-              }
-              else
-              {
-  							descrip.concat( TheGameText->fetch( "TOOLTIP:TooltipCannotBuildUnitBecauseMaximumNumber" ) );
-              }
+							if ( thingTemplate->isKindOf( KINDOF_STRUCTURE ) )
+							{
+							descrip.concat( TheGameText->fetch( "TOOLTIP:TooltipCannotBuildBuildingBecauseMaximumNumber" ) );
+							}
+							else
+							{
+								descrip.concat( TheGameText->fetch( "TOOLTIP:TooltipCannotBuildUnitBecauseMaximumNumber" ) );
+							}
 							break;
 						//case CANMAKE_NO_PREREQ:
 						//	descrip.concat( L"\n\n" );
 						//	descrip.concat( TheGameText->fetch( "TOOLTIP:TooltipCannotBuildDueToPrerequisites" ) );
 						//	break;
+						default:
+							break;
 					}
 				}
 
@@ -425,17 +438,17 @@ void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton,
 					if (firstRequirement)
 						firstRequirement = false;
 					else
-						requires.concat(L", ");
+						require.concat(L", ");
 				}
-				requires.concat(requiresList);
+				require.concat(requiresList);
 			}
-			if( !requires.isEmpty() )
+			if( !require.isEmpty() )
 			{
 				UnicodeString requireFormat = TheGameText->fetch("CONTROLBAR:Requirements");
-				requires.format(requireFormat.str(), requires.str());
+				require.format(requireFormat.str(), require.str());
 				if(!descrip.isEmpty())
 					descrip.concat(L"\n");
-				descrip.concat(requires);
+				descrip.concat(require);
 
 			}
 		}
@@ -493,7 +506,7 @@ void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton,
 			{
 
 				//Do we have a prerequisite science?
-				for( Int i = 0; i < commandButton->getScienceVec().size(); i++ )
+				for( size_t i = 0; i < commandButton->getScienceVec().size(); i++ )
 				{
 					ScienceType st = commandButton->getScienceVec()[ i ];
 					if( !player->hasScience( st ) )
@@ -514,8 +527,8 @@ void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton,
 				{
 					if( !descrip.isEmpty() )
 						descrip.concat(L"\n");
-					requires.format( TheGameText->fetch( "CONTROLBAR:Requirements" ).str(), TheGameText->fetch( "CONTROLBAR:GeneralsPromotion" ).str() );
-					descrip.concat( requires );
+					require.format( TheGameText->fetch( "CONTROLBAR:Requirements" ).str(), TheGameText->fetch( "CONTROLBAR:GeneralsPromotion" ).str() );
+					descrip.concat( require );
 				}
 			}
 		}	
@@ -543,17 +556,17 @@ void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton,
 						if (firstRequirement)
 							firstRequirement = false;
 						else
-							requires.concat(L", ");
+							require.concat(L", ");
 					}
-					requires.concat(requiresList);
+					require.concat(requiresList);
 				}
-				if( !requires.isEmpty() )
+				if( !require.isEmpty() )
 				{
 					UnicodeString requireFormat = TheGameText->fetch("CONTROLBAR:Requirements");
-					requires.format(requireFormat.str(), requires.str());
+					require.format(requireFormat.str(), require.str());
 					if(!descrip.isEmpty())
 						descrip.concat(L"\n");
-					descrip.concat(requires);
+					descrip.concat(require);
 				}
 			}
 
@@ -683,6 +696,7 @@ void ControlBar::populateBuildTooltipLayout( const CommandButton *commandButton,
 		GadgetStaticTextSetText(win, descrip);		
 	}
 	m_buildToolTipLayout->hide(FALSE);
+#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -691,7 +705,7 @@ void ControlBar::hideBuildTooltipLayout()
 {
 	if(theAnimateWindowManager && theAnimateWindowManager->isReversed())
 		return;
-	if(useAnimation && theAnimateWindowManager && TheGlobalData->m_animateWindows)
+	if(useAnimation && theAnimateWindowManager && TheGlobalData->m_data.m_animateWindows)
 		theAnimateWindowManager->reverseAnimateWindow();
 	else
 		deleteBuildTooltipLayout();

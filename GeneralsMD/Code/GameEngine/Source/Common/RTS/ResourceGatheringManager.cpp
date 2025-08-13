@@ -262,7 +262,7 @@ Object *ResourceGatheringManager::findBestSupplyCenter( Object *queryObject )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ResourceGatheringManager::crc( Xfer *xfer )
+void ResourceGatheringManager::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc

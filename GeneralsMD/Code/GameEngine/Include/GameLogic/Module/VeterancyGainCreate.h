@@ -48,7 +48,7 @@ public:
 	ScienceType m_scienceRequired;			///< The science you must have to trigger this
 
 	VeterancyGainCreateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 // ------------------------------------------------------------------------------------------------

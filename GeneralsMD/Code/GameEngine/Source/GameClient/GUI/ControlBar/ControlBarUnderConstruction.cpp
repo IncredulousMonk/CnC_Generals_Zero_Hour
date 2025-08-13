@@ -49,7 +49,7 @@ void ControlBar::updateConstructionTextDisplay( Object *obj )
 {
 	UnicodeString text;
 	static UnsignedInt descID = TheNameKeyGenerator->nameToKey( "ControlBar.wnd:UnderConstructionDesc" );
-	GameWindow *descWindow = TheWindowManager->winGetWindowFromId( NULL, descID );
+	GameWindow *descWindow = TheWindowManager->winGetWindowFromId( NULL, (Int)descID );
 
 	// santiy
 	DEBUG_ASSERTCRASH( descWindow, ("Under construction window not found\n") );

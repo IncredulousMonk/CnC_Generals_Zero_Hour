@@ -336,6 +336,7 @@ void LinuxDisplayString::setWordWrap(Int wordWrap)
 //=============================================================================
 void LinuxDisplayString::setUseHotkey(Bool useHotkey, Color hotKeyColor)
 {
+   (void) hotKeyColor;
    if (useHotkey) {
       DEBUG_LOG(("LinuxDisplayString::setUseHotkey not yet implemented!\n"));
    }
@@ -367,6 +368,7 @@ void LinuxDisplayString::createText()
 {
    if (m_text) {
       TTF_DestroyText(m_text);
+      m_text = nullptr;
    }
    if (getTextLength() > 0 && m_font) {
       m_text = m_renderer->createText(m_textString, *m_font);

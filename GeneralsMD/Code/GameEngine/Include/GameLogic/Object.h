@@ -350,7 +350,9 @@ public:
 	// Ditto for special powers -- Kris
 	SpecialPowerModuleInterface* findSpecialPowerModuleInterface( SpecialPowerType type ) const;
 	SpecialPowerModuleInterface* findAnyShortcutSpecialPowerModuleInterface() const;
+#endif // if 0
 	SpecialAbilityUpdate* findSpecialAbilityUpdate( SpecialPowerType type ) const;
+#if 0
 	SpecialPowerCompletionDie* findSpecialPowerCompletionDie() const;
 #endif // if 0
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestinationActive( SpecialPowerType type = SPECIAL_INVALID ) const;
@@ -413,10 +415,8 @@ public:
 	inline Bool isEffectivelyDead() const { return (m_privateStatus & EFFECTIVELY_DEAD) != 0; }
 	void setEffectivelyDead(Bool dead);
 
-#if 0
 	void markSingleUseCommandUsed() { m_singleUseCommandUsed = true; }
 	Bool hasSingleUseCommandBeenUsed() const { return m_singleUseCommandUsed; }
-#endif // if 0
 	
 	/// returns true iff the object can run over the other object. 
 	Bool canCrushOrSquish(Object *otherObj, CrushSquishTestType testType = TEST_CRUSH_OR_SQUISH) const;
@@ -434,9 +434,9 @@ public:
 	ObjectID calculateCountermeasureToDivertTo( const Object& victim );
 
 	void calcNaturalRallyPoint(Coord2D *pt); ///< calc the "natural" starting rally point
+#endif // if 0
 	void setConstructionPercent( Real percent ) { m_constructionPercent = percent; }
 	Real getConstructionPercent() const { return m_constructionPercent; }
-#endif // if 0
 
 	void setLayer( PathfindLayerEnum layer );
 	PathfindLayerEnum getLayer() const { return m_layer; }
@@ -602,12 +602,10 @@ public:
 	void clearArmorSetFlag(ArmorSetType ast);
 	Bool testArmorSetFlag(ArmorSetType ast) const;
 
-#if 0
 	/// return true if the template has the specified special power flag set
 	// @todo: inline
 	Bool hasSpecialPower( SpecialPowerType type ) const;
 	Bool hasAnySpecialPower() const;
-#endif // if 0
 
 	void setWeaponBonusCondition(WeaponBonusConditionType wst);
 	void clearWeaponBonusCondition(WeaponBonusConditionType wst);
@@ -841,9 +839,7 @@ private:
 	WeaponBonusConditionFlags			m_weaponBonusCondition {};
 	Byte								m_lastWeaponCondition[WEAPONSLOT_COUNT] {};
 
-#if 0
 	SpecialPowerMaskType				m_specialPowerBits {}; ///< bits determining what kind of special abilities this object has access to.
-#endif // if 0
 
 	//////////////////////////////////////< for the non-stacking healers like ambulance and propaganda
 	ObjectID m_soleHealingBenefactorID {}; ///< who is the only other object that can give me this non-stacking heal benefit?

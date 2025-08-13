@@ -239,16 +239,14 @@ void BridgeTowerBehavior::onHealing( DamageInfo *damageInfo )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void BridgeTowerBehavior::onBodyDamageStateChange( const DamageInfo* damageInfo, 
-																									 BodyDamageType oldState, 
-																									 BodyDamageType newState )
+void BridgeTowerBehavior::onBodyDamageStateChange( const DamageInfo* /* damageInfo */, BodyDamageType /* oldState */, BodyDamageType /* newState */ )
 {
 
 }  // end onBodyDamageStateChange
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void BridgeTowerBehavior::onDie( const DamageInfo *damageInfo )
+void BridgeTowerBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 
 	// kill the bridge object, this will kill all the towers

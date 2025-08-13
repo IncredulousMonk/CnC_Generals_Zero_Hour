@@ -27,6 +27,7 @@
 
 #include "GameClient/GameClient.h"
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
+#include "LinuxDevice/GameClient/LinuxInGameUI.h"
 #include "LinuxDevice/GameClient/LinuxDisplayStringManager.h"
 #include "LinuxDevice/GameClient/LinuxGameFont.h"
 #include "LinuxDevice/GameClient/LinuxGameWindowManager.h"
@@ -60,7 +61,7 @@ protected:
    virtual Display *createGameDisplay(void) { return NEW LinuxDisplay; }
 
    /// factory for creating TheInGameUI
-   virtual InGameUI *createInGameUI(void) { printf("!!! Creating NULL InGameUI !!!\n"); return nullptr; }	
+   virtual InGameUI *createInGameUI(void) { return NEW LinuxInGameUI; }
 
    /// factory for creating the window manager
    virtual GameWindowManager *createWindowManager(void) { return NEW LinuxGameWindowManager; }

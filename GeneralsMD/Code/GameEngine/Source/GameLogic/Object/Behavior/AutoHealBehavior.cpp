@@ -157,7 +157,7 @@ void AutoHealBehavior::undoUpgrade()
 //-------------------------------------------------------------------------------------------------
 /** Damage has been dealt, this is an opportunity to reach to that damage */
 //-------------------------------------------------------------------------------------------------
-void AutoHealBehavior::onDamage( DamageInfo *damageInfo )
+void AutoHealBehavior::onDamage( DamageInfo* /* damageInfo */ )
 {
 	if (m_stopped)
 		return;

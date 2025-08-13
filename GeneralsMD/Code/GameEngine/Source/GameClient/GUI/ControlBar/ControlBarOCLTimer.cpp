@@ -33,7 +33,7 @@
 #include "Common/NameKeyGenerator.h"
 #include "Common/ThingTemplate.h"
 #include "GameLogic/Object.h"
-#include "GameLogic/Module/OCLUpdate.h"
+// #include "GameLogic/Module/OCLUpdate.h"
 #include "GameClient/Drawable.h"
 #include "GameClient/GameText.h"
 #include "GameClient/ControlBar.h"
@@ -48,16 +48,16 @@ void ControlBar::updateOCLTimerTextDisplay( UnsignedInt totalSeconds, Real perce
 {
 	UnicodeString text;
 	static UnsignedInt descID = TheNameKeyGenerator->nameToKey( "ControlBar.wnd:OCLTimerStaticText" );
-	GameWindow *descWindow = TheWindowManager->winGetWindowFromId( NULL, descID );
+	GameWindow *descWindow = TheWindowManager->winGetWindowFromId( NULL, (Int)descID );
 
 	static UnsignedInt barID = TheNameKeyGenerator->nameToKey( "ControlBar.wnd:OCLTimerProgressBar" );
-	GameWindow *barWindow = TheWindowManager->winGetWindowFromId( NULL, barID );
+	GameWindow *barWindow = TheWindowManager->winGetWindowFromId( NULL, (Int)barID );
 
 	// santiy
 	DEBUG_ASSERTCRASH( descWindow, ("Under construction window not found\n") );
 
-	Int minutes = totalSeconds / 60;
-	Int seconds = totalSeconds - (minutes * 60);
+	UnsignedInt minutes = totalSeconds / 60;
+	UnsignedInt seconds = totalSeconds - (minutes * 60);
 
 	// format the message
 	if( seconds < 10 )
@@ -139,6 +139,8 @@ void ControlBar::populateOCLTimer( Object *creatorObject )
 //-------------------------------------------------------------------------------------------------
 void ControlBar::updateContextOCLTimer( void )
 {
+DEBUG_CRASH(("ControlBar::updateContextOCLTimer not yet implemented!"));
+#if 0
 	Object *obj = m_currentSelectedDrawable->getObject();
 
 	static const NameKeyType key_OCLUpdate = NAMEKEY( "OCLUpdate" );
@@ -153,4 +155,5 @@ void ControlBar::updateContextOCLTimer( void )
 	if( m_displayedOCLTimerSeconds != seconds )
 		updateOCLTimerTextDisplay( seconds, percent );
 
+#endif // if 0
 }  // end updatecontextUnderConstruction

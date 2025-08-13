@@ -44,22 +44,26 @@ public:
 
 	struct FactionOCLInfo
 	{
-		std::string									m_factionName;
+		std::string					m_factionName;
 		const ObjectCreationList *	m_ocl;
 	};
 
 	typedef std::list<FactionOCLInfo> FactionOCLList;
 
 	const ObjectCreationList *	m_ocl;
-	FactionOCLList							m_factionOCL;
-	UnsignedInt									m_minDelay;
-	UnsignedInt									m_maxDelay;
-	Bool												m_isCreateAtEdge;				///< Otherwise, it is created on top of myself
-	Bool												m_isFactionTriggered;		///< Faction has to be present before update will happen
+	FactionOCLList				m_factionOCL;
+	UnsignedInt					m_minDelay;
+	UnsignedInt					m_maxDelay;
+	Bool						m_isCreateAtEdge;				///< Otherwise, it is created on top of myself
+	Bool						m_isFactionTriggered;		///< Faction has to be present before update will happen
 	
 	OCLUpdateModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	// No copies allowed!
+	OCLUpdateModuleData(const OCLUpdateModuleData&) = delete;
+	OCLUpdateModuleData& operator=(const OCLUpdateModuleData&) = delete;
+
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 

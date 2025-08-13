@@ -128,7 +128,7 @@ DEBUG_CRASH(("SoundFXNugget::doFXObj not yet implemented!"));
 #endif // if 0
 	}
 
-	static void parseSoundName(INI* ini, void *instance, void *store, const void *userData)
+	static void parseSoundName(INI* ini, void *instance, void* /* store */, const void* /* userData */)
 	{
 		SoundFXNugget* self = (SoundFXNugget*) instance;
 		INI::parseAsciiString(ini, nullptr, &self->m_soundName, nullptr);
@@ -464,7 +464,7 @@ DEBUG_CRASH(("ViewShakeFXNugget::doFXObj not yet implemented!"));
 	}
 
 protected:
-	static void parseShakeType( INI* ini, void *instance, void *store, const void* /*userData*/ )
+	static void parseShakeType( INI* ini, void* /* instance */, void *store, const void* /*userData*/ )
 	{
 		static const LookupListRec shakeTypeNames[] = 
 		{
@@ -536,7 +536,7 @@ public:
 
 protected:
 
-	static void parseScorchType( INI* ini, void *instance, void *store, const void* /*userData*/ )
+	static void parseScorchType( INI* ini, void* /* instance */, void *store, const void* /*userData*/ )
 	{
 		static const LookupListRec scorchTypeNames[] = 
 		{
@@ -769,7 +769,7 @@ public:
 		m_ini.m_orientToBone = true;
 	}
 
-	virtual void doFXPos(const Coord3D *primary, const Matrix3D* primaryMtx, const Real /*primarySpeed*/, const Coord3D * /*secondary*/, const Real /*overrideRadius*/ ) const
+	virtual void doFXPos(const Coord3D* /* primary */, const Matrix3D* /* primaryMtx */, const Real /*primarySpeed*/, const Coord3D * /*secondary*/, const Real /*overrideRadius*/ ) const
 	{
 		DEBUG_CRASH(("You must use the object form for this effect"));
 	}

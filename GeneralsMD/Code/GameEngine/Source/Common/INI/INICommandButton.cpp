@@ -72,8 +72,7 @@ void ControlBar::parseCommandButtonDefinition( INI *ini )
 	}
 
 	// parse the ini definition
-	ini->initFromINI( button, button->getFieldParse() );
-	
+	ini->initFromINI( &button->m_ini, button->getFieldParse() );
 
 	//Make sure buttons with special power templates also have the appropriate option set.
 	const SpecialPowerTemplate *spTemplate = button->getSpecialPowerTemplate();

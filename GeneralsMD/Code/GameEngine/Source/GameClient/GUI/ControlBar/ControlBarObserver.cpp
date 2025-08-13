@@ -57,7 +57,7 @@
 #include "Common/Player.h"
 #include "Common/PlayerTemplate.h"
 #include "Common/KindOf.h"
-#include "Common/Recorder.h"
+// #include "Common/Recorder.h"
 #include "GameClient/ControlBar.h"
 #include "GameClient/GameWindowManager.h"
 #include "GameClient/GadgetPushButton.h"
@@ -130,10 +130,10 @@ void ControlBar::initObserverControls( void )
 //-------------------------------------------------------------------------------------------------
 /** System callback for the ControlBarObserverSystem */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType ControlBarObserverSystem( GameWindow *window, UnsignedInt msg, 
-																			 WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType ControlBarObserverSystem( GameWindow* /* window */, UnsignedInt msg, 
+																			 WindowMsgData mData1, WindowMsgData /* mData2 */ )
 {
-	static NameKeyType buttonCommunicator = NAMEKEY_INVALID;
+	// static NameKeyType buttonCommunicator = NAMEKEY_INVALID;
 	
 	switch( msg ) 
 	{
@@ -209,6 +209,8 @@ WindowMsgHandledType ControlBarObserverSystem( GameWindow *window, UnsignedInt m
 
 void ControlBar::populateObserverList( void )
 {
+DEBUG_CRASH(("ControlBar::populateObserverList not yet implemented!"));
+#if 0
 	Int currentButton = 0, i;
 	if(TheRecorder->isMultiplayer())
 	{
@@ -251,7 +253,7 @@ void ControlBar::populateObserverList( void )
 				++currentButton;
 			}
 		}
-		for(currentButton; currentButton<MAX_BUTTONS; ++currentButton)
+		for(; currentButton<MAX_BUTTONS; ++currentButton)
 		{
 			buttonPlayer[currentButton]->winHide(TRUE);
 			staticTextPlayer[currentButton]->winHide(TRUE);
@@ -284,12 +286,13 @@ void ControlBar::populateObserverList( void )
 				break;
 			}
 		}
-		for(currentButton; currentButton<MAX_BUTTONS; ++currentButton)
+		for(; currentButton<MAX_BUTTONS; ++currentButton)
 		{
 			buttonPlayer[currentButton]->winHide(TRUE);
 			staticTextPlayer[currentButton]->winHide(TRUE);
 		}
 	}
+#endif // if 0
 }
 
 void ControlBar::populateObserverInfoWindow ( void )

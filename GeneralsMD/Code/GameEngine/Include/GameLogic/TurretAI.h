@@ -165,7 +165,7 @@ public:
 	virtual StateReturnType update();
 protected:
 	// snapshot interface	STUBBED - no member vars to save. jba.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };
@@ -185,7 +185,7 @@ public:
 	virtual StateReturnType update();
 protected:
 	// snapshot interface	STUBBED - no member vars to save. jba.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer * /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 };

@@ -45,24 +45,24 @@ public:
 		Int count;
 	};
 
-	Int								m_slotCapacity;								///< max units that can be inside us
-	Real							m_exitPitchRate;
-	AsciiString				m_exitBone;
+	Int					m_slotCapacity;								///< max units that can be inside us
+	Real				m_exitPitchRate;
+	AsciiString			m_exitBone;
 	InitialPayload		m_initialPayload;
-	Real							m_healthRegen;
-	UnsignedInt				m_exitDelay;
-	Bool							m_scatterNearbyOnExit;
-	Bool							m_orientLikeContainerOnExit;
-	Bool							m_keepContainerVelocityOnExit;
-	Bool							m_goAggressiveOnExit;
-	Bool							m_armedRidersUpgradeWeaponSet;
-	Bool							m_resetMoodCheckTimeOnExit;
-	Bool							m_destroyRidersWhoAreNotFreeToExit;
-	Bool							m_isDelayExitInAir;
+	Real				m_healthRegen;
+	UnsignedInt			m_exitDelay;
+	Bool				m_scatterNearbyOnExit;
+	Bool				m_orientLikeContainerOnExit;
+	Bool				m_keepContainerVelocityOnExit;
+	Bool				m_goAggressiveOnExit;
+	Bool				m_armedRidersUpgradeWeaponSet;
+	Bool				m_resetMoodCheckTimeOnExit;
+	Bool				m_destroyRidersWhoAreNotFreeToExit;
+	Bool				m_isDelayExitInAir;
 
 	TransportContainModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	static void parseInitialPayload( INI* ini, void *instance, void *store, const void* /*userData*/ );
 
 };

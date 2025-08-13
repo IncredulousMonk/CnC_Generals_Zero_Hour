@@ -38,7 +38,7 @@
 #include "Common/PlayerTemplate.h"
 #include "Common/SpecialPower.h"
 #include "Common/Upgrade.h"
-#include "Common/BuildAssistant.h"
+// #include "Common/BuildAssistant.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Module/BattlePlanUpdate.h"
 #include "GameLogic/Module/DozerAIUpdate.h"
@@ -67,7 +67,7 @@
 #endif
 
 // PRIVATE DATA ///////////////////////////////////////////////////////////////////////////////////
-static GameWindow *commandWindows[ MAX_COMMANDS_PER_SET ];
+// static GameWindow *commandWindows[ MAX_COMMANDS_PER_SET ];
 Bool commandWindowsInitialized = FALSE;
 static Color BuildClockColor = GameMakeColor(0,0,0,100);
 // STATIC DATA STORAGE ////////////////////////////////////////////////////////////////////////////
@@ -372,14 +372,14 @@ void ControlBar::populateCommand( Object *obj )
 								//button specifying a vector of sciences in the command button.
 								Int bestIndex = -1;
 								ScienceType science;
-								for( Int scienceIndex = 0; scienceIndex < commandButton->getScienceVec().size(); ++scienceIndex )
+								for( size_t scienceIndex = 0; scienceIndex < commandButton->getScienceVec().size(); ++scienceIndex )
 								{
 									science = commandButton->getScienceVec()[ scienceIndex ];
 									
 									//Keep going until we reach the end or don't have the required science!
 									if( player->hasScience( science ) )
 									{
-										bestIndex = scienceIndex;
+										bestIndex = (Int)scienceIndex;
 									}
 									else
 									{
@@ -390,7 +390,7 @@ void ControlBar::populateCommand( Object *obj )
 								if( bestIndex != -1 )
 								{
 									//Now get the best sciencetype.
-									science = commandButton->getScienceVec()[ bestIndex ];
+									science = commandButton->getScienceVec().data()[ bestIndex ];
 
 									const CommandSet *commandSet1;
 									const CommandSet *commandSet3;
@@ -966,8 +966,10 @@ const Image* ControlBar::calculateVeterancyOverlayForThing( const ThingTemplate 
 			return m_rankEliteIcon;
 		case LEVEL_HEROIC:
 			return m_rankHeroicIcon;
+		default:
+			break;
 	}
-	return NULL;;
+	return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -988,10 +990,13 @@ const Image* ControlBar::calculateVeterancyOverlayForObject( const Object *obj )
 			return m_rankEliteIcon;
 		case LEVEL_HEROIC:
 			return m_rankHeroicIcon;
+		default:
+			break;
 	}
 	return NULL;;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 static Int getRappellerCount(Object* obj)
 {
@@ -1009,6 +1014,7 @@ static Int getRappellerCount(Object* obj)
 	}
 	return num;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** What's the status between 'obj' and the 'command' at present.  Can we do it?  Are
@@ -1020,6 +1026,14 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 																												GameWindow *applyToWin,
 																												Bool forceDisabledEvaluation ) const
 {
+(void) command;
+(void) obj;
+(void) win;
+(void) applyToWin;
+(void) forceDisabledEvaluation;
+DEBUG_CRASH(("ControlBar::getCommandAvailability not yet implemented!"));
+return COMMAND_AVAILABLE;
+#if 0
 	if(	command->getCommandType() == GUI_COMMAND_SPECIAL_POWER_FROM_SHORTCUT 
 			|| command->getCommandType() == GUI_COMMAND_SPECIAL_POWER_CONSTRUCT_FROM_SHORTCUT )
 	{
@@ -1135,7 +1149,7 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 	{
 		case GUI_COMMAND_DOZER_CONSTRUCT:
 		{
-      const ThingTemplate * whatToBuild = command->getThingTemplate();
+			const ThingTemplate * whatToBuild = command->getThingTemplate();
 			// if the command is a dozer construct task and the object dozer is building anything
 			// this command is not available
 			if(whatToBuild)
@@ -1172,10 +1186,9 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			{
 				return COMMAND_RESTRICTED;//COMMAND_CANT_AFFORD;
 			}
-      
 
 			break;
-		}  
+		}
 
 		case GUI_COMMAND_SELL:
 		{
@@ -1184,9 +1197,9 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			if (obj->testScriptStatusBit(OBJECT_STATUS_SCRIPT_UNSELLABLE))
 				return COMMAND_HIDDEN;
 
-    //since the container can be subdued, , M Lorenzen 8/11
-      if ( obj->isDisabledByType( DISABLED_SUBDUED ) )
-        return COMMAND_RESTRICTED;
+			//since the container can be subdued, , M Lorenzen 8/11
+			if ( obj->isDisabledByType( DISABLED_SUBDUED ) )
+				return COMMAND_RESTRICTED;
 
 			break;
 		}
@@ -1223,7 +1236,7 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			}
 
 			break;
-		}  
+		}
 
 		case GUI_COMMAND_PLAYER_UPGRADE:
 		{
@@ -1240,7 +1253,7 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			if( TheUpgradeCenter->canAffordUpgrade( player, command->getUpgradeTemplate() ) == FALSE )
 				return COMMAND_RESTRICTED;//COMMAND_CANT_AFFORD;
 
-			for( Int i = 0; i < command->getScienceVec().size(); i++ )
+			for( size_t i = 0; i < command->getScienceVec().size(); i++ )
 			{
 				ScienceType st = command->getScienceVec()[ i ];
 				if( !player->hasScience( st ) )
@@ -1276,7 +1289,7 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			if( TheUpgradeCenter->canAffordUpgrade( player, command->getUpgradeTemplate() ) == FALSE )
 				return COMMAND_RESTRICTED;//COMMAND_CANT_AFFORD;
 
-			for( Int i = 0; i < command->getScienceVec().size(); i++ )
+			for( size_t i = 0; i < command->getScienceVec().size(); i++ )
 			{
 				ScienceType st = command->getScienceVec()[ i ];
 				if( !player->hasScience( st ) )
@@ -1375,9 +1388,9 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			// container changes the UI is completely repopulated
 			//
 
-    //since the container can be subdued, the above is no longer true, M Lorenzen 8/11
-      if ( obj->isDisabledByType( DISABLED_SUBDUED ) )
-        return COMMAND_RESTRICTED;
+			//since the container can be subdued, the above is no longer true, M Lorenzen 8/11
+			if ( obj->isDisabledByType( DISABLED_SUBDUED ) )
+				return COMMAND_RESTRICTED;
 
 			break;
 		} 
@@ -1389,8 +1402,8 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			if( !obj->getContain() || obj->getContain()->getContainCount() <= 0 )
 				return COMMAND_RESTRICTED;
 
-      if ( obj->isDisabledByType( DISABLED_SUBDUED ) )
-        return COMMAND_RESTRICTED;
+			if ( obj->isDisabledByType( DISABLED_SUBDUED ) )
+				return COMMAND_RESTRICTED;
 
 
 			break;
@@ -1404,7 +1417,7 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			if( dui == NULL || dui->isDockOpen() == FALSE )
 				return COMMAND_RESTRICTED;
 			break;
-		}  
+		}
 
 		case GUI_COMMAND_SPECIAL_POWER:
 		case GUI_COMMAND_SPECIAL_POWER_FROM_SHORTCUT:
@@ -1532,10 +1545,13 @@ CommandAvailability ControlBar::getCommandAvailability( const CommandButton *com
 			//We can *always* select a unit :)
 			return COMMAND_AVAILABLE;
 		}
+
+		default:
+			break;
 	}
 	
 	// all is well with the command
 	return COMMAND_AVAILABLE;
 
+#endif // if 0
 }  // end getCommandAvailability
-

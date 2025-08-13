@@ -76,33 +76,33 @@ enum RadiusCursorType: int;
 //-------------------------------------------------------------------------------------------------
 enum CommandOption: UnsignedInt
 {
-	COMMAND_OPTION_NONE					= 0x00000000,
+	COMMAND_OPTION_NONE				= 0x00000000,
 	NEED_TARGET_ENEMY_OBJECT		= 0x00000001, // command now needs user to select enemy target
-	NEED_TARGET_NEUTRAL_OBJECT	= 0x00000002, // command now needs user to select neutral target
+	NEED_TARGET_NEUTRAL_OBJECT		= 0x00000002, // command now needs user to select neutral target
 	NEED_TARGET_ALLY_OBJECT			= 0x00000004, // command now needs user to select ally target
 #ifdef ALLOW_SURRENDER
-	NEED_TARGET_PRISONER				= 0x00000008, // needs user to now select prisoner object
+	NEED_TARGET_PRISONER			= 0x00000008, // needs user to now select prisoner object
 #endif
 	ALLOW_SHRUBBERY_TARGET			= 0x00000010, // allow neutral shrubbery as a target
-	NEED_TARGET_POS							= 0x00000020, // command now needs user to select target position
-	NEED_UPGRADE								= 0x00000040, // command requires upgrade to be enabled
-	NEED_SPECIAL_POWER_SCIENCE	= 0x00000080, // command requires a science in the special power specified
-	OK_FOR_MULTI_SELECT					= 0x00000100, // command is ok to show when multiple objects selected
-	CONTEXTMODE_COMMAND					= 0x00000200, // a context sensitive command mode that requires code to determine whether cursor is valid or not.
-	CHECK_LIKE									= 0x00000400, // dynamically change the UI element push button to be "check like"
-	ALLOW_MINE_TARGET						= 0x00000800, // allow (land)mines as a target
-	ATTACK_OBJECTS_POSITION			=	0x00001000, // for weapons that need an object target but attack the position indirectly (like burning trees)
-	OPTION_ONE									= 0x00002000, // User data -- option 1
-	OPTION_TWO									= 0x00004000,	// User data -- option 2
-	OPTION_THREE								= 0x00008000,	// User data -- option 3
-	NOT_QUEUEABLE								= 0x00010000,	// Option not build queueable meaning you can only build it when queue is empty!
-	SINGLE_USE_COMMAND					= 0x00020000, // Once used, it can never be used again!
+	NEED_TARGET_POS					= 0x00000020, // command now needs user to select target position
+	NEED_UPGRADE					= 0x00000040, // command requires upgrade to be enabled
+	NEED_SPECIAL_POWER_SCIENCE		= 0x00000080, // command requires a science in the special power specified
+	OK_FOR_MULTI_SELECT				= 0x00000100, // command is ok to show when multiple objects selected
+	CONTEXTMODE_COMMAND				= 0x00000200, // a context sensitive command mode that requires code to determine whether cursor is valid or not.
+	CHECK_LIKE						= 0x00000400, // dynamically change the UI element push button to be "check like"
+	ALLOW_MINE_TARGET				= 0x00000800, // allow (land)mines as a target
+	ATTACK_OBJECTS_POSITION			= 0x00001000, // for weapons that need an object target but attack the position indirectly (like burning trees)
+	OPTION_ONE						= 0x00002000, // User data -- option 1
+	OPTION_TWO						= 0x00004000, // User data -- option 2
+	OPTION_THREE					= 0x00008000, // User data -- option 3
+	NOT_QUEUEABLE					= 0x00010000, // Option not build queueable meaning you can only build it when queue is empty!
+	SINGLE_USE_COMMAND				= 0x00020000, // Once used, it can never be used again!
 	COMMAND_FIRED_BY_SCRIPT			= 0x00040000, // Used only by code to tell special powers that they have been fired by a script.
-	SCRIPT_ONLY									= 0x00080000, // Only a script can use this command (not by users)
-	IGNORES_UNDERPOWERED				= 0x00100000, // this button isn't disabled if its object is merely underpowered
-	USES_MINE_CLEARING_WEAPONSET= 0x00200000,	// uses the special mine-clearing weaponset, even if not current
-	CAN_USE_WAYPOINTS						= 0x00400000, // button has option to use a waypoint path
-	MUST_BE_STOPPED							= 0x00800000, // Unit must be stopped in order to be able to use button.
+	SCRIPT_ONLY						= 0x00080000, // Only a script can use this command (not by users)
+	IGNORES_UNDERPOWERED			= 0x00100000, // this button isn't disabled if its object is merely underpowered
+	USES_MINE_CLEARING_WEAPONSET	= 0x00200000, // uses the special mine-clearing weaponset, even if not current
+	CAN_USE_WAYPOINTS				= 0x00400000, // button has option to use a waypoint path
+	MUST_BE_STOPPED					= 0x00800000, // Unit must be stopped in order to be able to use button.
 
 	NUM_COMMAND_OPTIONS						// keep this last
 };
@@ -169,51 +169,51 @@ const UnsignedInt COMMAND_OPTION_NEED_OBJECT_TARGET =
 //-------------------------------------------------------------------------------------------------
 enum GUICommandType: int
 {
-	GUI_COMMAND_NONE = 0,									///< invalid command
-	GUI_COMMAND_DOZER_CONSTRUCT,					///< dozer construct
+	GUI_COMMAND_NONE = 0,					///< invalid command
+	GUI_COMMAND_DOZER_CONSTRUCT,			///< dozer construct
 	GUI_COMMAND_DOZER_CONSTRUCT_CANCEL,		///< cancel a dozer construction process
-	GUI_COMMAND_UNIT_BUILD,								///< build a unit
-	GUI_COMMAND_CANCEL_UNIT_BUILD,				///< cancel a unit build
-	GUI_COMMAND_PLAYER_UPGRADE,						///< put an upgrade that applies to the player in the queue
-	GUI_COMMAND_OBJECT_UPGRADE,						///< put an object upgrade in the queue
-	GUI_COMMAND_CANCEL_UPGRADE,						///< cancel an upgrade
-	GUI_COMMAND_ATTACK_MOVE,							///< attack move command
-	GUI_COMMAND_GUARD,										///< guard command
+	GUI_COMMAND_UNIT_BUILD,					///< build a unit
+	GUI_COMMAND_CANCEL_UNIT_BUILD,			///< cancel a unit build
+	GUI_COMMAND_PLAYER_UPGRADE,				///< put an upgrade that applies to the player in the queue
+	GUI_COMMAND_OBJECT_UPGRADE,				///< put an object upgrade in the queue
+	GUI_COMMAND_CANCEL_UPGRADE,				///< cancel an upgrade
+	GUI_COMMAND_ATTACK_MOVE,				///< attack move command
+	GUI_COMMAND_GUARD,						///< guard command
 	GUI_COMMAND_GUARD_WITHOUT_PURSUIT,		///< guard command, no pursuit out of guard area
 	GUI_COMMAND_GUARD_FLYING_UNITS_ONLY,	///< guard command, ignore nonflyers
-	GUI_COMMAND_STOP,											///< stop moving
-	GUI_COMMAND_WAYPOINTS,								///< create a set of waypoints for this unit
-	GUI_COMMAND_EXIT_CONTAINER,						///< an inventory box for a container like a structure or transport
-	GUI_COMMAND_EVACUATE,									///< dump all our contents
+	GUI_COMMAND_STOP,						///< stop moving
+	GUI_COMMAND_WAYPOINTS,					///< create a set of waypoints for this unit
+	GUI_COMMAND_EXIT_CONTAINER,				///< an inventory box for a container like a structure or transport
+	GUI_COMMAND_EVACUATE,					///< dump all our contents
 	GUI_COMMAND_EXECUTE_RAILED_TRANSPORT,	///< execute railed transport sequence
-	GUI_COMMAND_BEACON_DELETE,						///< delete a beacon
-	GUI_COMMAND_SET_RALLY_POINT,					///< set rally point for a structure
-	GUI_COMMAND_SELL,											///< sell a structure
-	GUI_COMMAND_FIRE_WEAPON,							///< fire a weapon
-	GUI_COMMAND_SPECIAL_POWER,						///< do a special power
-	GUI_COMMAND_PURCHASE_SCIENCE,					///< purchase science
-	GUI_COMMAND_HACK_INTERNET,						///< gain income from the ether (by hacking the internet)
-	GUI_COMMAND_TOGGLE_OVERCHARGE,				///< Overcharge command for power plants
+	GUI_COMMAND_BEACON_DELETE,				///< delete a beacon
+	GUI_COMMAND_SET_RALLY_POINT,			///< set rally point for a structure
+	GUI_COMMAND_SELL,						///< sell a structure
+	GUI_COMMAND_FIRE_WEAPON,				///< fire a weapon
+	GUI_COMMAND_SPECIAL_POWER,				///< do a special power
+	GUI_COMMAND_PURCHASE_SCIENCE,			///< purchase science
+	GUI_COMMAND_HACK_INTERNET,				///< gain income from the ether (by hacking the internet)
+	GUI_COMMAND_TOGGLE_OVERCHARGE,			///< Overcharge command for power plants
 #ifdef ALLOW_SURRENDER
-	GUI_COMMAND_POW_RETURN_TO_PRISON,			///< POW Truck, return to prison
+	GUI_COMMAND_POW_RETURN_TO_PRISON,		///< POW Truck, return to prison
 #endif
-	GUI_COMMAND_COMBATDROP,								///< rappel contents to ground or bldg
-	GUI_COMMAND_SWITCH_WEAPON,						///< switch weapon use
+	GUI_COMMAND_COMBATDROP,					///< rappel contents to ground or bldg
+	GUI_COMMAND_SWITCH_WEAPON,				///< switch weapon use
 
 	//Context senstive command modes
 	GUICOMMANDMODE_HIJACK_VEHICLE,
 	GUICOMMANDMODE_CONVERT_TO_CARBOMB,
 	GUICOMMANDMODE_SABOTAGE_BUILDING,
 #ifdef ALLOW_SURRENDER
-	GUICOMMANDMODE_PICK_UP_PRISONER,			///< POW Truck assigned to pick up a specific prisoner
+	GUICOMMANDMODE_PICK_UP_PRISONER,		///< POW Truck assigned to pick up a specific prisoner
 #endif
 
 	// context-insensitive command mode(s)
 	GUICOMMANDMODE_PLACE_BEACON,
 
 	GUI_COMMAND_SPECIAL_POWER_FROM_SHORTCUT,			///< do a special power from localPlayer's command center, regardless of selection
-	GUI_COMMAND_SPECIAL_POWER_CONSTRUCT,					///< do a special power using the construct building interface
-	GUI_COMMAND_SPECIAL_POWER_CONSTRUCT_FROM_SHORTCUT, ///< do a shortcut special power using the construct building interface
+	GUI_COMMAND_SPECIAL_POWER_CONSTRUCT,				///< do a special power using the construct building interface
+	GUI_COMMAND_SPECIAL_POWER_CONSTRUCT_FROM_SHORTCUT,	///< do a shortcut special power using the construct building interface
 	
 	GUI_COMMAND_SELECT_ALL_UNITS_OF_TYPE,
 
@@ -284,7 +284,7 @@ enum CommandButtonMappedBorderType
 
 static const LookupListRec CommandButtonMappedBorderTypeNames[] = 
 {
-	{ "NONE",					COMMAND_BUTTON_BORDER_NONE },
+	{ "NONE",				COMMAND_BUTTON_BORDER_NONE },
 	{ "BUILD",				COMMAND_BUTTON_BORDER_BUILD },
 	{ "UPGRADE",			COMMAND_BUTTON_BORDER_UPGRADE },
 	{ "ACTION",				COMMAND_BUTTON_BORDER_ACTION },
@@ -307,14 +307,15 @@ public:
 	CommandButton( void );
 	// virtual destructor prototype provided by MemoryPoolObject
 
-	// No copies allowed!
 	CommandButton(const CommandButton&) = delete;
-	CommandButton& operator=(const CommandButton&) = delete;
+	CommandButton& operator=(const CommandButton&) = default;
 
 	/// INI parsing
 	const FieldParse *getFieldParse() const { return s_commandButtonFieldParseTable; }
 	static const FieldParse s_commandButtonFieldParseTable[];		///< the parse table
 	static void parseCommand( INI* ini, void *instance, void *store, const void *userData );
+	// Proxy parse function to avoid offset problems:
+	static void parseAudioEventRTS(INI* ini, void *instance, void* store, const void* userData);
 
 	Bool isContextCommand() const;									///< determines if this is a context sensitive command.
 	Bool isValidRelationshipTarget(Relationship r) const;
@@ -328,24 +329,24 @@ public:
 	Bool isReady(const Object *sourceObj) const;
 
 	const AsciiString& getName() const { return m_name; }
-	const AsciiString& getCursorName() const { return m_cursorName; }
-	const AsciiString& getInvalidCursorName() const { return m_invalidCursorName; }
-	const AsciiString& getTextLabel() const { return m_textLabel; }
-	const AsciiString& getDescriptionLabel() const { return m_descriptionLabel; }
-	const AsciiString& getPurchasedLabel() const { return m_purchasedLabel; }
-	const AsciiString& getConflictingLabel() const { return m_conflictingLabel; }
+	const AsciiString& getCursorName() const { return m_ini.m_cursorName; }
+	const AsciiString& getInvalidCursorName() const { return m_ini.m_invalidCursorName; }
+	const AsciiString& getTextLabel() const { return m_ini.m_textLabel; }
+	const AsciiString& getDescriptionLabel() const { return m_ini.m_descriptionLabel; }
+	const AsciiString& getPurchasedLabel() const { return m_ini.m_purchasedLabel; }
+	const AsciiString& getConflictingLabel() const { return m_ini.m_conflictingLabel; }
 	const AudioEventRTS* getUnitSpecificSound() const { return &m_unitSpecificSound; }
 
-	GUICommandType getCommandType() const { return m_command; }
-	UnsignedInt getOptions() const { return m_options; }
-	OVERRIDE<ThingTemplate> getThingTemplate() const { return m_thingTemplate; }
-	const UpgradeTemplate* getUpgradeTemplate() const { return m_upgradeTemplate; }
-	const SpecialPowerTemplate* getSpecialPowerTemplate() const { return m_specialPower; }
-	RadiusCursorType getRadiusCursorType() const { return m_radiusCursor; }
-	WeaponSlotType getWeaponSlot() const { return m_weaponSlot; }
-	Int getMaxShotsToFire() const { return m_maxShotsToFire; }
-	const ScienceVec& getScienceVec() const { return m_science; }
-	CommandButtonMappedBorderType getCommandButtonMappedBorderType() const { return m_commandButtonBorder; }
+	GUICommandType getCommandType() const { return m_ini.m_command; }
+	UnsignedInt getOptions() const { return m_ini.m_options; }
+	OVERRIDE<ThingTemplate> getThingTemplate() const { return m_ini.m_thingTemplate; }
+	const UpgradeTemplate* getUpgradeTemplate() const { return m_ini.m_upgradeTemplate; }
+	const SpecialPowerTemplate* getSpecialPowerTemplate() const { return m_ini.m_specialPower; }
+	RadiusCursorType getRadiusCursorType() const { return m_ini.m_radiusCursor; }
+	WeaponSlotType getWeaponSlot() const { return m_ini.m_weaponSlot; }
+	Int getMaxShotsToFire() const { return m_ini.m_maxShotsToFire; }
+	const ScienceVec& getScienceVec() const { return m_ini.m_science; }
+	CommandButtonMappedBorderType getCommandButtonMappedBorderType() const { return m_ini.m_commandButtonBorder; }
 	const Image* getButtonImage() const { return m_buttonImage;	}
 	void cacheButtonImage();
 
@@ -372,36 +373,46 @@ public:
 	CommandButton* friend_getNext() { return m_next; }
 
 private:
-	AsciiString										m_name;												///< template name
-	GUICommandType								m_command;										///< type of command this button 
-	CommandButton*								m_next;
-	UnsignedInt										m_options;										///< command options (see CommandOption enum)
-	const ThingTemplate*					m_thingTemplate;							///< for commands that use thing templates in command data
-	const UpgradeTemplate*				m_upgradeTemplate;						///< for commands that use upgrade templates in command data
-	const SpecialPowerTemplate*		m_specialPower;								///< actual special power template
-	RadiusCursorType							m_radiusCursor;								///< radius cursor, if any
-	AsciiString										m_cursorName;									///< cursor name for placement (NEED_TARGET_POS) or valid version (CONTEXTMODE_COMMAND)
-	AsciiString										m_invalidCursorName;					///< cursor name for invalid version
+	// MG: Cannot apply offsetof to CommandButton, so had to move data into an embedded struct.
+	struct IniData
+	{
+		GUICommandType					m_command;						///< type of command this button 
+		UnsignedInt						m_options;						///< command options (see CommandOption enum)
+		const ThingTemplate*			m_thingTemplate;				///< for commands that use thing templates in command data
+		const UpgradeTemplate*			m_upgradeTemplate;				///< for commands that use upgrade templates in command data
+		const SpecialPowerTemplate*		m_specialPower;					///< actual special power template
+		RadiusCursorType				m_radiusCursor;					///< radius cursor, if any
+		AsciiString						m_cursorName;					///< cursor name for placement (NEED_TARGET_POS) or valid version (CONTEXTMODE_COMMAND)
+		AsciiString						m_invalidCursorName;			///< cursor name for invalid version
 
-	// bleah. shouldn't be mutable, but is. sue me. (Kris) -snork!
-	mutable AsciiString										m_textLabel;									///< string manager text label
-	mutable AsciiString										m_descriptionLabel;						///< The description of the current command, read in from the ini
+		// bleah. shouldn't be mutable, but is. sue me. (Kris) -snork!
+		mutable AsciiString				m_textLabel;					///< string manager text label
+		mutable AsciiString				m_descriptionLabel;				///< The description of the current command, read in from the ini
 	
-	AsciiString										m_purchasedLabel;							///< Description for the current command if it has already been purchased.
-	AsciiString										m_conflictingLabel;						///< Description for the current command if it can't be selected due to multually-exclusive choice.
-	WeaponSlotType								m_weaponSlot;									///< for commands that refer to a weapon slot
-	Int														m_maxShotsToFire;							///< for commands that fire weapons
-	ScienceVec										m_science;										///< actual science
-	CommandButtonMappedBorderType	m_commandButtonBorder;
-	AsciiString										m_buttonImageName;
-	GameWindow*										m_window;											///< used during the run-time assignment of a button to a gadget button window
-	AudioEventRTS									m_unitSpecificSound;					///< Unit sound played whenever button is clicked.
+		AsciiString						m_purchasedLabel;				///< Description for the current command if it has already been purchased.
+		AsciiString						m_conflictingLabel;				///< Description for the current command if it can't be selected due to multually-exclusive choice.
+		WeaponSlotType					m_weaponSlot;					///< for commands that refer to a weapon slot
+		Int								m_maxShotsToFire;				///< for commands that fire weapons
+		ScienceVec						m_science;						///< actual science
+		CommandButtonMappedBorderType	m_commandButtonBorder;
+		AsciiString						m_buttonImageName;
+
+		CommandButton*					m_obj;
+	};
+
+	IniData m_ini {};
+
+	AsciiString						m_name {};							///< template name
+	CommandButton*					m_next {};
+	GameWindow*						m_window {};						///< used during the run-time assignment of a button to a gadget button window
+	AudioEventRTS					m_unitSpecificSound {};				///< Unit sound played whenever button is clicked.
 
 	// bleah. shouldn't be mutable, but is. sue me. (srj)
-	mutable const Image*					m_buttonImage;								///< button image
+	mutable const Image*			m_buttonImage {};					///< button image
 	// bleah. shouldn't be mutable, but is. sue me. (srj)
-	mutable Int										m_flashCount;                 ///< the number of times a cameo is supposed to flash
+	mutable Int						m_flashCount {};					///< the number of times a cameo is supposed to flash
 
+	friend class ControlBar;
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -411,13 +422,14 @@ private:
 enum { MAX_COMMANDS_PER_SET = 18 };  // user interface max is 14 (but internally it's 18 for script only buttons!)
 enum { MAX_RIGHT_HUD_UPGRADE_CAMEOS = 5};
 enum { 
-			 MAX_PURCHASE_SCIENCE_RANK_1 = 4,
-			 MAX_PURCHASE_SCIENCE_RANK_3 = 15,
-			 MAX_PURCHASE_SCIENCE_RANK_8 = 4,
-			};
+	MAX_PURCHASE_SCIENCE_RANK_1 = 4,
+	MAX_PURCHASE_SCIENCE_RANK_3 = 15,
+	MAX_PURCHASE_SCIENCE_RANK_8 = 4,
+};
 enum { MAX_STRUCTURE_INVENTORY_BUTTONS = 10 }; // there are this many physical buttons in "inventory" windows for structures
 enum { MAX_BUILD_QUEUE_BUTTONS = 9 };// physical button count for the build queue
 enum { MAX_SPECIAL_POWER_SHORTCUTS = 11};
+
 class CommandSet : public Overridable
 {
 
@@ -428,9 +440,8 @@ public:
 	CommandSet( const AsciiString& name );
 	// virtual destructor prototype provided by MemoryPoolObject
 
-	// No copies allowed!
 	CommandSet(const CommandSet&) = delete;
-	CommandSet& operator=(const CommandSet&) = delete;
+	CommandSet& operator=(const CommandSet&) = default;
 
 	const AsciiString& getName() const { return m_name; }
 	const CommandButton* getCommandButton(Int i) const;
@@ -446,14 +457,22 @@ private:
 	static void parseCommandButton( INI* ini, void *instance, void *store, const void *userData );
 
 	AsciiString m_name;															  ///< name of this command set
-	const CommandButton *m_command[ MAX_COMMANDS_PER_SET ]; ///< the set of command buttons that make this set
+
+	// MG: Cannot apply offsetof to CommandSet, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const CommandButton *m_command[ MAX_COMMANDS_PER_SET ]; ///< the set of command buttons that make this set
+	};
+
+	IniData m_ini {};
 
 	CommandSet *m_next;
 
+	friend class ControlBar;
 };
 
 //-------------------------------------------------------------------------------------------------
-/** The Side selece window data is used to animate on the proper generals select */
+/** The Side select window data is used to animate on the proper generals select */
 //-------------------------------------------------------------------------------------------------
 class SideSelectWindowData
 {
@@ -644,7 +663,7 @@ enum CommandAvailability
 	COMMAND_RESTRICTED,
 	COMMAND_AVAILABLE,
 	COMMAND_ACTIVE,
-  COMMAND_HIDDEN,
+	COMMAND_HIDDEN,
 	COMMAND_NOT_READY,
 	COMMAND_CANT_AFFORD,
 };
@@ -746,11 +765,11 @@ public:
 	/// We want to be able to have the control bar scheme set the color of the build up clock
 	void updateBuildUpClockColor( Color color);
 
-	WindowVideoManager *m_videoManager;						///< Video manager to take care of all animations on screen.
-	AnimateWindowManager *m_animateWindowManager; ///< The animate window manager
-	AnimateWindowManager *m_animateWindowManagerForGenShortcuts; ///< The animate window manager
+	WindowVideoManager *m_videoManager {};						///< Video manager to take care of all animations on screen.
+	AnimateWindowManager *m_animateWindowManager {}; ///< The animate window manager
+	AnimateWindowManager *m_animateWindowManagerForGenShortcuts {}; ///< The animate window manager
 	void updatePurchaseScience( void );
-	AnimateWindowManager *m_generalsScreenAnimate; ///< The animate window manager
+	AnimateWindowManager *m_generalsScreenAnimate {}; ///< The animate window manager
 
 	// Initialize the Observer controls Must be called after we've already loaded the window
 	void initObserverControls( void );
@@ -892,46 +911,46 @@ public:
 
 protected:
 
-	ICoord2D m_defaultControlBarPosition;				///< Stored the original position of the control bar on the screen
-	ControlBarStages m_currentControlBarStage;
+	ICoord2D m_defaultControlBarPosition {};				///< Stored the original position of the control bar on the screen
+	ControlBarStages m_currentControlBarStage {};
 
-	Bool m_UIDirty;																///< the context UI must be re-evaluated
+	Bool m_UIDirty {};																///< the context UI must be re-evaluated
 
-	CommandButton *m_commandButtons;							///< list of possible commands to have
-	CommandSet *m_commandSets;										///< list of all command sets defined
-	ControlBarSchemeManager *m_controlBarSchemeManager;		///< The Scheme singleton
+	CommandButton *m_commandButtons {};							///< list of possible commands to have
+	CommandSet *m_commandSets {};										///< list of all command sets defined
+	ControlBarSchemeManager *m_controlBarSchemeManager {};		///< The Scheme singleton
 
 	GameWindow *m_contextParent[ NUM_CONTEXT_PARENTS ];		///< "parent" window for buttons that are part of the context sensitive interface
 
-	Drawable *m_currentSelectedDrawable;					///< currently selected drawable for the context sensitive interface
-	ControlBarContext m_currContext;							///< our current displayed context
+	Drawable *m_currentSelectedDrawable {};					///< currently selected drawable for the context sensitive interface
+	ControlBarContext m_currContext {};							///< our current displayed context
 
-	DrawableID m_rallyPointDrawableID;						///< rally point drawable for visual rally point 
+	DrawableID m_rallyPointDrawableID {};						///< rally point drawable for visual rally point 
 
-	Real m_displayedConstructPercent;							///< construct percent last displayed to user
-	UnsignedInt m_displayedOCLTimerSeconds;				///< OCL Timer seconds remaining last displayed to user
-	UnsignedInt m_displayedQueueCount;						///< queue count last displayed to user
-	UnsignedInt m_lastRecordedInventoryCount;			///< last known UI state of an inventory count
+	Real m_displayedConstructPercent {};							///< construct percent last displayed to user
+	UnsignedInt m_displayedOCLTimerSeconds {};				///< OCL Timer seconds remaining last displayed to user
+	UnsignedInt m_displayedQueueCount {};						///< queue count last displayed to user
+	UnsignedInt m_lastRecordedInventoryCount {};			///< last known UI state of an inventory count
 
-	GameWindow *m_rightHUDWindow;									///< window of the right HUD display
-	GameWindow *m_rightHUDCameoWindow;									///< window of the right HUD display
+	GameWindow *m_rightHUDWindow {};									///< window of the right HUD display
+	GameWindow *m_rightHUDCameoWindow {};									///< window of the right HUD display
 	GameWindow *m_rightHUDUpgradeCameos[MAX_RIGHT_HUD_UPGRADE_CAMEOS];
-	GameWindow *m_rightHUDUnitSelectParent;
+	GameWindow *m_rightHUDUnitSelectParent {};
 
-	GameWindow *m_communicatorButton;             ///< button for the communicator
+	GameWindow *m_communicatorButton {};             ///< button for the communicator
 	
-	WindowLayout *m_scienceLayout;								///< the Science window layout
+	WindowLayout *m_scienceLayout {};								///< the Science window layout
 	GameWindow *m_sciencePurchaseWindowsRank1[ MAX_PURCHASE_SCIENCE_RANK_1 ];			///< command window controls for easy access
 	GameWindow *m_sciencePurchaseWindowsRank3[ MAX_PURCHASE_SCIENCE_RANK_3 ];			///< command window controls for easy access
 	GameWindow *m_sciencePurchaseWindowsRank8[ MAX_PURCHASE_SCIENCE_RANK_8 ];			///< command window controls for easy access
 	GameWindow *m_specialPowerShortcutButtons[ MAX_SPECIAL_POWER_SHORTCUTS ];
 	GameWindow *m_specialPowerShortcutButtonParents[ MAX_SPECIAL_POWER_SHORTCUTS ];
 	DisplayString *m_shortcutDisplayStrings[ MAX_SPECIAL_POWER_SHORTCUTS ];
-	Int m_currentlyUsedSpecialPowersButtons; ///< Value will be <= MAX_SPECIAL_POWER_SHORTCUTS;
+	Int m_currentlyUsedSpecialPowersButtons {}; ///< Value will be <= MAX_SPECIAL_POWER_SHORTCUTS;
 
 
-	WindowLayout *m_specialPowerLayout;
-	GameWindow *m_specialPowerShortcutParent;
+	WindowLayout *m_specialPowerLayout {};
+	GameWindow *m_specialPowerShortcutParent {};
 
 	GameWindow *m_commandWindows[ MAX_COMMANDS_PER_SET ];			///< command window controls for easy access
 	const CommandButton *m_commonCommands[ MAX_COMMANDS_PER_SET ];	///< shared commands we will use for multi-selection
@@ -969,23 +988,23 @@ protected:
 	QueueEntry m_queueData[ MAX_BUILD_QUEUE_BUTTONS ];	///< what the build queue represents
 
 	//cameo flash
-	Bool m_flash;                                       ///< tells update whether or not to check for flash
+	Bool m_flash {};                                       ///< tells update whether or not to check for flash
 
-	Bool m_sideSelectAnimateDown;
-	ICoord2D m_animateDownWin1Size;
-	ICoord2D m_animateDownWin2Size;
-	ICoord2D m_animateDownWin1Pos;
-	ICoord2D m_animateDownWin2Pos;
-	GameWindow *m_animateDownWindow;
-	UnsignedInt m_animTime;
+	Bool m_sideSelectAnimateDown {};
+	ICoord2D m_animateDownWin1Size {};
+	ICoord2D m_animateDownWin2Size {};
+	ICoord2D m_animateDownWin1Pos {};
+	ICoord2D m_animateDownWin2Pos {};
+	GameWindow *m_animateDownWindow {};
+	UnsignedInt m_animTime {};
 
-	Color m_buildUpClockColor;
+	Color m_buildUpClockColor {};
 
-	Bool m_isObserverCommandBar;												///< If this is true, the command bar behaves greatly differnt
-	Player *m_observerLookAtPlayer;											///< The current player we're looking at, Null if we're not looking at anyone.
+	Bool m_isObserverCommandBar {};												///< If this is true, the command bar behaves greatly differnt
+	Player *m_observerLookAtPlayer {};											///< The current player we're looking at, Null if we're not looking at anyone.
 
-	WindowLayout *m_buildToolTipLayout;										///< The window that will slide on/display tooltips
-	Bool m_showBuildToolTipLayout;											///< every frame we test to see if we aregoing to continue showing this or not.
+	WindowLayout *m_buildToolTipLayout {};										///< The window that will slide on/display tooltips
+	Bool m_showBuildToolTipLayout {};											///< every frame we test to see if we aregoing to continue showing this or not.
 public:
 	void showBuildTooltipLayout( GameWindow *cmdButton );
 	void hideBuildTooltipLayout( void );
@@ -997,12 +1016,12 @@ private:
 
 
 	// Command Bar button border bars stuff
-	Color m_commandButtonBorderBuildColor;
-	Color m_commandButtonBorderActionColor;
-	Color m_commandButtonBorderUpgradeColor;
-	Color m_commandButtonBorderSystemColor;
+	Color m_commandButtonBorderBuildColor {};
+	Color m_commandButtonBorderActionColor {};
+	Color m_commandButtonBorderUpgradeColor {};
+	Color m_commandButtonBorderSystemColor {};
 	
-	Color m_commandBarBorderColor;
+	Color m_commandBarBorderColor {};
 
 	void setCommandBarBorder( GameWindow *button, CommandButtonMappedBorderType type);
 public:
@@ -1013,40 +1032,40 @@ private:
 	/// find existing command set
 	CommandSet *findNonConstCommandSet( const AsciiString& name );
 
-	const Image *m_genStarOn;
-	const Image *m_genStarOff;
+	const Image *m_genStarOn {};
+	const Image *m_genStarOff {};
 
-	const Image *m_toggleButtonUpIn;
-	const Image *m_toggleButtonUpOn;
-	const Image *m_toggleButtonUpPushed;
-	const Image *m_toggleButtonDownIn;
-	const Image *m_toggleButtonDownOn;
-	const Image *m_toggleButtonDownPushed;
+	const Image *m_toggleButtonUpIn {};
+	const Image *m_toggleButtonUpOn {};
+	const Image *m_toggleButtonUpPushed {};
+	const Image *m_toggleButtonDownIn {};
+	const Image *m_toggleButtonDownOn {};
+	const Image *m_toggleButtonDownPushed {};
 
-	GameWindowTransitionsHandler *m_transitionHandler;
-	const Image *m_genArrow;
+	GameWindowTransitionsHandler *m_transitionHandler {};
+	const Image *m_genArrow {};
 
 	static const Image *m_rankVeteranIcon;
 	static const Image *m_rankEliteIcon;
 	static const Image *m_rankHeroicIcon;
 
-	const Image *m_generalButtonEnable;
-	const Image *m_generalButtonHighlight;
+	const Image *m_generalButtonEnable {};
+	const Image *m_generalButtonHighlight {};
 
 
-	Bool m_genStarFlash;
-	Int m_lastFlashedAtPointValue;
+	Bool m_genStarFlash {};
+	Int m_lastFlashedAtPointValue {};
 	
-	ICoord2D m_controlBarForegroundMarkerPos;
-	ICoord2D m_controlBarBackgroundMarkerPos;
+	ICoord2D m_controlBarForegroundMarkerPos {};
+	ICoord2D m_controlBarBackgroundMarkerPos {};
 	
-	Bool m_radarAttackGlowOn;
-	Int m_remainingRadarAttackGlowFrames;
-	GameWindow *m_radarAttackGlowWindow;
+	Bool m_radarAttackGlowOn {};
+	Int m_remainingRadarAttackGlowFrames {};
+	GameWindow *m_radarAttackGlowWindow {};
 
 #if defined( _INTERNAL ) || defined( _DEBUG )
-	UnsignedInt m_lastFrameMarkedDirty;
-	UnsignedInt m_consecutiveDirtyFrames;
+	UnsignedInt m_lastFrameMarkedDirty {};
+	UnsignedInt m_consecutiveDirtyFrames {};
 #endif
 //	ControlBarResizer *m_controlBarResizer;
 
@@ -1056,4 +1075,3 @@ private:
 extern ControlBar *TheControlBar;
 
 #endif  // end __CONTROLBAR_H_
-

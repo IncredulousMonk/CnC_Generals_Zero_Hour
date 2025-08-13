@@ -181,7 +181,7 @@ void TunnelTracker::addToContainList( Object *obj )
 }
 
 // ------------------------------------------------------------------------
-void TunnelTracker::removeFromContain( Object *obj, Bool exposeStealthUnits )
+void TunnelTracker::removeFromContain( Object *obj, Bool /* exposeStealthUnits */ )
 {
 
 	ContainedItemsList::iterator it = std::find(m_containList.begin(), m_containList.end(), obj);
@@ -297,7 +297,7 @@ void TunnelTracker::healObject( Object *obj, void *frames)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TunnelTracker::crc( Xfer *xfer )
+void TunnelTracker::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc

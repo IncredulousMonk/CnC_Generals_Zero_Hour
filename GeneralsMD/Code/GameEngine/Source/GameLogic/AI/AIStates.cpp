@@ -480,7 +480,7 @@ AIRappelState::AIRappelState( StateMachine *machine ) : State( machine, "AIRappe
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIRappelState::crc( Xfer *xfer )
+void AIRappelState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -655,7 +655,7 @@ return STATE_CONTINUE;
 }
 
 //-----------------------------------------------------------------------------------------------------------
-void AIRappelState::onExit( StateExitType status )
+void AIRappelState::onExit( StateExitType /* status */ )
 {
 	Object* obj = getMachineOwner();
 	AIUpdateInterface *ai = obj->getAI();
@@ -1107,7 +1107,7 @@ Squad *AIStateMachine::getGoalSquad( void )
  * Return true if the machine's owner's current weapon's range 
  * cannot reach the goalObject.
  */
-Bool outOfWeaponRangeObject( State *thisState, void* userData )
+Bool outOfWeaponRangeObject( State *thisState, void* /* userData */ )
 {
 	Object *obj = thisState->getMachineOwner();
 	Object *victim = thisState->getMachineGoalObject();
@@ -1168,7 +1168,7 @@ static Bool inWeaponRangeObject(State *thisState, void* userData)
 	return !outOfWeaponRangeObject(thisState, userData);
 }
 
-Bool wantToSquishTarget( State *thisState, void* userData )
+Bool wantToSquishTarget( State *thisState, void* /* userData */ )
 {
 	Object *obj = thisState->getMachineOwner();
 	Object *victim = thisState->getMachineGoalObject();
@@ -1197,7 +1197,7 @@ Bool wantToSquishTarget( State *thisState, void* userData )
 	return false;
 }
 
-Bool outOfWeaponRangePosition( State *thisState, void* userData )
+Bool outOfWeaponRangePosition( State *thisState, void* /* userData */ )
 {
 	Object *obj = thisState->getMachineOwner();
 	const Coord3D *pos = thisState->getMachineGoalPosition();
@@ -1288,7 +1288,7 @@ AIIdleState::AIIdleState( StateMachine *machine, AIIdleState::AIIdleTargetingTyp
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIIdleState::crc( Xfer *xfer )
+void AIIdleState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -1550,7 +1550,7 @@ StateReturnType AIDeadState::update()
 	return STATE_CONTINUE;
 }
 
-void AIDeadState::onExit( StateExitType status )
+void AIDeadState::onExit( StateExitType /* status */ )
 {
 	Object *obj = getMachineOwner();
 	obj->clearModelConditionState(MODELCONDITION_DYING);
@@ -1560,7 +1560,7 @@ void AIDeadState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIInternalMoveToState::crc( Xfer *xfer )
+void AIInternalMoveToState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -1749,7 +1749,7 @@ void AIInternalMoveToState::startMoveSound(void)
 /**
  * We are leaving the moveTo state.
  */
-void AIInternalMoveToState::onExit( StateExitType status )
+void AIInternalMoveToState::onExit( StateExitType /* status */ )
 {
 	Object *obj = getMachineOwner();
 	AIUpdateInterface *ai = obj->getAI();
@@ -3543,7 +3543,7 @@ AIAttackMoveToState::~AIAttackMoveToState()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIAttackMoveToState::crc( Xfer *xfer )
+void AIAttackMoveToState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -3878,7 +3878,7 @@ Real AIFollowWaypointPathState::calcExtraPathDistance(void)
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIFollowWaypointPathState::computeGoal(Bool useGroupOffsets)
+void AIFollowWaypointPathState::computeGoal(Bool /* useGroupOffsets */)
 {
 	if (m_currentWaypoint == NULL)
 		return;
@@ -4398,7 +4398,7 @@ AIAttackFollowWaypointPathState::~AIAttackFollowWaypointPathState()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIAttackFollowWaypointPathState::crc( Xfer *xfer )
+void AIAttackFollowWaypointPathState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -4889,7 +4889,7 @@ void AIPanicState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIAttackAimAtTargetState::crc( Xfer *xfer )
+void AIAttackAimAtTargetState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -5145,7 +5145,7 @@ StateReturnType AIAttackAimAtTargetState::update()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIAttackAimAtTargetState::onExit( StateExitType status )
+void AIAttackAimAtTargetState::onExit( StateExitType /* status */ )
 {
 	// contained by AIAttackState, so no separate timer
 	if (m_canTurnInPlace)
@@ -5333,7 +5333,7 @@ StateReturnType AIAttackFireWeaponState::update()
 /** 
 	Stop firing.
 	*/
-void AIAttackFireWeaponState::onExit( StateExitType status )
+void AIAttackFireWeaponState::onExit( StateExitType /* status */ )
 {
 	// contained by AIAttackState, so no separate timer
 	Object *obj = getMachineOwner();
@@ -5407,7 +5407,7 @@ AIAttackState::~AIAttackState()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIAttackState::crc( Xfer *xfer )
+void AIAttackState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -5704,7 +5704,7 @@ StateReturnType AIAttackState::update()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIAttackState::onExit( StateExitType status )
+void AIAttackState::onExit( StateExitType /* status */ )
 {
 	USE_PERF_TIMER(AIAttackState)
 	// nope, don't do this, since we may well still have it targeted
@@ -5816,7 +5816,7 @@ AIAttackSquadState::~AIAttackSquadState()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIAttackSquadState::crc( Xfer *xfer )
+void AIAttackSquadState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -5929,7 +5929,7 @@ StateReturnType AIAttackSquadState::update( void )
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIAttackSquadState::onExit( StateExitType status )
+void AIAttackSquadState::onExit( StateExitType /* status */ )
 {
 	if( m_attackSquadMachine )
 	{
@@ -6060,7 +6060,7 @@ AIDockState::~AIDockState()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIDockState::crc( Xfer *xfer )
+void AIDockState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -6152,7 +6152,7 @@ StateReturnType AIDockState::onEnter()
  * For whatever reason, we are leaving the AI_DOCK state.
  * Destroy the docking sub-machine.
  */
-void AIDockState::onExit( StateExitType status )
+void AIDockState::onExit( StateExitType /* status */ )
 {
 	// destroy the dock machine
 	if (m_dockMachine) {
@@ -6428,7 +6428,7 @@ return STATE_CONTINUE;
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIExitState::crc( Xfer *xfer )
+void AIExitState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -6516,7 +6516,7 @@ StateReturnType AIExitState::update()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIExitState::onExit( StateExitType status )
+void AIExitState::onExit( StateExitType /* status */ )
 {
 	Object* obj = getMachineOwner();
 
@@ -6543,7 +6543,7 @@ void AIExitState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIExitInstantlyState::crc( Xfer *xfer )
+void AIExitInstantlyState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -6612,7 +6612,7 @@ StateReturnType AIExitInstantlyState::update()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIExitInstantlyState::onExit( StateExitType status )
+void AIExitInstantlyState::onExit( StateExitType /* status */ )
 {
 	Object* obj = getMachineOwner();
 
@@ -6660,7 +6660,7 @@ AsciiString AIGuardState::getName(  ) const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardState::crc( Xfer *xfer )
+void AIGuardState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -6750,7 +6750,7 @@ StateReturnType AIGuardState::onEnter()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIGuardState::onExit( StateExitType status )
+void AIGuardState::onExit( StateExitType /* status */ )
 {
 	m_guardMachine->deleteInstance();
 	m_guardMachine = NULL;
@@ -6818,7 +6818,7 @@ AsciiString AIGuardRetaliateState::getName(  ) const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardRetaliateState::crc( Xfer *xfer )
+void AIGuardRetaliateState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -6897,7 +6897,7 @@ StateReturnType AIGuardRetaliateState::onEnter()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIGuardRetaliateState::onExit( StateExitType status )
+void AIGuardRetaliateState::onExit( StateExitType /* status */ )
 {
 	m_guardRetaliateMachine->deleteInstance();
 	m_guardRetaliateMachine = NULL;
@@ -6957,7 +6957,7 @@ AsciiString AITunnelNetworkGuardState::getName(  ) const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AITunnelNetworkGuardState::crc( Xfer *xfer )
+void AITunnelNetworkGuardState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -7028,7 +7028,7 @@ StateReturnType AITunnelNetworkGuardState::onEnter()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AITunnelNetworkGuardState::onExit( StateExitType status )
+void AITunnelNetworkGuardState::onExit( StateExitType /* status */ )
 {
 	m_guardMachine->deleteInstance();
 	m_guardMachine = NULL;
@@ -7083,7 +7083,7 @@ AIHuntState::~AIHuntState()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIHuntState::crc( Xfer *xfer )
+void AIHuntState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -7151,7 +7151,7 @@ StateReturnType AIHuntState::onEnter()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIHuntState::onExit( StateExitType status )
+void AIHuntState::onExit( StateExitType /* status */ )
 {
 	// destroy the hunt machine
 	m_huntMachine->deleteInstance();
@@ -7294,7 +7294,7 @@ AIAttackAreaState::~AIAttackAreaState()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIAttackAreaState::crc( Xfer *xfer )
+void AIAttackAreaState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -7359,7 +7359,7 @@ StateReturnType AIAttackAreaState::onEnter()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIAttackAreaState::onExit( StateExitType status )
+void AIAttackAreaState::onExit( StateExitType /* status */ )
 {
 	// destroy the hunt machine
 	m_attackMachine->deleteInstance();
@@ -7428,7 +7428,7 @@ StateReturnType AIAttackAreaState::update()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIFaceState::crc( Xfer *xfer )
+void AIFaceState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -7473,7 +7473,7 @@ StateReturnType AIFaceState::onEnter()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void AIFaceState::onExit( StateExitType status )
+void AIFaceState::onExit( StateExitType /* status */ )
 {
 }
 

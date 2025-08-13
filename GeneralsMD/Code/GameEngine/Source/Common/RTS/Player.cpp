@@ -141,6 +141,8 @@ ClosestKindOfData::ClosestKindOfData( void )
 // ------------------------------------------------------------------------------------------------
 static void findClosestKindOf( Object *obj, void *userData )
 {
+(void) obj;
+(void) userData;
 DEBUG_CRASH(("findClosestKindOf not yet implemented!\n"));
 #if 0
 	ClosestKindOfData *closestData = (ClosestKindOfData *)userData;
@@ -229,7 +231,7 @@ PlayerRelationMap::~PlayerRelationMap( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void PlayerRelationMap::crc( Xfer *xfer )
+void PlayerRelationMap::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -1240,6 +1242,10 @@ return false;
  */
 Bool Player::computeSuperweaponTarget(const SpecialPowerTemplate *power, Coord3D *retPos, Int playerNdx, Real weaponRadius)
 {
+(void) power;
+(void) retPos;
+(void) playerNdx;
+(void) weaponRadius;
 DEBUG_CRASH(("Player::computeSuperweaponTarget not yet implemented!"));
 return false;
 #if 0
@@ -1632,6 +1638,8 @@ return DIFFICULTY_EASY;
 //-------------------------------------------------------------------------------------------------
 Bool Player::checkBridges(Object *unit, Waypoint *way)
 {
+(void) unit;
+(void) way;
 DEBUG_CRASH(("Player::checkBridges not yet implemented!"));
 return false;
 #if 0
@@ -1644,6 +1652,7 @@ return false;
 //-------------------------------------------------------------------------------------------------
 Bool Player::getAiBaseCenter(Coord3D *pos)
 {
+(void) pos;
 DEBUG_CRASH(("Player::getAiBaseCenter not yet implemented!"));
 return false;
 #if 0
@@ -1656,6 +1665,7 @@ return false;
 //-------------------------------------------------------------------------------------------------
 void Player::repairStructure(ObjectID structureID)
 {
+(void) structureID;
 DEBUG_CRASH(("Player::repairStructure not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -1670,6 +1680,8 @@ DEBUG_CRASH(("Player::repairStructure not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 void Player::onUnitCreated( Object *factory, Object *unit )
 {
+(void) factory;
+(void) unit;
 DEBUG_CRASH(("Player::onUnitCreated not yet implemented!"));
 #if 0
 	// When a a unit is completed, it becomes "real" as far as scripting is 
@@ -1691,6 +1703,7 @@ DEBUG_CRASH(("Player::onUnitCreated not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 Bool Player::isSupplySourceSafe( Int minSupplies )
 {
+(void) minSupplies;
 DEBUG_CRASH(("Player::isSupplySourceSafe not yet implemented!"));
 return false;
 #if 0
@@ -1721,6 +1734,7 @@ return false;
 //-------------------------------------------------------------------------------------------------
 void Player::setTeamDelaySeconds(Int delay  )
 {
+(void) delay;
 DEBUG_CRASH(("Player::setTeamDelaySeconds not yet implemented!"));
 #if 0
 	// ai action
@@ -1734,6 +1748,8 @@ DEBUG_CRASH(("Player::setTeamDelaySeconds not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 void Player::guardSupplyCenter( Team *team, Int minSupplies  )
 {
+(void) team;
+(void) minSupplies;
 DEBUG_CRASH(("Player::guardSupplyCenter not yet implemented!"));
 #if 0
 	// ai action
@@ -1747,6 +1763,7 @@ DEBUG_CRASH(("Player::guardSupplyCenter not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 void Player::preTeamDestroy( const Team *team )
 {
+(void) team;
 DEBUG_CRASH(("Player::preTeamDestroy not yet implemented!"));
 #if 0
 	// ai notification callback
@@ -1758,7 +1775,7 @@ DEBUG_CRASH(("Player::preTeamDestroy not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 /// a structuer was just created, but is under construction
 //-------------------------------------------------------------------------------------------------
-void Player::onStructureCreated( Object *builder, Object *structure )
+void Player::onStructureCreated( Object* /* builder */, Object* /* structure */ )
 {
 
 }  // end onStructureCreated
@@ -2109,6 +2126,7 @@ VeterancyLevel Player::getProductionVeterancyLevel( AsciiString buildTemplateNam
 //=============================================================================
 void Player::friend_setSkillset(Int skillSet)
 {
+(void) skillSet;
 DEBUG_CRASH(("Player::friend_setSkillset not yet implemented!"));
 #if 0
 	if (m_ai) {
@@ -2480,6 +2498,7 @@ Bool Player::allowedToBuild(const ThingTemplate *tmplate) const
 //=============================================================================
 void Player::buildSpecificTeam( TeamPrototype *teamProto) 
 {
+(void) teamProto;
 DEBUG_CRASH(("Player::buildSpecificTeam not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -2493,6 +2512,7 @@ DEBUG_CRASH(("Player::buildSpecificTeam not yet implemented!"));
 //=============================================================================
 void Player::buildBaseDefense(Bool flank) 
 {
+(void) flank;
 DEBUG_CRASH(("Player::buildBaseDefense not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -2506,6 +2526,8 @@ DEBUG_CRASH(("Player::buildBaseDefense not yet implemented!"));
 //=============================================================================
 void Player::buildBaseDefenseStructure(const AsciiString &thingName, Bool flank) 
 {
+(void) thingName;
+(void) flank;
 DEBUG_CRASH(("Player::buildBaseDefenseStructure not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -2519,6 +2541,7 @@ DEBUG_CRASH(("Player::buildBaseDefenseStructure not yet implemented!"));
 //=============================================================================
 void Player::buildSpecificBuilding(const AsciiString &thingName) 
 {
+(void) thingName;
 DEBUG_CRASH(("Player::buildSpecificBuilding not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -2532,6 +2555,8 @@ DEBUG_CRASH(("Player::buildSpecificBuilding not yet implemented!"));
 //=============================================================================
 void Player::buildBySupplies(Int minimumCash, const AsciiString &thingName) 
 {
+(void) minimumCash;
+(void) thingName;
 DEBUG_CRASH(("Player::buildBySupplies not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -2544,6 +2569,8 @@ DEBUG_CRASH(("Player::buildBySupplies not yet implemented!"));
 //=============================================================================
 void Player::buildSpecificBuildingNearestTeam( const AsciiString &thingName, const Team *team )
 {
+(void) thingName;
+(void) team;
 DEBUG_CRASH(("Player::buildSpecificBuildingNearestTeam not yet implemented!"));
 #if 0
 	if( m_ai )
@@ -2556,6 +2583,7 @@ DEBUG_CRASH(("Player::buildSpecificBuildingNearestTeam not yet implemented!"));
 //=============================================================================
 void Player::buildUpgrade( const AsciiString &upgrade) 
 {
+(void) upgrade;
 DEBUG_CRASH(("Player::buildUpgrade not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -2568,6 +2596,8 @@ DEBUG_CRASH(("Player::buildUpgrade not yet implemented!"));
 //=============================================================================
 void Player::recruitSpecificTeam( TeamPrototype *teamProto, Real recruitRadius) 
 {
+(void) teamProto;
+(void) recruitRadius;
 DEBUG_CRASH(("Player::recruitSpecificTeam not yet implemented!"));
 #if 0
 	if (m_ai) 
@@ -2584,6 +2614,8 @@ DEBUG_CRASH(("Player::recruitSpecificTeam not yet implemented!"));
 //=============================================================================
 Bool Player::calcClosestConstructionZoneLocation( const ThingTemplate *constructTemplate, Coord3D *location )
 {
+(void) constructTemplate;
+(void) location;
 DEBUG_CRASH(("Player::calcClosestConstructionZoneLocation not yet implemented!"));
 return false;
 #if 0

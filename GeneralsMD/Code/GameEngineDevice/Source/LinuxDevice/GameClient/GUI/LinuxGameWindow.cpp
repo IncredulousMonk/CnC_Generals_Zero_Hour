@@ -534,6 +534,8 @@ Int LinuxGameWindow::winSetPosition( Int x, Int y )
 //=============================================================================
 void LinuxGameWindow::getTextSize( Int *width, Int *height )
 {
+   (void) width;
+   (void) height;
    // Vector2 extents = m_textRenderer.Get_Text_Extents( m_instData.getText().str() );
 
    // if( width )
@@ -571,6 +573,7 @@ void LinuxGameWindow::setTextLoc( Int x, Int y )
 //=============================================================================
 void LinuxGameWindow::drawText( Color color )
 {
+   (void) color;
    // Bool needDraw = FALSE;
 
    // // if new text pos we need to redraw

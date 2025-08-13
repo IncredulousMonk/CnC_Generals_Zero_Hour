@@ -123,7 +123,7 @@ static void advancePosition(GameWindow *window, const Image *image, UnsignedInt 
 }
 #endif
 
-void LinuxShellMenuSchemeDraw( GameWindow *window, WinInstanceData *instData )
+void LinuxShellMenuSchemeDraw( GameWindow* /* window */, WinInstanceData* /* instData */ )
 {
    if(TheShell && TheShell->isShellActive())
       TheShell->getShellMenuSchemeManager()->draw();
@@ -875,7 +875,7 @@ void LinuxMainMenuInit( WindowLayout *layout, void *userData )
    MainMenuInit( layout, userData );
 }
 
-void LinuxCreditsMenuDraw( GameWindow *window, WinInstanceData *instData )
+void LinuxCreditsMenuDraw( GameWindow* /* window */, WinInstanceData* /* instData */ )
 {
    TheCredits->draw();
 }

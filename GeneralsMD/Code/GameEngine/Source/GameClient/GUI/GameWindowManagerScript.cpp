@@ -458,7 +458,7 @@ static Bool parseDefaultColor( Color *color, File *inFile, char *buffer )
 // parseDefaultFont ===========================================================
 /** Parse the default font */
 //=============================================================================
-static Bool parseDefaultFont( GameFont *font, File *inFile, char *buffer )
+static Bool parseDefaultFont( GameFont* /* font */, File *inFile, char *buffer )
 {
 
 	// eat '=' 
@@ -481,8 +481,7 @@ static Bool parseDefaultFont( GameFont *font, File *inFile, char *buffer )
 // parseTooltip ===============================================================
 /** Parse the tooltip field */
 //=============================================================================
-static Bool parseTooltip( char *token, WinInstanceData *instData, 
-													char *buffer, void *data )
+static Bool parseTooltip( char* /* token */, WinInstanceData* instData, char* /* buffer */, void* /* data */ )
 {
 	UnicodeString tooltip;
 	tooltip.set(L"Need tooltip translation");
@@ -499,8 +498,7 @@ static Bool parseTooltip( char *token, WinInstanceData *instData,
 	* and adjust to make the screen rect coords relative to any parent
 	* if present */
 //=============================================================================
-static Bool parseScreenRect( char *token, char *buffer,
-														 Int *x, Int *y, Int *width, Int *height )
+static Bool parseScreenRect( char* /* token */, char* /* buffer */, Int *x, Int *y, Int *width, Int *height )
 {
 	GameWindow *parent = peekWindow();
 	IRegion2D screenRegion;
@@ -574,8 +572,7 @@ static Bool parseScreenRect( char *token, char *buffer,
 // parseImageOffset ===========================================================
 /** Parse the image draw offset */
 //=============================================================================
-static Bool parseImageOffset( char *token, WinInstanceData *instData, 
-															char *buffer, void *data )
+static Bool parseImageOffset( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
   char *c;
 
@@ -592,8 +589,7 @@ static Bool parseImageOffset( char *token, WinInstanceData *instData,
 // parseFont ==================================================================
 /** Parse the font field */
 //=============================================================================
-static Bool parseFont( char *token, WinInstanceData *instData, 
-											 char *buffer, void *data )
+static Bool parseFont( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	char *c, *ptr;
 	const char *seps = " ,\n\r\t";
@@ -639,8 +635,7 @@ static Bool parseFont( char *token, WinInstanceData *instData,
 // parseName =================================================================
 /** Parse the NAME field */
 //=============================================================================
-static Bool parseName( char *token, WinInstanceData *instData,
-											 char *buffer, void *data )
+static Bool parseName( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	char *c, *ptr;
 //	const char *seps = " ,\n\r\t";
@@ -666,8 +661,7 @@ static Bool parseName( char *token, WinInstanceData *instData,
 // parseStatus ================================================================
 /** Parse the STATUS field */
 //=============================================================================
-static Bool parseStatus( char *token, WinInstanceData *instData, 
-												 char *buffer, void *data )
+static Bool parseStatus( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 
   instData->m_status = 0;
@@ -680,8 +674,7 @@ static Bool parseStatus( char *token, WinInstanceData *instData,
 // parseStyle =================================================================
 /** Parse the STYLE field */
 //=============================================================================
-static Bool parseStyle( char *token, WinInstanceData *instData, 
-												char *buffer, void *data )
+static Bool parseStyle( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 
   instData->m_style = 0;
@@ -694,8 +687,7 @@ static Bool parseStyle( char *token, WinInstanceData *instData,
 // parseSystemCallback ========================================================
 /** Parse the system method callback for a window */
 //=============================================================================
-static Bool parseSystemCallback( char *token, WinInstanceData *instData,
-																 char *buffer, void *data )
+static Bool parseSystemCallback( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* /* data */ )
 {
 	char *c, *ptr;
 //	const char *seps = " ,\n\r\t";
@@ -721,8 +713,7 @@ static Bool parseSystemCallback( char *token, WinInstanceData *instData,
 // parseInputCallback =========================================================
 /** Parse the Input method callback for a window */
 //=============================================================================
-static Bool parseInputCallback( char *token, WinInstanceData *instData,
-																char *buffer, void *data )
+static Bool parseInputCallback( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* /* data */ )
 {
 	char *c, *ptr;
 //	const har *seps = " ,\n\r\t";
@@ -748,8 +739,7 @@ static Bool parseInputCallback( char *token, WinInstanceData *instData,
 // parseTooltipCallback =======================================================
 /** Parse the Tooltip method callback for a window */
 //=============================================================================
-static Bool parseTooltipCallback( char *token, WinInstanceData *instData,
-																  char *buffer, void *data )
+static Bool parseTooltipCallback( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* /* data */ )
 {
 	char *c, *ptr;
 //	const char *seps = " ,\n\r\t";
@@ -775,8 +765,7 @@ static Bool parseTooltipCallback( char *token, WinInstanceData *instData,
 // parseDrawCallback ==========================================================
 /** Parse the Draw method callback for a window */
 //=============================================================================
-static Bool parseDrawCallback( char *token, WinInstanceData *instData,
-															 char *buffer, void *data )
+static Bool parseDrawCallback( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* /* data */ )
 {
 	char *c, *ptr;
 //	const char *seps = " ,\n\r\t";
@@ -803,8 +792,7 @@ DEBUG_ASSERTLOG(drawFunc || theDrawString.compareNoCase("[None]") == 0, ("gameWi
 // parseHeaderTemplate ==========================================================
 /** Parse the Draw method callback for a window */
 //=============================================================================
-static Bool parseHeaderTemplate( char *token, WinInstanceData *instData,
-															 char *buffer, void *data )
+static Bool parseHeaderTemplate( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	char *c, *ptr;
 //	const char *seps = " ,\n\r\t";
@@ -829,8 +817,7 @@ static Bool parseHeaderTemplate( char *token, WinInstanceData *instData,
 // parseListboxData ===========================================================
 /** Parse listbox data entry */
 //=============================================================================
-static Bool parseListboxData( char *token, WinInstanceData *instData,
-															char *buffer, void *data )
+static Bool parseListboxData( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* data )
 {
 	ListboxData *listData = (ListboxData *)data;
 	char *c;
@@ -905,8 +892,7 @@ static Bool parseListboxData( char *token, WinInstanceData *instData,
 // parseComboBoxData ===========================================================
 /** Parse Combo Box data entry */
 //=============================================================================
-static Bool parseComboBoxData( char *token, WinInstanceData *instData,
-															char *buffer, void *data )
+static Bool parseComboBoxData( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* data )
 {
 	ComboBoxData *comboData = (ComboBoxData *)data;
 	char *c;
@@ -939,8 +925,7 @@ static Bool parseComboBoxData( char *token, WinInstanceData *instData,
 // parseSliderData ============================================================
 /** Parse slider data entry */
 //=============================================================================
-static Bool parseSliderData( char *token, WinInstanceData *instData,
-														 char *buffer, void *data )
+static Bool parseSliderData( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* data )
 {
 	SliderData *sliderData = (SliderData *)data;
 	char *c;
@@ -963,8 +948,7 @@ static Bool parseSliderData( char *token, WinInstanceData *instData,
 // parseRadioButtonData =======================================================
 /** Parse radio button data entry */
 //=============================================================================
-static Bool parseRadioButtonData( char *token, WinInstanceData *instData,
-																	char *buffer, void *data )
+static Bool parseRadioButtonData( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* data )
 {
 	RadioButtonData *radioData = (RadioButtonData *)data;
 	char *c;
@@ -983,8 +967,7 @@ static Bool parseRadioButtonData( char *token, WinInstanceData *instData,
 // parseTooltipText ===========================================================
 /** Parse the TOOLTIPTEXT field */
 //=============================================================================
-static Bool parseTooltipText( char *token, WinInstanceData *instData, 
-											 char *buffer, void *data )
+static Bool parseTooltipText( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	char *ptr = buffer;
 	char *c;
@@ -1016,8 +999,7 @@ static Bool parseTooltipText( char *token, WinInstanceData *instData,
 // parseTooltipDelay =======================================================
 /** Parse the tooltip delay */
 //=============================================================================
-static Bool parseTooltipDelay( char *token, WinInstanceData *instData,
-																	char *buffer, void *data )
+static Bool parseTooltipDelay( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	//RadioButtonData *radioData = (RadioButtonData *)data;
 	char *c;
@@ -1035,8 +1017,7 @@ static Bool parseTooltipDelay( char *token, WinInstanceData *instData,
 // parseText ==================================================================
 /** Parse the TEXT field */
 //=============================================================================
-static Bool parseText( char *token, WinInstanceData *instData, 
-											 char *buffer, void *data )
+static Bool parseText( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	char *ptr = buffer;
 	char *c;
@@ -1066,8 +1047,7 @@ static Bool parseText( char *token, WinInstanceData *instData,
 /** Parse text color entries for enabled, disabled, and hilite with
 	* drop shadow colors */
 //=============================================================================
-static Bool parseTextColor( char *token, WinInstanceData *instData,
-														char *buffer, void *data )
+static Bool parseTextColor( char* /* token */, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	char *c;
 	const char *seps       = " :,\n\r\t";
@@ -1132,8 +1112,7 @@ static Bool parseTextColor( char *token, WinInstanceData *instData,
 // parseStaticTextData ========================================================
 /** Parse static text data entry */
 //=============================================================================
-static Bool parseStaticTextData( char *token, WinInstanceData *instData,
-																 char *buffer, void *data )
+static Bool parseStaticTextData( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* data )
 {
 	TextData *textData = (TextData *)data;
 	char *c;
@@ -1158,8 +1137,7 @@ static Bool parseStaticTextData( char *token, WinInstanceData *instData,
 // parseTextEntryData =========================================================
 /** Parse text entry data entry */
 //=============================================================================
-static Bool parseTextEntryData( char *token, WinInstanceData *instData,
-																char *buffer, void *data )
+static Bool parseTextEntryData( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* data )
 {
 	EntryData *entryData = (EntryData *)data;
 	char *c;
@@ -1197,8 +1175,7 @@ static Bool parseTextEntryData( char *token, WinInstanceData *instData,
 // parseTabControlData =========================================================
 /** Parse tab control data entry */
 //=============================================================================
-static Bool parseTabControlData( char *token, WinInstanceData *instData,
-																char *buffer, void *data )
+static Bool parseTabControlData( char* /* token */, WinInstanceData* /* instData */, char* buffer, void* data )
 {
 	TabControlData *tabControlData = (TabControlData *)data;
 	char *c;
@@ -1252,8 +1229,7 @@ static Bool parseTabControlData( char *token, WinInstanceData *instData,
 // parseDrawData ==============================================================
 /** Parse set of draw data elements */
 //=============================================================================
-static Bool parseDrawData( char *token, WinInstanceData *instData,
-													 char *buffer, void *data )
+static Bool parseDrawData( char* token, WinInstanceData* instData, char* buffer, void* /* data */ )
 {
 	Int i;
 	UnsignedInt r, g, b, a;
@@ -2502,7 +2478,7 @@ cleanupAndExit:
 //-------------------------------------------------------------------------------------------------
 /** Parse init for layout file */
 //-------------------------------------------------------------------------------------------------
-Bool parseInit( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo *info )
+Bool parseInit( char* /* token */, char* buffer, UnsignedInt /* version */, WindowLayoutInfo* info )
 {
 	char *c;
 	const char *seps = " \n\r\t";
@@ -2523,7 +2499,7 @@ DEBUG_ASSERTCRASH(info->init || info->initNameString.compareNoCase("[None]") == 
 //-------------------------------------------------------------------------------------------------
 /** Parse update for layout file */
 //-------------------------------------------------------------------------------------------------
-Bool parseUpdate( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo *info )
+Bool parseUpdate( char* /* token */, char* buffer, UnsignedInt /* version */, WindowLayoutInfo* info )
 {
 	char *c;
 	const char *seps = " \n\r\t";
@@ -2542,7 +2518,7 @@ Bool parseUpdate( char *token, char *buffer, UnsignedInt version, WindowLayoutIn
 //-------------------------------------------------------------------------------------------------
 /** Parse shutdown for layout file */
 //-------------------------------------------------------------------------------------------------
-Bool parseShutdown( char *token, char *buffer, UnsignedInt version, WindowLayoutInfo *info )
+Bool parseShutdown( char* /* token */, char* buffer, UnsignedInt /* version */, WindowLayoutInfo* info )
 {
 	char *c;
 	const char *seps = " \n\r\t";
@@ -2560,11 +2536,11 @@ Bool parseShutdown( char *token, char *buffer, UnsignedInt version, WindowLayout
 
 static LayoutScriptParse layoutScriptTable[] =
 {
-	{ "LAYOUTINIT",										parseInit },
-	{ "LAYOUTUPDATE",									parseUpdate },
-	{ "LAYOUTSHUTDOWN",								parseShutdown },
+	{ "LAYOUTINIT",			parseInit },
+	{ "LAYOUTUPDATE",		parseUpdate },
+	{ "LAYOUTSHUTDOWN",		parseShutdown },
 
-	{ NULL,															NULL },
+	{ NULL,					NULL },
 
 };
 

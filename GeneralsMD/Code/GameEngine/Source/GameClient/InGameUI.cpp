@@ -49,7 +49,7 @@
 #include "Common/SpecialPower.h"
 
 #include "GameClient/Anim2D.h"
-// #include "GameClient/ControlBar.h"
+#include "GameClient/ControlBar.h"
 #include "GameClient/DisplayStringManager.h"
 #include "GameClient/Diplomacy.h"
 #include "GameClient/Eva.h"
@@ -349,7 +349,7 @@ Real SuperweaponInfo::getHeight() const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void InGameUI::crc( Xfer *xfer )
+void InGameUI::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -552,7 +552,7 @@ void InGameUI::setMouseCursor(Mouse::MouseCursor c)
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-SuperweaponInfo* InGameUI::findSWInfo(Int playerIndex, const AsciiString& powerName, ObjectID id, const SpecialPowerTemplate *powerTemplate)
+SuperweaponInfo* InGameUI::findSWInfo(Int playerIndex, const AsciiString& powerName, ObjectID id, const SpecialPowerTemplate* /* powerTemplate */)
 {
 	SuperweaponMap::iterator mapIt = m_superweapons[playerIndex].find(powerName);
 	if (mapIt != m_superweapons[playerIndex].end())
@@ -606,7 +606,7 @@ void InGameUI::addSuperweapon(Int playerIndex, const AsciiString& powerName, Obj
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Bool InGameUI::removeSuperweapon(Int playerIndex, const AsciiString& powerName, ObjectID id, const SpecialPowerTemplate *powerTemplate)
+Bool InGameUI::removeSuperweapon(Int playerIndex, const AsciiString& powerName, ObjectID id, const SpecialPowerTemplate* /* powerTemplate */)
 {
 	DEBUG_LOG(("Removing superweapon UI timer\n"));
 	SuperweaponMap::iterator mapIt = m_superweapons[playerIndex].find(powerName);
@@ -1069,7 +1069,6 @@ InGameUI::InGameUI()
 //-------------------------------------------------------------------------------------------------
 InGameUI::~InGameUI()
 {
-	// FIXME: TheControlBar.
 	// delete TheControlBar;
 	// TheControlBar = NULL;
 
@@ -1177,6 +1176,8 @@ void InGameUI::init( void )
 	// }
 	// TheTacticalView->setDefaultView(0.0f, 0.0f, 1.0f);
 
+// FIXME: TheTacticalView.  Also, Control Bar loads CommandButton.ini, which needs AmericaCommandCenter Thing template.
+#if 0
 	/** @todo this may be the wrong place to create the sidebar, but for now
 	this is where it lives */
 	createControlBar();
@@ -1185,10 +1186,11 @@ void InGameUI::init( void )
 	this is where it lives */
 	createReplayControl();
 
-	// FIXME: TheControlBar.
-	// // create the command bar
-	// TheControlBar = NEW ControlBar;
-	// TheControlBar->init();
+	// create the command bar
+	TheControlBar = NEW ControlBar;
+	TheControlBar->init();
+#endif // if 0
+// FIXME: Uncomment the delete!
 
 	m_windowLayouts.clear();
 
@@ -1204,7 +1206,7 @@ void InGameUI::setRadiusCursor(RadiusCursorType cursorType, const SpecialPowerTe
 (void) cursorType;
 (void) specPowTempl;
 (void) weaponSlot;
-DEBUG_CRASH(("InGameUI::setRadiusCursor not yet implemented!"));
+DEBUG_LOG(("InGameUI::setRadiusCursor not yet implemented!\n"));
 #if 0
 	if (cursorType == m_curRcType)
 		return;
@@ -2182,7 +2184,7 @@ void InGameUI::beginAreaSelectHint( const GameMessage *msg )
 //-------------------------------------------------------------------------------------------------
 /** An area selection has occurred, finish graphical "hint". */
 //-------------------------------------------------------------------------------------------------
-void InGameUI::endAreaSelectHint( const GameMessage *msg )
+void InGameUI::endAreaSelectHint( const GameMessage* /* msg */ )
 {
 	m_isDragSelecting = false;
 }
@@ -2225,7 +2227,7 @@ void InGameUI::createMoveHint( const GameMessage *msg )
 //-------------------------------------------------------------------------------------------------
 /** An attack command has occurred, start graphical "hint". */
 //-------------------------------------------------------------------------------------------------
-void InGameUI::createAttackHint( const GameMessage *msg )
+void InGameUI::createAttackHint( const GameMessage* /* msg */ )
 {
 
 }
@@ -2233,7 +2235,7 @@ void InGameUI::createAttackHint( const GameMessage *msg )
 //-------------------------------------------------------------------------------------------------
 /** A force attack command has occurred, start graphical "hint". */
 //-------------------------------------------------------------------------------------------------
-void InGameUI::createForceAttackHint( const GameMessage *msg )
+void InGameUI::createForceAttackHint( const GameMessage* /* msg */ )
 {
 
 }
@@ -3006,7 +3008,7 @@ const CommandButton *InGameUI::getGUICommand( void ) const
 //-------------------------------------------------------------------------------------------------
 void InGameUI::destroyPlacementIcons( void )
 {
-DEBUG_CRASH(("InGameUI::destroyPlacementIcons not yet implemented!"));
+DEBUG_LOG(("InGameUI::destroyPlacementIcons not yet implemented!\n"));
 #if 0
 	Int i;
 
@@ -3927,8 +3929,6 @@ void InGameUI::expireHint( HintType type, UnsignedInt hintIndex )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::createControlBar( void )
 {
-DEBUG_CRASH(("InGameUI::createControlBar not yet implemented!"));
-#if 0
 
 	TheWindowManager->winCreateFromScript( AsciiString("ControlBar.wnd") );
 	HideControlBar();
@@ -3939,7 +3939,6 @@ DEBUG_CRASH(("InGameUI::createControlBar not yet implemented!"));
 		window->winHide( TRUE );
 */
 
-#endif // if 0
 }  // end createControlBar
 
 //-------------------------------------------------------------------------------------------------
@@ -4047,18 +4046,22 @@ void InGameUI::stopCameoMovie( void )
 	//GameWindow *window = TheWindowManager->winGetWindowFromId(NULL,TheNameKeyGenerator->nameToKey( AsciiString("ControlBar.wnd:CameoMovieWindow") ));
 	GameWindow *window = TheWindowManager->winGetWindowFromId(NULL,TheNameKeyGenerator->nameToKey( AsciiString("ControlBar.wnd:RightHUD") ));
 //	window->winHide(FALSE);
-	WinInstanceData *winData = window->winGetInstanceData();
-	winData->setVideoBuffer(NULL);
-	
-	delete m_cameoVideoBuffer;
-	m_cameoVideoBuffer = NULL;
+
+	if (window) {
+		WinInstanceData *winData = window->winGetInstanceData();
+		winData->setVideoBuffer(NULL);
+	}
+
+	if (m_cameoVideoBuffer) {
+		delete m_cameoVideoBuffer;
+		m_cameoVideoBuffer = NULL;
+	}
 
 	if ( m_cameoVideoStream )
 	{
 		m_cameoVideoStream->close();
 		m_cameoVideoStream = NULL;
 	}
-	
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -5829,8 +5832,7 @@ Bool InGameUI::areTooltipsDisabled() const
 }
 
 
-WindowMsgHandledType IdleWorkerSystem( GameWindow *window, UnsignedInt msg, 
-																				WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType IdleWorkerSystem( GameWindow* /* window */, UnsignedInt msg, WindowMsgData mData1, WindowMsgData mData2 )
 {
 	switch( msg ) 
 	{

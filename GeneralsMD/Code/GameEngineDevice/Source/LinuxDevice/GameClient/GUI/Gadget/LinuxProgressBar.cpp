@@ -153,7 +153,7 @@ void LinuxGadgetProgressBarDraw( GameWindow *window, WinInstanceData *instData )
 // LinuxGadgetProgressBarImageDraw ============================================
 /** Draw Progress Bar with user supplied images */
 //=============================================================================
-void LinuxGadgetProgressBarImageDrawA( GameWindow *window, WinInstanceData *instData )
+void LinuxGadgetProgressBarImageDrawA( GameWindow* window, WinInstanceData* /* instData */ )
 {
    ICoord2D origin, size;
    const Image *barCenter, *barRight, *left, *right, *center;

@@ -770,9 +770,9 @@ static Bool collideTest_Box_Box(const CollideInfo *a, const CollideInfo *b, Coll
 //-----------------------------------------------------------------------------
 static Bool distCalcProc_CenterAndCenter_2D(
 	const Coord3D *posA, 
-	const Object *objA, 
+	const Object* /* objA */, 
 	const Coord3D *posB, 
-	const Object *objB, 
+	const Object* /* objB */, 
 	Real& abDistSqr, 
 	Coord3D& abVec,
 	Real maxDistSqr
@@ -855,9 +855,9 @@ static Bool distCalcProc_BoundaryAndBoundary_2D(
 //-----------------------------------------------------------------------------
 static Bool distCalcProc_CenterAndCenter_3D(
 	const Coord3D *posA, 
-	const Object *objA, 
+	const Object* /* objA */, 
 	const Coord3D *posB, 
-	const Object *objB, 
+	const Object* /* objB */, 
 	Real& abDistSqr, 
 	Coord3D& abVec,
 	Real maxDistSqr
@@ -2155,12 +2155,12 @@ static AsciiString theObjName;
 #endif
 
 //-----------------------------------------------------------------------------
-Int PartitionData::calcMaxCoiForShape(GeometryType geom, Real majorRadius, Real minorRadius, Bool isSmall)
+Int PartitionData::calcMaxCoiForShape(GeometryType geom, Real majorRadius, Real minorRadius, Bool /* isSmall */)
 {
 	Int result;
 
 
-  // THis is commented out, since some cases od big extets labeled small seem to be escaping.
+  // This is commented out, since some cases of big extents labeled small seem to be escaping.
   //M Lorenzen 8/26/03
 //	if (isSmall)
 //	{
@@ -2261,6 +2261,7 @@ void PartitionData::attachToObject(Object* object)
 {
 
 DEBUG_CRASH(("PartitionData::attachToObject not yet implemented!"));
+(void) object;
 #if 0
 	// remember who contains us
 	m_object = object;
@@ -5021,7 +5022,7 @@ void PartitionManager::getMostValuableLocation( Int playerIndex, UnsignedInt whi
 
 //-------------------------------------------------------------------------------------------------
 void PartitionManager::getNearestGroupWithValue( Int playerIndex, UnsignedInt whichPlayerTypes, ValueOrThreat valType,
-															 const Coord3D *sourceLocation, Int valueRequired, Bool greaterThan, Coord3D *outLocation )
+															 const Coord3D *sourceLocation, Int valueRequired, Bool /* greaterThan */, Coord3D *outLocation )
 {
 	if (!(sourceLocation && outLocation))
 		return;
@@ -5882,7 +5883,7 @@ Bool SightingInfo::isInvalid() const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void SightingInfo::crc( Xfer *xfer )
+void SightingInfo::crc( Xfer * /* xfer */ )
 {
 
 }  // end crc

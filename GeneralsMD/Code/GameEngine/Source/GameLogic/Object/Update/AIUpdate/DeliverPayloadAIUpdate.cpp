@@ -143,7 +143,7 @@ DeliverPayloadAIUpdate::~DeliverPayloadAIUpdate( void )
 } 
 
 //-------------------------------------------------------------------------------------------------
-AIFreeToExitType DeliverPayloadAIUpdate::getAiFreeToExit(const Object* exiter) const 
+AIFreeToExitType DeliverPayloadAIUpdate::getAiFreeToExit(const Object* /* exiter */) const 
 { 
 	if( getObject()->isEffectivelyDead() )
 		return NOT_FREE_TO_EXIT;
@@ -570,7 +570,7 @@ void DeliverPayloadStateMachine::loadPostProcess( void )
 }  // end loadPostProcess
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ Bool DeliverPayloadStateMachine::isOffMap( State *thisState, void* userData )
+/*static*/ Bool DeliverPayloadStateMachine::isOffMap( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	DeliverPayloadAIUpdate *ai = (DeliverPayloadAIUpdate*)owner->getAIUpdateInterface();
@@ -644,7 +644,7 @@ StateReturnType ApproachState::update()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void DeliveringState::crc( Xfer *xfer )
+void DeliveringState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -1026,7 +1026,7 @@ StateReturnType ConsiderNewApproachState::update() // Success if we should try a
 }
 
 //-------------------------------------------------------------------------------------------------
-void ConsiderNewApproachState::onExit( StateExitType status )
+void ConsiderNewApproachState::onExit( StateExitType /* status */ )
 {
 	Object *owner = getMachineOwner();
 	DeliverPayloadAIUpdate *ai = (DeliverPayloadAIUpdate*)owner->getAIUpdateInterface();
@@ -1046,7 +1046,7 @@ void ConsiderNewApproachState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void RecoverFromOffMapState::crc( Xfer *xfer )
+void RecoverFromOffMapState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 

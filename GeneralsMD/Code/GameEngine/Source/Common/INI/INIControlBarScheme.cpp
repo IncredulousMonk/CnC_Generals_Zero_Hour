@@ -78,7 +78,7 @@ void INI::parseControlBarSchemeDefinition( INI *ini )
 
 	// read the name
 	const char* c = ini->getNextToken();
-	name.set( c );	
+	name.set( c );
 
 	// find existing item if present
 	CBSchemeManager = TheControlBar->getControlBarSchemeManager();
@@ -94,8 +94,6 @@ void INI::parseControlBarSchemeDefinition( INI *ini )
 	DEBUG_ASSERTCRASH( CBScheme, ("parseControlBarSchemeDefinition: Unable to allocate Scheme '%s'\n", name.str()) );
 
 	// parse the ini definition
-	ini->initFromINI( CBScheme, CBSchemeManager->getFieldParse() );
+	ini->initFromINI( &CBScheme->m_ini, CBSchemeManager->getFieldParse() );
 
 }  // end parseCommandButtonDefinition
-
-

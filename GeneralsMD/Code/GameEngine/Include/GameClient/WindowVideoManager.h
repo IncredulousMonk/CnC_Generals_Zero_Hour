@@ -113,12 +113,12 @@ public:
 	VideoStreamInterface *videoStream);
 	
 private:
-	WindowVideoPlayType m_playType;
-	GameWindow *m_win;
-	VideoBuffer *m_videoBuffer;
-	VideoStreamInterface *m_videoStream;
-	AsciiString m_movieName;
-	WindowVideoStates m_state;
+	WindowVideoPlayType m_playType {};
+	GameWindow *m_win {};
+	VideoBuffer *m_videoBuffer {};
+	VideoStreamInterface *m_videoStream {};
+	AsciiString m_movieName {};
+	WindowVideoStates m_state {};
 
 };
 
@@ -162,10 +162,10 @@ private:
 
 	typedef std::unordered_map< ConstGameWindowPtr, WindowVideo *, hashConstGameWindowPtr, std::equal_to<ConstGameWindowPtr> > WindowVideoMap;
 
-	WindowVideoMap m_playingVideos;								///< List of currently playin Videos
-	//WindowVideoMap m_pausedVideos;									///< List of currently paused Videos
-	Bool m_stopAllMovies;														///< Maintains is we're in a stop all Movies State
-	Bool m_pauseAllMovies;													///< Maintains if we're in a pause all movies state
+	WindowVideoMap m_playingVideos {};								///< List of currently playin Videos
+	//WindowVideoMap m_pausedVideos {};									///< List of currently paused Videos
+	Bool m_stopAllMovies {};														///< Maintains is we're in a stop all Movies State
+	Bool m_pauseAllMovies {};													///< Maintains if we're in a pause all movies state
 
 
 };

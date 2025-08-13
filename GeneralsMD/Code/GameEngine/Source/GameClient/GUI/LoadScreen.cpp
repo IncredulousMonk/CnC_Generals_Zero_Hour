@@ -161,7 +161,7 @@ LoadScreen::~LoadScreen( void )
 	m_loadScreen = NULL;
 }
 
-void LoadScreen::update( Int percent )
+void LoadScreen::update( Int /* percent */ )
 {
 	TheGameEngine->serviceWindowsOS();
 	if (TheGameEngine->getQuitting())
@@ -389,7 +389,7 @@ void SinglePlayerLoadScreen::moveWindows( Int frame )
 	}
 }*/
  
-void SinglePlayerLoadScreen::init( GameInfo *game )
+void SinglePlayerLoadScreen::init( GameInfo* /* game */ )
 {
 	//No music in SinglePlayerLoadScreen
 
@@ -638,7 +638,7 @@ void SinglePlayerLoadScreen::update( Int percent )
 	LoadScreen::update( percent );
 }
 
-void SinglePlayerLoadScreen::setProgressRange( Int min, Int max )
+void SinglePlayerLoadScreen::setProgressRange( Int /* min */, Int /* max */ )
 {
 
 }
@@ -1177,7 +1177,7 @@ void ChallengeLoadScreen::update( Int percent )
 	LoadScreen::update( percent );
 }
 
-void ChallengeLoadScreen::setProgressRange( Int min, Int max )
+void ChallengeLoadScreen::setProgressRange( Int /* min */, Int /* max */ )
 {
 
 }
@@ -1195,7 +1195,7 @@ ShellGameLoadScreen::~ShellGameLoadScreen( void )
 	m_progressBar = NULL;
 }
 
-void ShellGameLoadScreen::init( GameInfo *game )
+void ShellGameLoadScreen::init( GameInfo* /* game */ )
 {
 	static Bool firstLoad = TRUE;
 

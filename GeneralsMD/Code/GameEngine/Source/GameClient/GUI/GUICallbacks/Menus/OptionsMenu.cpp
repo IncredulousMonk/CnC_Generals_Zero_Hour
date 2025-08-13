@@ -1340,7 +1340,7 @@ static void cancelAdvancedOptions()
 //-------------------------------------------------------------------------------------------------
 /** Initialize the options menu */
 //-------------------------------------------------------------------------------------------------
-void OptionsMenuInit( WindowLayout *layout, void *userData )
+void OptionsMenuInit( WindowLayout* layout, void* /* userData */ )
 {
 	ignoreSelected = TRUE;
 	if (TheGameEngine->getQuitting())
@@ -1836,7 +1836,7 @@ void OptionsMenuInit( WindowLayout *layout, void *userData )
 //-------------------------------------------------------------------------------------------------
 /** options menu shutdown method */
 //-------------------------------------------------------------------------------------------------
-void OptionsMenuShutdown( WindowLayout *layout, void *userData )
+void OptionsMenuShutdown( WindowLayout* /* layout */, void* /* userData */ )
 {
 /* moved into the back button stuff
 	if (pref)
@@ -1860,7 +1860,7 @@ void OptionsMenuShutdown( WindowLayout *layout, void *userData )
 //-------------------------------------------------------------------------------------------------
 /** options menu update method */
 //-------------------------------------------------------------------------------------------------
-void OptionsMenuUpdate( WindowLayout *layout, void *userData )
+void OptionsMenuUpdate( WindowLayout* /* layout */, void* /* userData */ )
 {
 
 }  // end OptionsMenuUpdate
@@ -1868,8 +1868,7 @@ void OptionsMenuUpdate( WindowLayout *layout, void *userData )
 //-------------------------------------------------------------------------------------------------
 /** Options menu input callback */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType OptionsMenuInput( GameWindow *window, UnsignedInt msg,
-																			 WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType OptionsMenuInput( GameWindow *window, UnsignedInt msg, WindowMsgData mData1, WindowMsgData mData2 )
 {
 
 	switch( msg ) 
@@ -1921,8 +1920,7 @@ WindowMsgHandledType OptionsMenuInput( GameWindow *window, UnsignedInt msg,
 //-------------------------------------------------------------------------------------------------
 /** options menu window system callback */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType OptionsMenuSystem( GameWindow *window, UnsignedInt msg, 
-																				WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType OptionsMenuSystem( GameWindow* /* window */, UnsignedInt msg, WindowMsgData mData1, WindowMsgData mData2 )
 {
 	static NameKeyType buttonBack = NAMEKEY_INVALID;
 	static NameKeyType buttonDefaults = NAMEKEY_INVALID;

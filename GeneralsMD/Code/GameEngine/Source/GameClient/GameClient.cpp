@@ -528,7 +528,7 @@ void GameClient::update( void )
 			// TheDisplay->playLogoMovie("EALogoMovie640", 5000, 3000);
 		TheWritableGlobalData->m_data.m_playIntro = FALSE;
 		TheWritableGlobalData->m_data.m_afterIntro = TRUE;
-		playSizzle = TRUE;
+		// playSizzle = TRUE;
 	}
 
 	//Initial Game Codition.  We must show the movie first and then we can display the shell	
@@ -1014,17 +1014,22 @@ void GameClient::flushTextBearingDrawables( void )
 }
 
 // ------------------------------------------------------------------------------------------------
-// GameMessage::Type GameClient::evaluateContextCommand( Drawable *draw,
-// 																											const Coord3D *pos,
-// 																											CommandTranslator::CommandEvaluateType cmdType )
-// {
+GameMessage::Type GameClient::evaluateContextCommand( Drawable *draw, const Coord3D *pos, CommandTranslator::CommandEvaluateType cmdType )
+{
 
-// 	if( m_commandTranslator )
-// 		return m_commandTranslator->evaluateContextCommand( draw, pos, cmdType );
-// 	else
-// 		return GameMessage::MSG_INVALID;
+(void) draw;
+(void) pos;
+(void) cmdType;
+DEBUG_CRASH(("GameClient::evaluateContextCommand not yet implemented!"));
+return GameMessage::MSG_INVALID;
+#if 0
+	if( m_commandTranslator )
+		return m_commandTranslator->evaluateContextCommand( draw, pos, cmdType );
+	else
+		return GameMessage::MSG_INVALID;
 
-// }  // end evaluateContextCommand
+#endif // if 0
+}  // end evaluateContextCommand
 
 //-------------------------------------------------------------------------------------------------
 /** Get the ray effect data for a drawable */

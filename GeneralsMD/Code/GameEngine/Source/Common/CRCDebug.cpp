@@ -203,7 +203,7 @@ void addCRCGenLine(const char *fmt, ...)
 	//DEBUG_LOG(("%s", buf));
 }
 
-void addCRCDumpLine(const char *fmt, ...)
+void addCRCDumpLine(const char* /* fmt */, ...)
 {
 	/*
 	va_list va;

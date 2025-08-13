@@ -133,7 +133,7 @@ static Object *findBestTunnel(Player *ownerPlayer, const Coord3D *pos)
 /**
  * This returns true if the conditions specified have been met, false otherwise.
  */
-Bool TunnelNetworkExitConditions::shouldExit(const StateMachine* machine) const
+Bool TunnelNetworkExitConditions::shouldExit(const StateMachine* /* machine */) const
 {
 
 		if (TheGameLogic->getFrame() >= m_attackGiveUpFrame)
@@ -266,7 +266,7 @@ Bool AITNGuardMachine::lookForInnerTarget(void)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AITNGuardMachine::crc( Xfer *xfer )
+void AITNGuardMachine::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -300,7 +300,7 @@ void AITNGuardMachine::loadPostProcess( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AITNGuardInnerState::crc( Xfer *xfer )
+void AITNGuardInnerState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -438,7 +438,7 @@ void AITNGuardInnerState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AITNGuardOuterState::crc( Xfer *xfer )
+void AITNGuardOuterState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -642,7 +642,7 @@ void AITNGuardReturnState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AITNGuardIdleState::crc( Xfer *xfer )
+void AITNGuardIdleState::crc( Xfer * /* xfer */ )
 {
 }  // end crc
 
@@ -734,7 +734,7 @@ StateReturnType AITNGuardIdleState::update( void )
 }
 
 //--------------------------------------------------------------------------------------
-void AITNGuardIdleState::onExit( StateExitType status )
+void AITNGuardIdleState::onExit( StateExitType /* status */ )
 {
 }
 
@@ -770,7 +770,7 @@ StateReturnType AITNGuardPickUpCrateState::update( void )
 }
 
 //--------------------------------------------------------------------------------------
-void AITNGuardPickUpCrateState::onExit( StateExitType status )
+void AITNGuardPickUpCrateState::onExit( StateExitType /* status */ )
 {
 	
 }
@@ -855,7 +855,7 @@ void AITNGuardAttackAggressorState::onExit( StateExitType status )
 }
 
 //-------------------------------------------------------------------------------------------------
-void AITNGuardAttackAggressorState::crc( Xfer *xfer )
+void AITNGuardAttackAggressorState::crc( Xfer * /* xfer */ )
 {
 
 }

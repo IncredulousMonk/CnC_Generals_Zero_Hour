@@ -69,9 +69,7 @@ class CommandButton;
 enum BuildableStatus: int;
 
 
-#if 0
 typedef const CommandButton* ConstCommandButtonPtr;
-#endif // if 0
 
 // What kind of game we're in.
 enum
@@ -160,10 +158,8 @@ public:
 #endif // if 0
 	Bool findBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus& bs) const;
 
-#if 0
 	void setControlBarOverride(const AsciiString& commandSetName, Int slot, ConstCommandButtonPtr commandButton);
 	Bool findControlBarOverride(const AsciiString& commandSetName, Int slot, ConstCommandButtonPtr& commandButton) const;
-#endif // if 0
 
 	//-----------------------------------------------------------------------------------------------
 	/// create an object given the thing template. (Only for use by ThingFactory.)
@@ -319,14 +315,14 @@ private:
 	*/
 	typedef std::unordered_map< AsciiString, BuildableStatus, rts::hash<AsciiString>, rts::equal_to<AsciiString> > BuildableMap;
 	BuildableMap m_thingTemplateBuildableOverrides;
+#endif // if 0
 
 	/**
 		overrides to control bars. doesn't really belong here, but has to go somewhere. (srj)
 	*/
 	typedef std::unordered_map< AsciiString, ConstCommandButtonPtr, rts::hash<AsciiString>, rts::equal_to<AsciiString> > ControlBarOverrideMap;
-	ControlBarOverrideMap m_controlBarOverrides;
+	ControlBarOverrideMap m_controlBarOverrides {};
 
-#endif // if 0
 	Real m_width {}, m_height {};																	///< Dimensions of the world
 	UnsignedInt m_frame {};																		///< Simulation frame number
 

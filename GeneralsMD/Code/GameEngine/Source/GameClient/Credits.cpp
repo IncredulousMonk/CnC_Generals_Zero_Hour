@@ -414,14 +414,14 @@ void CreditsManager::addBlank( void )
 
 
 
-void CreditsManager::parseBlank( INI* ini, void *instance, void *store, const void *userData )
+void CreditsManager::parseBlank( INI* /* ini */, void* instance, void* /* store */, const void* /* userData */ )
 {
 	CreditsManager::IniData* iniData = (CreditsManager::IniData*) instance;
 	CreditsManager *cManager = iniData->m_obj;
 	cManager->addBlank();
 }
 
-void CreditsManager::parseText( INI* ini, void *instance, void *store, const void *userData )
+void CreditsManager::parseText( INI* ini, void *instance, void* /* store */, const void* /* userData */ )
 {
 	
 	AsciiString asciiString = ini->getNextQuotedAsciiString();

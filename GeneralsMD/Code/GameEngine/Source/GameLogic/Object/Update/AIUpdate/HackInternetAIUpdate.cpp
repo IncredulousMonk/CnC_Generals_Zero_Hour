@@ -239,7 +239,7 @@ void HackInternetAIUpdate::loadPostProcess( void )
 //-------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------
-HackInternetStateMachine::HackInternetStateMachine( Object *owner, AsciiString name ) : AIStateMachine( owner, "HackInternetStateMachine" )
+HackInternetStateMachine::HackInternetStateMachine( Object *owner, AsciiString /* name */ ) : AIStateMachine( owner, "HackInternetStateMachine" )
 {
 	//HackInternetAIUpdate *ai = (HackInternetAIUpdate*)owner->getAIUpdateInterface();
 
@@ -257,7 +257,7 @@ HackInternetStateMachine::~HackInternetStateMachine()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void UnpackingState::crc( Xfer *xfer )
+void UnpackingState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -331,7 +331,7 @@ StateReturnType UnpackingState::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-void UnpackingState::onExit( StateExitType status )
+void UnpackingState::onExit( StateExitType /* status */ )
 {
 	Object *owner = getMachineOwner();
 	owner->clearModelConditionState( MODELCONDITION_UNPACKING );
@@ -346,7 +346,7 @@ void UnpackingState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void PackingState::crc( Xfer *xfer )
+void PackingState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -413,7 +413,7 @@ StateReturnType PackingState::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-void PackingState::onExit( StateExitType status )
+void PackingState::onExit( StateExitType /* status */ )
 {
 	Object *owner = getMachineOwner();
 	owner->clearModelConditionState( MODELCONDITION_PACKING );
@@ -422,7 +422,7 @@ void PackingState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void HackInternetState::crc( Xfer *xfer )
+void HackInternetState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -602,7 +602,7 @@ StateReturnType HackInternetState::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-void HackInternetState::onExit( StateExitType status )
+void HackInternetState::onExit( StateExitType /* status */ )
 {
 	Object *owner = getMachineOwner();
 	owner->clearModelConditionState( MODELCONDITION_FIRING_A );

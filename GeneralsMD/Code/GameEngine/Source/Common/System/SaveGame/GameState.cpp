@@ -444,7 +444,7 @@ static void findHighFileNumber( AsciiString filename, void *userData )
 // ------------------------------------------------------------------------------------------------
 /** Given the save files on disk, find the "next" filename to use when saving a game */
 // ------------------------------------------------------------------------------------------------
-AsciiString GameState::findNextSaveFilename( UnicodeString desc )
+AsciiString GameState::findNextSaveFilename( UnicodeString /* desc */ )
 {
 // works, but needs approval from mgmt (srj)
 	// GS activating for patch

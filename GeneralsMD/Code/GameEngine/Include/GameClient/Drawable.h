@@ -356,8 +356,10 @@ public:
 
 
 	void setStealthLook(StealthLookType look);
+#endif // if 0
 	StealthLookType getStealthLook() const { return m_stealthLook; }
 
+#if 0
 	void updateDrawableClipStatus( UnsignedInt shotsRemaining, UnsignedInt maxShots, WeaponSlotType slot ); ///< This will do the show/hide work if ProjectileBoneFeedbackEnabled is set.
 #endif // if 0
 	void updateDrawableSupplyStatus( Int maxSupply, Int currentSupply ); ///< This will do visual feedback on Supplies carried
@@ -387,12 +389,12 @@ public:
 	DrawModule** getDrawModules();
 	DrawModule const** getDrawModules() const;
 
-#if 0
 	//---------------------------------------------------------------------------
 	void setDrawableStatus( DrawableStatus bit )  { BitSet( m_status, bit ); }
 	void clearDrawableStatus( DrawableStatus bit ) { BitClear( m_status, bit ); }
 	inline Bool testDrawableStatus( DrawableStatus bit ) const { return (m_status & bit) != 0; }
 
+#if 0
 	void setShroudClearFrame( UnsignedInt frame )  { m_shroudClearFrame = frame; }
 	UnsignedInt getShroudClearFrame( void ) { return m_shroudClearFrame; }
  
@@ -602,9 +604,11 @@ public:
 	// caption text methods -----------------------------------------------------------
 	void setCaptionText( const UnicodeString& captionText );
 	void clearCaptionText( void );
+#endif // if 0
 	UnicodeString getCaptionText( void );
 	//---------------------------------------------------------------------------------
 
+#if 0
 	DrawableIconInfo* getIconInfo();															///< lazily allocates, if necessary
 	void killIcon(DrawableIconType t) { if (m_iconInfo) m_iconInfo->killIcon(t); }
 	Bool hasIconInfo() const { return m_iconInfo != NULL; }
@@ -720,11 +724,13 @@ private:
 
 #if 0
 	DynamicAudioEventInfo *m_customSoundAmbientInfo {}; ///< If not NULL, info about the ambient sound to attach to this object
+#endif // if 0
 
 	UnsignedInt m_status {};				///< status bits (see DrawableStatus enum)
 	UnsignedInt m_tintStatus {};				///< tint color status bits (see TintStatus enum)
 	UnsignedInt m_prevTintStatus {};///< for edge testing with m_tintStatus
 	
+#if 0
 	enum FadingMode: int
 	{
 		FADING_NONE,
@@ -744,9 +750,9 @@ private:
 
 	Module** m_modules[NUM_DRAWABLE_MODULE_TYPES] {};
 
-#if 0
 	StealthLookType m_stealthLook {};
 
+#if 0
 	Int m_flashCount {};           ///< number of times to flash the drawable
 	Color m_flashColor {};					///< color to flash the drawable
 

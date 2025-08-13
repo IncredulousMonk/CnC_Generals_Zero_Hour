@@ -298,8 +298,8 @@ class SupplyTruckBusyState :  public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(SupplyTruckBusyState, "SupplyTruckBusyState")		
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
-	virtual void xfer( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
+	virtual void xfer( Xfer* /* xfer */ ){};
 	virtual void loadPostProcess(){};
 
 public:
@@ -326,7 +326,7 @@ TheInGameUI->DEBUG_addFloatingText("entering busy state", getMachineOwner()->get
 	{ 
 		return STATE_CONTINUE; 
 	}
-	virtual void onExit(StateExitType status)
+	virtual void onExit(StateExitType /* status */)
 	{
 #ifdef DEBUG_SUPPLY_STATE
 TheInGameUI->DEBUG_addFloatingText("exiting busy state", getMachineOwner()->getPosition(), GameMakeColor(255, 0, 0, 255));
@@ -342,8 +342,8 @@ class SupplyTruckIdleState :  public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(SupplyTruckIdleState, "SupplyTruckIdleState")		
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
-	virtual void xfer( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
+	virtual void xfer( Xfer* /* xfer */ ){};
 	virtual void loadPostProcess(){};
 
 public:
@@ -353,7 +353,7 @@ public:
 	{ 
 		return STATE_CONTINUE; 
 	}
-	virtual void onExit(StateExitType status)
+	virtual void onExit(StateExitType /* status */)
 	{
 #ifdef DEBUG_SUPPLY_STATE
 TheInGameUI->DEBUG_addFloatingText("exiting idle state", getMachineOwner()->getPosition(), GameMakeColor(255, 0, 0, 255));
@@ -500,7 +500,7 @@ TheInGameUI->DEBUG_addFloatingText("entering wanting state", getMachineOwner()->
 }
 
 //-------------------------------------------------------------------------------------------------
-void SupplyTruckWantsToPickUpOrDeliverBoxesState::onExit(StateExitType status)
+void SupplyTruckWantsToPickUpOrDeliverBoxesState::onExit(StateExitType /* status */)
 {
 #ifdef DEBUG_SUPPLY_STATE
 TheInGameUI->DEBUG_addFloatingText("exiting wanting state", getMachineOwner()->getPosition(), GameMakeColor(255, 0, 0, 255));
@@ -630,7 +630,7 @@ StateReturnType RegroupingState::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-void RegroupingState::onExit(StateExitType status)
+void RegroupingState::onExit(StateExitType /* status */)
 {
 #ifdef DEBUG_SUPPLY_STATE
 	TheInGameUI->DEBUG_addFloatingText("exiting regroup state", getMachineOwner()->getPosition(), GameMakeColor(255, 0, 0, 255));
@@ -664,7 +664,7 @@ StateReturnType DockingState::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-void DockingState::onExit(StateExitType status)
+void DockingState::onExit(StateExitType /* status */)
 {
 #ifdef DEBUG_SUPPLY_STATE
 TheInGameUI->DEBUG_addFloatingText("exiting docking state", getMachineOwner()->getPosition(), GameMakeColor(255, 0, 0, 255));
@@ -679,7 +679,7 @@ TheInGameUI->DEBUG_addFloatingText("exiting docking state", getMachineOwner()->g
 //-------------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool SupplyTruckStateMachine::isForcedIntoWantingState( State *thisState, void* userData )
+/* static */ Bool SupplyTruckStateMachine::isForcedIntoWantingState( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	AIUpdateInterface *ai = owner->getAIUpdateInterface();
@@ -703,7 +703,7 @@ TheInGameUI->DEBUG_addFloatingText(tmp, owner->getPosition(), GameMakeColor(255,
 }
 
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool SupplyTruckStateMachine::isForcedIntoBusyState( State *thisState, void* userData )
+/* static */ Bool SupplyTruckStateMachine::isForcedIntoBusyState( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	AIUpdateInterface *ai = owner->getAIUpdateInterface();
@@ -727,7 +727,7 @@ TheInGameUI->DEBUG_addFloatingText(tmp, owner->getPosition(), GameMakeColor(255,
 }
 
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool SupplyTruckStateMachine::ownerDocking( State *thisState, void* userData )
+/* static */ Bool SupplyTruckStateMachine::ownerDocking( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	AIUpdateInterface *ai = owner->getAIUpdateInterface();
@@ -750,7 +750,7 @@ TheInGameUI->DEBUG_addFloatingText(tmp, owner->getPosition(), GameMakeColor(255,
 }
 
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool SupplyTruckStateMachine::ownerPlayerCommanded( State *thisState, void* userData )
+/* static */ Bool SupplyTruckStateMachine::ownerPlayerCommanded( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	AIUpdateInterface *ai = owner->getAIUpdateInterface();
@@ -771,7 +771,7 @@ TheInGameUI->DEBUG_addFloatingText(tmp, owner->getPosition(), GameMakeColor(255,
 }
 
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool SupplyTruckStateMachine::ownerIdle( State *thisState, void* userData )
+/* static */ Bool SupplyTruckStateMachine::ownerIdle( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	AIUpdateInterface *ai = owner->getAIUpdateInterface();
@@ -792,7 +792,7 @@ TheInGameUI->DEBUG_addFloatingText(tmp, owner->getPosition(), GameMakeColor(255,
 }
 
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool SupplyTruckStateMachine::ownerAvailableForSupplying( State *thisState, void* userData )
+/* static */ Bool SupplyTruckStateMachine::ownerAvailableForSupplying( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	AIUpdateInterface *ai = owner->getAIUpdateInterface();
@@ -816,7 +816,7 @@ TheInGameUI->DEBUG_addFloatingText(tmp, owner->getPosition(), GameMakeColor(255,
 }
 
 //-------------------------------------------------------------------------------------------------
-/* static */ Bool SupplyTruckStateMachine::ownerNotDockingOrIdle( State *thisState, void* userData )
+/* static */ Bool SupplyTruckStateMachine::ownerNotDockingOrIdle( State *thisState, void* /* userData */ )
 {
 	Object *owner = thisState->getMachineOwner();
 	AIUpdateInterface *ai = owner->getAIUpdateInterface();

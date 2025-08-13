@@ -45,18 +45,18 @@ public:
 		Int count;
 	};
 
-	Int								m_slotCapacity;								///< max units that can be inside us
-	Real							m_exitPitchRate;
-	Bool							m_scatterNearbyOnExit;
-	Bool							m_orientLikeContainerOnExit;
-	Bool							m_keepContainerVelocityOnExit;
-	AsciiString				m_exitBone;
+	Int					m_slotCapacity;								///< max units that can be inside us
+	Real				m_exitPitchRate;
+	Bool				m_scatterNearbyOnExit;
+	Bool				m_orientLikeContainerOnExit;
+	Bool				m_keepContainerVelocityOnExit;
+	AsciiString			m_exitBone;
 	InitialPayload		m_initialPayload;
-	Real							m_healthRegen;
+	Real				m_healthRegen;
 
 	MobNexusContainModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	static void parseInitialPayload( INI* ini, void *instance, void *store, const void* /*userData*/ );
 
 };

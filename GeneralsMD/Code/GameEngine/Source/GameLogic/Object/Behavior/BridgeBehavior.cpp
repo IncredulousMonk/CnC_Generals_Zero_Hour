@@ -142,10 +142,7 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 
 //-------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void BridgeBehaviorModuleData::parseFX( INI *ini, 
-											 														 void *instance, 
-																									 void *store, 
-																									 const void *userData )
+/*static*/ void BridgeBehaviorModuleData::parseFX( INI* ini, void* instance, void* /* store */, const void* /* userData */ )
 {
 	const char *token;
 
@@ -181,10 +178,7 @@ static void parseTimeAndLocationInfo( INI *ini, void *instance,
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void BridgeBehaviorModuleData::parseOCL( INI *ini, 
-																										void *instance,
-																										void *store, 
-																										const void *userData )
+/*static*/ void BridgeBehaviorModuleData::parseOCL( INI* ini, void* instance, void* /* store */, const void* /* userData */ )
 {
 	const char *token;
 
@@ -861,7 +855,7 @@ return UPDATE_SLEEP_INVALID;
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void BridgeBehavior::onDie( const DamageInfo *damageInfo )
+void BridgeBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 
 	// kill the towers associated with us

@@ -30,7 +30,7 @@
 #include "LinuxDevice/GameClient/LinuxGadget.h"
 
 //-------------------------------------------------------------------------------------------------
-/** W3D implementation of the game window manager which controls all windows
+/** Linux implementation of the game window manager which controls all windows
    * and user interface controls */
 //-------------------------------------------------------------------------------------------------
 class LinuxGameWindowManager: public GameWindowManager

@@ -43,8 +43,8 @@
 // #include "Common/MapObject.h"
 // #include "Common/MultiplayerSettings.h"
 #include "Common/PerfTimer.h"
-// #include "Common/Player.h"
-// #include "Common/PlayerList.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
 // #include "Common/PlayerTemplate.h"
 // #include "Common/Radar.h"
 // #include "Common/RandomValue.h"
@@ -61,7 +61,7 @@
 // #include "Common/XferDeepCRC.h"
 // #include "Common/GameSpyMiscPreferences.h"
 
-// #include "GameClient/ControlBar.h"
+#include "GameClient/ControlBar.h"
 // #include "GameClient/Drawable.h"
 #include "GameClient/GameClient.h"
 // #include "GameClient/GameText.h"
@@ -73,13 +73,13 @@
 #include "GameClient/ParticleSys.h"
 // #include "GameClient/TerrainVisual.h"
 // #include "GameClient/View.h"
-// #include "GameClient/ControlBar.h"
+#include "GameClient/ControlBar.h"
 // #include "GameClient/CampaignManager.h"
 #include "GameClient/GameWindowTransitions.h"
 #include "GameClient/GameWindowManager.h"
 
-// #include "GameLogic/AI.h"
-// #include "GameLogic/AIPathfind.h"
+#include "GameLogic/AI.h"
+#include "GameLogic/AIPathfind.h"
 // #include "GameLogic/CaveSystem.h"
 // #include "GameLogic/CrateSystem.h"
 // #include "GameLogic/FPUControl.h"
@@ -3021,6 +3021,10 @@ void GameLogic::popSleepyUpdate()
 //DECLARE_PERF_TIMER(friend_awakenUpdateModule)
 void GameLogic::friend_awakenUpdateModule(Object* obj, UpdateModulePtr u, UnsignedInt whenToWakeUp)
 {
+(void) obj;
+(void) u;
+(void) whenToWakeUp;
+DEBUG_CRASH(("GameLogic::friend_awakenUpdateModule not yet implemented!"));
 #if 0
 	//USE_PERF_TIMER(friend_awakenUpdateModule)
 	UnsignedInt now = TheGameLogic->getFrame();
@@ -4044,19 +4048,18 @@ void GameLogic::destroyObject( Object *obj )
 	// run any on destroy logic internal to the object
 	obj->onDestroy();
 
-	// FIXME: TheAI, ThePlayerList, TheControlBar
-	// // remove wall pieces from the pathfinder
-	// if( obj->isKindOf( KINDOF_WALK_ON_TOP_OF_WALL ) )
-	// 	TheAI->pathfinder()->removeWallPiece( obj );
+	// remove wall pieces from the pathfinder
+	if( obj->isKindOf( KINDOF_WALK_ON_TOP_OF_WALL ) )
+		TheAI->pathfinder()->removeWallPiece( obj );
 
-	// //Clean up special power shortcut bars
-	// if( obj->hasAnySpecialPower() )
-	// {
-	// 	if( ThePlayerList->getLocalPlayer() == obj->getControllingPlayer() )
-	// 	{
-	// 		TheControlBar->markUIDirty();
-	// 	}
-	// }
+	//Clean up special power shortcut bars
+	if( obj->hasAnySpecialPower() )
+	{
+		if( ThePlayerList->getLocalPlayer() == obj->getControllingPlayer() )
+		{
+			TheControlBar->markUIDirty();
+		}
+	}
 
 
 }  // end destroyObject
@@ -4066,6 +4069,8 @@ void GameLogic::destroyObject( Object *obj )
 Bool inCRCGen = FALSE;
 UnsignedInt GameLogic::getCRC( Int mode, AsciiString deepCRCFileName )
 {
+(void) mode;
+(void) deepCRCFileName;
 DEBUG_CRASH(("GameLogic::getCRC not yet implemented!"));
 return false;
 #if 0
@@ -4478,7 +4483,6 @@ Bool GameLogic::findBuildableStatusOverride(const ThingTemplate* tt, BuildableSt
 	return false;
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 void GameLogic::setControlBarOverride(const AsciiString& commandSetName, Int slot, ConstCommandButtonPtr commandButton)
 {
@@ -4506,6 +4510,7 @@ Bool GameLogic::findControlBarOverride(const AsciiString& commandSetName, Int sl
 	return false;
 }
 
+#if 0
 #ifdef DUMP_PERF_STATS
 // ------------------------------------------------------------------------------------------------
 void GameLogic::getAIMetricsStatistics( UnsignedInt *numAI, UnsignedInt *numMoving, UnsignedInt *numAttacking, UnsignedInt *numWaitingForPath, UnsignedInt *overallFailedPathfinds )

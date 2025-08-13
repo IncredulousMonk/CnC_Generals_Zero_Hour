@@ -313,7 +313,7 @@ Bool AIGuardMachine::lookForInnerTarget(void)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardMachine::crc( Xfer *xfer )
+void AIGuardMachine::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -358,7 +358,7 @@ void AIGuardMachine::loadPostProcess( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardInnerState::crc( Xfer *xfer )
+void AIGuardInnerState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -482,7 +482,7 @@ void AIGuardInnerState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardOuterState::crc( Xfer *xfer )
+void AIGuardOuterState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -599,7 +599,7 @@ void AIGuardOuterState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardReturnState::crc( Xfer *xfer )
+void AIGuardReturnState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -675,7 +675,7 @@ void AIGuardReturnState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardIdleState::crc( Xfer *xfer )
+void AIGuardIdleState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -759,7 +759,7 @@ StateReturnType AIGuardIdleState::update( void )
 }
 
 //--------------------------------------------------------------------------------------
-void AIGuardIdleState::onExit( StateExitType status )
+void AIGuardIdleState::onExit( StateExitType /* status */ )
 {
 	
 }
@@ -796,7 +796,7 @@ StateReturnType AIGuardPickUpCrateState::update( void )
 }
 
 //--------------------------------------------------------------------------------------
-void AIGuardPickUpCrateState::onExit( StateExitType status )
+void AIGuardPickUpCrateState::onExit( StateExitType /* status */ )
 {
 	
 }
@@ -881,7 +881,7 @@ void AIGuardAttackAggressorState::onExit( StateExitType status )
 }
 
 //-------------------------------------------------------------------------------------------------
-void AIGuardAttackAggressorState::crc( Xfer *xfer )
+void AIGuardAttackAggressorState::crc( Xfer* /* xfer */ )
 {
 
 }

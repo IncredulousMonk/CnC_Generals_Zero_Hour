@@ -75,7 +75,7 @@ public:
 	virtual void onDrawableBoundToObject();
 
 	virtual Bool isValidContainerFor( const Object* obj, bool checkCapacity) const;
-	virtual Bool isEnclosingContainerFor( const Object *obj ) const { return FALSE; }	///< Does this type of Contain Visibly enclose its contents?
+	virtual Bool isEnclosingContainerFor( const Object* /* obj */ ) const { return FALSE; }	///< Does this type of Contain Visibly enclose its contents?
 	virtual Bool isSpecialZeroSlotContainer() const { return true; }
 
 	virtual void onContaining( Object *obj, Bool wasSelected );		///< object now contains 'obj'

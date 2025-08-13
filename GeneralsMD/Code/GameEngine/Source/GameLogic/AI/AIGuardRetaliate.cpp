@@ -306,7 +306,7 @@ Bool AIGuardRetaliateMachine::lookForInnerTarget(void)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardRetaliateMachine::crc( Xfer *xfer )
+void AIGuardRetaliateMachine::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -340,7 +340,7 @@ void AIGuardRetaliateMachine::loadPostProcess( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardRetaliateInnerState::crc( Xfer *xfer )
+void AIGuardRetaliateInnerState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -456,7 +456,7 @@ void AIGuardRetaliateInnerState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardRetaliateOuterState::crc( Xfer *xfer )
+void AIGuardRetaliateOuterState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -558,7 +558,7 @@ void AIGuardRetaliateOuterState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardRetaliateReturnState::crc( Xfer *xfer )
+void AIGuardRetaliateReturnState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -628,7 +628,7 @@ void AIGuardRetaliateReturnState::onExit( StateExitType status )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIGuardRetaliateIdleState::crc( Xfer *xfer )
+void AIGuardRetaliateIdleState::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -700,7 +700,7 @@ StateReturnType AIGuardRetaliateIdleState::update( void )
 }
 
 //--------------------------------------------------------------------------------------
-void AIGuardRetaliateIdleState::onExit( StateExitType status )
+void AIGuardRetaliateIdleState::onExit( StateExitType /* status */ )
 {
 	
 }
@@ -737,7 +737,7 @@ StateReturnType AIGuardRetaliatePickUpCrateState::update( void )
 }
 
 //--------------------------------------------------------------------------------------
-void AIGuardRetaliatePickUpCrateState::onExit( StateExitType status )
+void AIGuardRetaliatePickUpCrateState::onExit( StateExitType /* status */ )
 {
 	
 }
@@ -837,7 +837,7 @@ void AIGuardRetaliateAttackAggressorState::onExit( StateExitType status )
 }
 
 //-------------------------------------------------------------------------------------------------
-void AIGuardRetaliateAttackAggressorState::crc( Xfer *xfer )
+void AIGuardRetaliateAttackAggressorState::crc( Xfer* /* xfer */ )
 {
 
 }

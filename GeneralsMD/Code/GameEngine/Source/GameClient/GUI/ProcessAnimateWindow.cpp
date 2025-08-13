@@ -804,7 +804,7 @@ ProcessAnimateWindowSlideFromBottomTimed::ProcessAnimateWindowSlideFromBottomTim
 
 ProcessAnimateWindowSlideFromBottomTimed::~ProcessAnimateWindowSlideFromBottomTimed( void ) { }
 
-void ProcessAnimateWindowSlideFromBottomTimed::initReverseAnimateWindow( AnimateWindow *animWin, Millis maxDelay )
+void ProcessAnimateWindowSlideFromBottomTimed::initReverseAnimateWindow( AnimateWindow *animWin, Millis /* maxDelay */ )
 {
 	ICoord2D restPos = {0,0};
 	ICoord2D startPos = {0,0};

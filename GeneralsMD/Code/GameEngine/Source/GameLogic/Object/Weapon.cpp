@@ -419,7 +419,7 @@ void WeaponTemplate::reset( void )
 }
 
 //-------------------------------------------------------------------------------------------------
-void WeaponTemplate::parseAudioEventRTS(INI* ini, void *instance, void *store, const void *userData)
+void WeaponTemplate::parseAudioEventRTS(INI* ini, void *instance, void* /* store */, const void* /* userData */)
 {
 	WeaponTemplate::IniData* data = (WeaponTemplate::IniData*) instance;
 	WeaponTemplate* self = data->m_obj;

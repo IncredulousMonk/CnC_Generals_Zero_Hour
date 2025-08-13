@@ -31,7 +31,7 @@
 // USER INCLUDES //////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Common/BuildAssistant.h"
+// #include "Common/BuildAssistant.h"
 #include "Common/Money.h"
 #include "Common/Player.h"
 #include "Common/PlayerList.h"
@@ -44,7 +44,7 @@
 #include "GameClient/CommandXlat.h"
 #include "GameClient/ControlBar.h"
 #include "GameClient/Drawable.h"
-#include "GameClient/Eva.h"
+// #include "GameClient/Eva.h"
 #include "GameClient/GameClient.h"
 #include "GameClient/GadgetPushButton.h"
 #include "GameClient/GameWindow.h"
@@ -102,7 +102,7 @@ void selectObjectOfType( Object* obj, void* selectObjectsInfo )
 /** Process a button transition message from the window system that should be for one of
 	* our GUI commands */
 //-------------------------------------------------------------------------------------------------
-CBCommandStatus ControlBar::processCommandTransitionUI( GameWindow *control, GadgetGameMessage gadgetMessage )
+CBCommandStatus ControlBar::processCommandTransitionUI( GameWindow* /* control */, GadgetGameMessage /* gadgetMessage */ )
 {
 	// sanity, we won't process messages if we have no source object
 	if( m_currContext != CB_CONTEXT_MULTI_SELECT &&
@@ -129,6 +129,11 @@ CBCommandStatus ControlBar::processCommandTransitionUI( GameWindow *control, Gad
 CBCommandStatus ControlBar::processCommandUI( GameWindow *control, 
 																							GadgetGameMessage gadgetMessage )
 {
+(void) control;
+(void) gadgetMessage;
+DEBUG_CRASH(("ControlBar::processCommandUI not yet implemented!"));
+return CBC_COMMAND_NOT_USED;
+#if 0
 	// get the command pointer from the control user data we put in the button
 	const CommandButton *commandButton = (const CommandButton *)GadgetButtonGetData(control);
 	if( !commandButton )
@@ -843,8 +848,8 @@ CBCommandStatus ControlBar::processCommandUI( GameWindow *control,
 
 			// command needs no additional data, send the message
 			GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_DO_SPECIAL_POWER );
-			msg->appendIntegerArgument( spTemplate->getID() );
-			msg->appendIntegerArgument( commandButton->getOptions() );
+			msg->appendIntegerArgument( (Int)spTemplate->getID() );
+			msg->appendIntegerArgument( (Int)commandButton->getOptions() );
 			msg->appendObjectIDArgument( obj->getID() );
 			break;
 
@@ -854,8 +859,8 @@ CBCommandStatus ControlBar::processCommandUI( GameWindow *control,
 		{
 			// command needs no additional data, send the message
 			GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_DO_SPECIAL_POWER );
-			msg->appendIntegerArgument( commandButton->getSpecialPowerTemplate()->getID() );
-			msg->appendIntegerArgument( commandButton->getOptions() );
+			msg->appendIntegerArgument( (Int)commandButton->getSpecialPowerTemplate()->getID() );
+			msg->appendIntegerArgument( (Int)commandButton->getOptions() );
 			msg->appendObjectIDArgument( INVALID_ID );	// no specific source
 			break;
 
@@ -869,7 +874,7 @@ CBCommandStatus ControlBar::processCommandUI( GameWindow *control,
 
 			ScienceType	st = SCIENCE_INVALID; 
 			Player *player = ThePlayerList->getLocalPlayer();
-			for(Int i = 0; i < commandButton->getScienceVec().size(); ++i)
+			for(size_t i = 0; i < commandButton->getScienceVec().size(); ++i)
 			{
 				st = commandButton->getScienceVec()[ i ];
 				if(!player->hasScience(st) && TheScienceStore->playerHasPrereqsForScience(player, st) && TheScienceStore->getSciencePurchaseCost(st) <= player->getSciencePurchasePoints())
@@ -904,5 +909,6 @@ CBCommandStatus ControlBar::processCommandUI( GameWindow *control,
 
 	return CBC_COMMAND_USED;
 
+#endif // if 0
 }  // end processCommandUI
 

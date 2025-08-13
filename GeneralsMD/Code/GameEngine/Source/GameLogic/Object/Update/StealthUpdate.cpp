@@ -849,6 +849,8 @@ return UPDATE_SLEEP_NONE;
 //-------------------------------------------------------------------------------------------------
 void setWakeupIfInRange( Object *obj, void *userData)
 {
+(void) obj;
+(void) userData;
 DEBUG_CRASH(("setWakeupIfInRange not yet implemented!"));
 #if 0
 	Object *victim = (Object *)userData;
@@ -950,6 +952,7 @@ void StealthUpdate::markAsDetected(UnsignedInt numFrames)
 //-------------------------------------------------------------------------------------------------
 void StealthUpdate::disguiseAsObject( const Object *target )
 {
+(void) target;
 DEBUG_CRASH(("StealthUpdate::changeVisualDisguise not yet implemented!"));
 #if 0
 	Object *self = getObject();

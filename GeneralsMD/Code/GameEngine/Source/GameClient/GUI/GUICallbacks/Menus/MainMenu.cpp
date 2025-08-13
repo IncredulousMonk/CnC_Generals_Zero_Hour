@@ -454,7 +454,7 @@ GameWindow *win = NULL;
 //-------------------------------------------------------------------------------------------------
 /** Initialize the main menu */
 //-------------------------------------------------------------------------------------------------
-void MainMenuInit( WindowLayout *layout, void *userData )
+void MainMenuInit( WindowLayout* layout, void* /* userData */ )
 {
 	TheWritableGlobalData->m_data.m_breakTheMovie = FALSE;
 
@@ -834,7 +834,7 @@ void ResolutionDialogUpdate()
 /** Main menu update method */
 //-------------------------------------------------------------------------------------------------
 void DownloadMenuUpdate( WindowLayout *layout, void *userData );
-void MainMenuUpdate( WindowLayout *layout, void *userData )
+void MainMenuUpdate( WindowLayout* layout, void* /* userData */ )
 {
 	// if( TheGameLogic->isInGame() && !TheGameLogic->isInShellGame() )
 	// {
@@ -982,8 +982,7 @@ void MainMenuUpdate( WindowLayout *layout, void *userData )
 //-------------------------------------------------------------------------------------------------
 /** Main menu input callback */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType MainMenuInput( GameWindow *window, UnsignedInt msg,
-																		WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType MainMenuInput( GameWindow* /* window */, UnsignedInt msg, WindowMsgData mData1, WindowMsgData /* mData2 */ )
 {
 
 	if(!notShown)
@@ -1046,8 +1045,7 @@ void PrintOffsetsFromControlBarParent( void );
 //-------------------------------------------------------------------------------------------------
 /** Main menu window system callback */
 //-------------------------------------------------------------------------------------------------
-WindowMsgHandledType MainMenuSystem( GameWindow *window, UnsignedInt msg, 
-										 WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType MainMenuSystem( GameWindow* /* window */, UnsignedInt msg, WindowMsgData mData1, WindowMsgData mData2 )
 {
 	// static Bool triedToInitWOLAPI = FALSE;
 	// static Bool canInitWOLAPI = FALSE;

@@ -362,7 +362,7 @@ Int CampaignManager::getCurrentMissionNumber( void )
 }
 
 //-----------------------------------------------------------------------------
-void CampaignManager::parseMissionPart( INI* ini, void *instance, void *store, const void *userData )
+void CampaignManager::parseMissionPart( INI* ini, void* instance, void* /* store */, const void* /* userData */ )
 {
 	static const FieldParse myFieldParse[] = 
 		{

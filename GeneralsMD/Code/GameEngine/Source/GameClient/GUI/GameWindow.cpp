@@ -1492,8 +1492,7 @@ GameWindow *GameWindow::winPointInAnyChild( Int x, Int y, Bool ignoreHidden, Boo
 // GameWinDefaultInput ========================================================
 /** The default input callback.  Currently does nothing. */
 //=============================================================================
-WindowMsgHandledType GameWinDefaultInput( GameWindow *window, UnsignedInt msg,
-													WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType GameWinDefaultInput( GameWindow* /* window */, UnsignedInt /* msg */, WindowMsgData /* mData1 */, WindowMsgData /* mData2 */ )
 {
 
 	return MSG_IGNORED;
@@ -1501,8 +1500,7 @@ WindowMsgHandledType GameWinDefaultInput( GameWindow *window, UnsignedInt msg,
 }  // end GameWinDefaultInput
 
 ///< Input that blocks all (mouse) input like a wall, instead of passing like it wasn't there
-WindowMsgHandledType GameWinBlockInput( GameWindow *window, UnsignedInt msg,
-													WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType GameWinBlockInput( GameWindow* /* window */, UnsignedInt msg, WindowMsgData /* mData1 */, WindowMsgData /* mData2 */ )
 {
 	if (msg == GWM_CHAR || msg == GWM_MOUSE_POS)
 		return MSG_IGNORED;
@@ -1530,8 +1528,7 @@ WindowMsgHandledType GameWinBlockInput( GameWindow *window, UnsignedInt msg,
 // GameWinDefaultSystem =======================================================
 /** The default system callback.  Currently does nothing. */
 //=============================================================================
-WindowMsgHandledType GameWinDefaultSystem( GameWindow *window, UnsignedInt msg, 
-													 WindowMsgData mData1, WindowMsgData mData2 )
+WindowMsgHandledType GameWinDefaultSystem( GameWindow* /* window */, UnsignedInt /* msg */, WindowMsgData /* mData1 */, WindowMsgData /* mData2 */ )
 {
 
 	return MSG_IGNORED;
@@ -1541,9 +1538,7 @@ WindowMsgHandledType GameWinDefaultSystem( GameWindow *window, UnsignedInt msg,
 // GameWinDefaultTooltip ======================================================
 /** Default tooltip callback */
 //=============================================================================
-void GameWinDefaultTooltip( GameWindow *window, 
-														WinInstanceData *instData,
-														UnsignedInt mouse )
+void GameWinDefaultTooltip( GameWindow* /* window */, WinInstanceData* /* instData */, UnsignedInt /* mouse */ )
 {
 	return;
 
@@ -1552,7 +1547,7 @@ void GameWinDefaultTooltip( GameWindow *window,
 // GameWinDefaultDraw =========================================================
 /** Default draw, does nothing */
 //=============================================================================
-void GameWinDefaultDraw( GameWindow *window, WinInstanceData *instData )
+void GameWinDefaultDraw( GameWindow* /* window */, WinInstanceData* /* instData */ )
 {
 
 	return;

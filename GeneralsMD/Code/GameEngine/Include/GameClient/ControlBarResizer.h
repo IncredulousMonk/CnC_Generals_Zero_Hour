@@ -67,11 +67,11 @@ class ResizerWindow
 {
 public:
 ResizerWindow( void );
-	AsciiString m_name;
-	ICoord2D m_defaultSize;
-	ICoord2D m_defaultPos;
-	ICoord2D m_altSize;
-	ICoord2D m_altPos;
+	AsciiString m_name {};
+	ICoord2D m_defaultSize {};
+	ICoord2D m_defaultPos {};
+	ICoord2D m_altSize {};
+	ICoord2D m_altPos {};
 };
 
 class ControlBarResizer
@@ -93,7 +93,7 @@ public:
 	void sizeWindowsAlt( void );
 
 	typedef std::list< ResizerWindow *> ResizerWindowList;
-	ResizerWindowList m_resizerWindowsList;
+	ResizerWindowList m_resizerWindowsList {};
 
 };
 //-----------------------------------------------------------------------------

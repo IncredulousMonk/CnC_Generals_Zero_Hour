@@ -79,14 +79,18 @@ public:
 	ControlBarSchemeImage( void );
 	~ControlBarSchemeImage( void );
 
-	AsciiString m_name;						///< Name of the image
-	ICoord2D m_position;					///< the position we'll draw it at
-	ICoord2D m_size;							///< the size of the image needed when we draw it
-	Image *m_image;								///< the actual pointer to the mapped image
+	// No copies allowed!
+	ControlBarSchemeImage(const ControlBarSchemeImage&) = delete;
+	ControlBarSchemeImage& operator=(const ControlBarSchemeImage&) = delete;
+
+	AsciiString m_name {};		///< Name of the image
+	ICoord2D m_position {};		///< the position we'll draw it at
+	ICoord2D m_size {};			///< the size of the image needed when we draw it
+	Image *m_image {};			///< the actual pointer to the mapped image
 
 	// m_layer is where the image will get drawn,  everything in layer 0-2 gets drawn during the forground draw
 	// the layers 3-5 gets drawn during the background draw
-	Int m_layer; //layer means how deep the image will be drawn, it's a number between 0-5 with 0 being on top 	
+	Int m_layer {}; //layer means how deep the image will be drawn, it's a number between 0-5 with 0 being on top 	
 };
 
 // Class that will hold the information needed for the animations
@@ -96,6 +100,11 @@ class ControlBarSchemeAnimation
 public:
 	ControlBarSchemeAnimation( void );
 	~ControlBarSchemeAnimation( void );
+
+	// No copies allowed!
+	ControlBarSchemeAnimation(const ControlBarSchemeAnimation&) = delete;
+	ControlBarSchemeAnimation& operator=(const ControlBarSchemeAnimation&) = delete;
+
 	/// Enum that will contain all the kinds of animations we have... make sure in ControlBarScheme.cpp there's a
 	/// mapping for it for the INI translation
 	enum
@@ -105,19 +114,27 @@ public:
 		CB_ANIM_MAX
 	};
 
-	AsciiString m_name;										///< Current animation name
-	Int m_animType;												///< Type of animation that this will follow
-	ControlBarSchemeImage *m_animImage;		///< Pointer of the image that this animation will act on
-	UnsignedInt m_animDuration;						///< Contians how long the animation should take based off game frames
-	ICoord2D m_finalPos;									///< The final position when we hit the m_animDuration frame
+	// MG: Cannot apply offsetof to ControlBarSchemeAnimation, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_name {};						///< Current animation name
+		Int m_animType {};							///< Type of animation that this will follow
+		ControlBarSchemeImage *m_animImage {};		///< Pointer of the image that this animation will act on
+		UnsignedInt m_animDuration {};				///< Contains how long the animation should take based off game frames
+		ICoord2D m_finalPos {};						///< The final position when we hit the m_animDuration frame
+
+		ControlBarSchemeAnimation* m_obj;
+	};
+
+	IniData m_ini {};
 
 	UnsignedInt getCurrentFrame(void) { return m_currentFrame; }
 	void setCurrentFrame( UnsignedInt currentFrame ) { m_currentFrame = currentFrame; }
 	ICoord2D getStartPos( void ) { return m_startPos; }
 	void setStartPos(ICoord2D startPos) { m_startPos = startPos;	}
 private:
-	ICoord2D m_startPos;									///< set when we first begin an animation
-	UnsignedInt m_currentFrame;							///< This is the last frame (a value between 0 and m_animDuration)
+	ICoord2D m_startPos {};						///< set when we first begin an animation
+	UnsignedInt m_currentFrame {};				///< This is the last frame (a value between 0 and m_animDuration)
 };
 
 
@@ -128,6 +145,10 @@ class ControlBarScheme
 public:
 	ControlBarScheme( void );
 	~ControlBarScheme( void );
+
+	// No copies allowed!
+	ControlBarScheme(const ControlBarScheme&) = delete;
+	ControlBarScheme& operator=(const ControlBarScheme&) = delete;
 	
 	void init( void );
 	void update( void );
@@ -140,108 +161,113 @@ public:
 	void updateAnim (ControlBarSchemeAnimation * anim);
 
 
-	AsciiString m_name;												///< it's name
-	ICoord2D m_ScreenCreationRes;							///< Used to determine what screen res this will look the best on
-	AsciiString m_side;												///< contain what faction type this command bar was made for (used when selecting command bar by template	
-	Image *m_buttonQueueImage;								///< We'll probably want each one to have it's own image.
-	Image *m_rightHUDImage;										///< We'll probably want each one to have it's own right HUD image.
-	Color m_buildUpClockColor;								///< we can setup the color for the buildup clock if we want
-	
-	Color m_borderBuildColor;									///< we can setup the color for the button border colors
-	Color m_borderActionColor;								///< we can setup the color for the button border colors
-	Color m_borderUpgradeColor;								///< we can setup the color for the button border colors
-	Color m_borderSystemColor;								///< we can setup the color for the button border colors
+	AsciiString m_name {};										///< it's name
 
-	Color m_commandBarBorderColor;
+	// MG: Cannot apply offsetof to ControlBarScheme, so had to move data into an embedded struct.
+	struct IniData
+	{
+		ICoord2D m_ScreenCreationRes;							///< Used to determine what screen res this will look the best on
+		AsciiString m_side;										///< contain what faction type this command bar was made for (used when selecting command bar by template	
+		Image *m_buttonQueueImage;								///< We'll probably want each one to have it's own image.
+		Image *m_rightHUDImage;									///< We'll probably want each one to have it's own right HUD image.
+		Color m_buildUpClockColor;								///< we can setup the color for the buildup clock if we want
 
-	Image *m_optionsButtonEnable;
-	Image *m_optionsButtonHightlited;
-	Image *m_optionsButtonPushed;
-	Image *m_optionsButtonDisabled;
+		Color m_borderBuildColor;								///< we can setup the color for the button border colors
+		Color m_borderActionColor;								///< we can setup the color for the button border colors
+		Color m_borderUpgradeColor;								///< we can setup the color for the button border colors
+		Color m_borderSystemColor;								///< we can setup the color for the button border colors
 
-	Image *m_idleWorkerButtonEnable;
-	Image *m_idleWorkerButtonHightlited;
-	Image *m_idleWorkerButtonPushed;
-	Image *m_idleWorkerButtonDisabled;
+		Color m_commandBarBorderColor;
 
-	Image *m_buddyButtonEnable;
-	Image *m_buddyButtonHightlited;
-	Image *m_buddyButtonPushed;
-	Image *m_buddyButtonDisabled;
+		Image *m_optionsButtonEnable;
+		Image *m_optionsButtonHightlited;
+		Image *m_optionsButtonPushed;
+		Image *m_optionsButtonDisabled;
 
-	Image *m_beaconButtonEnable;
-	Image *m_beaconButtonHightlited;
-	Image *m_beaconButtonPushed;
-	Image *m_beaconButtonDisabled;
+		Image *m_idleWorkerButtonEnable;
+		Image *m_idleWorkerButtonHightlited;
+		Image *m_idleWorkerButtonPushed;
+		Image *m_idleWorkerButtonDisabled;
 
-	Image *m_genBarButtonIn;
-	Image *m_genBarButtonOn;
+		Image *m_buddyButtonEnable;
+		Image *m_buddyButtonHightlited;
+		Image *m_buddyButtonPushed;
+		Image *m_buddyButtonDisabled;
 
-	Image *m_toggleButtonUpIn;
-	Image *m_toggleButtonUpOn;
-	Image *m_toggleButtonUpPushed;
-	Image *m_toggleButtonDownIn;
-	Image *m_toggleButtonDownOn;
-	Image *m_toggleButtonDownPushed;
+		Image *m_beaconButtonEnable;
+		Image *m_beaconButtonHightlited;
+		Image *m_beaconButtonPushed;
+		Image *m_beaconButtonDisabled;
 
-	Image *m_generalButtonEnable;
-	Image *m_generalButtonHightlited;
-	Image *m_generalButtonPushed;
-	Image *m_generalButtonDisabled;
+		Image *m_genBarButtonIn;
+		Image *m_genBarButtonOn;
 
-	Image *m_uAttackButtonEnable;
-	Image *m_uAttackButtonHightlited;
-	Image *m_uAttackButtonPushed;
+		Image *m_toggleButtonUpIn;
+		Image *m_toggleButtonUpOn;
+		Image *m_toggleButtonUpPushed;
+		Image *m_toggleButtonDownIn;
+		Image *m_toggleButtonDownOn;
+		Image *m_toggleButtonDownPushed;
 
-	Image *m_minMaxButtonEnable;
-	Image *m_minMaxButtonHightlited;
-	Image *m_minMaxButtonPushed;
+		Image *m_generalButtonEnable;
+		Image *m_generalButtonHightlited;
+		Image *m_generalButtonPushed;
+		Image *m_generalButtonDisabled;
 
-	Image *m_genArrow;
+		Image *m_uAttackButtonEnable;
+		Image *m_uAttackButtonHightlited;
+		Image *m_uAttackButtonPushed;
 
+		Image *m_minMaxButtonEnable;
+		Image *m_minMaxButtonHightlited;
+		Image *m_minMaxButtonPushed;
 
-	ICoord2D m_moneyUL;
-	ICoord2D m_moneyLR;
-
-	ICoord2D m_minMaxUL;
-	ICoord2D m_minMaxLR;
-
-	ICoord2D m_generalUL;
-	ICoord2D m_generalLR;
-
-	ICoord2D m_uAttackUL;
-	ICoord2D m_uAttackLR;
-
-	ICoord2D m_optionsUL;
-	ICoord2D m_optionsLR;
-
-	ICoord2D m_workerUL;
-	ICoord2D m_workerLR;
-
-	ICoord2D m_chatUL;
-	ICoord2D m_chatLR;
-
-	ICoord2D m_beaconUL;
-	ICoord2D m_beaconLR;
-
-	ICoord2D m_powerBarUL;
-	ICoord2D m_powerBarLR;
+		Image *m_genArrow;
 
 
+		ICoord2D m_moneyUL;
+		ICoord2D m_moneyLR;
 
+		ICoord2D m_minMaxUL;
+		ICoord2D m_minMaxLR;
 
+		ICoord2D m_generalUL;
+		ICoord2D m_generalLR;
 
-	Image *m_expBarForeground;
+		ICoord2D m_uAttackUL;
+		ICoord2D m_uAttackLR;
 
-	Image *m_commandMarkerImage;
+		ICoord2D m_optionsUL;
+		ICoord2D m_optionsLR;
 
-	Image *m_powerPurchaseImage;
+		ICoord2D m_workerUL;
+		ICoord2D m_workerLR;
+
+		ICoord2D m_chatUL;
+		ICoord2D m_chatLR;
+
+		ICoord2D m_beaconUL;
+		ICoord2D m_beaconLR;
+
+		ICoord2D m_powerBarUL;
+		ICoord2D m_powerBarLR;
+
+		Image *m_expBarForeground;
+
+		Image *m_commandMarkerImage;
+
+		Image *m_powerPurchaseImage;
+
+		ControlBarScheme* m_obj;
+	};
+
+	IniData m_ini {};
 
 	typedef std::list< ControlBarSchemeImage* > ControlBarSchemeImageList;
 	ControlBarSchemeImageList m_layer[MAX_CONTROL_BAR_SCHEME_IMAGE_LAYERS];
 
 	typedef std::list< ControlBarSchemeAnimation* > ControlBarSchemeAnimationList;
-	ControlBarSchemeAnimationList m_animations;
+	ControlBarSchemeAnimationList m_animations {};
 
 };
 
@@ -251,6 +277,10 @@ class ControlBarSchemeManager
 public:
 	ControlBarSchemeManager( void );
 	~ControlBarSchemeManager( void );
+
+	// No copies allowed!
+	ControlBarSchemeManager(const ControlBarSchemeManager&) = delete;
+	ControlBarSchemeManager& operator=(const ControlBarSchemeManager&) = delete;
 
 	void init( void );						///< Initialize from the INI files
 	void update( void );					///< move the animations if we have any
@@ -271,14 +301,14 @@ public:
 	ControlBarScheme *findControlBarScheme( AsciiString name ); ///< attempt to find the control bar scheme by it's name
 	ControlBarScheme *newControlBarScheme( AsciiString name );	///< create a new control bar scheme and return it.
 
-	void preloadAssets( TimeOfDay timeOfDay );									///< preload the assets
+	void preloadAssets( TimeOfDay timeOfDay );								///< preload the assets
 
 private:
-	ControlBarScheme *m_currentScheme;													///< the current scheme that everythign uses
-	Coord2D m_multiplyer;																	
+	ControlBarScheme *m_currentScheme {};									///< the current scheme that everythign uses
+	Coord2D m_multiplyer {};
 	
 	typedef std::list< ControlBarScheme* > ControlBarSchemeList;			///< list of control bar schemes
-	ControlBarSchemeList m_schemeList;
+	ControlBarSchemeList m_schemeList {};
 
 };
 

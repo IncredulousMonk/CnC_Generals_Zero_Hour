@@ -1437,7 +1437,7 @@ void TerrainLogic::deleteWaypoints(void)
 #endif // if 0
 
 //-------------------------------------------------------------------------------------------------
-Bool TerrainLogic::isClearLineOfSight(const Coord3D& pos, const Coord3D& posOther) const
+Bool TerrainLogic::isClearLineOfSight(const Coord3D& /* pos */, const Coord3D& /* posOther */) const
 {
 	DEBUG_CRASH(("implement ME"));
 	return false;
@@ -1446,7 +1446,7 @@ Bool TerrainLogic::isClearLineOfSight(const Coord3D& pos, const Coord3D& posOthe
 //-------------------------------------------------------------------------------------------------
 /** default get height for terrain logic */
 //-------------------------------------------------------------------------------------------------
-Real TerrainLogic::getGroundHeight( Real x, Real y, Coord3D* normal ) const
+Real TerrainLogic::getGroundHeight( Real /* x */, Real /* y */, Coord3D* normal ) const
 {
 	if( normal )
 		normal->zero();
@@ -1458,7 +1458,7 @@ Real TerrainLogic::getGroundHeight( Real x, Real y, Coord3D* normal ) const
 //-------------------------------------------------------------------------------------------------
 /** default get height for terrain logic */
 //-------------------------------------------------------------------------------------------------
-Real TerrainLogic::getLayerHeight( Real x, Real y, PathfindLayerEnum layer, Coord3D* normal, Bool clip ) const
+Real TerrainLogic::getLayerHeight( Real /* x */, Real /* y */, PathfindLayerEnum /* layer */, Coord3D* normal, Bool /* clip */ ) const
 {
 	if( normal )
 		normal->zero();
@@ -1470,7 +1470,7 @@ Real TerrainLogic::getLayerHeight( Real x, Real y, PathfindLayerEnum layer, Coor
 //-------------------------------------------------------------------------------------------------
 /** default isCliffCell for terrain logic */
 //-------------------------------------------------------------------------------------------------
-Bool TerrainLogic::isCliffCell( Real x, Real y) const
+Bool TerrainLogic::isCliffCell( Real /* x */, Real /* y */) const
 {
 
 	return false;
@@ -2939,7 +2939,7 @@ void TerrainLogic::createCraterInTerrain(Object *obj)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TerrainLogic::crc( Xfer *xfer )
+void TerrainLogic::crc( Xfer * /* xfer */ )
 {
 
 }  // end crc
@@ -2953,7 +2953,7 @@ void TerrainLogic::crc( Xfer *xfer )
 // ------------------------------------------------------------------------------------------------
 void TerrainLogic::xfer( Xfer *xfer )
 {
-
+(void) xfer;
 #if 0
 	// version
 	const XferVersion currentVersion = 2;	

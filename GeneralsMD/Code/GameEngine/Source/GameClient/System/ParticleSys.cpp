@@ -99,7 +99,7 @@ ParticleInfo::ParticleInfo( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ParticleInfo::crc( Xfer *xfer )
+void ParticleInfo::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -626,7 +626,7 @@ Bool Particle::isInvisible( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Particle::crc( Xfer *xfer )
+void Particle::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -783,7 +783,7 @@ void ParticleSystemInfo::tintAllColors( Color tintColor )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystemInfo::crc( Xfer *xfer )
+void ParticleSystemInfo::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -2400,7 +2400,7 @@ void ParticleSystem::setControlParticle( Particle *p )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystem::crc( Xfer *xfer )
+void ParticleSystem::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -2716,8 +2716,7 @@ const FieldParse ParticleSystemTemplate::m_fieldParseTable[] =
 /** Parse a "random keyframe".
  * The format is "FIELD = low high frame". */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystemTemplate::parseRandomKeyframe( INI* ini, void *instance,
-																											 void *store, const void* /*userData*/ )
+void ParticleSystemTemplate::parseRandomKeyframe( INI* ini, void* /* instance */, void* store, const void* /*userData*/ )
 {
 	RandomKeyframe *key = static_cast<RandomKeyframe *>(store);
 
@@ -2733,8 +2732,7 @@ void ParticleSystemTemplate::parseRandomKeyframe( INI* ini, void *instance,
 /** Parse a "color keyframe".
  * The format is "FIELD = R:r G:g B:b frame". */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystemTemplate::parseRGBColorKeyframe( INI* ini, void *instance,
-																													void *store, const void* /*userData*/ )
+void ParticleSystemTemplate::parseRGBColorKeyframe( INI* ini, void *instance, void *store, const void* /*userData*/ )
 {
 	RGBColorKeyframe *key = static_cast<RGBColorKeyframe *>(store);
 
@@ -2746,9 +2744,11 @@ void ParticleSystemTemplate::parseRGBColorKeyframe( INI* ini, void *instance,
 /** Parse a RandomVariable RGB color.
  * Note that the components may be negative, as this is used for rates, as well. */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystemTemplate::parseRandomRGBColor( INI* ini, void *instance, 
-																											 void *store, const void* /*userData*/ )
+void ParticleSystemTemplate::parseRandomRGBColor( INI* ini, void *instance, void *store, const void* /*userData*/ )
 {
+(void) ini;
+(void) instance;
+(void) store;
 #if 0
 	char seps[] = " \n\r\t=:RGB,";
 	const char *token;
@@ -3237,7 +3237,7 @@ Int ParticleSystemManager::removeOldestParticles( UnsignedInt count,
 // ------------------------------------------------------------------------------------------------
 /** Preload particle system textures */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystemManager::preloadAssets( TimeOfDay timeOfDay )
+void ParticleSystemManager::preloadAssets( TimeOfDay /* timeOfDay */ )
 {
 	TemplateMap::iterator begin(m_templateMap.begin());
 	TemplateMap::iterator end(m_templateMap.end());
@@ -3255,7 +3255,7 @@ void ParticleSystemManager::preloadAssets( TimeOfDay timeOfDay )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystemManager::crc( Xfer *xfer )
+void ParticleSystemManager::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -3370,7 +3370,7 @@ void ParticleSystemManager::loadPostProcess( void )
 /** Output particle system statistics to the screen
  * @todo Implement a real console (MSB) */
 // ------------------------------------------------------------------------------------------------
-void ParticleSystemDebugDisplay( DebugDisplayInterface *dd, void *, FILE *fp )
+void ParticleSystemDebugDisplay( DebugDisplayInterface *dd, void *, FILE* /* fp */ )
 {
 	if (!dd)
 		return;
@@ -3451,4 +3451,3 @@ static Real angleBetween(const Coord2D *vecA, const Coord2D *vecB)
 	
 	return -theta;
 }
-

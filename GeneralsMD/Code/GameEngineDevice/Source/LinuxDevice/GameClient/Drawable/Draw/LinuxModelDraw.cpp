@@ -404,7 +404,7 @@ LinuxAnimationInfo::~LinuxAnimationInfo()
 }
 
 //-------------------------------------------------------------------------------------------------
-void ModelConditionInfo::preloadAssets( TimeOfDay timeOfDay, Real scale )
+void ModelConditionInfo::preloadAssets( TimeOfDay /* timeOfDay */, Real /* scale */ )
 {
    // load this asset
    if( m_ini.m_modelName.isEmpty() == FALSE )
@@ -1377,7 +1377,7 @@ static void parseWeaponBoneName(INI* ini, void *instance, void * store, const vo
 #endif // if 0
 
 //-------------------------------------------------------------------------------------------------
-static void parseParticleSysBone(INI* ini, void *instance, void * store, const void * /*userData*/)
+static void parseParticleSysBone(INI* ini, void *instance, void * /* store */, const void * /*userData*/)
 {
    ParticleSysBoneInfo info;
    info.boneName = ini->getNextAsciiString();
@@ -1447,6 +1447,8 @@ static Bool doesStateExist(const ModelConditionVector& v, const ModelConditionFl
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, void * /*store*/, const void* userData)
 {
+   (void) instance;
+   (void) userData;
    static const FieldParse myFieldParse[] = 
    {
 // FIXME: LinuxModelDrawModuleData::buildFieldParse

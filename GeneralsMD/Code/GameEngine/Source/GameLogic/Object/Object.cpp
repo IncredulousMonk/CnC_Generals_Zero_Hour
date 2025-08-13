@@ -155,6 +155,8 @@ extern void addIcon(const Coord3D *pos, Real width, Int numFramesDuration, RGBCo
 #ifdef DEBUG_LOGGING
 AsciiString DescribeObject(const Object *obj)
 {
+(void) obj;
+DEBUG_CRASH(("Object: DescribeObject not yet implemented!"));
 #if 0
 	if (!obj)
 		return "<No Object>";
@@ -184,7 +186,7 @@ return AsciiString();
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType &objectStatusMask, Team *team ) : 
+Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectStatusMask */, Team* /* team */ ) : 
 	Thing(tt),
 	m_geometryInfo(tt->getTemplateGeometryInfo())
 {
@@ -685,7 +687,7 @@ DEBUG_CRASH(("Object::onContainedBy not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 /// this object no longer contained in "removedFrom"
 //-------------------------------------------------------------------------------------------------
-void Object::onRemovedFrom( Object *removedFrom )
+void Object::onRemovedFrom( Object* /* removedFrom */ )
 {
 	clearStatus( MAKE_OBJECT_STATUS_MASK2( OBJECT_STATUS_MASKED, OBJECT_STATUS_UNSELECTABLE ) );
 	m_containedBy = NULL;
@@ -1768,7 +1770,7 @@ inline Bool isAngleDifferent(Real a, Real b)
 #endif // if 0
 
 //-------------------------------------------------------------------------------------------------
-void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real oldPitch )
+void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real /* oldPitch */ )
 {
 	Real currentRotation = 0.0f;
 	Real currentPitch = 0.0f;
@@ -1790,6 +1792,10 @@ void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real
 //DECLARE_PERF_TIMER(Object_reactToTransformChange)
 void Object::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle)
 {
+(void) oldMtx;
+(void) oldPos;
+(void) oldAngle;
+DEBUG_CRASH(("Object::reactToTransformChange not yet implemented!"));
 #if 0
 	//USE_PERF_TIMER(Object_reactToTransformChange)
 	if(isnan(getPosition()->x) || isnan(getPosition()->y) || isnan(getPosition()->z)) {
@@ -1830,6 +1836,8 @@ void Object::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPo
 //-------------------------------------------------------------------------------------------------
 ObjectShroudStatus Object::getShroudedStatus(Int playerIndex) const 
 {
+(void) playerIndex;
+DEBUG_CRASH(("Object::getShroudedStatus not yet implemented!"));
 #if 0
 	if (getTemplate()->isKindOf( KINDOF_ALWAYS_VISIBLE ))
 		return OBJECTSHROUD_CLEAR;
@@ -3143,7 +3151,6 @@ void Object::clearWeaponSetFlag(WeaponSetType wst)
 	// }
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 Bool Object::hasSpecialPower( SpecialPowerType type ) const
 {
@@ -3155,7 +3162,6 @@ Bool Object::hasAnySpecialPower() const
 {
   return SPECIALPOWERMASK_ANY_SET( m_specialPowerBits );
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback )
@@ -6072,7 +6078,7 @@ ProjectileUpdateInterface* Object::getProjectileUpdateInterface() const
 // ------------------------------------------------------------------------------------------------
 // Simply find the special power module that is currently allowing plotting of positions to target.
 // ------------------------------------------------------------------------------------------------
-SpecialPowerUpdateInterface* Object::findSpecialPowerWithOverridableDestinationActive( SpecialPowerType type ) const
+SpecialPowerUpdateInterface* Object::findSpecialPowerWithOverridableDestinationActive( SpecialPowerType /* type */ ) const
 {
 	for( BehaviorModule** u = m_behaviors; *u; ++u )
 	{
@@ -6107,6 +6113,7 @@ SpecialPowerUpdateInterface* Object::findSpecialPowerWithOverridableDestination(
 	}  // end for
 	return NULL;
 }
+#endif // if 0
 
 
 // ------------------------------------------------------------------------------------------------
@@ -6114,6 +6121,10 @@ SpecialPowerUpdateInterface* Object::findSpecialPowerWithOverridableDestination(
 // ------------------------------------------------------------------------------------------------
 SpecialAbilityUpdate* Object::findSpecialAbilityUpdate( SpecialPowerType type ) const
 {
+(void) type;
+DEBUG_CRASH(("Object::findSpecialAbilityUpdate not yet implemented!"));
+return nullptr;
+#if 0
 	for( BehaviorModule** u = m_behaviors; *u; ++u )
 	{
 		SpecialPowerUpdateInterface *spInterface = (*u)->getSpecialPowerUpdateInterface();
@@ -6128,8 +6139,10 @@ SpecialAbilityUpdate* Object::findSpecialAbilityUpdate( SpecialPowerType type ) 
 	}  // end for
 
 	return NULL;
+#endif // if 0
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 SpecialPowerCompletionDie* Object::findSpecialPowerCompletionDie() const
 {

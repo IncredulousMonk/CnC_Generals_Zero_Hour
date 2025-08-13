@@ -42,7 +42,7 @@
 #include "GameClient/GameWindow.h"
 #include "GameClient/GameWindowManager.h"
 #include "GameClient/GadgetPushButton.h"
-#include "GameClient/Hotkey.h"
+// #include "GameClient/HotKey.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -50,17 +50,17 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
-#define STOP_ID			10
+#define STOP_ID		10
 #define EVACUATE_ID	11
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 struct PopulateButtonInfo
 {
-	Object *source;
-	Int buttonIndex;
-	ControlBar* self;
-	GameWindow** inventoryButtons;
+	Object *source {};
+	Int buttonIndex {};
+	ControlBar* self {};
+	GameWindow** inventoryButtons {};
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -99,6 +99,9 @@ void ControlBar::populateButtonProc( Object *obj, void *userData )
 //-------------------------------------------------------------------------------------------------
 void ControlBar::populateStructureInventory( Object *building )
 {
+(void) building;
+DEBUG_CRASH(("ControlBar::populateStructureInventory not yet implemented!"));
+#if 0
 	Int i;
 
 	// reset the inventory data
@@ -198,6 +201,7 @@ void ControlBar::populateStructureInventory( Object *building )
 	//
 	m_lastRecordedInventoryCount = contain->getContainCount();
 
+#endif // if 0
 }  // end populateStructureInventory
 
 //-------------------------------------------------------------------------------------------------

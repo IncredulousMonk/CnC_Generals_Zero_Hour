@@ -678,7 +678,7 @@ void LinuxCommandBarForegroundDraw( GameWindow *window, WinInstanceData *instDat
 }
 #endif
 
-void LinuxNoDraw( GameWindow *window, WinInstanceData *instData )
+void LinuxNoDraw( GameWindow* /* window */, WinInstanceData* /* instData */ )
 {
 
    // draw the default stuff

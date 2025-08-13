@@ -3720,8 +3720,7 @@ GameWindow *GameWindowManager::getWindowUnderCursor( Int x, Int y, Bool ignoreEn
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-static WindowMsgHandledType testGrab( GameWindow *window, UnsignedInt msg,
-											WindowMsgData mData1, WindowMsgData mData2 )
+static WindowMsgHandledType testGrab( GameWindow* /* window */, UnsignedInt msg, WindowMsgData /* mData1 */, WindowMsgData /* mData2 */ )
 {
 
 	switch( msg )

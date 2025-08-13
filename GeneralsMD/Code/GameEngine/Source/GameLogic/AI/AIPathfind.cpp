@@ -270,7 +270,7 @@ Path::~Path( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Path::crc( Xfer *xfer )
+void Path::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 
@@ -1992,7 +1992,7 @@ void ZoneBlock::freeZones(void)
 
 /* Allocate zone equivalency arrays large enough to hold required entries.  If the arrays are already
 large enough, reuse.  Then calculate terrain equivalencies. */
-void ZoneBlock::blockCalculateZones(PathfindCell **map, PathfindLayer layers[], const IRegion2D &bounds) 
+void ZoneBlock::blockCalculateZones(PathfindCell **map, PathfindLayer /* layers */[], const IRegion2D &bounds) 
 {
 	Int i, j;
 	m_cellOrigin = bounds.lo;
@@ -2266,7 +2266,7 @@ void PathfindZoneManager::reset(void)  ///< Called when the map is reset.
 } 
 
 
-void PathfindZoneManager::markZonesDirty( Bool insert )  ///< Called when the zones need to be recalculated.
+void PathfindZoneManager::markZonesDirty( Bool /* insert */ )  ///< Called when the zones need to be recalculated.
 {
 
 	if (TheGameLogic->getFrame()<2) {
@@ -2830,7 +2830,7 @@ void PathfindZoneManager::calculateZones( PathfindCell **map, PathfindLayer laye
  * Update zones where a structure has been added or removed.
  * This can be done by just updating the equivalency arrays, without rezoning the map..
  */
-void PathfindZoneManager::updateZonesForModify(PathfindCell **map, PathfindLayer layers[], const IRegion2D &structureBounds, const IRegion2D &globalBounds )
+void PathfindZoneManager::updateZonesForModify(PathfindCell **map, PathfindLayer /* layers */[], const IRegion2D &structureBounds, const IRegion2D &globalBounds )
 {
 
 #ifdef DEBUG_QPF
@@ -4851,7 +4851,7 @@ void Pathfinder::cleanOpenAndClosedLists(void) {
 // Return true if we can move onto this position
 //
 Bool Pathfinder::validMovementPosition( Bool isCrusher, LocomotorSurfaceTypeMask acceptableSurfaces, 
-																			 PathfindCell *toCell, PathfindCell *fromCell )
+																			 PathfindCell *toCell, PathfindCell* /* fromCell */ )
 {
 	if (toCell == NULL)
 		return false;
@@ -6015,7 +6015,7 @@ struct ExamineCellsStruct
 	PathfindCell				*goalCell;
 };
 
-/*static*/ Int Pathfinder::examineCellsCallback(Pathfinder* pathfinder, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
+/*static*/ Int Pathfinder::examineCellsCallback(Pathfinder* /* pathfinder */, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
 {
 	ExamineCellsStruct* d = (ExamineCellsStruct*)userData;
 	Bool isCrusher = d->obj ? d->obj->getCrusherLevel() > 0 : false;
@@ -6896,7 +6896,7 @@ struct MADStruct
 	ObjectID						ignoreID;
 };
 
-/*static*/ Int Pathfinder::moveAlliesDestinationCallback(Pathfinder* pathfinder, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
+/*static*/ Int Pathfinder::moveAlliesDestinationCallback(Pathfinder* /* pathfinder */, PathfindCell* /* from */, PathfindCell* to, Int /* to_x */, Int /* to_y */, void* userData)
 {
 	MADStruct* d = (MADStruct*)userData;
 	if (to) {
@@ -6954,7 +6954,7 @@ struct GroundCellsStruct
 	Bool								crusher;
 };
 
-/*static*/ Int Pathfinder::groundCellsCallback(Pathfinder* pathfinder, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
+/*static*/ Int Pathfinder::groundCellsCallback(Pathfinder* /* pathfinder */, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
 {
 	GroundCellsStruct* d = (GroundCellsStruct*)userData;
 	if (from && to) {
@@ -8422,7 +8422,7 @@ struct TightenPathStruct
 };
 
 
-/*static*/ Int Pathfinder::tightenPathCallback(Pathfinder* pathfinder, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
+/*static*/ Int Pathfinder::tightenPathCallback(Pathfinder* /* pathfinder */, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
 {
 	TightenPathStruct* d = (TightenPathStruct*)userData;
 	if (from == NULL || to==NULL) return 0;
@@ -8665,7 +8665,7 @@ Int Pathfinder::checkPathCost(Object *obj, const LocomotorSet& locomotorSet, con
  * Uses A* algorithm.
  */
 Path *Pathfinder::findClosestPath( Object *obj, const LocomotorSet& locomotorSet, const Coord3D *from, 
-																	Coord3D *rawTo, Bool blocked, Real pathCostMultiplier, Bool moveAllies)
+																	Coord3D *rawTo, Bool blocked, Real pathCostMultiplier, Bool /* moveAllies */)
 {
 	//CRCDEBUG_LOG(("Pathfinder::findClosestPath()\n"));
 #if defined _DEBUG || defined _INTERNAL
@@ -9242,7 +9242,7 @@ struct segmentIntersectsStruct
 	ObjectID ignoreBuilding;
 };
 
-/*static*/ Int Pathfinder::segmentIntersectsBuildingCallback(Pathfinder* pathfinder, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
+/*static*/ Int Pathfinder::segmentIntersectsBuildingCallback(Pathfinder* /* pathfinder */, PathfindCell* /* from */, PathfindCell* to, Int /* to_x */, Int /* to_y */, void* userData)
 {
 	segmentIntersectsStruct* d = (segmentIntersectsStruct*)userData;
 
@@ -9270,7 +9270,7 @@ struct ViewBlockedStruct
 };
 
 
-/*static*/ Int Pathfinder::lineBlockedByObstacleCallback(Pathfinder* pathfinder, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
+/*static*/ Int Pathfinder::lineBlockedByObstacleCallback(Pathfinder* /* pathfinder */, PathfindCell* /* from */, PathfindCell* to, Int /* to_x */, Int /* to_y */, void* userData)
 {
 	const ViewBlockedStruct* d = (const ViewBlockedStruct*)userData;
 
@@ -9317,7 +9317,7 @@ struct ViewAttackBlockedStruct
 	Int		skipCount;
 };
 
-/*static*/ Int Pathfinder::attackBlockedByObstacleCallback(Pathfinder* pathfinder, PathfindCell* from, PathfindCell* to, Int to_x, Int to_y, void* userData)
+/*static*/ Int Pathfinder::attackBlockedByObstacleCallback(Pathfinder* /* pathfinder */, PathfindCell* /* from */, PathfindCell* to, Int /* to_x */, Int /* to_y */, void* userData)
 {
 	ViewAttackBlockedStruct* d = (ViewAttackBlockedStruct*)userData;
 
@@ -9554,7 +9554,7 @@ Bool Pathfinder::segmentIntersectsTallBuilding(const PathNode *curNode,
 }
 
 //-----------------------------------------------------------------------------
-Bool Pathfinder::circleClipsTallBuilding(	const Coord3D *from, const Coord3D *to, Real circleRadius, ObjectID ignoreBuilding, Coord3D *adjustTo)
+Bool Pathfinder::circleClipsTallBuilding(const Coord3D *from, const Coord3D *to, Real circleRadius, ObjectID /* ignoreBuilding */, Coord3D *adjustTo)
 {
 	PartitionFilterAcceptByKindOf filterKindof(MAKE_KINDOF_MASK(KINDOF_AIRCRAFT_PATH_AROUND), KINDOFMASK_NONE);
 	PartitionFilter *filters[] = { &filterKindof, NULL };
@@ -10204,7 +10204,7 @@ if (g_UT_startTiming) return false;
  * Uses A* algorithm.
  */
 Path *Pathfinder::getMoveAwayFromPath(Object* obj, Object *otherObj,
-											Path *pathToAvoid, Object *otherObj2, Path *pathToAvoid2)
+											Path *pathToAvoid, Object* /* otherObj2 */, Path *pathToAvoid2)
 {
 	if (m_isMapReady == false) return NULL; // Should always be ok.
 #if defined _DEBUG || defined _INTERNAL
@@ -10926,7 +10926,7 @@ Path *Pathfinder::findAttackPath( const Object *obj, const LocomotorSet& locomot
 
 /** Find a short, valid path to a location that is safe from the repulsors.  */
 Path *Pathfinder::findSafePath( const Object *obj, const LocomotorSet& locomotorSet, 
-		const Coord3D *from, const Coord3D* repulsorPos1, const Coord3D* repulsorPos2, Real repulsorRadius) 
+		const Coord3D* /* from */, const Coord3D* repulsorPos1, const Coord3D* repulsorPos2, Real repulsorRadius) 
 {
 	//CRCDEBUG_LOG(("Pathfinder::findSafePath()\n"));
 	if (m_isMapReady == false) return NULL; // Should always be ok.

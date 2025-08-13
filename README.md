@@ -63,6 +63,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheIMEManager
     - TheShell
     - TheInGameUI
+      - TheControlBar (partial)
   - TheAI
   - TheGameLogic (minimal)
     - ThePartitionManager

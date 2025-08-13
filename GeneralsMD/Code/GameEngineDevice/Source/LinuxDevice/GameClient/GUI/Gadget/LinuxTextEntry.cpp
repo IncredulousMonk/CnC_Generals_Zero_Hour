@@ -51,7 +51,7 @@
 
 // drawTextEntryText ==========================================================
 //=============================================================================
-static void drawTextEntryText( GameWindow *window, WinInstanceData *instData,	
+static void drawTextEntryText( GameWindow *window, WinInstanceData* /* instData */,
                                               Color textColor, Color textDropColor,
                                               Color compositeColor, Color compositeDropColor,
                                               Int x, Int y, Int width, Int fontHeight )

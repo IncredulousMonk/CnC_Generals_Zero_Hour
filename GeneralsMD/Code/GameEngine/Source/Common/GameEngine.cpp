@@ -30,7 +30,7 @@
 
 // #include "Common/ActionManager.h"
 #include "Common/AudioAffect.h"
-// #include "Common/BuildAssistant.h"
+#include "Common/BuildAssistant.h"
 // #include "Common/CRCDebug.h"
 // #include "Common/Radar.h"
 #include "Common/PlayerTemplate.h"
@@ -77,7 +77,7 @@
 #include "GameLogic/CrateSystem.h"
 // #include "GameLogic/Damage.h"
 // #include "GameLogic/VictoryConditions.h"
-// #include "GameLogic/ObjectCreationList.h"
+#include "GameLogic/ObjectCreationList.h"
 #include "GameLogic/Weapon.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Locomotor.h"
@@ -475,12 +475,12 @@ void GameEngine::init( int argc, char *argv[] )
 
 		initSubsystem(TheFXListStore,"TheFXListStore", MSGNEW("GameEngineSubsystem") FXListStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\FXList.ini", "Data\\INI\\FXList.ini");
 		initSubsystem(TheWeaponStore,"TheWeaponStore", MSGNEW("GameEngineSubsystem") WeaponStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Weapon.ini");
-		// initSubsystem(TheObjectCreationListStore,"TheObjectCreationListStore", MSGNEW("GameEngineSubsystem") ObjectCreationListStore(), &xferCRC, "Data\\INI\\Default\\ObjectCreationList.ini", "Data\\INI\\ObjectCreationList.ini");
+		initSubsystem(TheObjectCreationListStore,"TheObjectCreationListStore", MSGNEW("GameEngineSubsystem") ObjectCreationListStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\ObjectCreationList.ini", "Data\\INI\\ObjectCreationList.ini");
 		initSubsystem(TheLocomotorStore,"TheLocomotorStore", MSGNEW("GameEngineSubsystem") LocomotorStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Locomotor.ini");
 		initSubsystem(TheSpecialPowerStore,"TheSpecialPowerStore", MSGNEW("GameEngineSubsystem") SpecialPowerStore(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\SpecialPower.ini", "Data\\INI\\SpecialPower.ini");
 		initSubsystem(TheDamageFXStore,"TheDamageFXStore", MSGNEW("GameEngineSubsystem") DamageFXStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\DamageFX.ini");
 		initSubsystem(TheArmorStore,"TheArmorStore", MSGNEW("GameEngineSubsystem") ArmorStore(), nullptr /*&xferCRC*/, NULL, "Data\\INI\\Armor.ini");
-		// initSubsystem(TheBuildAssistant,"TheBuildAssistant", MSGNEW("GameEngineSubsystem") BuildAssistant, NULL);
+		initSubsystem(TheBuildAssistant,"TheBuildAssistant", MSGNEW("GameEngineSubsystem") BuildAssistant, NULL);
 
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////

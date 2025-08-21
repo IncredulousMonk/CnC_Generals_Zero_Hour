@@ -522,7 +522,7 @@ public:
 	Money m_defaultStartingCash {};				///< The amount of cash a player starts with by default.
 
 	// the trailing '\' is included!
-  const AsciiString &getPath_UserData() const { return m_userDataDir; }
+	const AsciiString &getPath_UserData() const { return m_userDataDir; }
 
 private:
 

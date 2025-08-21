@@ -280,6 +280,7 @@ void LinuxDisplayString::setFont(GameFont *font) {
 void LinuxDisplayString::setClipRegion( IRegion2D *region )
 {
    // FIXME: LinuxDisplayString::setClipRegion
+   // Have a look at bool SDL_SetRenderClipRect(SDL_Renderer *renderer, const SDL_Rect *rect);
 
    // extend functionality
    DisplayString::setClipRegion( region );
@@ -351,9 +352,7 @@ void LinuxDisplayString::setUseHotkey(Bool useHotkey, Color hotKeyColor)
 //=============================================================================
 void LinuxDisplayString::setWordWrapCentered(Bool isCentered)
 {
-   if (isCentered) {
-      DEBUG_LOG(("LinuxDisplayString::setWordWrapCentered not yet implemented!\n"));
-   }
+   (void) isCentered;
    // // set the Word Wrap
    //  if( m_textRenderer.Set_Word_Wrap_Centered(isCentered) )
    // 	notifyTextChanged();

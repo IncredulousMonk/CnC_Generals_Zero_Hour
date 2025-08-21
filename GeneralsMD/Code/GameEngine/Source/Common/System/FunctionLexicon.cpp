@@ -96,7 +96,7 @@ static FunctionLexicon::TableEntry gameWinSystemTable[] =
 
 	// { NAMEKEY_INVALID, "MOTDSystem",						reinterpret_cast<void*>(MOTDSystem) },
 	{ NAMEKEY_INVALID, "MainMenuSystem",					reinterpret_cast<void*>(MainMenuSystem) },
-	// { NAMEKEY_INVALID, "OptionsMenuSystem",					reinterpret_cast<void*>(OptionsMenuSystem) },
+	{ NAMEKEY_INVALID, "OptionsMenuSystem",					reinterpret_cast<void*>(OptionsMenuSystem) },
 	// { NAMEKEY_INVALID, "SinglePlayerMenuSystem",			reinterpret_cast<void*>(SinglePlayerMenuSystem) },
 	// { NAMEKEY_INVALID, "QuitMenuSystem",					reinterpret_cast<void*>(QuitMenuSystem) },
 	// { NAMEKEY_INVALID, "MapSelectMenuSystem",				reinterpret_cast<void*>(MapSelectMenuSystem) },

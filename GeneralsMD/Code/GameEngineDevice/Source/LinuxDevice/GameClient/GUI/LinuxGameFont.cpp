@@ -79,6 +79,10 @@ Bool LinuxFontLibrary::loadFontData(GameFont *font)
       fontData = NULL;
    } else if (font->nameString.compare("Generals") == 0) {
       fontData = TTF_OpenFont("/usr/share/fonts/truetype/msttcorefonts/Arial_Bold.ttf", font->pointSize == 15 ? 18 : font->pointSize);
+   } else if (font->nameString.compare("Arial") == 0 && !font->bold && font->pointSize == 10) {
+      fontData = TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf", 12);
+   } else if (font->nameString.compare("Arial") == 0 && !font->bold && font->pointSize == 8) {
+      fontData = TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf", 10);
    } else {
       if (font->bold) {
          fontData = TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf", font->pointSize);

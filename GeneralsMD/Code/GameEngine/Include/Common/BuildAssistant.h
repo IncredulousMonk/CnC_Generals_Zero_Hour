@@ -60,8 +60,8 @@ public:
 	ObjectSellInfo( void );
 	// virtual destructor prototypes provided by memory pool object
 
-	ObjectID m_id;									///< id of object to sell
-	UnsignedInt m_sellFrame;				///< frame the sell occurred on
+	ObjectID m_id {};				///< id of object to sell
+	UnsignedInt m_sellFrame {};		///< frame the sell occurred on
 
 };
 
@@ -107,18 +107,18 @@ public:
 	
 	struct TileBuildInfo
 	{
-		Int tilesUsed;
-		Coord3D *positions;
+		Int tilesUsed {};
+		Coord3D *positions {};
 	};
 
 	enum LocalLegalToBuildOptions
 	{
-		TERRAIN_RESTRICTIONS		= 0x00000001,	///< Check for basic terrain restrictions
-		CLEAR_PATH							= 0x00000002,	///< Must be able to path find to location
+		TERRAIN_RESTRICTIONS			= 0x00000001,	///< Check for basic terrain restrictions
+		CLEAR_PATH						= 0x00000002,	///< Must be able to path find to location
 		NO_OBJECT_OVERLAP				= 0X00000004,	///< Can't overlap enemy objects, or locally controled objects that can't move out of the way			
-		USE_QUICK_PATHFIND			= 0x00000008, ///< Use the quick pathfind method for CLEAR_PATH
+		USE_QUICK_PATHFIND				= 0x00000008, ///< Use the quick pathfind method for CLEAR_PATH
 		SHROUD_REVEALED					= 0x00000010,	///< Check to make sure the shroud is revealed
-		NO_ENEMY_OBJECT_OVERLAP	= 0x00000020,	///< Can't overlap enemy objects only.			
+		NO_ENEMY_OBJECT_OVERLAP			= 0x00000020,	///< Can't overlap enemy objects only.			
 		IGNORE_STEALTHED				= 0x00000040, ///< Units that we can't see are legal to "build" on. (when moving mouse around)
 		FAIL_STEALTHED_WITHOUT_FEEDBACK = 0x00000080 ///< USE WITH IGNORE_STEALTHED except it will fail without BIB feedback (when clicking to place).
 	};
@@ -211,9 +211,9 @@ protected:
 	Bool moveObjectsForConstruction( const ThingTemplate *whatToBuild, 
 																	 const Coord3D *pos, Real angle, Player *playerToBuild );
 
-	Coord3D *m_buildPositions;			///< array used to create a line of build locations (think walls)
-	Int m_buildPositionSize;				///< number of elements in the build position array
-	ObjectSellList m_sellList;			///< list of objects currently going through the "sell process"
+	Coord3D *m_buildPositions {};			///< array used to create a line of build locations (think walls)
+	Int m_buildPositionSize {};				///< number of elements in the build position array
+	ObjectSellList m_sellList {};			///< list of objects currently going through the "sell process"
 
 };  // end BuildAssistant
 
@@ -221,4 +221,3 @@ protected:
 extern BuildAssistant *TheBuildAssistant;
 
 #endif // __BUILDASSISTANT_H_
-

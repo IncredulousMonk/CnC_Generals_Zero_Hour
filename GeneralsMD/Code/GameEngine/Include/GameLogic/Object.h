@@ -352,9 +352,7 @@ public:
 	SpecialPowerModuleInterface* findAnyShortcutSpecialPowerModuleInterface() const;
 #endif // if 0
 	SpecialAbilityUpdate* findSpecialAbilityUpdate( SpecialPowerType type ) const;
-#if 0
 	SpecialPowerCompletionDie* findSpecialPowerCompletionDie() const;
-#endif // if 0
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestinationActive( SpecialPowerType type = SPECIAL_INVALID ) const;
 #if 0
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestination( SpecialPowerType type = SPECIAL_INVALID ) const;
@@ -382,10 +380,10 @@ public:
 
 	// Useful for status bits that can be set by the scripting system
 	inline Bool testScriptStatusBit(ObjectScriptStatusBit b) const { return BitTest(m_scriptStatus, b); }
-#if 0
 	void setScriptStatus( ObjectScriptStatusBit bit, Bool set = true );
 	inline void clearScriptStatus( ObjectScriptStatusBit bit ) { setScriptStatus(bit, false); }
 
+#if 0
 	// Selectable is individually controlled on an object by object basis for design now.
 	// It defaults to the thingTemplate->isKindof(KINDOF_SELECTABLE), however, it can be overridden on an 
 	// object by object basis.  Finally, it can be temporarily overriden by the OBJECT_STATUS_UNSELECTABLE. 
@@ -660,8 +658,8 @@ public:
 	void setHealthBoxOffset( const Coord3D& offset ) { m_healthBoxOffset = offset; } ///< for special amorphous like angry mob
 
 	void defect( Team *newTeam, UnsignedInt detectionTime );
-	void goInvulnerable( UnsignedInt time );
 #endif // if 0
+	void goInvulnerable( UnsignedInt time );
 	
 	// This is public, since there is no Thing level master setting of Turret stuff.  It is all done in a sleepy hamlet
 	// of a module called TurretAI.

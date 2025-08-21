@@ -125,7 +125,7 @@ static const BlockParse theTypeTable[] =
 	{ "MultiplayerSettings",			INI::parseMultiplayerSettingsDefinition },
 	{ "MusicTrack",						INI::parseMusicTrackDefinition },
 	{ "Object",							INI::parseObjectDefinition },
-// 	{ "ObjectCreationList",				INI::parseObjectCreationListDefinition },
+	{ "ObjectCreationList",				INI::parseObjectCreationListDefinition },
 	{ "ObjectReskin",					INI::parseObjectReskinDefinition },
 	{ "ParticleSystem",					INI::parseParticleSystemDefinition },
 	{ "PlayerTemplate",					INI::parsePlayerTemplateDefinition },

@@ -96,8 +96,8 @@ public:
 
 protected:
 
-	ObjectID m_creatorID;
-	Bool m_creatorSet;
+	ObjectID m_creatorID {};
+	Bool m_creatorSet {};
 
 };
 

@@ -43,7 +43,7 @@
 #include "GameClient/ControlBar.h"
 #include "GameClient/Drawable.h"
 #include "GameClient/InGameUI.h"
-#include "GameClient/TerrainVisual.h"
+// #include "GameClient/TerrainVisual.h"
 #include "GameLogic/AI.h"
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/TerrainLogic.h"
@@ -144,7 +144,7 @@ void BuildAssistant::init( void )
 	// allocate our array of positions that we use to assist ourselves when constructing
 	// a tiled array of locations to build things like walls
 	//
-	m_buildPositionSize = TheGlobalData->m_maxLineBuildObjects;
+	m_buildPositionSize = TheGlobalData->m_data.m_maxLineBuildObjects;
 	m_buildPositions = NEW Coord3D[ m_buildPositionSize ];
 
 }  // end init
@@ -173,8 +173,8 @@ void BuildAssistant::reset( void )
 
 }  // end reset
 
-static const Real FRAMES_TO_ALLOW_SCAFFOLD = LOGICFRAMES_PER_SECOND * 1.5f;
-static const Real TOTAL_FRAMES_TO_SELL_OBJECT = LOGICFRAMES_PER_SECOND * 3.0f;
+static const Real FRAMES_TO_ALLOW_SCAFFOLD = (Real)LOGICFRAMES_PER_SECOND * 1.5f;
+static const Real TOTAL_FRAMES_TO_SELL_OBJECT = (Real)LOGICFRAMES_PER_SECOND * 3.0f;
 //-------------------------------------------------------------------------------------------------
 /** Update phase for the build assistant */
 //-------------------------------------------------------------------------------------------------
@@ -256,10 +256,9 @@ void BuildAssistant::update( void )
 				UnsignedInt sellValue;
 				// 0 is the init, and means you have no override.  We would be marked unsellable if someone wanted us to not sell
 				if( obj->getTemplate()->getRefundValue() != 0 )
-					sellValue = obj->getTemplate()->getRefundValue();
+					sellValue = (UnsignedInt)obj->getTemplate()->getRefundValue();
 				else
-					sellValue = REAL_TO_UNSIGNEDINT( obj->getTemplate()->calcCostToBuild( player ) * 
-																										 TheGlobalData->m_sellPercentage );
+					sellValue = REAL_TO_UNSIGNEDINT( obj->getTemplate()->calcCostToBuild( player ) * TheGlobalData->m_data.m_sellPercentage );
 
 				player->getMoney()->deposit( sellValue );
 				// this money shouldn't be scored since it wasn't really "earned."
@@ -465,7 +464,7 @@ void BuildAssistant::buildObjectLineNow( Object *constructorObject, const ThingT
 	Real objectSize = what->getTemplateGeometryInfo().getMajorRadius() * 2.0f;
 	
 	// what is our max tiling length we can make
-	Int maxObjects = TheGlobalData->m_maxLineBuildObjects;
+	Int maxObjects = TheGlobalData->m_data.m_maxLineBuildObjects;
 
 	// build an array of locations that we want to build from start to end
 	tileBuildInfo = buildTiledLocations( what, angle, start, end, 
@@ -490,6 +489,7 @@ struct SampleBuildData
 	Real loZ;								///< lowest sample point used
 };
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** This will check the build conditions at the specified sample location point */
 //-------------------------------------------------------------------------------------------------
@@ -533,18 +533,19 @@ static void checkSampleBuildLocation( const Coord3D *samplePoint, void *userData
 		sampleData->hiZ = samplePoint->z;
 
 	// too close to edge of map?
-	if (TheGlobalData->m_MinDistFromEdgeOfMapForBuild > 0.0f)
+	if (TheGlobalData->m_data.m_MinDistFromEdgeOfMapForBuild > 0.0f)
 	{
-		if (samplePoint->x < sampleData->mapRegion.lo.x + TheGlobalData->m_MinDistFromEdgeOfMapForBuild
-				|| samplePoint->x > sampleData->mapRegion.hi.x - TheGlobalData->m_MinDistFromEdgeOfMapForBuild
-				|| samplePoint->y < sampleData->mapRegion.lo.y + TheGlobalData->m_MinDistFromEdgeOfMapForBuild
-				|| samplePoint->y > sampleData->mapRegion.hi.y - TheGlobalData->m_MinDistFromEdgeOfMapForBuild)
+		if (samplePoint->x < sampleData->mapRegion.lo.x + TheGlobalData->m_data.m_MinDistFromEdgeOfMapForBuild
+				|| samplePoint->x > sampleData->mapRegion.hi.x - TheGlobalData->m_data.m_MinDistFromEdgeOfMapForBuild
+				|| samplePoint->y < sampleData->mapRegion.lo.y + TheGlobalData->m_data.m_MinDistFromEdgeOfMapForBuild
+				|| samplePoint->y > sampleData->mapRegion.hi.y - TheGlobalData->m_data.m_MinDistFromEdgeOfMapForBuild)
 		{
 			sampleData->terrainRestricted = TRUE;
 		}
 	}
 
 }  // end checkSampleBuildLocation
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** This function will call the user callback at each "sample point" across the footprint
@@ -670,6 +671,14 @@ LegalBuildCode BuildAssistant::isLocationClearOfObjects( const Coord3D *worldPos
 																											 UnsignedInt options,
 																											 Player *thePlayer)
 {
+(void) worldPos;
+(void) build;
+(void) angle;
+(void) builderObject;
+(void) options;
+(void) thePlayer;
+DEBUG_CRASH(("BuildAssistant::isLocationClearOfObjects not yet implemented!"));
+#if 0
 	ObjectIterator *iter = 
 			ThePartitionManager->iteratePotentialCollisions( worldPos,
 																											 build->getTemplateGeometryInfo(),
@@ -706,7 +715,7 @@ LegalBuildCode BuildAssistant::isLocationClearOfObjects( const Coord3D *worldPos
 		//Prevent busy units (black lotus hacking from being moved by trying to place a building -- exploit).
 		if( rel == ALLIES )
 		{
-			if( them->testStatus( OBJECT_STATUS_IS_USING_ABILITY ) || them->getAI() && them->getAI()->isBusy() )
+			if( them->testStatus( OBJECT_STATUS_IS_USING_ABILITY ) || (them->getAI() && them->getAI()->isBusy()) )
 			{
 				return LBC_OBJECTS_IN_THE_WAY;
 			}
@@ -897,6 +906,7 @@ LegalBuildCode BuildAssistant::isLocationClearOfObjects( const Coord3D *worldPos
 		}
 
 	}  // end for, them
+#endif // if 0
 	return LBC_OK;
 }
 
@@ -913,6 +923,14 @@ LegalBuildCode BuildAssistant::isLocationLegalToBuild( const Coord3D *worldPos,
 																											 Player *player)
 {
 
+(void) worldPos;
+(void) build;
+(void) angle;
+(void) options;
+(void) builderObject;
+(void) player;
+DEBUG_CRASH(("BuildAssistant::isLocationLegalToBuild not yet implemented!"));
+#if 0
 	/* You just can't never build off the map, regardless of options.  jba. */			
 	Region3D mapExtent;
 	TheTerrainLogic->getMaximumPathfindExtent(&mapExtent);
@@ -965,20 +983,20 @@ LegalBuildCode BuildAssistant::isLocationLegalToBuild( const Coord3D *worldPos,
 		}
 	}  // end if
 
-	if (build->isKindOf(KINDOF_CANNOT_BUILD_NEAR_SUPPLIES) && TheGlobalData->m_SupplyBuildBorder > 0)
+	if (build->isKindOf(KINDOF_CANNOT_BUILD_NEAR_SUPPLIES) && TheGlobalData->m_data.m_SupplyBuildBorder > 0)
 	{
 		// special case for supply centers: can't build too close to supply sources 
 		PartitionFilterAcceptByKindOf f1(MAKE_KINDOF_MASK(KINDOF_SUPPLY_SOURCE), KINDOFMASK_NONE);
 		PartitionFilter *filters[] = { &f1, NULL };
 		
 		// see if there are any reasonably close by
-		Real range = build->getTemplateGeometryInfo().getBoundingCircleRadius() + TheGlobalData->m_SupplyBuildBorder*2;
+		Real range = build->getTemplateGeometryInfo().getBoundingCircleRadius() + TheGlobalData->m_data.m_SupplyBuildBorder*2;
 		Object* tooClose = ThePartitionManager->getClosestObject(worldPos, range, FROM_BOUNDINGSPHERE_2D, filters);
 		if (tooClose != NULL)
 		{
 			// yep, see if we would collide with an expanded version
 			GeometryInfo tooCloseGeom = tooClose->getGeometryInfo();
-			tooCloseGeom.expandFootprint(TheGlobalData->m_SupplyBuildBorder);
+			tooCloseGeom.expandFootprint(TheGlobalData->m_data.m_SupplyBuildBorder);
 			if (ThePartitionManager->geomCollidesWithGeom(
 						worldPos,
 						build->getTemplateGeometryInfo(),
@@ -987,7 +1005,7 @@ LegalBuildCode BuildAssistant::isLocationLegalToBuild( const Coord3D *worldPos,
 						tooCloseGeom,
 						tooClose->getOrientation()))
 			{
-				TheTerrainVisual->addFactionBib(tooClose, true, TheGlobalData->m_SupplyBuildBorder);
+				TheTerrainVisual->addFactionBib(tooClose, true, TheGlobalData->m_data.m_SupplyBuildBorder);
 				return LBC_TOO_CLOSE_TO_SUPPLIES;
 			}
 		}
@@ -1048,7 +1066,7 @@ LegalBuildCode BuildAssistant::isLocationLegalToBuild( const Coord3D *worldPos,
 		if( sampleData.terrainRestricted == TRUE )
 			return LBC_RESTRICTED_TERRAIN;
 		// check if the height across the whole footprint area is too varied (not flat enough)
-		if( sampleData.hiZ - sampleData.loZ > TheGlobalData->m_allowedHeightVariationForBuilding )
+		if( sampleData.hiZ - sampleData.loZ > TheGlobalData->m_data.m_allowedHeightVariationForBuilding )
 			return LBC_NOT_FLAT_ENOUGH;
 
 		// careful check at full res.
@@ -1057,12 +1075,13 @@ LegalBuildCode BuildAssistant::isLocationLegalToBuild( const Coord3D *worldPos,
 		if( sampleData.terrainRestricted == TRUE )
 			return LBC_RESTRICTED_TERRAIN;
 		// check if the height across the whole footprint area is too varied (not flat enough)
-		if( sampleData.hiZ - sampleData.loZ > TheGlobalData->m_allowedHeightVariationForBuilding )
+		if( sampleData.hiZ - sampleData.loZ > TheGlobalData->m_data.m_allowedHeightVariationForBuilding )
 			return LBC_NOT_FLAT_ENOUGH;
 
 	}  // end if
 
 	// we passed all the checks
+#endif // if 0
 	return LBC_OK;
 
 }  // end isLocationLegalToBuild
@@ -1074,6 +1093,10 @@ void BuildAssistant::addBibs(const Coord3D *worldPos,
 																	const ThingTemplate *build  )
 {
 
+(void) worldPos;
+(void) build;
+DEBUG_CRASH(("BuildAssistant::addBibs not yet implemented!"));
+#if 0
 	Real range = build->friend_calcVisionRange();
 	range += 3*build->getTemplateGeometryInfo().getMajorRadius();
 
@@ -1096,6 +1119,7 @@ void BuildAssistant::addBibs(const Coord3D *worldPos,
 
 	}  // end for, them
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1340,7 +1364,7 @@ CanMakeType BuildAssistant::canMakeUnit( Object *builder, const ThingTemplate *w
 
 	// make sure we have enough money to build this
 	Money *money = player->getMoney();
-	if( whatToBuild->calcCostToBuild( player ) > money->countMoney() )
+	if( whatToBuild->calcCostToBuild( player ) > (Int)money->countMoney() )
 		return CANMAKE_NO_MONEY;
 
 	// get the command set for the producer object
@@ -1390,6 +1414,11 @@ void BuildAssistant::clearRemovableForConstruction( const ThingTemplate *whatToB
 																										const Coord3D *pos,
 																										Real angle )
 {
+(void) whatToBuild;
+(void) pos;
+(void) angle;
+DEBUG_CRASH(("BuildAssistant::clearRemovableForConstruction not yet implemented!"));
+#if 0
 	ObjectIterator *iter = 
 			ThePartitionManager->iteratePotentialCollisions( pos,
 																											 whatToBuild->getTemplateGeometryInfo(),
@@ -1406,6 +1435,7 @@ void BuildAssistant::clearRemovableForConstruction( const ThingTemplate *whatToB
 	}  // end for, them
 	TheTerrainVisual->removeTreesAndPropsForConstruction(pos, whatToBuild->getTemplateGeometryInfo(), angle);
 
+#endif // if 0
 }  // end clearRemovableForConstruction
 
 // ------------------------------------------------------------------------------------------------

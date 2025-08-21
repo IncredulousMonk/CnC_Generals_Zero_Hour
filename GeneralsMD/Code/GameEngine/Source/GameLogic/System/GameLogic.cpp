@@ -33,7 +33,7 @@
 // #include "Common/AudioHandleSpecialValues.h"
 // #include "Common/BuildAssistant.h"
 // #include "Common/CopyProtection.h"
-// #include "Common/CRCDebug.h"
+#include "Common/CRCDebug.h"
 #include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
 // #include "Common/GameLOD.h"
@@ -2647,6 +2647,7 @@ Bool GameLogic::isIntroMoviePlaying()
 	/// @todo remove this hack
 	return m_startNewGame && TheDisplay->isMoviePlaying();
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -2747,6 +2748,7 @@ void GameLogic::deselectObject(Object *obj, PlayerMaskType playerMask, Bool affe
 	}
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 inline void GameLogic::validateSleepyUpdate() const
 {

@@ -119,22 +119,22 @@ enum GameWindowMessage: UnsignedInt
 
 	GWM_NONE = 0,
 
-	GWM_CREATE,									GWM_DESTROY,
-	GWM_ACTIVATE,								GWM_ENABLE,
-	GWM_LEFT_DOWN,							GWM_LEFT_UP,
+	GWM_CREATE,						GWM_DESTROY,
+	GWM_ACTIVATE,					GWM_ENABLE,
+	GWM_LEFT_DOWN,					GWM_LEFT_UP,
 	GWM_LEFT_DOUBLE_CLICK,			GWM_LEFT_DRAG,
-	GWM_MIDDLE_DOWN,						GWM_MIDDLE_UP,
+	GWM_MIDDLE_DOWN,				GWM_MIDDLE_UP,
 	GWM_MIDDLE_DOUBLE_CLICK,		GWM_MIDDLE_DRAG,
-	GWM_RIGHT_DOWN,							GWM_RIGHT_UP,
+	GWM_RIGHT_DOWN,					GWM_RIGHT_UP,
 	GWM_RIGHT_DOUBLE_CLICK,			GWM_RIGHT_DRAG,
-	GWM_MOUSE_ENTERING,					GWM_MOUSE_LEAVING,
-	GWM_WHEEL_UP,								GWM_WHEEL_DOWN,
-	GWM_CHAR,										GWM_SCRIPT_CREATE,
+	GWM_MOUSE_ENTERING,				GWM_MOUSE_LEAVING,
+	GWM_WHEEL_UP,					GWM_WHEEL_DOWN,
+	GWM_CHAR,						GWM_SCRIPT_CREATE,
 	// note that GWM_MOUSE_POS is only actually propogated to windows if the static
 	// sendMousePosMessages is set to true in the window manager file.  See the
 	// comment on the static declaration for addtional info
-	GWM_INPUT_FOCUS,						GWM_MOUSE_POS,
-	GWM_IME_CHAR,								GWM_IME_STRING
+	GWM_INPUT_FOCUS,				GWM_MOUSE_POS,
+	GWM_IME_CHAR,					GWM_IME_STRING
 
 };
 
@@ -157,34 +157,34 @@ enum: UnsignedInt
 {
 
 	// when you edit this, remember to edit WindowStatusNames[]
-	WIN_STATUS_NONE								= 0x00000000,		// No status bits set at all
-	WIN_STATUS_ACTIVE							= 0x00000001,		// At the top of the window list
-	WIN_STATUS_TOGGLE							= 0x00000002,		// If set, click to toggle
-	WIN_STATUS_DRAGABLE						= 0x00000004,		// Window can be dragged
-	WIN_STATUS_ENABLED						= 0x00000008,		// Window can receive input
-	WIN_STATUS_HIDDEN 						= 0x00000010,		// Window is hidden, no input
-	WIN_STATUS_ABOVE    					= 0x00000020,		// Window is always above others
-	WIN_STATUS_BELOW    					= 0x00000040,		// Window is always below others
-	WIN_STATUS_IMAGE							= 0x00000080,	  // Window is drawn with images
-	WIN_STATUS_TAB_STOP						= 0x00000100,	  // Window is a tab stop
-	WIN_STATUS_NO_INPUT						= 0x00000200,	  // Window does not take input
-	WIN_STATUS_NO_FOCUS						= 0x00000400,	  // Window does not take focus
-	WIN_STATUS_DESTROYED					= 0x00000800,	  // Window has been destroyed
-	WIN_STATUS_BORDER							= 0x00001000,	  // Window will be drawn with Borders & Corners
-	WIN_STATUS_SMOOTH_TEXT				= 0x00002000,	  // Window text will be drawn with smoothing
-	WIN_STATUS_ONE_LINE						= 0x00004000,	  // Window text will be drawn on only one line
-	WIN_STATUS_NO_FLUSH						= 0x00008000,	  // Window images will not be unloaded when window is hidden
-	WIN_STATUS_SEE_THRU						= 0x00010000,   // Will not draw, but it NOT hidden ... does not apply to children
-	WIN_STATUS_RIGHT_CLICK				= 0x00020000,		// Window pays attention to right clicks
-	WIN_STATUS_WRAP_CENTERED			= 0x00040000,		// Text will be centered on each word wrap or \n
-	WIN_STATUS_CHECK_LIKE					= 0x00080000,		// Make push buttons "check-like" with dual state
-	WIN_STATUS_HOTKEY_TEXT				= 0x00100000,		// Make push buttons "check-like" with dual state
-	WIN_STATUS_USE_OVERLAY_STATES	= 0x00200000,		// Push buttons will use the global automatic rendering overlay for disabled, hilited, and pushed.
-	WIN_STATUS_NOT_READY					= 0x00400000,		// A disabled button that is available -- but not yet (power charge, fire delay).
-	WIN_STATUS_FLASHING						= 0x00800000,   // Used for buttons that do cameo flashes.
-	WIN_STATUS_ALWAYS_COLOR				= 0x01000000,		// Never render these buttons using greyscale renderer when button disabled.
-	WIN_STATUS_ON_MOUSE_DOWN			= 0x02000000,		// Pushbutton triggers on mouse down.
-	WIN_STATUS_SHORTCUT_BUTTON		= 0x04000000,   // Oh god... this is a total hack for shortcut buttons to handle rendering text top left corner...
+	WIN_STATUS_NONE					= 0x00000000,	// No status bits set at all
+	WIN_STATUS_ACTIVE				= 0x00000001,	// At the top of the window list
+	WIN_STATUS_TOGGLE				= 0x00000002,	// If set, click to toggle
+	WIN_STATUS_DRAGABLE				= 0x00000004,	// Window can be dragged
+	WIN_STATUS_ENABLED				= 0x00000008,	// Window can receive input
+	WIN_STATUS_HIDDEN 				= 0x00000010,	// Window is hidden, no input
+	WIN_STATUS_ABOVE				= 0x00000020,	// Window is always above others
+	WIN_STATUS_BELOW				= 0x00000040,	// Window is always below others
+	WIN_STATUS_IMAGE				= 0x00000080,	// Window is drawn with images
+	WIN_STATUS_TAB_STOP				= 0x00000100,	// Window is a tab stop
+	WIN_STATUS_NO_INPUT				= 0x00000200,	// Window does not take input
+	WIN_STATUS_NO_FOCUS				= 0x00000400,	// Window does not take focus
+	WIN_STATUS_DESTROYED			= 0x00000800,	// Window has been destroyed
+	WIN_STATUS_BORDER				= 0x00001000,	// Window will be drawn with Borders & Corners
+	WIN_STATUS_SMOOTH_TEXT			= 0x00002000,	// Window text will be drawn with smoothing
+	WIN_STATUS_ONE_LINE				= 0x00004000,	// Window text will be drawn on only one line
+	WIN_STATUS_NO_FLUSH				= 0x00008000,	// Window images will not be unloaded when window is hidden
+	WIN_STATUS_SEE_THRU				= 0x00010000,	// Will not draw, but it NOT hidden ... does not apply to children
+	WIN_STATUS_RIGHT_CLICK			= 0x00020000,	// Window pays attention to right clicks
+	WIN_STATUS_WRAP_CENTERED		= 0x00040000,	// Text will be centered on each word wrap or \n
+	WIN_STATUS_CHECK_LIKE			= 0x00080000,	// Make push buttons "check-like" with dual state
+	WIN_STATUS_HOTKEY_TEXT			= 0x00100000,	// Make push buttons "check-like" with dual state
+	WIN_STATUS_USE_OVERLAY_STATES	= 0x00200000,	// Push buttons will use the global automatic rendering overlay for disabled, hilited, and pushed.
+	WIN_STATUS_NOT_READY			= 0x00400000,	// A disabled button that is available -- but not yet (power charge, fire delay).
+	WIN_STATUS_FLASHING				= 0x00800000,	// Used for buttons that do cameo flashes.
+	WIN_STATUS_ALWAYS_COLOR			= 0x01000000,	// Never render these buttons using greyscale renderer when button disabled.
+	WIN_STATUS_ON_MOUSE_DOWN		= 0x02000000,	// Pushbutton triggers on mouse down.
+	WIN_STATUS_SHORTCUT_BUTTON		= 0x04000000,	// Oh god... this is a total hack for shortcut buttons to handle rendering text top left corner...
 	// when you edit this, remember to edit WindowStatusNames[]
 
 };
@@ -194,10 +194,10 @@ enum: UnsignedInt
 //-----------------------------------------------------------------------------
 enum
 {
-	MSG_BOX_YES							= 0x01, //Display the yes button
-	MSG_BOX_NO							= 0x02, //Display the No button
-	MSG_BOX_OK							= 0x08, //Display the Ok button
-	MSG_BOX_CANCEL					= 0x04, //Display the Cancel button	
+	MSG_BOX_YES		= 0x01, //Display the yes button
+	MSG_BOX_NO		= 0x02, //Display the No button
+	MSG_BOX_OK		= 0x08, //Display the Ok button
+	MSG_BOX_CANCEL	= 0x04, //Display the Cancel button	
 };
 
 
@@ -207,9 +207,9 @@ enum
 struct WindowMessageBoxData
 {
 	GameWinMsgBoxFunc yesCallback; ///<Function pointer to the Yes Button Callback
-  GameWinMsgBoxFunc noCallback;///<Function pointer to the No Button Callback
-  GameWinMsgBoxFunc okCallback;///<Function pointer to the Ok Button Callback
-  GameWinMsgBoxFunc cancelCallback;///<Function pointer to the Cancel Button Callback
+	GameWinMsgBoxFunc noCallback;///<Function pointer to the No Button Callback
+	GameWinMsgBoxFunc okCallback;///<Function pointer to the Ok Button Callback
+	GameWinMsgBoxFunc cancelCallback;///<Function pointer to the Cancel Button Callback
 };
 
 // GameWindowEditData ---------------------------------------------------------

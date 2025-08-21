@@ -340,8 +340,10 @@ public:
 	// This is stuff to get the currently active boundary information
 	Int getActiveBoundary(void) { return m_activeBoundary; }
 	void setActiveBoundary(Int newActiveBoundary);
+#endif // if 0
 
 	void flattenTerrain(Object *obj);  ///< Flatten the terrain under a building.
+#if 0
 	void createCraterInTerrain(Object *obj);  ///< Flatten the terrain under a building.
 #endif // if 0
 

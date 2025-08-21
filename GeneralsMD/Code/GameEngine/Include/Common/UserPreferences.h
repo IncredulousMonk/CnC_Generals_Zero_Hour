@@ -146,10 +146,10 @@ public:
 	Int getNumRemoteIPs(void);					// convenience function
 	UnicodeString getRemoteIPEntry(Int i);	// convenience function
 
-  Bool getSuperweaponRestricted(void) const;
-  Money getStartingCash(void) const;
-  void setSuperweaponRestricted( Bool superweaponRestricted);
-  void setStartingCash( const Money & startingCash );
+	Bool getSuperweaponRestricted(void) const;
+	Money getStartingCash(void) const;
+	void setSuperweaponRestricted( Bool superweaponRestricted);
+	void setStartingCash( const Money & startingCash );
 };
 
 #endif // __USERPREFERENCES_H__

@@ -581,11 +581,11 @@ public:
 	inline Real getSecondMaterialPassOpacity() const { return m_secondMaterialPassOpacity; }		///< get alpha/opacity value used to render add'l  rendering pass.
 	void setSecondMaterialPassOpacity( Real op ) { m_secondMaterialPassOpacity = op; }; ///< set alpha/opacity value used to render add'l  rendering pass.
 
-#if 0
 	// both of these assume that you are starting at one extreme 100% or 0% opacity and are trying to go to the other!! -- amit
 	void fadeOut( UnsignedInt frames );		///< fade object out...how gradually this is done is determined by frames
 	void fadeIn( UnsignedInt frames );		///< fade object in...how gradually this is done is determined by frames
 
+#if 0
 	void preloadAssets( TimeOfDay timeOfDay );	///< preload the assets
 	
 	Bool isVisible();											///< for limiting tree sway, etc to visible objects
@@ -730,7 +730,6 @@ private:
 	UnsignedInt m_tintStatus {};				///< tint color status bits (see TintStatus enum)
 	UnsignedInt m_prevTintStatus {};///< for edge testing with m_tintStatus
 	
-#if 0
 	enum FadingMode: int
 	{
 		FADING_NONE,
@@ -741,6 +740,7 @@ private:
 	UnsignedInt		m_timeElapsedFade {};			///< for how many frames have i been fading
 	UnsignedInt		m_timeToFade {};						///< how slowly am I fading
 
+#if 0
 	UnsignedInt		m_shroudClearFrame {};						///< Last frame the local player saw this drawable "OBJECTSHROUD_CLEAR"
 
 	DrawableLocoInfo*	m_locoInfo {};	// lazily allocated

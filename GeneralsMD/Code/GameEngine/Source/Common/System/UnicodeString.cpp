@@ -291,9 +291,9 @@ void UnicodeString::format(UnicodeString format, ...)
 {
 	validate();
 	va_list args;
-  va_start(args, format);
+	va_start(args, format);
 	format_va(format, args);
-  va_end(args);
+	va_end(args);
 	validate();
 }
 
@@ -302,9 +302,9 @@ void UnicodeString::format(const WideChar* format, ...)
 {
 	validate();
 	va_list args;
-  va_start(args, format);
+	va_start(args, format);
 	format_va(format, args);
-  va_end(args);
+	va_end(args);
 	validate();
 }
 
@@ -313,7 +313,7 @@ void UnicodeString::format_va(const UnicodeString& format, va_list args)
 {
 	validate();
 	WideChar buf[MAX_FORMAT_BUF_LEN];
-  if (vswprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format.str(), args) < 0)
+	if (vswprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format.str(), args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();
@@ -324,7 +324,7 @@ void UnicodeString::format_va(const WideChar* format, va_list args)
 {
 	validate();
 	WideChar buf[MAX_FORMAT_BUF_LEN];
-  if (vswprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format, args) < 0)
+	if (vswprintf(buf, sizeof(buf)/sizeof(WideChar)-1, format, args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();

@@ -479,6 +479,7 @@ void SinglePlayerLoadScreen::init( GameInfo* /* game */ )
 	DEBUG_ASSERTCRASH(m_cameoText, ("Can't initialize the m_cameoText for the single player loadscreen"));
 
 */
+#if 0 // Video problems
 	m_ambientLoop.setEventName("LoadScreenAmbient");
 	// create the new stream
 	m_videoStream = TheVideoPlayer->open( TheCampaignManager->getCurrentMission()->m_ini.m_movieLabel );
@@ -488,7 +489,6 @@ void SinglePlayerLoadScreen::init( GameInfo* /* game */ )
 		return;
 	}
 
-#if 0 // Video buffer
 	// Create the new buffer
 	m_videoBuffer = TheDisplay->createVideoBuffer();
 	if (	m_videoBuffer == NULL || 
@@ -615,8 +615,10 @@ void SinglePlayerLoadScreen::init( GameInfo* /* game */ )
 	}
 	// setFPMode();
 	m_percent->winHide(TRUE);
+#if 0 // Audio problems
 	m_ambientLoopHandle = TheAudio->addAudioEvent(&m_ambientLoop);
-	
+#endif // if 0
+
 }
 
 void SinglePlayerLoadScreen::reset( void )

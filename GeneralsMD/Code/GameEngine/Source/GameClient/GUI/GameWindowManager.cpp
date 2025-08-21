@@ -1573,14 +1573,14 @@ Int GameWindowManager::winSetModal( GameWindow *window )
 	// verify requesting window is a root window
 	if( window->m_parent != NULL )
 	{
-		DEBUG_LOG(( "WinSetModal: Non Root window attempted to go modal." ));
+		DEBUG_LOG(( "WinSetModal: Non Root window attempted to go modal.\n" ));
 		return WIN_ERR_INVALID_PARAMETER;			// return error if not
 	}
 	// Allocate new Modal Window Entry
 	modal = newInstance(ModalWindow);
 	if( modal == NULL )
 	{
-		DEBUG_LOG(( "WinSetModal: Unable to allocate space for Modal Entry." ));
+		DEBUG_LOG(( "WinSetModal: Unable to allocate space for Modal Entry.\n" ));
 		return WIN_ERR_GENERAL_FAILURE;
 	}
 

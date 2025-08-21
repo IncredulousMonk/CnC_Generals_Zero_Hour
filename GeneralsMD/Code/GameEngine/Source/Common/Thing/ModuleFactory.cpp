@@ -105,7 +105,9 @@
 #include "GameLogic/Module/EjectPilotDie.h"
 #include "GameLogic/Module/FXListDie.h"
 #include "GameLogic/Module/RebuildHoleExposeDie.h"
+#endif // if 0
 #include "GameLogic/Module/SpecialPowerCompletionDie.h"
+#if 0
 #include "GameLogic/Module/UpgradeDie.h"
 #include "GameLogic/Module/KeepObjectDie.h"
 
@@ -153,7 +155,9 @@
 #include "GameLogic/Module/BaikonurLaunchPower.h"
 #include "GameLogic/Module/BattlePlanUpdate.h"
 #include "GameLogic/Module/LifetimeUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/RadiusDecalUpdate.h"
+#if 0
 #include "GameLogic/Module/AutoDepositUpdate.h"
 #include "GameLogic/Module/MissileAIUpdate.h"
 #include "GameLogic/Module/NeutronMissileUpdate.h"
@@ -419,7 +423,9 @@ void ModuleFactory::init( void )
 	addModule( CreateCrateDie );
 	addModule( CreateObjectDie );
 	addModule( EjectPilotDie );
+#endif // if 0
 	addModule( SpecialPowerCompletionDie );
+#if 0
 	addModule( RebuildHoleExposeDie );
 	addModule( UpgradeDie );
 	addModule( KeepObjectDie );
@@ -441,7 +447,9 @@ void ModuleFactory::init( void )
 	addModule( ToppleUpdate );
 	addModule( EnemyNearUpdate );
 	addModule( LifetimeUpdate );
+#endif // if 0
 	addModule( RadiusDecalUpdate );
+#if 0
 	addModule( EMPUpdate );
 	addModule( LeafletDropBehavior );
 	addModule( AutoDepositUpdate );

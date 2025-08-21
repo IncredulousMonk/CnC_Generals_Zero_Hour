@@ -46,9 +46,9 @@ public:
 
 	FloatUpdateModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	Bool m_enabled;							///< enabled
+	Bool m_enabled {};							///< enabled
 
 };
 
@@ -71,7 +71,7 @@ public:
 protected:
 
 	
-	Bool m_enabled;			///< enabled
+	Bool m_enabled {};			///< enabled
 
 };
 

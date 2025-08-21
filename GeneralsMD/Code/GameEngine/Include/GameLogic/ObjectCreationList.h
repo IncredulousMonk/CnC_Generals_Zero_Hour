@@ -176,7 +176,7 @@ private:
 
 	// note, this list doesn't own the nuggets; all nuggets are owned by the Store.
 	typedef std::vector<ObjectCreationNugget*> ObjectCreationNuggetVector;
-	ObjectCreationNuggetVector m_nuggets;
+	ObjectCreationNuggetVector m_nuggets {};
 
 };  
 
@@ -209,11 +209,11 @@ public:
 private:
 
 	typedef std::map< NameKeyType, ObjectCreationList, std::less<NameKeyType> > ObjectCreationListMap;
-	ObjectCreationListMap m_ocls;
+	ObjectCreationListMap m_ocls {};
 
 	// note, this list doesn't own the nuggets; all nuggets are owned by the Store.
 	typedef std::vector<ObjectCreationNugget*> ObjectCreationNuggetVector;
-	ObjectCreationNuggetVector m_nuggets;
+	ObjectCreationNuggetVector m_nuggets {};
 
 };
 
@@ -221,4 +221,3 @@ private:
 extern ObjectCreationListStore *TheObjectCreationListStore;
 
 #endif // _ObjectCreationList_H_
-

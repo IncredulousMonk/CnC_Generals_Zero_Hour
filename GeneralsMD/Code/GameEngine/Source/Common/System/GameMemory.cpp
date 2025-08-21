@@ -590,9 +590,9 @@ inline MemoryPoolBlob *MemoryPoolSingleBlock::getOwningBlob()
 	return the next free block in this blob. this call assumes that the block
 	in question belongs to a blob, and will assert if not.
 */
-inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::getNextFreeBlock() 
-{ 
-	DEBUG_ASSERTCRASH(m_owningBlob != NULL, ("must be called on blob block")); 
+inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::getNextFreeBlock()
+{
+	DEBUG_ASSERTCRASH(m_owningBlob != NULL, ("MemoryPoolSingleBlock::getNextFreeBlock: must be called on blob block")); 
 	return m_nextBlock; 
 }
 
@@ -601,11 +601,11 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::getNextFreeBlock()
 	in question belongs to a blob, but will NOT assert if not, since it may be 
 	called when the blocks are in an inconsistent state.
 */
-inline void MemoryPoolSingleBlock::setNextFreeBlock(MemoryPoolSingleBlock *b) 
-{ 
+inline void MemoryPoolSingleBlock::setNextFreeBlock(MemoryPoolSingleBlock *b)
+{
 	//DEBUG_ASSERTCRASH(m_owningBlob != NULL && b->m_owningBlob != NULL, ("must be called on blob block")); 
 	// don't check the 'b' block -- we need to call this before 'b' is fully initialized.
-	DEBUG_ASSERTCRASH(m_owningBlob != NULL, ("must be called on blob block")); 
+	DEBUG_ASSERTCRASH(m_owningBlob != NULL, ("MemoryPoolSingleBlock::setNextFreeBlock: must be called on blob block")); 
 	this->m_nextBlock = b;
 #ifdef MPSB_DLINK
 	if (b) {
@@ -619,8 +619,8 @@ inline void MemoryPoolSingleBlock::setNextFreeBlock(MemoryPoolSingleBlock *b)
 	in question does NOT belong to a blob, and will assert if not.
 */
 inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::getNextRawBlock()
-{ 
-	DEBUG_ASSERTCRASH(m_owningBlob == NULL, ("must be called on raw block")); 
+{
+	DEBUG_ASSERTCRASH(m_owningBlob == NULL, ("MemoryPoolSingleBlock::getNextRawBlock: must be called on raw block")); 
 	return m_nextBlock; 
 }
 
@@ -630,7 +630,7 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::getNextRawBlock()
 */
 inline void MemoryPoolSingleBlock::setNextRawBlock(MemoryPoolSingleBlock *b) 
 { 
-	DEBUG_ASSERTCRASH(m_owningBlob == NULL && (!b || b->m_owningBlob == NULL), ("must be called on raw block")); 
+	DEBUG_ASSERTCRASH(m_owningBlob == NULL && (!b || b->m_owningBlob == NULL), ("MemoryPoolSingleBlock::setNextRawBlock: must be called on raw block")); 
 	m_nextBlock = b; 
 #ifdef MPSB_DLINK
 	if (b)

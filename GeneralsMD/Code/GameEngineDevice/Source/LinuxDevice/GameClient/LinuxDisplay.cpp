@@ -25,9 +25,22 @@
 #include "Common/FileSystem.h"
 #include "LinuxDevice/Common/SdlFileStream.h"
 #include <SDL3_image/SDL_image.h>
+#include <set>
 
 // DEFINES ////////////////////////////////////////////////////////////////////
 #define LOCALISED_TGA_PATH "Data/English/Art/Textures/"
+#define MIN_DISPLAY_RESOLUTION_X 800
+#define MIN_DISPLAY_RESOLUTION_Y 600
+
+// PRIVATE FUNCTIONS //////////////////////////////////////////////////////////////////////////////
+Bool isFourByThreeAspect(Int x, Int y) {
+   if (y == 0) {
+      return FALSE;
+   }
+
+   Real aspectRatio = fabs((Real)x / y); 
+   return ((aspectRatio > 1.332f) && (aspectRatio < 1.334f));
+}
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////
 extern SDL_Renderer* renderer;
@@ -79,6 +92,50 @@ void LinuxDisplay::init()
    };
 
    TheMappedImageCollection->iterate(storeTexturePath);
+
+   // MG: Hmm... what to do with multiple displays?  I guess we'll use just the first one.
+   SDL_DisplayID displayID {SDL_GetPrimaryDisplay()};
+   if (displayID == 0) {
+      DEBUG_CRASH(("LinuxDisplay::init: couldn't get the primary display ID: %s\n", SDL_GetError()));
+   }
+
+   int displayModeCount {};
+   SDL_DisplayMode** displayModes {SDL_GetFullscreenDisplayModes(displayID, &displayModeCount)};
+   std::set<DisplayMode> uniqueDisplayModes {};
+   for (int i {0}; i < displayModeCount; ++i) {
+      SDL_DisplayMode* mode {displayModes[i]};
+      if (mode->w >= MIN_DISPLAY_RESOLUTION_X /* && isFourByThreeAspect(mode->w, mode->h) */) {
+         DisplayMode dispmode {mode->w, mode->h};
+         uniqueDisplayModes.insert(dispmode);
+      }
+   }
+   SDL_free(displayModes);
+   std::for_each(uniqueDisplayModes.cbegin(), uniqueDisplayModes.cend(), [this](DisplayMode mode) {
+      m_displayModes.push_back(mode);
+   });
+}
+
+//-------------------------------------------------------------------------------------------------
+Bool LinuxDisplay::setDisplayMode(UnsignedInt xres, UnsignedInt yres, UnsignedInt bitdepth, Bool windowed)
+{
+   DEBUG_LOG(("LinuxDisplay::setDisplayMode: %d x %d, %d, %s\n", xres, yres, bitdepth, windowed ? "Windowed" : "Full screen"));
+   // Display::setDisplayMode(xres, yres, bitdepth, windowed);
+   return FALSE;  //did not change to a new mode.
+}
+
+//-------------------------------------------------------------------------------------------------
+Int LinuxDisplay::getDisplayModeCount()
+{
+   return static_cast<Int>(m_displayModes.size());
+}
+
+//-------------------------------------------------------------------------------------------------
+void LinuxDisplay::getDisplayModeDescription(Int modeIndex, UnsignedInt *xres, UnsignedInt *yres, UnsignedInt *bitDepth)
+{
+   DisplayMode mode {m_displayModes.at(static_cast<size_t>(modeIndex))};
+   *xres = static_cast<UnsignedInt>(mode.xres);
+   *yres = static_cast<UnsignedInt>(mode.yres);
+   *bitDepth = 32;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -189,6 +246,11 @@ void LinuxDisplay::drawOpenRect(Int startX, Int startY, Int width, Int height, R
    UnsignedByte b {};
    UnsignedByte a {};
    GameGetColorComponents(lineColor, &r, &g, &b, &a);
+   if (a == 255) {
+      SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+   } else {
+      SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+   }
    SDL_SetRenderDrawColor(renderer, r, g, b, a);
    SDL_FRect frect {};
    frect.x = startX;
@@ -208,6 +270,11 @@ void LinuxDisplay::drawFillRect(Int startX, Int startY, Int width, Int height, C
    UnsignedByte a {};
    GameGetColorComponents(color, &r, &g, &b, &a);
    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+   if (a == 255) {
+      SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+   } else {
+      SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+   }
    SDL_FRect frect {};
    frect.x = startX;
    frect.y = startY;

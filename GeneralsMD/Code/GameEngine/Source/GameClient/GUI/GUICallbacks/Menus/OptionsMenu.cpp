@@ -39,7 +39,7 @@
 #include "Common/UserPreferences.h"
 #include "Common/GameLOD.h"
 // #include "Common/Registry.h"
-// #include "Common/Version.h"
+#include "Common/Version.h"
 
 #include "GameClient/GameClient.h"
 // #include "GameClient/InGameUI.h"
@@ -56,16 +56,16 @@
 #include "GameClient/KeyDefs.h"
 // #include "GameClient/GameWindowManager.h"
 #include "GameClient/Mouse.h"
-// #include "GameClient/GameText.h"
+#include "GameClient/GameText.h"
 #include "GameClient/Display.h"
 // #include "GameClient/IMEManager.h"
 // #include "GameClient/ShellHooks.h"
-// #include "GameClient/GUICallbacks.h"
+#include "GameClient/GUICallbacks.h"
 // #include "GameNetwork/FirewallHelper.h"
 // #include "GameNetwork/IPEnumeration.h"
 // #include "GameNetwork/GameSpyOverlay.h"
 // #include "GameNetwork/GameSpy/PeerDefs.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameLogic/ScriptEngine.h"
 // #include "WWDownload/Registry.h"
 //added by saad
@@ -786,52 +786,50 @@ static void setDefaults( void )
 	
 	//-------------------------------------------------------------------------------------------------
 	// LOD
-	// FIXME: TheGameLogic, TheGameLODManager
-	// if ((TheGameLogic->isInGame() == FALSE) || (TheGameLogic->isInShellGame() == TRUE)) {
-	// 	StaticGameLODLevel level=TheGameLODManager->findStaticLODLevel();
-	// 	switch (level)
-	// 	{
-	// 	case STATIC_GAME_LOD_LOW:
-	// 		GadgetComboBoxSetSelectedPos(comboBoxDetail, LOWDETAIL);
-	// 		break;
-	// 	case STATIC_GAME_LOD_MEDIUM:
-	// 		GadgetComboBoxSetSelectedPos(comboBoxDetail, MEDIUMDETAIL);
-	// 		break;
-	// 	case STATIC_GAME_LOD_HIGH:
-	// 		GadgetComboBoxSetSelectedPos(comboBoxDetail, HIGHDETAIL);
-	// 		break;
-	// 	case STATIC_GAME_LOD_CUSTOM:
-	// 		GadgetComboBoxSetSelectedPos(comboBoxDetail, CUSTOMDETAIL);
-	// 		break;
-	// 	default:
-	// 		DEBUG_ASSERTCRASH(FALSE,("Tried to set comboBoxDetail to a value of %d ", TheGameLODManager->getStaticLODLevel()) );
-	// 	};
-	// }
+	if ((TheGameLogic->isInGame() == FALSE) || (TheGameLogic->isInShellGame() == TRUE)) {
+		StaticGameLODLevel level=TheGameLODManager->findStaticLODLevel();
+		switch (level)
+		{
+			case STATIC_GAME_LOD_LOW:
+				GadgetComboBoxSetSelectedPos(comboBoxDetail, LOWDETAIL);
+				break;
+			case STATIC_GAME_LOD_MEDIUM:
+				GadgetComboBoxSetSelectedPos(comboBoxDetail, MEDIUMDETAIL);
+				break;
+			case STATIC_GAME_LOD_HIGH:
+				GadgetComboBoxSetSelectedPos(comboBoxDetail, HIGHDETAIL);
+				break;
+			case STATIC_GAME_LOD_CUSTOM:
+				GadgetComboBoxSetSelectedPos(comboBoxDetail, CUSTOMDETAIL);
+				break;
+			default:
+				DEBUG_ASSERTCRASH(FALSE,("Tried to set comboBoxDetail to a value of %d ", TheGameLODManager->getStaticLODLevel()) );
+		};
+	}
 	
 	//-------------------------------------------------------------------------------------------------
 	// Resolution
 	//Find index of 800x600 mode.
-	// FIXME: TheGameLogic
-	// if ((TheGameLogic->isInGame() == FALSE) || (TheGameLogic->isInShellGame() == TRUE) /* && !TheGameSpyInfo*/) {
-	// 	Int numResolutions = TheDisplay->getDisplayModeCount();
-	// 	Int defaultResIndex=0;
-	// 	for( Int i = 0; i < numResolutions; ++i )
-	// 	{	UnsignedInt xres,yres,bitDepth;
-	// 		TheDisplay->getDisplayModeDescription(i,&xres,&yres,&bitDepth);
-	// 		if (xres == 800 && yres == 600)	//keep track of default mode in case we need it.
-	// 		{	defaultResIndex=i;
-	// 			break;
-	// 		}
-	// 	}
-	// 	GadgetComboBoxSetSelectedPos( comboBoxResolution, defaultResIndex );	//should be 800x600 (our lowest supported mode)
-	// }
+	if ((TheGameLogic->isInGame() == FALSE) || (TheGameLogic->isInShellGame() == TRUE) /* && !TheGameSpyInfo*/) {
+		Int numResolutions = TheDisplay->getDisplayModeCount();
+		Int defaultResIndex=0;
+		for( Int i = 0; i < numResolutions; ++i )
+		{	UnsignedInt xres,yres,bitDepth;
+			TheDisplay->getDisplayModeDescription(i,&xres,&yres,&bitDepth);
+			if (xres == 800 && yres == 600)	//keep track of default mode in case we need it.
+			{	defaultResIndex=i;
+				break;
+			}
+		}
+		GadgetComboBoxSetSelectedPos( comboBoxResolution, defaultResIndex );	//should be 800x600 (our lowest supported mode)
+	}
 
 
 	//-------------------------------------------------------------------------------------------------
 	// Mouse Mode
 	GadgetCheckBoxSetChecked(checkAlternateMouse, FALSE);
 	GadgetCheckBoxSetChecked(checkRetaliation, TRUE );
-	GadgetCheckBoxSetChecked( checkDoubleClickAttackMove, FALSE );
+	GadgetCheckBoxSetChecked(checkDoubleClickAttackMove, FALSE );
 
 	//-------------------------------------------------------------------------------------------------
 //	// scroll speed val
@@ -839,13 +837,13 @@ static void setDefaults( void )
 //	GadgetSliderGetMinMax(sliderScrollSpeed,&valMin, &valMax);
 //	GadgetSliderSetPosition(sliderScrollSpeed, ((valMax - valMin) / 2 + valMin));
 	Int scrollPos = (Int)(TheGlobalData->m_data.m_keyboardDefaultScrollFactor*100.0f);
-	GadgetSliderSetPosition( sliderScrollSpeed, scrollPos );
+	GadgetSliderSetPosition(sliderScrollSpeed, scrollPos );
 
 
 	//-------------------------------------------------------------------------------------------------
 	// slider music volume
 	GadgetSliderGetMinMax(sliderMusicVolume,&valMin, &valMax);
-	GadgetSliderSetPosition(sliderMusicVolume,REAL_TO_INT(TheAudio->getAudioSettings()->m_defaultMusicVolume * 100.0f));
+	GadgetSliderSetPosition(sliderMusicVolume, REAL_TO_INT(TheAudio->getAudioSettings()->m_defaultMusicVolume * 100.0f));
 
 	//-------------------------------------------------------------------------------------------------
 	// slider SFX volume
@@ -867,73 +865,72 @@ static void setDefaults( void )
  	// Texture resolution slider
 	//
 
-	// FIXME: TheGameLogic
-	// if ((TheGameLogic->isInGame() == FALSE) || (TheGameLogic->isInShellGame() == TRUE))
-	// {	
-	// 	Int	txtFact=TheGameLODManager->getRecommendedTextureReduction();
+	if ((TheGameLogic->isInGame() == FALSE) || (TheGameLogic->isInShellGame() == TRUE))
+	{	
+		Int	txtFact=TheGameLODManager->getRecommendedTextureReduction();
 
-	// 	GadgetSliderSetPosition( sliderTextureResolution, 2-txtFact);
+		GadgetSliderSetPosition( sliderTextureResolution, 2-txtFact);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// 3D Shadows checkbox
-	// 	//
-	// 	GadgetCheckBoxSetChecked( check3DShadows, TheGlobalData->m_data.m_useShadowVolumes);
+		//-------------------------------------------------------------------------------------------------
+ 		// 3D Shadows checkbox
+		//
+		GadgetCheckBoxSetChecked( check3DShadows, TheGlobalData->m_data.m_useShadowVolumes);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// 2D Shadows checkbox
-	// 	//
-	// 	GadgetCheckBoxSetChecked( check2DShadows, TheGlobalData->m_data.m_useShadowDecals);
+		//-------------------------------------------------------------------------------------------------
+ 		// 2D Shadows checkbox
+		//
+		GadgetCheckBoxSetChecked( check2DShadows, TheGlobalData->m_data.m_useShadowDecals);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Cloud Shadows checkbox
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkCloudShadows, TheGlobalData->m_data.m_useCloudMap);
+		//-------------------------------------------------------------------------------------------------
+ 		// Cloud Shadows checkbox
+		//
+		GadgetCheckBoxSetChecked( checkCloudShadows, TheGlobalData->m_data.m_useCloudMap);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Ground Lighting (lightmap) checkbox
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkGroundLighting, TheGlobalData->m_data.m_useLightMap);
+		//-------------------------------------------------------------------------------------------------
+ 		// Ground Lighting (lightmap) checkbox
+		//
+		GadgetCheckBoxSetChecked( checkGroundLighting, TheGlobalData->m_data.m_useLightMap);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Smooth Water Border checkbox
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkSmoothWater, TheGlobalData->m_data.m_showSoftWaterEdge);
+		//-------------------------------------------------------------------------------------------------
+ 		// Smooth Water Border checkbox
+		//
+		GadgetCheckBoxSetChecked( checkSmoothWater, TheGlobalData->m_data.m_showSoftWaterEdge);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Extra Animations (tree sway and buildups) checkbox
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkExtraAnimations, !TheGlobalData->m_data.m_useDrawModuleLOD);
+		//-------------------------------------------------------------------------------------------------
+ 		// Extra Animations (tree sway and buildups) checkbox
+		//
+		GadgetCheckBoxSetChecked( checkExtraAnimations, !TheGlobalData->m_data.m_useDrawModuleLOD);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// DisableDynamicLOD
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkNoDynamicLod, !TheGlobalData->m_data.m_enableDynamicLOD);
+		//-------------------------------------------------------------------------------------------------
+ 		// DisableDynamicLOD
+		//
+		GadgetCheckBoxSetChecked( checkNoDynamicLod, !TheGlobalData->m_data.m_enableDynamicLOD);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Disable FPS Limit
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkUnlockFps, !TheGlobalData->m_data.m_useFpsLimit);
+		//-------------------------------------------------------------------------------------------------
+ 		// Disable FPS Limit
+		//
+		GadgetCheckBoxSetChecked( checkUnlockFps, !TheGlobalData->m_data.m_useFpsLimit);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Heat Effects
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkHeatEffects, TheGlobalData->m_data.m_useHeatEffects);
+		//-------------------------------------------------------------------------------------------------
+ 		// Heat Effects
+		//
+		GadgetCheckBoxSetChecked( checkHeatEffects, TheGlobalData->m_data.m_useHeatEffects);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Building Occlusion checkbox
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkBuildingOcclusion, TheGlobalData->m_data.m_enableBehindBuildingMarkers);
+		//-------------------------------------------------------------------------------------------------
+ 		// Building Occlusion checkbox
+		//
+		GadgetCheckBoxSetChecked( checkBuildingOcclusion, TheGlobalData->m_data.m_enableBehindBuildingMarkers);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Particle Cap slider
-	// 	//
-	// 	GadgetSliderSetPosition( sliderParticleCap, TheGlobalData->m_data.m_maxParticleCount);
+		//-------------------------------------------------------------------------------------------------
+ 		// Particle Cap slider
+		//
+		GadgetSliderSetPosition( sliderParticleCap, TheGlobalData->m_data.m_maxParticleCount);
 
-	// 	//-------------------------------------------------------------------------------------------------
- 	// 	// Trees and Shrubs
-	// 	//
-	// 	GadgetCheckBoxSetChecked( checkProps, TheGlobalData->m_data.m_useTrees);
-	// }
+		//-------------------------------------------------------------------------------------------------
+ 		// Trees and Shrubs
+		//
+		GadgetCheckBoxSetChecked( checkProps, TheGlobalData->m_data.m_useTrees);
+	}
 }
 
 static void saveOptions( void )
@@ -1201,7 +1198,7 @@ static void saveOptions( void )
 	if(val != -1)
 	{
 		TheWritableGlobalData->m_data.m_keyboardScrollFactor = val/100.0f;
-		DEBUG_LOG(("Scroll Spped val %d, keyboard scroll factor %f\n", val, TheGlobalData->m_data.m_keyboardScrollFactor));
+		DEBUG_LOG(("Scroll Speed val %d, keyboard scroll factor %f\n", val, TheGlobalData->m_data.m_keyboardScrollFactor));
 		AsciiString prefString;
 		prefString.format("%d", val);
 		(*pref)["ScrollFactor"] = prefString;
@@ -1242,15 +1239,15 @@ static void saveOptions( void )
 		}
 
 		//Apply the sound volumes in the audio system now.
-    TheAudio->setVolume( sound2DVolume, (AudioAffect) (AudioAffect_Sound | AudioAffect_SystemSetting) );
+		TheAudio->setVolume( sound2DVolume, (AudioAffect) (AudioAffect_Sound | AudioAffect_SystemSetting) );
 		TheAudio->setVolume( sound3DVolume, (AudioAffect) (AudioAffect_Sound3D | AudioAffect_SystemSetting) );
 
 		//Save the settings in the options.ini.
-    TheWritableGlobalData->m_data.m_SFXVolumeFactor = val;
-    AsciiString prefString;
-    prefString.format("%d", REAL_TO_INT( sound2DVolume * 100.0f ) );
-    (*pref)["SFXVolume"] = prefString;
-    prefString.format("%d", REAL_TO_INT( sound3DVolume * 100.0f ) );
+		TheWritableGlobalData->m_data.m_SFXVolumeFactor = val;
+		AsciiString prefString;
+		prefString.format("%d", REAL_TO_INT( sound2DVolume * 100.0f ) );
+		(*pref)["SFXVolume"] = prefString;
+		prefString.format("%d", REAL_TO_INT( sound3DVolume * 100.0f ) );
 		(*pref)["SFX3DVolume"] = prefString;
 	}
 
@@ -1259,11 +1256,11 @@ static void saveOptions( void )
 	val = GadgetSliderGetPosition(sliderVoiceVolume);
 	if(val != -1)
 	{
-    TheWritableGlobalData->m_data.m_voiceVolumeFactor = val;
-    AsciiString prefString;
-    prefString.format("%d", val);
-    (*pref)["VoiceVolume"] = prefString;
-    TheAudio->setVolume(val / 100.0f, (AudioAffect) (AudioAffect_Speech | AudioAffect_SystemSetting));
+		TheWritableGlobalData->m_data.m_voiceVolumeFactor = val;
+		AsciiString prefString;
+		prefString.format("%d", val);
+		(*pref)["VoiceVolume"] = prefString;
+		TheAudio->setVolume(val / 100.0f, (AudioAffect) (AudioAffect_Speech | AudioAffect_SystemSetting));
 	}
 
  	//-------------------------------------------------------------------------------------------------
@@ -1454,42 +1451,43 @@ void OptionsMenuInit( WindowLayout* layout, void* /* userData */ )
 	checkProps   = TheWindowManager->winGetWindowFromId( NULL, checkPropsID);
 
 	sliderParticleCapID = TheNameKeyGenerator->nameToKey( AsciiString( "OptionsMenu.wnd:ParticleCapSlider" ) );
-  sliderParticleCap = TheWindowManager->winGetWindowFromId( NULL, sliderParticleCapID );
+	sliderParticleCap = TheWindowManager->winGetWindowFromId( NULL, sliderParticleCapID );
 
 	WinAdvancedDisplay->winHide(TRUE);
 
 	Color color =  GameMakeColor(255,255,255,255);
 
-  enum AliasingMode
-  {
-    OFF = 0,
-    LOW,
-    HIGH,
-    NUM_ALIASING_MODES
-  };
+	enum AliasingMode
+	{
+		OFF = 0,
+		LOW,
+		HIGH,
+		NUM_ALIASING_MODES
+	};
 
-	// NameKeyType versionID = TheNameKeyGenerator->nameToKey( AsciiString("OptionsMenu.wnd:LabelVersion") );
-	// GameWindow *labelVersion = TheWindowManager->winGetWindowFromId( NULL, versionID );
-	// UnicodeString versionString;
-	// versionString.format(TheGameText->fetch("Version:Format2").str(), (GetRegistryVersion() >> 16), (GetRegistryVersion() & 0xffff));
+	NameKeyType versionID = TheNameKeyGenerator->nameToKey( AsciiString("OptionsMenu.wnd:LabelVersion") );
+	GameWindow *labelVersion = TheWindowManager->winGetWindowFromId( NULL, versionID );
+	UnicodeString versionString;
+	UnsignedInt versionNumber {TheVersion->getVersionNumber()};
+	versionString.format(TheGameText->fetch("Version:Format2").str(), (versionNumber >> 16), (versionNumber & 0xffff));
 	
-	// if (TheVersion->showFullVersion())
-	// {
-	// 	if (TheVersion)
-	// 	{
-	// 		UnicodeString version;
-	// 		version.format(L"(%s) %s -- %s", versionString.str(), TheVersion->getFullUnicodeVersion().str(), TheVersion->getUnicodeBuildTime().str());
-	// 		GadgetStaticTextSetText( labelVersion, version );
-	// 	}
-	// 	else
-	// 	{
-	// 		labelVersion->winHide( TRUE );
-	// 	}
-	// }
-	// else
-	// {
-	// 	GadgetStaticTextSetText( labelVersion, versionString );
-	// }
+	if (TheVersion->showFullVersion())
+	{
+		if (TheVersion)
+		{
+			UnicodeString version;
+			version.format(L"(%ls) %ls -- %ls", versionString.str(), TheVersion->getFullUnicodeVersion().str(), TheVersion->getUnicodeBuildTime().str());
+			GadgetStaticTextSetText( labelVersion, version );
+		}
+		else
+		{
+			labelVersion->winHide( TRUE );
+		}
+	}
+	else
+	{
+		GadgetStaticTextSetText( labelVersion, versionString );
+	}
 
 
 	// Choose an IP address, then initialize the IP combo box
@@ -1590,22 +1588,22 @@ void OptionsMenuInit( WindowLayout* layout, void* /* userData */ )
 			GadgetTextEntrySetText(textEntryFirewallPortOverride,uStr);
 	}
 
-	// // populate anti aliasing modes
-	// AsciiString selectedAliasingMode = (*pref)["AntiAliasing"];
-	// GadgetComboBoxReset(comboBoxAntiAliasing);
-	// AsciiString temp;
-	// for (Int i=0; i < NUM_ALIASING_MODES; ++i)
-	// {
-	// 	temp.format("GUI:AntiAliasing%d", i);
-	// 	str = TheGameText->fetch( temp );
-	// 	// index = GadgetComboBoxAddEntry(comboBoxAntiAliasing, str, color);
-	// }
-	// Int val = atoi(selectedAliasingMode.str());
-	// if( val < 0 || val > NUM_ALIASING_MODES )
-	// {
-	// 	TheWritableGlobalData->m_data.m_antiAliasBoxValue = val = 0;
-	// }
-	// GadgetComboBoxSetSelectedPos(comboBoxAntiAliasing, val);
+	// populate anti aliasing modes
+	AsciiString selectedAliasingMode = (*pref)["AntiAliasing"];
+	GadgetComboBoxReset(comboBoxAntiAliasing);
+	AsciiString temp;
+	for (Int i=0; i < NUM_ALIASING_MODES; ++i)
+	{
+		temp.format("GUI:AntiAliasing%d", i);
+		str = TheGameText->fetch( temp );
+		GadgetComboBoxAddEntry(comboBoxAntiAliasing, str, color);
+	}
+	Int val = atoi(selectedAliasingMode.str());
+	if( val < 0 || val > NUM_ALIASING_MODES )
+	{
+		TheWritableGlobalData->m_data.m_antiAliasBoxValue = val = 0;
+	}
+	GadgetComboBoxSetSelectedPos(comboBoxAntiAliasing, val);
 
 	// get resolution from saved preferences file
 	AsciiString selectedResolution = (*pref) ["Resolution"];
@@ -1615,7 +1613,8 @@ void OptionsMenuInit( WindowLayout* layout, void* /* userData */ )
 	if (!selectedResolution.isEmpty())
 	{	//try to parse 2 integers out of string
 		if (sscanf(selectedResolution.str(),"%u%u", &selectedXRes, &selectedYRes) != 2)
-		{	selectedXRes=800; selectedYRes=600;
+		{
+			selectedXRes=800; selectedYRes=600;
 		}
 	}
 
@@ -1645,12 +1644,12 @@ void OptionsMenuInit( WindowLayout* layout, void* /* userData */ )
 
 	GadgetComboBoxSetSelectedPos( comboBoxResolution, selectedResIndex );
 
-	// // set the display detail
-	// GadgetComboBoxReset(comboBoxDetail);
-	// GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:High"), color);
-	// GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Medium"), color);
-	// GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Low"), color);
-	// GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Custom"), color);
+	// set the display detail
+	GadgetComboBoxReset(comboBoxDetail);
+	GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:High"), color);
+	GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Medium"), color);
+	GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Low"), color);
+	GadgetComboBoxAddEntry(comboBoxDetail, TheGameText->fetch("GUI:Custom"), color);
 
 	//Check if level was never set and default to setting most suitable for system.
 	if (TheGameLODManager->getStaticLODLevel() == STATIC_GAME_LOD_UNKNOWN)
@@ -1776,7 +1775,7 @@ void OptionsMenuInit( WindowLayout* layout, void* /* userData */ )
 	// set scroll speed slider
 	Int scrollPos = (Int)(TheGlobalData->m_data.m_keyboardScrollFactor*100.0f);
 	GadgetSliderSetPosition( sliderScrollSpeed, scrollPos );
-	DEBUG_LOG(("Scroll SPeed %d\n", scrollPos));
+	DEBUG_LOG(("Scroll Speed %d\n", scrollPos));
 
 	// set the send delay check box
 	GadgetCheckBoxSetChecked(checkSendDelay, TheGlobalData->m_data.m_firewallSendDelay);
@@ -1886,7 +1885,7 @@ WindowMsgHandledType OptionsMenuInput( GameWindow *window, UnsignedInt msg, Wind
 				// ----------------------------------------------------------------------------------------
 				case KEY_ESC:
 				{
-					
+
 					//
 					// send a simulated selected event to the parent window of the
 					// back/exit button
@@ -1897,8 +1896,7 @@ WindowMsgHandledType OptionsMenuInput( GameWindow *window, UnsignedInt msg, Wind
 						NameKeyType buttonID = TheNameKeyGenerator->nameToKey( buttonName );
 						GameWindow *button = TheWindowManager->winGetWindowFromId( window, buttonID );
 
-						TheWindowManager->winSendSystemMsg( window, GBM_SELECTED, 
-																								(WindowMsgData)button, buttonID );
+						TheWindowManager->winSendSystemMsg( window, GBM_SELECTED, (WindowMsgData)button, buttonID );
 
 					}  // end if
 
@@ -2027,7 +2025,8 @@ WindowMsgHandledType OptionsMenuSystem( GameWindow* /* window */, UnsignedInt ms
 
 				comboBoxLANIP = NULL;
 				comboBoxOnlineIP = NULL;
-				
+
+				// FIXME: Quit Menu
 				// if(!TheGameLogic->isInGame() || TheGameLogic->isInShellGame())
 				// 	destroyQuitMenu(); // if we're in a game, the change res then enter the same kind of game, we nee the quit menu to be gone.
 

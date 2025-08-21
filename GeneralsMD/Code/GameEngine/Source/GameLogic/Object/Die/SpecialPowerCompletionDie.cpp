@@ -34,7 +34,7 @@
 #include "Common/Xfer.h"
 #include "GameLogic/Module/SpecialPowerCompletionDie.h"
 #include "GameLogic/Object.h"
-#include "GameLogic/ScriptEngine.h"
+// #include "GameLogic/ScriptEngine.h"
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -64,14 +64,17 @@ void SpecialPowerCompletionDie::onDie( const DamageInfo *damageInfo )
 //-------------------------------------------------------------------------------------------------
 void SpecialPowerCompletionDie::notifyScriptEngine( void )
 {
+DEBUG_CRASH(("SpecialPowerCompletionDie::notifyScriptEngine not yet implemented!"));
+#if 0
 	if (m_creatorID != INVALID_ID)
 	{
 		TheScriptEngine->notifyOfCompletedSpecialPower(
 			getObject()->getControllingPlayer()->getPlayerIndex(),
-			getSpecialPowerCompletionDieModuleData()->m_specialPowerTemplate->getName(),
+			getSpecialPowerCompletionDieModuleData()->m_ini.m_specialPowerTemplate->getName(),
 			m_creatorID);
 	}
-}  
+#endif // if 0
+}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------

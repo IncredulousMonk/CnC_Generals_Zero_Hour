@@ -39,25 +39,33 @@
 class LifetimeUpdateModuleData : public UpdateModuleData
 {
 public:
-	UnsignedInt m_minFrames;
-	UnsignedInt m_maxFrames;
+	// MG: Cannot apply offsetof to LifetimeUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_minFrames;
+		UnsignedInt m_maxFrames;
+	};
+
+	IniData m_ini {};
 
 	LifetimeUpdateModuleData()
 	{
-		m_minFrames = 0.0f;
-		m_maxFrames = 0.0f;
+		m_ini.m_minFrames = 0.0f;
+		m_ini.m_maxFrames = 0.0f;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "MinLifetime",					INI::parseDurationUnsignedInt,		NULL, offsetof( LifetimeUpdateModuleData, m_minFrames ) },
-			{ "MaxLifetime",					INI::parseDurationUnsignedInt,		NULL, offsetof( LifetimeUpdateModuleData, m_maxFrames ) },
+			{ "MinLifetime",	INI::parseDurationUnsignedInt,	NULL, offsetof( LifetimeUpdateModuleData::IniData, m_minFrames ) },
+			{ "MaxLifetime",	INI::parseDurationUnsignedInt,	NULL, offsetof( LifetimeUpdateModuleData::IniData, m_maxFrames ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		LifetimeUpdateModuleData* self {static_cast<LifetimeUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 

@@ -41,50 +41,58 @@
 class ParkingPlaceBehaviorModuleData : public UpdateModuleData
 {
 public:
+	// MG: Cannot apply offsetof to ParkingPlaceBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real	m_healAmount;
+	//	Real	m_extraHealAmount4Helicopters;
+		Int		m_numRows;
+		Int		m_numCols;
+		Real	m_approachHeight;
+		Real	m_landingDeckHeightOffset;
+		Bool	m_hasRunways;			// if true, each col has a runway in front of it
+		Bool	m_parkInHangars;		// if true, park at the hangar production spot, not the "real" parking place
+	};
+
+	IniData m_ini {};
 	//UnsignedInt		m_framesForFullHeal;
-	Real					m_healAmount;
-//	Real					m_extraHealAmount4Helicopters;
-	Int						m_numRows;
-	Int						m_numCols;
-	Real					m_approachHeight;
-	Real					m_landingDeckHeightOffset;
-	Bool					m_hasRunways;			// if true, each col has a runway in front of it
-	Bool					m_parkInHangars;	// if true, park at the hangar production spot, not the "real" parking place
 
 	ParkingPlaceBehaviorModuleData()
 	{
 		//m_framesForFullHeal = 0;
-		m_healAmount = 0;
-//    m_extraHealAmount4Helicopters = 0;
-		m_numRows = 0;
-		m_numCols = 0;
-		m_approachHeight = 0.0f;
-		m_landingDeckHeightOffset = 0.0f;
-		m_hasRunways = false;
-		m_parkInHangars = false;
+		m_ini.m_healAmount = 0;
+//		m_extraHealAmount4Helicopters = 0;
+		m_ini.m_numRows = 0;
+		m_ini.m_numCols = 0;
+		m_ini.m_approachHeight = 0.0f;
+		m_ini.m_landingDeckHeightOffset = 0.0f;
+		m_ini.m_hasRunways = false;
+		m_ini.m_parkInHangars = false;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p)
+	static void buildFieldParse(void* what, MultiIniFieldParse& p)
 	{
-		UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "NumRows",						     INI::parseInt,	 NULL, offsetof( ParkingPlaceBehaviorModuleData, m_numRows ) },
-			{ "NumCols",						     INI::parseInt,	 NULL, offsetof( ParkingPlaceBehaviorModuleData, m_numCols ) },
-			{ "ApproachHeight",			     INI::parseReal, NULL, offsetof( ParkingPlaceBehaviorModuleData, m_approachHeight ) },
-			{ "LandingDeckHeightOffset", INI::parseReal, NULL, offsetof( ParkingPlaceBehaviorModuleData, m_landingDeckHeightOffset ) },
-			{ "HasRunways",					     INI::parseBool, NULL, offsetof( ParkingPlaceBehaviorModuleData, m_hasRunways ) },
-			{ "ParkInHangars",			     INI::parseBool, NULL, offsetof( ParkingPlaceBehaviorModuleData, m_parkInHangars ) },
-			{ "HealAmountPerSecond",     INI::parseReal, NULL, offsetof( ParkingPlaceBehaviorModuleData, m_healAmount ) },
-//			{ "ExtraHealAmount4Helicopters",  INI::parseReal, NULL, offsetof( ParkingPlaceBehaviorModuleData, m_extraHealAmount4Helicopters ) },
+			{ "NumRows",						INI::parseInt,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_numRows ) },
+			{ "NumCols",						INI::parseInt,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_numCols ) },
+			{ "ApproachHeight",					INI::parseReal,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_approachHeight ) },
+			{ "LandingDeckHeightOffset",		INI::parseReal,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_landingDeckHeightOffset ) },
+			{ "HasRunways",						INI::parseBool,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_hasRunways ) },
+			{ "ParkInHangars",					INI::parseBool,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_parkInHangars ) },
+			{ "HealAmountPerSecond",			INI::parseReal,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_healAmount ) },
+//			{ "ExtraHealAmount4Helicopters",	INI::parseReal,	NULL, offsetof( ParkingPlaceBehaviorModuleData::IniData, m_extraHealAmount4Helicopters ) },
 
 
 
 			//{ "TimeForFullHeal",	INI::parseDurationUnsignedInt,	NULL, offsetof( ParkingPlaceBehaviorModuleData, m_framesForFullHeal ) },
 			{ 0, 0, 0, 0 }
 		};
-		p.add(dataFieldParse);
+		ParkingPlaceBehaviorModuleData* self {static_cast<ParkingPlaceBehaviorModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 
 private:
@@ -119,7 +127,7 @@ public:
 	virtual ExitDoorType reserveDoorForExit( const ThingTemplate* objType, Object *specificObject );
 	virtual void exitObjectViaDoor( Object *newObj, ExitDoorType exitDoor );
 	virtual void unreserveDoorForExit( ExitDoorType exitDoor );
-	virtual void exitObjectByBudding( Object *newObj, Object *budHost ) { return; }
+	virtual void exitObjectByBudding( Object* /* newObj */, Object* /* budHost */ ) { return; }
 
 	virtual Bool getExitPosition( Coord3D& rallyPoint ) const;		
 	virtual Bool getNaturalRallyPoint( Coord3D& rallyPoint, Bool offset = TRUE ) const;
@@ -145,28 +153,28 @@ public:
 	virtual Int getRunwayCount() const { return m_runways.size(); }
 	virtual ObjectID getRunwayReservation( Int r, RunwayReservationType type );
 	virtual void transferRunwayReservationToNextInLineForTakeoff(ObjectID id);
-	virtual Real getApproachHeight() const { return getParkingPlaceBehaviorModuleData()->m_approachHeight; }
-	virtual Real getLandingDeckHeightOffset() const { return getParkingPlaceBehaviorModuleData()->m_landingDeckHeightOffset; }
+	virtual Real getApproachHeight() const { return getParkingPlaceBehaviorModuleData()->m_ini.m_approachHeight; }
+	virtual Real getLandingDeckHeightOffset() const { return getParkingPlaceBehaviorModuleData()->m_ini.m_landingDeckHeightOffset; }
 	virtual void setHealee(Object* healee, Bool add);
 	virtual void killAllParkedUnits();
 	virtual void defectAllParkedUnits(Team* newTeam, UnsignedInt detectionTime);
-	virtual Bool calcBestParkingAssignment( ObjectID id, Coord3D *pos, Int *oldIndex = NULL, Int *newIndex = NULL ) { return FALSE; }
-	virtual const std::vector<Coord3D>* getTaxiLocations( ObjectID id ) const { return NULL; }
-	virtual const std::vector<Coord3D>* getCreationLocations( ObjectID id ) const { return NULL; }
+	virtual Bool calcBestParkingAssignment( ObjectID /* id */, Coord3D* /* pos */, Int* /* oldIndex */ = NULL, Int* /* newIndex */ = NULL ) { return FALSE; }
+	virtual const std::vector<Coord3D>* getTaxiLocations( ObjectID /* id */ ) const { return NULL; }
+	virtual const std::vector<Coord3D>* getCreationLocations( ObjectID /* id */ ) const { return NULL; }
 
 private:
 
 	struct ParkingPlaceInfo
 	{
-		Coord3D				m_hangarStart;
-		Real					m_hangarStartOrient;
-		Coord3D				m_location;
-		Coord3D				m_prep;
-		Real					m_orientation;
-		Int						m_runway;
-		ExitDoorType	m_door;
-		ObjectID			m_objectInSpace;
-		Bool					m_reservedForExit;
+		Coord3D			m_hangarStart {};
+		Real			m_hangarStartOrient {};
+		Coord3D			m_location {};
+		Coord3D			m_prep {};
+		Real			m_orientation {};
+		Int				m_runway {};
+		ExitDoorType	m_door {};
+		ObjectID		m_objectInSpace {};
+		Bool			m_reservedForExit {};
 
 		ParkingPlaceInfo()
 		{
@@ -184,24 +192,24 @@ private:
 
 	struct RunwayInfo
 	{
-		Coord3D		m_start;
-		Coord3D		m_end;
-		ObjectID	m_inUseBy;
-		ObjectID	m_nextInLineForTakeoff;
-		Bool			m_wasInLine;
+		Coord3D		m_start {};
+		Coord3D		m_end {};
+		ObjectID	m_inUseBy {};
+		ObjectID	m_nextInLineForTakeoff {};
+		Bool		m_wasInLine {};
 	};
 
 	struct HealingInfo
 	{
-		ObjectID		m_gettingHealedID;
-		UnsignedInt	m_healStartFrame;
+		ObjectID		m_gettingHealedID {};
+		UnsignedInt		m_healStartFrame {};
 	};
 
-	std::vector<ParkingPlaceInfo>	m_spaces;
-	std::vector<RunwayInfo>				m_runways;
-	std::list<HealingInfo>				m_healing;	// note, this list can vary in size, and be larger than the parking space count
-	UnsignedInt										m_nextHealFrame;
-	Bool													m_gotInfo;
+	std::vector<ParkingPlaceInfo>	m_spaces {};
+	std::vector<RunwayInfo>			m_runways {};
+	std::list<HealingInfo>			m_healing {};	// note, this list can vary in size, and be larger than the parking space count
+	UnsignedInt						m_nextHealFrame {};
+	Bool							m_gotInfo {};
 
 	void buildInfo();
 	void purgeDead();
@@ -215,4 +223,3 @@ private:
 };
 
 #endif // __ParkingPlaceBehavior_H_
-

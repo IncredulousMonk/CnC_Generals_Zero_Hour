@@ -39,23 +39,23 @@ class RadiusDecalUpdateModuleData : public UpdateModuleData
 {
 public:
 	//RadiusDecalTemplate	m_deliveryDecalTemplate;
-	//Real								m_deliveryDecalRadius;
+	//Real					m_deliveryDecalRadius;
 
 	RadiusDecalUpdateModuleData()
 	{
 		//m_deliveryDecalRadius = 0.0f;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			//{ "DeliveryDecal",						RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( RadiusDecalUpdateModuleData, m_deliveryDecalTemplate ) },
+			//{ "DeliveryDecal",				RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL,	offsetof( RadiusDecalUpdateModuleData, m_deliveryDecalTemplate ) },
 			//{ "DeliveryDecalRadius",			INI::parseReal,									NULL,	offsetof( RadiusDecalUpdateModuleData, m_deliveryDecalRadius ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		p.add(dataFieldParse);
 	}
 };
 
@@ -81,9 +81,8 @@ public:
 
 private:
 
-	RadiusDecal m_deliveryDecal;
-	Bool m_killWhenNoLongerAttacking;
+	RadiusDecal m_deliveryDecal {};
+	Bool m_killWhenNoLongerAttacking {};
 };
 
 #endif // __RadiusDecalUpdate_H_
-

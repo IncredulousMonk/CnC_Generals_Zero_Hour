@@ -36,13 +36,30 @@ struct Texture {
 
 using TextureCache = std::unordered_map<AsciiString, Texture, rts::hash<AsciiString>, rts::equal_to<AsciiString>>;
 
+struct DisplayMode {
+   int xres;
+   int yres;
+
+   bool operator<(const DisplayMode& other) const {
+      // Uses > to sort in descending order.
+      return (xres > other.xres) || (xres == other.xres && yres > other.yres);
+   }
+};
+
 class LinuxDisplay: public Display {
 public:
    LinuxDisplay();
    virtual ~LinuxDisplay();
 
-   virtual void init();  ///< initialize or re-initialize the sytsem
+   virtual void init();    ///< initialize or re-initialize the system
+   // virtual void reset();   ///< Reset system
 
+   // virtual void setWidth(UnsignedInt width);
+   // virtual void setHeight(UnsignedInt height);
+   virtual Bool setDisplayMode(UnsignedInt xres, UnsignedInt yres, UnsignedInt bitdepth, Bool windowed);
+   virtual Int getDisplayModeCount();  ///<return number of display modes/resolutions supported by video card.
+   virtual void getDisplayModeDescription(Int modeIndex, UnsignedInt *xres, UnsignedInt *yres, UnsignedInt *bitDepth);  ///<return description of mode
+   // virtual void setGamma(Real gamma, Real bright, Real contrast, Bool calibrate);
    virtual void doSmartAssetPurgeAndPreload(const char* usageFileName);
 #if defined(_DEBUG) || defined(_INTERNAL)
    virtual void dumpAssetUsage(const char* mapname);
@@ -94,6 +111,7 @@ protected:
    IRegion2D m_clipRegion {}; ///< the clipping region for images
    Bool m_isClippedEnabled {};
    TextureCache m_textureCache {};
+   std::vector<DisplayMode> m_displayModes {};
 };
 
 #endif // __LINUX_DISPLAY_H

@@ -670,7 +670,7 @@ void MainMenuInit( WindowLayout* layout, void* /* userData */ )
 		justEntered = TRUE;
 		initialGadgetDelay = 2;
 		if(rule)
-		rule->winHide(FALSE);
+			rule->winHide(FALSE);
 	}
 
 	layout->bringForward();
@@ -849,7 +849,7 @@ void MainMenuUpdate( WindowLayout* layout, void* /* userData */ )
 	// 	DownloadMenuUpdate(layout, userData);
 	// }
 
-	// Added by Saad to the confirmation or decline of the resoluotion change
+	// Added by Saad to the confirmation or decline of the resolution change
 	// dialog box.
 	/* This is also commented for the same reason as the top
 	if (dispChanged)

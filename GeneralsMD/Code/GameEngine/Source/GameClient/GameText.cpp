@@ -149,59 +149,59 @@ class GameTextManager : public GameTextInterface
 		GameTextManager(const GameTextManager&) = delete;
 		GameTextManager& operator=(const GameTextManager&) = delete;
 
-		virtual void					init( void );						///< Initlaizes the text system
-		virtual void					deinit( void );					///< De-initlaizes the text system
-		virtual void					update( void ) {};			///< update text manager
-		virtual void					reset( void );					///< Resets the text system
+		virtual void	init( void );						///< Initlaizes the text system
+		virtual void	deinit( void );					///< De-initlaizes the text system
+		virtual void	update( void ) {};			///< update text manager
+		virtual void	reset( void );					///< Resets the text system
 
 		virtual UnicodeString fetch( const Char *label, Bool *exists = NULL );		///< Returns the associated labeled unicode text
 		virtual UnicodeString fetch( AsciiString label, Bool *exists = NULL );		///< Returns the associated labeled unicode text
 		virtual AsciiStringVec& getStringsWithLabelPrefix(AsciiString label);
 
-		virtual void					initMapStringFile( const AsciiString& filename );
+		virtual void	initMapStringFile( const AsciiString& filename );
 
 	protected:
 
-		Int							m_textCount;
-		UnsignedInt					m_maxLabelLen;
-		Char						m_buffer[MAX_UITEXT_LENGTH];
-		Char						m_buffer2[MAX_UITEXT_LENGTH];
-		Char						m_buffer3[MAX_UITEXT_LENGTH];
-		char16_t				m_buffer16[MAX_UITEXT_LENGTH];
-		WideChar				m_tbuffer[MAX_UITEXT_LENGTH];
+		Int				m_textCount;
+		UnsignedInt		m_maxLabelLen;
+		Char			m_buffer[MAX_UITEXT_LENGTH];
+		Char			m_buffer2[MAX_UITEXT_LENGTH];
+		Char			m_buffer3[MAX_UITEXT_LENGTH];
+		char16_t		m_buffer16[MAX_UITEXT_LENGTH];
+		WideChar		m_tbuffer[MAX_UITEXT_LENGTH];
 
-		StringInfo			*m_stringInfo;
-		StringLookUp		*m_stringLUT;
-		Bool						m_initialized;
-		NoString				*m_noStringList;
+		StringInfo		*m_stringInfo;
+		StringLookUp	*m_stringLUT;
+		Bool			m_initialized;
+		NoString		*m_noStringList;
 #if defined(_DEBUG) || defined(_INTERNAL)
-		Bool						m_jabberWockie;
-		Bool						m_munkee;
+		Bool			m_jabberWockie;
+		Bool			m_munkee;
 #endif
-		Int							m_useStringFile;
-		LanguageID			m_language {};
+		Int				m_useStringFile;
+		LanguageID		m_language {};
 		
-		StringInfo			*m_mapStringInfo;
-		StringLookUp		*m_mapStringLUT;
-		UnicodeString		m_failed;
-		Int							m_mapTextCount {};
+		StringInfo		*m_mapStringInfo;
+		StringLookUp	*m_mapStringLUT;
+		UnicodeString	m_failed;
+		Int				m_mapTextCount {};
 
 		/// m_asciiStringVec will be altered every time that getStringsWithLabelPrefix is called,
 		/// so don't simply store a pointer to it.
-		AsciiStringVec			m_asciiStringVec {};
+		AsciiStringVec	m_asciiStringVec {};
 
-		void						stripSpaces ( WideChar *string );
-		void						removeLeadingAndTrailing ( Char *m_buffer );
-		void						readToEndOfQuote( File *file, Char *in, Char *out, Char *wavefile, Int maxBufLen );
-		void						reverseWord ( Char *file, Char *lp );
-		void						translateCopy( WideChar *outbuf, Char *inbuf );
-		Bool						getStringCount( const Char *filename, Int& textCount );
-		Bool						getCSFInfo ( const Char *filename );
-		Bool						parseCSF(  const Char *filename );
-		Bool						parseStringFile( const char *filename );
-		Bool						parseMapStringFile( const char *filename );
-		Bool						readLine( char *buffer, Int max, File *file );
-		Char						readChar( File *file );
+		void	stripSpaces ( WideChar *string );
+		void	removeLeadingAndTrailing ( Char *m_buffer );
+		void	readToEndOfQuote( File *file, Char *in, Char *out, Char *wavefile, Int maxBufLen );
+		void	reverseWord ( Char *file, Char *lp );
+		void	translateCopy( WideChar *outbuf, Char *inbuf );
+		Bool	getStringCount( const Char *filename, Int& textCount );
+		Bool	getCSFInfo ( const Char *filename );
+		Bool	parseCSF(  const Char *filename );
+		Bool	parseStringFile( const char *filename );
+		Bool	parseMapStringFile( const char *filename );
+		Bool	readLine( char *buffer, Int max, File *file );
+		Char	readChar( File *file );
 };
 
 static int compareLUT ( const void *,  const void*);

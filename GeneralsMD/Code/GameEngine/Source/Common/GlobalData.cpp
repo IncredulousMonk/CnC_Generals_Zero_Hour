@@ -1043,13 +1043,13 @@ GlobalData::GlobalData()
 
 	// FIXME: Fix me later!
 	// m_data.m_movementPenaltyDamageState = BODY_REALLYDAMAGED;
-	
+
 	m_data.m_shouldUpdateTGAToDDS = FALSE;
 	
 	// Default DoubleClickTime to System double click time.
 	// m_data.m_doubleClickTimeMS = GetDoubleClickTime(); // Note: This is actual MS, not frames.
 	m_data.m_doubleClickTimeMS = 500;
-	
+
 #ifdef DUMP_PERF_STATS
 	m_data.m_dumpPerformanceStatistics = FALSE;
 	m_data.m_dumpStatsAtInterval = FALSE;

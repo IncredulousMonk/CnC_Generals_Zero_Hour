@@ -76,7 +76,7 @@
 // #include "GameLogic/Module/DestroyModule.h"
 // #include "GameLogic/Module/DieModule.h"
 // #include "GameLogic/Module/DozerAIUpdate.h"
-// #include "GameLogic/Module/ObjectDefectionHelper.h"
+#include "GameLogic/Module/ObjectDefectionHelper.h"
 // #include "GameLogic/Module/ObjectRepulsorHelper.h"
 #include "GameLogic/Module/ObjectSMCHelper.h"
 // #include "GameLogic/Module/ObjectWeaponStatusHelper.h"
@@ -98,7 +98,7 @@
 #include "GameLogic/Module/UpgradeModule.h"
 
 #include "GameLogic/Object.h"
-// #include "GameLogic/PartitionManager.h"
+#include "GameLogic/PartitionManager.h"
 // #include "GameLogic/PolygonTrigger.h"
 // #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
@@ -1034,7 +1034,6 @@ DEBUG_CRASH(("Object::setStatus not yet implemented!"));
 #endif // if 0
 }
 
-#if 0
 //=============================================================================
 void Object::setScriptStatus( ObjectScriptStatusBit bit, Bool set )
 {
@@ -1091,7 +1090,6 @@ void Object::setScriptStatus( ObjectScriptStatusBit bit, Bool set )
 		}
 	}
 }
-#endif // if 0
 
 //=============================================================================
 Bool Object::canCrushOrSquish(Object *otherObj, CrushSquishTestType testType ) const
@@ -6142,7 +6140,6 @@ return nullptr;
 #endif // if 0
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 SpecialPowerCompletionDie* Object::findSpecialPowerCompletionDie() const
 {
@@ -6150,6 +6147,7 @@ SpecialPowerCompletionDie* Object::findSpecialPowerCompletionDie() const
 	return (SpecialPowerCompletionDie*)findModule(key_SpecialPowerCompletionDie);
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 Int Object::getNumConsecutiveShotsFiredAtTarget( const Object *victim ) const
 {
@@ -6398,6 +6396,7 @@ void Object::defect( Team* newTeam, UnsignedInt detectionTime )
 	}
 
 }
+#endif // if 0
 
 //=============================================================================
 // Object::goInvulnerable
@@ -6414,6 +6413,7 @@ void Object::goInvulnerable( UnsignedInt time )
 
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Return the radar priority for this object type */
 // ------------------------------------------------------------------------------------------------

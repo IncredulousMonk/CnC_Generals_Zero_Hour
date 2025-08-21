@@ -274,13 +274,13 @@ public:
 	void incrementOverallFailedPathfinds() { m_overallFailedPathfinds++; }
 	UnsignedInt getOverallFailedPathfinds() const { return m_overallFailedPathfinds; }
 #endif
+#endif // if 0
 	
 	// NOTE: selectObject and deselectObject should be called *only* by logical things, NEVER by the
 	// client. These will cause the client to select or deselect the object, if affectClient is true.
 	// If createToSelection is TRUE, this object causes a new group to be selected.
 	void selectObject(Object *obj, Bool createNewSelection, PlayerMaskType playerMask, Bool affectClient = FALSE);
 	void deselectObject(Object *obj, PlayerMaskType playerMask, Bool affectClient = FALSE);
-#endif // if 0
 
 	// this should be called only by UpdateModule, thanks.
 	void friend_awakenUpdateModule(Object* obj, UpdateModulePtr update, UnsignedInt whenToWakeUp);

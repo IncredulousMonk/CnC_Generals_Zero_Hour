@@ -2666,12 +2666,16 @@ void TerrainLogic::setActiveBoundary(Int newActiveBoundary)
 
 	TheTacticalView->forceCameraConstraintRecalc();
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Flatten the terrain beneath a struture. */
 // ------------------------------------------------------------------------------------------------
 void TerrainLogic::flattenTerrain(Object *obj) 
 {
+(void) obj;
+DEBUG_CRASH(("TerrainLogic::flattenTerrain not yet implemented!"));
+#if 0
 	if (obj->getGeometryInfo().getIsSmall()) {
 		return;
 	}
@@ -2795,8 +2799,7 @@ void TerrainLogic::flattenTerrain(Object *obj)
 				}
 			}
 
-				
-		break;
+			break;
 		}
 		case GEOMETRY_SPHERE:	// not quite right, but close enough
 		case GEOMETRY_CYLINDER:
@@ -2877,14 +2880,17 @@ void TerrainLogic::flattenTerrain(Object *obj)
 				}
 			}
 		
+			break;
 		} // cylinder
-		break;
+		default:
+			break;
 	} // switch
 
+#endif // if 0
 }
 
 
-
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Dig a deep circular gorge into the terrain beneath an object. */
 // ------------------------------------------------------------------------------------------------

@@ -1116,8 +1116,8 @@ const Vector3 * Drawable::getSelectionColor( void )	const
 	return NULL;
 
 }
+#endif // if 0
 
-		
 //-------------------------------------------------------------------------------------------------
 /** fades the object out gradually...how gradually is determined by number of frames */
 //-------------------------------------------------------------------------------------------------
@@ -1140,7 +1140,7 @@ void Drawable::fadeIn( UnsignedInt frames )		///< decloak object
 	m_timeElapsedFade = 0;
 }
 
-
+#if 0
 //-------------------------------------------------------------------------------------------------
 Real Drawable::getScale (void) const 
 { 

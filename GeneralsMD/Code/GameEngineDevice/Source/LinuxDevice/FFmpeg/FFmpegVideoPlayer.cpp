@@ -20,6 +20,7 @@
 // Matthew Gill, April 2025
 ///////////////////////////////////////////////////////
 
+#include "PreRTS.h"
 #include "LinuxDevice/FFmpeg/FFmpegVideoPlayer.h"
 #include "Common/LocalFileSystem.h"
 

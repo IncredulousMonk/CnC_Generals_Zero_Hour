@@ -31,10 +31,14 @@
 //----------------------------------------------------------------------------
 class GameMessageParserArgumentType : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(GameMessageParserArgumentType, "GameMessageParserArgumentType")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(GameMessageParserArgumentType, "GameMessageParserArgumentType")
 public:
 	GameMessageParserArgumentType(GameMessageArgumentDataType type, Int argCount);
 	//virtual ~GameMessageParserArgumentType();
+
+	// No copies allowed!
+	GameMessageParserArgumentType(const GameMessageParserArgumentType&) = delete;
+	GameMessageParserArgumentType& operator=(const GameMessageParserArgumentType&) = delete;
 
 	GameMessageParserArgumentType *getNext();
 	void setNext(GameMessageParserArgumentType *next);
@@ -43,8 +47,8 @@ public:
 
 protected:
 	GameMessageParserArgumentType*	m_next;
-	GameMessageArgumentDataType			m_type;
-	Int															m_argCount;
+	GameMessageArgumentDataType		m_type;
+	Int								m_argCount;
 };
 
 //----------------------------------------------------------------------------
@@ -76,11 +80,15 @@ inline Int GameMessageParserArgumentType::getArgCount()
 //----------------------------------------------------------------------------
 class GameMessageParser : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(GameMessageParser, "GameMessageParser")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(GameMessageParser, "GameMessageParser")
 public:
 	GameMessageParser();
 	GameMessageParser(GameMessage *msg);
 	//virtual ~GameMessageParser();
+
+	// No copies allowed!
+	GameMessageParser(const GameMessageParser&) = delete;
+	GameMessageParser& operator=(const GameMessageParser&) = delete;
 
 	GameMessageParserArgumentType *getFirstArgumentType();
 	void addArgType(GameMessageArgumentDataType type, Int argCount);

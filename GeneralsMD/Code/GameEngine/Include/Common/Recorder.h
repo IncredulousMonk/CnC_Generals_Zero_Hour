@@ -84,29 +84,29 @@ public:
 public:
 	void handleCRCMessage(UnsignedInt newCRC, Int playerIndex, Bool fromPlayback);
 protected:
-	CRCInfo *m_crcInfo;
+	CRCInfo *m_crcInfo {};
 public:
 
 	// read in info relating to a replay, conditionally setting up m_file for playback
 	struct ReplayHeader
 	{
-		AsciiString filename;
-		Bool forPlayback;
-		UnicodeString replayName;
-		std::tm timeVal;
-		UnicodeString versionString;
-		UnicodeString versionTimeString;
-		UnsignedInt versionNumber;
-		UnsignedInt exeCRC;
-		UnsignedInt iniCRC;
-		time_t startTime;
-		time_t endTime;
-		UnsignedInt frameDuration;
-		Bool quitEarly;
-		Bool desyncGame;
+		AsciiString filename {};
+		Bool forPlayback {};
+		UnicodeString replayName {};
+		std::tm timeVal {};
+		UnicodeString versionString {};
+		UnicodeString versionTimeString {};
+		UnsignedInt versionNumber {};
+		UnsignedInt exeCRC {};
+		UnsignedInt iniCRC {};
+		time_t startTime {};
+		time_t endTime {};
+		UnsignedInt frameDuration {};
+		Bool quitEarly {};
+		Bool desyncGame {};
 		Bool playerDiscons[MAX_SLOTS];
-		AsciiString gameOptions;
-		Int localPlayerIndex;
+		AsciiString gameOptions {};
+		UnsignedInt localPlayerIndex {};
 	};
 	Bool readReplayHeader( ReplayHeader& header );
 
@@ -144,20 +144,20 @@ protected:
 
 	void cullBadCommands();														///< prevent the user from giving mouse commands that he shouldn't be able to do during playback.
 
-	FILE *m_file;
-	AsciiString m_fileName;
-	Int m_currentFilePosition;
-	RecorderModeType m_mode;
-	AsciiString m_currentReplayFilename;							///< valid during playback only
+	FILE *m_file {};
+	AsciiString m_fileName {};
+	Int m_currentFilePosition {};
+	RecorderModeType m_mode {};
+	AsciiString m_currentReplayFilename {};							///< valid during playback only
 
-	ReplayGameInfo m_gameInfo;
-	Bool m_wasDesync;
+	ReplayGameInfo m_gameInfo {};
+	Bool m_wasDesync {};
 
-	Bool m_doingAnalysis;
+	Bool m_doingAnalysis {};
 
-	Int m_originalGameMode; // valid in replays
+	Int m_originalGameMode {}; // valid in replays
 
-	UnsignedInt m_nextFrame;												///< The Frame that the next message is to be executed on.  This can be -1.
+	UnsignedInt m_nextFrame {};												///< The Frame that the next message is to be executed on.  This can be -1.
 };
 
 extern RecorderClass *TheRecorder;

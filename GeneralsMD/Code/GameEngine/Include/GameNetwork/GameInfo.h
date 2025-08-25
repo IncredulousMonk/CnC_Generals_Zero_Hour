@@ -130,28 +130,28 @@ public:
 	void mute( Bool isMuted ) { m_isMuted = isMuted; }
 	Bool isMuted( void ) const { return m_isMuted; }
 protected:
-	SlotState m_state;
-	Bool m_isAccepted;
-	Bool m_hasMap;
-	Bool m_isMuted;
-	Int m_color;																			///< color, or -1 for random
-	Int m_startPos;																		///< start position, or -1 for random
-	Int m_playerTemplate;															///< PlayerTemplate
-	Int m_teamNumber;																	///< alliance, -1 for none
-	Int m_origColor;																			///< color, or -1 for random
-	Int m_origStartPos;																		///< start position, or -1 for random
-	Int m_origPlayerTemplate;															///< PlayerTemplate
-	UnicodeString m_name;															///< Only valid for human players
-	UnsignedInt m_IP;																	///< Only valid for human players in LAN/WOL
-	UnsignedShort m_port;															///< Only valid for human players in LAN/WOL
-	FirewallHelperClass::FirewallBehaviorType m_NATBehavior;	///< The NAT behavior for this slot's player.
-	UnsignedInt m_lastFrameInGame;	// only valid for human players
-	Bool m_disconnected;						// only valid for human players
+	SlotState m_state {};
+	Bool m_isAccepted {};
+	Bool m_hasMap {};
+	Bool m_isMuted {};
+	Int m_color {};													///< color, or -1 for random
+	Int m_startPos {};												///< start position, or -1 for random
+	Int m_playerTemplate {};										///< PlayerTemplate
+	Int m_teamNumber {};											///< alliance, -1 for none
+	Int m_origColor {};												///< color, or -1 for random
+	Int m_origStartPos {};											///< start position, or -1 for random
+	Int m_origPlayerTemplate {};									///< PlayerTemplate
+	UnicodeString m_name {};										///< Only valid for human players
+	UnsignedInt m_IP {};											///< Only valid for human players in LAN/WOL
+	UnsignedShort m_port {};										///< Only valid for human players in LAN/WOL
+	FirewallHelperClass::FirewallBehaviorType m_NATBehavior {};		///< The NAT behavior for this slot's player.
+	UnsignedInt m_lastFrameInGame {};								// only valid for human players
+	Bool m_disconnected {};											// only valid for human players
 };
 
 /**
   * GameInfo class - maintains information about the game setup and
-	* the contents of its slot list hroughout the game.
+	* the contents of its slot list throughout the game.
 	*/
 class GameInfo
 {
@@ -203,10 +203,10 @@ public:
 	inline Int getUseStats( void ) const;		///< Does this game count towards gamespy stats?
 	inline void setUseStats( Int useStats );
 
-  inline UnsignedShort getSuperweaponRestriction( void ) const; ///< Get any optional limits on superweapons
-  void setSuperweaponRestriction( UnsignedShort restriction ); ///< Set the optional limits on superweapons
-  inline const Money & getStartingCash(void) const; 
-  void setStartingCash( const Money & startingCash );
+	inline UnsignedShort getSuperweaponRestriction( void ) const; ///< Get any optional limits on superweapons
+	void setSuperweaponRestriction( UnsignedShort restriction ); ///< Set the optional limits on superweapons
+	inline const Money & getStartingCash(void) const; 
+	void setStartingCash( const Money & startingCash );
 
 	void setSlotPointer( Int index, GameSlot *slot );	///< Set the slot info pointer
 
@@ -236,30 +236,30 @@ public:
 	Bool isPlayerPreorder(Int index);
 	void markPlayerAsPreorder(Int index);
 
-  inline Bool oldFactionsOnly(void) const;
-  inline void setOldFactionsOnly( Bool oldFactionsOnly );
+	inline Bool oldFactionsOnly(void) const;
+	inline void setOldFactionsOnly( Bool oldFactionsOnly );
 
 protected:
-	Int m_preorderMask;
-	Int m_crcInterval;
-	Bool m_inGame;
-	Bool m_inProgress;
-	Bool m_surrendered;
-	Int m_gameID;
+	Int m_preorderMask {};
+	Int m_crcInterval {};
+	Bool m_inGame {};
+	Bool m_inProgress {};
+	Bool m_surrendered {};
+	Int m_gameID {};
 	GameSlot *m_slot[MAX_SLOTS];
 
-	UnsignedInt m_localIP;
+	UnsignedInt m_localIP {};
 
 	// Game options
-	AsciiString m_mapName;
-	UnsignedInt m_mapCRC;
-	UnsignedInt m_mapSize;
-	Int m_mapMask;
-	Int m_seed;
-	Int m_useStats;
-  Money         m_startingCash;
-  UnsignedShort m_superweaponRestriction;
-  Bool m_oldFactionsOnly; // Only USA, China, GLA -- not USA Air Force General, GLA Toxic General, et al
+	AsciiString m_mapName {};
+	UnsignedInt m_mapCRC {};
+	UnsignedInt m_mapSize {};
+	Int m_mapMask {};
+	Int m_seed {};
+	Int m_useStats {};
+	Money m_startingCash {};
+	UnsignedShort m_superweaponRestriction {};
+	Bool m_oldFactionsOnly {}; // Only USA, China, GLA -- not USA Air Force General, GLA Toxic General, et al
 };
 
 extern GameInfo *TheGameInfo;

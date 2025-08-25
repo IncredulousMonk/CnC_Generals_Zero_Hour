@@ -53,6 +53,10 @@ class VictoryConditionsInterface : public SubsystemInterface
 {
 public:
 	VictoryConditionsInterface() { m_victoryConditions = 0; }
+
+	// No copies allowed!
+	VictoryConditionsInterface(const VictoryConditionsInterface&) = delete;
+	VictoryConditionsInterface& operator=(const VictoryConditionsInterface&) = delete;
 	
 	virtual void init( void ) = 0;
 	virtual void reset( void ) = 0;

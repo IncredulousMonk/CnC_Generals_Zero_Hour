@@ -63,7 +63,7 @@
 Radar *TheRadar = NULL;  ///< the radar global singleton
 
 // PRIVATE ////////////////////////////////////////////////////////////////////////////////////////
-#define RADAR_QUEUE_TERRAIN_REFRESH_DELAY (LOGICFRAMES_PER_SECOND * 3.0f)
+#define RADAR_QUEUE_TERRAIN_REFRESH_DELAY ((Real)LOGICFRAMES_PER_SECOND * 3.0f)
 
 //-------------------------------------------------------------------------------------------------
 /** Delete list resources used by the radar and return them to the memory pools */
@@ -151,7 +151,7 @@ Bool RadarObject::isTemporarilyHidden() const
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void RadarObject::crc( Xfer *xfer )
+void RadarObject::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -161,7 +161,7 @@ void RadarObject::crc( Xfer *xfer )
 	* Version Info:
 	* 1: Initial version */
 // ------------------------------------------------------------------------------------------------
-void RadarObject::xfer( Xfer *xfer )
+void RadarObject::xfer( Xfer* xfer )
 {
 
 	// version
@@ -345,8 +345,8 @@ void Radar::newMap( TerrainLogic *terrain )
 	terrain->getExtent( &m_mapExtent );
 
 	// we will sample at these intervals across the map
-	m_xSample = m_mapExtent.width() / RADAR_CELL_WIDTH;
-	m_ySample = m_mapExtent.height() / RADAR_CELL_HEIGHT;
+	m_xSample = m_mapExtent.width() / (Real)RADAR_CELL_WIDTH;
+	m_ySample = m_mapExtent.height() / (Real)RADAR_CELL_HEIGHT;
 
 	// find the "middle" height for the terrain (most used value) and water table
 	Int x, y;
@@ -1025,7 +1025,8 @@ void Radar::createEvent( const Coord3D *world, RadarEventType type, Real seconds
 
 	// lookup the colors we are to used based on the event 
 	RGBAColorInt color[ 2 ];
-	for( Int i = 0; radarColorLookupTable[ i ].event != RADAR_EVENT_INVALID; ++i )
+	Int i {};
+	for( i = 0; radarColorLookupTable[ i ].event != RADAR_EVENT_INVALID; ++i )
 	{
 
 		if( radarColorLookupTable[ i ].event == type )
@@ -1083,15 +1084,15 @@ void Radar::createPlayerEvent( Player *player, const Coord3D *world,
 	// the second will be a darker color 1
 	Real darkScale = 0.75f;
 	color[ 1 ] = color[ 0 ];
-	color[ 1 ].red -= REAL_TO_INT( color[ 0 ].red * darkScale );
-	if( color[ 1 ].red < 0 )
-		color[ 1 ].red = 0;
-	color[ 1 ].green -= REAL_TO_INT( color[ 0 ].green * darkScale );
-	if( color[ 1 ].green < 0 )
-		color[ 1 ].green = 0;
-	color[ 1 ].blue -= REAL_TO_INT( color[ 0 ].blue * darkScale );
-	if( color[ 1 ].blue < 0 )
-		color[ 1 ].blue = 0;
+	color[ 1 ].red -= REAL_TO_UNSIGNEDINT( color[ 0 ].red * darkScale );
+	// if( color[ 1 ].red < 0 )
+	// 	color[ 1 ].red = 0;
+	color[ 1 ].green -= REAL_TO_UNSIGNEDINT( color[ 0 ].green * darkScale );
+	// if( color[ 1 ].green < 0 )
+	// 	color[ 1 ].green = 0;
+	color[ 1 ].blue -= REAL_TO_UNSIGNEDINT( color[ 0 ].blue * darkScale );
+	// if( color[ 1 ].blue < 0 )
+	// 	color[ 1 ].blue = 0;
 
 	// create the events using these colors
 	internalCreateEvent( world, type, secondsToLive, &color[ 0 ], &color[ 1 ] );
@@ -1118,8 +1119,8 @@ void Radar::internalCreateEvent( const Coord3D *world, RadarEventType type, Real
 	m_event[ m_nextFreeRadarEvent ].type = type;
 	m_event[ m_nextFreeRadarEvent ].active = TRUE;
 	m_event[ m_nextFreeRadarEvent ].createFrame = TheGameLogic->getFrame();
-	m_event[ m_nextFreeRadarEvent ].dieFrame = TheGameLogic->getFrame() + LOGICFRAMES_PER_SECOND * secondsToLive;
-	m_event[ m_nextFreeRadarEvent ].fadeFrame = m_event[ m_nextFreeRadarEvent ].dieFrame - LOGICFRAMES_PER_SECOND * secondsBeforeDieToFade;
+	m_event[ m_nextFreeRadarEvent ].dieFrame = TheGameLogic->getFrame() + (Real)LOGICFRAMES_PER_SECOND * secondsToLive;
+	m_event[ m_nextFreeRadarEvent ].fadeFrame = m_event[ m_nextFreeRadarEvent ].dieFrame - (Real)LOGICFRAMES_PER_SECOND * secondsBeforeDieToFade;
 	m_event[ m_nextFreeRadarEvent ].color1 = *color1;
 	m_event[ m_nextFreeRadarEvent ].color2 = *color2;
 	m_event[ m_nextFreeRadarEvent ].worldLoc = *world;
@@ -1170,6 +1171,9 @@ Bool Radar::getLastEventLoc( Coord3D *eventPos )
 // ------------------------------------------------------------------------------------------------
 void Radar::tryUnderAttackEvent( const Object *obj )
 {
+(void) obj;
+DEBUG_CRASH(("Radar::tryUnderAttackEvent not yet implemented!"));
+#if 0
 
 	// sanity
 	if( obj == NULL )
@@ -1247,6 +1251,7 @@ void Radar::tryUnderAttackEvent( const Object *obj )
 
 	}  // end if
 
+#endif // if 0
 }  // end tryUnderAttackEvent
 
 // ------------------------------------------------------------------------------------------------
@@ -1341,7 +1346,7 @@ Bool Radar::tryEvent( RadarEventType event, const Coord3D *pos )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void Radar::refreshTerrain( TerrainLogic *terrain )
+void Radar::refreshTerrain( TerrainLogic* /* terrain */ )
 {
 
 	// no future queue is valid now
@@ -1373,7 +1378,7 @@ void Radar::queueTerrainRefresh( void )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Radar::crc( Xfer *xfer )
+void Radar::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc

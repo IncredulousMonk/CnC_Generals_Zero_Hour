@@ -26,7 +26,7 @@
 
 #include "Common/Recorder.h"
 #include "Common/FileSystem.h"
-#include "Common/playerlist.h"
+#include "Common/PlayerList.h"
 #include "Common/Player.h"
 #include "Common/GlobalData.h"
 #include "Common/GameEngine.h"
@@ -36,14 +36,15 @@
 #include "GameClient/Shell.h"
 #include "GameClient/GameText.h"
 
-#include "GameNetwork/LANAPICallbacks.h"
+// #include "GameNetwork/LANAPICallbacks.h"
 #include "GameNetwork/GameMessageParser.h"
-#include "GameNetwork/GameSpy/PeerDefs.h"
-#include "GameNetwork/NetworkUtil.h"
+// #include "GameNetwork/GameSpy/PeerDefs.h"
+// #include "GameNetwork/networkutil.h"
 #include "GameLogic/GameLogic.h"
 #include "Common/RandomValue.h"
 #include "Common/CRCDebug.h"
 #include "Common/Version.h"
+#include <unistd.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -56,7 +57,7 @@ Int REPLAY_CRC_INTERVAL = 100;
 const char *replayExtention = ".rep";
 const char *lastReplayFileName = "00000000";	// a name the user is unlikely to ever type, but won't cause panic & confusion
 
-static time_t startTime;
+// static time_t startTime;
 static const UnsignedInt startTimeOffset = 6;
 static const UnsignedInt endTimeOffset = startTimeOffset + sizeof(time_t);
 static const UnsignedInt framesOffset = endTimeOffset + sizeof(time_t);
@@ -64,8 +65,18 @@ static const UnsignedInt desyncOffset = framesOffset + sizeof(UnsignedInt);
 static const UnsignedInt quitEarlyOffset = desyncOffset + sizeof(Bool);
 static const UnsignedInt disconOffset = quitEarlyOffset + sizeof(Bool);
 
+#define MAX_COMPUTERNAME_LENGTH HOST_NAME_MAX
+
+static int GetComputerName(char* name, unsigned long* bufferSize)
+{
+	return gethostname(name, *bufferSize);
+}
+
 void RecorderClass::logGameStart(AsciiString options)
 {
+(void) options;
+DEBUG_CRASH(("RecorderClass::logGameStart not yet implemented!"));
+#if 0
 	if (!m_file)
 		return;
 
@@ -85,7 +96,7 @@ void RecorderClass::logGameStart(AsciiString options)
 	DEBUG_ASSERTCRASH(res == 0, ("Could not seek to end of file!"));
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheNetwork && TheGlobalData->m_saveStats)
+	if (TheNetwork && TheGlobalData->m_data.m_saveStats)
 	{
 		//if (TheLAN)
 		{
@@ -95,7 +106,7 @@ void RecorderClass::logGameStart(AsciiString options)
 			{
 				strcpy(computerName, "unknown");
 			}
-			AsciiString statsFile = TheGlobalData->m_baseStatsDir;
+			AsciiString statsFile = TheGlobalData->m_data.m_baseStatsDir;
 			TheFileSystem->createDirectory(statsFile);
 			statsFile.concat(computerName);
 			statsFile.concat(".txt");
@@ -103,8 +114,8 @@ void RecorderClass::logGameStart(AsciiString options)
 			if (!logFP)
 			{
 				// try again locally
-				TheWritableGlobalData->m_baseStatsDir = TheGlobalData->getPath_UserData();
-				statsFile = TheGlobalData->m_baseStatsDir;
+				TheWritableGlobalData->m_data.m_baseStatsDir = TheGlobalData->getPath_UserData();
+				statsFile = TheGlobalData->m_data.m_baseStatsDir;
 				statsFile.concat(computerName);
 				statsFile.concat(".txt");
 				logFP = fopen(statsFile.str(), "a+");
@@ -118,6 +129,7 @@ void RecorderClass::logGameStart(AsciiString options)
 		}
 	}
 #endif
+#endif // if 0
 }
 
 void RecorderClass::logPlayerDisconnect(UnicodeString player, Int slot)
@@ -132,7 +144,7 @@ void RecorderClass::logPlayerDisconnect(UnicodeString player, Int slot)
 	}
 	UnsignedInt fileSize = ftell(m_file);
 	// move to appropriate offset
-	if (!fseek(m_file, disconOffset + slot*sizeof(Bool), SEEK_SET))
+	if (!fseek(m_file, disconOffset + (UnsignedInt)slot * sizeof(Bool), SEEK_SET))
 	{
 		// save off discon status
 		Bool b = TRUE;
@@ -146,7 +158,7 @@ void RecorderClass::logPlayerDisconnect(UnicodeString player, Int slot)
 	DEBUG_ASSERTCRASH(res == 0, ("Could not seek to end of file!"));
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_saveStats)
+	if (TheGlobalData->m_data.m_saveStats)
 	{
 		unsigned long bufSize = MAX_COMPUTERNAME_LENGTH + 1;
 		char computerName[MAX_COMPUTERNAME_LENGTH + 1];
@@ -154,7 +166,7 @@ void RecorderClass::logPlayerDisconnect(UnicodeString player, Int slot)
 		{
 			strcpy(computerName, "unknown");
 		}
-		AsciiString statsFile = TheGlobalData->m_baseStatsDir;
+		AsciiString statsFile = TheGlobalData->m_data.m_baseStatsDir;
 		statsFile.concat(computerName);
 		statsFile.concat(".txt");
 		FILE *logFP = fopen(statsFile.str(), "a+");
@@ -191,7 +203,7 @@ void RecorderClass::logCRCMismatch( void )
 	DEBUG_ASSERTCRASH(res == 0, ("Could not seek to end of file!"));
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_saveStats)
+	if (TheGlobalData->m_data.m_saveStats)
 	{
 		m_wasDesync = TRUE;
 		unsigned long bufSize = MAX_COMPUTERNAME_LENGTH + 1;
@@ -200,7 +212,7 @@ void RecorderClass::logCRCMismatch( void )
 		{
 			strcpy(computerName, "unknown");
 		}
-		AsciiString statsFile = TheGlobalData->m_baseStatsDir;
+		AsciiString statsFile = TheGlobalData->m_data.m_baseStatsDir;
 		statsFile.concat(computerName);
 		statsFile.concat(".txt");
 		FILE *logFP = fopen(statsFile.str(), "a+");
@@ -218,6 +230,8 @@ void RecorderClass::logCRCMismatch( void )
 
 void RecorderClass::logGameEnd( void )
 {
+DEBUG_CRASH(("RecorderClass::logGameEnd not yet implemented!"));
+#if 0
 	if (!m_file)
 		return;
 
@@ -245,7 +259,7 @@ void RecorderClass::logGameEnd( void )
 	DEBUG_ASSERTCRASH(res == 0, ("Could not seek to end of file!"));
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheNetwork && TheGlobalData->m_saveStats)
+	if (TheNetwork && TheGlobalData->m_data.m_saveStats)
 	{
 		//if (TheLAN)
 		{
@@ -255,7 +269,7 @@ void RecorderClass::logGameEnd( void )
 			{
 				strcpy(computerName, "unknown");
 			}
-			AsciiString statsFile = TheGlobalData->m_baseStatsDir;
+			AsciiString statsFile = TheGlobalData->m_data.m_baseStatsDir;
 			statsFile.concat(computerName);
 			statsFile.concat(".txt");
 			FILE *logFP = fopen(statsFile.str(), "a+");
@@ -263,14 +277,15 @@ void RecorderClass::logGameEnd( void )
 			{
 				struct tm *t2 = localtime(&t);
 				duration = t - startTime;
-				Int minutes = duration/60;
-				Int seconds = duration%60;
+				UnsignedInt minutes = duration/60;
+				UnsignedInt seconds = duration%60;
 				fprintf(logFP, "Game end at   %s(%d:%2.2d elapsed time)\n", asctime(t2), minutes, seconds);
 				fclose(logFP);
 			}
 		}
 	}
 #endif
+#endif // if 0
 }
 
 #ifdef DEBUG_LOGGING
@@ -288,12 +303,14 @@ void RecorderClass::logGameEnd( void )
 
 void RecorderClass::cleanUpReplayFile( void )
 {
+DEBUG_CRASH(("RecorderClass::cleanUpReplayFile not yet implemented!"));
+#if 0
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_saveStats)
+	if (TheGlobalData->m_data.m_saveStats)
 	{
-		char fname[_MAX_PATH+1];
-		strncpy(fname, TheGlobalData->m_baseStatsDir.str(), _MAX_PATH);
-		strncat(fname, m_fileName.str(), _MAX_PATH - strlen(fname));
+		char fname[PATH_MAX+1];
+		strncpy(fname, TheGlobalData->m_data.m_baseStatsDir.str(), PATH_MAX);
+		strncat(fname, m_fileName.str(), PATH_MAX - strlen(fname));
 		DEBUG_LOG(("Saving replay to %s\n", fname));
 		AsciiString oldFname;
 		oldFname.format("%s%s", getReplayDir().str(), m_fileName.str());
@@ -316,7 +333,7 @@ void RecorderClass::cleanUpReplayFile( void )
 		}
 
 		const int MAX_DEBUG_SIZE = 65536;
-		if (fileSize <= MAX_DEBUG_SIZE || TheGlobalData->m_saveAllStats)
+		if (fileSize <= MAX_DEBUG_SIZE || TheGlobalData->m_data.m_saveAllStats)
 		{
 			DEBUG_LOG(("Using CopyFile to copy %s\n", DEBUG_FILE_NAME));
 			CopyFile(DEBUG_FILE_NAME, debugFname.str(), TRUE);
@@ -351,6 +368,7 @@ void RecorderClass::cleanUpReplayFile( void )
 #endif // DEBUG_FILE_NAME
 	}
 #endif
+#endif // if 0
 }
 
 /**
@@ -399,11 +417,11 @@ void RecorderClass::init() {
 	m_currentFilePosition = 0;
 	m_gameInfo.clearSlotList();
 	m_gameInfo.reset();
-	if (TheGlobalData->m_pendingFile.isEmpty())
-		m_gameInfo.setMap(TheGlobalData->m_mapName);
+	if (TheGlobalData->m_data.m_pendingFile.isEmpty())
+		m_gameInfo.setMap(TheGlobalData->m_data.m_mapName);
 	else
-		m_gameInfo.setMap(TheGlobalData->m_pendingFile);
-	m_gameInfo.setSeed(GetGameLogicRandomSeed());
+		m_gameInfo.setMap(TheGlobalData->m_data.m_pendingFile);
+	m_gameInfo.setSeed((Int)GetGameLogicRandomSeed());
 	m_wasDesync = FALSE;
 	m_doingAnalysis = FALSE;
 }
@@ -440,7 +458,7 @@ void RecorderClass::updatePlayback() {
 	cullBadCommands();	// Remove any bad commands that have been inserted by the local user that shouldn't be
 											// executed during playback.
 
-	if (m_nextFrame == -1) {
+	if (m_nextFrame == (UnsignedInt)-1) {
 		// This is reached if there are no more commands to be executed.
 		return;
 	}
@@ -479,7 +497,7 @@ void RecorderClass::stopPlayback() {
 void RecorderClass::updateRecord() 
 {
 	Bool needFlush = FALSE;
-	static Int lastFrame = -1;
+	// static Int lastFrame = -1;
 	GameMessage *msg = TheCommandList->getFirstMessage();
 	while (msg != NULL) {
 		if (msg->getType() == GameMessage::MSG_NEW_GAME &&
@@ -489,7 +507,7 @@ void RecorderClass::updateRecord()
 		{
 			m_originalGameMode = msg->getArgument(0)->integer;
 			DEBUG_LOG(("RecorderClass::updateRecord() - original game is mode %d\n", m_originalGameMode));
-			lastFrame = 0;
+			// lastFrame = 0;
 			GameDifficulty diff = DIFFICULTY_NORMAL;
 			if (msg->getArgumentCount() >= 2)
 				diff = (GameDifficulty)msg->getArgument(1)->integer;
@@ -503,7 +521,7 @@ void RecorderClass::updateRecord()
 			startRecording(diff, m_originalGameMode, rankPoints, maxFPS);
 		} else if (msg->getType() == GameMessage::MSG_CLEAR_GAME_DATA) {
 			if (m_file != NULL) {
-				lastFrame = -1;
+				// lastFrame = -1;
 				writeToFile(msg);
 				stopRecording();
 			}
@@ -531,6 +549,12 @@ void RecorderClass::updateRecord()
  * So don't call this unless you really mean it.
  */
 void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, Int rankPoints, Int maxFPS) {
+(void) diff;
+(void) originalGameMode;
+(void) rankPoints;
+(void) maxFPS;
+DEBUG_CRASH(("RecorderClass::startRecording not yet implemented!"));
+#if 0
 	DEBUG_ASSERTCRASH(m_file == NULL, ("Starting to record game while game is in progress."));
 
 	reset();
@@ -579,9 +603,12 @@ void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, In
 	fputwc(0, m_file);
 
 	// Date and Time
-	SYSTEMTIME systemTime;
-	GetLocalTime( &systemTime );
-	fwrite(&systemTime, sizeof(SYSTEMTIME), 1, m_file);
+	// SYSTEMTIME systemTime;
+	// GetLocalTime( &systemTime );
+	// fwrite(&systemTime, sizeof(SYSTEMTIME), 1, m_file);
+	std::time_t epochTime {std::time(nullptr)};
+	std::tm* systemTime {std::localtime(&epochTime)};
+	fwrite(systemTime, sizeof(std::tm), 1, m_file);
 
 	// write out version info
 	UnicodeString versionString = TheVersion->getUnicodeVersion();
@@ -592,8 +619,8 @@ void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, In
 	fwprintf(m_file, L"%ws", versionTimeString.str());
 	fputwc(0, m_file);
 	fwrite(&versionNumber, sizeof(UnsignedInt), 1, m_file);
-	fwrite(&(TheGlobalData->m_exeCRC), sizeof(UnsignedInt), 1, m_file);
-	fwrite(&(TheGlobalData->m_iniCRC), sizeof(UnsignedInt), 1, m_file);
+	fwrite(&(TheGlobalData->m_data.m_exeCRC), sizeof(UnsignedInt), 1, m_file);
+	fwrite(&(TheGlobalData->m_data.m_iniCRC), sizeof(UnsignedInt), 1, m_file);
 
 	// Number of players
 	/*
@@ -694,6 +721,7 @@ void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, In
 	*/
 
 	/// @todo Need to write game options when there are some to be written.
+#endif // if 0
 }
 
 /**
@@ -701,6 +729,8 @@ void RecorderClass::startRecording(GameDifficulty diff, Int originalGameMode, In
  * every game.
  */
 void RecorderClass::stopRecording() {
+DEBUG_CRASH(("RecorderClass::stopRecording not yet implemented!"));
+#if 0
 	logGameEnd();
 	if (TheNetwork)
 	{
@@ -716,12 +746,16 @@ void RecorderClass::stopRecording() {
 		m_file = NULL;
 	}
 	m_fileName.clear();
+#endif // if 0
 }
 
 /**
  * Write this game message to the record file. This also writes the game message's execution frame.
  */
 void RecorderClass::writeToFile(GameMessage * msg) {
+(void) msg;
+DEBUG_CRASH(("RecorderClass::writeToFile not yet implemented!"));
+#if 0
 	// Write the frame number for this command.
 	UnsignedInt frame = TheGameLogic->getFrame();
 	fwrite(&frame, sizeof(frame), 1, m_file);
@@ -781,6 +815,7 @@ void RecorderClass::writeToFile(GameMessage * msg) {
 	parser = NULL;
 
 	fflush(m_file); ///< @todo should this be in the final release?
+#endif // if 0
 }
 
 void RecorderClass::writeArgument(GameMessageArgumentDataType type, const GameMessageArgumentType arg) {
@@ -852,7 +887,7 @@ Bool RecorderClass::readReplayHeader(ReplayHeader& header)
 	header.replayName = readUnicodeString();
 
 	// Read the date and time.  We don't really do anything with this either. Oh well.
-	fread(&header.timeVal, sizeof(SYSTEMTIME), 1, m_file);
+	fread(&header.timeVal, sizeof(std::tm), 1, m_file);
 
 	// Read in the Version info
 	header.versionString = readUnicodeString();
@@ -876,8 +911,8 @@ Bool RecorderClass::readReplayHeader(ReplayHeader& header)
 	m_gameInfo.startGame(0);
 
 	AsciiString playerIndex = readAsciiString();
-	header.localPlayerIndex = atoi(playerIndex.str());
-	if (header.localPlayerIndex < -1 || header.localPlayerIndex >= MAX_SLOTS)
+	header.localPlayerIndex = strtoul(playerIndex.str(), NULL, 10);
+	if (header.localPlayerIndex >= MAX_SLOTS)
 	{
 		DEBUG_LOG(("RecorderClass::readReplayHeader - invalid local slot number.\n"));
 		m_gameInfo.endGame();
@@ -886,11 +921,8 @@ Bool RecorderClass::readReplayHeader(ReplayHeader& header)
 		m_file = NULL;
 		return FALSE;
 	}
-	if (header.localPlayerIndex >= 0)
-	{
-		Int localIP = m_gameInfo.getSlot(header.localPlayerIndex)->getIP();
-		m_gameInfo.setLocalIP(localIP);
-	}
+	UnsignedInt localIP = m_gameInfo.getSlot((Int)header.localPlayerIndex)->getIP();
+	m_gameInfo.setLocalIP(localIP);
 
 	if (!header.forPlayback)
 	{
@@ -911,7 +943,7 @@ Bool RecorderClass::analyzeReplay( AsciiString filename )
 
 Bool RecorderClass::isAnalysisInProgress( void )
 {
-	return m_mode == RECORDERMODETYPE_PLAYBACK && m_nextFrame != -1;
+	return m_mode == RECORDERMODETYPE_PLAYBACK && m_nextFrame != (UnsignedInt)-1;
 }
 #endif
 
@@ -939,15 +971,15 @@ public:
 
 protected:
 
-	Bool m_sawCRCMismatch;
-	Bool m_skippedOne;
-	std::list<UnsignedInt> m_data;
-	UnsignedInt m_localPlayer;
+	Bool m_sawCRCMismatch {};
+	Bool m_skippedOne {};
+	std::list<UnsignedInt> m_data {};
+	UnsignedInt m_localPlayer {};
 };
 
 CRCInfo::CRCInfo()
 {
-	m_localPlayer = ~0;
+	m_localPlayer = (UnsignedInt)~0;
 	m_skippedOne = FALSE;
 	m_sawCRCMismatch = FALSE;
 }
@@ -987,14 +1019,14 @@ void RecorderClass::handleCRCMessage(UnsignedInt newCRC, Int playerIndex, Bool f
 		return;
 	}
 
-	Int localPlayerIndex = m_crcInfo->getLocalPlayer();
+	UnsignedInt localPlayerIndex = m_crcInfo->getLocalPlayer();
 	Bool samePlayer = FALSE;
 	AsciiString playerName;
 	playerName.format("player%d", localPlayerIndex);
 	const Player *p = ThePlayerList->getNthPlayer(playerIndex);
 	if (!p || (p->getPlayerNameKey() == NAMEKEY(playerName)))
 		samePlayer = TRUE;
-	if (samePlayer || (localPlayerIndex < 0))
+	if (samePlayer)
 	{
 		UnsignedInt playbackCRC = m_crcInfo->readCRC();
 		//DEBUG_LOG(("RecorderClass::handleCRCMessage() - Comparing CRCs of %8.8X/%8.8X from %d\n", newCRC, playbackCRC, playerIndex));
@@ -1034,9 +1066,9 @@ Bool RecorderClass::testVersionPlayback(AsciiString filename)
 	Bool versionStringDiff = header.versionString != TheVersion->getUnicodeVersion();
 	Bool versionTimeStringDiff = header.versionTimeString != TheVersion->getUnicodeBuildTime();
 	Bool versionNumberDiff = header.versionNumber != TheVersion->getVersionNumber();
-	Bool exeCRCDiff = header.exeCRC != TheGlobalData->m_exeCRC;
+	Bool exeCRCDiff = header.exeCRC != TheGlobalData->m_data.m_exeCRC;
 	Bool exeDifferent = versionStringDiff || versionTimeStringDiff || versionNumberDiff || exeCRCDiff;
-	Bool iniDifferent = header.iniCRC != TheGlobalData->m_iniCRC;
+	Bool iniDifferent = header.iniCRC != TheGlobalData->m_data.m_iniCRC;
 
 	if(exeDifferent || iniDifferent)
 	{
@@ -1075,9 +1107,9 @@ Bool RecorderClass::playbackFile(AsciiString filename)
 	Bool versionStringDiff = header.versionString != TheVersion->getUnicodeVersion();
 	Bool versionTimeStringDiff = header.versionTimeString != TheVersion->getUnicodeBuildTime();
 	Bool versionNumberDiff = header.versionNumber != TheVersion->getVersionNumber();
-	Bool exeCRCDiff = header.exeCRC != TheGlobalData->m_exeCRC;
+	Bool exeCRCDiff = header.exeCRC != TheGlobalData->m_data.m_exeCRC;
 	Bool exeDifferent = versionStringDiff || versionTimeStringDiff || versionNumberDiff || exeCRCDiff;
-	Bool iniDifferent = header.iniCRC != TheGlobalData->m_iniCRC;
+	Bool iniDifferent = header.iniCRC != TheGlobalData->m_data.m_iniCRC;
 
 	AsciiString debugString;
 	AsciiString tempStr;
@@ -1101,27 +1133,24 @@ Bool RecorderClass::playbackFile(AsciiString filename)
 		}
 		if (exeCRCDiff)
 		{
-			tempStr.format("   CRC %8.8X vs %8.8X\n", TheGlobalData->m_exeCRC, header.exeCRC);
+			tempStr.format("   CRC %8.8X vs %8.8X\n", TheGlobalData->m_data.m_exeCRC, header.exeCRC);
 			debugString.concat(tempStr);
 		}
 	}
 	if (iniDifferent)
 	{
 		debugString.concat("INIs are different:\n");
-		tempStr.format("   CRC %8.8X vs %8.8X\n", TheGlobalData->m_iniCRC, header.iniCRC);
+		tempStr.format("   CRC %8.8X vs %8.8X\n", TheGlobalData->m_data.m_iniCRC, header.iniCRC);
 		debugString.concat(tempStr);
 	}
 	DEBUG_ASSERTCRASH(!exeDifferent && !iniDifferent, (debugString.str()));
 #endif
 
-	TheWritableGlobalData->m_pendingFile = m_gameInfo.getMap();
+	TheWritableGlobalData->m_data.m_pendingFile = m_gameInfo.getMap();
 
 #ifdef DEBUG_LOGGING
-	if (header.localPlayerIndex >= 0)
-	{
-		DEBUG_LOG(("Local player is %ls (slot %d, IP %8.8X)\n",
-			m_gameInfo.getSlot(header.localPlayerIndex)->getName().str(), header.localPlayerIndex, m_gameInfo.getSlot(header.localPlayerIndex)->getIP()));
-	}
+	DEBUG_LOG(("Local player is %ls (slot %d, IP %8.8X)\n",
+		m_gameInfo.getSlot((Int)header.localPlayerIndex)->getName().str(), header.localPlayerIndex, m_gameInfo.getSlot((Int)header.localPlayerIndex)->getIP()));
 #endif
 
 	m_crcInfo = NEW CRCInfo;
@@ -1154,7 +1183,7 @@ Bool RecorderClass::playbackFile(AsciiString filename)
 		if( maxFPS != 0 )
 			msg->appendIntegerArgument(maxFPS);
 		//InitGameLogicRandom( m_gameInfo.getSeed());
-		InitRandom( m_gameInfo.getSeed() );
+		InitRandom( (UnsignedInt)m_gameInfo.getSeed() );
 	}
 
 	m_currentReplayFilename = filename;
@@ -1165,23 +1194,23 @@ Bool RecorderClass::playbackFile(AsciiString filename)
  * Read a unicode string from the current file position. The string is assumed to be 0-terminated.
  */
 UnicodeString RecorderClass::readUnicodeString() {
-	UnsignedShort str[1024] = L"";
+	WideChar str[1024] = L"";
 	Int index = 0;
 
-	Int c = fgetwc(m_file);
-	if (c == EOF) {
+	wint_t c = fgetwc(m_file);
+	if (c == WEOF) {
 		str[index] = 0;
 	}
-	str[index] = c;
+	str[index] = (WideChar)c;
 
 	while (index < 1024 && str[index] != 0) {
 		++index;
-		Int c = fgetwc(m_file);
-		if (c == EOF) {
+		wint_t c = fgetwc(m_file);
+		if (c == WEOF) {
 			str[index] = 0;
 			break;
 		}
-		str[index] = c;
+		str[index] = (WideChar)c;
 	}
 	str[1023] = L'\0';
 
@@ -1225,7 +1254,7 @@ void RecorderClass::readNextFrame() {
 	Int retcode = fread(&m_nextFrame, sizeof(m_nextFrame), 1, m_file);
 	if (retcode != 1) {
 		DEBUG_LOG(("RecorderClass::readNextFrame - fread failed on frame %d\n", TheGameLogic->getFrame()));
-		m_nextFrame = -1;
+		m_nextFrame = (UnsignedInt)-1;
 		stopPlayback();
 	}
 }
@@ -1234,6 +1263,8 @@ void RecorderClass::readNextFrame() {
  * This reads the next command from the replay file and appends it to TheCommandList.
  */
 void RecorderClass::appendNextCommand() {
+DEBUG_CRASH(("RecorderClass::appendNextCommand not yet implemented!"));
+#if 0
 	GameMessage::Type type;
 	Int retcode = fread(&type, sizeof(type), 1, m_file);
 	if (retcode != 1) {
@@ -1337,6 +1368,7 @@ void RecorderClass::appendNextCommand() {
 
 	parser->deleteInstance();
 	parser = NULL;
+#endif // if 0
 }
 
 void RecorderClass::readArgument(GameMessageArgumentDataType type, GameMessage *msg) {
@@ -1501,8 +1533,11 @@ AsciiString RecorderClass::getReplayExtention() {
  */
 AsciiString RecorderClass::getLastReplayFileName() 
 {
+DEBUG_CRASH(("RecorderClass::getLastReplayFileName not yet implemented!"));
+return AsciiString();
+#if 0
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheNetwork && TheGlobalData->m_saveStats)
+	if (TheNetwork && TheGlobalData->m_data.m_saveStats)
 	{
 		GameInfo *game = NULL;
 		if (TheLAN)
@@ -1563,6 +1598,7 @@ AsciiString RecorderClass::getLastReplayFileName()
 	}
 #endif
 	return AsciiString(lastReplayFileName);
+#endif // if 0
 }
 
 /**
@@ -1588,6 +1624,9 @@ void RecorderClass::initControls()
 ///< is this a multiplayer game (record OR playback)?
 Bool RecorderClass::isMultiplayer( void )
 {
+DEBUG_CRASH(("RecorderClass::isMultiplayer not yet implemented!"));
+return false;
+#if 0
 
 	if (m_mode == RECORDERMODETYPE_PLAYBACK)
 	{
@@ -1609,6 +1648,7 @@ Bool RecorderClass::isMultiplayer( void )
 		return true;
 
 	return false;
+#endif // if 0
 }
 
 /**

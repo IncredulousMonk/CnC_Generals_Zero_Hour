@@ -6413,7 +6413,6 @@ void Object::goInvulnerable( UnsignedInt time )
 
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** Return the radar priority for this object type */
 // ------------------------------------------------------------------------------------------------
@@ -6455,7 +6454,6 @@ RadarPriorityType Object::getRadarPriority( void ) const
 	return priority;
 
 }  // end getRadarPriority
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 AIGroup *Object::getGroup(void)

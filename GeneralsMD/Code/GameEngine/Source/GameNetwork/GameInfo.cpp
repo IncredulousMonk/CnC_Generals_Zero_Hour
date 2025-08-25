@@ -41,8 +41,8 @@
 #include "GameNetwork/GameInfo.h"
 #include "GameNetwork/GameSpy/ThreadUtils.h"
 #include "GameNetwork/GameSpy/StagingRoomGameInfo.h"
-#include "GameNetwork/LANAPI.h"						// for testing packet size
-#include "GameNetwork/LANAPICallbacks.h"	// for testing packet size
+// #include "GameNetwork/LANAPI.h"						// for testing packet size
+// #include "GameNetwork/LANAPICallbacks.h"	// for testing packet size
 #include "strtok_r.h"
 
 #ifdef _INTERNAL
@@ -160,7 +160,7 @@ Int GameSlot::getApparentPlayerTemplate( void ) const
 Int GameSlot::getApparentColor( void ) const
 {
 	if (TheMultiplayerSettings && m_origPlayerTemplate == PLAYERTEMPLATE_OBSERVER)
-		return TheMultiplayerSettings->getColor(PLAYERTEMPLATE_OBSERVER)->getColor();
+		return (int)TheMultiplayerSettings->getColor(PLAYERTEMPLATE_OBSERVER)->getColor();
 
 	if (TheMultiplayerSettings && TheMultiplayerSettings->showRandomColor() &&
 		!isSlotLocalAlly(this))
@@ -206,10 +206,11 @@ void GameSlot::setState( SlotState state, UnicodeString name, UnsignedInt IP )
 		m_playerTemplate = -1;
 		m_teamNumber = -1;
 
-		if (state == SLOT_OPEN && TheGameSpyGame && TheGameSpyGame->getConstSlot(0) == this)
-		{
-			DEBUG_CRASH(("Game Is Hosed!\n"));
-		}
+		// FIXME: TheGameSpyGame.
+		// if (state == SLOT_OPEN && TheGameSpyGame && TheGameSpyGame->getConstSlot(0) == this)
+		// {
+		// 	DEBUG_CRASH(("Game Is Hosed!\n"));
+		// }
 	}
 	if (state == SLOT_PLAYER)
 	{
@@ -302,25 +303,28 @@ void GameInfo::init( void )
 
 void GameInfo::reset( void )
 {
-	m_crcInterval = NET_CRC_INTERVAL;
+	std::chrono::duration<long, std::milli> msSinceEpoch {std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())};
+	// FIXME: Whichever header that includes NET_CRC_INTERVAL.
+	m_crcInterval = 0;
+	// m_crcInterval = NET_CRC_INTERVAL;
 	m_inGame = false;
 	m_inProgress = false;
 	m_gameID = 0;
 	m_mapName = AsciiString("NOMAP");
 	m_mapMask = 0;
-	m_seed = GetTickCount(); //GameClientRandomValue(0, INT_MAX - 1);
+	m_seed = msSinceEpoch.count(); //GameClientRandomValue(0, INT_MAX - 1);
 	m_useStats = TRUE;
 	m_surrendered = FALSE;
-  m_oldFactionsOnly = FALSE;
+	m_oldFactionsOnly = FALSE;
 	// Added By Sadullah Nader
 	// Initializations missing and needed
 //	m_localIP = 0; // BGC - actually we don't want this to be reset since the m_localIP is 
 										// set properly in the constructor of LANGameInfo which uses this as a base class.
 	m_mapCRC = 0;
 	m_mapSize = 0;
-  m_superweaponRestriction = 0; 
-  m_startingCash = TheGlobalData->m_defaultStartingCash;
-  
+	m_superweaponRestriction = 0; 
+	m_startingCash = TheGlobalData->m_defaultStartingCash;
+
 	//
 
 	for (Int i=0; i<MAX_SLOTS; ++i)
@@ -379,6 +383,9 @@ Int GameInfo::getNumNonObserverPlayers( void ) const
 
 Int GameInfo::getMaxPlayers( void ) const
 {
+DEBUG_CRASH(("GameInfo::getMaxPlayers not yet implemented!"));
+return 0;
+#if 0
 	if (!TheMapCache)
 		return -1;
 
@@ -389,6 +396,7 @@ Int GameInfo::getMaxPlayers( void ) const
 		return -1;
 	MapMetaData data = it->second;
 	return data.m_numPlayers;
+#endif // if 0
 }
 
 void GameInfo::enterGame( void )
@@ -512,6 +520,9 @@ Bool GameInfo::amIHost( void ) const
 
 void GameInfo::setMap( AsciiString mapName )
 {
+(void) mapName;
+DEBUG_LOG(("GameInfo::setMap not yet implemented!\n"));
+#if 0
 	m_mapName = mapName;
 	if (m_inGame && amIHost())
 	{
@@ -608,6 +619,7 @@ void GameInfo::setMap( AsciiString mapName )
 			m_mapMask = 0;
 		}
 	}
+#endif // if 0
 }
 
 void GameInfo::setMapContentsMask( Int mask )
@@ -617,6 +629,9 @@ void GameInfo::setMapContentsMask( Int mask )
 
 void GameInfo::setMapCRC( UnsignedInt mapCRC )
 {
+(void) mapCRC;
+DEBUG_CRASH(("GameInfo::setMapCRC not yet implemented!"));
+#if 0
 	m_mapCRC = mapCRC;
 	if (!TheMapCache)
 		return;
@@ -653,10 +668,14 @@ void GameInfo::setMapCRC( UnsignedInt mapCRC )
 			getSlot(getLocalSlotNum())->setMapAvailability(true);
 		}
 	}
+#endif // if 0
 }
 
 void GameInfo::setMapSize( UnsignedInt mapSize )
 {
+(void) mapSize;
+DEBUG_CRASH(("GameInfo::setMapSize not yet implemented!"));
+#if 0
 	m_mapSize = mapSize;
 	if (!TheMapCache)
 		return;
@@ -684,6 +703,7 @@ void GameInfo::setMapSize( UnsignedInt mapSize )
 			getSlot(getLocalSlotNum())->setMapAvailability(true);
 		}
 	}
+#endif // if 0
 }
 
 void GameInfo::setSeed( Int seed )
@@ -762,6 +782,8 @@ void GameInfo::resetStartSpots()
 // players the map can hold.
 void GameInfo::adjustSlotsForMap()
 {
+DEBUG_CRASH(("GameInfo::adjustSlotsForMap not yet implemented!"));
+#if 0
 	const MapMetaData *md = TheMapCache->findMap(m_mapName);
 	if (md != NULL)
 	{
@@ -782,7 +804,7 @@ void GameInfo::adjustSlotsForMap()
 		// now go through and close the appropriate number of slots.
 		// note that no players are kicked in this process, we leave
 		// that up to the user.
-		for (i = 0; i < MAX_SLOTS; ++i)
+		for (Int i = 0; i < MAX_SLOTS; ++i)
 		{
 			// we have room for more players, if this slot is unoccupied, set it to open.
 			GameSlot *slot = getSlot(i);
@@ -808,6 +830,7 @@ void GameInfo::adjustSlotsForMap()
 			}
 		}
 	}
+#endif // if 0
 }
 
 void GameInfo::closeOpenSlots()
@@ -824,20 +847,20 @@ void GameInfo::closeOpenSlots()
 	}
 }
 
-static Bool isSlotLocalAlly(GameInfo *game, const GameSlot *slot)
-{
-	const GameSlot *localSlot = game->getConstSlot(game->getLocalSlotNum());
-	if (!localSlot)
-		return TRUE;
+// static Bool isSlotLocalAlly(GameInfo *game, const GameSlot *slot)
+// {
+// 	const GameSlot *localSlot = game->getConstSlot(game->getLocalSlotNum());
+// 	if (!localSlot)
+// 		return TRUE;
 
-	if (slot == localSlot)
-		return TRUE;
+// 	if (slot == localSlot)
+// 		return TRUE;
 
-	if (slot->getTeamNumber() < 0)
-		return FALSE;
+// 	if (slot->getTeamNumber() < 0)
+// 		return FALSE;
 
-	return slot->getTeamNumber() == localSlot->getTeamNumber();
-}
+// 	return slot->getTeamNumber() == localSlot->getTeamNumber();
+// }
 
 Bool GameInfo::isSkirmish(void)
 {
@@ -898,6 +921,10 @@ static const char slotListID		= 'S';
 
 AsciiString GameInfoToAsciiString( const GameInfo *game )
 {
+(void) game;
+DEBUG_CRASH(("GameInfo: GameInfoToAsciiString not yet implemented!"));
+return AsciiString();
+#if 0
 	if (!game)
 		return AsciiString::TheEmptyString;
 
@@ -993,18 +1020,25 @@ AsciiString GameInfoToAsciiString( const GameInfo *game )
 		optionsString.getLength(), m_lanMaxOptionsLength));
 	
 	return optionsString;
+#endif // if 0
 }
 
-static Int grabHexInt(const char *s)
-{
-	char tmp[5] = "0xff";
-	tmp[2] = s[0];
-	tmp[3] = s[1];
-	Int b = strtol(tmp, NULL, 16);
-	return b;
-}
+// static Int grabHexInt(const char *s)
+// {
+// 	char tmp[5] = "0xff";
+// 	tmp[2] = s[0];
+// 	tmp[3] = s[1];
+// 	Int b = strtol(tmp, NULL, 16);
+// 	return b;
+// }
+
 Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 {
+(void) game;
+(void) options;
+DEBUG_CRASH(("GameInfo: ParseAsciiStringToGameInfo not yet implemented!"));
+return false;
+#if 0
 	// Parse game options
 	char *buf = strdup(options.str());
 	char *bufPtr = buf;
@@ -1017,11 +1051,11 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 	Int seed = 0;
 	Int crc = 100;
 	Bool sawCRC = FALSE;
-  Bool oldFactionsOnly = FALSE;
+	Bool oldFactionsOnly = FALSE;
 	Int useStats = TRUE;
-  Money startingCash = TheGlobalData->m_defaultStartingCash;
-  UnsignedShort restriction = 0; // Always the default
-  
+	Money startingCash = TheGlobalData->m_defaultStartingCash;
+	UnsignedShort restriction = 0; // Always the default
+
 	Bool sawMap, sawMapCRC, sawMapSize, sawSeed, sawSlotlist, sawUseStats, sawSuperweaponRestriction, sawStartingCash, sawOldFactions;
 	sawMap = sawMapCRC = sawMapSize = sawSeed = sawSlotlist = sawUseStats = sawSuperweaponRestriction = sawStartingCash = sawOldFactions = FALSE;
 
@@ -1052,7 +1086,7 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 
 		if (key.compare("US") == 0)
 		{
-			useStats = atoi(val.str());
+			useStats = strtoul(val.str(), NULL, 10);
 			sawUseStats = true;
 		}
 		else
@@ -1092,7 +1126,7 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 		}
 		else if (key.compare("MS") == 0)
 		{
-			mapSize = atoi(val.str());
+			mapSize = strtoul(val.str(), NULL, 10);
 			sawMapSize = true;
 		}
 		else if (key.compare("SD") == 0)
@@ -1182,7 +1216,7 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 								break;
 							}
 							UnsignedInt playerPort = 0;
-							sscanf(slotValue.str(), "%d", &playerPort);
+							sscanf(slotValue.str(), "%u", &playerPort);
 							newSlot[i].setPort(playerPort);
 							DEBUG_LOG(("ParseAsciiStringToGameInfo - port is %d\n", playerPort));
 
@@ -1491,6 +1525,7 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 
 	DEBUG_LOG(("ParseAsciiStringToGameInfo - game options messed up\n"));
 	return false;
+#endif // if 0
 }
 
 
@@ -1502,7 +1537,7 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void SkirmishGameInfo::crc( Xfer *xfer )
+void SkirmishGameInfo::crc( Xfer* /* xfer */ )
 {
 }  // end crc
 

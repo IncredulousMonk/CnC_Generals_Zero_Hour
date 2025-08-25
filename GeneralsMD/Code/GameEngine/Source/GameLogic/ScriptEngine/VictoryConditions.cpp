@@ -80,30 +80,34 @@ class VictoryConditions : public VictoryConditionsInterface
 {
 public:
 	VictoryConditions();
-	
+
+	// No copies allowed!
+	VictoryConditions(const VictoryConditions&) = delete;
+	VictoryConditions& operator=(const VictoryConditions&) = delete;
+
 	void init( void );
 	void reset( void );
 	void update( void );
 
-	Bool hasAchievedVictory(Player *player);					///< has a specific player and his allies won?
+	Bool hasAchievedVictory(Player *player);						///< has a specific player and his allies won?
 	Bool hasBeenDefeated(Player *player);							///< has a specific player and his allies lost?
-	Bool hasSinglePlayerBeenDefeated(Player *player);	///< has a specific player lost?
+	Bool hasSinglePlayerBeenDefeated(Player *player);				///< has a specific player lost?
 
-	void cachePlayerPtrs( void );											///< players have been created - cache the ones of interest
+	void cachePlayerPtrs( void );									///< players have been created - cache the ones of interest
 
 	Bool isLocalAlliedVictory( void );								///< convenience function
-	Bool isLocalAlliedDefeat( void );									///< convenience function
-	Bool isLocalDefeat( void );												///< convenience function
-	Bool amIObserver( void ) { return m_isObserver;} 	///< Am I an observer?( need this for scripts )
+	Bool isLocalAlliedDefeat( void );								///< convenience function
+	Bool isLocalDefeat( void );										///< convenience function
+	Bool amIObserver( void ) { return m_isObserver;}				///< Am I an observer?( need this for scripts )
 	virtual UnsignedInt getEndFrame( void ) { return m_endFrame; }	///< on which frame was the game effectively over?
 private:
-	Player*				m_players[MAX_PLAYER_COUNT];
-	Int						m_localSlotNum;
-	UnsignedInt		m_endFrame;
-	Bool					m_isDefeated[MAX_PLAYER_COUNT];
-	Bool					m_localPlayerDefeated;												///< prevents condition from being signaled each frame
-	Bool					m_singleAllianceRemaining;										///< prevents condition from being signaled each frame
-	Bool					m_isObserver;
+	Player*			m_players[MAX_PLAYER_COUNT];
+	Int				m_localSlotNum {};
+	UnsignedInt		m_endFrame {};
+	Bool			m_isDefeated[MAX_PLAYER_COUNT];
+	Bool			m_localPlayerDefeated {};						///< prevents condition from being signaled each frame
+	Bool			m_singleAllianceRemaining {};					///< prevents condition from being signaled each frame
+	Bool			m_isObserver {};
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -218,7 +222,8 @@ void VictoryConditions::update( void )
 
 			// destroy any remaining units (infantry if its a short game, for example)
 			p->killPlayer();
-			PopulateInGameDiplomacyPopup();
+			// FIXME: PopulateInGameDiplomacyPopup.
+			// PopulateInGameDiplomacyPopup();
 		}
 	}
 
@@ -234,7 +239,8 @@ void VictoryConditions::update( void )
 			}
 			m_localPlayerDefeated = true;	// don't check again
 			TheRadar->forceOn(TRUE);
-			SetInGameChatType( INGAME_CHAT_EVERYONE ); // can't chat to allies after death.  Only to other observers.
+			// FIXME: SetInGameChatType.
+			// SetInGameChatType( INGAME_CHAT_EVERYONE ); // can't chat to allies after death.  Only to other observers.
 		}
 	}
 }
@@ -365,6 +371,3 @@ Bool VictoryConditions::isLocalDefeat( void )
 
 	return (m_localPlayerDefeated);
 }
-
-
-

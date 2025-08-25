@@ -473,12 +473,12 @@ public:
 	// Both of these calls are intended to only be used by TerrainLogic, specifically setActiveBoundary()
 	void friend_prepareForMapBoundaryAdjust(void);
 	void friend_notifyOfNewMapBoundary(void);
+#endif // if 0
 
 	// data for the radar
 	void friend_setRadarData( RadarObject *rd ) { m_radarData = rd; }
 	RadarObject *friend_getRadarData() { return m_radarData; }
 	RadarPriorityType getRadarPriority() const;
-#endif // if 0
 
 	// contained-by
 	inline Object *getContainedBy() { return m_containedBy; }

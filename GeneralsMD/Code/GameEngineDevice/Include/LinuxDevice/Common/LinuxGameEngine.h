@@ -41,7 +41,7 @@
 #include "LinuxDevice/GameClient/LinuxParticleSys.h"
 // #include "W3DDevice/GameClient/W3DWebBrowser.h"
 #include "LinuxDevice/Common/LinuxFunctionLexicon.h"
-// #include "W3DDevice/Common/W3DRadar.h"
+#include "LinuxDevice/Common/LinuxRadar.h"
 #include "Common/ThingFactory.h"
 
 //-------------------------------------------------------------------------------------------------
@@ -55,24 +55,24 @@ public:
    virtual ~LinuxGameEngine();
 
    virtual void init(int argc, char* argv[]);                  ///< initialization 
-   virtual void reset(void);                                   ///< reset engine
-   virtual void update(void);                                  ///< update the game engine
-   virtual void checkForEvents(void);                          ///< check for SDL events
+   virtual void reset();                                   ///< reset engine
+   virtual void update();                                  ///< update the game engine
+   virtual void checkForEvents();                          ///< check for SDL events
 
 protected:
 
-   virtual GameLogic* createGameLogic(void);                   ///< factory for game logic
-   virtual GameClient* createGameClient(void);                 ///< factory for game client
-   virtual ModuleFactory* createModuleFactory(void);           ///< factory for creating modules
-   virtual ThingFactory* createThingFactory(void);             ///< factory for the thing factory
-   virtual FunctionLexicon* createFunctionLexicon(void);       ///< factory for function lexicon
-   virtual LocalFileSystem* createLocalFileSystem(void);       ///< factory for local file system
-   virtual ArchiveFileSystem* createArchiveFileSystem(void);   ///< factory for archive file system
-   virtual NetworkInterface* createNetwork(void);              ///< Factory for the network
-   virtual Radar* createRadar(void);                           ///< Factory for radar
-   virtual WebBrowser* createWebBrowser(void);                 ///< Factory for embedded browser
-   virtual AudioManager* createAudioManager(void);             ///< Factory for audio device
-   virtual ParticleSystemManager* createParticleSystemManager(void);
+   virtual GameLogic* createGameLogic();                   ///< factory for game logic
+   virtual GameClient* createGameClient();                 ///< factory for game client
+   virtual ModuleFactory* createModuleFactory();           ///< factory for creating modules
+   virtual ThingFactory* createThingFactory();             ///< factory for the thing factory
+   virtual FunctionLexicon* createFunctionLexicon();       ///< factory for function lexicon
+   virtual LocalFileSystem* createLocalFileSystem();       ///< factory for local file system
+   virtual ArchiveFileSystem* createArchiveFileSystem();   ///< factory for archive file system
+   virtual NetworkInterface* createNetwork();              ///< Factory for the network
+   virtual Radar* createRadar();                           ///< Factory for radar
+   virtual WebBrowser* createWebBrowser();                 ///< Factory for embedded browser
+   virtual AudioManager* createAudioManager();             ///< Factory for audio device
+   virtual ParticleSystemManager* createParticleSystemManager();
 
 
 protected:
@@ -80,21 +80,20 @@ protected:
 };  // end LinuxGameEngine
 
 // INLINE -----------------------------------------------------------------------------------------
-inline GameLogic* LinuxGameEngine::createGameLogic( void ) { return NEW LinuxGameLogic; }
-inline GameClient* LinuxGameEngine::createGameClient( void ) { return NEW LinuxGameClient; }
-inline ModuleFactory* LinuxGameEngine::createModuleFactory( void ) { return NEW LinuxModuleFactory; }
-inline ThingFactory* LinuxGameEngine::createThingFactory( void ) { return NEW ThingFactory; }
-inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon( void ) { return NEW LinuxFunctionLexicon; }
-inline LocalFileSystem* LinuxGameEngine::createLocalFileSystem( void ) { return NEW LinuxLocalFileSystem; }
-inline ArchiveFileSystem* LinuxGameEngine::createArchiveFileSystem( void ) { return NEW LinuxBIGFileSystem; }
-inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager( void ) { return NEW LinuxParticleSystemManager; }
+inline GameLogic* LinuxGameEngine::createGameLogic() { return NEW LinuxGameLogic; }
+inline GameClient* LinuxGameEngine::createGameClient() { return NEW LinuxGameClient; }
+inline ModuleFactory* LinuxGameEngine::createModuleFactory() { return NEW LinuxModuleFactory; }
+inline ThingFactory* LinuxGameEngine::createThingFactory() { return NEW ThingFactory; }
+inline FunctionLexicon* LinuxGameEngine::createFunctionLexicon() { return NEW LinuxFunctionLexicon; }
+inline LocalFileSystem* LinuxGameEngine::createLocalFileSystem() { return NEW LinuxLocalFileSystem; }
+inline ArchiveFileSystem* LinuxGameEngine::createArchiveFileSystem() { return NEW LinuxBIGFileSystem; }
+inline ParticleSystemManager* LinuxGameEngine::createParticleSystemManager() { return NEW LinuxParticleSystemManager; }
 
-// inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { return NetworkInterface::createNetwork(); }
-inline NetworkInterface* LinuxGameEngine::createNetwork( void ) { printf("Creating NULL Network!\n"); return nullptr; }
-// inline Radar* LinuxGameEngine::createRadar( void ) { return NEW W3DRadar; }
-inline Radar* LinuxGameEngine::createRadar( void ) { printf("Creating NULL Radar!\n"); return nullptr; }
-// inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { return NEW CComObject<W3DWebBrowser>; }
-inline WebBrowser* LinuxGameEngine::createWebBrowser( void ) { printf("Creating NULL WebBrowser!\n"); return nullptr; }
-inline AudioManager* LinuxGameEngine::createAudioManager( void ) { return NEW SdlAudioManager; }
+// inline NetworkInterface* LinuxGameEngine::createNetwork() { return NetworkInterface::createNetwork(); }
+inline NetworkInterface* LinuxGameEngine::createNetwork() { printf("Creating NULL Network!\n"); return nullptr; }
+inline Radar* LinuxGameEngine::createRadar() { return NEW LinuxRadar; }
+// inline WebBrowser* LinuxGameEngine::createWebBrowser() { return NEW CComObject<W3DWebBrowser>; }
+inline WebBrowser* LinuxGameEngine::createWebBrowser() { printf("Creating NULL WebBrowser!\n"); return nullptr; }
+inline AudioManager* LinuxGameEngine::createAudioManager() { return NEW SdlAudioManager; }
 
 #endif  // end __LINUXGAMEENGINE_H_

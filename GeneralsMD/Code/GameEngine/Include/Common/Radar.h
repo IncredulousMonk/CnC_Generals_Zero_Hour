@@ -121,9 +121,9 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	Object *m_object;				///< the object
-	RadarObject *m_next;		///< next radar object
-	Color m_color;					///< color to draw for this object on the radar
+	Object *m_object {};				///< the object
+	RadarObject *m_next {};		///< next radar object
+	Color m_color {};					///< color to draw for this object on the radar
 
 };
 
@@ -252,49 +252,49 @@ protected:
 	// search the object list for an object that maps to the given logical radar coords
 	Object *searchListForRadarLocationMatch( RadarObject *listHead, ICoord2D *radarMatch );
 
-	Bool m_radarHidden;										///< true when radar is not visible
-	Bool m_radarForceOn;									///< true when radar is forced to be on
-	RadarObject *m_objectList;						///< list of objects in the radar
-	RadarObject *m_localObjectList;				/** list of objects for the local player, sorted
+	Bool m_radarHidden {};										///< true when radar is not visible
+	Bool m_radarForceOn {};									///< true when radar is forced to be on
+	RadarObject *m_objectList {};						///< list of objects in the radar
+	RadarObject *m_localObjectList {};				/** list of objects for the local player, sorted
 																					* in exactly the same priority as the regular
 																					* object list for all other objects */
 //	typedef std::list<Object*> HeroList;
 //	HeroList m_heroList;		//< list of pointers to objects with radar icon representations
 
-	Real m_terrainAverageZ;								///< average Z for terrain samples
-	Real m_waterAverageZ;									///< average Z for water samples
+	Real m_terrainAverageZ {};								///< average Z for terrain samples
+	Real m_waterAverageZ {};									///< average Z for water samples
 
 	//
 	// when dealing with world sampling we will sample at these intervals so that
 	// the whole map can be accounted for within our RADAR_CELL_WIDTH and
 	// RADAR_CELL_HEIGHT resolutions
 	//
-	Real m_xSample;												
-	Real m_ySample;												  
+	Real m_xSample {};
+	Real m_ySample {};
 
 	enum { MAX_RADAR_EVENTS = 64 };
 	struct RadarEvent
 	{
-		RadarEventType type;								///< type of this radar event
-		Bool active;												///< TRUE when event is "active", otherwise it's just historical information in the event array to look through
-		UnsignedInt createFrame;						///< frame event was created on
-		UnsignedInt dieFrame;								///< frame the event will go away on
-		UnsignedInt fadeFrame;							///< start fading out on this frame
-		RGBAColorInt color1;								///< color 1 for drawing
-		RGBAColorInt color2;								///< color 2 for drawing
-		Coord3D worldLoc;										///< location of event in the world
-		ICoord2D radarLoc;									///< 2D radar location of the event
-		Bool soundPlayed;										///< TRUE when we have played the radar sound for this
+		RadarEventType type {};								///< type of this radar event
+		Bool active {};												///< TRUE when event is "active", otherwise it's just historical information in the event array to look through
+		UnsignedInt createFrame {};						///< frame event was created on
+		UnsignedInt dieFrame {};								///< frame the event will go away on
+		UnsignedInt fadeFrame {};							///< start fading out on this frame
+		RGBAColorInt color1 {};								///< color 1 for drawing
+		RGBAColorInt color2 {};								///< color 2 for drawing
+		Coord3D worldLoc {};										///< location of event in the world
+		ICoord2D radarLoc {};									///< 2D radar location of the event
+		Bool soundPlayed {};										///< TRUE when we have played the radar sound for this
 	};
 	RadarEvent m_event[ MAX_RADAR_EVENTS ];///< our radar events
-	Int m_nextFreeRadarEvent;							///< index into m_event for where to store the next event
-	Int m_lastRadarEvent;									///< index of the most recent radar event
+	Int m_nextFreeRadarEvent {};							///< index into m_event for where to store the next event
+	Int m_lastRadarEvent {};									///< index of the most recent radar event
 
-	GameWindow *m_radarWindow;						///< window we display the radar in
+	GameWindow *m_radarWindow {};						///< window we display the radar in
 
-	Region3D m_mapExtent;									///< extents of the current map
+	Region3D m_mapExtent {};									///< extents of the current map
 
-	UnsignedInt m_queueTerrainRefreshFrame;  ///< frame we requested the last terrain refresh on
+	UnsignedInt m_queueTerrainRefreshFrame {};  ///< frame we requested the last terrain refresh on
 
 };
 

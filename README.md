@@ -73,6 +73,9 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheTeamFactory
   - TheCrateSystem
   - ThePlayerList
+  - TheRecorder
+  - TheRadar
+  - TheVictoryConditions
   - TheGameState
 
 ## Still to do

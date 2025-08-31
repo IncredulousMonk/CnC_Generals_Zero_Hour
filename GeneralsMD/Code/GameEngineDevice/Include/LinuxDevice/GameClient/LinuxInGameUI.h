@@ -30,7 +30,7 @@
 // USER INCLUDES //////////////////////////////////////////////////////////////
 #include "GameClient/InGameUI.h"
 #include "GameClient/View.h"
-// #include "W3DDevice/GameClient/W3DView.h"
+#include "LinuxDevice/GameClient/LinuxView.h"
 // #include "WW3D2/Render2D.h"
 // #include "WW3D2/RendObj.h"
 // #include "WW3D2/Line3D.h"
@@ -60,8 +60,7 @@ public:
 protected:
 
    /// factory for views
-   // virtual View *createView( void ) { return NEW LinuxView; }
-   virtual View *createView( void ) { printf("!!! Creating NULL View !!!\n"); return nullptr; }
+   virtual View *createView( void ) { return NEW LinuxView; }
 
    // virtual void drawSelectionRegion();          ///< draw the selection region on screen
    // virtual void drawMoveHints(View* view);      ///< draw move hint visual feedback

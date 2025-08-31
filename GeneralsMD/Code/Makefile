@@ -1,13 +1,14 @@
 CXXFLAGS = -std=c++23 -O2 -Wall -Weffc++ -Wextra -Wsign-conversion -Werror -pedantic-errors
 LDPATHS = -LGameEngineDevice/Lib -LGameEngine/Lib -LLibraries/Lib
-LDFLAGS = -lavutil -lavcodec -lswscale -lswresample
+LDFLAGS = -lavutil -lavcodec -lswscale -lswresample -lGL
 CXXFLAGS += $(shell pkg-config sdl3 --cflags)
 LDFLAGS += $(shell pkg-config sdl3 --libs) $(shell pkg-config sdl3-ttf --libs) $(shell pkg-config sdl3-image --libs) $(shell pkg-config sdl3-sound --libs)
 INCS = -I. -ILibraries/Include -ILibraries/Source/WWVegas -ILibraries/Source/WWVegas/WWLib -ILibraries/Source/WWVegas/WWMath -ILibraries/Source/WWVegas/WWSaveLoad -ILibraries/Source/WWVegas/WWDebug \
-   -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
+   -ILibraries/Source/OGL -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
 PROG = ../Run/rts
 ENGINE_DEVICE_LIB = GameEngineDevice/Lib/GameEngineDevice.a
 ENGINE_LIB = GameEngine/Lib/GameEngine.a
+OGL_LIB = Libraries/Lib/OGL.a
 WWMATH_LIB = Libraries/Lib/WWMath.a
 GEDO = GameEngineDevice/Obj
 GEDSLDC = GameEngineDevice/Source/LinuxDevice/Common
@@ -26,8 +27,8 @@ endif
 
 .PHONY: run debug clean
 
-$(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB)
-	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a $(LDFLAGS)
+$(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(OGL_LIB)
+	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:OGL.a $(LDFLAGS)
 
 
 # ===== WWMath =====
@@ -52,7 +53,7 @@ $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(
 $(GEDO)/LinuxFunctionLexicon.o $(GEDO)/LinuxRadar.o \
 $(GEDO)/LinuxModuleFactory.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
-$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o $(GEDO)/LinuxParticleSys.o \
+$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxView.o \
    $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
 $(GEDO)/LinuxDefaultDraw.o $(GEDO)/LinuxModelDraw.o $(GEDO)/LinuxScienceModelDraw.o \
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
@@ -135,6 +136,9 @@ $(GEDO)/LinuxInGameUI.o: $(GEDSLD)/GameClient/LinuxInGameUI.cpp GameEngineDevice
 
 $(GEDO)/LinuxParticleSys.o: $(GEDSLD)/GameClient/LinuxParticleSys.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxParticleSys.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxParticleSys.o $(GEDSLD)/GameClient/LinuxParticleSys.cpp
+
+$(GEDO)/LinuxView.o: $(GEDSLD)/GameClient/LinuxView.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxView.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxView.o $(GEDSLD)/GameClient/LinuxView.cpp
 
 $(GEDO)/SdlKeyboard.o: $(GEDSLD)/GameClient/SdlKeyboard.cpp GameEngineDevice/Include/LinuxDevice/GameClient/SdlKeyboard.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/SdlKeyboard.o $(GEDSLD)/GameClient/SdlKeyboard.cpp

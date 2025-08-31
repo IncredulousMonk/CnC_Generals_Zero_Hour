@@ -1161,22 +1161,22 @@ void InGameUI::init( void )
 	to order the translators when the code is not centralized so it has
 	been moved to where all the other translators are attached in game client */
 
-	// FIXME: TheTacticalView
-	// // create the tactical view
-	// if (TheDisplay)
-	// {
-	// 	TheTacticalView = createView();
-	// 	TheTacticalView->init();
-	// 	TheDisplay->attachView( TheTacticalView );
+	// create the tactical view
+	if (TheDisplay)
+	{
+		TheTacticalView = createView();
+		TheTacticalView->init();
+		TheDisplay->attachView( TheTacticalView );
 
+	// FIXME: TheTacticalView
 	// 	// make the tactical display the full screen width for now
 	// 	TheTacticalView->setWidth( (Int)TheDisplay->getWidth());
 	// 	// make the tactical display 0.76 of full screen so no drawing under GUI.
 	// 	TheTacticalView->setHeight( (Int)TheDisplay->getHeight() * 0.77f);
-	// }
+	}
 	// TheTacticalView->setDefaultView(0.0f, 0.0f, 1.0f);
 
-// FIXME: TheTacticalView.  Also, Control Bar loads CommandButton.ini, which needs AmericaCommandCenter Thing template.
+// FIXME: TheControlBar.  Also, Control Bar loads CommandButton.ini, which needs AmericaCommandCenter Thing template.
 #if 0
 	/** @todo this may be the wrong place to create the sidebar, but for now
 	this is where it lives */
@@ -1639,8 +1639,8 @@ void InGameUI::preDraw( void )
 //-------------------------------------------------------------------------------------------------
 //DECLARE_PERF_TIMER(InGameUI_update)
 void InGameUI::update( void )
-{ 
-DEBUG_CRASH(("InGameUI::update not yet implemented!"));
+{
+// FIXME: DEBUG_CRASH(("InGameUI::update not yet implemented!"));
 #if 0
 	//USE_PERF_TIMER(InGameUI_update)
 	Int i;

@@ -41,9 +41,9 @@ public:
    /// given a type, create a drawable
    virtual Drawable* friend_createDrawable(const ThingTemplate* thing, DrawableStatus statusBits = DRAWABLE_STATUS_NONE);
 
-   virtual void init(void);      ///< initialize resources
-   virtual void update(void);    ///< per frame update
-   virtual void reset(void);     ///< reset system
+   virtual void init();      ///< initialize resources
+   virtual void update();    ///< per frame update
+   virtual void reset();     ///< reset system
 
    virtual void addScorch(const Coord3D *pos, Real radius, Scorches type);
    virtual void createRayEffectByTemplate(const Coord3D *start, const Coord3D *end, const ThingTemplate* tmpl);  ///< create effect needing start and end location
@@ -54,31 +54,31 @@ public:
    virtual void adjustLOD(Int adj); ///< @todo hack for evaluation, remove.
    virtual void notifyTerrainObjectMoved(Object *obj);
 protected:
-   virtual Keyboard *createKeyboard(void);      ///< factory for the keyboard
-   virtual Mouse *createMouse(void);            ///< factory for the mouse
+   virtual Keyboard *createKeyboard();      ///< factory for the keyboard
+   virtual Mouse *createMouse();            ///< factory for the mouse
 
    /// factory for creating TheDisplay
-   virtual Display *createGameDisplay(void) { return NEW LinuxDisplay; }
+   virtual Display *createGameDisplay() { return NEW LinuxDisplay; }
 
    /// factory for creating TheInGameUI
-   virtual InGameUI *createInGameUI(void) { return NEW LinuxInGameUI; }
+   virtual InGameUI *createInGameUI() { return NEW LinuxInGameUI; }
 
    /// factory for creating the window manager
-   virtual GameWindowManager *createWindowManager(void) { return NEW LinuxGameWindowManager; }
+   virtual GameWindowManager *createWindowManager() { return NEW LinuxGameWindowManager; }
 
    /// factory for creating the font library
-   virtual FontLibrary *createFontLibrary(void) { return NEW LinuxFontLibrary; }
+   virtual FontLibrary *createFontLibrary() { return NEW LinuxFontLibrary; }
 
    /// Manager for display strings
-   virtual DisplayStringManager *createDisplayStringManager(void) { return NEW LinuxDisplayStringManager; }
+   virtual DisplayStringManager *createDisplayStringManager() { return NEW LinuxDisplayStringManager; }
 
-   virtual VideoPlayerInterface *createVideoPlayer(void) { return NEW FFmpegVideoPlayer; }
+   virtual VideoPlayerInterface *createVideoPlayer() { return NEW FFmpegVideoPlayer; }
 
    /// factory for creating the TerrainVisual
-   virtual TerrainVisual *createTerrainVisual(void) { printf("!!! Creating NULL TerrainVisual !!!\n"); return nullptr; }
+   virtual TerrainVisual *createTerrainVisual() { printf("!!! Creating NULL TerrainVisual !!!\n"); return nullptr; }
 
    /// factory for creating the snow manager
-   virtual SnowManager *createSnowManager(void) { printf("!!! Creating NULL SnowManager !!!\n"); return nullptr; }
+   virtual SnowManager *createSnowManager() { printf("!!! Creating NULL SnowManager !!!\n"); return nullptr; }
 
    virtual void setFrameRate(Real msecsPerFrame) { (void) msecsPerFrame; }
 };

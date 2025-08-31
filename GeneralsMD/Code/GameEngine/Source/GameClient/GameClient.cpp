@@ -94,8 +94,6 @@
 /// The GameClient singleton instance
 GameClient *TheGameClient = NULL;
 
-extern SDL_Renderer* renderer; // FIXME: Remove this once the InGameUI is sorted!
-
 //-------------------------------------------------------------------------------------------------
 GameClient::GameClient()
 {
@@ -643,11 +641,11 @@ void GameClient::update( void )
 	// update the window system itself
 	{
 		TheWindowManager->UPDATE();
-		// FIXME: Temporary fudge.  Should add the InGameUI, which does the repainting.
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);
-		TheWindowManager->winRepaint();
-		SDL_RenderPresent(renderer);
+	}
+
+	// update the video player
+	{
+		TheVideoPlayer->UPDATE();
 	}
 
 // 	Bool freezeTime = TheTacticalView->isTimeFrozen() && !TheTacticalView->isCameraMovementFinished();
@@ -758,14 +756,14 @@ void GameClient::update( void )
 		TheDisplay->UPDATE();
 	}
 
-// 	{
+	{
 // 		USE_PERF_TIMER(GameClient_draw)
 			
 // 	// redraw all views, update the GUI
 // 	//if(TheGameLogic->getFrame() >= 2)
 		
-// 		TheDisplay->DRAW();
-// 	}
+		TheDisplay->DRAW();
+	}
 
 	{
 		// let display string factory handle its update
@@ -777,10 +775,10 @@ void GameClient::update( void )
 		TheShell->UPDATE();
 	}
 
-// 	{
-// 		// update the in game UI 
-// 		TheInGameUI->UPDATE();
-// 	}
+	{
+		// update the in game UI 
+		TheInGameUI->UPDATE();
+	}
 }  // end update
 
 /** -----------------------------------------------------------------------------------------------

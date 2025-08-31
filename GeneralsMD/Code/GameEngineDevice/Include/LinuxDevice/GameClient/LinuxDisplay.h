@@ -71,6 +71,7 @@ public:
    virtual void setClipRegion(IRegion2D* region);  ///< Set clip rectangle for 2D draw operations.
    virtual Bool isClippingEnabled(void) { return m_isClippedEnabled; }
    virtual void enableClipping(Bool onoff) { m_isClippedEnabled = onoff; }
+	virtual void draw();  ///< redraw the entire display
    virtual void setTimeOfDay(TimeOfDay tod);
    /// @todo Replace these light management routines with a LightManager singleton
    virtual void createLightPulse(const Coord3D* pos, const RGBColor* color, Real innerRadius, Real outerRadius, 

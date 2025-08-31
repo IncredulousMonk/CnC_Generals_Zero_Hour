@@ -534,7 +534,7 @@ static PoolSizeRec sizes[] =
 	{ "AttackNugget", 32, 32 },
 	{ "DeliverPayloadNugget", 48, 32 },
 	{ "ApplyRandomForceNugget", 32, 32 },
-	{ "GenericObjectCreationNugget", 632, 32 },
+	{ "GenericObjectCreationNugget", 660, 32 },
 	{ "SoundFXNugget", 320, 32 },
 	{ "TracerFXNugget", 32, 32 },
 	{ "RayEffectFXNugget", 32, 32 },

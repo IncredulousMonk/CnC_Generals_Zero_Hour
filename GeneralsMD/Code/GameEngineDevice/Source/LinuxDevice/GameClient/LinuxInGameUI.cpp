@@ -45,6 +45,9 @@
 
 #include "Common/UnitTimings.h" //Contains the DO_UNIT_TIMINGS define jba.		 
 
+// EXTERNALS //////////////////////////////////////////////////////////////////////////////////////
+extern SDL_Renderer* renderer;
+
 #if 0
 #ifdef _DEBUG
 #include "W3DDevice/GameClient/HeightMap.h"
@@ -309,10 +312,10 @@ void LinuxInGameUI::reset() {
 }  // end reset
 
 //-------------------------------------------------------------------------------------------------
-/** Draw member for the Linux implemenation of the game user interface */
+/** Draw member for the Linux implementation of the game user interface */
 //-------------------------------------------------------------------------------------------------
 void LinuxInGameUI::draw() {
-   preDraw();
+   // preDraw();
 
 #if 0
    // draw selection region if drag selecting
@@ -350,9 +353,12 @@ void LinuxInGameUI::draw() {
    if (!g_UT_startTiming)
 #endif
 
-   postDraw();
+   // postDraw();
 
+   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+   SDL_RenderClear(renderer);
    TheWindowManager->winRepaint();
+   SDL_RenderPresent(renderer);
 
 #ifdef EXTENDED_STATS
    }

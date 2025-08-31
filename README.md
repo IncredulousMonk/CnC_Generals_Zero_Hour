@@ -14,7 +14,8 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - Plays the logo movie.
 - Displays the main menu.
 - The credits menu works (including the music!)
-- The options menu mostly works (the IP address stuff doesn't, because I haven't implemented the network code yet. Also the resolution picker needs work... see below)
+- The options menu mostly works (the IP address stuff doesn't, because I haven't implemented the network code yet. Also the resolution picker needs work... see below).
+- I have added the skeleton of an OpenGL renderer, which is a prerequisite to doing any 3D rendering.
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator

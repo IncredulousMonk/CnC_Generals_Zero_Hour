@@ -22,8 +22,10 @@
 
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
 #include "GameClient/Image.h"
+#include "GameClient/InGameUI.h"
 #include "Common/FileSystem.h"
 #include "LinuxDevice/Common/SdlFileStream.h"
+#include "OpenGLRenderer.h"
 #include <SDL3_image/SDL_image.h>
 #include <set>
 
@@ -177,6 +179,24 @@ void LinuxDisplay::setClipRegion( IRegion2D *region )
    m_isClippedEnabled = TRUE;
 
 }  // end setClipRegion
+
+//============================================================================
+// LinuxDisplay::draw
+//============================================================================
+void LinuxDisplay::draw()
+{
+   updateViews();
+
+   TheOpenGLRenderer->beginRender();
+
+   // draw all views of the world
+   Display::draw();
+
+   // draw the user interface
+   TheInGameUI->DRAW();
+
+   TheOpenGLRenderer->endRender();
+}
 
 // LinuxDisplay::setTimeOfDay =================================================
 /** */

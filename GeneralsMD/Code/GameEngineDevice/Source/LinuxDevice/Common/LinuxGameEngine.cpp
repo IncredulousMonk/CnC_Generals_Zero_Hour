@@ -27,13 +27,13 @@
 #include "LinuxDevice/GameClient/SdlKeyboard.h"
 #include "LinuxDevice/GameClient/SdlMouse.h"
 #include "Common/PerfTimer.h"
+#include "OpenGLRenderer.h"
 #include <SDL3/SDL.h>
 #include <iostream>
 
 // #include "GameNetwork/LANAPICallbacks.h"
 
 // extern DWORD TheMessageTime;
-extern void drawSplashImage(void);
 
 //-------------------------------------------------------------------------------------------------
 /** Constructor for LinuxGameEngine */
@@ -45,6 +45,8 @@ LinuxGameEngine::LinuxGameEngine() {
 /** Destructor for LinuxGameEngine */
 //-------------------------------------------------------------------------------------------------
 LinuxGameEngine::~LinuxGameEngine() {
+   delete TheOpenGLRenderer;
+   TheOpenGLRenderer = nullptr;
 }
 
 
@@ -53,7 +55,10 @@ LinuxGameEngine::~LinuxGameEngine() {
 //-------------------------------------------------------------------------------------------------
 void LinuxGameEngine::init(int argc, char* argv[]) {
 
-   drawSplashImage();
+   TheOpenGLRenderer = NEW OpenGLRenderer();
+   TheOpenGLRenderer->init();
+
+   TheOpenGLRenderer->drawSplashImage();
 
    // extending functionality
    GameEngine::init(argc, argv);

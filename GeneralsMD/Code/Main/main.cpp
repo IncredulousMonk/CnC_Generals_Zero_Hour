@@ -38,7 +38,9 @@
 
 SDL_Window* window {};
 SDL_Renderer* renderer {};
-static SDL_Texture* texture {};
+SDL_Surface* surface {};
+SDL_Texture* splashTexture {};
+static SDL_GLContext glContext {};
 static CriticalSection critSec4 {};
 
 // What are these for?
@@ -52,50 +54,89 @@ void initialiseSdl(void) {
       exit(1);
    }
 
-   window = SDL_CreateWindow("Command and Conquer Generals", 800, 600, SDL_WINDOW_HIDDEN);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+   window = SDL_CreateWindow("Command and Conquer Generals", 800, 600, SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
    if (!window) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s", SDL_GetError());
       SDL_Quit();
       exit(1);
    }
 
-   renderer = SDL_CreateRenderer(window, NULL);
-   if (!renderer) {
-      SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create renderer: %s", SDL_GetError());
+   glContext = SDL_GL_CreateContext(window);
+   if (!glContext) {
+      SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create OpenGL context: %s", SDL_GetError());
       SDL_DestroyWindow(window);
       SDL_Quit();
       exit(1);
    }
+
+   if (!SDL_GL_SetSwapInterval(1)) {
+      SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Warning: Unable to set VSync!: %s", SDL_GetError());
+      SDL_GL_DestroyContext(glContext);
+      SDL_DestroyWindow(window);
+      SDL_Quit();
+      exit(1);
+   }
+
+   surface = SDL_CreateSurface(1024, 1024, SDL_PIXELFORMAT_ABGR8888); // SDL pixel format is backwards!
+   if (!surface) {
+      SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create surface: %s", SDL_GetError());
+      SDL_GL_DestroyContext(glContext);
+      SDL_DestroyWindow(window);
+      SDL_Quit();
+      exit(1);
+   }
+   SDL_ClearSurface(surface, 0.0f, 0.0f, 0.0f, 1.0f);
+
+   renderer = SDL_CreateSoftwareRenderer(surface);
+   if (!renderer) {
+      SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create renderer: %s", SDL_GetError());
+      SDL_DestroySurface(surface);
+      SDL_GL_DestroyContext(glContext);
+      SDL_DestroyWindow(window);
+      SDL_Quit();
+      exit(1);
+   }
+
+   // renderer = SDL_CreateRenderer(window, NULL);
+   // if (!renderer) {
+   //    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create renderer: %s", SDL_GetError());
+   //    SDL_GL_DestroyContext(glContext);
+   //    SDL_DestroyWindow(window);
+   //    SDL_Quit();
+   //    exit(1);
+   // }
 
    SDL_Surface* bmp = SDL_LoadBMP("../assets/Install_Final.bmp");
    if (!bmp) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not load bitmap: %s", SDL_GetError());
       SDL_DestroyRenderer(renderer);
+      SDL_GL_DestroyContext(glContext);
       SDL_DestroyWindow(window);
       SDL_Quit();
       exit(1);
    }
 
-   texture = SDL_CreateTextureFromSurface(renderer, bmp);
+   splashTexture = SDL_CreateTextureFromSurface(renderer, bmp);
    SDL_DestroySurface(bmp);
-   if (!texture) {
+   if (!splashTexture) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create texture: %s", SDL_GetError());
       SDL_DestroyRenderer(renderer);
+      SDL_GL_DestroyContext(glContext);
       SDL_DestroyWindow(window);
       SDL_Quit();
       exit(1);
    }
-}
-
-void drawSplashImage(void) {
-   SDL_RenderClear(renderer);
-   SDL_RenderTexture(renderer, texture, NULL, NULL);
-   SDL_RenderPresent(renderer);
 }
 
 void cleanupSdl(void) {
-   SDL_DestroyTexture(texture);
+   SDL_DestroyTexture(splashTexture);
+   SDL_DestroySurface(surface);
    SDL_DestroyRenderer(renderer);
+   SDL_GL_DestroyContext(glContext);
    SDL_DestroyWindow(window);
 }
 
@@ -105,6 +146,12 @@ int main(int argc, char* argv[]) {
    initialiseSdl();
 
    SDL_ShowWindow(window);
+
+   int major {};
+   int minor {};
+   SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
+   SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
+   SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "OpenGL version: %d.%d", major, minor);
 
    DEBUG_INIT(DEBUG_FLAGS_DEFAULT);
    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Initialising memory manager.");

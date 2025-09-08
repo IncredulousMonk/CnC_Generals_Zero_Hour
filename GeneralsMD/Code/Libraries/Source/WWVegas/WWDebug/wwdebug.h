@@ -40,7 +40,7 @@
 
 #ifndef WWDEBUG_H
 #define WWDEBUG_H
-				
+
 // The macro MESSAGE allows user to put:
 // #pragma MESSAGE("Hello world")
 // anywhere in a source file.  The message:
@@ -73,7 +73,7 @@ typedef bool (*TriggerFunc)(int trigger_num);
 typedef void (*ProfileFunc)(const char * title);
 
 PrintFunc			WWDebug_Install_Message_Handler(PrintFunc func);
-AssertPrintFunc	WWDebug_Install_Assert_Handler(AssertPrintFunc func);
+AssertPrintFunc		WWDebug_Install_Assert_Handler(AssertPrintFunc func);
 TriggerFunc			WWDebug_Install_Trigger_Handler(TriggerFunc func);
 ProfileFunc			WWDebug_Install_Profile_Start_Handler(ProfileFunc func);
 ProfileFunc			WWDebug_Install_Profile_Stop_Handler(ProfileFunc func);
@@ -101,15 +101,15 @@ void					WWDebug_DBWin32_Message_Handler( const char * message);
 
 /*
 ** Use the following #define so that all of the debugging messages
-** and strings go away when the release version is built.  
+** and strings go away when the release version is built.
 ** WWDEBUG_SAY(("dir = %f\n",dir));
 */
 
 #include "Common/Debug.h"
 
 #ifdef DEBUG_LOGGING
-#define WWDEBUG_SAY(x)							DEBUG_LOG(x)
-#define WWDEBUG_WARNING(x)					DEBUG_LOG(x)
+#define WWDEBUG_SAY(x)		DEBUG_LOG(x)
+#define WWDEBUG_WARNING(x)	DEBUG_LOG(x)
 #else
 #define WWDEBUG_SAY(x)
 #define WWDEBUG_WARNING(x)
@@ -126,10 +126,10 @@ void					WWDebug_DBWin32_Message_Handler( const char * message);
 ** assert handler.
 */
 #ifdef DEBUG_CRASHING
-#define WWASSERT(expr)							DEBUG_ASSERTCRASH(expr, ("%s, %s, %d", #expr,__FILE__,__LINE__))
+#define WWASSERT(expr)						DEBUG_ASSERTCRASH(expr, ("%s, %s, %d", #expr,__FILE__,__LINE__))
 #define WWASSERT_PRINT( expr, string )		DEBUG_ASSERTCRASH(expr, ("%s, %s, %d - %s", #expr,__FILE__,__LINE__,string))
-#define W3D_DIE                               	DEBUG_CRASH(("DIE!, %s, %d", __FILE__,__LINE__))
-#define WWDEBUG_ERROR(x)						DEBUG_CRASH(x)
+#define W3D_DIE								DEBUG_CRASH(("DIE!, %s, %d", __FILE__,__LINE__))
+#define WWDEBUG_ERROR(x)					DEBUG_CRASH(x)
 #else
 #define WWASSERT( expr )
 #define WWASSERT_PRINT( expr, string )	

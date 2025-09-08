@@ -143,8 +143,7 @@ void HeaderTemplateManager::init( void )
 {
 	INI ini;
 	AsciiString fname;
-	// fname.format("Data\\%s\\HeaderTemplate.ini", GetRegistryLanguage().str());
-	fname.format("Data\\%s\\HeaderTemplate.ini", "English");
+	fname.format("Data\\%s\\HeaderTemplate.ini", GetRegistryLanguage().str());
 	ini.load( fname, INI_LOAD_OVERWRITE, NULL );
 	populateGameFonts();
 }

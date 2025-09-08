@@ -213,6 +213,11 @@ class FastFixedAllocator
 public:
 	FastFixedAllocator(unsigned int n=0);
   ~FastFixedAllocator();
+
+	// No copies allowed!
+	FastFixedAllocator(const FastFixedAllocator&) = delete;
+	FastFixedAllocator& operator=(const FastFixedAllocator&) = delete;
+
    void  Init(unsigned int n); //Useful for setting allocation size *after* construction,
                                //but before first use.
 	void* Alloc();
@@ -230,19 +235,19 @@ protected:
 
    struct Chunk
 	{
-		enum {
+		enum: unsigned int {
 			size = 8*1024-16
 		};
 
 		Chunk* next;
 		char mem[size];
 	};
-	Chunk* chunks;
-	unsigned int esize;
-	unsigned TotalHeapSize;
-	unsigned TotalAllocatedSize;
-	unsigned TotalAllocationCount;
-	Link*  head;
+	Chunk* chunks {};
+	unsigned int esize {};
+	unsigned TotalHeapSize {};
+	unsigned TotalAllocatedSize {};
+	unsigned TotalAllocationCount {};
+	Link*  head {};
 	void   grow();
 };
 
@@ -332,7 +337,7 @@ WWINLINE void FastFixedAllocator::grow()
    chunks   = n;
 	TotalHeapSize+=sizeof(Chunk);
    
-   const int nelem = Chunk::size/esize;
+   const unsigned int nelem = Chunk::size/esize;
    char* start = n->mem;
    char* last = &start[(nelem-1)*esize];
    for(char* p = start; p<last; p+=esize)
@@ -387,7 +392,7 @@ protected:
 
 WWINLINE unsigned FastAllocatorGeneral::Get_Total_Heap_Size()
 {
-	int size=AllocatedWithMalloc;
+	unsigned size=AllocatedWithMalloc;
 	for (int i=0;i<MAX_ALLOC_SIZE/ALLOC_STEP;++i) {
 		FastCriticalSectionClass::LockClass lock(CriticalSections[i]);
 		size+=allocators[i].Get_Heap_Size();
@@ -397,7 +402,7 @@ WWINLINE unsigned FastAllocatorGeneral::Get_Total_Heap_Size()
 
 WWINLINE unsigned FastAllocatorGeneral::Get_Total_Allocated_Size()
 {
-	int size=AllocatedWithMalloc;
+	unsigned size=AllocatedWithMalloc;
 	for (int i=0;i<MAX_ALLOC_SIZE/ALLOC_STEP;++i) {
 		FastCriticalSectionClass::LockClass lock(CriticalSections[i]);
 		size+=allocators[i].Get_Allocated_Size();
@@ -407,7 +412,7 @@ WWINLINE unsigned FastAllocatorGeneral::Get_Total_Allocated_Size()
 
 WWINLINE unsigned FastAllocatorGeneral::Get_Total_Allocation_Count()
 {
-	int count=AllocatedWithMallocCount;
+	unsigned count=AllocatedWithMallocCount;
 	for (int i=0;i<MAX_ALLOC_SIZE/ALLOC_STEP;++i) {
 		FastCriticalSectionClass::LockClass lock(CriticalSections[i]);
 		count+=allocators[i].Get_Allocation_Count();
@@ -439,7 +444,7 @@ WWINLINE void* FastAllocatorGeneral::Alloc(unsigned int n)
 		ActualMemoryUsage+=n;
 	}
 	if (n<MAX_ALLOC_SIZE) {
-		int index=(n)/ALLOC_STEP;
+		unsigned index=(n)/ALLOC_STEP;
 		{
 			FastCriticalSectionClass::LockClass lock(CriticalSections[index]);
 			pMemory = allocators[index].Alloc();
@@ -480,7 +485,7 @@ WWINLINE void FastAllocatorGeneral::Free(void* pAlloc)
 		ActualMemoryUsage-=size;
 
 		if (size<MAX_ALLOC_SIZE) {
-			int index=size/ALLOC_STEP;
+			unsigned index=size/ALLOC_STEP;
 			FastCriticalSectionClass::LockClass lock(CriticalSections[index]);
          allocators[index].Free(n);
 		}

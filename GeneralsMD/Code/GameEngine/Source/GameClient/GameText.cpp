@@ -296,7 +296,7 @@ extern const Char *g_csfFile;
 void GameTextManager::init( void )
 {
 	AsciiString csfFile;
-	csfFile.format(g_csfFile, "English" /*GetRegistryLanguage().str()*/);
+	csfFile.format(g_csfFile, GetRegistryLanguage().str());
 	Int format;
 
 	if ( m_initialized )

@@ -90,7 +90,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 
 ## Dependencies
 
-I'm using SDL3, SDL_ttf 3 (fonts), SDL_image 3 (loading .tga images), and SDL_sound (decoding .mp3 files), so you'll have to install those libraries.
+I'm using SDL3, SDL_ttf 3 (fonts), and SDL_sound (decoding .mp3 files), so you'll have to install those libraries.
 
 I'm using FFmpeg to replace Bink, so I installed libavformat-dev, libswscale-dev, and libavdevice-dev.
 

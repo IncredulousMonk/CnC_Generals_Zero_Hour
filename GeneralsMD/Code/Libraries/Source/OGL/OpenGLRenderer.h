@@ -40,9 +40,9 @@ public:
    void drawSplashImage();
    void beginRender();
    void endRender();
-private:
-   void addShader(GLuint program, const char* source, GLenum shaderType);
-   void buildShader(GLuint program);
+
+   static void addShader(GLuint program, const char* source, GLenum shaderType);
+   static void buildShader(GLuint program);
 };
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////

@@ -26,12 +26,14 @@
 #define __LINUX_DISPLAY_H
 
 #include "GameClient/Display.h"
+#include "LinuxDevice/GameClient/LinuxFileSystem.h"
 #include <SDL3/SDL.h>
 
 struct Texture {
-   AsciiString path {};
+   GameFileClass* gameFile {};
    SDL_Texture* texture {};
    Bool loaded {};
+   Bool dds {};
 };
 
 using TextureCache = std::unordered_map<AsciiString, Texture, rts::hash<AsciiString>, rts::equal_to<AsciiString>>;

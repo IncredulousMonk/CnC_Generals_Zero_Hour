@@ -29,6 +29,7 @@
 #include "ww3dformat.h"
 #include "wwstring.h"
 #include "vector3.h"
+#include "ffactory.h"
 
 struct IDirect3DSurface8;
 struct IDirect3DVolume8;
@@ -143,7 +144,7 @@ struct LegacyDDSURFACEDESC2 {
 	};
 	unsigned AlphaBitDepth;
 	unsigned Reserved;
-	void* Surface;
+	unsigned SurfacePointer; //void* Surface;
 	union
 	{
 		LegacyDDCOLORKEY CKDestOverlay;
@@ -178,31 +179,40 @@ enum DDSType
 
 class DDSFileClass
 {
-	unsigned Width;
-	unsigned Height;
-	unsigned Depth;
-	unsigned FullWidth;
-	unsigned FullHeight;
-	unsigned FullDepth;
-	unsigned MipLevels;
-	unsigned long DateTime;
+	unsigned Width {0};
+	unsigned Height {0};
+	unsigned Depth {0};
+	unsigned FullWidth {0};
+	unsigned FullHeight {0};
+	unsigned FullDepth {0};
+	unsigned MipLevels {0};
+	unsigned long DateTime {0};
 	unsigned ReductionFactor;
-	unsigned char* DDSMemory;
-	WW3DFormat Format;
-	DDSType	Type;
-	unsigned* LevelSizes;
-	unsigned* LevelOffsets;
-	unsigned CubeFaceSize;
-	LegacyDDSURFACEDESC2 SurfaceDesc;
+	unsigned char* DDSMemory {};
+	WW3DFormat Format {WW3D_FORMAT_UNKNOWN};
+	DDSType	Type {DDS_TEXTURE};
+	unsigned* LevelSizes {};
+	unsigned* LevelOffsets {};
+	unsigned CubeFaceSize {0};
+	LegacyDDSURFACEDESC2 SurfaceDesc {};
 	char Name[256];
 
 	static unsigned Calculate_DXTC_Surface_Size(unsigned width, unsigned height, WW3DFormat format);
+
+private:
+	void Load_DDS_Info(FileClass* file);
+	bool Do_Load(FileClass* file);
 
 public:
 	// You can pass the name in .tga or .dds format, the class will automatically try and load .dds file.
 	// Note that creating the object will only give you image info - call Load() to load the surfaces.
 	DDSFileClass(const char* name,unsigned reduction_factor);
+	DDSFileClass(FileClass* file);
 	~DDSFileClass();
+
+	// No copies allowed!
+	DDSFileClass(const DDSFileClass&) = delete;
+	DDSFileClass& operator=(const DDSFileClass&) = delete;
 
 	unsigned Get_Width(unsigned level) const;
 	unsigned Get_Height(unsigned level) const;
@@ -219,8 +229,10 @@ public:
 
 	DDSType Get_Type() const { return Type; }
 
+#if 0
 	// Copy pixels to the destination surface.
 	void Copy_Level_To_Surface(unsigned level,IDirect3DSurface8* d3d_surface,const Vector3& hsv_shift=Vector3(0.0f,0.0f,0.0f));
+#endif // if 0
 	void Copy_Level_To_Surface(
 		unsigned level,
 		WW3DFormat dest_format, 
@@ -230,6 +242,7 @@ public:
 		unsigned dest_pitch,
 		const Vector3& hsv_shift=Vector3(0.0f,0.0f,0.0f));
 
+#if 0
 	// cube map
 	const unsigned char* Get_CubeMap_Memory_Pointer(unsigned face, unsigned level) const;
 	void Copy_CubeMap_Level_To_Surface
@@ -258,7 +271,8 @@ public:
 		unsigned slice_pitch,
 		const Vector3& hsv_shift=Vector3(0.0f,0.0f,0.0f)
 	);
-	
+#endif // if 0
+
 	// Get pixel in A8R8G8B8 format. This isn't the fastest possible way of reading data from DDS.
 	unsigned Get_Pixel(unsigned level,unsigned x,unsigned y) const;
 
@@ -275,6 +289,7 @@ public:
 		const Vector3& hsv_shift=Vector3(0.0f,0.0f,0.0f)) const;
 
 	bool Load();
+	bool Load(FileClass* file);
 	bool Is_Available() const { return !!LevelSizes; }
 };
 

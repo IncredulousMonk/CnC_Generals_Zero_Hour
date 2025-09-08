@@ -38,8 +38,9 @@
 #ifndef _SYSTIMER_H
 
 #include "always.h"
-#include <windows.h>
-#include "mmsys.h"
+// #include <windows.h>
+// #include "mmsys.h"
+#include <chrono>
 
 #define TIMEGETTIME SystemTime.Get
 #define MS_TIMER_SECOND 1000
@@ -79,12 +80,12 @@ class SysTimeClass
 		/*
 		** Time we were first called.
 		*/
-		unsigned long StartTime;
+		unsigned long StartTime {};
 
 		/*
 		** Time to add after timer wraps.
 		*/
-		unsigned long WrapAdd;
+		unsigned long WrapAdd {};
 
 };
 
@@ -118,7 +119,8 @@ WWINLINE unsigned long SysTimeClass::Get(void)
 		is_init = true;
 	}
 
-	unsigned long time = timeGetTime();
+	std::chrono::duration<unsigned long, std::milli> msSinceEpoch {std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())};
+	unsigned long time = msSinceEpoch.count();
 	if (time > StartTime) {
 		return(time - StartTime);
 	}

@@ -52,20 +52,23 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include	"always.h"
-#include	"rawfile.h"
-#include	<direct.h>
-//#include	<share.h>
-#include	<stddef.h>
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<string.h>
+// #include "always.h"
+#include "RAWFILE.H"
+#include "Lib/BaseType.h"
+// #include <direct.h>
+//#include <share.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "win.h"
-#include	<limits.h>
-#include	<errno.h>
+#include <limits.h>
+#include <errno.h>
+#include <ctype.h>
 #ifdef _UNIX
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 
@@ -128,6 +131,9 @@
 	EUCLEAN,				// not used
 #endif
 
+#ifdef _UNIX
+int GetLastError() { return errno; }
+#endif
 
 /***********************************************************************************************
  * RawFileClass::RawFileClass -- Default constructor for a file object.                        *
@@ -648,7 +654,7 @@ int RawFileClass::Read(void * buffer, int size)
 
 		#ifdef _UNIX
 			readok=TRUE;
-			bytesread=fread(buffer,1,size,Handle);
+			bytesread=(long)fread(buffer,1,(size_t)size,Handle);
 			if ((bytesread == 0)&&( ! feof(Handle)))
 				readok=ferror(Handle);
 		#else
@@ -714,7 +720,7 @@ int RawFileClass::Write(void const * buffer, int size)
 
    int writeok=TRUE;
    #ifdef _UNIX
-		byteswritten = fwrite(buffer, 1, size, Handle);
+		byteswritten = (long)fwrite(buffer, 1, (size_t)size, Handle);
 		if (byteswritten != size)
 			writeok = FALSE;
 	#else
@@ -855,18 +861,11 @@ int RawFileClass::Size(void)
 	*/
 	if (Is_Open()) {
 
-      #ifdef _UNIX
-			fpos_t curpos,startpos,endpos;
-			fgetpos(Handle,&curpos);	
-
-			fseek(Handle,0,SEEK_SET);
-			fgetpos(Handle,&startpos);	
-
+		#ifdef _UNIX
+			long curpos = ftell(Handle);
 			fseek(Handle,0,SEEK_END);
-			fgetpos(Handle,&endpos);	
-
-			size=endpos-startpos;
-			fsetpos(Handle,&curpos);
+			size = ftell(Handle);
+			fseek(Handle,curpos,SEEK_SET);
 		#else
 			size = GetFileSize(Handle, NULL);
 		#endif
@@ -874,7 +873,7 @@ int RawFileClass::Size(void)
 		/*
 		**	If there was in internal error, then call the error function.
 		*/
-		if (size == 0xFFFFFFFF) {
+		if (size == -1) {
 			Error(GetLastError(), false, Filename);
 		}
 
@@ -1032,7 +1031,7 @@ unsigned long RawFileClass::Get_Date_Time(void)
 #ifdef _UNIX
 		struct stat statbuf;
 		lstat(Filename, &statbuf);
-		retval = statbuf.st_mtime;
+		retval = (unsigned long)statbuf.st_mtime;
 #else
 		BY_HANDLE_FILE_INFORMATION info;
 
@@ -1050,7 +1049,7 @@ unsigned long RawFileClass::Get_Date_Time(void)
 #ifdef _UNIX
 			struct stat statbuf;
 			lstat(Filename, &statbuf);
-			retval = statbuf.st_mtime;
+			retval = (unsigned long)statbuf.st_mtime;
 #else
 			BY_HANDLE_FILE_INFORMATION info;
 
@@ -1085,7 +1084,7 @@ unsigned long RawFileClass::Get_Date_Time(void)
  *   11/14/1995 DRD : Created.                                                                 *
  *   07/13/1996 JLB : Handles win 32 method                                                    *
  *=============================================================================================*/
-bool RawFileClass::Set_Date_Time(unsigned long datetime)
+bool RawFileClass::Set_Date_Time([[maybe_unused]]unsigned long datetime)
 {
 #ifdef _UNIX
 	assert(0);
@@ -1201,7 +1200,7 @@ int RawFileClass::Raw_Seek(int pos, int dir)
 	/*
 	**	If there was an error in the seek, then bail with an error condition.
 	*/
-	if (pos == 0xFFFFFFFF) {
+	if (pos == -1) {
 		Error(GetLastError(), false, Filename);
 	}
 

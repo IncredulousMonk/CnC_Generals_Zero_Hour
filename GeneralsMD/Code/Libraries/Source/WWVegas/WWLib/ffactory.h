@@ -52,7 +52,7 @@
 /*
 **
 */
-#include	"rawfile.h"
+#include	"RAWFILE.H"
 class	FileClass;
 
 /*
@@ -145,8 +145,8 @@ public:
 	void						Reset_Sub_Directory( void )								{ SubDirectory = ""; }
 
 protected:
-	StringClass				SubDirectory;
-	bool						IsStripPath;
+	StringClass				SubDirectory {};
+	bool					IsStripPath;
 
 	// Mutex must be mutable because const functions lock on it.
 	mutable CriticalSectionClass	Mutex;

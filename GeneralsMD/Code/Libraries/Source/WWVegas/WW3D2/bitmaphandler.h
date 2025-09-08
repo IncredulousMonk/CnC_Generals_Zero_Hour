@@ -277,7 +277,7 @@ WWINLINE void BitmapHandlerClass::Read_B8G8R8A8(
 	unsigned bpp=Get_Bytes_Per_Pixel(src_format);
 	Read_B8G8R8A8(
 		argb,
-		src_ptr+bpp*x+width*bpp*y,
+		src_ptr + bpp * (unsigned)x + (unsigned)width * bpp * (unsigned)y,
 		src_format,
 		palette,
 		palette_bpp);

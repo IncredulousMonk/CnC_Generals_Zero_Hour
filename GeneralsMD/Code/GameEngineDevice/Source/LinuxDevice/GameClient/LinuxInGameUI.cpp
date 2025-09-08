@@ -355,7 +355,7 @@ void LinuxInGameUI::draw() {
 
    // postDraw();
 
-   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
    SDL_RenderClear(renderer);
    TheWindowManager->winRepaint();
    SDL_RenderPresent(renderer);

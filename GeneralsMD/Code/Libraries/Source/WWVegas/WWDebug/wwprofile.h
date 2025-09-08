@@ -68,6 +68,10 @@ public:
 	WWProfileHierachyNodeClass( unsigned id, WWProfileHierachyNodeClass * parent );
 	~WWProfileHierachyNodeClass( void );
 
+	// No copies allowed!
+	WWProfileHierachyNodeClass(const WWProfileHierachyNodeClass&) = delete;
+	WWProfileHierachyNodeClass& operator=(const WWProfileHierachyNodeClass&) = delete;
+
 	WWProfileHierachyNodeClass * Get_Sub_Node( const char * name );
 
 	WWProfileHierachyNodeClass * Get_Parent( void )			{ return Parent; }
@@ -95,22 +99,26 @@ public:
 
 protected:
 
-	const char *					Name;
-	int								TotalCalls;
-	float								TotalTime;
-	__int64							StartTime;
-	int								RecursionCounter;
-	unsigned						ProfileStringID;
+	const char *					Name {};
+	int								TotalCalls {};
+	float							TotalTime {};
+	__int64							StartTime {};
+	int								RecursionCounter {};
+	unsigned						ProfileStringID {};
 
-	WWProfileHierachyNodeClass *	Parent;
-	WWProfileHierachyNodeClass *	Child;
-	WWProfileHierachyNodeClass *	Sibling;
+	WWProfileHierachyNodeClass *	Parent {};
+	WWProfileHierachyNodeClass *	Child {};
+	WWProfileHierachyNodeClass *	Sibling {};
 };
 
 class	WWProfileHierachyInfoClass {
 public:
-	WWProfileHierachyInfoClass( const char * name, WWProfileHierachyInfoClass * parent );
+	WWProfileHierachyInfoClass( StringClass name, WWProfileHierachyInfoClass * parent );
 	~WWProfileHierachyInfoClass( void );
+
+	// No copies allowed!
+	WWProfileHierachyInfoClass(const WWProfileHierachyInfoClass&) = delete;
+	WWProfileHierachyInfoClass& operator=(const WWProfileHierachyInfoClass&) = delete;
 
 	WWProfileHierachyInfoClass * Get_Parent( void )			{ return Parent; }
 	WWProfileHierachyInfoClass * Get_Sibling( void )		{ return Sibling; }
@@ -120,8 +128,8 @@ public:
 	void Set_Sibling( WWProfileHierachyInfoClass *node )			{ Sibling=node; }
 	void Set_Child( WWProfileHierachyInfoClass *node )			{ Child=node; }
 
-	const char *						Get_Name( void )				{ return Name; }
-	void								Set_Name( const char* name )	{ Name=name; }
+	const wchar_t *						Get_Name( void )				{ return Name; }
+	void								Set_Name( const wchar_t* name )	{ Name=name; }
 	int									Get_Total_Calls( void )		{ return TotalCalls; }
 	float								Get_Total_Time( void )		{ return TotalTime; }
 	void								Set_Total_Calls(int calls) { TotalCalls=calls; }
@@ -129,9 +137,9 @@ public:
 
 protected:
 
-	StringClass							Name;
+	StringClass						Name;
 	int								TotalCalls;
-	float								TotalTime;
+	float							TotalTime;
 
 	WWProfileHierachyInfoClass *	Parent;
 	WWProfileHierachyInfoClass *	Child;
@@ -164,8 +172,8 @@ public:
 	float				Get_Current_Parent_Total_Time( void )	{ return CurrentParent->Get_Total_Time(); }
 	
 protected:
-	WWProfileHierachyNodeClass *	CurrentParent;
-	WWProfileHierachyNodeClass *	CurrentChild;
+	WWProfileHierachyNodeClass *	CurrentParent {};
+	WWProfileHierachyNodeClass *	CurrentChild {};
 
 	WWProfileIterator( WWProfileHierachyNodeClass * start );
 	friend	class		WWProfileManager;
@@ -188,7 +196,7 @@ public:
 	float				Get_Current_Total_Time( void )	{ return CurrentNode->Get_Total_Time(); }
 
 protected:
-	WWProfileHierachyNodeClass *	CurrentNode;
+	WWProfileHierachyNodeClass *	CurrentNode {};
 
 	WWProfileInOrderIterator( void );
 	friend	class		WWProfileManager;
@@ -279,9 +287,13 @@ class	WWTimeItClass {
 public:
 	WWTimeItClass( const char * name );
 	~WWTimeItClass( void );
+
+	// No copies allowed!
+	WWTimeItClass(const WWTimeItClass&) = delete;
+	WWTimeItClass& operator=(const WWTimeItClass&) = delete;
 private:
-	const char * Name;
-	__int64	Time;
+	const char * Name {};
+	__int64	Time {};
 };
 
 #ifdef ENABLE_WWPROFILE
@@ -301,9 +313,13 @@ public:
 	WWMeasureItClass( float * p_result );
 	~WWMeasureItClass( void );
 
+	// No copies allowed!
+	WWMeasureItClass(const WWMeasureItClass&) = delete;
+	WWMeasureItClass& operator=(const WWMeasureItClass&) = delete;
+
 private:
-	__int64	Time;
-	float *  PResult;
+	__int64	Time {};
+	float *  PResult {};
 };
 
 // ----------------------------------------------------------------------------
@@ -325,13 +341,13 @@ private:
 
 struct WWMemoryAndTimeLog
 {
-	unsigned TimeStart;
-	unsigned IntermediateTimeStart;
-	int AllocCountStart;
-	int IntermediateAllocCountStart;
-	int AllocSizeStart;
-	int IntermediateAllocSizeStart;
-	StringClass Name;
+	unsigned TimeStart {};
+	unsigned IntermediateTimeStart {};
+	int AllocCountStart {};
+	int IntermediateAllocCountStart {};
+	int AllocSizeStart {};
+	int IntermediateAllocSizeStart {};
+	StringClass Name {};
 	static unsigned TabCount;
 
 	WWMemoryAndTimeLog(const char* name);

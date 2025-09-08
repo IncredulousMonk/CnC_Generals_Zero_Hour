@@ -113,7 +113,7 @@ int BufferedFileClass::Read(void * buffer, int size)
 	// If there is anything in the buffer, copy it in.
 	if ( BufferAvailable > 0 ) {
 		int amount = min( size, BufferAvailable );
-		::memcpy( buffer, &Buffer[BufferOffset], amount );
+		::memcpy( buffer, &Buffer[BufferOffset], (size_t)amount );
 		BufferAvailable -= amount;
 		BufferOffset += amount;
 		size -= amount;
@@ -133,7 +133,7 @@ int BufferedFileClass::Read(void * buffer, int size)
 	int desired_buffer_size = _DesiredBufferSize;
 
 	// If we need more than the buffer will hold, just read it
-	int amount = BufferSize;
+	int amount = (int)BufferSize;
 	if ( amount == 0 ) {
 		amount = desired_buffer_size;
 	}
@@ -143,7 +143,7 @@ int BufferedFileClass::Read(void * buffer, int size)
 
 	// If we dont have a buffer, get one
 	if ( BufferSize == 0 ) {
-		BufferSize = desired_buffer_size;
+		BufferSize = (unsigned int)desired_buffer_size;
 		Buffer = W3DNEWARRAY unsigned char [BufferSize];
 		BufferAvailable = 0;
 		BufferOffset = 0;
@@ -151,14 +151,14 @@ int BufferedFileClass::Read(void * buffer, int size)
 
 	// Fill the buffer
 	if ( BufferAvailable == 0 ) {
-		BufferAvailable = BASECLASS::Read( Buffer, BufferSize );
+		BufferAvailable = BASECLASS::Read( Buffer, (int)BufferSize );
 		BufferOffset = 0;
 	}
 
 	// If there is anything in the buffer, copy it in.
 	if ( BufferAvailable > 0 ) {
 		int amount = min( size, BufferAvailable );
-		::memcpy( buffer, &Buffer[BufferOffset], amount );
+		::memcpy( buffer, &Buffer[BufferOffset], (size_t)amount );
 		BufferAvailable -= amount;
 		BufferOffset += amount;
 		read += amount;

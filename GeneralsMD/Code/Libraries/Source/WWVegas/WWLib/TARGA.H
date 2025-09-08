@@ -67,18 +67,18 @@ long Targa_Error_Handler(long error_code,const char* filename);
  */
 typedef struct _TGAHeader
 	{
-	char  IDLength;
-	char  ColorMapType;
-	char  ImageType;
-	short CMapStart;
-	short CMapLength;
-	char  CMapDepth;
-	short XOffset;
-	short YOffset;
-	short Width;
-	short Height;
-	char  PixelDepth;
-	char  ImageDescriptor;
+	char  IDLength {};
+	char  ColorMapType {};
+	char  ImageType {};
+	short CMapStart {};
+	short CMapLength {};
+	char  CMapDepth {};
+	short XOffset {};
+	short YOffset {};
+	short Width {};
+	short Height {};
+	char  PixelDepth {};
+	char  ImageDescriptor {};
 	} TGAHeader;
 
 /* ImageType definiton */
@@ -133,11 +133,11 @@ typedef struct _TGAHeader
  */
 typedef struct _TGA2Footer
 	{
-	long Extension;
-	long Developer;
+	int Extension {};
+	int Developer {};
 	char Signature[16];
-	char RsvdChar;
-	char BZST;
+	char RsvdChar {};
+	char BZST {};
 	_TGA2Footer() {}
 	} TGA2Footer;
 
@@ -150,9 +150,9 @@ typedef struct _TGA2Footer
  */
 typedef struct _TGA2DateStamp
 	{
-	short Month;
-	short Day;
-	short Year;
+	short Month {};
+	short Day {};
+	short Year {};
 	} TGA2DateStamp;
 
 /* TGA2TimeStamp - A series of 3 WORD values which define the integer value
@@ -164,9 +164,9 @@ typedef struct _TGA2DateStamp
  */
 typedef struct _TGA2TimeStamp
 	{
-	short Hour;
-	short Minute;
-	short Second;
+	short Hour {};
+	short Minute {};
+	short Second {};
 	} TGA2TimeStamp;
 
 /* TGA2SoftVer - Define the version of the software used to generate file.
@@ -176,8 +176,8 @@ typedef struct _TGA2TimeStamp
  */
 typedef struct _TGA2SoftVer
 	{
-	short Number;
-	char  Letter;
+	short Number {};
+	char  Letter {};
 	} TGA2SoftVer;
 
 /* TGA2Ratio - Numerator and denominator which when taken together specify
@@ -188,8 +188,8 @@ typedef struct _TGA2SoftVer
  */
 typedef struct _TGA2Ratio
 	{
-	short Numer;
-	short Denom;
+	short Numer {};
+	short Denom {};
 	} TGA2Ratio;
 
 /* TGA2Extension - Extension area, provided for additional file information.
@@ -215,22 +215,22 @@ typedef struct _TGA2Ratio
  */
 typedef struct _TGA2Extension
 	{
-	short         ExtSize;
+	short         ExtSize {};
 	char          AuthName[41];
 	char          AuthComment[324];
-	TGA2DateStamp Date;
-	TGA2TimeStamp Time;
+	TGA2DateStamp Date {};
+	TGA2TimeStamp Time {};
 	char          JobName[41];
-	TGA2TimeStamp JobTime;
+	TGA2TimeStamp JobTime {};
 	char          SoftID[41];
-	TGA2SoftVer   SoftVer;
-	long          KeyColor;
-	TGA2Ratio     Aspect;
-	TGA2Ratio     Gamma;
-	long          ColorCor;
-	long          PostStamp;
-	long          ScanLine;
-	char          Attributes;
+	TGA2SoftVer   SoftVer {};
+	int           KeyColor {};
+	TGA2Ratio     Aspect {};
+	TGA2Ratio     Gamma {};
+	int           ColorCor {};
+	int           PostStamp {};
+	int           ScanLine {};
+	char          Attributes {};
 	} TGA2Extension;
 
 /* Alpha channel attributes (Extension Area) */
@@ -263,12 +263,17 @@ class Targa
 		Targa(void);
 		~Targa();
 
+		// No copies allowed!
+		Targa(const Targa&) = delete;
+		Targa& operator=(const Targa&) = delete;
+
 		/* Function prototypes. */
 		long Open(const char* name, long mode);
 		void Close(void);
 
 		long Load(const char* name, char* palette, char* image,bool invert_image=true);
 		long Load(const char* name, long flags, bool invert_image=true);
+		long Load(FileClass* tgaFile, long flags, bool invert_image=true);
 		long Save(const char* name, long flags, bool addextension = false);
 		
 		void XFlip(void);
@@ -284,21 +289,27 @@ class Targa
 
 		TGA2Extension* GetExtension(void);
 
-		TGAHeader Header;
+		TGAHeader Header {};
 
 	protected:
 #ifdef TGA_USES_WWLIB_FILE_CLASSES
-		FileClass *TGAFile;
+		FileClass *TGAFile {};
 #else
-		long mFH;
+		long mFH {};
 #endif
-		long mAccess;
-		long mFlags;
-		char* mImage;
-		char* mPalette;
-		TGA2Extension mExtension;
+		long mAccess {};
+		long mFlags {};
+		char* mImage {};
+		char* mPalette {};
+		TGA2Extension mExtension {};
 
 	private:
+		long ReadHeaderAndExtension();
+		long AllocatePaletteMemory(long flags);
+		long LoadPalette(char* palette);
+		long AllocateImageMemory(long flags);
+		long LoadImageData(char* image, bool invert_image);
+
 		// Utility functions
 		long DecodeImage(void);
 		long EncodeImage(void);

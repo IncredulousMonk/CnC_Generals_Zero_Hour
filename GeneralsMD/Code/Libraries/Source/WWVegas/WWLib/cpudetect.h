@@ -201,7 +201,7 @@ public:
 	static unsigned Get_Total_Virtual_Memory() { return TotalVirtualMemory; }
 	static unsigned Get_Available_Virtual_Memory() { return AvailableVirtualMemory; }
 
-	static unsigned Get_Processor_Type() { return ProcessorType; }
+	static unsigned Get_Processor_Type() { return (unsigned)ProcessorType; }
 
 	inline static const char* Get_Processor_String() { return ProcessorString; }
 	inline static const StringClass& Get_Processor_Log() { return ProcessorLog; }
@@ -307,10 +307,10 @@ private:
 
 struct CPUIDStruct
 {
-	unsigned Eax;
-	unsigned Ebx;
-	unsigned Ecx;
-	unsigned Edx;
+	unsigned Eax {};
+	unsigned Ebx {};
+	unsigned Ecx {};
+	unsigned Edx {};
 	CPUIDStruct(unsigned cpuid_type)
 	{
 		if (!CPUDetectClass::Has_CPUID_Instruction()) {

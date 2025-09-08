@@ -62,7 +62,7 @@ public:
 	class LockClass
 	{
 		MutexClass& mutex;
-		bool failed;
+		bool failed {};
 	public:
 
 		// In order to lock a mutex create a local instance of LockClass with mutex as a parameter.

@@ -56,7 +56,7 @@ SysTimeClass SystemTime;
 SysTimeClass::SysTimeClass(void)
 {
 	//tell windows we need single ms precision.
-	timeBeginPeriod(1);
+	// timeBeginPeriod(1);
 }
 
 /***********************************************************************************************
@@ -76,7 +76,7 @@ SysTimeClass::SysTimeClass(void)
 SysTimeClass::~SysTimeClass(void)
 {
 	//tell windows we need single ms precision.
-	timeEndPeriod(1);
+	// timeEndPeriod(1);
 }
 
 /***********************************************************************************************
@@ -95,7 +95,8 @@ SysTimeClass::~SysTimeClass(void)
  *=============================================================================================*/
 void SysTimeClass::Reset(void)
 {
-	StartTime = timeGetTime();
+	std::chrono::duration<unsigned long, std::milli> msSinceEpoch {std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())};
+	StartTime = msSinceEpoch.count();
 	WrapAdd = 0 - StartTime;
 }
 

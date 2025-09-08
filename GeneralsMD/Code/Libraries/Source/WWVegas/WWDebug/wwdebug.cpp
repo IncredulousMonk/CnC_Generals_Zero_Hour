@@ -43,18 +43,16 @@
 
 
 #include "wwdebug.h"
-#include <windows.h>
-//#include "win.h" can use this if allowed to see wwlib
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
 #include <signal.h>
-#include "except.h"
+#include <errno.h>
 
 
-static PrintFunc			_CurMessageHandler = NULL;
+static PrintFunc		_CurMessageHandler = NULL;
 static AssertPrintFunc	_CurAssertHandler = NULL;
 static TriggerFunc		_CurTriggerHandler = NULL;
 static ProfileFunc		_CurProfileStartHandler = NULL;
@@ -63,7 +61,7 @@ static ProfileFunc		_CurProfileStopHandler = NULL;
 // Convert the latest system error into a string and return a pointer to
 // a static buffer containing the error string.
 
-void Convert_System_Error_To_String(int id, char* buffer, int buf_len)
+void Convert_System_Error_To_String([[maybe_unused]] int id, [[maybe_unused]] char* buffer, [[maybe_unused]] int buf_len)
 {
 #ifndef _UNIX
 	FormatMessage(
@@ -79,7 +77,8 @@ void Convert_System_Error_To_String(int id, char* buffer, int buf_len)
 
 int Get_Last_System_Error()
 {
-	return GetLastError();
+	// return GetLastError();
+	return errno;
 }
 
 /***********************************************************************************************

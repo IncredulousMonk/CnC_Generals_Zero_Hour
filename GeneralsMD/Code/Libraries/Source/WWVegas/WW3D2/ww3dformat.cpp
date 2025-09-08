@@ -40,9 +40,9 @@
 #include "ww3dformat.h"
 #include "vector4.h"
 #include "wwdebug.h"
-#include "targa.h"
+#include "TARGA.H"
 #include "dx8wrapper.h"
-#include "dx8caps.h"
+// #include "dx8caps.h"
 #include <d3d8.h>
 
  /*
@@ -263,6 +263,7 @@ void Color_to_Vector4(Vector4* outc,const unsigned int inc,const WW3DFormat form
 	outc->W=a/255.0f;
 }
 
+#if 0
 // ----------------------------------------------------------------------------
 //
 // Utility function for determining WW3D format from TGA file header.
@@ -389,6 +390,7 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool is_compression_allow
 
 	return format;
 }
+#endif // if 0
 
 unsigned Get_Bytes_Per_Pixel(WW3DFormat format)
 {
@@ -429,6 +431,7 @@ unsigned Get_Num_Depth_Bits(WW3DZFormat zformat)
 	case WW3D_ZFORMAT_LIN_D16		: return 16; break;
 	case WW3D_ZFORMAT_LIN_F16		: return 16; break;
 #endif
+	default: break;
 	};
 	return 0;
 };
@@ -450,6 +453,7 @@ unsigned Get_Num_Stencil_Bits(WW3DZFormat zformat)
 	case WW3D_ZFORMAT_LIN_D16		: return 0; break;
 	case WW3D_ZFORMAT_LIN_F16		: return 0; break;
 #endif
+	default: break;
 	};
 	return 0;
 };

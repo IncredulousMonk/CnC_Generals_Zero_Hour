@@ -101,15 +101,6 @@ void initialiseSdl(void) {
       exit(1);
    }
 
-   // renderer = SDL_CreateRenderer(window, NULL);
-   // if (!renderer) {
-   //    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create renderer: %s", SDL_GetError());
-   //    SDL_GL_DestroyContext(glContext);
-   //    SDL_DestroyWindow(window);
-   //    SDL_Quit();
-   //    exit(1);
-   // }
-
    SDL_Surface* bmp = SDL_LoadBMP("../assets/Install_Final.bmp");
    if (!bmp) {
       SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not load bitmap: %s", SDL_GetError());
@@ -146,12 +137,6 @@ int main(int argc, char* argv[]) {
    initialiseSdl();
 
    SDL_ShowWindow(window);
-
-   int major {};
-   int minor {};
-   SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
-   SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
-   SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "OpenGL version: %d.%d", major, minor);
 
    DEBUG_INIT(DEBUG_FLAGS_DEFAULT);
    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Initialising memory manager.");
@@ -208,6 +193,11 @@ int MessageBox(const char* text, const char* caption, UnsignedInt) {
 
 void SetWindowText(const char* text) {
    SDL_SetWindowTitle(window, text);
+}
+
+AsciiString GetRegistryLanguage() {
+   // FIXME: If I ever support international versions of Zero Hour.
+   return "English";
 }
 
 const char *gAppPrefix = ""; /// So WB can have a different debug log file name.

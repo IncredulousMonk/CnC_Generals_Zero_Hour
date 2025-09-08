@@ -108,9 +108,9 @@ private:
 
 	struct Entry
 	{
-		int Next;						// next pointer in linked list
-		KeyType Key;							// key
-		ValueType Value;					// value
+		int Next {};						// next pointer in linked list
+		KeyType Key {};							// key
+		ValueType Value {};					// value
 	};
 
 	int* Hash;							// hash pointers
@@ -122,8 +122,8 @@ private:
 template <class KeyType, class ValueType>
 class HashTemplateIterator
 {
-	int HashIndex;					// index to hash pointer table
-	int Handle;
+	int HashIndex {};					// index to hash pointer table
+	int Handle {};
 	HashTemplateClass<KeyType,ValueType>& HashTable;
 
 public:
@@ -136,8 +136,8 @@ public:
 
 	void First()
 	{
-		Handle=HashTemplateClass<KeyType,ValueType>::NIL;
-		int size=HashTable.Get_Size();
+		Handle=(int)HashTemplateClass<KeyType,ValueType>::NIL;
+		int size=(int)HashTable.Get_Size();
 		for (HashIndex=0;HashIndex<size;++HashIndex) {
 			Handle = HashTable.Get_Hash()[HashIndex];
 			if (Handle!=HashTemplateClass<KeyType,ValueType>::NIL) break;
@@ -148,7 +148,7 @@ public:
 	{
 		Handle=HashTable.Get_Table()[Handle].Next;
 		if (Handle==HashTemplateClass<KeyType,ValueType>::NIL) {
-			int size=HashTable.Get_Size();
+			int size=(int)HashTable.Get_Size();
 			for (++HashIndex;HashIndex<size;++HashIndex) {
 				Handle = HashTable.Get_Hash()[HashIndex];
 				if (Handle!=HashTemplateClass<KeyType,ValueType>::NIL) break;
@@ -414,7 +414,7 @@ template <class KeyType, class ValueType> inline HashTemplateClass<KeyType,Value
 
 template <> inline unsigned int HashTemplateKeyClass<StringClass>::Get_Hash_Value(const StringClass& s)
 {
-	unsigned int len=s.Get_Length();
+	unsigned int len=(unsigned)s.Get_Length();
 	unsigned char* buffer=(unsigned char*)s.Peek_Buffer();
 	if (len<8) {
 		unsigned int hval=0;

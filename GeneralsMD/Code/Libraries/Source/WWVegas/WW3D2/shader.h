@@ -55,20 +55,20 @@ class StringClass;
 // Re-written shader class
 // Hector Yee 1/24/01
 
-enum ShaderShiftConstants
+enum ShaderShiftConstants: unsigned int
 {
 	SHIFT_DEPTHCOMPARE			= 0,	// bit shift for depth comparison setting
 	SHIFT_DEPTHMASK				= 3,	// bit shift for depth mask setting
 	SHIFT_COLORMASK				= 4,	// bit shift for color mask setting
-	SHIFT_DSTBLEND					= 5,	// bit shift for destination blend setting
-	SHIFT_FOG						= 8,	// bit shift for fog setting
-	SHIFT_PRIGRADIENT				= 10,	// bit shift for primary gradient setting
-	SHIFT_SECGRADIENT				= 13,	// bit shift for secondary gradient setting
-	SHIFT_SRCBLEND					= 14,	// bit shift for source blend setting
+	SHIFT_DSTBLEND				= 5,	// bit shift for destination blend setting
+	SHIFT_FOG					= 8,	// bit shift for fog setting
+	SHIFT_PRIGRADIENT			= 10,	// bit shift for primary gradient setting
+	SHIFT_SECGRADIENT			= 13,	// bit shift for secondary gradient setting
+	SHIFT_SRCBLEND				= 14,	// bit shift for source blend setting
 	SHIFT_TEXTURING				= 16,	// bit shift for texturing setting (1 bit)
 	SHIFT_NPATCHENABLE			= 17,	// bit shift for npatch enabling
 	SHIFT_ALPHATEST				= 18,	// bit shift for alpha test setting
-	SHIFT_CULLMODE					= 19,	// bit shift for cullmode setting
+	SHIFT_CULLMODE				= 19,	// bit shift for cullmode setting
 	SHIFT_POSTDETAILCOLORFUNC	= 20,	// bit shift for post-detail color function setting
 	SHIFT_POSTDETAILALPHAFUNC	= 24	// bit shift for post-detail alpha function setting
 };
@@ -91,14 +91,14 @@ class ShaderClass
 	void	Apply();
 public:
 	
-	enum AlphaTestType
+	enum AlphaTestType: unsigned int
 	{
 		ALPHATEST_DISABLE= 0,// disable alpha testing (default)
 		ALPHATEST_ENABLE,		// enable alpha testing
 		ALPHATEST_MAX			// end of enumeration
 	};
 
-	enum DepthCompareType
+	enum DepthCompareType: unsigned int
 	{
 		PASS_NEVER=0,        	// pass never
 		PASS_LESS,        	// pass if incoming less than stored
@@ -111,21 +111,21 @@ public:
 		PASS_MAX					// end of enumeration
 	};
 
-	enum DepthMaskType
+	enum DepthMaskType: unsigned int
 	{
 		DEPTH_WRITE_DISABLE=0,	// disable depth buffer writes 
 		DEPTH_WRITE_ENABLE,		// enable depth buffer writes		(default)
 		DEPTH_WRITE_MAX			// end of enumeration
 	};
 
-	enum ColorMaskType
+	enum ColorMaskType: unsigned int
 	{
 		COLOR_WRITE_DISABLE=0,	// disable color buffer writes 
 		COLOR_WRITE_ENABLE,		// enable color buffer writes		(default)
 		COLOR_WRITE_MAX			// end of enumeration
 	};
 
- 	enum DetailAlphaFuncType
+ 	enum DetailAlphaFuncType: unsigned int
  	{
 		DETAILALPHA_DISABLE=0,	// local (default)
 		DETAILALPHA_DETAIL,		// other
@@ -134,7 +134,7 @@ public:
 		DETAILALPHA_MAX			// end of enumeration
 	};
 
-	enum DetailColorFuncType
+	enum DetailColorFuncType: unsigned int
  	{
  		DETAILCOLOR_DISABLE=0,		// 0000	local (default)
 		DETAILCOLOR_DETAIL,			// 0001	other
@@ -153,21 +153,21 @@ public:
 		DETAILCOLOR_MAX				//			end of enumeration
 	};
 
-	enum CullModeType
+	enum CullModeType: unsigned int
 	{
 		CULL_MODE_DISABLE=0,
 		CULL_MODE_ENABLE,
 		CULL_MODE_MAX
 	};
 
-	enum NPatchEnableType
+	enum NPatchEnableType: unsigned int
 	{
 		NPATCH_DISABLE=0,
 		NPATCH_ENABLE,
 		NPATCH_TYPE_MAX
 	};
 
-  	enum DstBlendFuncType
+  	enum DstBlendFuncType: unsigned int
   	{
   		DSTBLEND_ZERO=0,					// destination pixel doesn't affect blending (default)
   		DSTBLEND_ONE,						// destination pixel added unmodified
@@ -178,7 +178,7 @@ public:
 		DSTBLEND_MAX						// end of enumeration
   	};
 
-	enum FogFuncType
+	enum FogFuncType: unsigned int
  	{
  		FOG_DISABLE=0,			// don't perform fogging (default)
  		FOG_ENABLE,        	// apply fog, f*fogColor + (1-f)*fragment
@@ -187,7 +187,7 @@ public:
 		FOG_MAX					// end of enumeration
  	};
 
- 	enum PriGradientType
+ 	enum PriGradientType: unsigned int
  	{
  		GRADIENT_DISABLE=0,				//	000	disable primary gradient (same as OpenGL 'decal' texture blend)
 		GRADIENT_MODULATE,				//	001	modulate fragment ARGB by gradient ARGB (default)
@@ -198,14 +198,14 @@ public:
 		GRADIENT_MAX						// end of enumeration
  	};
 
-	enum SecGradientType
+	enum SecGradientType: unsigned int
 	{
 		SECONDARY_GRADIENT_DISABLE=0,	// don't draw secondary gradient (default)
 		SECONDARY_GRADIENT_ENABLE,    // add secondary gradient RGB to fragment RGB 
 		SECONDARY_GRADIENT_MAX			// end of enumeration
 	};
 
-	enum SrcBlendFuncType	
+	enum SrcBlendFuncType: unsigned int
   	{
   		SRCBLEND_ZERO=0,						// fragment not added to color buffer
   		SRCBLEND_ONE,							// fragment added unmodified to color buffer (default)
@@ -214,14 +214,14 @@ public:
 		SRCBLEND_MAX							// end of enumeration
   	};
 
-	enum TexturingType
+	enum TexturingType: unsigned int
 	{
 		TEXTURING_DISABLE=0, // no texturing (treat fragment initial color as 1,1,1,1)
 		TEXTURING_ENABLE,    // enable texturing
 		TEXTURING_MAX			// end of enumeration
 	};
 
-	enum StaticSortCategoryType
+	enum StaticSortCategoryType: unsigned int
 	{
 		SSCAT_OPAQUE=0,
 		SSCAT_ALPHA_TEST,
@@ -230,7 +230,7 @@ public:
 		SSCAT_OTHER
 	};
 
-	enum														
+	enum: unsigned int
 	{
 		MASK_DEPTHCOMPARE			= (7<<0),			// mask for depth comparison setting
 		MASK_DEPTHMASK				= (1<<3),			// mask for depth mask setting
@@ -458,7 +458,7 @@ protected:
 	// Debug warning.
 	void Report_Unable_To_Fog (const char *source);
 
-	unsigned int ShaderBits;
+	unsigned int ShaderBits {};
 
 	static bool ShaderDirty;
 	static unsigned long CurrentShader;

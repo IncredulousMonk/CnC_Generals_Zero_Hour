@@ -60,7 +60,7 @@
 *
 ****************************************************************************/
 
-#include "targa.h"
+#include "TARGA.H"
 #ifndef TGA_USES_WWLIB_FILE_CLASSES
 #include <stdio.h>
 #endif
@@ -68,7 +68,7 @@
 #include <memory.h>
 #include <string.h>
 #ifdef TGA_USES_WWLIB_FILE_CLASSES
-#include "wwfile.h"
+#include "WWFILE.H"
 #include "ffactory.h"
 #else
 #include <io.h>
@@ -105,8 +105,8 @@ Targa::Targa(void)
 	Clear_File();
 	mAccess = TGA_READMODE;
 	mFlags = 0;
-	memset(&Header, 0, sizeof(TGAHeader));
-	memset(&mExtension, 0, sizeof(TGA2Extension));
+	// memset(&Header, 0, sizeof(TGAHeader));
+	// memset(&mExtension, 0, sizeof(TGA2Extension));
 	}
 
 
@@ -170,10 +170,8 @@ Targa::~Targa(void)
 
 long Targa::Open(const char* name, long mode)
 {
-	TGA2Footer	footer;
 	long			size;
 	long			error = 0;
-	memset(&footer, 0, sizeof(footer));
 
 	/* File already open? */
 	if (Is_File_Open() && (mAccess == mode)) {
@@ -191,57 +189,7 @@ long Targa::Open(const char* name, long mode)
 		/* Open targa file for read. */
 		case TGA_READMODE:
 			if (File_Open_Read(name)) {
-
-				/* Check for 2.0 targa file by loading the footer */
-				if (File_Seek(-26, SEEK_END) == -1) {
-					error = TGAERR_READ;
-				}
-
-				if (!error) {
-					if (File_Read(&footer, sizeof(TGA2Footer)) != sizeof(TGA2Footer)) {
-						error = TGAERR_READ;
-					} else {
-						/* If this a 2.0 file with an extension? */
-						if (strncmp(footer.Signature, TGA2_SIGNATURE, 16) == 0) {
-							if (footer.Extension != 0) {
-								mFlags |= TGAF_TGA2;
-							}
-						}
-					}
-				}
-
-				/* Read in Extension data */
-				if (!error && (mFlags & TGAF_TGA2)) {
-
-					if (File_Seek(footer.Extension, SEEK_SET) == -1) {
-						error = TGAERR_READ;
-					}
-
-					if (!error) {
-						if (File_Read(&mExtension, sizeof(TGA2Extension)) != sizeof(TGA2Extension)) {
-							error = TGAERR_READ;
-						}
-					}
-				}
-
-				/* Read in header. */
-				if (!error && (File_Seek(0, SEEK_SET) == -1)) {
-					error = TGAERR_READ;
-				} else {
-
-					size = File_Read(&Header, sizeof(TGAHeader));
-					if (size != sizeof(TGAHeader)) {
-						error = TGAERR_READ;
-					}
-				}
-
-				/* Skip the ID field */
-				if (!error && (Header.IDLength != 0)) {
-					if (File_Seek(Header.IDLength, SEEK_CUR) == -1) {
-						error = TGAERR_READ;
-					}
-				}
-
+				error = ReadHeaderAndExtension();
 			} else {
 				error = TGAERR_OPEN;
 			}
@@ -351,105 +299,21 @@ void Targa::Close(void)
 *
 ****************************************************************************/
 
-long Targa::Load(const char* name, char* palette, char* image,bool invert_image)
+long Targa::Load(const char* name, char* palette, char* image, bool invert_image)
 {
-	long size;
-	long depth;
 	long error = 0;
 
 	/* Open the Targa */
-	if (Open(name, TGA_READMODE) == NULL) {
+	if (Open(name, TGA_READMODE) == 0) {
 
 		/* Process ColorMap (palette) */
-		if (Header.ColorMapType == 1) {
-
-			depth = (Header.CMapDepth >> 3);
-			size = (Header.CMapLength * depth);
-
-			/* Load the palette from the TGA if a palette buffer is provided
-			 * otherwise we will skip it.
-			 */
-			if ((palette != NULL) && (Header.CMapLength > 0)) {
-
-				/* Adjust palette to the starting color entry. */
-				palette += (Header.CMapStart * depth);
-
-				/* Read in the palette. */
-				if (File_Read(palette, size) != size) {
-					error = TGAERR_READ;
-				}
-
-			} else {
-				if (File_Seek(size, SEEK_CUR) == -1) {
-					error = TGAERR_READ;
-				}
-			}
-		}
+		error = LoadPalette(palette);
 
 		/* Load the image data from the TGA if an image buffer is provided
 		 * otherwise we are done.
 		 */
 		if (!error && (image != NULL)) {
-
-			depth = TGA_BytesPerPixel(Header.PixelDepth);
-			size = ((Header.Width * Header.Height) * depth);
-
-			switch (Header.ImageType) {
-				case TGA_CMAPPED:
-					if (File_Read(image, size) != size) {
-						error = TGAERR_READ;
-					}
-					break;
-
-				case TGA_TRUECOLOR:
-					if (File_Read(image, size) == size) {
-						if (invert_image) InvertImage();
-					} else {
-						error = TGAERR_READ;
-					}
-					break;
-
-				case TGA_MONO:
-					if (File_Read(image, size) != size) {
-						error = TGAERR_READ;
-					}
-					break;
-
-				case TGA_CMAPPED_ENCODED:
-					error = DecodeImage();
-					break;
-
-				case TGA_TRUECOLOR_ENCODED:
-					if ((error = DecodeImage()) == NULL) {
-						if (invert_image) InvertImage();
-					}
-					break;
-
-				default:
-					error = TGAERR_NOTSUPPORTED;
-					break;
-			}
-
-			/* Arrange the image so that the origin position (coordinate 0,0)
-			 * is the upperleft hand corner of the image.
-			 */
-			if (!error) {
-				if ( Header.ImageDescriptor & TGAIDF_XORIGIN ) {
-					XFlip();
-					Header.ImageDescriptor &= ~TGAIDF_XORIGIN;
-				}
-				
-				// Mod (IML) : Locate the origin at the bottom-left corner instead. This
-				// will make ot consistent with .TGA's that have been generated with our
-				// existing software.
-				//	if (( Header.ImageDescriptor & TGAIDF_YORIGIN ) == 0){
-				if ( Header.ImageDescriptor & TGAIDF_YORIGIN ) {
-					YFlip();
-					//	Bug fix (IML) : Clear this flag to indicate to the targa reader
-					// that the Y-origin is at the bottom of the image. 
-					Header.ImageDescriptor &= ~TGAIDF_YORIGIN;
-				}
-			}
+			error = LoadImageData(image, invert_image);
 		}
 
 		/* Close the Targa */
@@ -487,63 +351,17 @@ long Targa::Load(const char* name, char* palette, char* image,bool invert_image)
 
 long Targa::Load(const char* name, long flags, bool invert_image)
 {
-	long size;
 	long error = 0;
 
 	/* Open the file to get the header. */
 	if (Open(name, TGA_READMODE) == 0) {
 
 		/* Allocate palette memory if requested to and the targa has one. */
-		if ((flags & TGAF_PAL) && (Header.ColorMapType == 1)) {
-
-			/* Dispose of any previous palette. */
-			if ((mPalette != NULL) && (mFlags & TGAF_PAL)) {
-				free(mPalette);
-				mPalette = NULL;
-				mFlags &= ~TGAF_PAL;
-			}
-
-			/* Only allocate a palette if the client hasn't assigned one. */
-			if ((mPalette == NULL) && !(mFlags & TGAF_PAL)) {
-
-				/* Compute the size of the palette from the targa header. */
-				size = (Header.CMapLength * (Header.CMapDepth >> 3));
-
-				if (size != 0) {
-					/* Allocate memory for the palette. */
-					if ((mPalette = (char *)malloc(size)) != NULL) {
-						mFlags |= TGAF_PAL; /* We allocated the palette. */
-					} else {
-						error = TGAERR_NOMEM;
-					}
-				}
-			}
-		}
+		error = AllocatePaletteMemory(flags);
 
 		/* Allocate image memory if requested to. */
 		if (!error && (flags & TGAF_IMAGE)) {
-
-			/* Dispose of any previous image. */
-			if ((mImage != NULL) && (mFlags & TGAF_IMAGE)) {
-				free(mImage);
-				mImage = NULL;
-				mFlags &= ~TGAF_IMAGE;
-			}
-
-			/* Only allocate an image if the client hasn't assigned one. */
-			if ((mImage == NULL) && !(mFlags & TGAF_IMAGE)) {
-
-				/* Compute the size of the image data from the targa header. */
-				size = ((Header.Width * Header.Height) * TGA_BytesPerPixel(Header.PixelDepth));
-				if (size != 0) {
-					/* Allocate memory for the image. */
-					if ((mImage = (char *)malloc(size)) != NULL) {
-						mFlags |= TGAF_IMAGE; /* We allocated the image. */
-					} else {
-						error = TGAERR_NOMEM;
-					}
-				}
-			}
+			error = AllocateImageMemory(flags);
 		}
 
 		/* Read in the file contents. */
@@ -557,6 +375,71 @@ long Targa::Load(const char* name, long flags, bool invert_image)
 	} else {
 		error = TGAERR_OPEN;
 	}
+
+	return (error);
+}
+
+
+/****************************************************************************
+*
+* NAME
+*     Targa::Load - Load Targa Image File. (Auto buffer allocation).
+*
+* SYNOPSIS
+*     Error = Load(TgaFile, Flags)
+*
+*     long Load(FileClass*, long);
+*
+* FUNCTION
+*     Open and load the Targa into buffers allocated by this function.
+*
+* INPUTS
+*     TgaFile - Targa image file to load.
+*     Flags   -
+*
+* RESULT
+*     Error - 0 if successful, or TGAERR_??? error code.
+*
+****************************************************************************/
+
+long Targa::Load(FileClass* tgaFile, long flags, bool invert_image)
+{
+	long error = 0;
+
+	TGAFile = tgaFile;
+
+	if (!TGAFile || !TGAFile->Is_Available() || !TGAFile->Open(FileClass::READ)) {
+		error = TGAERR_OPEN;
+	}
+
+	if (!error) {
+		error = ReadHeaderAndExtension();
+	}
+
+	if (!error) {
+		/* Allocate palette memory if requested to and the targa has one. */
+		error = AllocatePaletteMemory(flags);
+	}
+
+	if (!error) {
+		/* Process ColorMap (palette) */
+		error = LoadPalette(mPalette);
+	}
+
+	/* Allocate image memory if requested to. */
+	if (!error && (flags & TGAF_IMAGE)) {
+		error = AllocateImageMemory(flags);
+	}
+
+	/* Load the image data from the TGA if an image buffer is provided
+		* otherwise we are done.
+		*/
+	if (!error && (mImage != NULL)) {
+		error = LoadImageData(mImage, invert_image);
+	}
+
+	TGAFile->Close();
+	TGAFile = NULL;
 
 	return (error);
 }
@@ -589,14 +472,14 @@ long Targa::Save(const char* name, long flags, bool addextension)
 	long depth;
 	char *palette;
 	char *temppal;
-	char *ptr;
+	// char *ptr;
 	//long i,n;
 	//char c;
 	long error = 0;
 	TGA2Footer footer;
 
 	/* Open the Targa for write. */
-	if (Open(name, TGA_WRITEMODE) == NULL)
+	if (Open(name, TGA_WRITEMODE) == 0)
 		{
 		Header.IDLength = 0;
 
@@ -641,10 +524,10 @@ long Targa::Save(const char* name, long flags, bool addextension)
 			size = (Header.CMapLength * depth);
 
 			/* Allocate temporary buffer for palette manipulation. */
-			if ((temppal = (char *)malloc(size)) != NULL)
+			if ((temppal = (char *)malloc((size_t)size)) != NULL)
 				{
-				memcpy(temppal, palette, size);
-				ptr = temppal;
+				memcpy(temppal, palette, (size_t)size);
+				// ptr = temppal;
 
 				#if(0)
 				/* Swap the byte ordering of the palette entries. */
@@ -733,7 +616,8 @@ long Targa::Save(const char* name, long flags, bool addextension)
 		if (!error)
 			{
 			footer.Developer = 0;
-			strncpy(footer.Signature, TGA2_SIGNATURE, 16);
+			// strncpy(footer.Signature, TGA2_SIGNATURE, 16);
+			memcpy(footer.Signature, TGA2_SIGNATURE, 16);
 			footer.RsvdChar = '.';
 			footer.BZST = 0;
 
@@ -803,7 +687,7 @@ void Targa::XFlip(void)
 		}
 	}
 
-
+#if 0
 /****************************************************************************
 *
 * NAME
@@ -905,6 +789,7 @@ void Targa::YFlip(void)
   for (unsigned y=Header.Height/2;y;--y,ptrTop+=stride,ptrBottom-=stride)
     _swapBytes(ptrTop,ptrBottom,stride);
 } 
+#endif // if 0
 
 /****************************************************************************
 *
@@ -1036,6 +921,264 @@ TGA2Extension *Targa::GetExtension(void)
 /****************************************************************************
 *
 * NAME
+*     Targa::ReadHeaderAndExtension - Read Targa header and extension blocks.
+*
+* SYNOPSIS
+*     Error = ReadHeaderAndExtension()
+*
+*     long ReadHeaderAndExtension();
+*
+* FUNCTION
+*     Read the Targa image header. Read the extension block if it is present.
+*     The file stream will positioned after the ID field (if there is one).
+*
+* RESULT
+*     Error - Error code, 0 if okay.
+*
+****************************************************************************/
+
+long Targa::ReadHeaderAndExtension()
+{
+	TGA2Footer footer {};
+	long error = 0;
+
+	mFlags &= ~TGAF_TGA2;
+
+	/* Check for 2.0 targa file by loading the footer */
+	if (File_Seek(-26, SEEK_END) == -1) {
+		error = TGAERR_READ;
+	}
+
+	if (!error) {
+		if (File_Read(&footer, sizeof(TGA2Footer)) != sizeof(TGA2Footer)) {
+			error = TGAERR_READ;
+		} else {
+			/* If this a 2.0 file with an extension? */
+			if (strncmp(footer.Signature, TGA2_SIGNATURE, 16) == 0) {
+				if (footer.Extension != 0) {
+					mFlags |= TGAF_TGA2;
+				}
+			}
+		}
+	}
+
+	/* Read in Extension data */
+	if (!error && (mFlags & TGAF_TGA2)) {
+
+		if (File_Seek(footer.Extension, SEEK_SET) == -1) {
+			error = TGAERR_READ;
+		}
+
+		if (!error) {
+			if (File_Read(&mExtension, sizeof(TGA2Extension)) != sizeof(TGA2Extension)) {
+				error = TGAERR_READ;
+			}
+		}
+	}
+
+	/* Read in header. */
+	if (!error && (File_Seek(0, SEEK_SET) == -1)) {
+		error = TGAERR_READ;
+	} else {
+		long size = File_Read(&Header, sizeof(TGAHeader));
+		if (size != sizeof(TGAHeader)) {
+			error = TGAERR_READ;
+		}
+	}
+
+	/* Skip the ID field */
+	if (!error && (Header.IDLength != 0)) {
+		if (File_Seek(Header.IDLength, SEEK_CUR) == -1) {
+			error = TGAERR_READ;
+		}
+	}
+
+	return (error);
+}
+
+
+long Targa::AllocatePaletteMemory(long flags)
+{
+	long error = 0;
+
+	/* Allocate palette memory if requested to and the targa has one. */
+	if ((flags & TGAF_PAL) && (Header.ColorMapType == 1)) {
+
+		/* Dispose of any previous palette. */
+		if ((mPalette != NULL) && (mFlags & TGAF_PAL)) {
+			free(mPalette);
+			mPalette = NULL;
+			mFlags &= ~TGAF_PAL;
+		}
+
+		/* Only allocate a palette if the client hasn't assigned one. */
+		if ((mPalette == NULL) && !(mFlags & TGAF_PAL)) {
+
+			/* Compute the size of the palette from the targa header. */
+			long size = (Header.CMapLength * (Header.CMapDepth >> 3));
+
+			if (size != 0) {
+				/* Allocate memory for the palette. */
+				if ((mPalette = (char *)malloc((size_t)size)) != NULL) {
+					mFlags |= TGAF_PAL; /* We allocated the palette. */
+				} else {
+					error = TGAERR_NOMEM;
+				}
+			}
+		}
+	}
+
+	return (error);
+}
+
+long Targa::LoadPalette(char* palette)
+{
+	long error = 0;
+
+	/* Process ColorMap (palette) */
+	if (Header.ColorMapType == 1) {
+
+		long depth = (Header.CMapDepth >> 3);
+		long size = (Header.CMapLength * depth);
+
+		/* Load the palette from the TGA if a palette buffer is provided
+			* otherwise we will skip it.
+			*/
+		if ((palette != NULL) && (Header.CMapLength > 0)) {
+
+			/* Adjust palette to the starting color entry. */
+			palette += (Header.CMapStart * depth);
+
+			/* Read in the palette. */
+			if (File_Read(palette, size) != size) {
+				error = TGAERR_READ;
+			}
+
+		} else {
+			if (File_Seek(size, SEEK_CUR) == -1) {
+				error = TGAERR_READ;
+			}
+		}
+	}
+
+	return (error);
+}
+
+
+long Targa::AllocateImageMemory(long flags)
+{
+	long error = 0;
+
+	/* Allocate image memory if requested to. */
+	if (flags & TGAF_IMAGE) {
+
+		/* Dispose of any previous image. */
+		if ((mImage != NULL) && (mFlags & TGAF_IMAGE)) {
+			free(mImage);
+			mImage = NULL;
+			mFlags &= ~TGAF_IMAGE;
+		}
+
+		/* Only allocate an image if the client hasn't assigned one. */
+		if ((mImage == NULL) && !(mFlags & TGAF_IMAGE)) {
+
+			/* Compute the size of the image data from the targa header. */
+			long size = ((Header.Width * Header.Height) * TGA_BytesPerPixel(Header.PixelDepth));
+			if (size != 0) {
+				/* Allocate memory for the image. */
+				if ((mImage = (char *)malloc((size_t)size)) != NULL) {
+					mFlags |= TGAF_IMAGE; /* We allocated the image. */
+				} else {
+					error = TGAERR_NOMEM;
+				}
+			}
+		}
+	}
+
+	return (error);
+}
+
+long Targa::LoadImageData(char* image, bool invert_image)
+{
+	long error = 0;
+
+	/* Load the image data from the TGA if an image buffer is provided
+		* otherwise we are done.
+		*/
+	if (image != NULL) {
+
+		long depth = TGA_BytesPerPixel(Header.PixelDepth);
+		long size = ((Header.Width * Header.Height) * depth);
+
+		switch (Header.ImageType) {
+			case TGA_CMAPPED:
+				if (File_Read(image, size) != size) {
+					error = TGAERR_READ;
+				}
+				break;
+
+			case TGA_TRUECOLOR:
+				if (File_Read(image, size) == size) {
+					if (invert_image) InvertImage();
+				} else {
+					error = TGAERR_READ;
+				}
+				break;
+
+			case TGA_MONO:
+				if (File_Read(image, size) != size) {
+					error = TGAERR_READ;
+				}
+				break;
+
+			case TGA_CMAPPED_ENCODED:
+				error = DecodeImage();
+				break;
+
+			case TGA_TRUECOLOR_ENCODED:
+				if ((error = DecodeImage()) == 0) {
+					if (invert_image) InvertImage();
+				}
+				break;
+
+			default:
+				error = TGAERR_NOTSUPPORTED;
+				break;
+		}
+
+		/* Arrange the image so that the origin position (coordinate 0,0)
+			* is the upperleft hand corner of the image.
+			*/
+		if (!error) {
+			if ( Header.ImageDescriptor & TGAIDF_XORIGIN ) {
+				XFlip();
+				Header.ImageDescriptor &= ~TGAIDF_XORIGIN;
+			}
+			
+			// Mod (IML) : Locate the origin at the bottom-left corner instead. This
+			// will make ot consistent with .TGA's that have been generated with our
+			// existing software.
+			//	if (( Header.ImageDescriptor & TGAIDF_YORIGIN ) == 0){
+			if ( Header.ImageDescriptor & TGAIDF_YORIGIN ) {
+				// FIXME: YFlip uses asm!
+				error = TGAERR_NOTSUPPORTED;
+#if 0
+				YFlip();
+				//	Bug fix (IML) : Clear this flag to indicate to the targa reader
+				// that the Y-origin is at the bottom of the image. 
+				Header.ImageDescriptor &= ~TGAIDF_YORIGIN;
+#endif // if 0
+			}
+		}
+	}
+
+	return (error);
+}
+
+
+/****************************************************************************
+*
+* NAME
 *     Targa::DecodeImage - Decompress Targa image data.
 *
 * SYNOPSIS
@@ -1073,7 +1216,7 @@ long Targa::DecodeImage()
 	depth = TGA_BytesPerPixel(Header.PixelDepth);
 
 	/* Total number of pixels compressed in this image. */
-	pixel_count = (Header.Width * Header.Height);
+	pixel_count = (unsigned long)(Header.Width * Header.Height);
 
 	while ((pixel_count > 0) && !error)
 		{
@@ -1164,7 +1307,7 @@ long Targa::EncodeImage()
 	depth = TGA_BytesPerPixel(Header.PixelDepth);
 
 	/* Allocate packet buffer to hold maximum encoded data run. */
-	if ((packet = (char *)malloc(128 * depth)) != NULL)
+	if ((packet = (char *)malloc(128 * (size_t)depth)) != NULL)
 		{
 		pixels = Header.Width * Header.Height;
 		start = mImage;

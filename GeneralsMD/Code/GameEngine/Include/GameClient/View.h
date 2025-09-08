@@ -113,12 +113,12 @@ public:
 	virtual Bool isZoomLimited( void ) { return m_zoomLimited; }							///< get status of zoom limit
 
 	/// pick drawable given the screen pixel coords.  If force attack, picks bridges as well.
-	virtual Drawable *pickDrawable( const ICoord2D *screen, Bool forceAttack, PickType pickType ) = 0;
+	virtual Drawable *pickDrawable( const ICoord2D* /* screen */, Bool /* forceAttack */, PickType /* pickType */ ) { return nullptr; };
 
 	/// all drawables in the 2D screen region will call the 'callback'
-	virtual Int iterateDrawablesInRegion( IRegion2D *screenRegion,
-																				Bool (*callback)( Drawable *draw, void *userData ),
-																				void *userData ) = 0;
+	virtual Int iterateDrawablesInRegion( IRegion2D* /* screenRegion */,
+																				Bool (* /* callback */)( Drawable *draw, void *userData ),
+																				void* /* userData */ ) { return 0; };
 
 	/** project the 4 corners of this view into the world and return each point as a parameter,
 			the world points are at the requested Z */
@@ -133,7 +133,7 @@ public:
 	virtual void setOrigin( Int x, Int y) { m_originX=x; m_originY=y;}				///< Sets location of top-left view corner on display 
 	virtual void getOrigin( Int *x, Int *y) { *x=m_originX; *y=m_originY;}			///< Return location of top-left view corner on display
 
-	virtual void forceRedraw() = 0;
+	virtual void forceRedraw() {};
 
 	virtual void lookAt( const Coord3D *o );														///< Center the view on the given coordinate
 	virtual void initHeightForMap( void ) {};														///<  Init the camera height for the map at the current position.
@@ -183,7 +183,7 @@ public:
 	virtual void setAngleAndPitchToDefault( void );											///< Set the view angle back to default 
 	virtual void getPosition(Coord3D *pos)	{ *pos=m_pos;}							///< Returns position camera is looking at (z will be zero)
 
-	virtual const Coord3D& get3DCameraPosition() const = 0;							///< Returns the actual camera position
+	virtual const Coord3D& get3DCameraPosition() const { static Coord3D p; return p; };							///< Returns the actual camera position
 
 	virtual Real getZoom() { return m_zoom; }
 	virtual void setZoom(Real /* z */) { }
@@ -205,10 +205,10 @@ public:
 	virtual Real getFieldOfView( void ) { return m_FOV; }								///< Get the horizontal field of view angle
 
 	Bool worldToScreen( const Coord3D *w, ICoord2D *s ) { return worldToScreenTriReturn( w, s ) == WTS_INSIDE_FRUSTUM; }	///< Transform world coordinate "w" into screen coordinate "s"
-	virtual WorldToScreenReturn worldToScreenTriReturn(const Coord3D *w, ICoord2D *s ) = 0; ///< Like worldToScreen(), but with a more informative return value
-	virtual void screenToWorld( const ICoord2D *s, Coord3D *w ) = 0;										///< Transform screen coordinate "s" into world coordinate "w"
-	virtual void screenToTerrain( const ICoord2D *screen, Coord3D *world ) = 0;  ///< transform screen coord to a point on the 3D terrain
-	virtual void screenToWorldAtZ( const ICoord2D *s, Coord3D *w, Real z ) = 0;  ///< transform screen point to world point at the specified world Z value
+	virtual WorldToScreenReturn worldToScreenTriReturn(const Coord3D* /* w */, ICoord2D* /* s */ ) { return WTS_INVALID; }; ///< Like worldToScreen(), but with a more informative return value
+	virtual void screenToWorld( const ICoord2D* /* s */, Coord3D* /* w */ ) {};										///< Transform screen coordinate "s" into world coordinate "w"
+	virtual void screenToTerrain( const ICoord2D* /* screen */, Coord3D* /* world */ ) {};  ///< transform screen coord to a point on the 3D terrain
+	virtual void screenToWorldAtZ( const ICoord2D* /* s */, Coord3D* /* w */, Real /* z */ ) {};  ///< transform screen point to world point at the specified world Z value
 
 	virtual void getLocation ( ViewLocation *location );								///< write the view's current location in to the view location object
 	virtual void setLocation ( const ViewLocation *location );					///< set the view's current location from to the view location object
@@ -237,7 +237,7 @@ public:
 
 	virtual Real getFXPitch( void ) const { return 1.0f; }					///< returns the FX pitch angle
 	virtual void forceCameraConstraintRecalc(void) {}
-	virtual void setGuardBandBias( const Coord2D *gb ) = 0;
+	virtual void setGuardBandBias( const Coord2D* /* gb */ ) {};
 
 protected:
 

@@ -21,16 +21,18 @@
 ///////////////////////////////////////////////////////
 
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
+#include "LinuxDevice/GameClient/LinuxFileSystem.h"
 #include "GameClient/Image.h"
 #include "GameClient/InGameUI.h"
 #include "Common/FileSystem.h"
 #include "LinuxDevice/Common/SdlFileStream.h"
 #include "OpenGLRenderer.h"
+#include "TARGA.H"
+#include "ddsfile.h"
 #include <SDL3_image/SDL_image.h>
 #include <set>
 
 // DEFINES ////////////////////////////////////////////////////////////////////
-#define LOCALISED_TGA_PATH "Data/English/Art/Textures/"
 #define MIN_DISPLAY_RESOLUTION_X 800
 #define MIN_DISPLAY_RESOLUTION_Y 600
 
@@ -42,6 +44,46 @@ Bool isFourByThreeAspect(Int x, Int y) {
 
    Real aspectRatio = fabs((Real)x / y); 
    return ((aspectRatio > 1.332f) && (aspectRatio < 1.334f));
+}
+
+//-------------------------------------------------------------------------------------------------
+void yFlipTarga(Targa* targa) {
+   /* Pixel depth in bytes. */
+   char depth = TGA_BytesPerPixel(targa->Header.PixelDepth);
+
+   for (int y = 0; y < (targa->Header.Height >> 1); y++)
+   {
+      /* Compute address of lines to exchange. */
+      char* ptr = (targa->GetImage() + ((targa->Header.Width * y) * depth));
+      char* ptr1 = (targa->GetImage() + ((targa->Header.Width * (targa->Header.Height - 1)) * depth));
+      ptr1 -= ((targa->Header.Width * y) * depth);
+
+      /* Exchange all the pixels on this scan line. */
+
+      for (int x = 0; x < (targa->Header.Width * depth); x++)
+      {
+         char v = *ptr;
+         char v1 = *ptr1;
+         *ptr = v1;
+         *ptr1 = v;
+         ptr++;
+         ptr1++;
+      }
+   } 
+} 
+
+//-------------------------------------------------------------------------------------------------
+// fileExtensionDDS
+// Typically used to change the extension of a Targa file name from .tga to .dds.
+//-------------------------------------------------------------------------------------------------
+AsciiString fileExtensionDDS(const AsciiString& filename) {
+   AsciiString ddsName = filename;
+   ddsName.removeLastChar(); // a
+   ddsName.removeLastChar(); // g
+   ddsName.removeLastChar(); // t
+   ddsName.removeLastChar(); // .
+   ddsName.concat(".dds");
+   return ddsName;
 }
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +100,14 @@ LinuxDisplay::~LinuxDisplay()
       if (value.loaded) {
          SDL_DestroyTexture(value.texture);
       }
+      if (value.gameFile) {
+         _TheFileFactory->Return_File(value.gameFile);
+      }
+   }
+
+   if (TheLinuxFileSystem) {
+      delete TheLinuxFileSystem;
+      TheLinuxFileSystem = NULL;
    }
 }
 
@@ -69,27 +119,28 @@ void LinuxDisplay::init()
 {
    Display::init();
 
+   // Override the W3D file factory.
+   TheLinuxFileSystem = NEW LinuxFileSystem;
+
    // FIXME: Asset manager gets created here.
 
    auto storeTexturePath {
       [this](Image* image) {
+         if (m_textureCache.contains(image->getFilename())) {
+            return;
+         }
          Texture texture {};
-         AsciiString filename {LOCALISED_TGA_PATH};
-         filename.concat(image->getFilename());
-         if (TheFileSystem->doesFileExist(filename.str())) {
-            texture.path = filename;
-         } else {
-            filename.set(TGA_DIR_PATH);
-            filename.concat(image->getFilename());
-            if (TheFileSystem->doesFileExist(filename.str())) {
-               texture.path = filename;
-            } else {
-               // Where are they?
-               DEBUG_LOG(("Image file not found: %s\n", image->getFilename().str()));
-               texture.path = AsciiString::TheEmptyString;
-            }
+         texture.gameFile = static_cast<GameFileClass*>(_TheFileFactory->Get_File(image->getFilename().str()));
+         if (!texture.gameFile->Is_Available()) {
+            _TheFileFactory->Return_File(texture.gameFile);
+            AsciiString ddsName = fileExtensionDDS(image->getFilename());
+            texture.dds = true;
+            texture.gameFile = static_cast<GameFileClass*>(_TheFileFactory->Get_File(ddsName.str()));
          }
          m_textureCache[image->getFilename()] = texture;
+         if (!texture.gameFile->Is_Available()) {
+            DEBUG_LOG(("Image file not found: %s\n", image->getFilename().str()));
+         }
       }
    };
 
@@ -344,19 +395,46 @@ void LinuxDisplay::drawImage( const Image *image, Int startX, Int startY, Int en
    }
    // DEBUG_LOG(("LinuxDisplay::drawImage: %s\n", image->getFilename().str()));
    if (!m_textureCache.contains(image->getFilename())) {
-      DEBUG_CRASH(("LinuxDisplay::drawImage: Texture not found for image called '%s'\n", image->getFilename().str()));
+      DEBUG_CRASH(("LinuxDisplay::drawImage: Texture not found for image called '%s'.\n", image->getFilename().str()));
    }
    Texture tex {m_textureCache[image->getFilename()]};
+   if (!tex.gameFile->Is_Available()) {
+      DEBUG_CRASH(("LinuxDisplay::drawImage: Image called '%s' is not available.\n", image->getFilename().str()));
+   }
    if (!tex.loaded) {
-      DEBUG_LOG(("Loading texture %s (%s)\n", image->getFilename().str(), tex.path.str()));
-      File* textureFile {TheFileSystem->openFile(tex.path.str())};
-      SdlFileStream fileStream {textureFile};
-      SDL_IOStream* sdlStream {SDL_OpenIO(fileStream.interface(), &fileStream)};
-      DEBUG_ASSERTCRASH(sdlStream, (("SDL stream is NULL\n")));
-      tex.texture = IMG_LoadTextureTyped_IO(renderer, sdlStream, true, "TGA");
-      DEBUG_ASSERTCRASH(tex.texture, ("Texture is NULL: %s\n", SDL_GetError()));
-      tex.loaded = TRUE;
-      m_textureCache[image->getFilename()] = tex;
+      DEBUG_LOG(("Loading texture %s (%s)\n", image->getFilename().str(), tex.gameFile->File_Path()));
+      if (tex.dds) {
+         DDSFileClass dds {tex.gameFile};
+         DEBUG_ASSERTCRASH(dds.Load(tex.gameFile), ("LinuxDisplay::drawImage: Failed to load .dds file\n"));
+         SDL_Surface* surface {SDL_CreateSurface(static_cast<int>(dds.Get_Full_Width()), static_cast<int>(dds.Get_Full_Height()), SDL_PIXELFORMAT_ABGR8888)};
+         dds.Copy_Level_To_Surface(0, WW3D_FORMAT_A8R8G8B8, dds.Get_Full_Width(), dds.Get_Full_Height(), static_cast<unsigned char*>(surface->pixels), dds.Get_Full_Width() * 4);
+         tex.texture = SDL_CreateTextureFromSurface(renderer, surface);
+         SDL_DestroySurface(surface);
+         tex.loaded = TRUE;
+         m_textureCache[image->getFilename()] = tex;
+      } else {
+         Targa targa {};
+         long status {targa.Load(tex.gameFile, TGAF_IMAGE, false)};
+         if (status == 0) {
+            yFlipTarga(&targa);
+            SDL_PixelFormat format {SDL_PIXELFORMAT_UNKNOWN};
+            int pitch {0};
+            if (targa.Header.PixelDepth == 32) {
+               format = SDL_PIXELFORMAT_BGRA32;
+               pitch = targa.Header.Width * 4;
+            } else if (targa.Header.PixelDepth == 24) {
+               format = SDL_PIXELFORMAT_BGR24;
+               pitch = targa.Header.Width * 3;
+            } else {
+               DEBUG_CRASH(("LinuxDisplay::drawImage: Invalid Targa pixel depth: %d\n", targa.Header.PixelDepth));
+            }
+            SDL_Surface* surface {SDL_CreateSurfaceFrom(targa.Header.Width, targa.Header.Height, format, targa.GetImage(), pitch)};
+            tex.texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_DestroySurface(surface);
+            tex.loaded = TRUE;
+            m_textureCache[image->getFilename()] = tex;
+         }
+      }
    }
 
    SDL_FRect src {};

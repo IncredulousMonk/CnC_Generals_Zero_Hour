@@ -23,6 +23,7 @@
 #include "PreRTS.h"
 #include "LinuxDevice/FFmpeg/FFmpegVideoPlayer.h"
 #include "Common/LocalFileSystem.h"
+#include "Common/Registry.h"
 
 //----------------------------------------------------------------------------
 //         Defines                                                         
@@ -157,7 +158,7 @@ VideoStreamInterface* FFmpegVideoPlayer::open(AsciiString movieTitle)
 
       char localizedFilePath[PATH_MAX] {};
       // sprintf( localizedFilePath, VIDEO_LANG_PATH_FORMAT, GetRegistryLanguage().str(), pVideo->m_filename.str(), VIDEO_EXT );
-      const char* language {"English"};
+      const char* language {GetRegistryLanguage().str()};
       sprintf(localizedFilePath, VIDEO_LANG_PATH_FORMAT, language, pVideo->m_filename.str(), VIDEO_EXT_1);
       if (!TheLocalFileSystem->doesFileExist(localizedFilePath)) {
          sprintf(localizedFilePath, VIDEO_LANG_PATH_FORMAT, language, pVideo->m_filename.str(), VIDEO_EXT_2);

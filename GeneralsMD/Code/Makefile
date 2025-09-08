@@ -1,23 +1,29 @@
-CXXFLAGS = -std=c++23 -O2 -Wall -Weffc++ -Wextra -Wsign-conversion -Werror -pedantic-errors
+CXXFLAGS = -std=c++23 -O2 -Wall -Weffc++ -Wextra -Wsign-conversion -Werror -pedantic-errors -D_UNIX
 LDPATHS = -LGameEngineDevice/Lib -LGameEngine/Lib -LLibraries/Lib
 LDFLAGS = -lavutil -lavcodec -lswscale -lswresample -lGL
 CXXFLAGS += $(shell pkg-config sdl3 --cflags)
-LDFLAGS += $(shell pkg-config sdl3 --libs) $(shell pkg-config sdl3-ttf --libs) $(shell pkg-config sdl3-image --libs) $(shell pkg-config sdl3-sound --libs)
+LDFLAGS += $(shell pkg-config sdl3 --libs) $(shell pkg-config sdl3-ttf --libs) $(shell pkg-config sdl3-sound --libs)
 INCS = -I. -ILibraries/Include -ILibraries/Source/WWVegas -ILibraries/Source/WWVegas/WWLib -ILibraries/Source/WWVegas/WWMath -ILibraries/Source/WWVegas/WWSaveLoad -ILibraries/Source/WWVegas/WWDebug \
-   -ILibraries/Source/OGL -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
+   -ILibraries/Source/WWVegas/WW3D2 -ILibraries/Source/OGL -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
 PROG = ../Run/rts
 ENGINE_DEVICE_LIB = GameEngineDevice/Lib/GameEngineDevice.a
 ENGINE_LIB = GameEngine/Lib/GameEngine.a
 OGL_LIB = Libraries/Lib/OGL.a
+WWDEBUG_LIB = Libraries/Lib/WWDebug.a
+WWLIB_LIB = Libraries/Lib/WWLib.a
 WWMATH_LIB = Libraries/Lib/WWMath.a
+WW3D2_LIB = Libraries/Lib/WW3D2.a
 GEDO = GameEngineDevice/Obj
 GEDSLDC = GameEngineDevice/Source/LinuxDevice/Common
 GEDSLDF = GameEngineDevice/Source/LinuxDevice/FFmpeg
 GEDSLD = GameEngineDevice/Source/LinuxDevice
 GEO = GameEngine/Obj
 GES = GameEngine/Source
-WWMO = Libraries/Obj
+LIBO = Libraries/Obj
+WWDS = Libraries/Source/WWVegas/WWDebug
+WWLS = Libraries/Source/WWVegas/WWLib
 WWMS = Libraries/Source/WWVegas/WWMath
+WW3S = Libraries/Source/WWVegas/WW3D2
 CUR_DIR := $(shell pwd)
 
 
@@ -27,23 +33,92 @@ endif
 
 .PHONY: run debug clean
 
-$(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(OGL_LIB)
-	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:OGL.a $(LDFLAGS)
+$(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(OGL_LIB) $(WWDEBUG_LIB) $(WWLIB_LIB) $(WW3D2_LIB)
+	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:OGL.a -l:WWLib.a -l:WW3D2.a $(LDFLAGS)
+
+
+# ===== WWDebug =====
+
+WWDEBUG_OBJS = $(LIBO)/wwdebug.o $(LIBO)/wwmemlog.o $(LIBO)/wwprofile.o
+
+$(WWDEBUG_LIB): $(WWDEBUG_OBJS)
+	ar rcs $(WWDEBUG_LIB)  $(WWDEBUG_OBJS)
+
+# --- Libraries/Source/WWVegas/WWDebug ---
+$(LIBO)/wwdebug.o: $(WWDS)/wwdebug.cpp $(WWDS)/wwdebug.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/wwdebug.o $(WWDS)/wwdebug.cpp
+
+$(LIBO)/wwmemlog.o: $(WWDS)/wwmemlog.cpp $(WWDS)/wwmemlog.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/wwmemlog.o $(WWDS)/wwmemlog.cpp
+
+$(LIBO)/wwprofile.o: $(WWDS)/wwprofile.cpp $(WWDS)/wwprofile.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/wwprofile.o $(WWDS)/wwprofile.cpp
+
+
+# ===== WWLib =====
+
+WWLIB_OBJS = $(LIBO)/bufffile.o $(LIBO)/ffactory.o $(LIBO)/mutex.o $(LIBO)/rawfile.o $(LIBO)/targa.o $(LIBO)/wwfile.o $(LIBO)/wwstring.o
+
+$(WWLIB_LIB): $(WWLIB_OBJS)
+	ar rcs $(WWLIB_LIB)  $(WWLIB_OBJS)
+
+# --- Libraries/Source/WWVegas/WWLib ---
+$(LIBO)/bufffile.o: $(WWLS)/bufffile.cpp $(WWLS)/bufffile.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/bufffile.o $(WWLS)/bufffile.cpp
+
+$(LIBO)/ffactory.o: $(WWLS)/ffactory.cpp $(WWLS)/ffactory.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/ffactory.o $(WWLS)/ffactory.cpp
+
+$(LIBO)/mutex.o: $(WWLS)/mutex.cpp $(WWLS)/mutex.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/mutex.o $(WWLS)/mutex.cpp
+
+$(LIBO)/rawfile.o: $(WWLS)/rawfile.cpp $(WWLS)/RAWFILE.H
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/rawfile.o $(WWLS)/rawfile.cpp
+
+$(LIBO)/targa.o: $(WWLS)/TARGA.CPP $(WWLS)/TARGA.H
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/targa.o $(WWLS)/TARGA.CPP
+
+$(LIBO)/wwfile.o: $(WWLS)/wwfile.cpp $(WWLS)/WWFILE.H
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/wwfile.o $(WWLS)/wwfile.cpp
+
+$(LIBO)/wwstring.o: $(WWLS)/wwstring.cpp $(WWLS)/wwstring.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/wwstring.o $(WWLS)/wwstring.cpp
 
 
 # ===== WWMath =====
 
-WWMATH_OBJS = $(WWMO)/matrix3d.o $(WWMO)/quat.o
+WWMATH_OBJS = $(LIBO)/matrix3d.o $(LIBO)/quat.o
 
 $(WWMATH_LIB): $(WWMATH_OBJS)
 	ar rcs $(WWMATH_LIB)  $(WWMATH_OBJS)
 
 # --- Libraries/Source/WWVegas/WWMath ---
-$(WWMO)/matrix3d.o: $(WWMS)/matrix3d.cpp $(WWMS)/matrix3d.h
-	g++ $(CXXFLAGS) $(INCS) -c -o $(WWMO)/matrix3d.o $(WWMS)/matrix3d.cpp
+$(LIBO)/matrix3d.o: $(WWMS)/matrix3d.cpp $(WWMS)/matrix3d.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/matrix3d.o $(WWMS)/matrix3d.cpp
 
-$(WWMO)/quat.o: $(WWMS)/quat.cpp $(WWMS)/quat.h
-	g++ $(CXXFLAGS) $(INCS) -c -o $(WWMO)/quat.o $(WWMS)/quat.cpp
+$(LIBO)/quat.o: $(WWMS)/quat.cpp $(WWMS)/quat.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/quat.o $(WWMS)/quat.cpp
+
+
+# ===== WW3D2 =====
+
+WW3D2_OBJS = $(LIBO)/bitmaphandler.o $(LIBO)/ddsfile.o $(LIBO)/formconv.o $(LIBO)/ww3dformat.o
+
+$(WW3D2_LIB): $(WW3D2_OBJS)
+	ar rcs $(WW3D2_LIB)  $(WW3D2_OBJS)
+
+# --- Libraries/Source/WWVegas/WW3D2 ---
+$(LIBO)/bitmaphandler.o: $(WW3S)/bitmaphandler.cpp $(WW3S)/bitmaphandler.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/bitmaphandler.o $(WW3S)/bitmaphandler.cpp
+
+$(LIBO)/ddsfile.o: $(WW3S)/ddsfile.cpp $(WW3S)/ddsfile.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/ddsfile.o $(WW3S)/ddsfile.cpp
+
+$(LIBO)/formconv.o: $(WW3S)/formconv.cpp $(WW3S)/formconv.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/formconv.o $(WW3S)/formconv.cpp
+
+$(LIBO)/ww3dformat.o: $(WW3S)/ww3dformat.cpp $(WW3S)/ww3dformat.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/ww3dformat.o $(WW3S)/ww3dformat.cpp
 
 
 # ===== GameEngineDevice =====
@@ -53,8 +128,8 @@ $(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(
 $(GEDO)/LinuxFunctionLexicon.o $(GEDO)/LinuxRadar.o \
 $(GEDO)/LinuxModuleFactory.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
-$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxView.o \
-   $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
+$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxFileSystem.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o \
+   $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxView.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
 $(GEDO)/LinuxDefaultDraw.o $(GEDO)/LinuxModelDraw.o $(GEDO)/LinuxScienceModelDraw.o \
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
 $(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
@@ -127,6 +202,9 @@ $(GEDO)/LinuxDisplayString.o: $(GEDSLD)/GameClient/LinuxDisplayString.cpp GameEn
 
 $(GEDO)/LinuxDisplayStringManager.o: $(GEDSLD)/GameClient/LinuxDisplayStringManager.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxDisplayStringManager.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxDisplayStringManager.o $(GEDSLD)/GameClient/LinuxDisplayStringManager.cpp
+
+$(GEDO)/LinuxFileSystem.o: $(GEDSLD)/GameClient/LinuxFileSystem.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxFileSystem.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxFileSystem.o $(GEDSLD)/GameClient/LinuxFileSystem.cpp
 
 $(GEDO)/LinuxGameClient.o: $(GEDSLD)/GameClient/LinuxGameClient.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxGameClient.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameClient.o $(GEDSLD)/GameClient/LinuxGameClient.cpp
@@ -1020,6 +1098,6 @@ debug: $(PROG)
 	cd ../Run && gdb -q ./rts && cd $(CUR_DIR)
 
 clean:
-	rm -v $(GEDO)/*.o $(GEO)/*.o $(WWMO)/*.o $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(WWMATH_LIB) $(PROG)
+	rm -v $(GEDO)/*.o $(GEO)/*.o $(LIBO)/*.o $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(WWMATH_LIB) $(PROG)
 
 # make DEBUG=1 &> build.log

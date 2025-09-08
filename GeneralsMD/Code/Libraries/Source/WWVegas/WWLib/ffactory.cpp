@@ -33,13 +33,13 @@
  *---------------------------------------------------------------------------------------------* 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include	"ffactory.h"
-#include	"rawfile.h"
+#include "ffactory.h"
+#include "RAWFILE.H"
 #include "bufffile.h"
 #include "realcrc.h"
-#include	<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include	<assert.h>
+#include <assert.h>
 #include <string.h>
 
 /*
@@ -49,10 +49,10 @@
 */
 SimpleFileFactoryClass		_DefaultFileFactory;
 FileFactoryClass *			_TheFileFactory = &_DefaultFileFactory;
-SimpleFileFactoryClass *			_TheSimpleFileFactory = &_DefaultFileFactory;
+SimpleFileFactoryClass *	_TheSimpleFileFactory = &_DefaultFileFactory;
 
-RawFileFactoryClass		_DefaultWritingFileFactory;
-RawFileFactoryClass *			_TheWritingFileFactory = &_DefaultWritingFileFactory;
+RawFileFactoryClass			_DefaultWritingFileFactory;
+RawFileFactoryClass *		_TheWritingFileFactory = &_DefaultWritingFileFactory;
 
 /*
 **

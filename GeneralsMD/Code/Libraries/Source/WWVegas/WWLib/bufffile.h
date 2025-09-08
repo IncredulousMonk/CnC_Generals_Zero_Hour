@@ -45,7 +45,7 @@
 #ifndef BUFFFILE_H
 #define BUFFFILE_H
 
-#include	"rawfile.h"
+#include "RAWFILE.H"
 
 
 /*
@@ -60,6 +60,7 @@ class BufferedFileClass : public RawFileClass
 		BufferedFileClass(char const *filename);
 		BufferedFileClass(void);
 		BufferedFileClass (RawFileClass const & f);
+		BufferedFileClass (BufferedFileClass const & f);
 		BufferedFileClass & operator = (BufferedFileClass const & f);
 		virtual ~BufferedFileClass(void);
 
@@ -76,9 +77,9 @@ class BufferedFileClass : public RawFileClass
 		
 	private:
 		unsigned char *	Buffer;				// The read buffer 
-		unsigned int		BufferSize;			// The allocated size of the read buffer
-		int					BufferAvailable;	// The amount of data in the read buffer
-		int					BufferOffset;		// The data already given out
+		unsigned int	BufferSize;			// The allocated size of the read buffer
+		int				BufferAvailable;	// The amount of data in the read buffer
+		int				BufferOffset;		// The data already given out
 		static	int		_DesiredBufferSize;
 };
 

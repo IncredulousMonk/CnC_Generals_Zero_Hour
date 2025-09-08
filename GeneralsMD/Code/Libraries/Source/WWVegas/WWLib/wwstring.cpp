@@ -102,12 +102,12 @@ StringClass::Get_String (int length, bool is_temp)
 				//
 				//	Grab this unused buffer for our string
 				//
-				unsigned temp_string=reinterpret_cast<unsigned>(m_TempStrings);
-				temp_string+=MAX_TEMP_BYTES*MAX_TEMP_STRING;
-				temp_string&=~(MAX_TEMP_BYTES*MAX_TEMP_STRING-1);
-				temp_string+=index*MAX_TEMP_BYTES;
-				temp_string+=sizeof(_HEADER);	// The buffer contains header as well, and it needs to be at the start
-				string=reinterpret_cast<char*>(temp_string);
+				uintptr_t temp_string=reinterpret_cast<uintptr_t>(m_TempStrings);
+				temp_string += MAX_TEMP_BYTES*MAX_TEMP_STRING;
+				temp_string &= (uintptr_t)~(MAX_TEMP_BYTES*MAX_TEMP_STRING-1);
+				temp_string += (uintptr_t)index*MAX_TEMP_BYTES;
+				temp_string += sizeof(_HEADER);	// The buffer contains header as well, and it needs to be at the start
+				string = reinterpret_cast<char*>(temp_string);
 
 				Set_Buffer_And_Allocated_Length (string, MAX_TEMP_LEN);
 				break;
@@ -197,8 +197,8 @@ StringClass::Free_String (void)
 {
 	if (m_Buffer != m_EmptyString) {
 
-		unsigned buffer_base=reinterpret_cast<unsigned>(m_Buffer-sizeof (StringClass::_HEADER));
-		unsigned temp_base=reinterpret_cast<unsigned>(m_TempStrings+MAX_TEMP_BYTES*MAX_TEMP_STRING);
+		uintptr_t buffer_base=reinterpret_cast<uintptr_t>(m_Buffer-sizeof (StringClass::_HEADER));
+		uintptr_t temp_base=reinterpret_cast<uintptr_t>(m_TempStrings+MAX_TEMP_BYTES*MAX_TEMP_STRING);
 
 		if ((buffer_base>>11)==(temp_base>>11)) {
 			m_Buffer[0] = 0;
@@ -237,8 +237,8 @@ StringClass::Free_String (void)
 //	Format
 //
 ///////////////////////////////////////////////////////////////////
-int _cdecl
-StringClass::Format_Args (const TCHAR *format, const va_list & arg_list )
+int
+StringClass::Format_Args (const TCHAR *format, va_list & arg_list )
 {
 	//
 	// Make a guess at the maximum length of the resulting string
@@ -252,7 +252,7 @@ StringClass::Format_Args (const TCHAR *format, const va_list & arg_list )
 	#ifdef _UNICODE
 		retval = _vsnwprintf (temp_buffer, 512, format, arg_list);
 	#else
-		retval = _vsnprintf (temp_buffer, 512, format, arg_list);
+		retval = vsnprintf (temp_buffer, 512, format, arg_list);
 	#endif
 	
 	//
@@ -269,7 +269,7 @@ StringClass::Format_Args (const TCHAR *format, const va_list & arg_list )
 //	Format
 //
 ///////////////////////////////////////////////////////////////////
-int _cdecl
+int
 StringClass::Format (const TCHAR *format, ...)
 {
 	va_list arg_list;
@@ -287,7 +287,7 @@ StringClass::Format (const TCHAR *format, ...)
 	#ifdef _UNICODE
 		retval = _vsnwprintf (temp_buffer, 512, format, arg_list);
 	#else
-		retval = _vsnprintf (temp_buffer, 512, format, arg_list);
+		retval = vsnprintf (temp_buffer, 512, format, arg_list);
 	#endif
 	
 	//
@@ -316,6 +316,7 @@ StringClass::Release_Resources (void)
 // Copy_Wide
 //
 ///////////////////////////////////////////////////////////////////
+#if 0
 bool StringClass::Copy_Wide (const WCHAR *source)
 {
 	if (source != NULL) {
@@ -340,3 +341,4 @@ bool StringClass::Copy_Wide (const WCHAR *source)
 	// Failure.
 	return (false);
 }
+#endif // if 0

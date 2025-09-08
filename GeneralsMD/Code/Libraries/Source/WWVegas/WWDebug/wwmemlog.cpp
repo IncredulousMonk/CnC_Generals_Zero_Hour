@@ -42,8 +42,8 @@
 #include "wwmemlog.h"
 #include "wwdebug.h"
 #include "vector.h"
-#include "fastallocator.h"
-#include <windows.h>
+#include "FastAllocator.h"
+#include <threads.h>
 
 #define USE_FAST_ALLOCATOR
 
@@ -95,7 +95,7 @@ static unsigned FreeCount;
 ** Name for each memory category.  I'm padding the array with some "undefined" strings in case
 ** someone forgets to set the name when adding a new category.
 */
-static char * _MemoryCategoryNames[] =
+static const char * _MemoryCategoryNames[] =
 {
 	"UNKNOWN",
 	"Geometry",
@@ -237,7 +237,7 @@ public:
 private:
 
 	MemoryCounterClass		_MemoryCounters[MEM_COUNT];
-	ActiveCategoryClass		_ActiveCategoryTracker;
+	ActiveCategoryClass		_ActiveCategoryTracker {};
 
 };
 
@@ -249,7 +249,9 @@ private:
 ** _MemLogLockCounter - count of the active mutex locks.
 */
 static MemLogClass *				_TheMemLog = NULL;
+#ifdef STEVES_NEW_CATCHER
 static bool							_MemLogAllocated = false;
+#endif
 
 #if MEMLOG_USE_MUTEX
 static void *						_MemLogMutex = NULL;
@@ -288,6 +290,10 @@ WWINLINE void * Get_Mem_Log_Mutex(void)
 	}
 	return _MemLogCriticalSectionHandle;
 
+#endif
+
+#if DISABLE_MEMLOG
+	return nullptr;
 #endif
 }
 
@@ -392,7 +398,11 @@ ActiveCategoryStackClass::operator = (const ActiveCategoryStackClass & that)
 ***************************************************************************************************/
 ActiveCategoryStackClass & ActiveCategoryClass::Get_Active_Stack(void)
 {
+#if _UNIX
+	int current_thread = (int)thrd_current();
+#else
 	int current_thread = ::GetCurrentThreadId();
+#endif
 
 	/*
 	** If we already have an allocated category stack for the current thread,
@@ -499,7 +509,7 @@ int WWMemoryLogClass::Get_Peak_Allocated_Memory(int category)
 	return Get_Log()->Get_Peak_Allocated_Memory(category);
 }
 
-void WWMemoryLogClass::Push_Active_Category(int category)
+void WWMemoryLogClass::Push_Active_Category([[maybe_unused]] int category)
 {
 #if (DISABLE_MEMLOG == 0)
 	Get_Log()->Push_Active_Category(category);
@@ -524,10 +534,10 @@ void WWMemoryLogClass::Register_Memory_Released(int category,int size)
 }
 
 
-static void _MemLogCleanup(void)
-{
-	delete _TheMemLog;
-}
+// static void _MemLogCleanup(void)
+// {
+// 	delete _TheMemLog;
+// }
 
 
 MemLogClass * WWMemoryLogClass::Get_Log(void)
@@ -748,13 +758,13 @@ void WWMemoryLogClass::Reset_Counters()
 // Return allocate count since last reset
 int WWMemoryLogClass::Get_Allocate_Count()
 {
-	return AllocateCount;
+	return (int)AllocateCount;
 }
 
 // Return allocate count since last reset
 int WWMemoryLogClass::Get_Free_Count()
 {
-	return FreeCount;
+	return (int)FreeCount;
 }
 
 void WWMemoryLogClass::Init()

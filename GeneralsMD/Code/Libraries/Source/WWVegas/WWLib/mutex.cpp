@@ -18,12 +18,12 @@
 
 #include "mutex.h"
 #include "wwdebug.h"
-#include <windows.h>
+// #include <windows.h>
 
 
 // ----------------------------------------------------------------------------
 
-MutexClass::MutexClass(const char* name) : handle(NULL), locked(false)
+MutexClass::MutexClass([[maybe_unused]]const char* name) : handle(NULL), locked(false)
 {
 	#ifdef _UNIX
 		//assert(0);
@@ -43,7 +43,7 @@ MutexClass::~MutexClass()
 	#endif
 }
 
-bool MutexClass::Lock(int time)
+bool MutexClass::Lock([[maybe_unused]]int time)
 {
 	#ifdef _UNIX
 		//assert(0);

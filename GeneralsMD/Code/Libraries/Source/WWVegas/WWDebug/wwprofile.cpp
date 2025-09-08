@@ -51,17 +51,19 @@
 
 #include "always.h"
 #include "wwprofile.h"
-#include "fastallocator.h"
+#include "FastAllocator.h"
 #include "wwdebug.h"
-#include <windows.h>
+// #include <windows.h>
 //#include "systimer.h"
 #include "systimer.h"
-#include "rawfile.h"
+#include "RAWFILE.H"
 #include "ffactory.h"
 #include "simplevec.h"
 #include "cpudetect.h"
 #include "hashtemplate.h"
 #include <stdio.h>
+#include <ctype.h>
+#include <threads.h>
 
 static SimpleDynVecClass<WWProfileHierachyNodeClass*> ProfileCollectVector;
 static double TotalFrameTimes;
@@ -99,7 +101,7 @@ WWINLINE double WWProfile_Get_Inv_Processor_Ticks_Per_Second(void)
 inline void WWProfile_Get_Ticks(_int64 * ticks)
 {
 #ifdef _UNIX
-       *ticks = TIMEGETTIME();
+       *ticks = (_int64)TIMEGETTIME();
 #else
 	__asm
 	{
@@ -160,10 +162,10 @@ WWProfileHierachyNodeClass::WWProfileHierachyNodeClass( unsigned id, WWProfileHi
 	TotalTime( 0 ),
 	StartTime( 0 ),
 	RecursionCounter( 0 ),
+	ProfileStringID(id),
 	Parent( parent ),
 	Child( NULL ),
-	Sibling( NULL ),
-	ProfileStringID(id)
+	Sibling( NULL )
 {
 	Reset();
 }
@@ -213,7 +215,7 @@ void WWProfileHierachyNodeClass::Write_To_File(FileClass* file,int recursion)
 		StringClass string;
 		StringClass work;
 		for (i=0;i<recursion;++i) { string+="\t"; }
-		work.Format("%s\t%d\t%f\r\n",Name,TotalCalls,TotalTime*1000.0f);
+		work.Format(L"%s\t%d\t%f\r\n",Name,TotalCalls,TotalTime*1000.0f);
 		string+=work;
 		file->Write(string.Peek_Buffer(),string.Get_Length());
 	}
@@ -229,7 +231,7 @@ void WWProfileHierachyNodeClass::Add_To_String_Compact(StringClass& string,int r
 {
 	if (TotalTime!=0.0f) {
 		StringClass work;
-		work.Format("%d %d %2.2f;",ProfileStringID,TotalCalls,TotalTime*1000.0f);
+		work.Format(L"%d %d %2.2f;",ProfileStringID,TotalCalls,TotalTime*1000.0f);
 		string+=work;
 	}
 	if (Child) {
@@ -389,7 +391,12 @@ static unsigned int				ThreadID = static_cast<unsigned int>(-1);
  *=============================================================================================*/
 void	WWProfileManager::Start_Profile( const char * name )
 {
-	if (::GetCurrentThreadId() != ThreadID) {
+#if _UNIX
+	unsigned int current_thread = thrd_current();
+#else
+	unsigned int current_thread = ::GetCurrentThreadId();
+#endif
+	if (current_thread != ThreadID) {
 		return;
 	}
 
@@ -403,7 +410,12 @@ void	WWProfileManager::Start_Profile( const char * name )
 
 void	WWProfileManager::Start_Root_Profile( const char * name )
 {
-	if (::GetCurrentThreadId() != ThreadID) {
+#if _UNIX
+	unsigned int current_thread = thrd_current();
+#else
+	unsigned int current_thread = ::GetCurrentThreadId();
+#endif
+	if (current_thread != ThreadID) {
 		return;
 	}
 
@@ -429,7 +441,12 @@ void	WWProfileManager::Start_Root_Profile( const char * name )
  *=============================================================================================*/
 void	WWProfileManager::Stop_Profile( void )
 {
-	if (::GetCurrentThreadId() != ThreadID) {
+#if _UNIX
+	unsigned int current_thread = thrd_current();
+#else
+	unsigned int current_thread = ::GetCurrentThreadId();
+#endif
+	if (current_thread != ThreadID) {
 		return;
 	}
 
@@ -442,7 +459,12 @@ void	WWProfileManager::Stop_Profile( void )
 
 void	WWProfileManager::Stop_Root_Profile( void )
 {
-	if (::GetCurrentThreadId() != ThreadID) {
+#if _UNIX
+	unsigned int current_thread = thrd_current();
+#else
+	unsigned int current_thread = ::GetCurrentThreadId();
+#endif
+	if (current_thread != ThreadID) {
 		return;
 	}
 
@@ -471,7 +493,12 @@ void	WWProfileManager::Stop_Root_Profile( void )
  *=============================================================================================*/
 void	WWProfileManager::Reset( void )
 {
-	ThreadID = ::GetCurrentThreadId();
+#if _UNIX
+	unsigned int current_thread = thrd_current();
+#else
+	unsigned int current_thread = ::GetCurrentThreadId();
+#endif
+	ThreadID = current_thread;
 
 	Root.Reset();
 	FrameCounter = 0;
@@ -587,7 +614,7 @@ void	WWProfileManager::End_Collecting(const char* filename)
 			StringClass str;
 			float avg_frame_time=TotalFrameTimes/float(ProfileCollectVector.Count());
 			str.Format(
-				"Total frames: %d, average frame time: %fms\r\n"
+				L"Total frames: %d, average frame time: %fms\r\n"
 				"All frames taking more than twice the average frame time are marked with keyword SPIKE.\r\n\r\n",
 				ProfileCollectVector.Count(),avg_frame_time*1000.0f);
 			file->Write(str.Peek_Buffer(),str.Get_Length());
@@ -603,16 +630,16 @@ void	WWProfileManager::End_Collecting(const char* filename)
 					if (name[i]==',') name[i]='.';
 					if (name[i]==';') name[i]=':';
 				}
-				str.Format("ID: %d %s\r\n",ite.Peek_Value(),name);
+				str.Format(L"ID: %d %s\r\n",ite.Peek_Value(),name);
 				file->Write(str.Peek_Buffer(),str.Get_Length());
 			}
 
-			str.Format("\r\n\r\n");
+			str.Format(L"\r\n\r\n");
 			file->Write(str.Peek_Buffer(),str.Get_Length());
 
 			for (i=0;i<ProfileCollectVector.Count();++i) {
 				float frame_time=ProfileCollectVector[i]->Get_Total_Time();
-				str.Format("FRAME: %d %2.2f %s ",i,frame_time*1000.0f,frame_time>avg_frame_time*2.0f ? "SPIKE" : "OK");
+				str.Format(L"FRAME: %d %2.2f %s ",i,frame_time*1000.0f,frame_time>avg_frame_time*2.0f ? "SPIKE" : "OK");
 				ProfileCollectVector[i]->Add_To_String_Compact(str,0);
 				str+="\r\n";
 				file->Write(str.Peek_Buffer(),str.Get_Length());
@@ -644,15 +671,15 @@ static unsigned Read_Line(char* memory,unsigned pos,unsigned maxpos)
 	return pos;
 }
 
-static unsigned Seek_Char(char* memory,unsigned pos,unsigned maxpos,char c)
-{
-	while (pos<maxpos) {
-		if (memory[pos++]==c) {
-			return pos;
-		}
-	}
-	return pos;
-}
+// static unsigned Seek_Char(char* memory,unsigned pos,unsigned maxpos,char c)
+// {
+// 	while (pos<maxpos) {
+// 		if (memory[pos++]==c) {
+// 			return pos;
+// 		}
+// 	}
+// 	return pos;
+// }
 
 unsigned Read_Int(char* memory,unsigned pos,unsigned maxpos,unsigned& number)
 {
@@ -661,7 +688,7 @@ unsigned Read_Int(char* memory,unsigned pos,unsigned maxpos,unsigned& number)
 		char c=memory[pos++];
 		if (isdigit(c)) {
 			number*=10;
-			number+=c-'0';
+			number += (unsigned)(c-'0');
 		}
 		else break;
 	}
@@ -690,7 +717,7 @@ unsigned Read_Float(char* memory,unsigned pos,unsigned maxpos,float& fnumber)
 		char c=memory[pos++];
 		if (isdigit(c)) {
 			ftint*=10;
-			ftint+=c-'0';
+			ftint+= (unsigned)(c-'0');
 		}
 		else {
 			if (c=='.') {
@@ -778,7 +805,7 @@ static unsigned Read_Frame(char* memory,unsigned pos,unsigned maxpos,WWProfileHi
 				parent->Set_Child(new_node);
 			}
 			new_node->Set_Total_Time(time);
-			new_node->Set_Total_Calls(count);
+			new_node->Set_Total_Calls((int)count);
 			latest=new_node;
 			if (root==NULL) root=new_node;
 		}
@@ -818,9 +845,9 @@ void WWProfileManager::Load_Profile_Log(const char* filename, WWProfileHierachyI
 		file->Open (FileClass::READ);
 		char tmp[256];
 
-		unsigned size=file->Size();
+		unsigned size=(unsigned)file->Size();
 		char* memory=new char[size];
-		file->Read(memory,size);
+		file->Read(memory,(int)size);
 		file->Close();
 		unsigned pos=0;
 
@@ -847,10 +874,10 @@ void WWProfileManager::Load_Profile_Log(const char* filename, WWProfileHierachyI
 		delete[] memory;
 
 		if (vec.Count()) {
-			count=vec.Count();
+			count=(unsigned)vec.Count();
 			array=new WWProfileHierachyInfoClass*[count];
 			for (i=0;i<count;++i) {
-				array[i]=vec[i];
+				array[i]=vec[(int)i];
 			}
 		}
 	}
@@ -1042,10 +1069,10 @@ unsigned WWMemoryAndTimeLog::TabCount;
 
 WWMemoryAndTimeLog::WWMemoryAndTimeLog(const char* name)
 	:
-	Name(name),
 	TimeStart(WWProfile_Get_System_Time()),
-	AllocCountStart(FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocation_Count()),
-	AllocSizeStart(FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocated_Size())
+	AllocCountStart((int)FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocation_Count()),
+	AllocSizeStart((int)FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocated_Size()),
+	Name(name)
 {
 	IntermediateTimeStart=TimeStart;
 	IntermediateAllocCountStart=AllocCountStart;
@@ -1064,8 +1091,8 @@ WWMemoryAndTimeLog::~WWMemoryAndTimeLog()
 	WWRELEASE_SAY(("%s} ",tmp));
 
 	unsigned current_time=WWProfile_Get_System_Time();
-	int current_alloc_count=FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocation_Count();
-	int current_alloc_size=FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocated_Size();
+	int current_alloc_count=(int)FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocation_Count();
+	int current_alloc_size=(int)FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocated_Size();
 	WWRELEASE_SAY(("IN TOTAL %s took %d.%3.3d s, did %d memory allocations of %d bytes\n",
 		Name,
 		(current_time - TimeStart)/1000, (current_time - TimeStart)%1000,
@@ -1079,8 +1106,8 @@ WWMemoryAndTimeLog::~WWMemoryAndTimeLog()
 void WWMemoryAndTimeLog::Log_Intermediate(const char* text)
 {
 	unsigned current_time=WWProfile_Get_System_Time();
-	int current_alloc_count=FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocation_Count();
-	int current_alloc_size=FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocated_Size();
+	int current_alloc_count=(int)FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocation_Count();
+	int current_alloc_size=(int)FastAllocatorGeneral::Get_Allocator()->Get_Total_Allocated_Size();
 	StringClass tmp(0,true);
 	for (unsigned i=0;i<TabCount;++i) tmp+="\t";
 	WWRELEASE_SAY(("%s%s took %d.%3.3d s, did %d memory allocations of %d bytes\n",
@@ -1108,7 +1135,7 @@ void WWMemoryAndTimeLog::Log_Intermediate(const char* text)
  *                                                                                             *
  * HISTORY:                                                                                    *
  *=============================================================================================*/
-WWProfileHierachyInfoClass::WWProfileHierachyInfoClass( const char * name, WWProfileHierachyInfoClass * parent ) :
+WWProfileHierachyInfoClass::WWProfileHierachyInfoClass( StringClass name, WWProfileHierachyInfoClass * parent ) :
 	Name( name ),
 	TotalCalls( 0 ),
 	TotalTime( 0 ),

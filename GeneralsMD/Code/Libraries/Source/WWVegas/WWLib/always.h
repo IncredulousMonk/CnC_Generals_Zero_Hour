@@ -37,10 +37,11 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#ifndef ALWAYS_H
-#define ALWAYS_H
+#ifndef _ALWAYS_H
+#define _ALWAYS_H
 
 #include <assert.h>
+#include <cstddef>
 
 // Disable warning about exception handling not being enabled. It's used as part of STL - in a part of STL we don't use.
 // #pragma warning(disable : 4530)
@@ -71,49 +72,43 @@
 #endif	//_MSC_VER
 #endif	//_DEBUG
 
-#if 1 // (gth) killing the Generals Memory Manager!
-
-#if 0
-
-// MG: I'm going to disable this for the moment.
+#if 0 // (gth) killing the Generals Memory Manager!
 
 #ifndef _OPERATOR_NEW_DEFINED_
 
 	#define _OPERATOR_NEW_DEFINED_
 
-	extern void * __cdecl operator new		(size_t size);
-	extern void __cdecl operator delete		(void *p);
+	extern void * operator new		(size_t size);
+	extern void operator delete		(void *p);
 
-	extern void * __cdecl operator new[]	(size_t size);
-	extern void __cdecl operator delete[]	(void *p);
+	extern void * operator new[]	(size_t size);
+	extern void operator delete[]	(void *p);
 
 	// additional overloads to account for VC/MFC funky versions
-	extern void* __cdecl operator new			(size_t nSize, const char *, int);
-	extern void __cdecl operator delete		(void *, const char *, int);
+	extern void* operator new			(size_t nSize, const char *, int);
+	extern void operator delete		(void *, const char *, int);
 
-	extern void* __cdecl operator new[]		(size_t nSize, const char *, int);
-	extern void __cdecl operator delete[]	(void *, const char *, int);
+	extern void* operator new[]		(size_t nSize, const char *, int);
+	extern void operator delete[]	(void *, const char *, int);
 
 	// additional overloads for 'placement new'
-	//inline void* __cdecl operator new							(size_t s, void *p) { return p; }
-	//inline void __cdecl operator delete						(void *, void *p)		{ }
-	inline void* __cdecl operator new[]						(size_t s, void *p) { return p; }
-	inline void __cdecl operator delete[]					(void *, void *p)		{ }
-
-#endif
+	//inline void* operator new							(size_t s, void *p) { return p; }
+	//inline void operator delete						(void *, void *p)		{ }
+	inline void* operator new[]						(size_t /* s */, void *p) { return p; }
+	inline void operator delete[]					(void *, void* /* p */)		{ }
 
 #endif
 
 #if (defined(_DEBUG) || defined(_INTERNAL)) 
-	#define MSGW3DNEW(MSG)					new( MSG, 0 )
+	#define MSGW3DNEW(MSG)				new( MSG, 0 )
 	#define MSGW3DNEWARRAY(MSG)			new( MSG, 0 )
-	#define W3DNEW									new("W3D_" __FILE__, 0)
-	#define W3DNEWARRAY							new("W3A_" __FILE__, 0)
+	#define W3DNEW						new("W3D_" __FILE__, 0)
+	#define W3DNEWARRAY					new("W3A_" __FILE__, 0)
 #else
-	#define MSGW3DNEW(MSG)					new
+	#define MSGW3DNEW(MSG)				new
 	#define MSGW3DNEWARRAY(MSG)			new
-	#define W3DNEW									new
-	#define W3DNEWARRAY							new
+	#define W3DNEW						new
+	#define W3DNEWARRAY					new
 #endif
 
 // ----------------------------------------------------------------------------
@@ -163,10 +158,10 @@ public:
 
 #else
 
-	#define MSGW3DNEW(MSG)					new
+	#define MSGW3DNEW(MSG)				new
 	#define MSGW3DNEWARRAY(MSG)			new
-	#define W3DNEW									new
-	#define W3DNEWARRAY							new
+	#define W3DNEW						new
+	#define W3DNEWARRAY					new
 
 	#define W3DMPO_GLUE(ARGCLASS)
 
@@ -260,6 +255,5 @@ template <class T> T max(T a,T b)
 #ifndef size_of
 #define size_of(typ,id) sizeof(((typ*)0)->id)
 #endif
-
 
 #endif

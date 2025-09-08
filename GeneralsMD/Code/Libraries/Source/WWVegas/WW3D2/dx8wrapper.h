@@ -46,27 +46,29 @@
 #ifndef DX8_WRAPPER_H
 #define DX8_WRAPPER_H
 
-#include "always.h"
-#include "dllist.h"
+// #include "always.h"
+// #include "dllist.h"
 #include "d3d8.h"
-#include "matrix4.h"
-#include "statistics.h"
-#include "wwstring.h"
-#include "lightenvironment.h"
-#include "shader.h"
+// #include "matrix4.h"
+// #include "statistics.h"
+// #include "wwstring.h"
+// #include "lightenvironment.h"
+// #include "shader.h"
+#include "vector3.h"
 #include "vector4.h"
-#include "cpudetect.h"
-#include "dx8caps.h"
+// #include "cpudetect.h"
+// #include "dx8caps.h"
 
-#include "texture.h"
-#include "dx8vertexbuffer.h"
-#include "dx8indexbuffer.h"
-#include "vertmaterial.h"
+// #include "texture.h"
+// #include "dx8vertexbuffer.h"
+// #include "dx8indexbuffer.h"
+// #include "vertmaterial.h"
 
+#if 0
 /*
 ** Registry value names
 */
-#define	VALUE_NAME_RENDER_DEVICE_NAME					"RenderDeviceName"
+#define	VALUE_NAME_RENDER_DEVICE_NAME				"RenderDeviceName"
 #define	VALUE_NAME_RENDER_DEVICE_WIDTH				"RenderDeviceWidth"
 #define	VALUE_NAME_RENDER_DEVICE_HEIGHT				"RenderDeviceHeight"
 #define	VALUE_NAME_RENDER_DEVICE_DEPTH				"RenderDeviceDepth"
@@ -201,6 +203,7 @@ struct RenderStateStruct
 
 	RenderStateStruct& operator= (const RenderStateStruct& src);
 };
+#endif // if 0
 
 /**
 ** DX8Wrapper
@@ -212,6 +215,7 @@ struct RenderStateStruct
 */
 class DX8Wrapper
 {
+#if 0
 	enum ChangedStates {
 		WORLD_CHANGED	=	1<<0,
 		VIEW_CHANGED	=	1<<1,
@@ -250,7 +254,10 @@ class DX8Wrapper
 		unsigned short min_vertex_index=0,
 		unsigned short vertex_count=0);
 
+#endif // if 0
+
 public:
+#if 0
 #ifdef EXTENDED_STATS
 	static DX8_Stats stats;
 #endif
@@ -448,11 +455,13 @@ public:
 	// Needed by shader class
 	static bool						Get_Fog_Enable() { return FogEnable; }
 	static D3DCOLOR				Get_Fog_Color() { return FogColor; }
+#endif // if 0
 
 	// Utilities
 	static Vector4 Convert_Color(unsigned color);
 	static unsigned int Convert_Color(const Vector4& color);
 	static unsigned int Convert_Color(const Vector3& color, const float alpha);
+#if 0
 	static void Clamp_Color(Vector4& color);
 	static unsigned int Convert_Color_Clamp(const Vector4& color);
 
@@ -713,8 +722,11 @@ protected:
 	friend class WW3D;
 	friend class DX8IndexBufferClass;
 	friend class DX8VertexBufferClass;
+
+#endif // if 0
 };
 
+#if 0
 // shader system updates KJM v
 WWINLINE void DX8Wrapper::Set_Vertex_Shader(DWORD vertex_shader)
 {
@@ -954,6 +966,7 @@ WWINLINE void DX8Wrapper::_Copy_DX8_Rects(
   pDestinationSurface,
   pDestPointsArray));
 }
+#endif // if 0
 
 WWINLINE Vector4 DX8Wrapper::Convert_Color(unsigned color)
 {
@@ -966,7 +979,7 @@ WWINLINE Vector4 DX8Wrapper::Convert_Color(unsigned color)
 	return col;
 }
 
-#if 0
+#if 1
 WWINLINE unsigned int DX8Wrapper::Convert_Color(const Vector3& color, const float alpha)
 {
 	WWASSERT(color.X<=1.0f);
@@ -1152,6 +1165,8 @@ WWINLINE unsigned int DX8Wrapper::Convert_Color_Clamp(const Vector4& color)
 
 #endif
 
+
+#if 0
 
 WWINLINE void DX8Wrapper::Set_Alpha (const float alpha, unsigned int &color)
 {
@@ -1504,5 +1519,6 @@ WWINLINE RenderStateStruct& RenderStateStruct::operator= (const RenderStateStruc
 	return *this;
 }
 
+#endif // if 0
 
 #endif

@@ -34,6 +34,8 @@
 #define __LINUXVIEW_H_
 
 // SYSTEM INCLUDES ////////////////////////////////////////////////////////////////////////////////
+#define GL_GLEXT_PROTOTYPES
+#include <GL/glcorearb.h>
 
 // USER INCLUDES //////////////////////////////////////////////////////////////////////////////////
 #include "Common/STLTypedefs.h"
@@ -47,7 +49,10 @@
 // ------------------------------------------------------------------------------------------------
 class LinuxView: public View, public SubsystemInterface
 {
-
+private:
+   GLuint m_vaoTri {};
+   GLuint m_vboTri {};
+   GLuint m_progTri {};
 public:
    LinuxView();
    ~LinuxView();

@@ -151,8 +151,8 @@ void OpenGLRenderer::init() {
    glClearColor(0.0, 0.0, 0.0, 1.0);
    // glEnable(GL_DEPTH_TEST);
    // glViewport(0, 0, 800, 600); // Need to call glViewport if window is resized.
-   // glEnable(GL_BLEND);
-   // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //============================================================================
@@ -191,9 +191,6 @@ void OpenGLRenderer::endRender() {
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// PRIVATE FUNCTIONS 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 //-------------------------------------------------------------------------------------------------
 void OpenGLRenderer::addShader(GLuint program, const char* source, GLenum shaderType) {

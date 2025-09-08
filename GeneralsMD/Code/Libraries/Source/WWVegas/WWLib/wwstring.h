@@ -53,12 +53,18 @@
 #include "osdep.h"
 #endif
 
-#define TCHAR wchar_t
+#define TCHAR char
 #define WCHAR wchar_t
-#define _tcscmp wcscmp
-#define _tcsicmp wcsicmp
-#define _tcslen wcslen
-#define _tcsclen wcslen
+// #define _tcscmp wcscmp
+// #define _tcsicmp wcscasecmp
+// #define _tcslen wcslen
+// #define _tcsclen wcslen
+#define _tcscpy strcpy
+#define _tcscmp strcmp
+#define _tcsicmp strcasecmp
+#define _tcslen strlen
+#define _tcsclen strlen
+#define _tcstrim strtrim
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -83,7 +89,7 @@ public:
 	StringClass (bool hint_temporary);
 	StringClass (int initial_len = 0, bool hint_temporary = false);
 	StringClass (const StringClass &string, bool hint_temporary = false);
-	StringClass (const TCHAR *string, bool hint_temporary = false);
+	// StringClass (const TCHAR *string, bool hint_temporary = false);
 	StringClass (TCHAR ch, bool hint_temporary = false);
 	StringClass (const WCHAR *string, bool hint_temporary = false);
 	~StringClass (void);
@@ -95,9 +101,11 @@ public:
 	bool operator!= (const TCHAR *rvalue) const;
 
 	inline const StringClass &operator= (const StringClass &string);
-	inline const StringClass &operator= (const TCHAR *string);
+	// inline const StringClass &operator= (const TCHAR *string);
 	inline const StringClass &operator= (TCHAR ch);
+#if 0
 	inline const StringClass &operator= (const WCHAR *string);
+#endif // if 0
 
 	const StringClass &operator+= (const StringClass &string);
 	const StringClass &operator+= (const TCHAR *string);
@@ -126,8 +134,8 @@ public:
 	bool			Is_Empty (void) const;
 
 	void			Erase (int start_index, int char_count);
-	int _cdecl  Format (const TCHAR *format, ...);
-	int _cdecl  Format_Args (const TCHAR *format, const va_list & arg_list );
+	int Format (const TCHAR *format, ...);
+	int Format_Args (const TCHAR *format, va_list & arg_list );
 
 	// Trim leading and trailing whitespace characters (values <= 32)
 	void Trim(void);
@@ -136,7 +144,9 @@ public:
 	TCHAR *		Peek_Buffer (void);
 	const TCHAR * Peek_Buffer (void) const;
 
+#if 0
 	bool Copy_Wide (const WCHAR *source);
+#endif // if 0
 
 	////////////////////////////////////////////////////////////
 	//	Static methods
@@ -209,7 +219,7 @@ StringClass::operator= (const StringClass &string)
 	Uninitialised_Grow(len+1);
 	Store_Length(len);
 
-	::memcpy (m_Buffer, string.m_Buffer, (len+1) * sizeof (TCHAR));		
+	::memcpy (m_Buffer, string.m_Buffer, ((size_t)len+1) * sizeof (TCHAR));
 	return (*this);
 
 }
@@ -217,25 +227,26 @@ StringClass::operator= (const StringClass &string)
 ///////////////////////////////////////////////////////////////////
 //	operator=
 ///////////////////////////////////////////////////////////////////
-inline const StringClass &
-StringClass::operator= (const TCHAR *string)
-{
-	if (string != 0) {
+// inline const StringClass &
+// StringClass::operator= (const TCHAR *string)
+// {
+// 	if (string != 0) {
 
-		int len = _tcslen (string);
-		Uninitialised_Grow (len+1);
-		Store_Length (len);
+// 		int len = _tcslen (string);
+// 		Uninitialised_Grow (len+1);
+// 		Store_Length (len);
 
-		::memcpy (m_Buffer, string, (len + 1) * sizeof (TCHAR));		
-	}
+// 		::memcpy (m_Buffer, string, ((size_t)len + 1) * sizeof (TCHAR));
+// 	}
 
-	return (*this);
-}
+// 	return (*this);
+// }
 
 
 ///////////////////////////////////////////////////////////////////
 //	operator=
 ///////////////////////////////////////////////////////////////////
+#if 0
 inline const StringClass &
 StringClass::operator= (const WCHAR *string)
 {
@@ -245,6 +256,7 @@ StringClass::operator= (const WCHAR *string)
 
 	return (*this);
 }
+#endif // if 0
 
 
 ///////////////////////////////////////////////////////////////////
@@ -318,18 +330,18 @@ StringClass::StringClass (const StringClass &string, bool hint_temporary)
 ///////////////////////////////////////////////////////////////////
 //	StringClass
 ///////////////////////////////////////////////////////////////////
-inline
-StringClass::StringClass (const TCHAR *string, bool hint_temporary)
-	:	m_Buffer (m_EmptyString)
-{
-	int len=string ? _tcsclen(string) : 0;
-	if (hint_temporary || len>0) {
-		Get_String (len+1, hint_temporary);
-	}
+// inline
+// StringClass::StringClass (const TCHAR *string, bool hint_temporary)
+// 	:	m_Buffer (m_EmptyString)
+// {
+// 	int len=string ? _tcsclen(string) : 0;
+// 	if (hint_temporary || len>0) {
+// 		Get_String (len+1, hint_temporary);
+// 	}
 
-	(*this) = string;
-	return ;
-}
+// 	(*this) = string;
+// 	return ;
+// }
 
 ///////////////////////////////////////////////////////////////////
 //	StringClass
@@ -485,7 +497,7 @@ StringClass::Erase (int start_index, int char_count)
 
 		::memmove (	&m_Buffer[start_index],
 						&m_Buffer[start_index + char_count],
-						(len - (start_index + char_count) + 1) * sizeof (TCHAR));
+						(size_t)(len - (start_index + char_count) + 1) * sizeof (TCHAR));
 
 		Store_Length( len - char_count );
 	}
@@ -499,7 +511,7 @@ StringClass::Erase (int start_index, int char_count)
 ///////////////////////////////////////////////////////////////////
 inline void StringClass::Trim(void)
 {
-	strtrim(m_Buffer);
+	_tcstrim(m_Buffer);
 }
 
 
@@ -524,7 +536,7 @@ StringClass::operator+= (const TCHAR *string)
 	//
 	//	Copy the new string onto our the end of our existing buffer
 	//
-	::memcpy (&m_Buffer[cur_len], string, (src_len + 1) * sizeof (TCHAR));
+	::memcpy (&m_Buffer[cur_len], string, ((size_t)src_len + 1) * sizeof (TCHAR));
 	return (*this);
 }
 
@@ -596,7 +608,7 @@ StringClass::operator+= (const StringClass &string)
 		//
 		//	Copy the new string onto our the end of our existing buffer
 		//
-		::memcpy (&m_Buffer[cur_len], (const TCHAR *)string, (src_len + 1) * sizeof (TCHAR));				
+		::memcpy (&m_Buffer[cur_len], (const TCHAR *)string, ((size_t)src_len + 1) * sizeof (TCHAR));				
 	}
 
 	return (*this);
@@ -726,7 +738,7 @@ StringClass::Allocate_Buffer (int length)
 	//	Allocate a buffer that is 'length' characters long, plus the
 	// bytes required to hold the header.
 	//
-	char *buffer = W3DNEWARRAY char[(sizeof (TCHAR) * length) + sizeof (StringClass::_HEADER)];
+	char *buffer = W3DNEWARRAY char[(sizeof (TCHAR) * (size_t)length) + sizeof (StringClass::_HEADER)];
 	
 	//
 	//	Fill in the fields of the header

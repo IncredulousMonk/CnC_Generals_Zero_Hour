@@ -74,11 +74,11 @@ static int refcompress(unsigned char *from, int len, unsigned char *dest, int ma
     if ((unsigned int)maxback > (unsigned int)131071)
         maxback = 131071;
 
-	hashtbl = (int *) galloc(65536L*sizeof(int));
-	if (!hashtbl)
+    hashtbl = (int *) galloc(65536L*sizeof(int));
+    if (!hashtbl)
         return(0);
-	link = (int *) galloc(131072L*sizeof(int));
-	if (!link)
+    link = (int *) galloc(131072L*sizeof(int));
+    if (!link)
         return(0);
 
     memset(hashtbl,-1,65536L*sizeof(int));
@@ -90,7 +90,7 @@ static int refcompress(unsigned char *from, int len, unsigned char *dest, int ma
         blen = 2;
         bcost = 2;
 //        ccost = 0;
-        mlen = qmin(len,1028);
+        mlen = (unsigned int)qmin(len,1028);
         tptr=cptr-1;
         hash = HASH(cptr);
         hoffset = hashtbl[hash];
@@ -146,7 +146,7 @@ static int refcompress(unsigned char *from, int len, unsigned char *dest, int ma
         {
             while (run>3)                   /* literal block of data */
             {
-                tlen = qmin(112,run&~3);
+                tlen = qmin(112,run&~3u);
                 run -= tlen;
                 *to++ = (unsigned char) (0xe0+(tlen>>2)-1);
                 memcpy(to,rptr,tlen);
@@ -202,14 +202,14 @@ static int refcompress(unsigned char *from, int len, unsigned char *dest, int ma
             }
 
             rptr = cptr;
-            len -= blen;
+            len -= (int)blen;
         }
     }
     len += 4;
-    run += len;
+    run += (unsigned int)len;
     while (run>3)                       /* no match at end, use literal */
     {
-        tlen = qmin(112,run&~3);
+        tlen = qmin(112,run&~3u);
         run -= tlen;
         *to++ = (unsigned char) (0xe0+(tlen>>2)-1);
         memcpy(to,rptr,tlen);
@@ -234,7 +234,7 @@ static int refcompress(unsigned char *from, int len, unsigned char *dest, int ma
 /*  Encode Function                                             */
 /****************************************************************/
 
-int GCALL REF_encode(void *compresseddata, const void *source, int sourcesize, int *opts)
+int GCALL REF_encode(void *compresseddata, const void *source, int sourcesize, int* /* opts */)
 {
     int    maxback=131072;
     int     quick=0;
@@ -261,4 +261,3 @@ int GCALL REF_encode(void *compresseddata, const void *source, int sourcesize, i
 }
 
 #endif
-

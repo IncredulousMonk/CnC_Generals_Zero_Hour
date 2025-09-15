@@ -608,18 +608,18 @@ struct W3dRGBStruct
 		return (R<<24)|(G<<16)|(B<<8);
 	}
 
-	uint8			R;
-	uint8			G;
-	uint8			B;
-	uint8			pad;
+	uint8			R {};
+	uint8			G {};
+	uint8			B {};
+	uint8			pad {};
 };
 
 struct W3dRGBAStruct
 {
-	uint8			R;
-	uint8			G;
-	uint8			B;
-	uint8			A;
+	uint8			R {};
+	uint8			G {};
+	uint8			B {};
+	uint8			A {};
 };
 
 
@@ -725,14 +725,14 @@ struct W3dVertexMaterialStruct
 		return (!(*this == vm));
 	}
 	
-	uint32					Attributes;					// bitfield for the flags defined above
-	W3dRGBStruct			Ambient;
-	W3dRGBStruct			Diffuse;
-	W3dRGBStruct			Specular;
-	W3dRGBStruct			Emissive;
-	float32					Shininess;					// how tight the specular highlight will be, 1 - 1000 (default = 1)
-	float32					Opacity;						// how opaque the material is, 0.0 = invisible, 1.0 = fully opaque (default = 1)
-	float32					Translucency;				// how much light passes through the material. (default = 0)
+	uint32					Attributes {};					// bitfield for the flags defined above
+	W3dRGBStruct			Ambient {};
+	W3dRGBStruct			Diffuse {};
+	W3dRGBStruct			Specular {};
+	W3dRGBStruct			Emissive {};
+	float32					Shininess {};					// how tight the specular highlight will be, 1 - 1000 (default = 1)
+	float32					Opacity {};						// how opaque the material is, 0.0 = invisible, 1.0 = fully opaque (default = 1)
+	float32					Translucency {};				// how much light passes through the material. (default = 0)
 };
 
 inline void W3d_Vertex_Material_Reset(W3dVertexMaterialStruct * vmat) 
@@ -866,21 +866,21 @@ struct W3dShaderStruct
 {
 	W3dShaderStruct(void) {}
 	
-	uint8						DepthCompare;
-	uint8						DepthMask;
-	uint8						ColorMask;		// now obsolete and ignored
-	uint8						DestBlend;
-	uint8						FogFunc;			// now obsolete and ignored
-	uint8						PriGradient;
-	uint8						SecGradient;
-	uint8						SrcBlend;
-	uint8						Texturing;
-	uint8						DetailColorFunc;
-	uint8						DetailAlphaFunc;
-	uint8						ShaderPreset;	// now obsolete and ignored
-	uint8						AlphaTest;
-	uint8						PostDetailColorFunc;
-	uint8						PostDetailAlphaFunc;
+	uint8						DepthCompare {};
+	uint8						DepthMask {};
+	uint8						ColorMask {};		// now obsolete and ignored
+	uint8						DestBlend {};
+	uint8						FogFunc {};			// now obsolete and ignored
+	uint8						PriGradient {};
+	uint8						SecGradient {};
+	uint8						SrcBlend {};
+	uint8						Texturing {};
+	uint8						DetailColorFunc {};
+	uint8						DetailAlphaFunc {};
+	uint8						ShaderPreset {};	// now obsolete and ignored
+	uint8						AlphaTest {};
+	uint8						PostDetailColorFunc {};
+	uint8						PostDetailAlphaFunc {};
 	uint8						pad[1];
 
 	// Required by DynamicVectorClass...
@@ -910,15 +910,15 @@ struct W3dShaderStruct
 
 struct W3dPS2ShaderStruct
 {
-	uint8						DepthCompare;
-	uint8						DepthMask;
-	uint8						PriGradient;
-	uint8						Texturing;
-	uint8						AlphaTest;
-	uint8						AParam;
-	uint8						BParam;
-	uint8						CParam;
-	uint8						DParam;
+	uint8						DepthCompare {};
+	uint8						DepthMask {};
+	uint8						PriGradient {};
+	uint8						Texturing {};
+	uint8						AlphaTest {};
+	uint8						AParam {};
+	uint8						BParam {};
+	uint8						CParam {};
+	uint8						DParam {};
 	uint8						pad[3];
 };
 
@@ -1035,10 +1035,10 @@ inline int W3d_Shader_Get_Post_Detail_Alpha_Func(const W3dShaderStruct * s)	 { r
 struct W3dTextureInfoStruct
 {
 	W3dTextureInfoStruct(void)	{}
-	uint16					Attributes;					// flags for this texture
-	uint16					AnimType;					// animation logic
-	uint32					FrameCount;					// Number of frames (1 if not animated)
-	float32					FrameRate;					// Frame rate, frames per second in floating point
+	uint16					Attributes {};					// flags for this texture
+	uint16					AnimType {};					// animation logic
+	uint32					FrameCount {};					// Number of frames (1 if not animated)
+	float32					FrameRate {};					// Frame rate, frames per second in floating point
 };
 
 

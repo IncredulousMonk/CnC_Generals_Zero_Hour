@@ -55,12 +55,12 @@ class RefCountClass;
 
 struct ActiveRefStruct
 {
-	char *					File;
-	int						Line;
+	const char *	File;
+	int				Line;
 };
 
-#define	NEW_REF( C, P )						( (C*)RefCountClass::Set_Ref_Owner( W3DNEW C P, __FILE__, __LINE__ ) )
-#define	SET_REF_OWNER( P )				(		RefCountClass::Set_Ref_Owner( P,       __FILE__, __LINE__ ) )
+#define	NEW_REF( C, P )					( (C*)RefCountClass::Set_Ref_Owner( W3DNEW C P, __FILE__, __LINE__ ) )
+#define	SET_REF_OWNER( P )				( RefCountClass::Set_Ref_Owner( P, __FILE__, __LINE__ ) )
 
 #else
 
@@ -235,7 +235,7 @@ public:
 	/*
 	** Updates the owner file/line for the given ref obj in the active ref list
 	*/
-	static RefCountClass *			Set_Ref_Owner(RefCountClass *obj,char * file,int line);
+	static RefCountClass *			Set_Ref_Owner(RefCountClass *obj, const char* file, int line);
 
 	/*
 	** Remove the ref obj from the active ref list

@@ -74,7 +74,7 @@ static void BTREE_writebits(struct BTreeEncodeContext *EC,
 		EC->workpattern += (bitpattern & EC->masks[len]) << (24-EC->packbits);
 		while (EC->packbits > 7)
 		{
-			*(dest->ptr+dest->len) = (unsigned char) (EC->workpattern >> 16);
+			*(dest->ptr+dest->len) = (char) (EC->workpattern >> 16);
 			++dest->len;
 
 			EC->workpattern = EC->workpattern << 8;
@@ -105,7 +105,7 @@ static void BTREE_adjcount(unsigned char *s, unsigned char *bend, BTREEWORD *cou
 
 	unsigned BTREEWORD		i;
 
-    #define COUNTADJ(j)	i = (BTREEWORD)(((i<<8) | *(s+j)));	++*(count+(int)i);
+    #define COUNTADJ(j)	i = (unsigned BTREEWORD)(((i<<8) | *(s+j)));	++*(count+(int)i);
 
 	i = (unsigned BTREEWORD) *s++;
 
@@ -284,7 +284,7 @@ static unsigned int	BTREE_findbest(BTREEWORD     *countptr,
 				if (*countptr++>(BTREEWORD)i)
 				{
 					if (tryq[i1])
-					{	i = *(countptr-1);
+					{	i = (unsigned int)*(countptr-1);
 						i3=bestsize;
 						while (bestval[i3-1]<i)
 						{
@@ -296,10 +296,10 @@ static unsigned int	BTREE_findbest(BTREEWORD     *countptr,
 						bestval[i3] = i;
 						if (bestsize<48)
 							++bestsize;
-						while (bestval[bestsize-1]<(bestval[1]/ratio))
+						while (bestval[bestsize-1]<(bestval[1]/(unsigned int)ratio))
 							--bestsize;
 						if (bestsize<48)
-							i = bestval[1]/ratio;
+							i = bestval[1]/(unsigned int)ratio;
 						else
 							i = bestval[bestsize-1];
 					}
@@ -330,7 +330,7 @@ static void BTREE_treepack(struct BTreeEncodeContext *EC,
 
 	int				joinnode, leftnode, rightnode;
 	int				ratio;
-	unsigned int	hlen;
+	// unsigned int	hlen;
 	unsigned int	domore;
 	unsigned int	cost, save;
 	unsigned int	tcost, tsave;
@@ -358,18 +358,18 @@ static void BTREE_treepack(struct BTreeEncodeContext *EC,
 
     // 3/2 allows for worst case, where 2nd most popular
 	treebufsize = 65536L*sizeof(BTREEWORD);  /* 131K */
-	buf1size = EC->ulen*3/2+(int)BTREESLOPAGE;
-	buf2size = EC->ulen*3/2+(int)BTREESLOPAGE;
+	buf1size = (int)EC->ulen*3/2+(int)BTREESLOPAGE;
+	buf2size = (int)EC->ulen*3/2+(int)BTREESLOPAGE;
 
-	treebuf =	(unsigned char *) galloc(treebufsize);
+	treebuf =	(unsigned char *) galloc((size_t)treebufsize);
 	if (!treebuf)
         return; /* failure Insufficient memory for work buffer */
 
-	EC->buf1 =	(unsigned char *) galloc(buf1size);
+	EC->buf1 =	(unsigned char *) galloc((size_t)buf1size);
 	if (!EC->buf1)
         return; /* failure Insufficient memory for work buffer */
 
-	EC->buf2 =	(unsigned char *) galloc(buf2size);
+	EC->buf2 =	(unsigned char *) galloc((size_t)buf2size);
 	if (!EC->buf2)
         return; /* failure Insufficient memory for work buffer */
 
@@ -383,7 +383,7 @@ static void BTREE_treepack(struct BTreeEncodeContext *EC,
 
 	count = (BTREEWORD *) treebuf;
 
-	if (quick)	ratio = quick;
+	if (quick)	ratio = (int)quick;
 	else		ratio = 2;
 
 /*** count file ***/
@@ -518,7 +518,7 @@ static void BTREE_treepack(struct BTreeEncodeContext *EC,
 
 					if (freeptr<BTREECODES)
 					{
-						joinnode = sortptr[freeptr];
+						joinnode = (int)sortptr[freeptr];
 
 						cost = 3+count2[joinnode];
 						save = bestval[i];
@@ -545,9 +545,9 @@ static void BTREE_treepack(struct BTreeEncodeContext *EC,
 							freeq[rightnode] = 0;
 							tryq[rightnode] = 2;
 
-							bt_node[bt_size] = joinnode;
-							bt_left[bt_size] = leftnode;
-							bt_right[bt_size] = rightnode;
+							bt_node[bt_size] = (unsigned int)joinnode;
+							bt_left[bt_size] = (unsigned int)leftnode;
+							bt_right[bt_size] = (unsigned int)rightnode;
 							++bt_size;
 
 							if (i1<=multimax)
@@ -596,7 +596,7 @@ static void BTREE_treepack(struct BTreeEncodeContext *EC,
 		BTREE_writebits(EC,dest,(unsigned int) bt_right[i], 8);
 	}
 
-	hlen = EC->plen;
+	// hlen = EC->plen;
 
 /*** write packed file ***/
 
@@ -644,7 +644,7 @@ static int BTREE_compressfile(struct BTreeEncodeContext *EC,
 	EC->buffer = (unsigned char *) (infile->ptr);
 	flen = infile->len;
 
-	EC->ulen = flen;
+	EC->ulen = (unsigned int)flen;
 	EC->bufptr = EC->buffer + flen;
 
 /* pack a file */
@@ -707,4 +707,3 @@ int GCALL BTREE_encode(void *compresseddata, const void *source, int sourcesize,
 }
 
 #endif
-

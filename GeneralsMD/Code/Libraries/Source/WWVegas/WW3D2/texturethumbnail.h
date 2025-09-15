@@ -68,6 +68,10 @@ class ThumbnailClass
 		ThumbnailManagerClass* manager,
 		const StringClass& filename);
 	~ThumbnailClass();
+
+	// No copies allowed!
+	ThumbnailClass(const ThumbnailClass&) = delete;
+	ThumbnailClass& operator=(const ThumbnailClass&) = delete;
 public:
 
 	unsigned char* Peek_Bitmap() { return Bitmap; }
@@ -87,7 +91,7 @@ public:
 
 class ThumbnailManagerClass : public DLNodeClass<ThumbnailManagerClass>
 {
-	W3DMPO_GLUE(ThumbnailManagerClass);
+	W3DMPO_GLUE(ThumbnailManagerClass)
 
 	friend ThumbnailClass;
 
@@ -103,9 +107,13 @@ class ThumbnailManagerClass : public DLNodeClass<ThumbnailManagerClass>
 	ThumbnailManagerClass(const char* thumbnail_filename, const char* mix_file_name);
 	~ThumbnailManagerClass();
 
-	void ThumbnailManagerClass::Remove_From_Hash(ThumbnailClass* thumb);
-	void ThumbnailManagerClass::Insert_To_Hash(ThumbnailClass* thumb);
-	ThumbnailClass* ThumbnailManagerClass::Get_From_Hash(const StringClass& name);
+	// No copies allowed!
+	ThumbnailManagerClass(const ThumbnailManagerClass&) = delete;
+	ThumbnailManagerClass& operator=(const ThumbnailManagerClass&) = delete;
+
+	void Remove_From_Hash(ThumbnailClass* thumb);
+	void Insert_To_Hash(ThumbnailClass* thumb);
+	ThumbnailClass* Get_From_Hash(const StringClass& name);
 
 	void Create_Thumbnails();
 	static void Update_Thumbnail_File(const char* mix_file_name, bool display_message_box);

@@ -81,6 +81,10 @@ public:
 	HAnimManagerClass(void);
 	~HAnimManagerClass(void);
 
+	// No copies allowed!
+	HAnimManagerClass(const HAnimManagerClass&) = delete;
+	HAnimManagerClass& operator=(const HAnimManagerClass&) = delete;
+
 	int			 		Load_Anim(ChunkLoadClass & cload);
 	HAnimClass *		Get_Anim(const char * name);
 	HAnimClass *		Peek_Anim(const char * name);

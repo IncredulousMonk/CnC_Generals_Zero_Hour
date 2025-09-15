@@ -63,22 +63,22 @@ enum WaypointID: UnsignedInt;
 
 // m_flags bit values.
 enum {
-	FLAG_DRAWS_IN_MIRROR		= 0x00000001,			 ///< If set, draws in water mirror.
-	FLAG_ROAD_POINT1				= 0x00000002,			 ///< If set, is the first point in a road segment.
-	FLAG_ROAD_POINT2				= 0x00000004,			 ///< If set, is the second point in a road segment.
-	FLAG_ROAD_FLAGS					= (FLAG_ROAD_POINT1|FLAG_ROAD_POINT2),	 ///< If nonzero, object is a road piece.
+	FLAG_DRAWS_IN_MIRROR	= 0x00000001,			 ///< If set, draws in water mirror.
+	FLAG_ROAD_POINT1		= 0x00000002,			 ///< If set, is the first point in a road segment.
+	FLAG_ROAD_POINT2		= 0x00000004,			 ///< If set, is the second point in a road segment.
+	FLAG_ROAD_FLAGS			= (FLAG_ROAD_POINT1|FLAG_ROAD_POINT2),	 ///< If nonzero, object is a road piece.
 	FLAG_ROAD_CORNER_ANGLED	= 0x00000008,			 ///< If set, the road corner is angled rather than curved.
-	FLAG_BRIDGE_POINT1			= 0x00000010,			 ///< If set, is the first point in a bridge.
-	FLAG_BRIDGE_POINT2			= 0x00000020,			 ///< If set, is the second point in a bridge.
-	FLAG_BRIDGE_FLAGS				= (FLAG_BRIDGE_POINT1|FLAG_BRIDGE_POINT2),	 ///< If nonzero, object is a bridge piece.
-	FLAG_ROAD_CORNER_TIGHT	= 0x00000040,     
-	FLAG_ROAD_JOIN					= 0x00000080,			 ///< If set, this road end does a generic alpha join.			
-	FLAG_DONT_RENDER				= 0x00000100			 ///< If set, do not render this object. Only WB pays attention to this. (Right now, anyways)
+	FLAG_BRIDGE_POINT1		= 0x00000010,			 ///< If set, is the first point in a bridge.
+	FLAG_BRIDGE_POINT2		= 0x00000020,			 ///< If set, is the second point in a bridge.
+	FLAG_BRIDGE_FLAGS		= (FLAG_BRIDGE_POINT1|FLAG_BRIDGE_POINT2),	 ///< If nonzero, object is a bridge piece.
+	FLAG_ROAD_CORNER_TIGHT	= 0x00000040,
+	FLAG_ROAD_JOIN			= 0x00000080,			 ///< If set, this road end does a generic alpha join.			
+	FLAG_DONT_RENDER		= 0x00000100			 ///< If set, do not render this object. Only WB pays attention to this. (Right now, anyways)
 };
 
 class MapObject : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(MapObject, "MapObject")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(MapObject, "MapObject")
 
 // friend doesn't play well with MPO -- srj
 //	friend class WorldHeightMap;
@@ -95,20 +95,20 @@ class MapObject : public MemoryPoolObject
 	};
 
 	// This data is currently written out into the map data file.
-	Coord3D								m_location;					///< Location of the center of the object.
-	AsciiString						m_objectName;				///< The object name.
-	const ThingTemplate*	m_thingTemplate; ///< thing template for map object
-	Real									m_angle;						///< positive x is 0 degrees, angle is counterclockwise in degrees.
-	MapObject*						m_nextMapObject;		///< linked list.
-	Int										m_flags;						///< Bit flags.  
-	Dict									m_properties;				///< general property sheet.
+	Coord3D					m_location {};					///< Location of the center of the object.
+	AsciiString				m_objectName {};				///< The object name.
+	const ThingTemplate*	m_thingTemplate {}; ///< thing template for map object
+	Real					m_angle {};						///< positive x is 0 degrees, angle is counterclockwise in degrees.
+	MapObject*				m_nextMapObject {};		///< linked list.
+	Int						m_flags {};						///< Bit flags.  
+	Dict					m_properties {};				///< general property sheet.
 	// This data is runtime data that is used by the worldbuider editor, but 
 	// not saved in the map file.
-	Int										m_color;		 ///< Display color.
-	RenderObjClass*				m_renderObj; ///< object that renders in the 3d scene.
-	Shadow*								m_shadowObj; ///< object that renders shadow in the 3d scene.
-	RenderObjClass*				m_bridgeTowers[ BRIDGE_MAX_TOWERS ];		///< for bridge towers
-	Int										m_runtimeFlags;
+	Int						m_color {};		 ///< Display color.
+	RenderObjClass*			m_renderObj {}; ///< object that renders in the 3d scene.
+	Shadow*					m_shadowObj {}; ///< object that renders shadow in the 3d scene.
+	RenderObjClass*			m_bridgeTowers[ BRIDGE_MAX_TOWERS ];		///< for bridge towers
+	Int						m_runtimeFlags {};
 
 public:
 	static MapObject *TheMapObjectListPtr;
@@ -190,4 +190,3 @@ public:
 };
 
 #endif
-

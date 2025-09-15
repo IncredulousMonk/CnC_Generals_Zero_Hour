@@ -128,8 +128,8 @@ public:
 	void Set_Sibling( WWProfileHierachyInfoClass *node )			{ Sibling=node; }
 	void Set_Child( WWProfileHierachyInfoClass *node )			{ Child=node; }
 
-	const wchar_t *						Get_Name( void )				{ return Name; }
-	void								Set_Name( const wchar_t* name )	{ Name=name; }
+	const char *						Get_Name( void )				{ return Name; }
+	void								Set_Name( const char* name )	{ Name=name; }
 	int									Get_Total_Calls( void )		{ return TotalCalls; }
 	float								Get_Total_Time( void )		{ return TotalTime; }
 	void								Set_Total_Calls(int calls) { TotalCalls=calls; }

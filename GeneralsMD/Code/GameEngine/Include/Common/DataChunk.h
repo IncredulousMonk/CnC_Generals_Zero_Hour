@@ -49,9 +49,9 @@ class Mapping : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Mapping, "Mapping")		
 public:
-	Mapping*			next;
-	AsciiString		name;
-	UnsignedInt		id;
+	Mapping*		next {};
+	AsciiString		name {};
+	UnsignedInt		id {};
 };
 EMPTY_DTOR(Mapping)
 
@@ -62,9 +62,9 @@ class OutputChunk : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(OutputChunk, "OutputChunk")		
 public:
-	OutputChunk*	next;
-	UnsignedInt		id;															// chunk symbol type from table of contents
-	Int						filepos;											// position of file at start of data offset
+	OutputChunk*	next {};
+	UnsignedInt		id {};			// chunk symbol type from table of contents
+	Int				filepos {};		// position of file at start of data offset
 };
 EMPTY_DTOR(OutputChunk)
 
@@ -75,12 +75,12 @@ class InputChunk : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(InputChunk, "InputChunk")		
 public:
-	InputChunk*						next;
-	UnsignedInt						id;															// chunk symbol type from table of contents
-	DataChunkVersionType	version;									// version of data
-	Int										chunkStart;																// tell position of the start of chunk data (past header).
-	Int										dataSize;														// total data size of chunk
-	Int										dataLeft;														// data left to read in this chunk
+	InputChunk*				next {};
+	UnsignedInt				id {};				// chunk symbol type from table of contents
+	DataChunkVersionType	version {};			// version of data
+	Int						chunkStart {};		// tell position of the start of chunk data (past header).
+	Int						dataSize {};		// total data size of chunk
+	Int						dataLeft {};		// data left to read in this chunk
 };
 EMPTY_DTOR(InputChunk)
 
@@ -89,10 +89,10 @@ EMPTY_DTOR(InputChunk)
 //----------------------------------------------------------------------
 class DataChunkTableOfContents
 {
-	Mapping*		m_list;																/// @TODO: This should be a hash table
-	Int					m_listLength;
-	UnsignedInt	m_nextID;											// simple ID allocator
-	Bool				m_headerOpened;
+	Mapping*		m_list {};				/// @TODO: This should be a hash table
+	Int				m_listLength {};
+	UnsignedInt		m_nextID {};			// simple ID allocator
+	Bool			m_headerOpened {};
 
 	Mapping *findMapping( const AsciiString& name );			// return mapping data
 
@@ -121,10 +121,10 @@ public:
 class DataChunkOutput
 {
 protected:
-	OutputStream*							m_pOut;										// The actual output stream.	
-	FILE *										m_tmp_file;												// tmp output file stream
-	DataChunkTableOfContents	m_contents;			// table of contents of data chunk types
-	OutputChunk*							m_chunkStack;													// current stack of open data chunks
+	OutputStream*				m_pOut {};				// The actual output stream.	
+	FILE *						m_tmp_file {};			// tmp output file stream
+	DataChunkTableOfContents	m_contents {};			// table of contents of data chunk types
+	OutputChunk*				m_chunkStack {};		// current stack of open data chunks
 
 public:
 	DataChunkOutput(  OutputStream *pOut  );
@@ -152,10 +152,10 @@ public:
 //----------------------------------------------------------------------
 struct DataChunkInfo
 {
-	AsciiString label;
-	AsciiString parentLabel;
-	DataChunkVersionType version;
-	Int dataSize;
+	AsciiString label {};
+	AsciiString parentLabel {};
+	DataChunkVersionType version {};
+	Int dataSize {};
 };
 
 typedef Bool (*DataChunkParserPtr)( DataChunkInput &file, DataChunkInfo *info, void *userData );
@@ -167,12 +167,12 @@ class UserParser : public MemoryPoolObject
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(UserParser, "UserParser")		
 public:
-	UserParser *next;
+	UserParser *next {};
 
-	DataChunkParserPtr parser;										// the user parsing function
-	AsciiString label;																	// the data chunk label to match
-	AsciiString parentLabel;														// the parent chunk's label (the scope)
-	void *userData;																	// user data pointer
+	DataChunkParserPtr parser {};	// the user parsing function
+	AsciiString label {};			// the data chunk label to match
+	AsciiString parentLabel {};		// the parent chunk's label (the scope)
+	void *userData {};				// user data pointer
 };
 EMPTY_DTOR(UserParser)
 
@@ -183,24 +183,24 @@ class DataChunkInput
 {
 	enum {CHUNK_HEADER_BYTES = 4}; // 2 shorts in chunk file header.
 protected:
-	ChunkInputStream*					m_file;															// input file stream
-	DataChunkTableOfContents	m_contents;							// table of contents of data chunk types
-	Int												m_fileposOfFirstChunk;										// seek position of first data chunk
-	UserParser*								m_parserList;																		// list of all registered parsers for this input stream
-	InputChunk*								m_chunkStack;																		// current stack of open data chunks
+	ChunkInputStream*			m_file {};					// input file stream
+	DataChunkTableOfContents	m_contents {};				// table of contents of data chunk types
+	Int							m_fileposOfFirstChunk {};	// seek position of first data chunk
+	UserParser*					m_parserList {};			// list of all registered parsers for this input stream
+	InputChunk*					m_chunkStack {};			// current stack of open data chunks
 
-	void clearChunkStack( void );										// clear the stack
+	void clearChunkStack( void );							// clear the stack
 
-	void decrementDataLeft( int size );							// update data left in chunk(s)
+	void decrementDataLeft( int size );						// update data left in chunk(s)
 
 public:
-	void *m_currentObject;														// user parse routines can use this to allow one chunk
-																									// to create an object, and a subsequent chunk to 
-																									// parse values into that object.  However, the second
-																									// chunk parser could also create and parse an object
-																									// of its own if this pointer is NULL.
-																									// The parser of the base class should NULL this pointer.
-	void *m_userData;																	// user data hook
+	void *m_currentObject {};		// user parse routines can use this to allow one chunk
+									// to create an object, and a subsequent chunk to 
+									// parse values into that object.  However, the second
+									// chunk parser could also create and parse an object
+									// of its own if this pointer is NULL.
+									// The parser of the base class should NULL this pointer.
+	void *m_userData {};			// user data hook
 
 public:
 	DataChunkInput( ChunkInputStream *pStream );

@@ -1,13 +1,14 @@
 CXXFLAGS = -std=c++23 -O2 -Wall -Weffc++ -Wextra -Wsign-conversion -Werror -pedantic-errors -D_UNIX
 LDPATHS = -LGameEngineDevice/Lib -LGameEngine/Lib -LLibraries/Lib
-LDFLAGS = -lavutil -lavcodec -lswscale -lswresample -lGL
+LDFLAGS = -lavutil -lavcodec -lswscale -lswresample -lGL -lz
 CXXFLAGS += $(shell pkg-config sdl3 --cflags)
 LDFLAGS += $(shell pkg-config sdl3 --libs) $(shell pkg-config sdl3-ttf --libs) $(shell pkg-config sdl3-sound --libs)
 INCS = -I. -ILibraries/Include -ILibraries/Source/WWVegas -ILibraries/Source/WWVegas/WWLib -ILibraries/Source/WWVegas/WWMath -ILibraries/Source/WWVegas/WWSaveLoad -ILibraries/Source/WWVegas/WWDebug \
-   -ILibraries/Source/WWVegas/WW3D2 -ILibraries/Source/OGL -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
+   -ILibraries/Source/WWVegas/WW3D2 -ILibraries/Source/OGL -ILibraries/Source/Compression -IGameEngine/Include -IGameEngineDevice/Include -IGameEngine/Include/Precompiled
 PROG = ../Run/rts
 ENGINE_DEVICE_LIB = GameEngineDevice/Lib/GameEngineDevice.a
 ENGINE_LIB = GameEngine/Lib/GameEngine.a
+COMPRESSION_LIB = Libraries/Lib/Compression.a
 OGL_LIB = Libraries/Lib/OGL.a
 WWDEBUG_LIB = Libraries/Lib/WWDebug.a
 WWLIB_LIB = Libraries/Lib/WWLib.a
@@ -20,6 +21,8 @@ GEDSLD = GameEngineDevice/Source/LinuxDevice
 GEO = GameEngine/Obj
 GES = GameEngine/Source
 LIBO = Libraries/Obj
+COMPS = Libraries/Source/Compression
+OGLS = Libraries/Source/OGL
 WWDS = Libraries/Source/WWVegas/WWDebug
 WWLS = Libraries/Source/WWVegas/WWLib
 WWMS = Libraries/Source/WWVegas/WWMath
@@ -33,8 +36,48 @@ endif
 
 .PHONY: run debug clean
 
-$(PROG): Main/main.cpp $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(OGL_LIB) $(WWDEBUG_LIB) $(WWLIB_LIB) $(WW3D2_LIB)
-	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:OGL.a -l:WWLib.a -l:WW3D2.a $(LDFLAGS)
+$(PROG): Main/main.cpp $(ENGINE_LIB) $(ENGINE_DEVICE_LIB) $(COMPRESSION_LIB) $(OGL_LIB) $(WWDEBUG_LIB) $(WWLIB_LIB) $(WW3D2_LIB)
+	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:GameEngineDevice.a -l:OGL.a -l:WWLib.a -l:WW3D2.a -l:Compression.a $(LDFLAGS)
+
+
+# ===== Compression =====
+
+COMPRESSION_OBJS = $(LIBO)/CompressionManager.o $(LIBO)/btreedecode.o $(LIBO)/btreeencode.o $(LIBO)/huffdecode.o $(LIBO)/huffencode.o $(LIBO)/refdecode.o $(LIBO)/refencode.o
+
+$(COMPRESSION_LIB): $(COMPRESSION_OBJS)
+	ar rcs $(COMPRESSION_LIB)  $(COMPRESSION_OBJS)
+
+$(LIBO)/CompressionManager.o: $(COMPS)/CompressionManager.cpp $(COMPS)/Compression.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/CompressionManager.o $(COMPS)/CompressionManager.cpp
+
+$(LIBO)/btreedecode.o: $(COMPS)/EAC/btreedecode.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/btreedecode.o $(COMPS)/EAC/btreedecode.cpp
+
+$(LIBO)/btreeencode.o: $(COMPS)/EAC/btreeencode.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/btreeencode.o $(COMPS)/EAC/btreeencode.cpp
+
+$(LIBO)/huffdecode.o: $(COMPS)/EAC/huffdecode.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/huffdecode.o $(COMPS)/EAC/huffdecode.cpp
+
+$(LIBO)/huffencode.o: $(COMPS)/EAC/huffencode.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/huffencode.o $(COMPS)/EAC/huffencode.cpp
+
+$(LIBO)/refdecode.o: $(COMPS)/EAC/refdecode.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/refdecode.o $(COMPS)/EAC/refdecode.cpp
+
+$(LIBO)/refencode.o: $(COMPS)/EAC/refencode.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/refencode.o $(COMPS)/EAC/refencode.cpp
+
+
+# ===== OGL =====
+
+OGL_OBJS = $(LIBO)/OpenGLRenderer.o
+
+$(OGL_LIB): $(OGL_OBJS)
+	ar rcs $(OGL_LIB)  $(OGL_OBJS)
+
+$(LIBO)/OpenGLRenderer.o: $(OGLS)/OpenGLRenderer.cpp $(OGLS)/OpenGLRenderer.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/OpenGLRenderer.o $(OGLS)/OpenGLRenderer.cpp
 
 
 # ===== WWDebug =====
@@ -57,7 +100,7 @@ $(LIBO)/wwprofile.o: $(WWDS)/wwprofile.cpp $(WWDS)/wwprofile.h
 
 # ===== WWLib =====
 
-WWLIB_OBJS = $(LIBO)/bufffile.o $(LIBO)/ffactory.o $(LIBO)/mutex.o $(LIBO)/rawfile.o $(LIBO)/targa.o $(LIBO)/wwfile.o $(LIBO)/wwstring.o
+WWLIB_OBJS = $(LIBO)/bufffile.o $(LIBO)/ffactory.o $(LIBO)/mutex.o $(LIBO)/rawfile.o $(LIBO)/refcount.o $(LIBO)/targa.o $(LIBO)/wwfile.o $(LIBO)/wwstring.o
 
 $(WWLIB_LIB): $(WWLIB_OBJS)
 	ar rcs $(WWLIB_LIB)  $(WWLIB_OBJS)
@@ -74,6 +117,9 @@ $(LIBO)/mutex.o: $(WWLS)/mutex.cpp $(WWLS)/mutex.h
 
 $(LIBO)/rawfile.o: $(WWLS)/rawfile.cpp $(WWLS)/RAWFILE.H
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/rawfile.o $(WWLS)/rawfile.cpp
+
+$(LIBO)/refcount.o: $(WWLS)/refcount.cpp $(WWLS)/refcount.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/refcount.o $(WWLS)/refcount.cpp
 
 $(LIBO)/targa.o: $(WWLS)/TARGA.CPP $(WWLS)/TARGA.H
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/targa.o $(WWLS)/TARGA.CPP
@@ -102,7 +148,7 @@ $(LIBO)/quat.o: $(WWMS)/quat.cpp $(WWMS)/quat.h
 
 # ===== WW3D2 =====
 
-WW3D2_OBJS = $(LIBO)/bitmaphandler.o $(LIBO)/ddsfile.o $(LIBO)/formconv.o $(LIBO)/ww3dformat.o
+WW3D2_OBJS = $(LIBO)/bitmaphandler.o $(LIBO)/ddsfile.o $(LIBO)/formconv.o $(LIBO)/texture.o $(LIBO)/texturefilter.o $(LIBO)/ww3dformat.o
 
 $(WW3D2_LIB): $(WW3D2_OBJS)
 	ar rcs $(WW3D2_LIB)  $(WW3D2_OBJS)
@@ -117,6 +163,12 @@ $(LIBO)/ddsfile.o: $(WW3S)/ddsfile.cpp $(WW3S)/ddsfile.h
 $(LIBO)/formconv.o: $(WW3S)/formconv.cpp $(WW3S)/formconv.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/formconv.o $(WW3S)/formconv.cpp
 
+$(LIBO)/texture.o: $(WW3S)/texture.cpp $(WW3S)/texture.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/texture.o $(WW3S)/texture.cpp
+
+$(LIBO)/texturefilter.o: $(WW3S)/texturefilter.cpp $(WW3S)/texturefilter.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/texturefilter.o $(WW3S)/texturefilter.cpp
+
 $(LIBO)/ww3dformat.o: $(WW3S)/ww3dformat.cpp $(WW3S)/ww3dformat.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/ww3dformat.o $(WW3S)/ww3dformat.cpp
 
@@ -129,13 +181,13 @@ $(GEDO)/LinuxFunctionLexicon.o $(GEDO)/LinuxRadar.o \
 $(GEDO)/LinuxModuleFactory.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
 $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxFileSystem.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o \
-   $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxView.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
+   $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxView.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o $(GEDO)/TerrainTex.o $(GEDO)/TileData.o $(GEDO)/WorldHeightMap.o \
 $(GEDO)/LinuxDefaultDraw.o $(GEDO)/LinuxModelDraw.o $(GEDO)/LinuxScienceModelDraw.o \
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
 $(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
    $(GEDO)/LinuxTextEntry.o $(GEDO)/LinuxVerticalSlider.o \
 $(GEDO)/LinuxControlBar.o $(GEDO)/LinuxMainMenu.o $(GEDO)/LinuxMOTD.o \
-$(GEDO)/LinuxGameLogic.o
+$(GEDO)/LinuxGameLogic.o $(GEDO)/LinuxTerrainLogic.o
 
 $(ENGINE_DEVICE_LIB): $(ENGINE_DEVICE_OBJS)
 	ar rcs $(ENGINE_DEVICE_LIB)  $(ENGINE_DEVICE_OBJS)
@@ -224,6 +276,15 @@ $(GEDO)/SdlKeyboard.o: $(GEDSLD)/GameClient/SdlKeyboard.cpp GameEngineDevice/Inc
 $(GEDO)/SdlMouse.o: $(GEDSLD)/GameClient/SdlMouse.cpp GameEngineDevice/Include/LinuxDevice/GameClient/SdlMouse.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/SdlMouse.o $(GEDSLD)/GameClient/SdlMouse.cpp
 
+$(GEDO)/TerrainTex.o: $(GEDSLD)/GameClient/TerrainTex.cpp GameEngineDevice/Include/LinuxDevice/GameClient/TerrainTex.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/TerrainTex.o $(GEDSLD)/GameClient/TerrainTex.cpp
+
+$(GEDO)/TileData.o: $(GEDSLD)/GameClient/TileData.cpp GameEngineDevice/Include/LinuxDevice/GameClient/TileData.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/TileData.o $(GEDSLD)/GameClient/TileData.cpp
+
+$(GEDO)/WorldHeightMap.o: $(GEDSLD)/GameClient/WorldHeightMap.cpp GameEngineDevice/Include/LinuxDevice/GameClient/WorldHeightMap.h GameEngine/Include/Common/MapObject.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/WorldHeightMap.o $(GEDSLD)/GameClient/WorldHeightMap.cpp
+
 # --- GameEngineDevice/Source/LinuxDevice/GameClient/Drawable/Draw ---
 $(GEDO)/LinuxDefaultDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxDefaultDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxDefaultDraw.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxDefaultDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxDefaultDraw.cpp
@@ -286,6 +347,9 @@ $(GEDO)/LinuxMOTD.o: $(GEDSLD)/GameClient/GUI/GUICallbacks/LinuxMOTD.cpp
 $(GEDO)/LinuxGameLogic.o: $(GEDSLD)/GameLogic/LinuxGameLogic.cpp GameEngineDevice/Include/LinuxDevice/GameLogic/LinuxGameLogic.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameLogic.o $(GEDSLD)/GameLogic/LinuxGameLogic.cpp
 
+$(GEDO)/LinuxTerrainLogic.o: $(GEDSLD)/GameLogic/LinuxTerrainLogic.cpp GameEngineDevice/Include/LinuxDevice/GameLogic/LinuxTerrainLogic.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxTerrainLogic.o $(GEDSLD)/GameLogic/LinuxTerrainLogic.cpp
+
 
 # ===== GameEngine =====
 
@@ -298,8 +362,8 @@ $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAiData.o $(GEO)/INIAudioEventInfo.o
    $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIUpgrade.o $(GEO)/INIVideo.o $(GEO)/INIWater.o $(GEO)/INIWeapon.o \
 $(GEO)/AcademyStats.o $(GEO)/Energy.o $(GEO)/Handicap.o $(GEO)/MissionStats.o $(GEO)/Money.o $(GEO)/ProductionPrerequisite.o $(GEO)/Player.o $(GEO)/PlayerList.o $(GEO)/PlayerTemplate.o \
    $(GEO)/ResourceGatheringManager.o $(GEO)/Science.o $(GEO)/ScoreKeeper.o $(GEO)/SpecialPower.o $(GEO)/Team.o $(GEO)/TunnelTracker.o \
-$(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/BuildAssistant.o $(GEO)/CriticalSection.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o $(GEO)/FileSystem.o \
-   $(GEO)/FunctionLexicon.o $(GEO)/GameCommon.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/Geometry.o $(GEO)/KindOf.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
+$(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/BuildAssistant.o $(GEO)/CriticalSection.o $(GEO)/DataChunk.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o \
+   $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o $(GEO)/GameCommon.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/Geometry.o $(GEO)/KindOf.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
    $(GEO)/ObjectStatusTypes.o $(GEO)/Radar.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/Trig.o $(GEO)/UnicodeString.o $(GEO)/Upgrade.o \
 $(GEO)/GameState.o \
 $(GEO)/DrawModule.o $(GEO)/Module.o $(GEO)/ModuleFactory.o $(GEO)/Thing.o $(GEO)/ThingFactory.o $(GEO)/ThingTemplate.o \
@@ -547,8 +611,8 @@ $(GEO)/BuildAssistant.o: $(GES)/Common/System/BuildAssistant.cpp GameEngine/Incl
 $(GEO)/CriticalSection.o: $(GES)/Common/System/CriticalSection.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CriticalSection.o $(GES)/Common/System/CriticalSection.cpp
 
-#$(GEO)/DataChunk.o: $(GES)/Common/System/DataChunk.cpp GameEngine/Include/Common/DataChunk.h
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DataChunk.o $(GES)/Common/System/DataChunk.cpp
+$(GEO)/DataChunk.o: $(GES)/Common/System/DataChunk.cpp GameEngine/Include/Common/DataChunk.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DataChunk.o $(GES)/Common/System/DataChunk.cpp
 
 $(GEO)/Debug.o: $(GES)/Common/System/Debug.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Debug.o $(GES)/Common/System/Debug.cpp
@@ -1098,6 +1162,6 @@ debug: $(PROG)
 	cd ../Run && gdb -q ./rts && cd $(CUR_DIR)
 
 clean:
-	rm -v $(GEDO)/*.o $(GEO)/*.o $(LIBO)/*.o $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) $(WWMATH_LIB) $(PROG)
+	rm -v $(GEDO)/*.o $(GEO)/*.o $(LIBO)/*.o $(ENGINE_DEVICE_LIB) $(ENGINE_LIB) Libraries/Lib/*.a $(PROG)
 
 # make DEBUG=1 &> build.log

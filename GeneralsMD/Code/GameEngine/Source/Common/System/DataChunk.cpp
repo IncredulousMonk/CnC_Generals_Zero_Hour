@@ -38,7 +38,7 @@
 // If verbose, lots of debug logging.
 #define not_VERBOSE
 
-CachedFileInputStream::CachedFileInputStream(void):m_buffer(NULL),m_size(0)
+CachedFileInputStream::CachedFileInputStream(void): m_size(0), m_buffer(NULL)
 {
 }
 
@@ -114,13 +114,14 @@ void CachedFileInputStream::close(void)
 
 Int CachedFileInputStream::read(void *pData, Int numBytes)
 {
+	size_t bytesToRead {static_cast<size_t>(numBytes)};
 	if (m_buffer) {
-		if ((numBytes+m_pos)>m_size) {
-			numBytes=m_size-m_pos;
+		if ((bytesToRead + m_pos) > (size_t)m_size) {
+			bytesToRead= (size_t)m_size - m_pos;
 		}
-		if (numBytes) {
-			memcpy(pData,m_buffer+m_pos,numBytes);
-			m_pos+=numBytes;
+		if (bytesToRead) {
+			memcpy(pData, m_buffer+m_pos, bytesToRead);
+			m_pos+=bytesToRead;
 		}
 		return(numBytes);
 	}
@@ -134,17 +135,16 @@ UnsignedInt CachedFileInputStream::tell(void)
 
 Bool CachedFileInputStream::absoluteSeek(UnsignedInt pos)
 {
-	if (pos<0) return false;
-	if (pos>m_size) {
-		pos=m_size;
+	if (pos > (size_t)m_size) {
+		pos = (UnsignedInt)m_size;
 	}
-	m_pos=pos;
+	m_pos = pos;
 	return true;
 }
 
 Bool CachedFileInputStream::eof(void)
 {
-	return m_size==m_pos;
+	return (UnsignedInt)m_size == m_pos;
 }
 
 void CachedFileInputStream::rewind()
@@ -317,7 +317,7 @@ void DataChunkOutput::closeDataChunk( void )
 	::fseek(m_tmp_file, m_chunkStack->filepos , SEEK_SET);
 
 	// compute data size (not including the actual data size itself)
-	Int size = here - m_chunkStack->filepos - sizeof(Int);
+	Int size = here - m_chunkStack->filepos - (Int)sizeof(Int);
 
 	// store the data size
 	::fwrite( (const char *)&size, sizeof(Int) , 1, m_tmp_file );
@@ -350,8 +350,8 @@ void DataChunkOutput::writeByte( Byte b )
 }
 
 void DataChunkOutput::writeArrayOfBytes(char *ptr, Int len) 
-{ 
-	::fwrite( (const char *)ptr, 1, len , m_tmp_file ); 
+{
+	::fwrite( (const char *)ptr, 1, (size_t)len , m_tmp_file ); 
 }
 
 void DataChunkOutput::writeAsciiString( const AsciiString& theString ) 
@@ -371,7 +371,7 @@ void DataChunkOutput::writeUnicodeString( UnicodeString theString )
 void DataChunkOutput::writeNameKey( const NameKeyType key ) 
 { 
 		AsciiString kname = TheNameKeyGenerator->keyToName(key);
-		Int keyAndType = m_contents.allocateID(kname);
+		Int keyAndType = (Int)m_contents.allocateID(kname);
 		keyAndType <<= 8;
 		Dict::DataType t = Dict::DICT_ASCIISTRING;
 		keyAndType |= (t & 0xff);
@@ -387,7 +387,7 @@ void DataChunkOutput::writeDict( const Dict& d )
 		NameKeyType k = d.getNthKey(i);
 		AsciiString kname = TheNameKeyGenerator->keyToName(k);
 
-		Int keyAndType = m_contents.allocateID(kname);
+		Int keyAndType = (Int)m_contents.allocateID(kname);
 		keyAndType <<= 8;
 		Dict::DataType t = d.getNthType(i);
 		keyAndType |= (t & 0xff);
@@ -423,8 +423,8 @@ void DataChunkOutput::writeDict( const Dict& d )
 
 DataChunkTableOfContents::DataChunkTableOfContents( void ) : 
 m_list(NULL), 
-m_nextID(1), 
 m_listLength(0),
+m_nextID(1), 
 m_headerOpened(false)
 {
 }
@@ -581,17 +581,17 @@ void DataChunkTableOfContents::read( ChunkInputStream &s)
 //----------------------------------------------------------------------
 // DataChunkInput
 //----------------------------------------------------------------------
-DataChunkInput::DataChunkInput( ChunkInputStream *pStream ) : m_file( pStream ), 
-																										m_userData(NULL), 
-																										m_currentObject(NULL),
-																										m_chunkStack(NULL),
-																										m_parserList(NULL)
+DataChunkInput::DataChunkInput( ChunkInputStream *pStream ) :	m_file( pStream ), 
+																m_parserList(NULL),
+																m_chunkStack(NULL),
+																m_currentObject(NULL),
+																m_userData(NULL)
 {
 	// read table of m_contents
 	m_contents.read(*m_file);
 
 	// store location of first data chunk
-	m_fileposOfFirstChunk = m_file->tell();
+	m_fileposOfFirstChunk = (Int)m_file->tell();
 }
 
 DataChunkInput::~DataChunkInput()
@@ -675,7 +675,7 @@ Bool DataChunkInput::parse( void *userData )
 					info.label = label;
 					info.parentLabel = parentLabel;
 					info.version = ver;
-					info.dataSize = getChunkDataSize();
+					info.dataSize = (Int)getChunkDataSize();
 
 					if (parser->parser( *this, &info, userData ) == false)
 						return false;
@@ -709,7 +709,7 @@ void DataChunkInput::clearChunkStack( void )
 void DataChunkInput::reset( void )
 {
 	clearChunkStack();
-	m_file->absoluteSeek( m_fileposOfFirstChunk );
+	m_file->absoluteSeek( (UnsignedInt)m_fileposOfFirstChunk );
 }
 
 // Checks if the file has our initial tag word.
@@ -740,7 +740,7 @@ AsciiString DataChunkInput::openDataChunk(DataChunkVersionType *ver )
 
 	// all of the data remains to be read
 	c->dataLeft = c->dataSize;
-	c->chunkStart = m_file->tell();
+	c->chunkStart = (Int)m_file->tell();
 
 	*ver = c->version;
 
@@ -764,7 +764,7 @@ void DataChunkInput::closeDataChunk( void )
 	if (m_chunkStack->dataLeft > 0)
 	{
 		// skip past the remainder of this chunk
-		m_file->absoluteSeek( m_file->tell()+m_chunkStack->dataLeft );
+		m_file->absoluteSeek( m_file->tell() + (UnsignedInt)m_chunkStack->dataLeft );
 		decrementDataLeft( m_chunkStack->dataLeft );
 
 	}
@@ -796,11 +796,11 @@ DataChunkVersionType DataChunkInput::getChunkVersion( void )
 	{
 		// TODO: Throw exception
 		DEBUG_CRASH(("Bad."));
-		return NULL;
+		return 0;
 	}
 
 	return m_chunkStack->version;
-}		
+}
 
 // return size of data stored in this chunk
 UnsignedInt DataChunkInput::getChunkDataSize( void )
@@ -809,10 +809,10 @@ UnsignedInt DataChunkInput::getChunkDataSize( void )
 	{
 		// TODO: Throw exception
 		DEBUG_CRASH(("Bad."));
-		return NULL;
+		return 0;
 	}
 
-	return m_chunkStack->dataSize;
+	return (UnsignedInt)m_chunkStack->dataSize;
 }
 
 
@@ -823,10 +823,10 @@ UnsignedInt DataChunkInput::getChunkDataSizeLeft( void )
 	{
 		// TODO: Throw exception
 		DEBUG_CRASH(("Bad."));
-		return NULL;
+		return 0;
 	}
 
-	return m_chunkStack->dataLeft;
+	return (UnsignedInt)m_chunkStack->dataLeft;
 }
 
 Bool DataChunkInput::atEndOfChunk( void )
@@ -859,7 +859,7 @@ void DataChunkInput::decrementDataLeft( Int size )
 Real DataChunkInput::readReal(void) 
 { 
 	Real r;
-	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=sizeof(Real), ("Read past end of chunk."));
+	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(Real), ("Read past end of chunk."));
 	m_file->read( (char *)&r, sizeof(Real) ); 
 	decrementDataLeft( sizeof(Real) );
 	return r; 
@@ -868,7 +868,7 @@ Real DataChunkInput::readReal(void)
 Int DataChunkInput::readInt(void) 
 { 
 	Int i;
-	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=sizeof(Int), ("Read past end of chunk."));
+	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(Int), ("Read past end of chunk."));
 	m_file->read( (char *)&i, sizeof(Int) ); 
 	decrementDataLeft( sizeof(Int) );
 	return i; 
@@ -877,7 +877,7 @@ Int DataChunkInput::readInt(void)
 Byte DataChunkInput::readByte(void) 
 { 
 	Byte b;
-	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=sizeof(Byte), ("Read past end of chunk."));
+	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(Byte), ("Read past end of chunk."));
 	m_file->read( (char *)&b, sizeof(Byte) ); 
 	decrementDataLeft( sizeof(Byte) );
 	return b; 
@@ -899,7 +899,7 @@ NameKeyType DataChunkInput::readNameKey(void)
 #endif
 		keyAndType >>= 8;
 
-		AsciiString kname = m_contents.getName(keyAndType);
+		AsciiString kname = m_contents.getName((UnsignedInt)keyAndType);
 		NameKeyType k = TheNameKeyGenerator->nameToKey(kname);
 		return k;
 }
@@ -907,7 +907,7 @@ NameKeyType DataChunkInput::readNameKey(void)
 Dict DataChunkInput::readDict() 
 { 
 	UnsignedShort len;	
-	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=sizeof(UnsignedShort), ("Read past end of chunk."));
+	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(UnsignedShort), ("Read past end of chunk."));
 	m_file->read( &len, sizeof(UnsignedShort) );
 	decrementDataLeft( sizeof(UnsignedShort) );
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=len, ("Read past end of chunk."));
@@ -920,7 +920,7 @@ Dict DataChunkInput::readDict()
 		Dict::DataType t = (Dict::DataType)(keyAndType & 0xff);
 		keyAndType >>= 8;
 
-		AsciiString kname = m_contents.getName(keyAndType);
+		AsciiString kname = m_contents.getName((UnsignedInt)keyAndType);
 		NameKeyType k = TheNameKeyGenerator->nameToKey(kname);
 
 		switch(t)
@@ -952,7 +952,7 @@ Dict DataChunkInput::readDict()
 AsciiString DataChunkInput::readAsciiString(void) 
 { 
 	UnsignedShort len;	
-	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=sizeof(UnsignedShort), ("Read past end of chunk."));
+	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(UnsignedShort), ("Read past end of chunk."));
 	m_file->read( &len, sizeof(UnsignedShort) );
 	decrementDataLeft( sizeof(UnsignedShort) );
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=len, ("Read past end of chunk."));
@@ -971,7 +971,7 @@ AsciiString DataChunkInput::readAsciiString(void)
 UnicodeString DataChunkInput::readUnicodeString(void) 
 { 
 	UnsignedShort len;	
-	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=sizeof(UnsignedShort), ("Read past end of chunk."));
+	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(UnsignedShort), ("Read past end of chunk."));
 	m_file->read( &len, sizeof(UnsignedShort) );
 	decrementDataLeft( sizeof(UnsignedShort) );
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=len, ("Read past end of chunk."));

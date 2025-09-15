@@ -23,13 +23,17 @@
 
 #include "Compression.h"
 #include "LZHCompress/NoxCompress.h"
+// ZLib typedefs Byte, but so does Lib/BaseType.h
+#define Byte zlib_byte
 extern "C" {
 #include <zlib.h>
 }
+#undef Byte
 #include "EAC/codex.h"
 #include "EAC/btreecodex.h"
 #include "EAC/huffcodex.h"
 #include "EAC/refcodex.h"
+#include <iostream>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -141,7 +145,9 @@ Int CompressionManager::getMaxCompressedSize( Int uncompressedLen, CompressionTy
 	switch (compType)
 	{
 		case COMPRESSION_NOXLZH:
-			return CalcNewSize(uncompressedLen) + 8;
+			printf("NOX compression not yet implemented!\n");
+			exit(1);
+			// return (Int)CalcNewSize((UnsignedInt)uncompressedLen) + 8;
 
 		case COMPRESSION_BTREE:   // guessing here
 		case COMPRESSION_HUFF:    // guessing here
@@ -158,6 +164,8 @@ Int CompressionManager::getMaxCompressedSize( Int uncompressedLen, CompressionTy
 		case COMPRESSION_ZLIB8:
 		case COMPRESSION_ZLIB9:
 			return (Int)(ceil(uncompressedLen * 1.1 + 12 + 8));
+		default:
+			break;
 	}
 
 	return 0;
@@ -185,6 +193,8 @@ Int CompressionManager::getUncompressedSize( const void *mem, Int len )
 		case COMPRESSION_HUFF:
 		case COMPRESSION_REFPACK:
 			return *(Int *)(((UnsignedByte *)mem)+4);
+		default:
+			break;
 	}
 
 	return len;
@@ -242,6 +252,9 @@ Int CompressionManager::compressData( CompressionType compType, void *srcVoid, I
 
 	if (compType == COMPRESSION_NOXLZH)
 	{
+		printf("NOX compression not yet implemented!\n");
+		exit(1);
+#if 0
 		memcpy(dest, "NOX\0", 4);
 		*(Int *)(dest+4) = 0;
 		Bool ret = CompressMemory(src, srcLen, dest+8, destLen);
@@ -252,6 +265,7 @@ Int CompressionManager::compressData( CompressionType compType, void *srcVoid, I
 		}
 		else
 			return 0;
+#endif // if 0
 	}
 
 	if (compType >= COMPRESSION_ZLIB1 && compType <= COMPRESSION_ZLIB9)
@@ -261,8 +275,8 @@ Int CompressionManager::compressData( CompressionType compType, void *srcVoid, I
 		dest[2] = '0' + level;
 		*(Int *)(dest+4) = 0;
 
-		unsigned long outLen = destLen;
-		Int err = compress2( dest+8, &outLen, src, srcLen, level );
+		unsigned long outLen = (unsigned long)destLen;
+		Int err = compress2( (Bytef*)dest+8, &outLen, (Bytef*)src, (ulong)srcLen, level );
 
 		if (err == Z_OK || err == Z_STREAM_END)
 		{
@@ -319,11 +333,15 @@ Int CompressionManager::decompressData( void *srcVoid, Int srcLen, void *destVoi
 
 	if (compType == COMPRESSION_NOXLZH)
 	{
+		printf("NOX compression not yet implemented!\n");
+		exit(1);
+#if 0
 		Bool ret = DecompressMemory(src+8, srcLen-8, dest, destLen);
 		if (ret)
 			return destLen;
 		else
 			return 0;
+#endif // if 0
 	}
 
 	if (compType >= COMPRESSION_ZLIB1 && compType <= COMPRESSION_ZLIB9)
@@ -332,8 +350,8 @@ Int CompressionManager::decompressData( void *srcVoid, Int srcLen, void *destVoi
 		Int level = compType - COMPRESSION_ZLIB1 + 1; // 1-9
 #endif
 
-		unsigned long outLen = destLen;
-		Int err = uncompress(dest, &outLen, src+8, srcLen-8);
+		unsigned long outLen = (unsigned long)destLen;
+		Int err = uncompress((Bytef*)dest, &outLen, (Bytef*)src+8, (ulong)srcLen-8);
 		if (err == Z_OK || err == Z_STREAM_END)
 		{
 			return outLen;

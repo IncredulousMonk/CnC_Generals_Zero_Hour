@@ -110,8 +110,8 @@ public:
 	static WW3DErrorType		Shutdown(void);
 	static bool					Is_Initted(void)								{ return IsInitted; }
 
-	static const int			Get_Render_Device_Count(void);
-	static const char *		Get_Render_Device_Name(int device_index);
+	static int					Get_Render_Device_Count(void);
+	static const char *			Get_Render_Device_Name(int device_index);
 	static const RenderDeviceDescClass &								Get_Render_Device_Desc(int device = -1);
 
 	static int					Get_Render_Device(void);
@@ -168,10 +168,10 @@ public:
 	** By calling the Sync function, the application can move the ww3d library time forward.  This
 	** will control things like animated uv-offset mappers and render object animations.
 	*/
-	static void					Sync( unsigned int sync_time );
+	static void				Sync( unsigned int sync_time );
 	static unsigned int		Get_Sync_Time(void) { return SyncTime; }
-   static unsigned int     Get_Frame_Time(void) { return SyncTime - PreviousSyncTime; }
-   static unsigned int     Get_Frame_Count(void) { return FrameCount; }
+	static unsigned int		Get_Frame_Time(void) { return SyncTime - PreviousSyncTime; }
+	static unsigned int		Get_Frame_Count(void) { return (unsigned int)FrameCount; }
 	static unsigned int		Get_Last_Frame_Poly_Count(void);
 	static unsigned int		Get_Last_Frame_Vertex_Count(void);
 
@@ -237,7 +237,7 @@ public:
 
 	static void					Set_Prelit_Mode (PrelitModeEnum mode)			{ PrelitMode = mode; }
 	static PrelitModeEnum 	Get_Prelit_Mode ()									{ return (PrelitMode); }
-	static bool					Supports_Prelit_Mode (PrelitModeEnum mode)	{ return (true); }
+	static bool					Supports_Prelit_Mode (PrelitModeEnum /* mode */)	{ return (true); }
 	static void					Expose_Prelit (bool onoff)							{ ExposePrelit = onoff; }
 	static bool					Expose_Prelit ()										{ return (ExposePrelit); }
 

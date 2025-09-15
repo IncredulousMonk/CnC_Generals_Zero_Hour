@@ -458,7 +458,8 @@ void MainMenuInit( WindowLayout* layout, void* /* userData */ )
 {
 	TheWritableGlobalData->m_data.m_breakTheMovie = FALSE;
 
-	TheShell->showShellMap(TRUE);
+	// MG: Why is the main menu calling showShellMap?
+	// TheShell->showShellMap(TRUE);
 	TheMouse->setVisibility(TRUE);
 	//winVidManager = NEW WindowVideoManager;
 	buttonPushed = FALSE;

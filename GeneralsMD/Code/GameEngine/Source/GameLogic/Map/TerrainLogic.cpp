@@ -56,6 +56,8 @@
 #include "GameLogic/Module/BridgeTowerBehavior.h"
 #include "GameLogic/GhostObject.h"
 
+#include "LinuxDevice/GameClient/WorldHeightMap.h"
+
 #include "WWMath/plane.h"
 #include "WWMath/tri.h"
 
@@ -1129,7 +1131,6 @@ void TerrainLogic::update( void )
 
 }  // end update
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** newMap */
 //-------------------------------------------------------------------------------------------------
@@ -1148,14 +1149,17 @@ void TerrainLogic::newMap( Bool saveGame )
 	// water grid
 	/// @todo Mark W, remove this when you have water plane placements in the map done (Colin)
 	//
-	Waypoint *waypoint = getWaypointByName( "WaveGuide1" );
-	Bool enable = FALSE;
-	if( waypoint )
-		enable = TRUE;
-	enableWaterGrid( enable );
+	// FIXME: TheTerrainVisual
+	(void) saveGame;
+	// Waypoint *waypoint = getWaypointByName( "WaveGuide1" );
+	// Bool enable = FALSE;
+	// if( waypoint )
+	// 	enable = TRUE;
+	// enableWaterGrid( enable );
 
 }  // end newMap
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void TerrainLogic::enableWaterGrid( Bool enable )
@@ -1256,6 +1260,7 @@ void TerrainLogic::enableWaterGrid( Bool enable )
 	TheTerrainVisual->enableWaterGrid( enable );
 
 }  // end enableWaterGrid
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** device independent terrain logic load.  If query is true, we are just loading it to get
@@ -1326,7 +1331,8 @@ Bool TerrainLogic::loadMap( AsciiString filename, Bool query )
 
 	if (!query) {
 		// tell the game interface a new terrain file has been loaded up
-		TheTerrainVisual->load( getSourceFilename() );
+		// FIXME: TheTerrainVisual.
+		// TheTerrainVisual->load( getSourceFilename() );
 	}
 
 	return TRUE;  // success
@@ -1345,7 +1351,7 @@ Bool TerrainLogic::parseWaypointDataChunk(DataChunkInput &file, DataChunkInfo *i
 //-------------------------------------------------------------------------------------------------
 /** Reads in the waypoint chunk */
 //-------------------------------------------------------------------------------------------------
-Bool TerrainLogic::parseWaypointData(DataChunkInput &file, DataChunkInfo *info, void *userData)
+Bool TerrainLogic::parseWaypointData(DataChunkInput &file, DataChunkInfo* /* info */, void* /* userData */)
 {
 	Int numWaypointLinks = file.readInt();
 	Int i;
@@ -1434,7 +1440,6 @@ void TerrainLogic::deleteWaypoints(void)
 	}
 	m_waypointListHead = NULL;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool TerrainLogic::isClearLineOfSight(const Coord3D& /* pos */, const Coord3D& /* posOther */) const
@@ -1680,7 +1685,6 @@ Bridge * TerrainLogic::findBridgeAt( const Coord3D *pLoc) const
 	return(NULL);
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Finds the bridge at a given x/y coordinate.  On a layer. */
 //-------------------------------------------------------------------------------------------------
@@ -1700,7 +1704,6 @@ Bridge * TerrainLogic::findBridgeLayerAt( const Coord3D *pLoc, PathfindLayerEnum
 	}
 	return(NULL);
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Returns the layer id for the bridge, if any, at this destination.  Otherwisee

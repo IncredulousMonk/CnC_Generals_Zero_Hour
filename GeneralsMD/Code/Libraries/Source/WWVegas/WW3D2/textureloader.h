@@ -51,6 +51,7 @@
 class StringClass;
 struct IDirect3DTexture8;
 class TextureLoadTaskClass;
+class TextureLoadTaskListClass;
 
 class TextureLoader
 {
@@ -114,12 +115,17 @@ class TextureLoadTaskListNodeClass
 
 	public:
 		TextureLoadTaskListNodeClass(void) : Next(0), Prev(0) { }
+		virtual ~TextureLoadTaskListNodeClass() = default;
+
+		// No copies allowed!
+		TextureLoadTaskListNodeClass(const TextureLoadTaskListNodeClass&) = delete;
+		TextureLoadTaskListNodeClass& operator=(const TextureLoadTaskListNodeClass&) = delete;
 
 		TextureLoadTaskListClass *Get_List(void)		{ return List; }
 
 		TextureLoadTaskListNodeClass *Next;
 		TextureLoadTaskListNodeClass *Prev;
-		TextureLoadTaskListClass *		List;
+		TextureLoadTaskListClass *		List {};
 };
 
 
@@ -209,6 +215,10 @@ class TextureLoadTaskClass : public TextureLoadTaskListNodeClass
 		TextureLoadTaskClass(void);
 		~TextureLoadTaskClass(void);
 
+		// No copies allowed!
+		TextureLoadTaskClass(const TextureLoadTaskClass&) = delete;
+		TextureLoadTaskClass& operator=(const TextureLoadTaskClass&) = delete;
+
 		static TextureLoadTaskClass *	Create			(TextureBaseClass *tc, TaskType type, PriorityType priority);
 		static void				Delete_Free_Pool			(void);
 
@@ -276,6 +286,10 @@ class CubeTextureLoadTaskClass : public TextureLoadTaskClass
 {
 public:
 	CubeTextureLoadTaskClass();
+
+	// No copies allowed!
+	CubeTextureLoadTaskClass(const CubeTextureLoadTaskClass&) = delete;
+	CubeTextureLoadTaskClass& operator=(const CubeTextureLoadTaskClass&) = delete;
 
 	virtual void			Destroy						(void);
 	virtual void			Init							(TextureBaseClass *tc, TaskType type, PriorityType priority);

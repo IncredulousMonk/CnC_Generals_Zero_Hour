@@ -44,6 +44,7 @@
 #include "vector.h"
 #include "FastAllocator.h"
 #include <threads.h>
+#include <thread>
 
 #define USE_FAST_ALLOCATOR
 

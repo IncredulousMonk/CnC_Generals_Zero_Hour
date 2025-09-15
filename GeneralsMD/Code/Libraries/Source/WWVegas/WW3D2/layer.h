@@ -61,6 +61,7 @@ public:
 	LayerClass(SceneClass * s,CameraClass * c,bool clear = false,bool clearz = false,const Vector3 & color = Vector3(0,0,0)); 
 	LayerClass(const LayerClass & src);
 	~LayerClass(void);
+	LayerClass& operator=(const LayerClass&) = delete;
 
 
 	/*
@@ -83,8 +84,8 @@ public:
 	/*
 	** LayerClass members are public since this is a "lightweight" class
 	*/
-	bool						Clear;
-	bool						ClearZ;
+	bool					Clear;
+	bool					ClearZ;
 	Vector3					ClearColor;
 
 	SceneClass *			Scene;

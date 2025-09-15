@@ -64,11 +64,11 @@
 #include "GameClient/ControlBar.h"
 // #include "GameClient/Drawable.h"
 #include "GameClient/GameClient.h"
-// #include "GameClient/GameText.h"
+#include "GameClient/GameText.h"
 #include "GameClient/GUICallbacks.h"
 // #include "GameClient/InGameUI.h"
 #include "GameClient/LoadScreen.h"
-// #include "GameClient/MapUtil.h"
+#include "GameClient/MapUtil.h"
 // #include "GameClient/Mouse.h"
 #include "GameClient/ParticleSys.h"
 // #include "GameClient/TerrainVisual.h"
@@ -86,6 +86,7 @@
 #include "GameLogic/GameLogic.h"
 // #include "GameLogic/Locomotor.h"
 #include "GameLogic/Object.h"
+#include "GameLogic/TerrainLogic.h"
 // #include "GameLogic/Module/AIUpdate.h"
 // #include "GameLogic/Module/BodyModule.h"
 // #include "GameLogic/Module/CreateModule.h"
@@ -352,11 +353,13 @@ GameLogic::~GameLogic()
 
 	// destroy all remaining objects
 	destroyAllObjectsImmediate();
+#endif // if 0
 
 	// delete the logical terrain
 	delete TheTerrainLogic;
 	TheTerrainLogic = NULL;
 
+#if 0
 	delete TheGhostObjectManager;
 	TheGhostObjectManager=NULL;
 #endif // if 0
@@ -405,12 +408,14 @@ void GameLogic::init( void )
 	// still in the partition manager because player has a fogged
 	// view of them.
 	TheGhostObjectManager = createGhostObjectManager();
+#endif // if 0
 
 	// create the terrain logic
 	TheTerrainLogic = createTerrainLogic();
 	TheTerrainLogic->init();
 	TheTerrainLogic->setName("TheTerrainLogic");
 
+#if 0
 	// Create script engine system.
 	TheScriptActions = NEW ScriptActions;		 // Basically, a subsystem of TheScriptEngine.
 	TheScriptConditions = NEW ScriptConditions;	 // Basically, a subsystem of TheScriptEngine.
@@ -1182,7 +1187,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 			m_startNewGame = TRUE;
 			return;
 
-		}  
+		}
 
 	}  // end if
 
@@ -1312,15 +1317,17 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 
 	// reset the frame counter
 	m_frame = 0;
+#endif // if 0
 
 	// before loading the map, load the map.ini file in the same directory.
-	loadMapINI( TheGlobalData->m_mapName );
+	// loadMapINI( TheGlobalData->m_data.m_mapName );
 
 	// load a map
-	TheTerrainLogic->loadMap( TheGlobalData->m_mapName, false );
+	// TheTerrainLogic->loadMap( TheGlobalData->m_data.m_mapName, false );
 	// anytime the world's size changes, must reset the partition mgr
 	//ThePartitionManager->init();
 
+#if 0
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_LOAD_MAP);
 
@@ -2409,6 +2416,7 @@ static void findAndSelectCommandCenter(Object *obj, void* alreadyFound)
 }
 //-----------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------
+#endif // if 0
 
 
 
@@ -2419,15 +2427,17 @@ static void findAndSelectCommandCenter(Object *obj, void* alreadyFound)
 void GameLogic::loadMapINI( AsciiString mapName )
 {
 
-	if (!TheMapCache) {
-		// Need the map cache to get the map and user map directories.
-		return;
-	}
+	// FIXME: Doesn't seem to be used?
+	// if (!TheMapCache) {
+	// 	// Need the map cache to get the map and user map directories.
+	// 	return;
+	// }
 
-	char filename[_MAX_PATH];
-	char fullFledgeFilename[_MAX_PATH];
+	char filename[PATH_MAX];
+	// char fullFledgeFilename[PATH_MAX];
+	AsciiString fullFledgeFilename {};
 
-	memset(filename, 0, _MAX_PATH);
+	memset(filename, 0, PATH_MAX);
 	strcpy(filename, mapName.str());
 
 	//
@@ -2452,16 +2462,17 @@ void GameLogic::loadMapINI( AsciiString mapName )
 	}
 	*extension = 0;
 
-
-	sprintf(fullFledgeFilename, "%s\\map.ini", filename);
-	if (TheFileSystem->doesFileExist(fullFledgeFilename)) {
+	fullFledgeFilename.format("%s\\map.ini", filename);
+	// sprintf(fullFledgeFilename, "%s\\map.ini", filename);
+	if (TheFileSystem->doesFileExist(fullFledgeFilename.str())) {
 		DEBUG_LOG(("Loading map.ini\n"));
 		INI ini;
 		ini.load( AsciiString(fullFledgeFilename), INI_LOAD_CREATE_OVERRIDES, NULL );
 	}
 
-	sprintf(fullFledgeFilename, "%s\\solo.ini", filename);
-	if (TheFileSystem->doesFileExist(fullFledgeFilename)) {
+	fullFledgeFilename.format("%s\\solo.ini", filename);
+	// sprintf(fullFledgeFilename, "%s\\solo.ini", filename);
+	if (TheFileSystem->doesFileExist(fullFledgeFilename.str())) {
 		DEBUG_LOG(("Loading solo.ini\n"));
 		INI ini;
 		ini.load( AsciiString(fullFledgeFilename), INI_LOAD_CREATE_OVERRIDES, NULL );
@@ -2470,9 +2481,10 @@ void GameLogic::loadMapINI( AsciiString mapName )
 	// No error here. There could've just *not* been a map.ini file.
 
 	// now look for a string file
-	sprintf(fullFledgeFilename, "%s\\map.str", filename);
+	fullFledgeFilename.format("%s\\map.str", filename);
+	// sprintf(fullFledgeFilename, "%s\\map.str", filename);
 
-	if (TheFileSystem->doesFileExist(fullFledgeFilename)) {
+	if (TheFileSystem->doesFileExist(fullFledgeFilename.str())) {
 		TheGameText->initMapStringFile(fullFledgeFilename);
 	}
 
@@ -2480,13 +2492,15 @@ void GameLogic::loadMapINI( AsciiString mapName )
 	if (TheDisplay)
 	{
 		const char* ASSET_USAGE_FILE_NAME = "AssetUsage.txt";
-		sprintf(fullFledgeFilename, "%s\\%s", filename, ASSET_USAGE_FILE_NAME);
+		fullFledgeFilename.format("%s\\%s", filename, ASSET_USAGE_FILE_NAME);
+		// sprintf(fullFledgeFilename, "%s\\%s", filename, ASSET_USAGE_FILE_NAME);
 		// note: call this EVEN IF THE FILE IN QUESTION DOES NOT EXIST.
-		TheDisplay->doSmartAssetPurgeAndPreload(fullFledgeFilename);
+		TheDisplay->doSmartAssetPurgeAndPreload(fullFledgeFilename.str());
 	}
 
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Process the destroy list, destroying all pending objects.
  * The destroy list exists to ensure that all objects have a chance to
@@ -3619,15 +3633,15 @@ extern __int64 Total_Load_3D_Assets;
 // ------------------------------------------------------------------------------------------------
 void GameLogic::update( void )
 {
-#if 0
 	USE_PERF_TIMER(GameLogic_update)
 
-	LatchRestore<Bool> inUpdateLatch(m_isInUpdate, TRUE);
+	// FIXME: What is this?
+	// LatchRestore<Bool> inUpdateLatch(m_isInUpdate, TRUE);
 #ifdef DO_UNIT_TIMINGS
 	unitTimings();
 #endif
 
-	setFPMode();
+	// setFPMode();
 	
 	/// @todo remove this hack
 	if ( m_startNewGame && !TheDisplay->isMoviePlaying())
@@ -3662,7 +3676,6 @@ void GameLogic::update( void )
 	DEBUG_LOG(("%s", Buf));
 	#endif
 	}
-#endif // if 0
 
 	// send the current time to the GameClient
 	DEBUG_ASSERTCRASH(TheGameLogic == this, ("hmm, TheGameLogic is not right"));
@@ -4448,14 +4461,17 @@ GhostObjectManager *GameLogic::createGhostObjectManager(void)
 { 
 	return NEW GhostObjectManager;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 TerrainLogic *GameLogic::createTerrainLogic( void )
 {
+	DEBUG_CRASH(("GameLogic::createTerrainLogic: I would be surprised if this is called!\n"));
 	return NEW TerrainLogic;
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 void GameLogic::setBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus bs)
 {

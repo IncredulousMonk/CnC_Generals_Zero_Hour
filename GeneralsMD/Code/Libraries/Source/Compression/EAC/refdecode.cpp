@@ -35,7 +35,7 @@
 bool GCALL REF_is(const void *compresseddata)
 {
     bool ok=false;
-    int packtype=ggetm(compresseddata,2);
+    unsigned int packtype=ggetm(compresseddata,2);
 
     if (packtype==0x10fb
      || packtype==0x11fb
@@ -53,8 +53,8 @@ bool GCALL REF_is(const void *compresseddata)
 
 int GCALL REF_size(const void *compresseddata)
 {
-    int len=0;
-    int packtype=ggetm(compresseddata,2);
+    unsigned int len=0;
+    unsigned int packtype=ggetm(compresseddata,2);
     int ssize=(packtype&0x8000)?4:3;
 
     if (packtype&0x100)     /* 11fb */
@@ -66,7 +66,7 @@ int GCALL REF_size(const void *compresseddata)
         len = ggetm((char *)compresseddata+2,ssize);
     }
 
-    return(len);
+    return (int)len;
 }
 
 
@@ -157,7 +157,7 @@ int GCALL REF_decode(void *dest, const void *compresseddata, int *compressedsize
 
                 ref = d-1 - (((first&0x10)>>4<<16) +  (second<<8) + third);
 
-                run = ((first&0x0c)>>2<<8) + forth + 5-1;
+                run = ((first&0x0c)>>2<<8) + forth + 5u-1;
                 do
                 {
                     *d++ = *ref++;

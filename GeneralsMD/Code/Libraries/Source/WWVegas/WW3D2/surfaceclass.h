@@ -80,6 +80,10 @@ class SurfaceClass : public W3DMPO, public RefCountClass
 
 		~SurfaceClass(void);
 
+		// No copies allowed!
+		SurfaceClass(const SurfaceClass&) = delete;
+		SurfaceClass& operator=(const SurfaceClass&) = delete;
+
 		// Get surface description
 		 void Get_Description(SurfaceDescription &surface_desc);
 

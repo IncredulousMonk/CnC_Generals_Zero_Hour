@@ -10,6 +10,8 @@
 #ifndef _D3D8_H_
 #define _D3D8_H_
 
+#include <cstdint>
+
 using BYTE = int8_t;
 using DWORD = uint32_t;
 

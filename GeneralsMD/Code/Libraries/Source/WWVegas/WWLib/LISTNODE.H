@@ -107,7 +107,7 @@ class GenericNode {
 		GenericNode * Prev_Valid(void) const {
 			return ((PrevNode && PrevNode->PrevNode) ? PrevNode : (GenericNode *)0);
 		}
-		bool Is_Valid(void) const {return(this != (GenericNode *)0 && NextNode != (GenericNode *)0 && PrevNode != (GenericNode *)0);}
+		bool Is_Valid(void) const {return(NextNode != (GenericNode *)0 && PrevNode != (GenericNode *)0);}
 
 	protected:
 		GenericNode * NextNode {};
@@ -224,7 +224,7 @@ class List : public GenericList {
 
 template<class T>
 class DataNode : public GenericNode {
-	T Value;
+	T Value {};
 public:
 	DataNode() {};
 	DataNode(T value) { Set(value); };

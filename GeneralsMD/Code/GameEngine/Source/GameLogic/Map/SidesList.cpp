@@ -45,7 +45,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-// #include "Common/DataChunk.h"
+#include "Common/DataChunk.h"
 #include "Common/GameState.h"
 #include "Common/PlayerTemplate.h"
 #include "Common/WellKnownKeys.h"
@@ -246,9 +246,9 @@ void SidesList::clear(void)
 */
 Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /*userData*/)
 {
-DEBUG_CRASH(("SidesList::ParseSidesDataChunk not yet implemented!"));
 (void) file;
 (void) info;
+DEBUG_CRASH(("TerrainLogic::isUnderwater not yet implemented!"));
 return false;
 #if 0
 	DEBUG_ASSERTCRASH(TheSidesList, ("TheSidesList is null"));

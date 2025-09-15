@@ -21,7 +21,7 @@
 //
 // Linux game logic class, there shouldn't be a lot of new functionality
 // in this class, but there are certain things that need to have close 
-// knowledge of each other like ther logical and visual terrain
+// knowledge of each other like the logical and visual terrain
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -33,7 +33,7 @@
 
 // USER INCLUDES //////////////////////////////////////////////////////////////
 #include "GameLogic/GameLogic.h"
-// #include "LinuxDevice/GameLogic/LinuxTerrainLogic.h"
+#include "LinuxDevice/GameLogic/LinuxTerrainLogic.h"
 // #include "LinuxDevice/GameLogic/LinuxGhostObject.h"
 
 // class LinuxGhostObjectManager;
@@ -54,7 +54,7 @@ public:
 protected:
 
    /// factory for TheTerrainLogic, called from init()
-   // virtual TerrainLogic *createTerrainLogic( void ) { return NEW LinuxTerrainLogic; };
+   virtual TerrainLogic *createTerrainLogic() { return NEW LinuxTerrainLogic; };
    // virtual GhostObjectManager *createGhostObjectManager(void) { return NEW LinuxGhostObjectManager; }
 
 };  // end class LinuxGameLogic

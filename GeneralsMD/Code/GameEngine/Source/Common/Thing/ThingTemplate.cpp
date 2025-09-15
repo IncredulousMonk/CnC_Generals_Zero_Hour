@@ -866,7 +866,7 @@ void ThingTemplate::parseReplaceModule(INI *ini, void *instance, void* /* store 
 	Bool removed = self->removeModuleInfo(modToRemove, removedModuleName);
 	if (!removed)
 	{
-		DEBUG_CRASH(("[LINE: %d - FILE: '%s'] ReplaceModule %s was not found for %s; cannot continue.\n",
+		DEBUG_CRASH(("[LINE: %d - FILE: '%s'] ThingTemplate::parseReplaceModule: ReplaceModule %s was not found for %s; cannot continue.\n",
 															ini->getLineNum(), ini->getFilename().str(), modToRemove, self->getName().str()));
 		throw INI_INVALID_DATA;
 	}

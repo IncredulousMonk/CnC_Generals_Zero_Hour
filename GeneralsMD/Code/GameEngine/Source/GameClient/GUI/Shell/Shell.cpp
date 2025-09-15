@@ -38,7 +38,7 @@
 #include "GameClient/IMEManager.h"
 #include "GameClient/AnimateWindowManager.h"
 #include "GameClient/ShellMenuScheme.h"
-// #include "GameLogic/GameLogic.h"
+#include "GameLogic/GameLogic.h"
 // #include "GameNetwork/GameSpyOverlay.h"
 // #include "GameNetwork/GameSpy/PeerDefsImplementation.h"
 
@@ -463,44 +463,42 @@ void Shell::showShell( Bool runInit )
 	
 
 	if (/*!TheGlobalData->m_data.m_shellMapOn &&*/ m_screenCount == 0)
-  {
+	{
 #ifdef _PROFILE
-    Profile::StopRange("init");
+		Profile::StopRange("init");
 #endif
 	//else
 		TheShell->push( AsciiString("Menus/MainMenu.wnd") );
-  }
+	}
 	m_isShellActive = TRUE;
 }  // end showShell
 
 //-------------------------------------------------------------------------------------------------
-void Shell::showShellMap(Bool useShellMap )
+void Shell::showShellMap(Bool useShellMap)
 {
-	(void) useShellMap;
-	// FIXME: Uncomment once TheGameLogic is implemented.
-	// // we don't want any of this to show if we're loading straight into a file
-	// if(TheGlobalData->m_data.m_initialFile.isNotEmpty() || !TheGameLogic )
-	// 	return;
-	// if(useShellMap && TheGlobalData->m_data.m_shellMapOn)
-	// {
-	// 	// we're already in a shell game, return
-	// 	if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
-	// 		return;
-	// 	// we're in some other kind of game, clear it out foo!
-	// 	if(TheGameLogic->isInGame())
-	// 		TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
+	// we don't want any of this to show if we're loading straight into a file
+	if (TheGlobalData->m_data.m_initialFile.isNotEmpty() || !TheGameLogic)
+		return;
+	if(useShellMap && TheGlobalData->m_data.m_shellMapOn)
+	{
+		// we're already in a shell game, return
+		if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
+			return;
+		// we're in some other kind of game, clear it out foo!
+		if(TheGameLogic->isInGame())
+			TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
 
-	// 	TheWritableGlobalData->m_data.m_pendingFile = TheGlobalData->m_data.m_shellMapName;
-	// 	InitGameLogicRandom(0);
-	// 	GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_NEW_GAME );
-	// 	msg->appendIntegerArgument(GAME_SHELL);
-	// 	m_shellMapOn = TRUE;
-	// }
-	// else
-	// {
-	// 	// we're in a shell game, stop it!
-	// 	if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
-	// 		TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
+		TheWritableGlobalData->m_data.m_pendingFile = TheGlobalData->m_data.m_shellMapName;
+		InitGameLogicRandom(0);
+		GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_NEW_GAME );
+		msg->appendIntegerArgument(GAME_SHELL);
+		m_shellMapOn = TRUE;
+	}
+	else
+	{
+		// we're in a shell game, stop it!
+		if(TheGameLogic->isInGame() && TheGameLogic->getGameMode() == GAME_SHELL)
+			TheMessageStream->appendMessage( GameMessage::MSG_CLEAR_GAME_DATA );
 
 		// if the shell is active,we need a background
 		if(!m_isShellActive)
@@ -515,7 +513,7 @@ void Shell::showShellMap(Bool useShellMap )
 			top()->bringForward();
 		m_shellMapOn = FALSE;
 		m_clearBackground = FALSE;
-	// }
+	}
 }
 
 //-------------------------------------------------------------------------------------------------

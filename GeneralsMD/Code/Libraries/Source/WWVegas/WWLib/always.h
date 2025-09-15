@@ -165,7 +165,9 @@ public:
 
 	#define W3DMPO_GLUE(ARGCLASS)
 
-	class W3DMPO { };
+	class W3DMPO {
+		public: virtual ~W3DMPO() = default;
+	};
 
 #endif // (gth) removing the generals memory stuff from W3D
 

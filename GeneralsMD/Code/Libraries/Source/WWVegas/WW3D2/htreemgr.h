@@ -69,6 +69,10 @@ public:
 	HTreeManagerClass(void);
 	~HTreeManagerClass(void);
 
+	// No copies allowed!
+	HTreeManagerClass(const HTreeManagerClass&) = delete;
+	HTreeManagerClass& operator=(const HTreeManagerClass&) = delete;
+
 	int							Load_Tree(ChunkLoadClass & cload);
 	int							Num_Trees(void) { return NumTrees; }
 	HTreeClass *				Get_Tree(const char * name);

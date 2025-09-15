@@ -171,9 +171,9 @@ public:
 
 	// super hack
 	void startNewGame( Bool loadSaveGame );
-#if 0
 	void loadMapINI( AsciiString mapName );
 
+#if 0
 	void updateLoadProgress( Int progress );
 	void deleteLoadScreen( void );
 #endif // if 0
@@ -381,9 +381,11 @@ private:
 	void processDestroyList( void );												///< Destroy all pending objects on the destroy list
 
 	void destroyAllObjectsImmediate();											///< destroy, and process destroy list immediately
+#endif // if 0
 
 	/// factory for TheTerrainLogic, called from init()
 	virtual TerrainLogic *createTerrainLogic( void );
+#if 0
 	virtual GhostObjectManager *createGhostObjectManager(void);
 #endif // if 0
 

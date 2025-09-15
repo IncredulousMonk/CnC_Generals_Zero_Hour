@@ -239,10 +239,8 @@ public:
 	virtual void reset( void );		///< Reset
 	virtual void update( void );	///< Update
 
-#if 0
 	virtual Bool loadMap( AsciiString filename, Bool query );
 	virtual void newMap( Bool saveGame );	///< Initialize the logic for new map.
-#endif // if 0
 
 	virtual Real getGroundHeight( Real x, Real y, Coord3D* normal = NULL )  const;
 	virtual Real getLayerHeight(Real x, Real y, PathfindLayerEnum layer, Coord3D* normal = NULL, Bool clip = true) const;
@@ -253,9 +251,9 @@ public:
 	virtual Coord3D findFarthestEdgePoint( const Coord3D *farthestFrom ) const ;
 	virtual Bool isClearLineOfSight(const Coord3D& pos, const Coord3D& posOther) const;
 
-#if 0
 	virtual AsciiString getSourceFilename( void ) { return m_filenameString; }
 
+#if 0
 	virtual PathfindLayerEnum alignOnTerrain( Real angle, const Coord3D& pos, Bool stickToGround, Matrix3D& mtx);
 #endif // if 0
 
@@ -300,10 +298,8 @@ public:
 	/// Find the bridge at a location.  NULL means no bridge.
 	virtual Bridge *findBridgeAt(const Coord3D *pLoc) const;
 
-#if 0
 	/// Find the bridge at a location.  NULL means no bridge. Note that the layer value will be used to resolve crossing bridges.
 	virtual Bridge *findBridgeLayerAt(const Coord3D *pLoc, PathfindLayerEnum layer, Bool clip = true) const;
-#endif // if 0
 
 	///  Returns true if the object is close enough to interact with the bridge for pathfinding.
 	virtual Bool objectInteractsWithBridgeLayer(Object *obj, Int layer, Bool considerBridgeHealth = true) const;
@@ -354,7 +350,6 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-#if 0
 	/// Chunk parser callback.
  	static Bool parseWaypointDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData);
 	/// Chunk parser callback.
@@ -368,6 +363,7 @@ protected:
 	/// Deletes all bridges.
 	void deleteBridges(void);
 
+#if 0
 	/// find the axis aligned region bounding the water table
 	void findAxisAlignedBoundingRect( const WaterHandle *waterHandle, Region3D *region );
 #endif // if 0

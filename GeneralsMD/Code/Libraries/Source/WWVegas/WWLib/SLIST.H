@@ -57,7 +57,7 @@
 #ifndef __SLIST_H__
 #define __SLIST_H__
 
-#include "slnode.h"
+#include "SLNODE.H"
 
 #ifndef NULL
 #define NULL 0L
@@ -82,6 +82,10 @@ class SList {
 		};
 
 		virtual ~SList(void) { Remove_All(); };
+
+		// No copies allowed!
+		SList(const SList&) = delete;
+		SList& operator=(const SList&) = delete;
 
 		//
 		// Returns the current head of the list.  Used to walk the list.

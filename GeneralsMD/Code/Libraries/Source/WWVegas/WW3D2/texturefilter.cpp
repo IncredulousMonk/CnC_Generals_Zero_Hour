@@ -69,6 +69,9 @@ TextureFilterClass::TextureFilterClass(MipCountType mip_level_count=MIP_LEVELS_1
 */
 void TextureFilterClass::Apply(unsigned int stage)
 {
+(void) stage;
+DEBUG_CRASH(("TextureFilterClass::Apply not yet implemented!"));
+#if 0
 	DX8Wrapper::Set_DX8_Texture_Stage_State(stage,D3DTSS_MINFILTER,_MinTextureFilters[stage][TextureMinFilter]);
 	DX8Wrapper::Set_DX8_Texture_Stage_State(stage,D3DTSS_MAGFILTER,_MagTextureFilters[stage][TextureMagFilter]);
 	DX8Wrapper::Set_DX8_Texture_Stage_State(stage,D3DTSS_MIPFILTER,_MipMapFilters[stage][MipMapFilter]);
@@ -94,6 +97,7 @@ void TextureFilterClass::Apply(unsigned int stage)
 		DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
 		break;
 	}
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -102,6 +106,9 @@ void TextureFilterClass::Apply(unsigned int stage)
 */
 void TextureFilterClass::_Init_Filters(TextureFilterMode filter_type)
 {
+(void) filter_type;
+DEBUG_CRASH(("TextureFilterClass::_Init_Filters not yet implemented!"));
+#if 0
 	const D3DCAPS8& dx8caps=DX8Wrapper::Get_Current_Caps()->Get_DX8_Caps();
 
 #ifndef _XBOX
@@ -195,6 +202,7 @@ void TextureFilterClass::_Init_Filters(TextureFilterMode filter_type)
 		DX8Wrapper::Set_DX8_Texture_Stage_State(i,D3DTSS_MAXANISOTROPY,2);
 	}
 
+#endif // if 0
 }
 
 
@@ -218,7 +226,7 @@ void TextureFilterClass::Set_Mip_Mapping(FilterType mipmap)
 */
 void TextureFilterClass::_Set_Default_Min_Filter(FilterType filter)
 {
-	for (int i=0;i<MAX_TEXTURE_STAGES;++i) 
+	for (unsigned int i=0;i<MAX_TEXTURE_STAGES;++i) 
 	{
 		_MinTextureFilters[i][FILTER_TYPE_DEFAULT]=_MinTextureFilters[i][filter];
 	}
@@ -231,7 +239,7 @@ void TextureFilterClass::_Set_Default_Min_Filter(FilterType filter)
 */
 void TextureFilterClass::_Set_Default_Mag_Filter(FilterType filter)
 {
-	for (int i=0;i<MAX_TEXTURE_STAGES;++i) 
+	for (unsigned int i=0;i<MAX_TEXTURE_STAGES;++i) 
 	{
 		_MagTextureFilters[i][FILTER_TYPE_DEFAULT]=_MagTextureFilters[i][filter];
 	}
@@ -243,7 +251,7 @@ void TextureFilterClass::_Set_Default_Mag_Filter(FilterType filter)
 */
 void TextureFilterClass::_Set_Default_Mip_Filter(FilterType filter)
 {
-	for (int i=0;i<MAX_TEXTURE_STAGES;++i) 
+	for (unsigned int i=0;i<MAX_TEXTURE_STAGES;++i) 
 	{
 		_MipMapFilters[i][FILTER_TYPE_DEFAULT]=_MipMapFilters[i][filter];
 	}

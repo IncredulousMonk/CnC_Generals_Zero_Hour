@@ -73,7 +73,7 @@ static int BTREE_decompress(unsigned char *packbuf,unsigned char *unpackbuf)
         if (type==0x47fb)                       /* skip ulen */
             s += 3;
 
-        ulen = ggetm(s,3);
+        ulen = (int)ggetm(s,3);
         s += 3;
 
         for (i=0;i<256;++i)                     /* 0 means a code is a leaf */
@@ -108,7 +108,7 @@ static int BTREE_decompress(unsigned char *packbuf,unsigned char *unpackbuf)
             node = (int) *s++;
             if (node)
             {
-                *DC.d++ = (char) node;
+                *DC.d++ = (unsigned char) node;
                 continue;
             }
             break;
@@ -146,20 +146,19 @@ int GCALL BTREE_size(const void *compresseddata)
 
     if (ggetm(compresseddata,2)==0x46fb)
     {
-        len = ggetm((char *)compresseddata+2,3);
+        len = (int)ggetm((char *)compresseddata+2,3);
     }
     else
     {
-        len = ggetm((char *)compresseddata+2+3,3);
+        len = (int)ggetm((char *)compresseddata+2+3,3);
     }
 
     return(len);
 }
 
-int GCALL BTREE_decode(void *dest, const void *compresseddata, int *compressedsize)
+int GCALL BTREE_decode(void *dest, const void *compresseddata, int* /* compressedsize */)
 {
     return(BTREE_decompress((unsigned char *)compresseddata,(unsigned char *)dest));
 }
 
 #endif
-

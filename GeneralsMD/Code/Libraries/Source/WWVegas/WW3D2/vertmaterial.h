@@ -88,7 +88,7 @@ public:
 		MAPPING_ENVIRONMENT = W3DMAPPING_ENVIRONMENT,		// use the environment mapper
 	};
 
-	enum FlagsType {
+	enum FlagsType: unsigned {
 		DEPTH_CUE= 0,					// enable depth cueing (default = false)
 		DEPTH_CUE_TO_ALPHA,
 		COPY_SPECULAR_TO_DIFFUSE,
@@ -137,7 +137,7 @@ public:
 		if (onoff)
 			Flags|=(1<<flag);
 		else
-			Flags&=~(1<<flag);
+			Flags&=~(1u<<flag);
 	}
 	int					Get_Flag(FlagsType flag)
 	{ return (Flags>>flag) & 0x1; }
@@ -271,7 +271,7 @@ private:
 	** Apply the render states corresponding to a NULL vetex material to D3D
 	*/
 	static void			Apply_Null(void);
-	unsigned long		VertexMaterialClass::Compute_CRC(void) const;
+	unsigned long		Compute_CRC(void) const;
 
 	static VertexMaterialClass *Presets[PRESET_COUNT];
 };

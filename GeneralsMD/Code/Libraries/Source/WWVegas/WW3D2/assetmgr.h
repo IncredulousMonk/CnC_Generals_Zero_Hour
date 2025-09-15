@@ -47,21 +47,21 @@
 #include "vector.h"
 #include "htreemgr.h"
 #include "hanimmgr.h"
-#include "slist.h"
+#include "SLIST.H"
 #include "texture.h"
 #include "hashtemplate.h"
 #include "simplevec.h"
 
-class	HAnimClass;
-class	HTreeClass;
-class	ChunkLoadClass;
+class HAnimClass;
+class HTreeClass;
+class ChunkLoadClass;
 
 class FileClass;
 class FileFactoryClass;
 class PrototypeLoaderClass;
-class	Font3DDataClass;
-class	Font3DInstanceClass;
-class	FontCharsClass;
+class Font3DDataClass;
+class Font3DInstanceClass;
+class FontCharsClass;
 class RenderObjClass;
 class HModelClass;
 class PrototypeClass;
@@ -96,7 +96,7 @@ public:
 protected:
 
 	AssetIterator(void)			{ Index = 0; }
-	int								Index;
+	int								Index {};
 };
 
 /*
@@ -191,6 +191,10 @@ public:
 	*/
 	WW3DAssetManager(void);
 	virtual ~WW3DAssetManager(void);
+
+	// No copies allowed!
+	WW3DAssetManager(const WW3DAssetManager&) = delete;
+	WW3DAssetManager& operator=(const WW3DAssetManager&) = delete;
 
 	/*
 	** Access to the single instance of a WW3DAssetManager.  The user

@@ -90,7 +90,7 @@ class TextureMapperClass : public W3DMPO, public RefCountClass
 		};
 
 		TextureMapperClass(unsigned int stage=0);
-		TextureMapperClass(const TextureMapperClass & src) : Stage(src.Stage) { }
+		TextureMapperClass(const TextureMapperClass & src) : RefCountClass(src), Stage(src.Stage) { }
 
 		virtual ~TextureMapperClass(void) { }
 
@@ -102,8 +102,8 @@ class TextureMapperClass : public W3DMPO, public RefCountClass
 		virtual void							Apply(int uv_array_index) = 0;
 		virtual void							Reset(void) { }
 		virtual bool							Needs_Normals(void) { return false; }
-		void										Set_Stage(int stage) { Stage = stage; }
-		int										Get_Stage(void) const { return Stage; }
+		void									Set_Stage(unsigned int stage) { Stage = stage; }
+		unsigned int							Get_Stage(void) const { return Stage; }
 
 		// This is called by Apply(). It should not be called externally except
 		// in unusual circumstances.

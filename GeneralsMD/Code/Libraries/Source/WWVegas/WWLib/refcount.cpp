@@ -40,7 +40,7 @@
 
 
 #include "refcount.h"
-#include <windows.h>
+// #include <windows.h>
 
 
 #ifndef NDEBUG
@@ -87,7 +87,7 @@ RefCountClass *	RefCountClass::Add_Active_Ref(RefCountClass *obj)
  * HISTORY:                                                                                    *
  *   3/16/98    GTH : Created.                                                                 *
  *=============================================================================================*/
-RefCountClass *	RefCountClass::Set_Ref_Owner(RefCountClass *obj,char * file,int line) 
+RefCountClass *	RefCountClass::Set_Ref_Owner(RefCountClass *obj, const char * file,int line) 
 { 
 //	static RefCountClass *hunt = (RefCountClass *)0x06558890;
 	static RefCountClass *hunt = (RefCountClass *)0x0;
@@ -154,7 +154,7 @@ bool RefCountClass::Validate_Active_Ref(RefCountClass * obj)
  * HISTORY:                                                                                    *
  *   2/06/99    EHC: Created.                                                                 *
  *=============================================================================================*/
-void	RefCountClass::Inc_Total_Refs(const RefCountClass * obj)
+void	RefCountClass::Inc_Total_Refs([[maybe_unused]] const RefCountClass * obj)
 {
 #ifdef PARANOID_REFCOUNTS
 	assert(Validate_Active_Ref(obj));
@@ -163,19 +163,20 @@ void	RefCountClass::Inc_Total_Refs(const RefCountClass * obj)
 
 }
 
-// SKB 7/21/99 Set BreakOnRefernce to a pointer and it will break when called.
-//					This is used for debugging, please do not deleted.
+// SKB 7/21/99 Set BreakOnReference to a pointer and it will break when called.
+//					This is used for debugging, please do not delete.
 RefCountClass* BreakOnReference = 0;
 
 #ifndef NDEBUG
-void RefCountClass::Add_Ref(void) const								
+void RefCountClass::Add_Ref(void) const
 { 
-	NumRefs++;  	  
+	NumRefs++;
 
-	// See if programmer set break on for a specific address.
-	if (this == BreakOnReference) {
-		DebugBreak();  // trigger the debugger
-	}
+	// FIXME: I think that DebugBreak is problematic.
+	// // See if programmer set break on for a specific address.
+	// if (this == BreakOnReference) {
+	// 	DebugBreak();  // trigger the debugger
+	// }
 	Inc_Total_Refs(this);
 }
 #endif																		
@@ -192,17 +193,17 @@ void RefCountClass::Add_Ref(void) const
  * HISTORY:                                                                                    *
  *   2/06/99    EHC: Created.                                                                 *
  *=============================================================================================*/
-void	RefCountClass::Dec_Total_Refs(const RefCountClass * obj)
+void	RefCountClass::Dec_Total_Refs([[maybe_unused]] const RefCountClass * obj)
 {
 #ifdef PARANOID_REFCOUNTS
 	assert(Validate_Active_Ref(obj));
 #endif
 	TotalRefs--;
 
-	// See if programmer set break on for a specific address.
-	if (obj == BreakOnReference) {
-		 DebugBreak();  // trigger the debugger
-	}
+	// // See if programmer set break on for a specific address.
+	// if (obj == BreakOnReference) {
+	// 	 DebugBreak();  // trigger the debugger
+	// }
 }
 
 

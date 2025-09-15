@@ -96,6 +96,10 @@ public:
 	DLNodeClass() : succ(0), pred(0), list(0) {}
 	~DLNodeClass() { Remove(); }
 
+	// No copies allowed!
+	DLNodeClass(const DLNodeClass&) = delete;
+	DLNodeClass& operator=(const DLNodeClass&) = delete;
+
 	void Insert_Before(DLNodeClass<T>* n)
 	{
 		list=n->list;

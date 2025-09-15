@@ -576,7 +576,8 @@ void GameClient::update( void )
 				
 // 			}
 
-			TheShell->showShellMap(TRUE);
+			TheShell->showShellMap(FALSE); // MG: Just show the background for the moment.
+			// TheShell->showShellMap(TRUE);
 			TheShell->showShell();
 			TheWritableGlobalData->m_data.m_afterIntro = FALSE;
 		}

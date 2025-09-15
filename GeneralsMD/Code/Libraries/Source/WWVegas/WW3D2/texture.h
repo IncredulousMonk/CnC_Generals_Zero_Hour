@@ -62,6 +62,7 @@ struct IDirect3DCubeTexture8;
 struct IDirect3DVolumeTexture8;
 
 class DX8Wrapper;
+class TextureClass;
 class TextureLoader;
 class LoaderThreadClass;
 class TextureLoadTaskClass;
@@ -104,6 +105,10 @@ public:
 
 	virtual ~TextureBaseClass();
 
+	// No copies allowed!
+	TextureBaseClass(const TextureBaseClass&) = delete;
+	TextureBaseClass& operator=(const TextureBaseClass&) = delete;
+
 	virtual TexAssetType Get_Asset_Type() const=0;
 
 	// Names
@@ -133,7 +138,7 @@ public:
 	// Time, after which the texture is invalidated if not used. Set to zero to indicate infinite.
 	// Time is in milliseconds.
 	void Set_Inactivation_Time(unsigned time) { InactivationTime=time; }
-	int Get_Inactivation_Time() const { return InactivationTime; }
+	int Get_Inactivation_Time() const { return (int)InactivationTime; }
 
 	// Texture priority affects texture management and caching.
 	unsigned int Get_Priority(void);
@@ -304,11 +309,13 @@ public:
 	(
 		SurfaceClass *surface, 
 		MipCountType mip_level_count=MIP_LEVELS_ALL
-	);		
+	);
 
+#if 0
 	TextureClass(IDirect3DBaseTexture8* d3d_texture);
+#endif // if 0
 
-	// defualt constructors for derived classes (cube & vol)
+	// default constructors for derived classes (cube & vol)
 	TextureClass
 	(
 		unsigned width,

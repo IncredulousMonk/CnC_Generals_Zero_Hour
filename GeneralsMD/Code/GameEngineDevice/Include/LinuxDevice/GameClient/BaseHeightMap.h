@@ -31,9 +31,9 @@
 #include "always.h"
 #include "rendobj.h"
 #include "w3d_file.h"
-#include "dx8vertexbuffer.h"
-#include "dx8indexbuffer.h"
-#include "dx8wrapper.h"
+// #include "dx8vertexbuffer.h"
+// #include "dx8indexbuffer.h"
+// #include "dx8wrapper.h"
 #include "shader.h"
 #include "vertmaterial.h"
 #include "Lib/BaseType.h"
@@ -47,7 +47,7 @@ class W3DBibBuffer;
 class W3DRoadBuffer;
 class W3DBridgeBuffer;
 class W3DWaypointBuffer;
-class W3DTerrainLogic;
+class LinuxTerrainLogic;
 class W3DAssetManager;
 class SimpleSceneClass;
 class W3DShroud;
@@ -55,6 +55,10 @@ class W3DPropDrawModuleData;
 class W3DPropBuffer;
 class W3DTreeDrawModuleData;
 class GeometryInfo;
+
+// FIXME: Once headers are sorted out.
+class DX8VertexBufferClass;
+class DX8IndexBufferClass;
 
 #define no_TIMING_TESTS	1
 
@@ -82,8 +86,11 @@ typedef struct {
 } TScorch;
 #endif
 
-#define VERTEX_FORMAT VertexFormatXYZDUV2
-#define DX8_VERTEX_FORMAT DX8_FVF_XYZDUV2
+// #define VERTEX_FORMAT VertexFormatXYZDUV2
+// #define DX8_VERTEX_FORMAT DX8_FVF_XYZDUV2
+
+// FIXME: Figure out vertex formats.
+#define VERTEX_FORMAT int
 
 /// Custom render object that draws the heightmap and handles intersection tests.
 /**
@@ -91,13 +98,17 @@ Custom W3D render object that's used to process the terrain.  It handles
 virtually everything to do with the terrain, including: drawing, lighting,
 scorchmarks and intersection tests.
 */
-class BaseHeightMapRenderObjClass : public RenderObjClass, public DX8_CleanupHook, public Snapshot
+class BaseHeightMapRenderObjClass : public RenderObjClass, /* public DX8_CleanupHook, */ public Snapshot
 {	
 
 public:
 
 	BaseHeightMapRenderObjClass(void);
 	virtual ~BaseHeightMapRenderObjClass(void);
+
+	// No copies allowed!
+	BaseHeightMapRenderObjClass(const BaseHeightMapRenderObjClass&) = delete;
+	BaseHeightMapRenderObjClass& operator=(const BaseHeightMapRenderObjClass&) = delete;
 
 	// DX8_CleanupHook methods
 	virtual void ReleaseResources(void);	///< Release all dx8 resources so the device can be reset.
@@ -118,7 +129,7 @@ public:
 	virtual void					On_Frame_Update(void); 
 	virtual void					Notify_Added(SceneClass * scene);
 
-  // Other VIRTUAL methods. [3/20/2003]
+	// Other VIRTUAL methods. [3/20/2003]
 
 	///allocate resources needed to render heightmap
 	virtual int initHeightData(Int width, Int height, WorldHeightMap *pMap, RefRenderObjListIterator *pLightsIterator, Bool updateExtraPassTiles=TRUE);
@@ -130,11 +141,11 @@ public:
 	virtual void oversizeTerrain(Int tilesToOversize);
 	virtual void reset(void);
 
-  void redirectToHeightmap( WorldHeightMap *pMap ) 
-  {
-    REF_PTR_RELEASE( m_map );
-	  REF_PTR_SET(m_map, pMap);	//update our heightmap pointer in case it changed since last call.
-  }
+	void redirectToHeightmap( WorldHeightMap *pMap ) 
+	{
+		REF_PTR_RELEASE( m_map );
+		REF_PTR_SET(m_map, pMap);	//update our heightmap pointer in case it changed since last call.
+	}
 
 
 	inline UnsignedByte getClipHeight(Int x, Int y) const
@@ -200,11 +211,11 @@ public:
 	void updateViewImpassableAreas(Bool partial = FALSE, Int minX = 0, Int maxX = 0, Int minY = 0, Int maxY = 0);
 	void clearAllScorches(void);
 	void setTimeOfDay( TimeOfDay tod );
-	void loadRoadsAndBridges(W3DTerrainLogic *pTerrainLogic, Bool saveGame); ///< Load the roads from the map objects.
+	void loadRoadsAndBridges(LinuxTerrainLogic *pTerrainLogic, Bool saveGame); ///< Load the roads from the map objects.
 	void worldBuilderUpdateBridgeTowers( W3DAssetManager *assetManager, SimpleSceneClass *scene );							///< for the editor updating of bridge tower visuals
 	Int  getStaticDiffuse(Int x, Int y); ///< Gets the diffuse terrain lighting value for a point on the mesh.
 
-	virtual Int	getNumExtraBlendTiles(Bool visible) { return 0;}
+	virtual Int	getNumExtraBlendTiles(Bool /* visible */) { return 0;}
 	Int getNumShoreLineTiles(Bool visible)	{ return visible?m_numVisibleShoreLineTiles:m_numShoreLineTiles;}
 	void setShoreLineDetail(void);	///<update shoreline tiles in case the feature was toggled by user.
 	Bool getMaximumVisibleBox(const FrustumClass &frustum,  AABoxClass *box, Bool ignoreMaxHeight);	///<3d extent of visible terrain.

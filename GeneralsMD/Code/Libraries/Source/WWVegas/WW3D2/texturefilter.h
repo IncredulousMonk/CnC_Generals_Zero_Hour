@@ -125,7 +125,7 @@ private:
 	// State not contained in the Direct3D texture object:
 	FilterType TextureMinFilter;
 	FilterType TextureMagFilter;
-	FilterType MipMapFilter;
+	FilterType MipMapFilter {};
 	TxtAddrMode UAddressMode;
 	TxtAddrMode VAddressMode;
 };

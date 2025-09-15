@@ -907,10 +907,10 @@ extern void userMemoryAdjustPoolSize(const char *poolName, size_t& initialAlloca
 
 #ifdef MEMORYPOOL_DEBUG_CUSTOM_NEW
 	#define MSGNEW(MSG)		new(MSG, 0)
-	#define NEW						new(__FILE__, __LINE__)
+	#define NEW				new(__FILE__, __LINE__)
 #else
 	#define MSGNEW(MSG)		new
-	#define NEW						new
+	#define NEW				new
 #endif
 
 #endif

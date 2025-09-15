@@ -71,4 +71,3 @@ int        GCALL REF_encode(void *compresseddata, const void *source, int source
 }
 #endif
 #endif
-

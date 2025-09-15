@@ -22,6 +22,7 @@
 #define __HUFWRITE 1
 
 #include <string.h>
+#include <cstdint>
 #include "codex.h"
 #include "huffcodex.h"
 
@@ -108,7 +109,7 @@ static void HUFF_writebits(struct HuffEncodeContext *EC,
 		EC->workpattern += (bitpattern & EC->masks[len]) << (24-EC->packbits);
 		while (EC->packbits > 7)
 		{
-			*(dest->ptr+dest->len) = (unsigned char) (EC->workpattern >> 16);
+			*(dest->ptr+dest->len) = (char) (EC->workpattern >> 16);
 			++dest->len;
 
 			EC->workpattern = EC->workpattern << 8;
@@ -231,14 +232,15 @@ static int HUFF_minrep(struct HuffEncodeContext *EC,
                 unsigned int remaining,
                 unsigned int r)
 {
-	int	min, min1, use, newremaining;
+	int min, min1;
+	unsigned int use, newremaining;
 
 	if (r)
 	{	min = HUFF_minrep(EC,remaining, r-1);
 		if (EC->count[EC->clue+r])
 		{	use = remaining/r;
 			newremaining = remaining-(use*r);
-			min1 = HUFF_minrep(EC,newremaining, r-1)+EC->bitsarray[EC->clue+r]*use;
+			min1 = HUFF_minrep(EC,newremaining, r-1) + (int)(EC->bitsarray[EC->clue+r]*use);
 			if (min1<min)
 				min = min1;
 		}
@@ -248,7 +250,7 @@ static int HUFF_minrep(struct HuffEncodeContext *EC,
 		if (remaining)
 		{	min = 20;
 			if (remaining<HUFFREPTBL)
-				min = EC->bitsarray[EC->clue]+3+EC->repbits[remaining]*2;
+				min = (int)(EC->bitsarray[EC->clue]+3+EC->repbits[remaining]*2);
 		}
 	}
 	return(min);
@@ -397,7 +399,7 @@ static void HUFF_analysis(struct HuffEncodeContext *EC,
 	unsigned int			i3;
 
 	unsigned int			thres=0;
-	int						di;
+	unsigned int			di;
 	unsigned int			pattern;
 	unsigned int			rep1;
 	unsigned int			repn;
@@ -406,7 +408,7 @@ static void HUFF_analysis(struct HuffEncodeContext *EC,
 	unsigned int			remaining;
 
 	unsigned int			count2[HUFFCODES];
-	unsigned int			dcount[HUFFCODES];
+	// unsigned int			dcount[HUFFCODES];
 
 /* count file (pass 1) */
 
@@ -527,8 +529,8 @@ static void HUFF_analysis(struct HuffEncodeContext *EC,
 	if (EC->dclues)
 	{
 		EC->mindelta = -((int)EC->dclues/2);
-		EC->maxdelta = EC->dclues+EC->mindelta;
-		thres = (int) (EC->ulen/25);
+		EC->maxdelta = (int)EC->dclues+EC->mindelta;
+		thres = EC->ulen/25;
 
 		for (i=1;i<=(unsigned int)EC->maxdelta;++i)
 			if (EC->count[256+i] > thres)
@@ -549,7 +551,7 @@ static void HUFF_analysis(struct HuffEncodeContext *EC,
 			EC->clues += di;
 		}
 		EC->mindelta = -((int)EC->dclues/2);
-		EC->maxdelta = EC->dclues+EC->mindelta;
+		EC->maxdelta = (int)EC->dclues + EC->mindelta;
 	}
 
 /* copy rep clue bytes */
@@ -582,7 +584,7 @@ static void HUFF_analysis(struct HuffEncodeContext *EC,
 			if (i1>8)
 				i1 = 8;
 			if (EC->count[EC->clue+i])
-			{	i1 = HUFF_minrep(EC,i,i1);
+			{	i1 = (unsigned int)HUFF_minrep(EC,i,i1);
 				if ((i1 <= EC->bitsarray[EC->clue+i])
 					 || (EC->count[EC->clue+i]*(i1-EC->bitsarray[EC->clue+i])<(i/2)))
 				{	EC->count[EC->clue+i] = 0;
@@ -602,7 +604,7 @@ static void HUFF_analysis(struct HuffEncodeContext *EC,
 
 	for (i=0; i<HUFFCODES; ++i)
 	{	count2[i] = EC->count[i];
-		dcount[i] = 0;
+		// dcount[i] = 0;
 		EC->count[i] = 0;
 		EC->count[256+i] = 0;
 		EC->count[512+i] = 0;
@@ -678,8 +680,8 @@ static void HUFF_analysis(struct HuffEncodeContext *EC,
 		if (EC->dclues)
 		{	i3 = 0;
 			di = i-i1;
-			if (di <= EC->maxdelta)
-			{	if (di >= EC->mindelta)
+			if (di <= (unsigned int)EC->maxdelta)
+			{	if (di >= (unsigned int)EC->mindelta)
 				{	di = (i-i1-1)*2+EC->dclue;
 					if (i<i1)
 						di = (i1-i-1)*2+EC->dclue+1;
@@ -860,8 +862,8 @@ static void HUFF_pack(struct HuffEncodeContext *EC,
 	unsigned int			i2;
 	unsigned int			i3;
 	int						uptype;
-	unsigned int			hlen, ibits, rladjust;
-	int						di, firstcode, firstbits;
+	unsigned int			/* hlen, */ ibits, rladjust;
+	int						di /* , firstcode, firstbits */;
 	unsigned int			rep1, repn, ncode, irep, remaining,curpc;
 
 /* write header */
@@ -915,8 +917,8 @@ static void HUFF_pack(struct HuffEncodeContext *EC,
 
 		i = 0;
 		i2 = 255;
-		firstbits = 0;
-		firstcode = -1;
+		// firstbits = 0;
+		// firstcode = -1;
 		while (i<EC->codes)
 		{
 			i1 = EC->sortptr[i];
@@ -943,7 +945,7 @@ static void HUFF_pack(struct HuffEncodeContext *EC,
 			++i;
 		}
 	}
-	hlen = EC->plen+1;
+	// hlen = EC->plen+1;
 
 	if (!EC->clues)
 		EC->clue = HUFFBIGNUM;
@@ -1035,11 +1037,11 @@ static void HUFF_pack(struct HuffEncodeContext *EC,
 		i3 = 0;
 		if (EC->dclues)
 		{
-			di = i-i1;
+			di = (int)(i-i1);
 			if ((di <= EC->maxdelta) && (di >= EC->mindelta))
-			{	di = (i-i1-1)*2+EC->dclue;
+			{	di = (int)((i-i1-1)*2+EC->dclue);
 				if (i<i1)
-					di = (i1-i-1)*2+EC->dclue+1;
+					di = (int)((i1-i-1)*2+EC->dclue+1);
 				if (EC->bitsarray[di] < EC->bitsarray[i])
 				{	HUFF_writebits(EC,dest,EC->patternarray[di], EC->bitsarray[di]);
 					++i3;
@@ -1050,8 +1052,8 @@ static void HUFF_pack(struct HuffEncodeContext *EC,
 		if (!i3)
 			HUFF_writecode(EC,dest,i);
 
-		if (((int) bptr1- (int) EC->buffer) >= (int)(EC->plen+curpc))
-			curpc = (int) bptr1 - (int) EC->buffer - EC->plen;
+		if (((intptr_t) bptr1- (intptr_t) EC->buffer) >= (intptr_t)(EC->plen+curpc))
+			curpc = (intptr_t) bptr1 - (intptr_t) EC->buffer - EC->plen;
 	}
 
 	/* write EOF ([clue] 0gn [10]) */
@@ -1096,7 +1098,7 @@ static int HUFF_packfile(struct HuffEncodeContext *EC,
 	EC->buffer = (unsigned char *) (infile->ptr);
 	EC->flen = infile->len;
 
-	EC->ulen = EC->flen;
+	EC->ulen = (unsigned int)EC->flen;
 	EC->bufptr = EC->buffer + EC->flen;
 
 /* pack a file */
@@ -1198,13 +1200,13 @@ int GCALL HUFF_encode(void *compresseddata, const void *source, int sourcesize, 
                 break;
 
             case 1:
-                deltabuf = galloc(sourcesize);
+                deltabuf = galloc((size_t)sourcesize);
     			HUFF_deltabytes(source,deltabuf,sourcesize);
                 infile.ptr = (char *) deltabuf;
                 break;
 
             case 2:
-                deltabuf = galloc(sourcesize);
+                deltabuf = galloc((size_t)sourcesize);
     			HUFF_deltabytes(source,deltabuf,sourcesize);
     			HUFF_deltabytes(deltabuf,deltabuf,sourcesize);
                 infile.ptr = (char *) deltabuf;
@@ -1224,4 +1226,3 @@ int GCALL HUFF_encode(void *compresseddata, const void *source, int sourcesize, 
 }
 
 #endif
-

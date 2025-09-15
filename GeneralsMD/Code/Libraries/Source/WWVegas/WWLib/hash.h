@@ -57,6 +57,10 @@ public:
 	HashableClass( void ) : NextHash( NULL ) {}
 	virtual	~HashableClass( void ) {}
 
+	// No copies allowed!
+	HashableClass(const HashableClass&) = delete;
+	HashableClass& operator=(const HashableClass&) = delete;
+
 	virtual	const char * Get_Key( void )				= 0;
 
 private:
@@ -74,6 +78,10 @@ class HashTableClass {
 public:
 	HashTableClass( int size );
 	~HashTableClass( void );
+
+	// No copies allowed!
+	HashTableClass(const HashTableClass&) = delete;
+	HashTableClass& operator=(const HashTableClass&) = delete;
 
 	void					Reset( void );
 	void					Add( HashableClass * entry );
@@ -102,6 +110,10 @@ public:
 	HashTableIteratorClass( HashTableClass & table ) : Table( table ) {}
 	virtual ~HashTableIteratorClass( void ) {}
 
+	// No copies allowed!
+	HashTableIteratorClass(const HashTableIteratorClass&) = delete;
+	HashTableIteratorClass& operator=(const HashTableIteratorClass&) = delete;
+
 	void					First( void );
 	void					Next( void );
 	bool					Is_Done( void )		{ return CurrentEntry == NULL; }
@@ -109,9 +121,9 @@ public:
 
 private:
 	const HashTableClass	&	Table;
-	int							Index;
-	HashableClass *			CurrentEntry;
-	HashableClass *			NextEntry;
+	int							Index {};
+	HashableClass *			CurrentEntry {};
+	HashableClass *			NextEntry {};
 
 	void					Advance_Next( void );
 };

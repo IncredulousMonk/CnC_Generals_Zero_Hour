@@ -109,6 +109,10 @@ public:
 	MeshBuilderClass(int pass_count=1,int face_count_guess=255,int face_count_growth_rate=64);
 	~MeshBuilderClass(void);
 
+	// No copies allowed!
+	MeshBuilderClass(const MeshBuilderClass&) = delete;
+	MeshBuilderClass& operator=(const MeshBuilderClass&) = delete;
+
 	/*
 	** VertClass.  The MeshBuilder deals with vertices in this format.  
 	*/
@@ -120,30 +124,30 @@ public:
 
 	public:
 
-		Vector3					Position;			// position of the vertex
-		Vector3					Normal;				// vertex normal (can be calculated by mesh builder)
-		int						SmGroup;				// smoothing group of the face this vertex was submitted with
-		int						Id;					// id of the vertex, must match for vert to be welded, ok at zero if you don't care
-		int						BoneIndex;			// bone influence if the mesh is a skin
+		Vector3					Position {};			// position of the vertex
+		Vector3					Normal {};				// vertex normal (can be calculated by mesh builder)
+		int						SmGroup {};				// smoothing group of the face this vertex was submitted with
+		int						Id {};					// id of the vertex, must match for vert to be welded, ok at zero if you don't care
+		int						BoneIndex {};			// bone influence if the mesh is a skin
 
-		int						MaxVertColIndex;	// Index into the Max mesh.vertCol array of this vertex.
+		int						MaxVertColIndex {};	// Index into the Max mesh.vertCol array of this vertex.
 		
 		Vector2					TexCoord[MAX_PASSES][MAX_STAGES];				
 		Vector3					DiffuseColor[MAX_PASSES];			// diffuse color
 		Vector3					SpecularColor[MAX_PASSES];			// specular color
 		Vector3					DiffuseIllumination[MAX_PASSES];	// pre-calced diffuse illum
-		float						Alpha[MAX_PASSES];					// alpha
+		float					Alpha[MAX_PASSES];					// alpha
 		int						VertexMaterialIndex[MAX_PASSES];	// vertex material index
 
-		int						Attribute0;			// user-set attributes (passed on through...)
-		int						Attribute1;			// user-set attributes
+		int						Attribute0 {};			// user-set attributes (passed on through...)
+		int						Attribute1 {};			// user-set attributes
 
 		// These values are set up by the mesh builder:
 
-		int						SharedSmGroup;		// smooth bits that were on in all faces that contributed to this final vertex
-		int						UniqueIndex;		// used internally!
-		int						ShadeIndex;			// used internally!
-		VertClass *				NextHash;			// used internally!
+		int						SharedSmGroup {};		// smooth bits that were on in all faces that contributed to this final vertex
+		int						UniqueIndex {};		// used internally!
+		int						ShadeIndex {};			// used internally!
+		VertClass *				NextHash {};			// used internally!
 	
 	};
 
@@ -160,17 +164,17 @@ public:
 		
 	public:
 		VertClass				Verts[3];										// array of 3 verts
-		int						SmGroup;											// smoothing group
-		int						Index;											// user-set index of the face
-		int						Attributes;										// user-set attributes
+		int						SmGroup {};											// smoothing group
+		int						Index {};											// user-set index of the face
+		int						Attributes {};										// user-set attributes
 		int						TextureIndex[MAX_PASSES][MAX_STAGES];	// texture to use for each pass
 		int						ShaderIndex[MAX_PASSES];					// shader for each pass
-		uint32					SurfaceType;									// surface type identifier
+		uint32					SurfaceType {};									// surface type identifier
 
-		int						AddIndex;			// set by builder: index of addition
+		int						AddIndex {};			// set by builder: index of addition
 		int						VertIdx[3];			// set by builder: "optimized" vertex indices
-		Vector3					Normal;		 		// set by builder: Face normal
-		float32					Dist;			 		// set by builder: Plane distance
+		Vector3					Normal {};		 		// set by builder: Face normal
+		float32					Dist {};			 		// set by builder: Plane distance
 	
 		void						Compute_Plane(void);
 		bool						operator != (const FaceClass & that)		{ return !(*this == that); }

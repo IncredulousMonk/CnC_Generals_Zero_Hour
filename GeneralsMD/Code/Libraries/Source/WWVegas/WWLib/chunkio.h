@@ -106,8 +106,8 @@ struct ChunkHeader
 	// Chunk type and size.
 	// Note: MSB of ChunkSize is used to indicate whether this chunk
 	// contains other chunks or data.
-	uint32 ChunkType;
-	uint32 ChunkSize;
+	uint32 ChunkType {};
+	uint32 ChunkSize {};
 };
 
 struct MicroChunkHeader
@@ -121,8 +121,8 @@ struct MicroChunkHeader
 	void		Add_Size(uint8 add)						{ Set_Size(Get_Size() + add); }
 	uint8		Get_Size(void)								{ return ChunkSize; }
 
-	uint8	ChunkType;
-	uint8	ChunkSize;
+	uint8	ChunkType {};
+	uint8	ChunkSize {};
 };
 
 
@@ -161,14 +161,14 @@ private:
 	FileClass *			File;
 
 	// Chunk building support
-	int					StackIndex;
+	int					StackIndex {};
 	int					PositionStack[MAX_STACK_DEPTH];
 	ChunkHeader			HeaderStack[MAX_STACK_DEPTH];
 
 	// MicroChunk building support
-	bool					InMicroChunk;
-	int					MicroChunkPosition;
-	MicroChunkHeader	MCHeader;
+	bool				InMicroChunk {};
+	int					MicroChunkPosition {};
+	MicroChunkHeader	MCHeader {};
 };
 
 
@@ -186,16 +186,16 @@ public:
 	ChunkLoadClass(FileClass * file);
 
 	// Chunk methods
-	bool					Open_Chunk();
-	bool					Close_Chunk();
+	bool				Open_Chunk();
+	bool				Close_Chunk();
 	uint32				Cur_Chunk_ID();
 	uint32				Cur_Chunk_Length();
 	int					Cur_Chunk_Depth();
 	int					Contains_Chunks();
 
 	// Micro Chunk methods
-	bool					Open_Micro_Chunk();
-	bool					Close_Micro_Chunk();
+	bool				Open_Micro_Chunk();
+	bool				Close_Micro_Chunk();
 	uint32				Cur_Micro_Chunk_ID();
 	uint32				Cur_Micro_Chunk_Length();
 
@@ -213,17 +213,17 @@ private:
 
 	enum { MAX_STACK_DEPTH = 256 };
 
-	FileClass *			File;
+	FileClass *			File {};
 
 	// Chunk reading support
-	int					StackIndex;
+	int					StackIndex {};
 	uint32				PositionStack[MAX_STACK_DEPTH];
 	ChunkHeader			HeaderStack[MAX_STACK_DEPTH];
 
 	// Micro-chunk reading support
-	bool					InMicroChunk;
-	int					MicroChunkPosition;
-	MicroChunkHeader	MCHeader;
+	bool				InMicroChunk {};
+	int					MicroChunkPosition {};
+	MicroChunkHeader	MCHeader {};
 
 };
 

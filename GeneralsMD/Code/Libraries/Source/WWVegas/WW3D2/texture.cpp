@@ -43,9 +43,9 @@
 
 #include <d3d8.h>
 #include <stdio.h>
-#include <D3dx8core.h>
+// #include <D3dx8core.h>
 #include "dx8wrapper.h"
-#include "targa.h"
+#include "TARGA.H"
 #include <nstrdup.h>
 #include "w3d_file.h"
 #include "assetmgr.h"
@@ -53,8 +53,8 @@
 #include "textureloader.h"
 #include "missingtexture.h"
 #include "ffactory.h"
-#include "dx8caps.h"
-#include "dx8texman.h"
+// #include "dx8caps.h"
+// #include "dx8texman.h"
 #include "meshmatdesc.h"
 #include "texturethumbnail.h"
 #include "wwprofile.h"
@@ -71,7 +71,7 @@ const unsigned DEFAULT_INACTIVATION_TIME=20000;
 static unsigned unused_texture_id;
 
 // This throttles submissions to the background texture loading queue.
-static unsigned TexturesAppliedPerFrame;
+// static unsigned TexturesAppliedPerFrame;
 const unsigned MAX_TEXTURES_APPLIED_PER_FRAME=2;
 
 
@@ -84,30 +84,30 @@ TextureBaseClass::TextureBaseClass
 	unsigned int height,
 	enum MipCountType mip_level_count,
 	enum PoolType pool,
-	bool rendertarget,
+	bool /* rendertarget */,
 	bool reducible
 )
 :	MipLevelCount(mip_level_count),
-	D3DTexture(NULL),
 	Initialized(false),
-   Name(""),
-	FullPath(""),
-	texture_id(unused_texture_id++),
 	IsLightmap(false),
+	IsCompressionAllowed(false),
 	IsProcedural(false),
 	IsReducible(reducible),
-	IsCompressionAllowed(false),
 	InactivationTime(0),
 	ExtendedInactivationTime(0),
 	LastInactivationSyncTime(0),
 	LastAccessed(0),
-	Width(width),
-	Height(height),
+	HSVShift(0.0f,0.0f,0.0f),
+	Width((int)width),
+	Height((int)height),
+	D3DTexture(NULL),
+	Name(""),
+	FullPath(""),
+	texture_id(unused_texture_id++),
 	Pool(pool),
 	Dirty(false),
 	TextureLoadTask(NULL),
-	ThumbnailLoadTask(NULL),
-	HSVShift(0.0f,0.0f,0.0f)
+	ThumbnailLoadTask(NULL)
 {
 }
 
@@ -123,13 +123,14 @@ TextureBaseClass::~TextureBaseClass(void)
 	delete ThumbnailLoadTask;
 	ThumbnailLoadTask=NULL;
 
-	if (D3DTexture) 
-	{
-		D3DTexture->Release();
-		D3DTexture = NULL;
-	}
+	// FIXME: DX8 stuff.
+	// if (D3DTexture) 
+	// {
+	// 	D3DTexture->Release();
+	// 	D3DTexture = NULL;
+	// }
 
-	DX8TextureManagerClass::Remove(this);
+	// DX8TextureManagerClass::Remove(this);
 }
 
 
@@ -141,6 +142,9 @@ TextureBaseClass::~TextureBaseClass(void)
 */
 void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned invalidation_time_override)
 {
+(void) invalidation_time_override;
+DEBUG_CRASH(("TextureBaseClass::Invalidate_Old_Unused_Textures not yet implemented!"));
+#if 0
 	// (gth) If thumbnails are not enabled, then we don't run this code.
 	if (WW3D::Get_Thumbnail_Enabled() == false) {
 		return;
@@ -181,6 +185,7 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned invalidation_time
 			}
 		}
 	}
+#endif // if 0
 }
 
 
@@ -193,6 +198,8 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned invalidation_time
 */
 void TextureBaseClass::Invalidate()
 {
+DEBUG_CRASH(("TextureBaseClass::Invalidate not yet implemented!"));
+#if 0
 	if (TextureLoadTask) {
 		return;
 	}
@@ -249,6 +256,7 @@ void TextureBaseClass::Invalidate()
 	Initialized=false;
 
 	LastAccessed=WW3D::Get_Sync_Time();*/
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -256,9 +264,13 @@ void TextureBaseClass::Invalidate()
 /*! 
 */
 IDirect3DBaseTexture8 * TextureBaseClass::Peek_D3D_Base_Texture() const 
-{ 	
+{
+DEBUG_CRASH(("TextureBaseClass::Peek_D3D_Base_Texture not yet implemented!"));
+return nullptr;
+#if 0
 	LastAccessed=WW3D::Get_Sync_Time(); 
 	return D3DTexture; 
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -266,7 +278,10 @@ IDirect3DBaseTexture8 * TextureBaseClass::Peek_D3D_Base_Texture() const
 /*! 
 */
 void TextureBaseClass::Set_D3D_Base_Texture(IDirect3DBaseTexture8* tex) 
-{ 
+{
+(void) tex;
+DEBUG_CRASH(("TextureBaseClass::Set_D3D_Base_Texture not yet implemented!"));
+#if 0
 	// (gth) Generals does stuff directly with the D3DTexture pointer so lets
 	// reset the access timer whenever someon messes with this pointer.
 	LastAccessed=WW3D::Get_Sync_Time();
@@ -278,6 +293,7 @@ void TextureBaseClass::Set_D3D_Base_Texture(IDirect3DBaseTexture8* tex)
 	if (D3DTexture != NULL) {
 		D3DTexture->AddRef();
 	}
+#endif // if 0
 }
 
 
@@ -287,11 +303,14 @@ void TextureBaseClass::Set_D3D_Base_Texture(IDirect3DBaseTexture8* tex)
 */
 void TextureBaseClass::Load_Locked_Surface()
 {
+DEBUG_CRASH(("TextureBaseClass::Load_Locked_Surface not yet implemented!"));
+#if 0
 	WWPROFILE(("TextureClass::Load_Locked_Surface()"));
 	if (D3DTexture) D3DTexture->Release();
 	D3DTexture=0;
 	TextureLoader::Request_Thumbnail(this);
 	Initialized=false;
+#endif // if 0
 }
 
 
@@ -301,6 +320,9 @@ void TextureBaseClass::Load_Locked_Surface()
 */
 bool TextureBaseClass::Is_Missing_Texture()
 {
+DEBUG_CRASH(("TextureBaseClass::Is_Missing_Texture not yet implemented!"));
+return false;
+#if 0
 	bool flag = false;
 	IDirect3DBaseTexture8 *missing_texture = MissingTexture::_Get_Missing_Texture();
 
@@ -313,6 +335,7 @@ bool TextureBaseClass::Is_Missing_Texture()
 	}
 
 	return flag;
+#endif // if 0
 }
 
 
@@ -334,6 +357,9 @@ void TextureBaseClass::Set_Texture_Name(const char * name)
 */
 unsigned int TextureBaseClass::Get_Priority(void)
 {
+DEBUG_CRASH(("TextureBaseClass::Get_Priority not yet implemented!"));
+return 0;
+#if 0
 	if (!D3DTexture) 
 	{
 		WWASSERT_PRINT(0, "Get_Priority: D3DTexture is NULL!\n");
@@ -345,6 +371,7 @@ unsigned int TextureBaseClass::Get_Priority(void)
 #else
 	return 0;
 #endif
+#endif // if 0
 }
 
 
@@ -354,6 +381,10 @@ unsigned int TextureBaseClass::Get_Priority(void)
 */
 unsigned int TextureBaseClass::Set_Priority(unsigned int priority)
 {
+(void) priority;
+DEBUG_CRASH(("TextureBaseClass::Set_Priority not yet implemented!"));
+return 0;
+#if 0
 	if (!D3DTexture) 
 	{
 		WWASSERT_PRINT(0, "Set_Priority: D3DTexture is NULL!\n");
@@ -365,6 +396,7 @@ unsigned int TextureBaseClass::Set_Priority(unsigned int priority)
 #else
 	return 0;
 #endif
+#endif // if 0
 }
 
 
@@ -374,6 +406,9 @@ unsigned int TextureBaseClass::Set_Priority(unsigned int priority)
 */
 unsigned TextureBaseClass::Get_Reduction() const
 {
+DEBUG_CRASH(("TextureBaseClass::Get_Reduction not yet implemented!"));
+return 0;
+#if 0
 	// don't reduce if the texture is too small already or
 	// has no mip map levels
 	if (MipLevelCount==MIP_LEVELS_1) return 0;
@@ -388,7 +423,8 @@ unsigned TextureBaseClass::Get_Reduction() const
 	if (MipLevelCount && reduction>MipLevelCount) {
 		reduction=MipLevelCount;
 	}
-	return reduction;
+	return (unsigned)reduction;
+#endif // if 0
 }
 
 
@@ -399,8 +435,12 @@ unsigned TextureBaseClass::Get_Reduction() const
 */
 void TextureBaseClass::Apply_Null(unsigned int stage)
 {
+(void) stage;
+DEBUG_CRASH(("TextureBaseClass::Apply_Null not yet implemented!"));
+#if 0
 	// This function sets the render states for a "NULL" texture
 	DX8Wrapper::Set_DX8_Texture(stage, NULL);
+#endif // if 0
 }
 
 // ----------------------------------------------------------------------------
@@ -420,6 +460,9 @@ void TextureBaseClass::Set_HSV_Shift(const Vector3 &hsv_shift)
 */
 int TextureBaseClass::_Get_Total_Locked_Surface_Size()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Locked_Surface_Size not yet implemented!"));
+return 0;
+#if 0
 	int total_locked_surface_size=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -430,10 +473,11 @@ int TextureBaseClass::_Get_Total_Locked_Surface_Size()
 		TextureBaseClass* tex=ite.Peek_Value();
 		if (!tex->Initialized) 
 		{
-			total_locked_surface_size+=tex->Get_Texture_Memory_Usage();
+			total_locked_surface_size += (int)tex->Get_Texture_Memory_Usage();
 		}
 	}
 	return total_locked_surface_size;
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -442,6 +486,9 @@ int TextureBaseClass::_Get_Total_Locked_Surface_Size()
 */
 int TextureBaseClass::_Get_Total_Texture_Size()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Texture_Size not yet implemented!"));
+return 0;
+#if 0
 	int total_texture_size=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -450,9 +497,10 @@ int TextureBaseClass::_Get_Total_Texture_Size()
 	{
 		// Get the current texture
 		TextureBaseClass* tex=ite.Peek_Value();
-		total_texture_size+=tex->Get_Texture_Memory_Usage();
+		total_texture_size += (int)tex->Get_Texture_Memory_Usage();
 	}
 	return total_texture_size;
+#endif // if 0
 }
 
 // ----------------------------------------------------------------------------
@@ -464,6 +512,9 @@ int TextureBaseClass::_Get_Total_Texture_Size()
 */
 int TextureBaseClass::_Get_Total_Lightmap_Texture_Size()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Lightmap_Texture_Size not yet implemented!"));
+return 0;
+#if 0
 	int total_texture_size=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -474,10 +525,11 @@ int TextureBaseClass::_Get_Total_Lightmap_Texture_Size()
 		TextureBaseClass* tex=ite.Peek_Value();
 		if (tex->Is_Lightmap()) 
 		{
-			total_texture_size+=tex->Get_Texture_Memory_Usage();
+			total_texture_size += (int)tex->Get_Texture_Memory_Usage();
 		}
 	}
 	return total_texture_size;
+#endif // if 0
 }
 
 
@@ -487,6 +539,9 @@ int TextureBaseClass::_Get_Total_Lightmap_Texture_Size()
 */
 int TextureBaseClass::_Get_Total_Procedural_Texture_Size()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Procedural_Texture_Size not yet implemented!"));
+return 0;
+#if 0
 	int total_texture_size=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -497,10 +552,11 @@ int TextureBaseClass::_Get_Total_Procedural_Texture_Size()
 		TextureBaseClass* tex=ite.Peek_Value();
 		if (tex->Is_Procedural()) 
 		{
-			total_texture_size+=tex->Get_Texture_Memory_Usage();
+			total_texture_size += (int)tex->Get_Texture_Memory_Usage();
 		}
 	}
 	return total_texture_size;
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -509,6 +565,9 @@ int TextureBaseClass::_Get_Total_Procedural_Texture_Size()
 */
 int TextureBaseClass::_Get_Total_Texture_Count()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Texture_Count not yet implemented!"));
+return 0;
+#if 0
 	int texture_count=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -519,6 +578,7 @@ int TextureBaseClass::_Get_Total_Texture_Count()
 	}
 
 	return texture_count;
+#endif // if 0
 }
 
 // ----------------------------------------------------------------------------
@@ -530,6 +590,9 @@ int TextureBaseClass::_Get_Total_Texture_Count()
 */
 int TextureBaseClass::_Get_Total_Lightmap_Texture_Count()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Lightmap_Texture_Count not yet implemented!"));
+return 0;
+#if 0
 	int texture_count=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -543,6 +606,7 @@ int TextureBaseClass::_Get_Total_Lightmap_Texture_Count()
 	}
 
 	return texture_count;
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -551,6 +615,9 @@ int TextureBaseClass::_Get_Total_Lightmap_Texture_Count()
 */
 int TextureBaseClass::_Get_Total_Procedural_Texture_Count()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Procedural_Texture_Count not yet implemented!"));
+return 0;
+#if 0
 	int texture_count=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -564,6 +631,7 @@ int TextureBaseClass::_Get_Total_Procedural_Texture_Count()
 	}
 
 	return texture_count;
+#endif // if 0
 }
 
 
@@ -573,6 +641,9 @@ int TextureBaseClass::_Get_Total_Procedural_Texture_Count()
 */
 int TextureBaseClass::_Get_Total_Locked_Surface_Count()
 {
+DEBUG_CRASH(("TextureBaseClass::_Get_Total_Locked_Surface_Count not yet implemented!"));
+return 0;
+#if 0
 	int texture_count=0;
 
 	HashTemplateIterator<StringClass,TextureClass*> ite(WW3DAssetManager::Get_Instance()->Texture_Hash());
@@ -588,6 +659,7 @@ int TextureBaseClass::_Get_Total_Locked_Surface_Count()
 	}
 
 	return texture_count;
+#endif // if 0
 }
 
 /*************************************************************************
@@ -604,9 +676,11 @@ TextureClass::TextureClass
 	bool allow_reduction
 )
 :	TextureBaseClass(width, height, mip_level_count, pool, rendertarget,allow_reduction),
-	Filter(mip_level_count),
-	TextureFormat(format)
+	TextureFormat(format),
+	Filter(mip_level_count)
 {
+DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
+#if 0
 	Initialized=true;
 	IsProcedural=true;
 	IsReducible=false;
@@ -660,6 +734,7 @@ TextureClass::TextureClass
 		DX8TextureManagerClass::Add(track);
 	}
 	LastAccessed=WW3D::Get_Sync_Time();
+#endif // if 0
 }
 
 
@@ -675,9 +750,15 @@ TextureClass::TextureClass
 	bool allow_reduction
 )
 :	TextureBaseClass(0, 0, mip_level_count),
-	Filter(mip_level_count),
-	TextureFormat(texture_format)
+	TextureFormat(texture_format),
+	Filter(mip_level_count)
 {
+(void) name;
+(void) full_path;
+(void) allow_compression;
+(void) allow_reduction;
+DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
+#if 0
 	IsCompressionAllowed=allow_compression;
 	InactivationTime=DEFAULT_INACTIVATION_TIME;		// Default inactivation time 30 seconds
 	IsReducible=allow_reduction;
@@ -760,6 +841,7 @@ TextureClass::TextureClass
 			Init();
 		}
 	}
+#endif // if 0
 }
 
 // ----------------------------------------------------------------------------
@@ -769,9 +851,11 @@ TextureClass::TextureClass
 	MipCountType mip_level_count
 )
 :  TextureBaseClass(0,0,mip_level_count),
-	Filter(mip_level_count),
-	TextureFormat(surface->Get_Surface_Format())
+	TextureFormat(surface->Get_Surface_Format()),
+	Filter(mip_level_count)
 {
+DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
+#if 0
 	IsProcedural=true;
 	Initialized=true;
 	IsReducible=false;
@@ -801,8 +885,10 @@ TextureClass::TextureClass
 		)
 	);
 	LastAccessed=WW3D::Get_Sync_Time();
+#endif // if 0
 }
 
+#if 0
 // ----------------------------------------------------------------------------
 TextureClass::TextureClass(IDirect3DBaseTexture8* d3d_texture)
 :	TextureBaseClass
@@ -840,6 +926,7 @@ TextureClass::TextureClass(IDirect3DBaseTexture8* d3d_texture)
 
 	LastAccessed=WW3D::Get_Sync_Time();
 }
+#endif // if 0
 
 //**********************************************************************************************
 //! Initialise the texture
@@ -847,6 +934,8 @@ TextureClass::TextureClass(IDirect3DBaseTexture8* d3d_texture)
 */
 void TextureClass::Init()
 {
+DEBUG_CRASH(("TextureClass::Init not yet implemented!"));
+#if 0
 	// If the texture has already been initialised we should exit now
 	if (Initialized) return;
 
@@ -885,6 +974,7 @@ void TextureClass::Init()
 	}
 
 	LastAccessed=WW3D::Get_Sync_Time();
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -898,6 +988,11 @@ void TextureClass::Apply_New_Surface
 	bool disable_auto_invalidation
 )
 {
+(void) d3d_texture;
+(void) initialized;
+(void) disable_auto_invalidation;
+DEBUG_CRASH(("TextureClass::Apply_New_Surface not yet implemented!"));
+#if 0
 	IDirect3DBaseTexture8* d3d_tex=Peek_D3D_Base_Texture();
 
 	if (d3d_tex) d3d_tex->Release();
@@ -922,6 +1017,7 @@ void TextureClass::Apply_New_Surface
 	}
 	surface->Release();
 
+#endif // if 0
 }
 
 
@@ -931,6 +1027,9 @@ void TextureClass::Apply_New_Surface
 */
 void TextureClass::Apply(unsigned int stage)
 {
+(void) stage;
+DEBUG_CRASH(("TextureClass::Apply not yet implemented!"));
+#if 0
 	// Initialization needs to be done when texture is used if it hasn't been done before.
 	// XBOX always initializes textures at creation time.
 	if (!Initialized) 
@@ -977,6 +1076,7 @@ void TextureClass::Apply(unsigned int stage)
 	}
 
 	Filter.Apply(stage);
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -985,6 +1085,10 @@ void TextureClass::Apply(unsigned int stage)
 */
 SurfaceClass *TextureClass::Get_Surface_Level(unsigned int level)
 {
+(void) level;
+DEBUG_CRASH(("TextureClass::Get_Surface_Level not yet implemented!"));
+return nullptr;
+#if 0
 	if (!Peek_D3D_Texture()) 
 	{
 		WWASSERT_PRINT(0, "Get_Surface_Level: D3DTexture is NULL!\n");
@@ -997,6 +1101,7 @@ SurfaceClass *TextureClass::Get_Surface_Level(unsigned int level)
 	d3d_surface->Release();
 
 	return surface;
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -1005,11 +1110,16 @@ SurfaceClass *TextureClass::Get_Surface_Level(unsigned int level)
 */
 void TextureClass::Get_Level_Description( SurfaceClass::SurfaceDescription & desc, unsigned int level )
 {
+(void) desc;
+(void) level;
+DEBUG_CRASH(("TextureClass::Get_Level_Description not yet implemented!"));
+#if 0
 	SurfaceClass * surf = Get_Surface_Level(level);
 	if (surf != NULL) {
 		surf->Get_Description(desc);
 	}
 	REF_PTR_RELEASE(surf);
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -1018,6 +1128,10 @@ void TextureClass::Get_Level_Description( SurfaceClass::SurfaceDescription & des
 */
 IDirect3DSurface8 *TextureClass::Get_D3D_Surface_Level(unsigned int level)
 {
+(void) level;
+DEBUG_CRASH(("TextureClass::Get_D3D_Surface_Level not yet implemented!"));
+return nullptr;
+#if 0
 	if (!Peek_D3D_Texture()) 
 	{
 		WWASSERT_PRINT(0, "Get_D3D_Surface_Level: D3DTexture is NULL!\n");
@@ -1027,6 +1141,7 @@ IDirect3DSurface8 *TextureClass::Get_D3D_Surface_Level(unsigned int level)
 	IDirect3DSurface8 *d3d_surface = NULL;
 	DX8_ErrorCode(Peek_D3D_Texture()->GetSurfaceLevel(level, &d3d_surface));
 	return d3d_surface;
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -1035,6 +1150,9 @@ IDirect3DSurface8 *TextureClass::Get_D3D_Surface_Level(unsigned int level)
 */
 unsigned TextureClass::Get_Texture_Memory_Usage() const
 {
+DEBUG_CRASH(("TextureClass::Get_Texture_Memory_Usage not yet implemented!"));
+return 0;
+#if 0
 	int size=0;
 	if (!Peek_D3D_Texture()) return 0;
 	for (unsigned i=0;i<Peek_D3D_Texture()->GetLevelCount();++i) 
@@ -1044,12 +1162,17 @@ unsigned TextureClass::Get_Texture_Memory_Usage() const
 		size+=desc.Size;
 	}
 	return size;
+#endif // if 0
 }
 
 
 // Utility functions
 TextureClass* Load_Texture(ChunkLoadClass & cload)
 {
+(void) cload;
+DEBUG_CRASH(("TextureClass::Load_Texture not yet implemented!"));
+return nullptr;
+#if 0
 	// Assume failure
 	TextureClass *newtex = NULL;
 
@@ -1168,6 +1291,7 @@ TextureClass* Load_Texture(ChunkLoadClass & cload)
 
 	// Return a pointer to the new texture
 	return newtex;
+#endif // if 0
 }
 
 // Utility function used by Save_Texture
@@ -1183,9 +1307,13 @@ void setup_texture_attributes(TextureClass * tex, W3dTextureInfoStruct * texinfo
 
 void Save_Texture(TextureClass * texture,ChunkSaveClass & csave)
 {
+(void) texture;
+(void) csave;
+DEBUG_CRASH(("Save_Texture not yet implemented!"));
+#if 0
 	const char * filename;
-	W3dTextureInfoStruct texinfo;
-	memset(&texinfo,0,sizeof(texinfo));
+	W3dTextureInfoStruct texinfo {};
+	// memset(&texinfo,0,sizeof(texinfo));
 
 	filename = texture->Get_Full_Path();
 
@@ -1200,6 +1328,7 @@ void Save_Texture(TextureClass * texture,ChunkSaveClass & csave)
 		csave.Write(&texinfo, sizeof(texinfo));
 		csave.End_Chunk();
 	}
+#endif // if 0
 }
 
 
@@ -1217,6 +1346,8 @@ ZTextureClass::ZTextureClass
 :	TextureBaseClass(width,height, mip_level_count, pool),
 	DepthStencilTextureFormat(zformat)
 {
+DEBUG_CRASH(("ZTextureClass::ZTextureClass not yet implemented!"));
+#if 0
 	D3DPOOL d3dpool=(D3DPOOL)0;
 	switch (pool)
 	{
@@ -1256,6 +1387,7 @@ ZTextureClass::ZTextureClass
 	IsReducible=false;
 
 	LastAccessed=WW3D::Get_Sync_Time();
+#endif // if 0
 }
 
 
@@ -1265,7 +1397,11 @@ ZTextureClass::ZTextureClass
 */
 void ZTextureClass::Apply(unsigned int stage)
 {
+(void) stage;
+DEBUG_CRASH(("ZTextureClass::Apply not yet implemented!"));
+#if 0
 	DX8Wrapper::Set_DX8_Texture(stage, Peek_D3D_Base_Texture());
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -1279,6 +1415,11 @@ void ZTextureClass::Apply_New_Surface
 	bool disable_auto_invalidation
 )
 {
+(void) d3d_texture;
+(void) initialized;
+(void) disable_auto_invalidation;
+DEBUG_CRASH(("ZTextureClass::Apply_New_Surface not yet implemented!"));
+#if 0
 	IDirect3DBaseTexture8* d3d_tex=Peek_D3D_Base_Texture();
 
 	if (d3d_tex) d3d_tex->Release();
@@ -1302,6 +1443,7 @@ void ZTextureClass::Apply_New_Surface
 		Height=d3d_desc.Height;
 	}
 	surface->Release();
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -1310,6 +1452,10 @@ void ZTextureClass::Apply_New_Surface
 */
 IDirect3DSurface8* ZTextureClass::Get_D3D_Surface_Level(unsigned int level)
 {
+(void) level;
+DEBUG_CRASH(("ZTextureClass::Get_D3D_Surface_Level not yet implemented!"));
+return nullptr;
+#if 0
 	if (!Peek_D3D_Texture()) 
 	{
 		WWASSERT_PRINT(0, "Get_D3D_Surface_Level: D3DTexture is NULL!\n");
@@ -1319,6 +1465,7 @@ IDirect3DSurface8* ZTextureClass::Get_D3D_Surface_Level(unsigned int level)
 	IDirect3DSurface8 *d3d_surface = NULL;
 	DX8_ErrorCode(Peek_D3D_Texture()->GetSurfaceLevel(level, &d3d_surface));
 	return d3d_surface;
+#endif // if 0
 }
 
 //**********************************************************************************************
@@ -1327,6 +1474,9 @@ IDirect3DSurface8* ZTextureClass::Get_D3D_Surface_Level(unsigned int level)
 */
 unsigned ZTextureClass::Get_Texture_Memory_Usage() const
 {
+DEBUG_CRASH(("ZTextureClass::Get_Texture_Memory_Usage not yet implemented!"));
+return 0;
+#if 0
 	int size=0;
 	if (!Peek_D3D_Texture()) return 0;
 	for (unsigned i=0;i<Peek_D3D_Texture()->GetLevelCount();++i) 
@@ -1336,6 +1486,7 @@ unsigned ZTextureClass::Get_Texture_Memory_Usage() const
 		size+=desc.Size;
 	}
 	return size;
+#endif // if 0
 }
 
 
@@ -1355,6 +1506,9 @@ CubeTextureClass::CubeTextureClass
 )
 : TextureClass(width, height, format, mip_level_count, pool, rendertarget)
 {
+(void) allow_reduction;
+DEBUG_CRASH(("CubeTextureClass::CubeTextureClass not yet implemented!"));
+#if 0
 	Initialized=true;
 	IsProcedural=true;
 	IsReducible=false;
@@ -1408,6 +1562,7 @@ CubeTextureClass::CubeTextureClass
 		DX8TextureManagerClass::Add(track);
 	}
 	LastAccessed=WW3D::Get_Sync_Time();
+#endif // if 0
 }
 
 
@@ -1424,6 +1579,12 @@ CubeTextureClass::CubeTextureClass
 )
 :	TextureClass(0,0,mip_level_count, POOL_MANAGED, false, texture_format)
 {
+(void) name;
+(void) full_path;
+(void) allow_compression;
+(void) allow_reduction;
+DEBUG_CRASH(("CubeTextureClass::CubeTextureClass not yet implemented!"));
+#if 0
 	IsCompressionAllowed=allow_compression;
 	InactivationTime=DEFAULT_INACTIVATION_TIME;		// Default inactivation time 30 seconds
 
@@ -1505,6 +1666,7 @@ CubeTextureClass::CubeTextureClass
 			Init();
 		}
 	}
+#endif // if 0
 }
 
 // don't know if these are needed
@@ -1598,6 +1760,11 @@ void CubeTextureClass::Apply_New_Surface
 	bool disable_auto_invalidation
 )
 {
+(void) d3d_texture;
+(void) initialized;
+(void) disable_auto_invalidation;
+DEBUG_CRASH(("CubeTextureClass::Apply_New_Surface not yet implemented!"));
+#if 0
 	IDirect3DBaseTexture8* d3d_tex=Peek_D3D_Base_Texture();
 
 	if (d3d_tex) d3d_tex->Release();
@@ -1619,6 +1786,7 @@ void CubeTextureClass::Apply_New_Surface
 		Width=d3d_desc.Width;
 		Height=d3d_desc.Height;
 	}
+#endif // if 0
 }
 
 
@@ -1637,8 +1805,11 @@ VolumeTextureClass::VolumeTextureClass
 	bool allow_reduction
 )
 : TextureClass(width, height, format, mip_level_count, pool, rendertarget),
-  Depth(depth)
+  Depth((int)depth)
 {
+(void) allow_reduction;
+DEBUG_CRASH(("VolumeTextureClass::VolumeTextureClass not yet implemented!"));
+#if 0
 	Initialized=true;
 	IsProcedural=true;
 	IsReducible=false;
@@ -1692,6 +1863,7 @@ VolumeTextureClass::VolumeTextureClass
 		DX8TextureManagerClass::Add(track);
 	}
 	LastAccessed=WW3D::Get_Sync_Time();
+#endif // if 0
 }
 
 
@@ -1709,6 +1881,12 @@ VolumeTextureClass::VolumeTextureClass
 :	TextureClass(0,0,mip_level_count, POOL_MANAGED, false, texture_format),
 	Depth(0)
 {
+(void) name;
+(void) full_path;
+(void) allow_compression;
+(void) allow_reduction;
+DEBUG_CRASH(("VolumeTextureClass::VolumeTextureClass not yet implemented!"));
+#if 0
 	IsCompressionAllowed=allow_compression;
 	InactivationTime=DEFAULT_INACTIVATION_TIME;		// Default inactivation time 30 seconds
 
@@ -1790,6 +1968,7 @@ VolumeTextureClass::VolumeTextureClass
 			Init();
 		}
 	}
+#endif // if 0
 }
 
 // don't know if these are needed
@@ -1886,6 +2065,11 @@ void VolumeTextureClass::Apply_New_Surface
 	bool disable_auto_invalidation
 )
 {
+(void) d3d_texture;
+(void) initialized;
+(void) disable_auto_invalidation;
+DEBUG_CRASH(("VolumeTextureClass::Apply_New_Surface not yet implemented!"));
+#if 0
 	IDirect3DBaseTexture8* d3d_tex=Peek_D3D_Base_Texture();
 
 	if (d3d_tex) d3d_tex->Release();
@@ -1909,4 +2093,5 @@ void VolumeTextureClass::Apply_New_Surface
 		Height=d3d_desc.Height;
 		Depth=d3d_desc.Depth;
 	}
+#endif // if 0
 }

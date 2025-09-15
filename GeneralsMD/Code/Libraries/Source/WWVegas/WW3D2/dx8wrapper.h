@@ -46,7 +46,8 @@
 #ifndef DX8_WRAPPER_H
 #define DX8_WRAPPER_H
 
-// #include "always.h"
+#include "always.h"
+#include "wwdebug.h"
 // #include "dllist.h"
 #include "d3d8.h"
 // #include "matrix4.h"
@@ -64,7 +65,6 @@
 // #include "dx8indexbuffer.h"
 // #include "vertmaterial.h"
 
-#if 0
 /*
 ** Registry value names
 */
@@ -81,6 +81,7 @@ const unsigned MAX_VERTEX_SHADER_CONSTANTS=96;
 const unsigned MAX_PIXEL_SHADER_CONSTANTS=8;
 const unsigned MAX_SHADOW_MAPS=1;
 
+#if 0
 #define prevVer
 #define nextVer
 #define __volatile unsigned

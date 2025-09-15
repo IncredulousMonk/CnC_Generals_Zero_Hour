@@ -55,8 +55,8 @@ static int ZERO=0;
 #define SQgetbits(v,n)\
     if (n) \
     { \
-        v = bits >> (32-(n));\
-        bits <<= (n);\
+        v = bits >> (unsigned int)(32-(n));\
+        bits <<= (unsigned int)(n);\
         bitsleft -= (n);\
     } \
 \
@@ -138,9 +138,9 @@ static int HUFF_decompress(unsigned char *packbuf, unsigned char *unpackbuf)
 {
     unsigned int    type;
     unsigned char   clue;
-    int            ulen;
+    unsigned int    ulen;
     unsigned int    cmp;
-    int             bitnum=0;
+    unsigned int    bitnum=0;
     int             cluelen=0;
     unsigned char   *qs;
     unsigned char   *qd;
@@ -180,7 +180,7 @@ static int HUFF_decompress(unsigned char *packbuf, unsigned char *unpackbuf)
                     SQgetbits(v,16);
                     SQgetbits(v,16);
                 }
-                type &= ~0x100;
+                type &= ~0x100u;
 
                 SQgetbits(v,16);                                 /* unpack len */
                 SQgetbits(ulen,16);
@@ -194,7 +194,7 @@ static int HUFF_decompress(unsigned char *packbuf, unsigned char *unpackbuf)
                     SQgetbits(v,8);
                     SQgetbits(v,16);
                 }
-                type &= ~0x100;
+                type &= ~0x100u;
 
                 SQgetbits(v,8);                                 /* unpack len */
                 SQgetbits(ulen,16);
@@ -223,12 +223,12 @@ static int HUFF_decompress(unsigned char *packbuf, unsigned char *unpackbuf)
                         do
                         {
                             basecmp <<= 1;
-                            deltatbl[numbits] = basecmp-numchars;
+                            deltatbl[numbits] = basecmp-(unsigned int)numchars;
 
                             SQgetnum(bitnum);               /* # of codes of n bits */
-                            bitnumtbl[numbits] = bitnum;
+                            bitnumtbl[numbits] = (int)bitnum;
 
-                            numchars += bitnum;
+                            numchars += (int)bitnum;
                             basecmp += bitnum;
 
                             cmp = 0;
@@ -255,7 +255,7 @@ static int HUFF_decompress(unsigned char *packbuf, unsigned char *unpackbuf)
 
                         for (i=0;i<numchars;++i)
                         {
-                            int leapdelta=0;
+                            unsigned int leapdelta=0;
 
                             SQgetnum(leapdelta);
                             ++leapdelta;
@@ -433,7 +433,7 @@ nextloop:
                     /* handle clue */
 
                     {
-                        int    runlen=0;
+                        unsigned int  runlen=0;
                         unsigned char *d=qd;
                         unsigned char *dest;
 
@@ -502,7 +502,7 @@ nextloop:
             }
         }
     }
-    return(ulen);
+    return (int)ulen;
 }
 
 #if defined(_MSC_VER)
@@ -519,7 +519,7 @@ nextloop:
 bool GCALL HUFF_is(const void *compresseddata)
 {
     bool ok=false;
-    int packtype=ggetm(compresseddata,2);
+    unsigned int packtype=ggetm(compresseddata,2);
 
     if (packtype==0x30fb
      || packtype==0x31fb
@@ -545,8 +545,8 @@ bool GCALL HUFF_is(const void *compresseddata)
 
 int GCALL HUFF_size(const void *compresseddata)
 {
-    int len=0;
-    int packtype=ggetm(compresseddata,2);
+    unsigned int len=0;
+    unsigned int packtype=ggetm(compresseddata,2);
     int ssize=(packtype&0x8000)?4:3;
 
     if (packtype&0x100)     /* 31fb 33fb 35fb */
@@ -558,13 +558,12 @@ int GCALL HUFF_size(const void *compresseddata)
         len = ggetm((char *)compresseddata+2,ssize);
     }
 
-    return(len);
+    return (int)len;
 }
 
-int GCALL HUFF_decode(void *dest, const void *compresseddata, int *compressedsize)
+int GCALL HUFF_decode(void *dest, const void *compresseddata, int* /* compressedsize */)
 {
     return(HUFF_decompress((unsigned char *)compresseddata, (unsigned char *)dest));
 }
 
 #endif
-

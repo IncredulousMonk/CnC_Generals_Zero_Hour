@@ -48,15 +48,15 @@ class Vector3i
 {
 public:
 
-	int		I;
-	int		J;
-	int		K;
+	int		I {};
+	int		J {};
+	int		K {};
 
 	WWINLINE Vector3i(void);
 	WWINLINE Vector3i(int i,int j,int k);
 
 	WWINLINE bool			operator== (const Vector3i & v) const;
-   WWINLINE bool			operator!= (const Vector3i& v) const;
+	WWINLINE bool			operator!= (const Vector3i& v) const;
 	WWINLINE const	int&	operator[] (int n) const;
 	WWINLINE int&			operator[] (int n);
 };
@@ -97,15 +97,15 @@ class Vector3i16
 {
 public:
 
-	unsigned short I;
-	unsigned short J;
-	unsigned short K;
+	unsigned short I {};
+	unsigned short J {};
+	unsigned short K {};
 
 	WWINLINE Vector3i16(void);
 	WWINLINE Vector3i16(unsigned short i,unsigned short j,unsigned short k);
 
 	WWINLINE bool			operator== (const Vector3i & v) const;
-   WWINLINE bool			operator!= (const Vector3i& v) const;
+	WWINLINE bool			operator!= (const Vector3i& v) const;
 	WWINLINE const	unsigned short &	operator[] (int n) const;
 	WWINLINE unsigned short & operator[] (int n);
 };

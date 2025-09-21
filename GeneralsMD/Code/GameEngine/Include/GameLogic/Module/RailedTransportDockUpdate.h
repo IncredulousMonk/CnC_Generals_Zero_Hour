@@ -42,7 +42,7 @@ public:
 
 	RailedTransportDockUpdateModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse( void* what, MultiIniFieldParse &p );
 
 	UnsignedInt m_pullInsideDurationInFrames;		/**< how long it takes to pull object inside 
 																									 once they're at the dock action point */
@@ -59,6 +59,7 @@ class RailedTransportDockUpdateInterface
 
 public:
 
+	virtual ~RailedTransportDockUpdateInterface() = default;
 	virtual Bool isLoadingOrUnloading( void ) = 0;
 	virtual void unloadAll( void ) = 0;
 	virtual void unloadSingleObject( Object *obj ) = 0;
@@ -67,8 +68,7 @@ public:
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-class RailedTransportDockUpdate : public DockUpdate,
-																	public RailedTransportDockUpdateInterface
+class RailedTransportDockUpdate : public DockUpdate, public RailedTransportDockUpdateInterface
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( RailedTransportDockUpdate, "RailedTransportDockUpdate" )

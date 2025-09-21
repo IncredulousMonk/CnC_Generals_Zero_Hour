@@ -287,7 +287,7 @@ enum
 struct ShroudStatusStoreRestore
 {
 	std::vector<UnsignedByte> m_foggedOrRevealed[MAX_PLAYER_COUNT];
-	Int m_cellsWide;	// m_cellsHigh is computed by m_foggedOrRevealed[0].size() / m_cellsWide 
+	Int m_cellsWide {};	// m_cellsHigh is computed by m_foggedOrRevealed[0].size() / m_cellsWide 
 };
 
 //=====================================

@@ -115,12 +115,12 @@ protected:
 	virtual void loadPostProcess( void );
 
 protected:
-	Script			*m_firstScript;
-	AsciiString m_groupName;
-	Bool				m_isGroupActive;
-	Bool				m_isGroupSubroutine;
-	ScriptGroup	*m_nextGroup;
-	Bool				m_hasWarnings; ///< Runtime flag used by the editor only.
+	Script		*m_firstScript {};
+	AsciiString m_groupName {};
+	Bool		m_isGroupActive {};
+	Bool		m_isGroupSubroutine {};
+	ScriptGroup	*m_nextGroup {};
+	Bool		m_hasWarnings {}; ///< Runtime flag used by the editor only.
 
 public:
 	ScriptGroup();
@@ -545,9 +545,9 @@ public:
 		CAMERA_DISABLE_SLAVE_MODE,
 		CAMERA_ADD_SHAKER_AT,			              	///< WST added 10.12.2002 (MBL)
 		SET_TRAIN_HELD,				                    ///< LORENZEN -- Forbids trains from departing stations while true
-    NAMED_SET_EVAC_LEFT_OR_RIGHT,	            ///< LORENZEN -- Which side of the garrisoned unit (LIKELY A TRAIN) do you want units to evacuate from?
-    ENABLE_OBJECT_SOUND,                      ///< Enables the ambient sound on an object or fire the one-shot "ambient" sound on an object
-    DISABLE_OBJECT_SOUND,                     ///< Disable the ambient sound on an object or kill the one-shot "ambient" sound on an object	
+		NAMED_SET_EVAC_LEFT_OR_RIGHT,	            ///< LORENZEN -- Which side of the garrisoned unit (LIKELY A TRAIN) do you want units to evacuate from?
+		ENABLE_OBJECT_SOUND,                      ///< Enables the ambient sound on an object or fire the one-shot "ambient" sound on an object
+		DISABLE_OBJECT_SOUND,                     ///< Disable the ambient sound on an object or kill the one-shot "ambient" sound on an object	
 		NAMED_USE_COMMANDBUTTON_ABILITY_USING_WAYPOINT_PATH, ///< Added for particle cannon to have beam follow waypoint path.
 		NAMED_SET_UNMANNED_STATUS,								///< Make unit unmanned or manned.
 		TEAM_SET_UNMANNED_STATUS,									///< Make all units on team unmanned or manned.
@@ -573,11 +573,11 @@ protected:
 		ScriptAction();  ///< Protected constructor for read.
 
 protected:
-	ScriptActionType	m_actionType;
-	Int 							m_numParms;
-	Parameter *				m_parms[MAX_PARMS];
-	ScriptAction *		m_nextAction;
-	Bool							m_hasWarnings; ///< Runtime flag used by the editor only.
+	ScriptActionType	m_actionType {};
+	Int 				m_numParms {};
+	Parameter *			m_parms[MAX_PARMS];
+	ScriptAction *		m_nextAction {};
+	Bool				m_hasWarnings {}; ///< Runtime flag used by the editor only.
 
 public:
 	void setActionType(ScriptActionType type);
@@ -624,30 +624,30 @@ protected:	// Note - If you add any member vars, you must take them into account
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	AsciiString	m_scriptName;   ///<Short name.
-	AsciiString m_comment;			///< Long comment.
-	AsciiString m_conditionComment;			///< Long comment about conditions.
-	AsciiString m_actionComment;			///< Long comment about actions.
-	Int					m_delayEvaluationSeconds; ///< Number of seconds to delay evaluation.
-	Bool				m_isActive;			 ///< If true, script is enabled.  If false, disabled.
-	Bool				m_isOneShot;    ///< If true, script is made not active after executing the m_action actions.
-	Bool				m_isSubroutine; ///< If true, script is a subroutine.
-	Bool				m_easy;					///< Applies to easy campaign.
-	Bool				m_normal;				///< Applies to normal campaign.
-	Bool				m_hard;					///< Applies to Hard campaign.
+	AsciiString	m_scriptName {};   ///<Short name.
+	AsciiString	m_comment {};			///< Long comment.
+	AsciiString	m_conditionComment {};			///< Long comment about conditions.
+	AsciiString	m_actionComment {};			///< Long comment about actions.
+	Int			m_delayEvaluationSeconds {}; ///< Number of seconds to delay evaluation.
+	Bool		m_isActive {true};			 ///< If true, script is enabled.  If false, disabled.
+	Bool		m_isOneShot {true};    ///< If true, script is made not active after executing the m_action actions.
+	Bool		m_isSubroutine {false}; ///< If true, script is a subroutine.
+	Bool		m_easy {true};					///< Applies to easy campaign.
+	Bool		m_normal {true};				///< Applies to normal campaign.
+	Bool		m_hard {true};					///< Applies to Hard campaign.
 
-	OrCondition *m_condition;		///< First in a list of ORed clauses.
-	ScriptAction *m_action;			///< First in a list of actions executed if the conditions are true.
-	ScriptAction *m_actionFalse;///< First in a list of actions executed if the conditions are false.
-	Script			*m_nextScript;	///< Next in the list of scripts.
+	OrCondition *m_condition {};		///< First in a list of ORed clauses.
+	ScriptAction *m_action {};			///< First in a list of actions executed if the conditions are true.
+	ScriptAction *m_actionFalse {};///< First in a list of actions executed if the conditions are false.
+	Script		*m_nextScript {};	///< Next in the list of scripts.
 
 // Runtime fields - not saved or read.
-	UnsignedInt m_frameToEvaluateAt; ///< When to evaluate the conditions next, if m_delayEvaluationSeconds>0.
-	Bool				m_hasWarnings; ///< Runtime flag used by the editor only.
-	AsciiString	m_conditionTeamName; ///< Runtime name used by ScriptEngine only.
-	Real				m_conditionTime;		///< Amount of time (cum) to evaluate conditions.
-	Real				m_curTime;		///< Amount of time (cum) to evaluate conditions.
-	Int					m_conditionExecutedCount; ///< Number of times conditions evaluated.
+	UnsignedInt m_frameToEvaluateAt {}; ///< When to evaluate the conditions next, if m_delayEvaluationSeconds>0.
+	Bool		m_hasWarnings {false}; ///< Runtime flag used by the editor only.
+	AsciiString	m_conditionTeamName {}; ///< Runtime name used by ScriptEngine only.
+	Real		m_conditionTime {};		///< Amount of time (cum) to evaluate conditions.
+	Real		m_curTime {};		///< Amount of time (cum) to evaluate conditions.
+	Int			m_conditionExecutedCount {}; ///< Number of times conditions evaluated.
 
 public:
 	Script();
@@ -1015,8 +1015,8 @@ private:
 	Parameter *m_parms[MAX_PARMS];
 	Condition *m_nextAndCondition;
 
-	Int				m_hasWarnings; ///< Runtime flag used by the editor only.
-	Int				m_customData;  ///< Custom data for cacheing.
+	Int			m_hasWarnings; ///< Runtime flag used by the editor only.
+	Int			m_customData;  ///< Custom data for cacheing.
 	UnsignedInt m_customFrame; ///< Custom frame count for cacheing.
 
 public:
@@ -1059,21 +1059,28 @@ public:
 condition or action. */
 class Template : public MemoryPoolObject 
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Template, "Template")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Template, "Template")
 // friend bad for MPOs. (srj)
 //friend class ScriptEngine;
 public:
-	AsciiString m_uiName;
-	AsciiString m_uiName2;
-	AsciiString m_internalName;
-	NameKeyType m_internalNameKey; // matches internal name.jba [3/20/2003]
-	Int					m_numUiStrings;
+	// MG: Cannot apply offsetof to Template, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_uiName;
+		AsciiString m_uiName2;
+		AsciiString m_internalName;
+		AsciiString m_helpText;
+	};
+
+	IniData m_ini {};
+
+	NameKeyType m_internalNameKey {}; // matches internal name.jba [3/20/2003]
+	Int			m_numUiStrings {};
 	AsciiString m_uiStrings[MAX_PARMS];
-	Int					m_numParameters;
+	Int			m_numParameters {};
 	enum Parameter::ParameterType m_parameters[MAX_PARMS];
-	AsciiString m_helpText;
 #ifdef COUNT_SCRIPT_USAGE
-	mutable Int					m_numTimesUsed;
+	mutable Int m_numTimesUsed;
 	mutable AsciiString m_firstMapUsed;
 #endif
 
@@ -1081,8 +1088,8 @@ public:
 	Template();
 
 public:
-	AsciiString getName(void) const {return m_uiName;}
-	AsciiString getName2(void) const {return m_uiName2;}
+	AsciiString getName(void) const {return m_ini.m_uiName;}
+	AsciiString getName2(void) const {return m_ini.m_uiName2;}
 	Int getUiStrings(AsciiString strings[MAX_PARMS]) const;
 	Int getNumParameters(void) const {return m_numParameters;}
 	enum Parameter::ParameterType getParameterType(Int ndx) const;
@@ -1164,4 +1171,3 @@ public:
 };
 
 #endif
-

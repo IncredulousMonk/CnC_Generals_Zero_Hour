@@ -102,10 +102,10 @@ class DynamicAudioEventInfo : public AudioEventInfo
     };
     // Warning: update xferNoName if you modify the enum list!
 
-    BitFlags< OVERRIDE_COUNT > m_overriddenFields;
+    BitFlags< OVERRIDE_COUNT > m_overriddenFields {};
 
     // Retain the original name so we can look it up later
-    AsciiString m_originalName;
+    AsciiString m_originalName {};
 };
 
 /** Query: was overrideAudioName called? */
@@ -159,4 +159,3 @@ inline Bool DynamicAudioEventInfo::wasPriorityOverriden() const
 
 
 #endif // DYNAMICAUDIOEVENTINFO_H_INCLUDED
-

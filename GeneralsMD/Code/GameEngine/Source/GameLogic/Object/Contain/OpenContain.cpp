@@ -72,49 +72,68 @@
 OpenContainModuleData::OpenContainModuleData( void )
 {
 
-	m_containMax = CONTAIN_MAX_UNKNOWN;  // means we don't care, infinite, unassigned, whatever
-	m_passengersAllowedToFire = FALSE;
-	m_passengersInTurret = FALSE;
-	m_numberOfExitPaths = 1;
-	m_damagePercentageToUnits = 0;
-	m_isBurnedDeathToUnits = TRUE;
-	m_doorOpenTime = 1;
-	m_allowInsideKindOf.clear(); m_allowInsideKindOf.flip();		// everything is allowed
-	m_forbidInsideKindOf.clear();	// nothing is forbidden
-	m_weaponBonusPassedToPassengers = FALSE;
- 	m_allowAlliesInside = TRUE;
- 	m_allowEnemiesInside = TRUE;
- 	m_allowNeutralInside = TRUE;
+	m_ini.m_containMax = CONTAIN_MAX_UNKNOWN;  // means we don't care, infinite, unassigned, whatever
+	m_ini.m_passengersAllowedToFire = FALSE;
+	m_ini.m_passengersInTurret = FALSE;
+	m_ini.m_numberOfExitPaths = 1;
+	m_ini.m_damagePercentageToUnits = 0;
+	m_ini.m_isBurnedDeathToUnits = TRUE;
+	m_ini.m_doorOpenTime = 1;
+	m_ini.m_allowInsideKindOf.clear(); m_ini.m_allowInsideKindOf.flip();		// everything is allowed
+	m_ini.m_forbidInsideKindOf.clear();	// nothing is forbidden
+	m_ini.m_weaponBonusPassedToPassengers = FALSE;
+	m_ini.m_allowAlliesInside = TRUE;
+	m_ini.m_allowEnemiesInside = TRUE;
+	m_ini.m_allowNeutralInside = TRUE;
+	m_ini.m_obj = this;
 }  // end OpenContainModuleData
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void OpenContainModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void OpenContainModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "ContainMax",								INI::parseInt, NULL, offsetof( OpenContainModuleData, m_containMax ) },
-		{ "EnterSound",								INI::parseAudioEventRTS,		NULL, offsetof( OpenContainModuleData, m_enterSound ) },
-		{ "ExitSound",								INI::parseAudioEventRTS,		NULL, offsetof( OpenContainModuleData, m_exitSound ) },
-		{ "DamagePercentToUnits",			INI::parsePercentToReal,		NULL, offsetof( OpenContainModuleData, m_damagePercentageToUnits ) },
-		{ "BurnedDeathToUnits",				INI::parseBool,							NULL, offsetof( OpenContainModuleData, m_isBurnedDeathToUnits ) },
-		{ "AllowInsideKindOf",				KindOfMaskType::parseFromINI, NULL, offsetof( OpenContainModuleData, m_allowInsideKindOf ) },
-		{ "ForbidInsideKindOf",				KindOfMaskType::parseFromINI, NULL, offsetof( OpenContainModuleData, m_forbidInsideKindOf ) },
-		{ "PassengersAllowedToFire",	INI::parseBool, NULL, offsetof( OpenContainModuleData, m_passengersAllowedToFire ) },
-		{ "PassengersInTurret",				INI::parseBool, NULL, offsetof( OpenContainModuleData, m_passengersInTurret ) },
-		{ "NumberOfExitPaths",				INI::parseInt, NULL, offsetof( OpenContainModuleData, m_numberOfExitPaths ) },
-		{ "DoorOpenTime",							INI::parseDurationUnsignedInt, NULL, offsetof( OpenContainModuleData, m_doorOpenTime ) },
- 		{ "WeaponBonusPassedToPassengers", INI::parseBool,	NULL, offsetof( OpenContainModuleData, m_weaponBonusPassedToPassengers ) },
- 		{ "AllowAlliesInside",				INI::parseBool,	NULL, offsetof( OpenContainModuleData, m_allowAlliesInside ) },
- 		{ "AllowEnemiesInside",				INI::parseBool,	NULL, offsetof( OpenContainModuleData, m_allowEnemiesInside ) },
- 		{ "AllowNeutralInside",				INI::parseBool,	NULL, offsetof( OpenContainModuleData, m_allowNeutralInside ) },
+		{ "ContainMax",						INI::parseInt,								NULL, offsetof( OpenContainModuleData::IniData, m_containMax ) },
+		{ "EnterSound",						OpenContainModuleData::parseEnterSound,		NULL, 0 },
+		{ "ExitSound",						OpenContainModuleData::parseExitSound,		NULL, 0 },
+		{ "DamagePercentToUnits",			INI::parsePercentToReal,					NULL, offsetof( OpenContainModuleData::IniData, m_damagePercentageToUnits ) },
+		{ "BurnedDeathToUnits",				INI::parseBool,								NULL, offsetof( OpenContainModuleData::IniData, m_isBurnedDeathToUnits ) },
+		{ "AllowInsideKindOf",				KindOfMaskType::parseFromINI,				NULL, offsetof( OpenContainModuleData::IniData, m_allowInsideKindOf ) },
+		{ "ForbidInsideKindOf",				KindOfMaskType::parseFromINI,				NULL, offsetof( OpenContainModuleData::IniData, m_forbidInsideKindOf ) },
+		{ "PassengersAllowedToFire",		INI::parseBool,								NULL, offsetof( OpenContainModuleData::IniData, m_passengersAllowedToFire ) },
+		{ "PassengersInTurret",				INI::parseBool,								NULL, offsetof( OpenContainModuleData::IniData, m_passengersInTurret ) },
+		{ "NumberOfExitPaths",				INI::parseInt,								NULL, offsetof( OpenContainModuleData::IniData, m_numberOfExitPaths ) },
+		{ "DoorOpenTime",					INI::parseDurationUnsignedInt,				NULL, offsetof( OpenContainModuleData::IniData, m_doorOpenTime ) },
+		{ "WeaponBonusPassedToPassengers",	INI::parseBool,								NULL, offsetof( OpenContainModuleData::IniData, m_weaponBonusPassedToPassengers ) },
+		{ "AllowAlliesInside",				INI::parseBool,								NULL, offsetof( OpenContainModuleData::IniData, m_allowAlliesInside ) },
+		{ "AllowEnemiesInside",				INI::parseBool,								NULL, offsetof( OpenContainModuleData::IniData, m_allowEnemiesInside ) },
+		{ "AllowNeutralInside",				INI::parseBool,								NULL, offsetof( OpenContainModuleData::IniData, m_allowNeutralInside ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
-	p.add(DieMuxData::getFieldParse(), offsetof( OpenContainModuleData, m_dieMuxData ));
+	OpenContainModuleData* self {static_cast<OpenContainModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
+	p.add(DieMuxData::getFieldParse(), offset + offsetof( OpenContainModuleData::IniData, m_dieMuxData ));
 
+}
+
+//-------------------------------------------------------------------------------------------------
+void OpenContainModuleData::parseEnterSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	OpenContainModuleData::IniData* data = (OpenContainModuleData::IniData*) instance;
+	OpenContainModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_enterSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void OpenContainModuleData::parseExitSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	OpenContainModuleData::IniData* data = (OpenContainModuleData::IniData*) instance;
+	OpenContainModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_exitSound);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,9 +167,9 @@ OpenContain::OpenContain( Thing *thing, const ModuleData* moduleData ) : UpdateM
 	m_noFirePointsInArt = false;
 	m_whichExitPath = 1;
 	m_loadSoundsEnabled = TRUE;
-  
-  m_passengerAllowedToFire = getOpenContainModuleData()->m_passengersAllowedToFire; 
-  // overridable by setPass...()  in the parent interface (for use by upgrade module)
+
+	m_passengerAllowedToFire = getOpenContainModuleData()->m_ini.m_passengersAllowedToFire; 
+	// overridable by setPass...()  in the parent interface (for use by upgrade module)
 
 	for( Int i = 0; i < MAX_FIRE_POINTS; i++ )
 	{		
@@ -165,7 +184,7 @@ Int OpenContain::getContainMax( void ) const
 {
 	const OpenContainModuleData *modData = getOpenContainModuleData();
 
-	return modData->m_containMax;
+	return modData->m_ini.m_containMax;
 
 }  // end getContainMax
 
@@ -736,7 +755,7 @@ void OpenContain::scatterToNearbyPosition(Object* rider)
 }
 
 //-------------------------------------------------------------------------------------------------
-void OpenContain::onContaining( Object *rider, Bool wasSelected )
+void OpenContain::onContaining( Object* /* rider */, Bool /* wasSelected */ )
 {
 	// Play audio
 	if( m_loadSoundsEnabled )
@@ -779,7 +798,7 @@ Real OpenContain::getContainedItemsMass() const
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void OpenContain::onCollide( Object *other, const Coord3D *loc, const Coord3D *normal )
+void OpenContain::onCollide( Object *other, const Coord3D* /* loc */, const Coord3D* /* normal */ )
 {
 	// colliding with nothing? we don't care.
 	if( other == NULL )
@@ -856,7 +875,7 @@ void OpenContain::onDelete( void )	///< Last possible moment cleanup
 //-------------------------------------------------------------------------------------------------
 void OpenContain::onDie( const DamageInfo * damageInfo )
 {
-	if (!getOpenContainModuleData()->m_dieMuxData.isDieApplicable(getObject(), damageInfo))
+	if (!getOpenContainModuleData()->m_ini.m_dieMuxData.isDieApplicable(getObject(), damageInfo))
 		return;
 
 	//Check to see if we are going to inflict damage on contained units.
@@ -877,14 +896,14 @@ void OpenContain::onDie( const DamageInfo * damageInfo )
 // ------------------------------------------------------------------------------------------------
 /** Check to see if we are a valid container for 'obj' */
 // ------------------------------------------------------------------------------------------------
-Bool OpenContain::isValidContainerFor(const Object* obj, Bool checkCapacity) const
+Bool OpenContain::isValidContainerFor(const Object* obj, Bool /* checkCapacity */) const
 {
 	const Object *us = getObject();
 	const OpenContainModuleData *modData = getOpenContainModuleData();
 
 	// if we have any kind of masks set then we must make that check
-	if (obj->isAnyKindOf( modData->m_allowInsideKindOf ) == FALSE ||
-			obj->isAnyKindOf( modData->m_forbidInsideKindOf ) == TRUE)
+	if (obj->isAnyKindOf( modData->m_ini.m_allowInsideKindOf ) == FALSE ||
+			obj->isAnyKindOf( modData->m_ini.m_forbidInsideKindOf ) == TRUE)
 	{
 		return false;
 	}
@@ -898,17 +917,17 @@ Bool OpenContain::isValidContainerFor(const Object* obj, Bool checkCapacity) con
  	switch( r )
  	{
  		case ALLIES:
- 			if( modData->m_allowAlliesInside == FALSE )
+ 			if( modData->m_ini.m_allowAlliesInside == FALSE )
  				relationshipRestricted = TRUE;
  			break;
  
  		case ENEMIES:
- 			if( modData->m_allowEnemiesInside == FALSE )
+ 			if( modData->m_ini.m_allowEnemiesInside == FALSE )
  				relationshipRestricted = TRUE;
  			break;
  
  		case NEUTRAL:
- 			if( modData->m_allowNeutralInside == FALSE )
+ 			if( modData->m_ini.m_allowNeutralInside == FALSE )
  				relationshipRestricted = TRUE;
  			break;
  
@@ -944,7 +963,7 @@ void OpenContain::exitObjectViaDoor( Object *exitObj, ExitDoorType exitDoor )
 
 	Object *me = getObject();
 
-	m_doorCloseCountdown = getOpenContainModuleData()->m_doorOpenTime;
+	m_doorCloseCountdown = getOpenContainModuleData()->m_ini.m_doorOpenTime;
 	if (m_doorCloseCountdown)
 	{
 		// srj sez: only diddle the doors if this countdown is nonzero. 
@@ -954,7 +973,7 @@ void OpenContain::exitObjectViaDoor( Object *exitObj, ExitDoorType exitDoor )
 		me->clearAndSetModelConditionState( MODELCONDITION_DOOR_1_CLOSING, MODELCONDITION_DOOR_1_OPENING );
 	}
 
-	Int numberExits = getOpenContainModuleData()->m_numberOfExitPaths;
+	Int numberExits = getOpenContainModuleData()->m_ini.m_numberOfExitPaths;
 	if( numberExits > 0 )
 	{
 		// We have ExitStart/End specified in art to use when we kick people out.  If >1, then
@@ -966,7 +985,8 @@ void OpenContain::exitObjectViaDoor( Object *exitObj, ExitDoorType exitDoor )
 		if( numberExits > 1 )
 		{
 			char suffix[8];
-			itoa(m_whichExitPath, suffix, 10);
+			sprintf(suffix, "%d", m_whichExitPath);
+			// itoa(m_whichExitPath, suffix, 10);
 			if( m_whichExitPath < 10 )
 			{
 				startBone.concat('0');
@@ -1063,7 +1083,7 @@ void OpenContain::exitObjectInAHurry( Object *exitObj )
 
 	Object *me = getObject();
 
-	m_doorCloseCountdown = getOpenContainModuleData()->m_doorOpenTime;
+	m_doorCloseCountdown = getOpenContainModuleData()->m_ini.m_doorOpenTime;
 	if (m_doorCloseCountdown)
 	{
 		// srj sez: only diddle the doors if this countdown is nonzero. 
@@ -1073,7 +1093,7 @@ void OpenContain::exitObjectInAHurry( Object *exitObj )
 		me->clearAndSetModelConditionState( MODELCONDITION_DOOR_1_CLOSING, MODELCONDITION_DOOR_1_OPENING );
 	}
 
-	Int numberExits = getOpenContainModuleData()->m_numberOfExitPaths;
+	Int numberExits = getOpenContainModuleData()->m_ini.m_numberOfExitPaths;
 	if( numberExits > 0 )
 	{
 		// We have ExitStart/End specified in art to use when we kick people out.  If >1, then
@@ -1085,7 +1105,8 @@ void OpenContain::exitObjectInAHurry( Object *exitObj )
 		if( numberExits > 1 )
 		{
 			char suffix[8];
-			itoa(m_whichExitPath, suffix, 10);
+			sprintf(suffix, "%d", m_whichExitPath);
+			// itoa(m_whichExitPath, suffix, 10);
 			if( m_whichExitPath < 10 )
 			{
 				startBone.concat('0');
@@ -1148,7 +1169,7 @@ void OpenContain::exitObjectInAHurry( Object *exitObj )
 
 
 //-------------------------------------------------------------------------------------------------
-Bool OpenContain::isPassengerAllowedToFire( ObjectID id ) const
+Bool OpenContain::isPassengerAllowedToFire( ObjectID /* id */ ) const
 {
 //	const OpenContainModuleData *modData = getOpenContainModuleData();
   //this flag is owned by opencontain, now, so that the upgrade can override the template data
@@ -1261,12 +1282,13 @@ void OpenContain::putObjAtNextFirePoint( Object *obj )
 
 	// get the position
 	Matrix3D matrix;
-	if( getOpenContainModuleData()->m_passengersInTurret )
+	if( getOpenContainModuleData()->m_ini.m_passengersInTurret )
 	{
 		// If our passengers are in our turret, we need to recompute the Matrix.
 		AsciiString firepoint("FIREPOINT");
 		char suffix[8];
-		itoa( m_firePointNext + 1, suffix, 10 );//+1 from bone names starting at 1, not zero like my array
+		sprintf(suffix, "%d", m_firePointNext + 1);
+		// itoa( m_firePointNext + 1, suffix, 10 );//+1 from bone names starting at 1, not zero like my array
 		if( m_firePointNext < 10 )
 		{
 			firepoint.concat('0');
@@ -1462,7 +1484,7 @@ void OpenContain::processDamageToContained(Real percentDamage)
 
 			DamageInfo damageInfo;
 			damageInfo.in.m_damageType = DAMAGE_UNRESISTABLE;
-			damageInfo.in.m_deathType = data->m_isBurnedDeathToUnits ? DEATH_BURNED : DEATH_NORMAL;
+			damageInfo.in.m_deathType = data->m_ini.m_isBurnedDeathToUnits ? DEATH_BURNED : DEATH_NORMAL;
 			damageInfo.in.m_sourceID = getObject()->getID();
 			damageInfo.in.m_amount = damage;
 			object->attemptDamage( &damageInfo );
@@ -1476,7 +1498,7 @@ void OpenContain::processDamageToContained(Real percentDamage)
 //-------------------------------------------------------------------------------------------------
 Bool OpenContain::isWeaponBonusPassedToPassengers() const
 {
-	return getOpenContainModuleData()->m_weaponBonusPassedToPassengers;
+	return getOpenContainModuleData()->m_ini.m_weaponBonusPassedToPassengers;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1489,7 +1511,7 @@ WeaponBonusConditionFlags OpenContain::getWeaponBonusPassedToPassengers() const
 //-------------------------------------------------------------------------------------------------
 Real OpenContain::getDamagePercentageToUnits( void ) 
 { 
-	return getOpenContainModuleData()->m_damagePercentageToUnits; 
+	return getOpenContainModuleData()->m_ini.m_damagePercentageToUnits; 
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1522,9 +1544,9 @@ const Coord3D *OpenContain::getRallyPoint( void ) const
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool OpenContain::getNaturalRallyPoint( Coord3D& rallyPoint, Bool offset )  const
+Bool OpenContain::getNaturalRallyPoint( Coord3D& rallyPoint, Bool /* offset */ )  const
 {
-	Int numberExits = getOpenContainModuleData()->m_numberOfExitPaths;
+	Int numberExits = getOpenContainModuleData()->m_ini.m_numberOfExitPaths;
 	if( numberExits > 0 )
 	{
 		AsciiString endBone("ExitEnd");

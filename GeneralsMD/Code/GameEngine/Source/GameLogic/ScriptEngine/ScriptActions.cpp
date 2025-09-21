@@ -99,7 +99,7 @@ extern void oversizeTheTerrain(Int amount);
 //-------------------------------------------------------------------------------------------------
 // when you set controlling player or merge teams, we don't always update all the upgrade stuff
 // or the indicator color. this allows us to force the situation. (srj)
-static void updateTeamAndPlayerStuff( Object *obj, void *userData )
+static void updateTeamAndPlayerStuff( Object *obj, void* /* userData */ )
 {
 	if (obj)
 	{
@@ -110,7 +110,7 @@ static void updateTeamAndPlayerStuff( Object *obj, void *userData )
 		Drawable* draw = obj->getDrawable();
 		if (draw)
 		{
-			if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+			if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 				draw->setIndicatorColor(obj->getNightIndicatorColor());
 			else
 				draw->setIndicatorColor(obj->getIndicatorColor());
@@ -206,7 +206,7 @@ void ScriptActions::doQuickVictory( void )
 void ScriptActions::doSetInfantryLightingOverride(Real setting)
 {
 	DEBUG_ASSERTCRASH( (setting == -1.0f) || (setting > 0.0f), ("Invalid setting (%d) in Infantry Lighting Override script.", setting) );
-	TheWritableGlobalData->m_scriptOverrideInfantryLightScale = setting;
+	TheWritableGlobalData->m_data.m_scriptOverrideInfantryLightScale = setting;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -392,8 +392,8 @@ void ScriptActions::doEnableObjectSound(const AsciiString& objectName, Bool enab
 		return;
 	}
 
-  drawable->enableAmbientSoundFromScript( enable );
-}	
+	drawable->enableAmbientSoundFromScript( enable );
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -643,7 +643,7 @@ void ScriptActions::doCreateReinforcements(const AsciiString& team, const AsciiS
 		PartitionSolver partition(vecOfUnits, vecOfTransports, PREFER_FAST_SOLUTION);
 		partition.solve();
 		SolutionVec solution = partition.getSolution();
-		for (int i = 0; i < solution.size(); ++i) {
+		for (size_t i = 0; i < solution.size(); ++i) {
 			Object *unit = TheGameLogic->findObjectByID(solution[i].first);
 			Object *trans = TheGameLogic->findObjectByID(solution[i].second);
 			if (!unit || !trans) {
@@ -830,6 +830,9 @@ void ScriptActions::doPitchCamera(Real pitch, Real sec, Real easeIn, Real easeOu
 //-------------------------------------------------------------------------------------------------
 void ScriptActions::doOversizeTheTerrain(Int amount)
 {
+(void) amount;
+DEBUG_CRASH(("ScriptActions::doOversizeTheTerrain not yet implemented!"));
+#if 0
 	oversizeTheTerrain(amount);
 	Coord2D offset;
 	offset.x = 0.0001f;
@@ -838,6 +841,7 @@ void ScriptActions::doOversizeTheTerrain(Int amount)
 	offset.x = -0.0001f;
 	offset.y = -0.0001f;
 	TheTacticalView->scrollBy(&offset);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1503,7 +1507,7 @@ void ScriptActions::doLoadAllTransports(const AsciiString& teamName)
 	PartitionSolver partition(vecOfUnits, vecOfTransports, PREFER_FAST_SOLUTION);
 	partition.solve();
 	SolutionVec solution = partition.getSolution();
-	for (int i = 0; i < solution.size(); ++i) {
+	for (size_t i = 0; i < solution.size(); ++i) {
 		Object *unit = TheGameLogic->findObjectByID(solution[i].first);
 		Object *trans = TheGameLogic->findObjectByID(solution[i].second);
 		if (!unit || !trans) {
@@ -2163,9 +2167,10 @@ void ScriptActions::doTeamHuntWithCommandButton(const AsciiString& teamName, con
 					}  // end if
 				}
 				break;
-				
+			default:
+				break;
 		}
-			
+
 	}
 
 }
@@ -2575,7 +2580,7 @@ void ScriptActions::doDisplayCinematicText(const AsciiString& displayText, const
 	char buf[256];
 	char *c;
 	strcpy(buf, fontType.str());
-	for( c = buf; c != '\0'; *c++ )
+	for( c = buf; *c != '\0'; c++ )
 	{
 		if( *c != ' ' && *c++ != '-' ) 
 			fontName.concat(c);
@@ -2583,12 +2588,12 @@ void ScriptActions::doDisplayCinematicText(const AsciiString& displayText, const
 			break;
 	}
 	while( *c != ':' )
-		*c++;
-	*c++;  // eat through " - Size:"
+		c++;
+	c++;  // eat through " - Size:"
 
 	// get font size
 	AsciiString fontSize = AsciiString::TheEmptyString;
-	for( ; *c != '\0'; *c++ )
+	for( ; *c != '\0'; c++ )
 	{
 		if( *c != '\0' && *c != ' ' )
 		{
@@ -2685,7 +2690,7 @@ void ScriptActions::doNamedFlash(const AsciiString& unitName, Int timeInSeconds,
 		Int frames = LOGICFRAMES_PER_SECOND * timeInSeconds;
 		// every time the framecount % 20 == 0, drawable::update will call doNamedFlash
 		Int count = frames / DRAWABLE_FRAMES_PER_FLASH;
-		Color flashy = (color == NULL) ? obj->getIndicatorColor() : color->getAsInt();
+		Color flashy = (color == NULL) ? obj->getIndicatorColor() : color->getAsUnsignedInt();
 		drawable->setFlashColor( flashy );
 		drawable->setFlashCount( count );
 		return;
@@ -2717,7 +2722,7 @@ void ScriptActions::doTeamFlash(const AsciiString& teamName, Int timeInSeconds, 
 		Int frames = LOGICFRAMES_PER_SECOND * timeInSeconds;
 
 		Int count = frames / DRAWABLE_FRAMES_PER_FLASH;
-		Color flashy = (color == NULL) ? obj->getIndicatorColor() : color->getAsInt();
+		Color flashy = (color == NULL) ? obj->getIndicatorColor() : color->getAsUnsignedInt();
 		draw->setFlashColor( flashy );
 		draw->setFlashCount( count );
 	}
@@ -3148,7 +3153,7 @@ void ScriptActions::doTeamAvailableForRecruitment(const AsciiString& teamName, B
 //-------------------------------------------------------------------------------------------------
 /** doCollectNearbyForTeam */
 //-------------------------------------------------------------------------------------------------
-void ScriptActions::doCollectNearbyForTeam(const AsciiString& teamName)
+void ScriptActions::doCollectNearbyForTeam(const AsciiString& /* teamName */)
 {
 	DEBUG_CRASH(("You would think this has been implemented, but you'd be wrong. (doCollectNearbyForTeam)"));
 }
@@ -3199,8 +3204,10 @@ void ScriptActions::doMergeTeamIntoTeam(const AsciiString& teamSrcName, const As
 //-------------------------------------------------------------------------------------------------
 void ScriptActions::doDisableInput()
 {
+DEBUG_CRASH(("ScriptActions::doDisableInput not yet implemented!"));
+#if 0
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (!TheGlobalData->m_disableScriptedInputDisabling)
+	if (!TheGlobalData->m_data.m_disableScriptedInputDisabling)
 #endif
 	{
 		TheInGameUI->setInputEnabled(false);
@@ -3211,6 +3218,7 @@ void ScriptActions::doDisableInput()
 		TheControlBar->deleteBuildTooltipLayout();
 		TheLookAtTranslator->resetModes();
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3228,9 +3236,9 @@ void ScriptActions::doEnableInput()
 void ScriptActions::doSetBorderShroud( Bool setting )
 {
 	if( setting )
-		TheDisplay->setBorderShroudLevel(TheGlobalData->m_shroudAlpha);
+		TheDisplay->setBorderShroudLevel(TheGlobalData->m_data.m_shroudAlpha);
 	else
-		TheDisplay->setBorderShroudLevel(TheGlobalData->m_clearAlpha);
+		TheDisplay->setBorderShroudLevel(TheGlobalData->m_data.m_clearAlpha);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3332,7 +3340,7 @@ void ScriptActions::doTeamGarrisonSpecificBuilding(const AsciiString& teamName, 
 	PlayerMaskType player = theBuilding->getContain()->getPlayerWhoEntered();
 
 	if (!(theBuilding->isKindOf(KINDOF_STRUCTURE) && 
-		(player == 0) || (player == theTeam->getControllingPlayer()->getPlayerMask()))) {
+		((player == 0) || (player == theTeam->getControllingPlayer()->getPlayerMask())))) {
 		return;
 	}
 	
@@ -3428,7 +3436,7 @@ void ScriptActions::doTeamGarrisonNearestBuilding(const AsciiString& teamName)
 			continue;
 		}
 
-		Int slotsAvailable = cmi->getContainMax() - cmi->getContainCount();
+		Int slotsAvailable = cmi->getContainMax() - (Int)cmi->getContainCount();
 		for (int i = 0; i < slotsAvailable; ) {
 			Object *obj = diter.cur();
 			if (diter.done() || !obj) {
@@ -3495,7 +3503,7 @@ void ScriptActions::doUnitGarrisonSpecificBuilding(const AsciiString& unitName, 
 	PlayerMaskType player = theBuilding->getContain()->getPlayerWhoEntered();
 
 	if (!(theBuilding->isKindOf(KINDOF_STRUCTURE) && 
-		(player == 0) || (player == theUnit->getControllingPlayer()->getPlayerMask()))) {
+		((player == 0) || (player == theUnit->getControllingPlayer()->getPlayerMask())))) {
 		return;
 	}
 	AIUpdateInterface *ai = theUnit->getAIUpdateInterface();
@@ -3807,10 +3815,13 @@ void ScriptActions::doBlackWhiteMode(Bool startBWMode, Int frames)
 //-------------------------------------------------------------------------------------------------
 /** doSkyBox */
 //-------------------------------------------------------------------------------------------------
-extern void doSkyBoxSet(Bool startDraw);	//hack to avoid including globaldata here.
+// extern void doSkyBoxSet(Bool startDraw);	//hack to avoid including globaldata here.
 
 void ScriptActions::doSkyBox(Bool startDraw)
 {
+(void) startDraw;
+DEBUG_CRASH(("ScriptActions::doSkyBox not yet implemented!"));
+#if 0
 	if (startDraw)
 	{
 		doSkyBoxSet(1);
@@ -3819,6 +3830,7 @@ void ScriptActions::doSkyBox(Bool startDraw)
 	{
 		doSkyBoxSet(0);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -3852,7 +3864,7 @@ void ScriptActions::doUnfreezeTime(void)
 void ScriptActions::doMilitaryCaption(const AsciiString& briefing, Int duration)
 {
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_disableMilitaryCaption)
+	if (TheGlobalData->m_data.m_disableMilitaryCaption)
 		duration = 1;
 #endif
 
@@ -3862,7 +3874,7 @@ void ScriptActions::doMilitaryCaption(const AsciiString& briefing, Int duration)
 //-------------------------------------------------------------------------------------------------
 /** Set the audible distance for shots in which the camera is up, and is therefore the center */
 //-------------------------------------------------------------------------------------------------
-void ScriptActions::doCameraSetAudibleDistance(Real audibleDistance)
+void ScriptActions::doCameraSetAudibleDistance(Real /* audibleDistance */)
 {
 	// No-op
 }
@@ -4014,7 +4026,7 @@ void ScriptActions::doSetMoney(const AsciiString& playerName, Int money)
 		return;
 
 	m->withdraw(m->countMoney());
-	m->deposit(money);
+	m->deposit((UnsignedInt)money);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -4033,9 +4045,9 @@ void ScriptActions::doGiveMoney(const AsciiString& playerName, Int money)
 		return;
 
 	if (money < 0)
-		m->withdraw(-money);
+		m->withdraw((UnsignedInt)-money);
 	else
-		m->deposit(money);
+		m->deposit((UnsignedInt)money);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -4115,7 +4127,7 @@ void ScriptActions::doNamedSetSpecialPowerCountdown( const AsciiString& unit, co
 		SpecialPowerModuleInterface *mod = theObj->getSpecialPowerModule(power);
 		if (mod)
 		{
-			Int frames = LOGICFRAMES_PER_SECOND * seconds;
+			UnsignedInt frames = (UnsignedInt)(LOGICFRAMES_PER_SECOND * seconds);
 			mod->setReadyFrame(TheGameLogic->getFrame() + frames);
 		}
 	}
@@ -4133,7 +4145,7 @@ void ScriptActions::doNamedAddSpecialPowerCountdown( const AsciiString& unit, co
 		SpecialPowerModuleInterface *mod = theObj->getSpecialPowerModule(power);
 		if (mod)
 		{
-			Int frames = LOGICFRAMES_PER_SECOND * seconds;
+			UnsignedInt frames = (UnsignedInt)(LOGICFRAMES_PER_SECOND * seconds);
 			mod->setReadyFrame(mod->getReadyFrame() + frames);
 		}
 	}
@@ -4671,8 +4683,8 @@ void ScriptActions::doTeamRemoveAllOverrideRelations(const AsciiString& teamName
 	Team *theTeam = TheScriptEngine->getTeamNamed( teamName );
 	if (theTeam) {
 		// invalid ID is OK -- it removes all relationships
-		theTeam->removeOverrideTeamRelationship( NULL );
-		theTeam->removeOverridePlayerRelationship( NULL );
+		theTeam->removeOverrideTeamRelationship( 0 );
+		theTeam->removeOverridePlayerRelationship( 0 );
 	}
 }
 //-------------------------------------------------------------------------------------------------
@@ -5002,18 +5014,17 @@ void ScriptActions::doForceObjectSelection(const AsciiString& teamName, const As
 	}
 }
 
-void* __cdecl killTheObject( Object *obj, void* userObj )
+void killTheObject(Object *obj, void* userObj)
 {
-	userObj;
+	(void) userObj;
 	if (obj)
 		obj->kill();
-	return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
 /** doForceObjectSelection */
 //-------------------------------------------------------------------------------------------------
-void ScriptActions::doDestroyAllContained(const AsciiString& unitName, Int damageType )
+void ScriptActions::doDestroyAllContained(const AsciiString& unitName, Int /* damageType */ )
 {
 	Object *obj = TheScriptEngine->getUnitNamed(unitName);
 	if (!obj) {
@@ -5206,7 +5217,7 @@ void ScriptActions::doMoveUnitTowardsNearest( const AsciiString& unitName, const
 			Real closestDist;
 			Real dist;
 
-			for( Int typeIndex = 0; typeIndex < objectTypes->getListSize(); typeIndex++ )
+			for( UnsignedInt typeIndex = 0; typeIndex < objectTypes->getListSize(); typeIndex++ )
 			{
 				AsciiString thisTypeName = objectTypes->getNthInList( typeIndex );
 				const ThingTemplate *thisType = TheThingFactory->findTemplate( thisTypeName );
@@ -5294,7 +5305,7 @@ void ScriptActions::doMoveTeamTowardsNearest( const AsciiString& teamName, const
 		{
 			Real closestDist;
 			Real dist;
-			for( Int typeIndex = 0; typeIndex < objectTypes->getListSize(); typeIndex++ )
+			for( UnsignedInt typeIndex = 0; typeIndex < objectTypes->getListSize(); typeIndex++ )
 			{
 				AsciiString thisTypeName = objectTypes->getNthInList( typeIndex );
 				const ThingTemplate *thisType = TheThingFactory->findTemplate( thisTypeName );
@@ -5316,7 +5327,7 @@ void ScriptActions::doMoveTeamTowardsNearest( const AsciiString& teamName, const
 			}
 		}
 	}
-	for( iter = team->iterate_TeamMemberList(); !iter.done(); iter.advance() )
+	for( DLINK_ITERATOR<Object> iter = team->iterate_TeamMemberList(); !iter.done(); iter.advance() )
 	{
 		Object *obj = iter.cur();
 		if( !obj )
@@ -5385,7 +5396,7 @@ void ScriptActions::doSkirmishAttackNearestGroupWithValue( const AsciiString& te
 //-------------------------------------------------------------------------------------------------
 /** doSkirmishCommandButtonOnMostValuable */
 //-------------------------------------------------------------------------------------------------
-void ScriptActions::doSkirmishCommandButtonOnMostValuable( const AsciiString& teamName, const AsciiString& ability, Real range, Bool allTeamMembers)
+void ScriptActions::doSkirmishCommandButtonOnMostValuable( const AsciiString& teamName, const AsciiString& ability, Real range, Bool /* allTeamMembers */)
 {
 	Team *team = TheScriptEngine->getTeamNamed(teamName);
 	if (!team) {
@@ -5608,7 +5619,7 @@ void ScriptActions::doTeamUseCommandButtonOnNearestKindof( const AsciiString& te
 	}
 
 	PartitionFilterPlayerAffiliation f1(team->getControllingPlayer(), ALLOW_ENEMIES, true);
-	PartitionFilterAcceptByKindOf f2(MAKE_KINDOF_MASK(kindofBit), KINDOFMASK_NONE);
+	PartitionFilterAcceptByKindOf f2(MAKE_KINDOF_MASK((UnsignedInt)kindofBit), KINDOFMASK_NONE);
 	PartitionFilterValidCommandButtonTarget f3(srcObj, commandButton, true, CMD_FROM_SCRIPT);
 	PartitionFilterSameMapStatus filterMapStatus(srcObj);
 
@@ -5703,7 +5714,7 @@ void ScriptActions::doTeamUseCommandButtonOnNearestBuildingClass( const AsciiStr
 
 	PartitionFilterPlayerAffiliation f1(team->getControllingPlayer(), ALLOW_ENEMIES, true);
 	PartitionFilterAcceptByKindOf f2(MAKE_KINDOF_MASK(KINDOF_STRUCTURE), KINDOFMASK_NONE);
-	PartitionFilterAcceptByKindOf f3(MAKE_KINDOF_MASK(kindofBit), KINDOFMASK_NONE);
+	PartitionFilterAcceptByKindOf f3(MAKE_KINDOF_MASK((UnsignedInt)kindofBit), KINDOFMASK_NONE);
 	PartitionFilterValidCommandButtonTarget f4(srcObj, commandButton, true, CMD_FROM_SCRIPT);
 	PartitionFilterSameMapStatus filterMapStatus(srcObj);
 
@@ -5784,7 +5795,7 @@ void ScriptActions::doTeamUseCommandButtonOnNearestObjectType( const AsciiString
 			Real closestDist;
 			Real dist;
 
-			for( Int typeIndex = 0; typeIndex < objectTypes->getListSize(); typeIndex++ )
+			for( UnsignedInt typeIndex = 0; typeIndex < objectTypes->getListSize(); typeIndex++ )
 			{
 				AsciiString thisTypeName = objectTypes->getNthInList( typeIndex );
 				const ThingTemplate *thisType = TheThingFactory->findTemplate( thisTypeName );
@@ -5882,7 +5893,7 @@ void ScriptActions::doTeamCaptureNearestUnownedFactionUnit( const AsciiString& t
 //-------------------------------------------------------------------------------------------------
 /** doCreateTeamFromCapturedUnits */
 //-------------------------------------------------------------------------------------------------
-void ScriptActions::doCreateTeamFromCapturedUnits( const AsciiString& playerName, const AsciiString& teamName )
+void ScriptActions::doCreateTeamFromCapturedUnits( const AsciiString& /* playerName */, const AsciiString& teamName )
 {
 	Team *team = TheScriptEngine->getTeamNamed(teamName);
 	if (!team) {
@@ -5983,7 +5994,7 @@ void ScriptActions::doTeamEmoticon(const AsciiString& teamName, const AsciiStrin
 	}
 	theTeam->getTeamAsAIGroup( theGroup );
 	
-	Int frames = (Int)( duration * LOGICFRAMES_PER_SECOND );
+	Int frames = (Int)( duration * (Real)LOGICFRAMES_PER_SECOND );
 	theGroup->groupSetEmoticon( emoticonName, frames );
 }
 
@@ -5996,7 +6007,7 @@ void ScriptActions::doNamedEmoticon(const AsciiString& unitName, const AsciiStri
 		Drawable *draw = obj->getDrawable();
 		if( draw )
 		{
-			Int frames = (Int)( duration * LOGICFRAMES_PER_SECOND );
+			Int frames = (Int)( duration * (Real)LOGICFRAMES_PER_SECOND );
 			draw->setEmoticon( emoticonName, frames );
 		}
 	}
@@ -6028,7 +6039,11 @@ void ScriptActions::doUndoRevealMapAtWaypointPermanent(const AsciiString& lookNa
 //-------------------------------------------------------------------------------------------------
 void ScriptActions::doEvaEnabledDisabled(Bool setEnabled)
 {
+(void) setEnabled;
+DEBUG_CRASH(("ScriptActions::doEvaEnabledDisabled not yet implemented!"));
+#if 0
 	TheEva->setEvaEnabled(setEnabled);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -6060,7 +6075,7 @@ void ScriptActions::doOverrideHulkLifetime( Real seconds )
 	else
 	{
 		// Convert real seconds into frames.
-		Int frames = (Int)(seconds * LOGICFRAMES_PER_SECOND);
+		Int frames = (Int)(seconds * (Real)LOGICFRAMES_PER_SECOND);
 		TheGameLogic->setHulkMaxLifetimeOverride(frames);
 	}
 }
@@ -6644,9 +6659,9 @@ void ScriptActions::executeAction( ScriptAction *pAction )
 		case ScriptAction::TEAM_EXIT_ALL:
 			doTeamExitAll(pAction->getParameter(0)->getString());
 			return;
-    case ScriptAction::NAMED_SET_EVAC_LEFT_OR_RIGHT:
-      doNamedSetGarrisonEvacDisposition(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getInt());
-      return;
+		case ScriptAction::NAMED_SET_EVAC_LEFT_OR_RIGHT:
+			doNamedSetGarrisonEvacDisposition(pAction->getParameter(0)->getString(), (UnsignedInt)pAction->getParameter(1)->getInt());
+			return;
 		case ScriptAction::NAMED_FOLLOW_WAYPOINTS:
 			doNamedFollowWaypoints(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getString());
 			return;
@@ -6782,7 +6797,7 @@ void ScriptActions::executeAction( ScriptAction *pAction )
 			return;
 		case ScriptAction::NAMED_CUSTOM_COLOR:
 			{
-				doNamedCustomColor(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getInt());
+				doNamedCustomColor(pAction->getParameter(0)->getString(), (UnsignedInt)pAction->getParameter(1)->getInt());
 			}
 			return;
 		case ScriptAction::TEAM_FLASH_WHITE:
@@ -6993,14 +7008,14 @@ void ScriptActions::executeAction( ScriptAction *pAction )
 		case ScriptAction::SET_FPS_LIMIT:
 			if (!pAction->getParameter(0)->getInt())
 			{
-				TheGameEngine->setFramesPerSecondLimit(TheGlobalData->m_framesPerSecondLimit);
+				TheGameEngine->setFramesPerSecondLimit(TheGlobalData->m_data.m_framesPerSecondLimit);
 			}
 			else
 			{
 				TheGameEngine->setFramesPerSecondLimit(pAction->getParameter(0)->getInt());
 			}
 			// Setting the fps limit doesn't do much good if we don't use it.  jba.
-			TheWritableGlobalData->m_useFpsLimit = true; 
+			TheWritableGlobalData->m_data.m_useFpsLimit = true; 
 			return;
 			
 		case ScriptAction::DISABLE_SPECIAL_POWER_DISPLAY:

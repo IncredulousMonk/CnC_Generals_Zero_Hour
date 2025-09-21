@@ -45,11 +45,11 @@
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/ObjectIter.h"
-#include "GameLogic/Module\CommandButtonHuntUpdate.h"
-#include "GameLogic/Module\AIUpdate.h"
-#include "GameLogic/Module\CollideModule.h"
-#include "GameLogic/Module\SpecialAbilityUpdate.h"
-#include "GameLogic/Module\SpecialPowerModule.h"
+#include "GameLogic/Module/CommandButtonHuntUpdate.h"
+#include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/CollideModule.h"
+#include "GameLogic/Module/SpecialAbilityUpdate.h"
+#include "GameLogic/Module/SpecialPowerModule.h"
 #include "GameLogic/ScriptEngine.h"
 
 #ifdef _INTERNAL
@@ -62,22 +62,24 @@
 //-------------------------------------------------------------------------------------------------
 CommandButtonHuntUpdateModuleData::CommandButtonHuntUpdateModuleData()
 {
-	m_scanFrames				= LOGICFRAMES_PER_SECOND;
-	m_scanRange					= 9999.0f;
+	m_ini.m_scanFrames	= LOGICFRAMES_PER_SECOND;
+	m_ini.m_scanRange	= 9999.0f;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void CommandButtonHuntUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void CommandButtonHuntUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "ScanRate",							INI::parseDurationUnsignedInt,	NULL, offsetof( CommandButtonHuntUpdateModuleData, m_scanFrames ) },
-		{ "ScanRange",						INI::parseReal,									NULL, offsetof( CommandButtonHuntUpdateModuleData, m_scanRange ) },
+		{ "ScanRate",	INI::parseDurationUnsignedInt,	NULL, offsetof( CommandButtonHuntUpdateModuleData::IniData, m_scanFrames ) },
+		{ "ScanRange",	INI::parseReal,					NULL, offsetof( CommandButtonHuntUpdateModuleData::IniData, m_scanRange ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	CommandButtonHuntUpdateModuleData* self {static_cast<CommandButtonHuntUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -204,7 +206,7 @@ UpdateSleepTime CommandButtonHuntUpdate::huntSpecialPower(AIUpdateInterface *ai)
 	const CommandButtonHuntUpdateModuleData *data = getCommandButtonHuntUpdateModuleData();
 	if(  !ai->isIdle() )
 	{
-		return UPDATE_SLEEP(data->m_scanFrames);
+		return UPDATE_SLEEP(data->m_ini.m_scanFrames);
 	}
 	const SpecialPowerTemplate *spTemplate = m_commandButton->getSpecialPowerTemplate();
 	if( spTemplate )
@@ -212,7 +214,7 @@ UpdateSleepTime CommandButtonHuntUpdate::huntSpecialPower(AIUpdateInterface *ai)
 		SpecialAbilityUpdate* spUpdate = obj->findSpecialAbilityUpdate( spTemplate->getSpecialPowerType() );
 		if (spUpdate == NULL) return UPDATE_SLEEP_FOREVER;
 		if (spUpdate->isActive()) {
-			return UPDATE_SLEEP(data->m_scanFrames);
+			return UPDATE_SLEEP(data->m_ini.m_scanFrames);
 		}
 	}
 	//Periodic scanning (expensive)
@@ -221,7 +223,7 @@ UpdateSleepTime CommandButtonHuntUpdate::huntSpecialPower(AIUpdateInterface *ai)
 	{
 		obj->doCommandButtonAtObject( m_commandButton, victim, CMD_FROM_AI );
 	}
-	return UPDATE_SLEEP(data->m_scanFrames);
+	return UPDATE_SLEEP(data->m_ini.m_scanFrames);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -233,7 +235,7 @@ UpdateSleepTime CommandButtonHuntUpdate::huntEnter( AIUpdateInterface *ai )
 	const CommandButtonHuntUpdateModuleData *data = getCommandButtonHuntUpdateModuleData();
 	if( !ai->isIdle() )
 	{
-		return UPDATE_SLEEP( data->m_scanFrames );
+		return UPDATE_SLEEP( data->m_ini.m_scanFrames );
 	}
 
 	//Periodic scanning (expensive)
@@ -242,7 +244,7 @@ UpdateSleepTime CommandButtonHuntUpdate::huntEnter( AIUpdateInterface *ai )
 	{
 		obj->doCommandButtonAtObject( m_commandButton, victim, CMD_FROM_AI );
 	}
-	return UPDATE_SLEEP( data->m_scanFrames );
+	return UPDATE_SLEEP( data->m_ini.m_scanFrames );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -266,6 +268,8 @@ Object* CommandButtonHuntUpdate::scanClosestTarget(void)
 		case GUICOMMANDMODE_HIJACK_VEHICLE:
 		case GUICOMMANDMODE_SABOTAGE_BUILDING:
 			isEnter = TRUE;
+			break;
+		default:
 			break;
 	}
 
@@ -300,7 +304,7 @@ Object* CommandButtonHuntUpdate::scanClosestTarget(void)
 		}
 	}
 
-	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_scanRange, 
+	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_ini.m_scanRange, 
 		FROM_CENTER_2D, filters, ITER_SORTED_NEAR_TO_FAR );
 	MemoryPoolObjectHolder hold(iter);
 
@@ -344,11 +348,11 @@ Object* CommandButtonHuntUpdate::scanClosestTarget(void)
 				}
 				Real distSqr = ThePartitionManager->getDistanceSquared(me, other, FROM_BOUNDINGSPHERE_2D);
 				Real dist = sqrt(distSqr);
-				Int curPriority = data->m_scanRange - dist;
+				Int curPriority = data->m_ini.m_scanRange - dist;
 				if (info) curPriority = info->getPriority(other->getTemplate());
 				if (curPriority == 0) 
 					continue; // don't attack 0 priority targets.
-				Int modifier = dist/TheAI->getAiData()->m_attackPriorityDistanceModifier;
+				Int modifier = dist/TheAI->getAiData()->m_ini.m_attackPriorityDistanceModifier;
 				Int modPriority = curPriority-modifier;
 				if (modPriority < 1) 
 					modPriority = 1;
@@ -383,6 +387,8 @@ Object* CommandButtonHuntUpdate::scanClosestTarget(void)
 					break;
 				case GUICOMMANDMODE_CONVERT_TO_CARBOMB:
 					valid = TheActionManager->canConvertObjectToCarBomb( me, other, CMD_FROM_AI );
+					break;
+				default:
 					break;
 			}
 			if( valid )

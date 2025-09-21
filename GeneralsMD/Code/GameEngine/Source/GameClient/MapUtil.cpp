@@ -455,7 +455,7 @@ void MapCache::writeCacheINI( Bool userDir )
 
 void MapCache::updateCache( void )
 {
-	setFPMode();
+	// setFPMode();
 
 	TheFileSystem->createDirectory(getUserMapDir());
 
@@ -790,6 +790,13 @@ Bool WouldMapTransfer( const AsciiString& mapName )
 //-------------------------------------------------------------------------------------------------
 Int populateMapListboxNoReset( GameWindow *listbox, Bool useSystemMaps, Bool isMultiplayer, AsciiString mapToSelect )
 {
+(void) listbox;
+(void) useSystemMaps;
+(void) isMultiplayer;
+(void) mapToSelect;
+DEBUG_CRASH(("MapCache: populateMapListboxNoReset not yet implemented!"));
+return 0;
+#if 0
 	if(!TheMapCache)
 		return -1;
 
@@ -978,6 +985,7 @@ typedef std::map<UnicodeString, AsciiString> MapDisplayToFileNameList;
 	}
 	return selectionIndex;
 
+#endif // if 0
 }  // end loadMapListbox
 
 //-------------------------------------------------------------------------------------------------

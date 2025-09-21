@@ -85,19 +85,68 @@ Bool TrainTrack::releaseReference()
 // ------------------------------------------------------------------------------------------------
 RailroadBehaviorModuleData::RailroadBehaviorModuleData( void )
 {
-	m_carriageTemplateNameData.clear();
-	m_pathPrefixName.clear();
-	m_CrashFXTemplateName.clear();
+	m_ini.m_carriageTemplateNameData.clear();
+	m_ini.m_pathPrefixName.clear();
+	m_ini.m_CrashFXTemplateName.clear();
 	
-	m_isLocomotive = FALSE;
-	m_runningGarrisonSpeedMax = 1.0f;
-	m_killSpeedMin = 1.0f;
-	m_speedMax = 4;
-	m_acceleration = 1.01f;
-	m_braking = 0.99f;
-	m_friction = 0.97f;
-	m_waitAtStationTime = 150;
+	m_ini.m_isLocomotive = FALSE;
+	m_ini.m_runningGarrisonSpeedMax = 1.0f;
+	m_ini.m_killSpeedMin = 1.0f;
+	m_ini.m_speedMax = 4;
+	m_ini.m_acceleration = 1.01f;
+	m_ini.m_braking = 0.99f;
+	m_ini.m_friction = 0.97f;
+	m_ini.m_waitAtStationTime = 150;
+	m_ini.m_obj = this;
 }  // end RailroadBehaviorModuleData
+
+//-------------------------------------------------------------------------------------------------
+void RailroadBehaviorModuleData::parseBigMetalImpactDefaultSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
+	RailroadBehaviorModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_bigMetalImpactDefaultSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void RailroadBehaviorModuleData::parseSmallMetalImpactDefaultSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
+	RailroadBehaviorModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_smallMetalImpactDefaultSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void RailroadBehaviorModuleData::parseMeatyImpactDefaultSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
+	RailroadBehaviorModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_meatyImpactDefaultSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void RailroadBehaviorModuleData::parseRunningSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
+	RailroadBehaviorModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_runningSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void RailroadBehaviorModuleData::parseClicketyClackSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
+	RailroadBehaviorModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_clicketyClackSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void RailroadBehaviorModuleData::parseWhistleSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
+	RailroadBehaviorModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_whistleSound);
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -107,7 +156,7 @@ RailroadBehavior::RailroadBehavior( Thing *thing, const ModuleData *moduleData )
 {
 	const RailroadBehaviorModuleData *modData = getRailroadBehaviorModuleData();
 
-	m_carriageTemplateNameIterator = 0;
+	// m_carriageTemplateNameIterator = 0;
 
 	m_nextStationTask = DO_NOTHING;
 	m_trailerID = INVALID_ID;
@@ -158,7 +207,7 @@ RailroadBehavior::RailroadBehavior( Thing *thing, const ModuleData *moduleData )
 	m_trackDataLoaded = FALSE;
 	m_waitingInWings = TRUE;
 	m_endOfLine = FALSE;			
-	m_isLocomotive = modData->m_isLocomotive;
+	m_isLocomotive = modData->m_ini.m_isLocomotive;
 	m_isLeadCarraige = m_isLocomotive;  // for now, I am the lead, only if I am the locomotive
 	m_wantsToBeLeadCarraige = FALSE; 
 	m_disembark = FALSE;
@@ -290,7 +339,7 @@ void RailroadBehavior::onCollide( Object *other, const Coord3D *loc, const Coord
 
 	// maybe we don't want to trample this unit?
 	const RailroadBehaviorModuleData *modData = getRailroadBehaviorModuleData();
-	if ( m_conductorState == WAIT_AT_STATION && (m_pullInfo.speed < modData->m_runningGarrisonSpeedMax) ) // they can grab on safely
+	if ( m_conductorState == WAIT_AT_STATION && (m_pullInfo.speed < modData->m_ini.m_runningGarrisonSpeedMax) ) // they can grab on safely
 	{
 		AIUpdateInterface *ai = other->getAI();
 		if (ai && ai->getEnterTarget() == obj) // other intends to garrison me. 
@@ -344,7 +393,7 @@ void RailroadBehavior::onCollide( Object *other, const Coord3D *loc, const Coord
 	  other->setPosition( &newPos );
 	}
 
-  if ( m_conductorState == WAIT_AT_STATION || (m_conductorState == COAST && m_pullInfo.speed < modData->m_runningGarrisonSpeedMax) || !m_isLocomotive )
+  if ( m_conductorState == WAIT_AT_STATION || (m_conductorState == COAST && m_pullInfo.speed < modData->m_ini.m_runningGarrisonSpeedMax) || !m_isLocomotive )
 	{
 //  AIUpdateInterface *ai = other->getAI();
 //	  if ( ai )
@@ -372,7 +421,7 @@ void RailroadBehavior::onCollide( Object *other, const Coord3D *loc, const Coord
 		delta.scale( MIN(1.4f,m_pullInfo.speed  * 0.66f) );// the faster I go, the harder I slam!
 
 		//Absolute death to be hit by a train, no survival
-		if ( m_pullInfo.speed >= modData->m_killSpeedMin ) // they can grab on safely
+		if ( m_pullInfo.speed >= modData->m_ini.m_killSpeedMin ) // they can grab on safely
 		{
 			other->kill();
 			theirPhys->setPitchRate(GameLogicRandomValueReal(-0.03f, 0.03f));
@@ -645,24 +694,24 @@ void RailroadBehavior::loadTrackData( void )
 
 void RailroadBehavior::makeAWallOutOfThisTrain( Bool on )
 {
-  if ( on == TRUE )
-  	TheAI->pathfinder()->createAWallFromMyFootprint( getObject() ); // Temporarily treat this object as an obstacle.
-  else
-  	TheAI->pathfinder()->removeWallFromMyFootprint( getObject() );  // Undo createAWallFromMyFootprint.
+	if ( on == TRUE )
+		TheAI->pathfinder()->createAWallFromMyFootprint( getObject() ); // Temporarily treat this object as an obstacle.
+	else
+		TheAI->pathfinder()->removeWallFromMyFootprint( getObject() );  // Undo createAWallFromMyFootprint.
 
 
 	if ( m_trailerID != INVALID_ID )
 	{
 		Object *trailer = TheGameLogic->findObjectByID( m_trailerID );
-    if ( trailer )
-    {
+		if ( trailer )
+		{
 			static NameKeyType key_RGUpdate = NAMEKEY("RailroadBehavior");
 			RailroadBehavior *RGUpdate = (RailroadBehavior*)trailer->findUpdateModule(key_RGUpdate);
 			if( RGUpdate )
 			{
 				RGUpdate->makeAWallOutOfThisTrain( on ); // recursive down the train
 			}
-    }
+		}
 	}
 
 
@@ -706,17 +755,17 @@ UpdateSleepTime RailroadBehavior::update( void )
 
 		if ( m_conductorState == APPLY_BRAKES )
 		{
-			conductorPullInfo.speed *= modData->m_braking;
+			conductorPullInfo.speed *= modData->m_ini.m_braking;
 			if (fabs(conductorPullInfo.speed) < 0.1f)
 			{
 				conductorPullInfo.speed = 0;
 				///////////////////////////////////////( &m_hissySteamSound );
 
-				m_waitAtStationTimer = modData->m_waitAtStationTime;
+				m_waitAtStationTimer = (Int)modData->m_ini.m_waitAtStationTime;
 				m_conductorState = WAIT_AT_STATION;
 
 
-         makeAWallOutOfThisTrain( TRUE );
+				makeAWallOutOfThisTrain( TRUE );
 
 
 				if ( m_disembark )
@@ -736,11 +785,11 @@ UpdateSleepTime RailroadBehavior::update( void )
 
 				m_runningSound.setPlayingHandle(TheAudio->addAudioEvent( &m_runningSound ));
 
-        makeAWallOutOfThisTrain( FALSE );
+				makeAWallOutOfThisTrain( FALSE );
 
 
 			}
-			else if ( m_waitAtStationTimer == (modData->m_waitAtStationTime/4) )
+			else if ( m_waitAtStationTimer == (Int)(modData->m_ini.m_waitAtStationTime/4) )
 			{
 				m_whistleSound.setPlayingHandle(TheAudio->addAudioEvent( &m_whistleSound ));
 			}
@@ -749,14 +798,14 @@ UpdateSleepTime RailroadBehavior::update( void )
 		else if ( m_conductorState == ACCELERATE )
 		{
 			conductorPullInfo.speed += 0.02f * conductorPullInfo.m_direction; // push start multiplier
-			conductorPullInfo.speed *= modData->m_acceleration;
-			if ( conductorPullInfo.speed > modData->m_speedMax)
+			conductorPullInfo.speed *= modData->m_ini.m_acceleration;
+			if ( conductorPullInfo.speed > modData->m_ini.m_speedMax)
 			{
-				conductorPullInfo.speed = modData->m_speedMax;
+				conductorPullInfo.speed = modData->m_ini.m_speedMax;
 			}
-			else if ( conductorPullInfo.speed < -modData->m_speedMax)
+			else if ( conductorPullInfo.speed < -modData->m_ini.m_speedMax)
 			{
-				conductorPullInfo.speed = -modData->m_speedMax;
+				conductorPullInfo.speed = -modData->m_ini.m_speedMax;
 			}
 
 			
@@ -786,7 +835,7 @@ UpdateSleepTime RailroadBehavior::update( void )
 	
 		if ( m_conductorState == COAST )
 		{
-			conductorPullInfo.speed *= modData->m_friction;
+			conductorPullInfo.speed *= modData->m_ini.m_friction;
 			TheAudio->removeAudioEvent( m_runningSound.getPlayingHandle() );
 		}
 		
@@ -908,7 +957,11 @@ private:
 public:
 
 	PartitionFilterIsValidCarriage(Object* obj, const RailroadBehaviorModuleData* data) : m_obj(obj), m_data(data) { }
-	
+
+	// No copies allowed!
+	PartitionFilterIsValidCarriage(const PartitionFilterIsValidCarriage&) = delete;
+	PartitionFilterIsValidCarriage& operator=(const PartitionFilterIsValidCarriage&) = delete;
+
 #if defined(_DEBUG) || defined(_INTERNAL)
 	virtual const char* debugGetName() { return "PartitionFilterIsValidCarriage"; }
 #endif
@@ -983,50 +1036,50 @@ void RailroadBehavior::createCarriages( void )
 	else
 		closeCarriage = ThePartitionManager->getClosestObject( &myHitchLoc, maxRadius, FROM_CENTER_2D, filters);
 
-		TemplateNameList list = md->m_carriageTemplateNameData;
-		TemplateNameIterator iter = list.begin();
-		if ( iter != list.end() )
+	TemplateNameList list = md->m_ini.m_carriageTemplateNameData;
+	TemplateNameIterator iter = list.begin();
+	if ( iter != list.end() )
+	{
+		const ThingTemplate* temp = TheThingFactory->findTemplate( *iter );
+
+
+
+
+		if (temp)
 		{
-			const ThingTemplate* temp = TheThingFactory->findTemplate( *iter );
-
-
-
-
-			if (temp)
+			if ( closeCarriage )
+				firstCarriage = closeCarriage;
+			else // or else let's use the defualt template list prvided in the INI
 			{
-				if ( closeCarriage )
-					firstCarriage = closeCarriage;
-				else // or else let's use the defualt template list prvided in the INI
-				{
-					firstCarriage = TheThingFactory->newObject( temp, self->getTeam() ); 
-					DEBUG_LOG(("%s Added a carriage, %s \n", self->getTemplate()->getName().str(),firstCarriage->getTemplate()->getName().str()));
-				}
-				
-				if ( firstCarriage )
-				{
-					firstCarriage->setProducer(self);
-					m_trailerID = firstCarriage->getID();
-					
-					static NameKeyType key_rb = NAMEKEY("RailroadBehavior");
-					RailroadBehavior *rb = (RailroadBehavior*)firstCarriage->findUpdateModule(key_rb);
-					if( rb )
-					{
-						if ( closeCarriage )
-							rb->hitchNewCarriagebyProximity( self->getID(), m_track );
-						else
-							rb->hitchNewCarriagebyTemplate( self->getID(), list, ++iter, m_track );// ! increment iter here!
-					}
-					else
-					{
-						DEBUG_ASSERTCRASH( rb, 
-							("%s is attempting to hitch carriage, %s without a RailroadBehavior... \nwhat kind of nutty conductor are you? ", 
-							self->getTemplate()->getName().str(),
-							firstCarriage->getTemplate()->getName().str() ) );
-					}
-				}
-
+				firstCarriage = TheThingFactory->newObject( temp, self->getTeam() ); 
+				DEBUG_LOG(("%s Added a carriage, %s \n", self->getTemplate()->getName().str(),firstCarriage->getTemplate()->getName().str()));
 			}
+			
+			if ( firstCarriage )
+			{
+				firstCarriage->setProducer(self);
+				m_trailerID = firstCarriage->getID();
+				
+				static NameKeyType key_rb = NAMEKEY("RailroadBehavior");
+				RailroadBehavior *rb = (RailroadBehavior*)firstCarriage->findUpdateModule(key_rb);
+				if( rb )
+				{
+					if ( closeCarriage )
+						rb->hitchNewCarriagebyProximity( self->getID(), m_track );
+					else
+						rb->hitchNewCarriagebyTemplate( self->getID(), list, ++iter, m_track );// ! increment iter here!
+				}
+				else
+				{
+					DEBUG_ASSERTCRASH( rb, 
+						("%s is attempting to hitch carriage, %s without a RailroadBehavior... \nwhat kind of nutty conductor are you? ", 
+						self->getTemplate()->getName().str(),
+						firstCarriage->getTemplate()->getName().str() ) );
+				}
+			}
+
 		}
+	}
 
 	m_carriagesCreated = TRUE;
 

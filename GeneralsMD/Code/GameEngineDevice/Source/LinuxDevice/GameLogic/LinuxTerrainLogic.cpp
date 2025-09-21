@@ -108,9 +108,8 @@ Note - if query is true, we are  */
 //-------------------------------------------------------------------------------------------------
 Bool LinuxTerrainLogic::loadMap( AsciiString filename , Bool query )
 {
-   // FIXME: TheMapCache
-   // if(!TheMapCache)
-   //    return FALSE;
+   if(!TheMapCache)
+      return FALSE;
 
    WorldHeightMap *terrainHeightMap;				///< holds raw heightmap data samples
 

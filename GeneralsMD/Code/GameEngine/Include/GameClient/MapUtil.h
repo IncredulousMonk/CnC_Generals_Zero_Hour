@@ -62,7 +62,8 @@ public:
 	Int m_numStartSpots {};
 };
 
-typedef std::list <Coord3D> Coord3DList;
+// typedef std::list <Coord3D> Coord3DList;
+typedef std::vector <Coord3D> Coord3DList;
 
 class MapMetaData
 {

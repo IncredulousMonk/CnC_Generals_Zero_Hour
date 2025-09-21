@@ -114,7 +114,7 @@ AsciiString AsciiStringToQuotedPrintable(AsciiString original)
 // Convert ascii quoted-printable strings into unicode strings
 UnicodeString QuotedPrintableToUnicodeString(AsciiString original)
 {
-	static unsigned short dest[1024];
+	static WideChar dest[1024];
 	int i=0;
 
 	unsigned char *c = (unsigned char *)dest;
@@ -129,12 +129,12 @@ UnicodeString QuotedPrintableToUnicodeString(AsciiString original)
 				// string ends with MAGIC_CHAR
 				break;
 			}
-			*c = hexDigitToInt(src[1]);
+			*c = hexDigitToInt((char)src[1]);
 			src++;
 			if (src[1] != '\0')
 			{
 				*c = *c<<4;
-				*c = *c | hexDigitToInt(src[1]);
+				*c = *c | hexDigitToInt((char)src[1]);
 				src++;
 			}
 		}
@@ -181,12 +181,12 @@ AsciiString QuotedPrintableToAsciiString(AsciiString original)
 				// string ends with MAGIC_CHAR
 				break;
 			}
-			*c = hexDigitToInt(src[1]);
+			*c = hexDigitToInt((char)src[1]);
 			src++;
 			if (src[1] != '\0')
 			{
 				*c = *c<<4;
-				*c = *c | hexDigitToInt(src[1]);
+				*c = *c | hexDigitToInt((char)src[1]);
 				src++;
 			}
 		}
@@ -202,4 +202,3 @@ AsciiString QuotedPrintableToAsciiString(AsciiString original)
 
 	return AsciiString((const char *)dest);
 }
-

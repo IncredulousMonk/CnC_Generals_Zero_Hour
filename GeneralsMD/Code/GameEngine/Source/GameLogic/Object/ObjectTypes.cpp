@@ -33,7 +33,6 @@
 #include "Common/GameState.h"
 #include "Common/Player.h"
 #include "Common/ThingFactory.h"
-#include "Common/ThingTemplate.h"
 #include "Common/Xfer.h"
 
 //-------------------------------------------------------------------------------------------------
@@ -111,10 +110,10 @@ Int ObjectTypes::prepForPlayerCounting( std::vector<const ThingTemplate *>& temp
 		}
 	}
 
-	Int retVal = templates.size();
+	size_t retVal = templates.size();
 	counts.resize(retVal);
 
-	return retVal;
+	return (Int)retVal;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -132,7 +131,7 @@ Bool ObjectTypes::canBuildAny(Player *player)
 }
 
 // ------------------------------------------------------------------------------------------------
-void ObjectTypes::crc(Xfer *xfer)
+void ObjectTypes::crc(Xfer* /* xfer */)
 {
 
 }

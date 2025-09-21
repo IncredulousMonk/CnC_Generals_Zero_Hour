@@ -94,9 +94,9 @@
 // #include "GameLogic/Module/OpenContain.h"
 #include "GameLogic/PartitionManager.h"
 // #include "GameLogic/PolygonTrigger.h"
-// #include "GameLogic/ScriptActions.h"
-// #include "GameLogic/ScriptConditions.h"
-// #include "GameLogic/ScriptEngine.h"
+#include "GameLogic/ScriptActions.h"
+#include "GameLogic/ScriptConditions.h"
+#include "GameLogic/ScriptEngine.h"
 // #include "GameLogic/SidesList.h"
 // #include "GameLogic/VictoryConditions.h"
 // #include "GameLogic/Weapon.h"
@@ -368,7 +368,6 @@ GameLogic::~GameLogic()
 	delete ThePartitionManager;
 	ThePartitionManager = NULL;
 
-#if 0
 	delete TheScriptActions;
 	TheScriptActions = NULL;
 
@@ -378,7 +377,6 @@ GameLogic::~GameLogic()
 	// delete the Script Engine
 	delete TheScriptEngine;
 	TheScriptEngine = NULL;
-#endif // if 0
 	
 	// Null out TheGameLogic
 	TheGameLogic = NULL;
@@ -390,12 +388,10 @@ GameLogic::~GameLogic()
 void GameLogic::init( void )
 {
 
-#if 0
-	setFPMode();
+	// setFPMode();
 
 	/// @todo Clear object and destroy lists
 	setDefaults( FALSE );
-#endif // if 0
 
 	// create the partition manager
 	ThePartitionManager = NEW PartitionManager;
@@ -415,7 +411,6 @@ void GameLogic::init( void )
 	TheTerrainLogic->init();
 	TheTerrainLogic->setName("TheTerrainLogic");
 
-#if 0
 	// Create script engine system.
 	TheScriptActions = NEW ScriptActions;		 // Basically, a subsystem of TheScriptEngine.
 	TheScriptConditions = NEW ScriptConditions;	 // Basically, a subsystem of TheScriptEngine.
@@ -434,22 +429,19 @@ void GameLogic::init( void )
 	for(Int i = 0; i < MAX_SLOTS; ++i)
 	{
 		m_progressComplete[i] = FALSE;
-		m_progressCompleteTimeout[i] = 0;
+		m_progressCompleteTimeout[i] = TimePoint::min();
 	}
 	m_forceGameStartByTimeOut = FALSE;
 
 	m_isScoringEnabled = TRUE;
 	m_showBehindBuildingMarkers = TRUE;
-#endif // if 0
 	m_drawIconUI = TRUE;
-#if 0
 	m_showDynamicLOD = TRUE;
 	m_scriptHulkMaxLifetimeOverride = -1;
 	
 	m_isInUpdate = FALSE;
 
 	m_rankPointsToAddAtGameStart = 0;
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1284,7 +1276,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	populateRandomStartPosition( game );
 
 	//****************************//
-	// Start the LoadScreen Now!	//
+	// Start the LoadScreen Now!  //
 	//****************************//
 
 	// Get the m_loadScreen for this kind of game
@@ -2427,11 +2419,10 @@ static void findAndSelectCommandCenter(Object *obj, void* alreadyFound)
 void GameLogic::loadMapINI( AsciiString mapName )
 {
 
-	// FIXME: Doesn't seem to be used?
-	// if (!TheMapCache) {
-	// 	// Need the map cache to get the map and user map directories.
-	// 	return;
-	// }
+	if (!TheMapCache) {
+		// Need the map cache to get the map and user map directories.
+		return;
+	}
 
 	char filename[PATH_MAX];
 	// char fullFledgeFilename[PATH_MAX];
@@ -4471,7 +4462,6 @@ TerrainLogic *GameLogic::createTerrainLogic( void )
 	return NEW TerrainLogic;
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 void GameLogic::setBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus bs)
 {
@@ -4480,7 +4470,6 @@ void GameLogic::setBuildableStatusOverride(const ThingTemplate* tt, BuildableSta
 		m_thingTemplateBuildableOverrides[tt->getName()] = bs;
 	}
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 Bool GameLogic::findBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus& bs) const

@@ -84,6 +84,8 @@ public:
 		Bool							m_persistenceRequiresRecharge;
 
 		const ParticleSystemTemplate*	m_disableFXParticleSystem;
+
+		SpecialAbilityUpdateModuleData*	m_obj {};						///< pointer to the parent object
 	};
 
 	IniData m_ini {};
@@ -123,6 +125,7 @@ public:
 		m_ini.m_preTriggerUnstealthFrames = 0;
 		m_ini.m_needToFaceTarget = TRUE;
 		m_ini.m_persistenceRequiresRecharge = FALSE;
+		m_ini.m_obj = this;
 	}
 
 	// No copies allowed!
@@ -280,29 +283,29 @@ private:
 
 	enum PackingState
 	{
-		STATE_NONE, 
-		STATE_PACKING, 
+		STATE_NONE,
+		STATE_PACKING,
 		STATE_UNPACKING,
-		STATE_PACKED,		
-		STATE_UNPACKED,	
+		STATE_PACKED,
+		STATE_UNPACKED,
 	};
 	
-	AudioEventRTS									m_prepSoundLoop;
-	UnsignedInt										m_prepFrames;
-	UnsignedInt										m_animFrames;	//Used for packing/unpacking unit before or after using ability.
-	ObjectID											m_targetID;
-	Coord3D												m_targetPos;
-	Int														m_locationCount;
-	std::list<ObjectID>						m_specialObjectIDList; //The list of special objects
-	UnsignedInt										m_specialObjectEntries;				 //The size of the list of member Objects
-	Real													m_captureFlashPhase;    ///< used to track the accellerating flash of the capture FX
-	PackingState									m_packingState;
-	Bool													m_active;
-	Bool													m_noTargetCommand;
-	Bool													m_facingInitiated;
-	Bool													m_facingComplete;
-	Bool													m_withinStartAbilityRange;
-	Bool													m_doDisableFXParticles;      // smaller targets cause this flag to toggle, making the particle effect more sparse
+	AudioEventRTS			m_prepSoundLoop {};
+	UnsignedInt				m_prepFrames {};
+	UnsignedInt				m_animFrames {};				//Used for packing/unpacking unit before or after using ability.
+	ObjectID				m_targetID {};
+	Coord3D					m_targetPos {};
+	Int						m_locationCount {};
+	std::list<ObjectID>		m_specialObjectIDList {};		//The list of special objects
+	UnsignedInt				m_specialObjectEntries {};		//The size of the list of member Objects
+	Real					m_captureFlashPhase {};			///< used to track the accellerating flash of the capture FX
+	PackingState			m_packingState {};
+	Bool					m_active {};
+	Bool					m_noTargetCommand {};
+	Bool					m_facingInitiated {};
+	Bool					m_facingComplete {};
+	Bool					m_withinStartAbilityRange {};
+	Bool					m_doDisableFXParticles {};		// smaller targets cause this flag to toggle, making the particle effect more sparse
 };
 
 #endif // _SPECIAL_POWER_UPDATE_H_

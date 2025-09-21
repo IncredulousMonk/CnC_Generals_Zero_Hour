@@ -221,7 +221,7 @@ const ContainedItemsList* CaveContain::getContainedItemsList() const
 void CaveContain::onDie( const DamageInfo * damageInfo )
 {
 	// override the onDie we inherit from OpenContain. no super call.
-	if (!getCaveContainModuleData()->m_dieMuxData.isDieApplicable(getObject(), damageInfo))
+	if (!getCaveContainModuleData()->OpenContainModuleData::m_ini.m_dieMuxData.isDieApplicable(getObject(), damageInfo))
 		return;
 
 	if( getObject()->getStatusBits().test( OBJECT_STATUS_UNDER_CONSTRUCTION ) )
@@ -238,7 +238,7 @@ void CaveContain::onDie( const DamageInfo * damageInfo )
 //-------------------------------------------------------------------------------------------------
 void CaveContain::onCreate( void )
 {
-	m_caveIndex = getCaveContainModuleData()->m_caveIndexData;
+	m_caveIndex = getCaveContainModuleData()->m_ini.m_caveIndexData;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -311,7 +311,7 @@ void CaveContain::recalcApparentControllingPlayer( void )
 	const Player* controller = getApparentControllingPlayer(ThePlayerList->getLocalPlayer());
 	if (controller)
 	{
-		if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+		if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 			getObject()->getDrawable()->setIndicatorColor( controller->getPlayerNightColor() );
 		else
 			getObject()->getDrawable()->setIndicatorColor( controller->getPlayerColor() );

@@ -61,25 +61,25 @@ enum AudioPriority: int
 extern const char *theSoundTypeNames[];
 enum SoundType: int
 {
-	ST_UI										= 0x0001,
-	ST_WORLD								= 0x0002,
-	ST_SHROUDED							= 0x0004,
-	ST_GLOBAL								= 0x0008,
-	ST_VOICE								= 0x0010,
-	ST_PLAYER								= 0x0020,
-	ST_ALLIES								= 0x0040,
-	ST_ENEMIES							= 0x0080,
-	ST_EVERYONE							= 0x0100,	
+	ST_UI			= 0x0001,
+	ST_WORLD		= 0x0002,
+	ST_SHROUDED		= 0x0004,
+	ST_GLOBAL		= 0x0008,
+	ST_VOICE		= 0x0010,
+	ST_PLAYER		= 0x0020,
+	ST_ALLIES		= 0x0040,
+	ST_ENEMIES		= 0x0080,
+	ST_EVERYONE		= 0x0100,	
 };
 
 extern const char *theAudioControlNames[];
-enum AudioControl: int
+enum AudioControl: UnsignedInt
 {
-	AC_LOOP									= 0x0001,
-	AC_RANDOM								= 0x0002,
-	AC_ALL									= 0x0004,
-	AC_POSTDELAY						= 0x0008,
-	AC_INTERRUPT						= 0x0010,
+	AC_LOOP			= 0x0001,
+	AC_RANDOM		= 0x0002,
+	AC_ALL			= 0x0004,
+	AC_POSTDELAY	= 0x0008,
+	AC_INTERRUPT	= 0x0010,
 };
 
 class DynamicAudioEventInfo;

@@ -104,7 +104,7 @@ class STLSpecialAlloc;
 
 //------------------------------------------------------------------------------------ RTS Includes
 // Icky. These have to be in this order.
-// #include "Lib/BaseType.h"
+#include "Lib/BaseType.h"
 #include "Common/STLTypedefs.h"
 // #include "Common/Errors.h"
 #include "Common/Debug.h"

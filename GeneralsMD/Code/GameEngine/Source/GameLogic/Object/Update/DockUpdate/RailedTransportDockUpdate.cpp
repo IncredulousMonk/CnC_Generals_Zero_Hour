@@ -57,21 +57,21 @@ RailedTransportDockUpdateModuleData::RailedTransportDockUpdateModuleData( void )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void RailedTransportDockUpdateModuleData::buildFieldParse( MultiIniFieldParse &p )
+/*static*/ void RailedTransportDockUpdateModuleData::buildFieldParse( void* what, MultiIniFieldParse &p )
 {
-  DockUpdateModuleData::buildFieldParse( p );
+	DockUpdateModuleData::buildFieldParse( what, p );
 
 	static const FieldParse dataFieldParse[] = 
 	{
 
-		{ "PullInsideDuration", INI::parseDurationUnsignedInt, NULL, offsetof( RailedTransportDockUpdateModuleData, m_pullInsideDurationInFrames ) },	
-		{ "PushOutsideDuration",INI::parseDurationUnsignedInt, NULL, offsetof( RailedTransportDockUpdateModuleData, m_pushOutsideDurationInFrames ) },
-		{ "ToleranceDistance",  INI::parseReal,								 NULL, offsetof( RailedTransportDockUpdateModuleData, m_toleranceDistance ) },
+		{ "PullInsideDuration", INI::parseDurationUnsignedInt,	NULL, offsetof( RailedTransportDockUpdateModuleData, m_pullInsideDurationInFrames ) },	
+		{ "PushOutsideDuration",INI::parseDurationUnsignedInt,	NULL, offsetof( RailedTransportDockUpdateModuleData, m_pushOutsideDurationInFrames ) },
+		{ "ToleranceDistance",  INI::parseReal,					NULL, offsetof( RailedTransportDockUpdateModuleData, m_toleranceDistance ) },
 		{ 0, 0, 0, 0 }
 
 	};
 
-  p.add( dataFieldParse );
+	p.add( dataFieldParse );
 
 }  // end buildFieldParse
 

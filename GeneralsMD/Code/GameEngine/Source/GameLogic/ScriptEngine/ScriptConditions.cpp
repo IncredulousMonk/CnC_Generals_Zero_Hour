@@ -82,6 +82,10 @@ public:
 		if (m_types)
 			m_types->deleteInstance();
 	}
+
+	// No copies allowed!
+	ObjectTypesTemp(const ObjectTypesTemp&) = delete;
+	ObjectTypesTemp& operator=(const ObjectTypesTemp&) = delete;
 };
 
 // STATICS ////////////////////////////////////////////////////////////////////////////////////////
@@ -91,8 +95,8 @@ namespace rts
 		T sum(std::vector<T>& vecOfValues )
 	{
 		T retVal = 0;
-		std::vector<T>::iterator it;
-		for (it = vecOfValues.begin(); it != vecOfValues.end(); ++it) {
+		// typename std::vector<T>::iterator it;
+		for (auto it = vecOfValues.begin(); it != vecOfValues.end(); ++it) {
 			retVal += (*it);
 		}
 		return retVal;
@@ -107,13 +111,17 @@ class TransportStatus : public MemoryPoolObject
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(TransportStatus, "TransportStatus")		
 public:
 	TransportStatus *	m_nextStatus;
-	ObjectID					m_objID;
-	UnsignedInt				m_frameNumber;
-	Int								m_unitCount;
+	ObjectID			m_objID;
+	UnsignedInt			m_frameNumber;
+	Int					m_unitCount;
 
 public:
-	TransportStatus() : m_objID(INVALID_ID), m_frameNumber(0), m_unitCount(0), m_nextStatus(NULL) {}
+	TransportStatus() : m_nextStatus(NULL), m_objID(INVALID_ID), m_frameNumber(0), m_unitCount(0) {}
 	//~TransportStatus();
+
+	// No copies allowed!
+	TransportStatus(const TransportStatus&) = delete;
+	TransportStatus& operator=(const TransportStatus&) = delete;
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -156,8 +164,10 @@ void ScriptConditions::init( void )
 void ScriptConditions::reset( void )
 {
 
-	s_transportStatuses->deleteInstance();
-	s_transportStatuses = NULL;
+	if (s_transportStatuses) {
+		s_transportStatuses->deleteInstance();
+		s_transportStatuses = NULL;
+	}
 	// Empty for now.  jba.
 }  // end reset
 
@@ -608,7 +618,7 @@ Bool ScriptConditions::evaluatePlayerHasUnitKindInArea(Condition *pCondition, Pa
 		case Parameter::GREATER :				comparison = (count > pCountParm->getInt()); break;
 		case Parameter::NOT_EQUAL :			comparison = (count != pCountParm->getInt()); break;
 	}
-	pCondition->setCustomData(TheScriptEngine->getFrameObjectCountChanged());
+	pCondition->setCustomData((Int)TheScriptEngine->getFrameObjectCountChanged());
 	return comparison;
 }  
 
@@ -983,12 +993,12 @@ Bool ScriptConditions::evaluatePlayerHasCredits(Parameter *pCreditsParm, Paramet
 	if (pPlayer && pPlayer->getMoney()) {
 		switch (pComparisonParm->getInt())
 		{
-			case Parameter::LESS_THAN :			return (pCreditsParm->getInt() < pPlayer->getMoney()->countMoney()); break;
-			case Parameter::LESS_EQUAL :		return (pCreditsParm->getInt() <= pPlayer->getMoney()->countMoney()); break;
-			case Parameter::EQUAL :					return (pCreditsParm->getInt() == pPlayer->getMoney()->countMoney()); break;
-			case Parameter::GREATER_EQUAL :	return (pCreditsParm->getInt() >= pPlayer->getMoney()->countMoney()); break;
-			case Parameter::GREATER :				return (pCreditsParm->getInt() > pPlayer->getMoney()->countMoney()); break;
-			case Parameter::NOT_EQUAL :			return (pCreditsParm->getInt() != pPlayer->getMoney()->countMoney()); break;
+			case Parameter::LESS_THAN :		return ((UnsignedInt)pCreditsParm->getInt() < pPlayer->getMoney()->countMoney()); break;
+			case Parameter::LESS_EQUAL :	return ((UnsignedInt)pCreditsParm->getInt() <= pPlayer->getMoney()->countMoney()); break;
+			case Parameter::EQUAL :			return ((UnsignedInt)pCreditsParm->getInt() == pPlayer->getMoney()->countMoney()); break;
+			case Parameter::GREATER_EQUAL :	return ((UnsignedInt)pCreditsParm->getInt() >= pPlayer->getMoney()->countMoney()); break;
+			case Parameter::GREATER :		return ((UnsignedInt)pCreditsParm->getInt() > pPlayer->getMoney()->countMoney()); break;
+			case Parameter::NOT_EQUAL :		return ((UnsignedInt)pCreditsParm->getInt() != pPlayer->getMoney()->countMoney()); break;
 		}
 	}
 
@@ -1229,7 +1239,7 @@ Bool ScriptConditions::evaluateTeamDiscovered(Parameter *pTeamParm, Parameter *p
 //-------------------------------------------------------------------------------------------------
 /** evaluateMissionAttempts */
 //-------------------------------------------------------------------------------------------------
-Bool ScriptConditions::evaluateMissionAttempts(Parameter *pPlayerParm, Parameter *pComparisonParm, Parameter *pAttemptsParm)
+Bool ScriptConditions::evaluateMissionAttempts(Parameter* /* pPlayerParm */, Parameter* /* pComparisonParm */, Parameter* /* pAttemptsParm */)
 {	
 //Player* pPlayer = playerFromParam(pPlayerParm);
 	return false;
@@ -1358,7 +1368,7 @@ Bool ScriptConditions::evaluateTeamReachedWaypointsEnd(Parameter *pTeamParm, Par
 
 	AsciiString	pathName = pWaypointPathParm->getString();
 	Bool anyAtEnd = false;
-	Bool anyNotAtEnd = false;
+	// Bool anyNotAtEnd = false;
 	// Note - This returns true if any of the team completed the path.  This is as the current
 	// implementation tends to do group pathfinding by default, so we trigger when the leader actually thinks
 	// that he has reached the end of the waypoint path.
@@ -1374,7 +1384,7 @@ Bool ScriptConditions::evaluateTeamReachedWaypointsEnd(Parameter *pTeamParm, Par
 		const Waypoint *targetWay = ai->getCompletedWaypoint();
 
 		if (!targetWay) {
-			anyNotAtEnd = true;
+			// anyNotAtEnd = true;
 			continue;
 		}
 		Bool found = false;
@@ -1384,7 +1394,7 @@ Bool ScriptConditions::evaluateTeamReachedWaypointsEnd(Parameter *pTeamParm, Par
 		if (found) {
 			anyAtEnd = true;
 		} else {
-			anyNotAtEnd = true;
+			// anyNotAtEnd = true;
 		}
 	}
 	return anyAtEnd;
@@ -1620,7 +1630,7 @@ Bool ScriptConditions::evaluateNamedHasFreeContainerSlots(Parameter *pUnitParm)
 	ContainModuleInterface *contain = pUnit->getContain();
 	if( contain )
 	{
-		UnsignedInt max = contain->getContainMax();
+		UnsignedInt max = (UnsignedInt)contain->getContainMax();
 		UnsignedInt cur = contain->getContainCount();
 
 		if( cur < max )
@@ -1902,16 +1912,16 @@ Bool ScriptConditions::evaluatePlayerHasComparisonValueExcessPower(Parameter *pP
 Bool ScriptConditions::evaluateSkirmishSpecialPowerIsReady(Parameter *pSkirmishPlayerParm, Parameter *pPower)
 {
 	if (pPower->getInt() == -1) return false;
-	if (pPower->getInt()>0 && pPower->getInt()>TheGameLogic->getFrame()) {
+	if (pPower->getInt() > 0 && (UnsignedInt)pPower->getInt() > TheGameLogic->getFrame()) {
 		return false;
 	}
-	Int nextFrame = TheGameLogic->getFrame() + 10*LOGICFRAMES_PER_SECOND;
+	UnsignedInt nextFrame = TheGameLogic->getFrame() + 10*LOGICFRAMES_PER_SECOND;
 	const SpecialPowerTemplate *power = TheSpecialPowerStore->findSpecialPowerTemplate(pPower->getString());
 	if (power==NULL) {
 		pPower->friend_setInt(-1); // flag as never true.
 		return false;
 	}
-	Bool found = false;
+	// Bool found = false;
 	Player::PlayerTeamList::const_iterator it;
 	Player *pPlayer = playerFromParam(pSkirmishPlayerParm);
 	if (pPlayer==NULL) 
@@ -1934,7 +1944,7 @@ Bool ScriptConditions::evaluateSkirmishSpecialPowerIsReady(Parameter *pSkirmishP
 					if (!TheSpecialPowerStore->canUseSpecialPower(pObj, power)) {
 						continue;
 					}
-					found = true;
+					// found = true;
 					if (mod->isReady()) return true;
 					if (mod->getReadyFrame()<nextFrame) nextFrame = mod->getReadyFrame();
 				}
@@ -1942,7 +1952,7 @@ Bool ScriptConditions::evaluateSkirmishSpecialPowerIsReady(Parameter *pSkirmishP
 			}
 		}
 	}
-	pPower->friend_setInt(nextFrame);
+	pPower->friend_setInt((Int)nextFrame);
 	return false;
 }
 
@@ -1950,7 +1960,7 @@ Bool ScriptConditions::evaluateSkirmishSpecialPowerIsReady(Parameter *pSkirmishP
 //-------------------------------------------------------------------------------------------------
 /** evaluatePlayerDestroyedNOrMoreBuildings */
 //-------------------------------------------------------------------------------------------------
-Bool ScriptConditions::evaluatePlayerDestroyedNOrMoreBuildings(Parameter *pPlayerParm, Parameter *pNumParm, Parameter *pOpponentParm)
+Bool ScriptConditions::evaluatePlayerDestroyedNOrMoreBuildings(Parameter *pPlayerParm, Parameter* /* pNumParm */, Parameter *pOpponentParm)
 {
 	Player* pPlayer = playerFromParam(pPlayerParm);
 	Player* pOpponent = playerFromParam(pOpponentParm);
@@ -1984,7 +1994,7 @@ Bool ScriptConditions::evaluateUnitHasEmptied(Parameter *pUnitParm)
 	}
 
 	ContainModuleInterface *cmi = object->getContain();
-	Int numPeeps = cmi ? cmi->getContainCount() : 0;
+	Int numPeeps = cmi ? (Int)cmi->getContainCount() : 0;
 
 	UnsignedInt frameNum = TheGameLogic->getFrame();
 
@@ -2035,7 +2045,7 @@ Bool ScriptConditions::evaluateTeamIsContained(Parameter *pTeamParm, Bool allCon
 
 			AIUpdateInterface *ai = obj->getAIUpdateInterface();
 			if (ai) {
-				isContained = (isContained && (ai->getCurrentStateID() == AI_EXIT));
+				isContained = (isContained && (ai->getCurrentStateID() == (StateID) AI_EXIT));
 			}
 		}
 
@@ -2241,7 +2251,7 @@ Bool ScriptConditions::evaluateSkirmishSuppliesWithinDistancePerimeter(Parameter
 			continue;
 		}
 
-		Real value = player->getSupplyBoxValue() * warehouseModule->getBoxesStored();
+		Real value = (Real)player->getSupplyBoxValue() * (Real)warehouseModule->getBoxesStored();
 		if (value > maxValue) {
 			maxValue = value;
 		}

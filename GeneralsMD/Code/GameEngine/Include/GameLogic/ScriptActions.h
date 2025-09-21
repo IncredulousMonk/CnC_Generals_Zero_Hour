@@ -91,8 +91,8 @@ protected:
 	static GameWindow *m_messageWindow;
 	static void clearWindow(void) {m_messageWindow=NULL;};
 
-	Bool m_suppressNewWindows;
-	AsciiString m_unnamedUnit;
+	Bool m_suppressNewWindows {};
+	AsciiString m_unnamedUnit {};
 
 protected: // helper functions
 	void changeObjectPanelFlagForSingleObject(Object *obj, const AsciiString& flagToChange, Bool newVal );
@@ -394,5 +394,3 @@ protected:
 
 
 #endif  // end __SCRIPTACTIONS_H_
-
-

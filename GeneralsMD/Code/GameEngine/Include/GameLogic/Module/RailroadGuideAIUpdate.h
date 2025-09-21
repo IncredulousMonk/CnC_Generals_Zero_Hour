@@ -49,29 +49,29 @@ class RailroadBehaviorModuleData : public PhysicsBehaviorModuleData
 public:
 
 	RailroadBehaviorModuleData( void );
-	static void buildFieldParse( MultiIniFieldParse &p )
+	static void buildFieldParse(void* what, MultiIniFieldParse &p)
 	{
-		PhysicsBehaviorModuleData::buildFieldParse( p );
+		PhysicsBehaviorModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "PathPrefixName",		INI::parseAsciiString, NULL,	offsetof( RailroadBehaviorModuleData, m_pathPrefixName ) },
-			{ "CrashFXTemplateName",		INI::parseAsciiString, NULL,	offsetof( RailroadBehaviorModuleData, m_CrashFXTemplateName ) },
-			{ "IsLocomotive",		INI::parseBool, NULL,	offsetof( RailroadBehaviorModuleData, m_isLocomotive ) },
-			{ "CarriageTemplateName",  INI::parseAsciiStringVectorAppend, NULL, offsetof(RailroadBehaviorModuleData, m_carriageTemplateNameData) },
-			{ "BigMetalBounceSound",			INI::parseAudioEventRTS,	NULL,	offsetof( RailroadBehaviorModuleData, m_bigMetalImpactDefaultSound) },
-			{ "SmallMetalBounceSound",			INI::parseAudioEventRTS,	NULL,	offsetof( RailroadBehaviorModuleData, m_smallMetalImpactDefaultSound) },
-			{ "MeatyBounceSound",			INI::parseAudioEventRTS,	NULL,	offsetof( RailroadBehaviorModuleData, m_meatyImpactDefaultSound) },
-			{ "RunningGarrisonSpeedMax",			INI::parseReal,	NULL,	offsetof( RailroadBehaviorModuleData, m_runningGarrisonSpeedMax) },
-			{ "KillSpeedMin",			INI::parseReal,	NULL,	offsetof( RailroadBehaviorModuleData, m_killSpeedMin) },
-			{ "SpeedMax",			INI::parseReal,	NULL,	offsetof( RailroadBehaviorModuleData, m_speedMax) },
-			{ "Acceleration",			INI::parseReal,	NULL,	offsetof( RailroadBehaviorModuleData, m_acceleration) },
-			{ "Braking",			INI::parseReal,	NULL,	offsetof( RailroadBehaviorModuleData, m_braking) },
-			{ "WaitAtStationTime",			INI::parseDurationUnsignedInt,	NULL,	offsetof( RailroadBehaviorModuleData, m_waitAtStationTime) },
-			{ "RunningSound",			INI::parseAudioEventRTS,	NULL,	offsetof( RailroadBehaviorModuleData, m_runningSound) },
-			{ "ClicketyClackSound",			INI::parseAudioEventRTS,	NULL,	offsetof( RailroadBehaviorModuleData, m_clicketyClackSound) },
-			{ "WhistleSound",			INI::parseAudioEventRTS,	NULL,	offsetof( RailroadBehaviorModuleData, m_whistleSound) },
-			{ "Friction",			INI::parseReal,	NULL,	offsetof( RailroadBehaviorModuleData, m_friction) },
+			{ "PathPrefixName",				INI::parseAsciiString,											NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_pathPrefixName ) },
+			{ "CrashFXTemplateName",		INI::parseAsciiString,											NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_CrashFXTemplateName ) },
+			{ "IsLocomotive",				INI::parseBool,													NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_isLocomotive ) },
+			{ "CarriageTemplateName",		INI::parseAsciiStringVectorAppend,								NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_carriageTemplateNameData) },
+			{ "BigMetalBounceSound",		RailroadBehaviorModuleData::parseBigMetalImpactDefaultSound,	NULL,	0 },
+			{ "SmallMetalBounceSound",		RailroadBehaviorModuleData::parseSmallMetalImpactDefaultSound,	NULL,	0 },
+			{ "MeatyBounceSound",			RailroadBehaviorModuleData::parseMeatyImpactDefaultSound,		NULL,	0 },
+			{ "RunningGarrisonSpeedMax",	INI::parseReal,													NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_runningGarrisonSpeedMax) },
+			{ "KillSpeedMin",				INI::parseReal,													NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_killSpeedMin) },
+			{ "SpeedMax",					INI::parseReal,													NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_speedMax) },
+			{ "Acceleration",				INI::parseReal,													NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_acceleration) },
+			{ "Braking",					INI::parseReal,													NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_braking) },
+			{ "WaitAtStationTime",			INI::parseDurationUnsignedInt,									NULL,	offsetof(RailroadBehaviorModuleData::IniData, m_waitAtStationTime) },
+			{ "RunningSound",				RailroadBehaviorModuleData::parseRunningSound,					NULL,	0 },
+			{ "ClicketyClackSound",			RailroadBehaviorModuleData::parseClicketyClackSound,			NULL,	0 },
+			{ "WhistleSound",				RailroadBehaviorModuleData::parseWhistleSound,					NULL,	0 },
+			{ "Friction",					INI::parseReal,													NULL,	offsetof( RailroadBehaviorModuleData::IniData, m_friction) },
 			{ 0, 0, 0, 0 }
 		};
 
@@ -79,24 +79,42 @@ public:
 
 	}  // end buildFieldParse
 
-	TemplateNameList m_carriageTemplateNameData;
-	AsciiString m_pathPrefixName;		///< prefix to use for waypont start and end points we'll look for
-	AsciiString m_CrashFXTemplateName;
+	// MG: Cannot apply offsetof to RailroadBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		TemplateNameList m_carriageTemplateNameData;
+		AsciiString m_pathPrefixName;		///< prefix to use for waypont start and end points we'll look for
+		AsciiString m_CrashFXTemplateName;
 
-	Bool m_isLocomotive;
-	Real m_runningGarrisonSpeedMax;
-	Real m_killSpeedMin;
-	Real m_speedMax;
-	Real m_acceleration;
-	Real m_braking;
-	Real m_friction;
-	UnsignedInt m_waitAtStationTime;
-	AudioEventRTS			m_runningSound;
-	AudioEventRTS			m_clicketyClackSound;
-	AudioEventRTS				m_bigMetalImpactDefaultSound;		
-	AudioEventRTS				m_smallMetalImpactDefaultSound;	
-	AudioEventRTS				m_meatyImpactDefaultSound;			
-	AudioEventRTS				m_whistleSound;						
+		Bool m_isLocomotive;
+		Real m_runningGarrisonSpeedMax;
+		Real m_killSpeedMin;
+		Real m_speedMax;
+		Real m_acceleration;
+		Real m_braking;
+		Real m_friction;
+		UnsignedInt m_waitAtStationTime;
+
+		RailroadBehaviorModuleData* m_obj {};	///< pointer to the parent object
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS m_runningSound {};
+	AudioEventRTS m_clicketyClackSound {};
+	AudioEventRTS m_bigMetalImpactDefaultSound {};
+	AudioEventRTS m_smallMetalImpactDefaultSound {};
+	AudioEventRTS m_meatyImpactDefaultSound {};
+	AudioEventRTS m_whistleSound {};
+
+private:
+	// Proxy parse functions to avoid offset problems:
+	static void parseBigMetalImpactDefaultSound(INI* ini, void *instance, void* store, const void* userData);
+	static void parseSmallMetalImpactDefaultSound(INI* ini, void *instance, void* store, const void* userData);
+	static void parseMeatyImpactDefaultSound(INI* ini, void *instance, void* store, const void* userData);
+	static void parseRunningSound(INI* ini, void *instance, void* store, const void* userData);
+	static void parseClicketyClackSound(INI* ini, void *instance, void* store, const void* userData);
+	static void parseWhistleSound(INI* ini, void *instance, void* store, const void* userData);
 };
 //-------------------------------------------------------------------------------------------------
  
@@ -129,21 +147,18 @@ struct TrackPoint
 	};
 
 
-	const Int getHandle( void )
-	{
-		return m_handle;
-	};
+	Int getHandle( void ) { return m_handle; };
 
-	Coord3D m_position;
-	Real m_distanceFromPrev;
-	Real m_distanceFromFirst;
-	Int  m_handle;
-	Bool m_isFirstPoint;
-	Bool m_isLastPoint;
-	Bool m_isTunnelOrBridge;
-	Bool m_isStation;
-	Bool m_isDisembark;
-	Bool m_isPingPong;
+	Coord3D m_position {};
+	Real m_distanceFromPrev {};
+	Real m_distanceFromFirst {};
+	Int  m_handle {};
+	Bool m_isFirstPoint {};
+	Bool m_isLastPoint {};
+	Bool m_isTunnelOrBridge {};
+	Bool m_isStation {};
+	Bool m_isDisembark {};
+	Bool m_isPingPong {};
 
 };
 typedef std::list<TrackPoint> TrackPointList;
@@ -167,9 +182,9 @@ struct TrainTrack
 		m_length = 0.0f;
 	};
 
-	Bool m_isLooping;
-	Bool m_isValid;
-	Real m_length;
+	Bool m_isLooping {};
+	Bool m_isValid {};
+	Real m_length {};
 
 	void incReference(); 
 	Bool releaseReference(); 
@@ -180,8 +195,8 @@ struct TrainTrack
 	const TrackPointList* getPointList( void ) { return &m_pointList; };
 
 private:
-	TrackPointList m_pointList;
-	UnsignedInt m_refCount;
+	TrackPointList m_pointList {};
+	UnsignedInt m_refCount {};
 
 };
 
@@ -196,6 +211,10 @@ public:
 
 	RailroadBehavior( Thing *thing, const ModuleData *moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	RailroadBehavior(const RailroadBehavior&) = delete;
+	RailroadBehavior& operator=(const RailroadBehavior&) = delete;
 
 	static Int getInterfaceMask() { return PhysicsBehavior::getInterfaceMask(); }
 
@@ -214,8 +233,7 @@ public:
 	};
 
 	typedef std::vector<AsciiString> TemplateNameVector;
-	typedef TemplateNameVector::const_iterator TemplateNameIterator;;
-	
+	typedef TemplateNameVector::const_iterator TemplateNameIterator;
 
 
 	//UpdateModule methods
@@ -265,45 +283,42 @@ protected:
 	void FindPosByPathDistance( Coord3D *pos, const Real dist, const Real length, Bool setState = FALSE );
 	void playImpactSound(Object *victim, const Coord3D *impactPosition);
 
-	TemplateNameIterator m_carriageTemplateNameIterator;
-	StationTask m_nextStationTask;
-	ObjectID m_trailerID; ///< the ID of the object I am directly pulling
-	PullInfo conductorPullInfo;
-	PullInfo m_pullInfo;
+	TemplateNameIterator m_carriageTemplateNameIterator {};
+	StationTask m_nextStationTask {};
+	ObjectID m_trailerID {}; ///< the ID of the object I am directly pulling
+	PullInfo conductorPullInfo {};
+	PullInfo m_pullInfo {};
 
-	AudioEventRTS			m_whistleSound;
-	AudioEventRTS			m_clicketyClackSound;
-	AudioEventRTS			m_runningSound;
-	AudioHandle				m_runningSoundHandle;
+	AudioEventRTS			m_whistleSound {};
+	AudioEventRTS			m_clicketyClackSound {};
+	AudioEventRTS			m_runningSound {};
+	AudioHandle				m_runningSoundHandle {};
 	
-	TrainTrack *m_track;
+	TrainTrack *m_track {};
 
-	Int m_currentPointHandle; 
-	Int m_waitAtStationTimer;
+	Int m_currentPointHandle {};
+	Int m_waitAtStationTimer {};
 
 	//Flags
-	Bool m_carriagesCreated; ///< TRUE once we have made all the cars in the train
-	Bool m_hasEverBeenHitched; /// has somebody ever hitched me? Remains true, even after puller dies.
-	Bool m_trackDataLoaded; ///< have I TRIED to load track data, yet? I only try once!
-	Bool m_waitingInWings; /// I have not entered the real track yet, so leave me alone
-	Bool m_endOfLine;				/// I have reached the end of a non looping track
-	Bool m_isLocomotive; ///< Am I a locomotive, 
-	Bool m_isLeadCarraige; ///< Am the carraige in front,  
-	Int m_wantsToBeLeadCarraige; ///< Am the carraige in front,  
-	Bool m_disembark; ///< If I wait at a station, I should also evacuate everybody when I get theres
-	Bool m_inTunnel; ///< Am I in a tunnel, so I wil not snap to ground height, until the next waypoint, 
-												//  i.e. do I provide the movement and scheduling AI for m_trailerID 
-												//  And therefore for his and his and his..........
+	Bool m_carriagesCreated {};		///< TRUE once we have made all the cars in the train
+	Bool m_hasEverBeenHitched {};	/// has somebody ever hitched me? Remains true, even after puller dies.
+	Bool m_trackDataLoaded {};		///< have I TRIED to load track data, yet? I only try once!
+	Bool m_waitingInWings {};		/// I have not entered the real track yet, so leave me alone
+	Bool m_endOfLine {};			/// I have reached the end of a non looping track
+	Bool m_isLocomotive {};			///< Am I a locomotive, 
+	Bool m_isLeadCarraige {};		///< Am the carraige in front,  
+	Int m_wantsToBeLeadCarraige {};	///< Am the carraige in front,  
+	Bool m_disembark {};			///< If I wait at a station, I should also evacuate everybody when I get theres
+	Bool m_inTunnel {};				///< Am I in a tunnel, so I will not snap to ground height, until the next waypoint, 
+										//  i.e. do I provide the movement and scheduling AI for m_trailerID 
+										//  And therefore for his and his and his..........
 
-  Bool m_held;   ///< This will prevent a loco from departing a station
+	Bool m_held {};   ///< This will prevent a loco from departing a station
 
-	ConductorState m_conductorState;
+	ConductorState m_conductorState {};
 
-	WaypointID m_anchorWaypointID;
-
-
+	WaypointID m_anchorWaypointID {};
 };
 
 
 #endif  // end __RAILROAD_GUIDE_AI_UPDATE_H_
-

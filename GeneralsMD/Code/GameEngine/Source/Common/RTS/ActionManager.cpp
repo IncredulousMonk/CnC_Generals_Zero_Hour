@@ -287,7 +287,7 @@ Bool ActionManager::canTransferSuppliesAt( const Object *obj, const Object *tran
 // ------------------------------------------------------------------------------------------------
 /** Can object 'obj' dock with object 'dockDest' for any reason */
 // ------------------------------------------------------------------------------------------------
-Bool ActionManager::canDockAt( const Object *obj, const Object *dockDest, CommandSourceType commandSource )
+Bool ActionManager::canDockAt( const Object *obj, const Object *dockDest, CommandSourceType /* commandSource */ )
 {
 
 	// look for a dock interface
@@ -678,8 +678,8 @@ Bool ActionManager::canEnterObject( const Object *obj, const Object *objectToEnt
 	else
 	{
 		Bool checkCapacity = (mode == CHECK_CAPACITY);
-		Int containCount = contain->getContainCount();
-		Int stealthContainCount = contain->getStealthUnitsContained();
+		Int containCount = (Int)contain->getContainCount();
+		Int stealthContainCount = (Int)contain->getStealthUnitsContained();
 		Int nonStealthContainCount = containCount - stealthContainCount;
 
 		// not ours... must do special checks.
@@ -1080,8 +1080,8 @@ Bool ActionManager::canCaptureBuilding( const Object *obj, const Object *objectT
 	ContainModuleInterface *contain = objectToCapture->getContain();
 	if (contain != NULL && contain->isGarrisonable())
 	{
-		Int containCount = contain->getContainCount();
-		Int stealthContainCount = contain->getStealthUnitsContained();
+		Int containCount = (Int)contain->getContainCount();
+		Int stealthContainCount = (Int)contain->getStealthUnitsContained();
 		Int nonStealthContainCount = containCount - stealthContainCount;
 		if (nonStealthContainCount > 0)
 			return FALSE;
@@ -1377,13 +1377,13 @@ Bool ActionManager::canDisableBuildingViaHacking( const Object *obj, const Objec
 }
 
 // ------------------------------------------------------------------------------------------------
-Bool ActionManager::canBribeUnit( const Object *obj, const Object *objectToBribe, CommandSourceType commandSource )
+Bool ActionManager::canBribeUnit( const Object* /* obj */, const Object* /* objectToBribe */, CommandSourceType /* commandSource */ )
 {
 	return FALSE;
 }
 
 // ------------------------------------------------------------------------------------------------
-Bool ActionManager::canCutBuildingPower( const Object *obj, const Object *building, CommandSourceType commandSource )
+Bool ActionManager::canCutBuildingPower( const Object* /* obj */, const Object* /* building */, CommandSourceType /* commandSource */ )
 {
 	return FALSE;
 }
@@ -1457,7 +1457,8 @@ inline Bool isPointOnMap( const Coord3D  *testPos )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3D *loc, CommandSourceType commandSource, const SpecialPowerTemplate *spTemplate, const Object *objectInWay, UnsignedInt commandOptions, Bool checkSourceRequirements )
+Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3D *loc, CommandSourceType /* commandSource */, const SpecialPowerTemplate *spTemplate,
+	const Object* /* objectInWay */, UnsignedInt /* commandOptions */, Bool checkSourceRequirements )
 {
 	if (checkSourceRequirements)
 	{
@@ -1479,7 +1480,7 @@ Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3
 				return false;
 			}
 		}
-    
+
 		// First check terrain type, if it is cared about.  Don't return a true, since there are more checks.
 		switch( spTemplate->getSpecialPowerType() )
 		{
@@ -1491,6 +1492,8 @@ Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3
 				if( TheTerrainLogic->isUnderwater( loc->x, loc->y ) )
 					return FALSE;
 			}
+			default:
+				break;
 		}
 
 		// Last check is shroudedness, if it is cared about
@@ -1530,7 +1533,7 @@ Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3
 			case AIRF_SPECIAL_SPECTRE_GUNSHIP:
 			case SPECIAL_REPAIR_VEHICLES:
 			case EARLY_SPECIAL_REPAIR_VEHICLES:
-      case SPECIAL_GPS_SCRAMBLER:  
+			case SPECIAL_GPS_SCRAMBLER:  
 			case SLTH_SPECIAL_GPS_SCRAMBLER:
 			case SPECIAL_ARTILLERY_BARRAGE:
 			case SPECIAL_FRENZY:
@@ -1549,10 +1552,10 @@ Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3
 			case SPECIAL_SPY_DRONE:
 			case SPECIAL_HELIX_NAPALM_BOMB:
 
-        //These specials can be used anywhere!
-        return isPointOnMap( loc );
-      case SPECIAL_LAUNCH_BAIKONUR_ROCKET:
-			  return TRUE;
+				//These specials can be used anywhere!
+				return isPointOnMap( loc );
+			case SPECIAL_LAUNCH_BAIKONUR_ROCKET:
+				return TRUE;
 
 			//These special powers require object targets!
 			case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
@@ -1572,6 +1575,9 @@ Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3
 			case SPECIAL_CASH_BOUNTY:
 			case SPECIAL_CHANGE_BATTLE_PLANS:
 				return false;
+
+			default:
+				break;
 		}
 	}
 	return false;
@@ -1579,7 +1585,7 @@ Bool ActionManager::canDoSpecialPowerAtLocation( const Object *obj, const Coord3
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Bool ActionManager::canDoSpecialPowerAtObject( const Object *obj, const Object *target, CommandSourceType commandSource, const SpecialPowerTemplate *spTemplate, UnsignedInt commandOptions, Bool checkSourceRequirements )
+Bool ActionManager::canDoSpecialPowerAtObject( const Object *obj, const Object *target, CommandSourceType commandSource, const SpecialPowerTemplate *spTemplate, UnsignedInt /* commandOptions */, Bool checkSourceRequirements )
 {
 	if (checkSourceRequirements)
 	{
@@ -1768,14 +1774,14 @@ Bool ActionManager::canDoSpecialPowerAtObject( const Object *obj, const Object *
 			case SPECIAL_SCUD_STORM:
 			case SPECIAL_A10_THUNDERBOLT_STRIKE:
 			case AIRF_SPECIAL_A10_THUNDERBOLT_STRIKE:
-      case SPECIAL_SPECTRE_GUNSHIP:
+			case SPECIAL_SPECTRE_GUNSHIP:
 			case AIRF_SPECIAL_SPECTRE_GUNSHIP:
 			case SPECIAL_ARTILLERY_BARRAGE:
 			case SPECIAL_FRENZY:
 			case EARLY_SPECIAL_FRENZY:
 			case SPECIAL_REPAIR_VEHICLES:
 			case EARLY_SPECIAL_REPAIR_VEHICLES:
-      case SPECIAL_GPS_SCRAMBLER:
+			case SPECIAL_GPS_SCRAMBLER:
 			case SLTH_SPECIAL_GPS_SCRAMBLER:
 			case SPECIAL_PARTICLE_UPLINK_CANNON:
 			case SPECIAL_CHANGE_BATTLE_PLANS:
@@ -1834,6 +1840,9 @@ Bool ActionManager::canDoSpecialPowerAtObject( const Object *obj, const Object *
 				}
 				break;
 			}
+
+			default:
+				break;
 		}
 	}
 	return false;
@@ -1841,7 +1850,7 @@ Bool ActionManager::canDoSpecialPowerAtObject( const Object *obj, const Object *
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Bool ActionManager::canDoSpecialPower( const Object *obj, const SpecialPowerTemplate *spTemplate, CommandSourceType commandSource, UnsignedInt commandOptions, Bool checkSourceRequirements )
+Bool ActionManager::canDoSpecialPower( const Object *obj, const SpecialPowerTemplate *spTemplate, CommandSourceType /* commandSource */, UnsignedInt /* commandOptions */, Bool checkSourceRequirements )
 {
 	if (checkSourceRequirements)
 	{
@@ -1897,7 +1906,7 @@ Bool ActionManager::canDoSpecialPower( const Object *obj, const SpecialPowerTemp
 			case SPECIAL_SCUD_STORM:
 			case SPECIAL_A10_THUNDERBOLT_STRIKE:
 			case AIRF_SPECIAL_A10_THUNDERBOLT_STRIKE:
-      case SPECIAL_SPECTRE_GUNSHIP:
+			case SPECIAL_SPECTRE_GUNSHIP:
 			case AIRF_SPECIAL_SPECTRE_GUNSHIP:
 			case SPECIAL_ARTILLERY_BARRAGE:
 			case SPECIAL_FRENZY:
@@ -1905,7 +1914,7 @@ Bool ActionManager::canDoSpecialPower( const Object *obj, const SpecialPowerTemp
 			case SPECIAL_DISGUISE_AS_VEHICLE:
 			case SPECIAL_REPAIR_VEHICLES:
 			case EARLY_SPECIAL_REPAIR_VEHICLES:
-      case SPECIAL_GPS_SCRAMBLER:
+			case SPECIAL_GPS_SCRAMBLER:
 			case SLTH_SPECIAL_GPS_SCRAMBLER:
 			case SPECIAL_PARTICLE_UPLINK_CANNON:
 			case SPECIAL_CASH_BOUNTY:
@@ -1925,13 +1934,16 @@ Bool ActionManager::canDoSpecialPower( const Object *obj, const SpecialPowerTemp
 			case SPECIAL_LAUNCH_BAIKONUR_ROCKET:
 				//Detonate's any existing charges
 				return true;
+			
+			default:
+				break;
 		}
 	}
 	return false;
 }
 
 //------------------------------------------------------------------------------------------------
-Bool ActionManager::canFireWeaponAtLocation( const Object *obj, const Coord3D *loc, CommandSourceType commandSource, const WeaponSlotType slot, const Object *objectInWay )
+Bool ActionManager::canFireWeaponAtLocation( const Object *obj, const Coord3D *loc, CommandSourceType /* commandSource */, const WeaponSlotType slot, const Object* /* objectInWay */ )
 {
 	//Sanity check
 	if( obj == NULL || loc == NULL )
@@ -1989,7 +2001,7 @@ Bool ActionManager::canFireWeaponAtObject( const Object *obj, const Object *targ
 }
 
 //------------------------------------------------------------------------------------------------
-Bool ActionManager::canFireWeapon( const Object *obj, const WeaponSlotType slot, CommandSourceType commandSource )
+Bool ActionManager::canFireWeapon( const Object *obj, const WeaponSlotType slot, CommandSourceType /* commandSource */ )
 {
 	//Sanity check
 	if( obj == NULL )
@@ -2009,7 +2021,7 @@ Bool ActionManager::canFireWeapon( const Object *obj, const WeaponSlotType slot,
 }
 
 //------------------------------------------------------------------------------------------------
-Bool ActionManager::canGarrison( const Object *obj, const Object *target, CommandSourceType commandSource )
+Bool ActionManager::canGarrison( const Object *obj, const Object *target, CommandSourceType /* commandSource */ )
 {
 	if (!(obj && target))
 		return false;
@@ -2047,7 +2059,7 @@ Bool ActionManager::canGarrison( const Object *obj, const Object *target, Comman
 }
 
 //------------------------------------------------------------------------------------------------
-Bool ActionManager::canPlayerGarrison( const Player *player, const Object *target, CommandSourceType commandSource )
+Bool ActionManager::canPlayerGarrison( const Player *player, const Object *target, CommandSourceType /* commandSource */ )
 {
 	if (!(player && target))
 		return false;
@@ -2081,7 +2093,7 @@ Bool ActionManager::canPlayerGarrison( const Player *player, const Object *targe
 }
 
 //------------------------------------------------------------------------------------------------
-Bool ActionManager::canOverrideSpecialPowerDestination( const Object *obj, const Coord3D *loc, SpecialPowerType spType, CommandSourceType commandSource )
+Bool ActionManager::canOverrideSpecialPowerDestination( const Object *obj, const Coord3D *loc, SpecialPowerType spType, CommandSourceType /* commandSource */ )
 {
 	SpecialPowerUpdateInterface* spuInterface = obj->findSpecialPowerWithOverridableDestinationActive( spType );
 	if( spuInterface )

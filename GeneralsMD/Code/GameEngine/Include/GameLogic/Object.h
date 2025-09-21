@@ -193,10 +193,8 @@ public:
 	ObjectID getProducerID() const { return m_producerID; }
 	void setProducer(const Object* obj);
 
-#if 0
 	ObjectID getBuilderID() const { return m_builderID; }
 	void setBuilder( const Object *obj );
-#endif // if 0
 
 	void enterGroup( AIGroup *group );							///< become a member of the AIGroup
 	void leaveGroup( void );												///< leave our current AIGroup
@@ -206,7 +204,6 @@ public:
 	Bool isMobile() const;																	///< returns true if object is currently able to move
 	Bool isAbleToAttack() const;														///< returns true if object currently has some kind of attack capability
 
-#if 0
 	void maskObject( Bool mask );				///< mask/unmask object
 	
 	/** 
@@ -217,7 +214,6 @@ public:
 	Bool checkAndDetonateBoobyTrap(const Object *victim);
 
 	// cannot set velocity, since this is calculated from position every frame
-#endif // if 0
 	Bool isDestroyed() const { return m_status.test( OBJECT_STATUS_DESTROYED ); }		///< Returns TRUE if object has been destroyed
 	Bool isAirborneTarget() const { return m_status.test( OBJECT_STATUS_AIRBORNE_TARGET ); }	///< Our locomotor will control marking us as a valid target for anti air weapons or not
 	Bool isUsingAirborneLocomotor( void ) const;										///< returns true if the current locomotor is an airborne one
@@ -268,12 +264,10 @@ public:
 	Relationship getRelationship(const Object *that) const;
 	
 	Color getIndicatorColor() const;
-#if 0
 	Color getNightIndicatorColor() const;
 	Bool hasCustomIndicatorColor() const { return m_indicatorColor != 0; }
 	void setCustomIndicatorColor(Color c);
 	void removeCustomIndicatorColor();
-#endif // if 0
 
 	Bool isLocallyControlled() const;
 	Bool isNeutralControlled() const;
@@ -346,11 +340,9 @@ public:
 	//
 	DockUpdateInterface *getDockUpdateInterface( void );
 
-#if 0
 	// Ditto for special powers -- Kris
 	SpecialPowerModuleInterface* findSpecialPowerModuleInterface( SpecialPowerType type ) const;
 	SpecialPowerModuleInterface* findAnyShortcutSpecialPowerModuleInterface() const;
-#endif // if 0
 	SpecialAbilityUpdate* findSpecialAbilityUpdate( SpecialPowerType type ) const;
 	SpecialPowerCompletionDie* findSpecialPowerCompletionDie() const;
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestinationActive( SpecialPowerType type = SPECIAL_INVALID ) const;
@@ -383,13 +375,11 @@ public:
 	void setScriptStatus( ObjectScriptStatusBit bit, Bool set = true );
 	inline void clearScriptStatus( ObjectScriptStatusBit bit ) { setScriptStatus(bit, false); }
 
-#if 0
 	// Selectable is individually controlled on an object by object basis for design now.
 	// It defaults to the thingTemplate->isKindof(KINDOF_SELECTABLE), however, it can be overridden on an 
 	// object by object basis.  Finally, it can be temporarily overriden by the OBJECT_STATUS_UNSELECTABLE. 
 	// jba.
 	void setSelectable(Bool selectable);
-#endif // if 0
 	Bool isSelectable() const;
 	
 	Bool isMassSelectable() const;
@@ -469,11 +459,9 @@ public:
 #endif // if 0
 	void setVisionSpied(Bool setting, Int byWhom);///< Change who is looking through our eyes
 
-#if 0
 	// Both of these calls are intended to only be used by TerrainLogic, specifically setActiveBoundary()
 	void friend_prepareForMapBoundaryAdjust(void);
 	void friend_notifyOfNewMapBoundary(void);
-#endif // if 0
 
 	// data for the radar
 	void friend_setRadarData( RadarObject *rd ) { m_radarData = rd; }
@@ -487,10 +475,8 @@ public:
 	inline Bool isContained() const { return m_containedBy != NULL; }
 	void onContainedBy( Object *containedBy );
 	void onRemovedFrom( Object *removedFrom );
-#if 0
 	Int getTransportSlotCount() const;
 	void friend_setContainedBy( Object *containedBy ) { m_containedBy = containedBy; }
-#endif // if 0
 
 	// Special Powers -------------------------------------------------------------------------------
 	SpecialPowerModuleInterface *getSpecialPowerModule( const SpecialPowerTemplate *specialPowerTemplate ) const;
@@ -541,7 +527,9 @@ public:
 #if 0
 	UnsignedInt getLastShotFiredFrame() const;					///< Get the frame a shot was last fired on
 	ObjectID getLastVictimID() const;						///< Get the last victim we shot at
+#endif // if 0
 	Weapon* findWaypointFollowingCapableWeapon();
+#if 0
 	Bool getAmmoPipShowingInfo(Int& numTotal, Int& numFull) const;
 #endif // if 0
 
@@ -608,14 +596,11 @@ public:
 	void setWeaponBonusCondition(WeaponBonusConditionType wst);
 	void clearWeaponBonusCondition(WeaponBonusConditionType wst);
 	
-#if 0
 	// note, the !=0 at the end is important, to convert this into a boolean type! (srj)
 	Bool testWeaponBonusCondition(WeaponBonusConditionType wst) const { return (m_weaponBonusCondition & (1 << wst)) != 0; }
 	inline WeaponBonusConditionFlags getWeaponBonusCondition() const { return m_weaponBonusCondition; }
-#endif // if 0
 
 	Bool getSingleLogicalBonePosition(const char* boneName, Coord3D* position, Matrix3D* transform) const;
-#if 0
 	Bool getSingleLogicalBonePositionOnTurret(WhichTurretType whichTurret, const char* boneName, Coord3D* position, Matrix3D* transform) const;
 	Int getMultiLogicalBonePosition(const char* boneNamePrefix, Int maxBones, Coord3D* positions, Matrix3D* transforms, Bool convertToWorld = TRUE ) const;
 	
@@ -623,7 +608,6 @@ public:
 	Bool didEnter(const PolygonTrigger *pTrigger) const;
 	Bool didExit(const PolygonTrigger *pTrigger) const;
 	Bool isInside(const PolygonTrigger *pTrigger) const;
-#endif // if 0
 
 	// exiting of any kind
 	ExitInterface *getObjectExitInterface() const;  ///< get exit interface is present
@@ -656,9 +640,9 @@ public:
 	Int getNumConsecutiveShotsFiredAtTarget( const Object *victim) const;
 
 	void setHealthBoxOffset( const Coord3D& offset ) { m_healthBoxOffset = offset; } ///< for special amorphous like angry mob
+#endif // if 0
 
 	void defect( Team *newTeam, UnsignedInt detectionTime );
-#endif // if 0
 	void goInvulnerable( UnsignedInt time );
 	
 	// This is public, since there is no Thing level master setting of Turret stuff.  It is all done in a sleepy hamlet
@@ -676,10 +660,12 @@ public:
 	
 #if 0
 	Bool isHero(void) const;
+#endif // if 0
 
 	Bool getReceivingDifficultyBonus() const { return m_isReceivingDifficultyBonus; }
 	void setReceivingDifficultyBonus(Bool receive);
 
+#if 0
 	inline UnsignedInt getSafeOcclusionFrame(void) { return m_safeOcclusionFrame; }	//< this is an object specific frame at which it's safe to enable building occlusion.
 	inline void	setSafeOcclusionFrame(UnsignedInt frame) { m_safeOcclusionFrame = frame;} 
 
@@ -714,9 +700,7 @@ protected:
 	// It will go away someday. Yeah, right. Just like GlobalData.
 	Module* findModule(NameKeyType key) const;
 
-#if 0
 	Bool didEnterOrExit() const;
-#endif // if 0
 
 	void setID( ObjectID id );
 #if 0

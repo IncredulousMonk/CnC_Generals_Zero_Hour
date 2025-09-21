@@ -46,11 +46,17 @@ class WeaponTemplate;
 class CommandButtonHuntUpdateModuleData : public ModuleData
 {
 public:
-	UnsignedInt			m_scanFrames;
-	Real						m_scanRange;
+	// MG: Cannot apply offsetof to CommandButtonHuntUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt	m_scanFrames;
+		Real		m_scanRange;
+	};
+
+	IniData m_ini {};
 
 	CommandButtonHuntUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private: 
 
@@ -63,12 +69,16 @@ class CommandButtonHuntUpdate : public UpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( CommandButtonHuntUpdate, "CommandButtonHuntUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( CommandButtonHuntUpdate, CommandButtonHuntUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( CommandButtonHuntUpdate, CommandButtonHuntUpdateModuleData )
 
 public:
 
 	CommandButtonHuntUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	CommandButtonHuntUpdate(const CommandButtonHuntUpdate&) = delete;
+	CommandButtonHuntUpdate& operator=(const CommandButtonHuntUpdate&) = delete;
 
 	virtual void onObjectCreated();
 	virtual UpdateSleepTime update();
@@ -83,10 +93,9 @@ protected:
 
 
 protected:
-	AsciiString		m_commandButtonName;
-	const CommandButton *m_commandButton;
+	AsciiString		m_commandButtonName {};
+	const CommandButton *m_commandButton {};
 };
 
 
 #endif
-

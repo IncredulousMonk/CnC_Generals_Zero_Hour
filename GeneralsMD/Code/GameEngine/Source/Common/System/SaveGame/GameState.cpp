@@ -47,7 +47,7 @@
 #include "GameClient/GadgetListBox.h"
 #include "GameClient/GameClient.h"
 #include "GameClient/GameText.h"
-// #include "GameClient/MapUtil.h"
+#include "GameClient/MapUtil.h"
 #include "GameClient/MessageBox.h"
 #include "GameClient/InGameUI.h"
 #include "GameClient/ParticleSys.h"
@@ -829,7 +829,6 @@ AsciiString GameState::getMapLeafName(const AsciiString& in) const
 	}
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 static const char* findLastBackslashInRangeInclusive(const char* start, const char* end)
 {
@@ -872,6 +871,7 @@ static AsciiString getMapLeafAndDirName(const AsciiString& in)
 	}
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 static AsciiString removeExtension(const AsciiString& in)
 {
@@ -900,17 +900,16 @@ AsciiString GameState::realMapPathToPortableMapPath(const AsciiString& in) const
 		prefix = PORTABLE_SAVE;
 		prefix.concat(getMapLeafName(in));
 	}
-	// FIXME: TheMapCache
-	// else if (in.startsWithNoCase(TheMapCache->getMapDir()))
-	// {
-	// 	prefix = PORTABLE_MAPS;
-	// 	prefix.concat(getMapLeafAndDirName(in));
-	// }
-	// else if (in.startsWithNoCase(TheMapCache->getUserMapDir()))
-	// {
-	// 	prefix = PORTABLE_USER_MAPS;
-	// 	prefix.concat(getMapLeafAndDirName(in));
-	// }
+	else if (in.startsWithNoCase(TheMapCache->getMapDir()))
+	{
+		prefix = PORTABLE_MAPS;
+		prefix.concat(getMapLeafAndDirName(in));
+	}
+	else if (in.startsWithNoCase(TheMapCache->getUserMapDir()))
+	{
+		prefix = PORTABLE_USER_MAPS;
+		prefix.concat(getMapLeafAndDirName(in));
+	}
 	else
 	{
 		DEBUG_CRASH(("Map file was not found in any of the expected directories; this is impossible"));
@@ -932,21 +931,20 @@ AsciiString GameState::portableMapPathToRealMapPath(const AsciiString& in) const
 		prefix = getSaveDirectory();
 		prefix.concat(getMapLeafName(in));
 	}
-	// FIXME: TheMapCache
-	// else if (in.startsWithNoCase(PORTABLE_MAPS))
-	// {
-	// 	// the map dir DOES NOT end with "\\", must add it
-	// 	prefix = TheMapCache->getMapDir();
-	// 	prefix.concat("\\");
-	// 	prefix.concat(getMapLeafAndDirName(in));
-	// }
-	// else if (in.startsWithNoCase(PORTABLE_USER_MAPS))
-	// {
-	// 	// the map dir DOES NOT end with "\\", must add it
-	// 	prefix = TheMapCache->getUserMapDir();
-	// 	prefix.concat("\\");
-	// 	prefix.concat(getMapLeafAndDirName(in));
-	// }
+	else if (in.startsWithNoCase(PORTABLE_MAPS))
+	{
+		// the map dir DOES NOT end with "\\", must add it
+		prefix = TheMapCache->getMapDir();
+		prefix.concat("\\");
+		prefix.concat(getMapLeafAndDirName(in));
+	}
+	else if (in.startsWithNoCase(PORTABLE_USER_MAPS))
+	{
+		// the map dir DOES NOT end with "\\", must add it
+		prefix = TheMapCache->getUserMapDir();
+		prefix.concat("\\");
+		prefix.concat(getMapLeafAndDirName(in));
+	}
 	else
 	{
 		DEBUG_CRASH(("Map file was not found in any of the expected directories; this is impossible"));

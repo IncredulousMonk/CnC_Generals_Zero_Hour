@@ -68,13 +68,13 @@ enum SolutionType
 class PartitionSolver
 {
 	protected:
-		SolutionType m_howToSolve;
-		EntriesVec m_data;
-		SpacesVec m_spacesForData;
+		SolutionType m_howToSolve {};
+		EntriesVec m_data {};
+		SpacesVec m_spacesForData {};
 
-		SolutionVec m_currentSolution;
-		UnsignedInt m_currentSolutionLeftovers;
-		SolutionVec m_bestSolution;
+		SolutionVec m_currentSolution {};
+		UnsignedInt m_currentSolutionLeftovers {};
+		SolutionVec m_bestSolution {};
 
 	public:
 		PartitionSolver(const EntriesVec& elements, const SpacesVec& spaces, SolutionType solveHow);

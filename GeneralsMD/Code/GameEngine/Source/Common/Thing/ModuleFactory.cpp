@@ -58,8 +58,10 @@
 #include "GameLogic/Module/SlowDeathBehavior.h"
 #include "GameLogic/Module/HelicopterSlowDeathUpdate.h"
 #include "GameLogic/Module/NeutronMissileSlowDeathUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/CaveContain.h"
 #include "GameLogic/Module/OpenContain.h"
+#if 0
 #include "GameLogic/Module/OverchargeBehavior.h"
 #include "GameLogic/Module/HealContain.h"
 #include "GameLogic/Module/GarrisonContain.h"
@@ -142,11 +144,15 @@
 #include "GameLogic/Module/HeightDieUpdate.h"
 #include "GameLogic/Module/HordeUpdate.h"
 #include "GameLogic/Module/JetAIUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/LaserUpdate.h"
+#if 0
 #include "GameLogic/Module/PointDefenseLaserUpdate.h"
 #include "GameLogic/Module/CleanupHazardUpdate.h"
 #include "GameLogic/Module/AutoFindHealingUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/CommandButtonHuntUpdate.h"
+#if 0
 #include "GameLogic/Module/PilotFindVehicleUpdate.h"
 #include "GameLogic/Module/DemoTrapUpdate.h"
 #include "GameLogic/Module/ParticleUplinkCannonUpdate.h"
@@ -181,10 +187,14 @@
 #endif
 #include "GameLogic/Module/RailedTransportDockUpdate.h"
 #include "GameLogic/Module/RailedTransportAIUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/RailroadGuideAIUpdate.h"
+#if 0
 #include "GameLogic/Module/SlavedUpdate.h"
 #include "GameLogic/Module/MobMemberSlavedUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/SpecialAbilityUpdate.h"
+#if 0
 #include "GameLogic/Module/MissileLauncherBuildingUpdate.h"
 #include "GameLogic/Module/StealthDetectorUpdate.h"
 #endif // if 0
@@ -193,7 +203,9 @@
 #include "GameLogic/Module/SpawnPointProductionExitUpdate.h"
 #include "GameLogic/Module/SpawnBehavior.h"
 #include "GameLogic/Module/SpyVisionUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/StickyBombUpdate.h"
+#if 0
 #include "GameLogic/Module/FireOCLAfterWeaponCooldownUpdate.h"
 #include "GameLogic/Module/HijackerUpdate.h"
 #include "GameLogic/Module/StructureCollapseUpdate.h"
@@ -202,8 +214,8 @@
 #include "GameLogic/Module/SupplyCenterProductionExitUpdate.h"
 #endif // if 0
 #include "GameLogic/Module/SupplyTruckAIUpdate.h"
-#if 0
 #include "GameLogic/Module/SupplyWarehouseDockUpdate.h"
+#if 0
 #include "GameLogic/Module/ToppleUpdate.h"
 #include "GameLogic/Module/TransportAIUpdate.h"
 #include "GameLogic/Module/WanderAIUpdate.h"
@@ -375,8 +387,10 @@ void ModuleFactory::init( void )
 	addModule( SlowDeathBehavior );
 	addModule( HelicopterSlowDeathBehavior );
 	addModule( NeutronMissileSlowDeathBehavior );
+#endif // if 0
 	addModule( CaveContain );
 	addModule( OpenContain );
+#if 0
 	addModule( OverchargeBehavior );
 	addModule( HealContain );
 	addModule( GarrisonContain );
@@ -410,7 +424,9 @@ void ModuleFactory::init( void )
 	addModule( MinefieldBehavior );
 	addModule( BattleBusSlowDeathBehavior );
 	addModule( JetSlowDeathBehavior );
+#endif // if 0
 	addModule( RailroadBehavior );
+#if 0
 	addModule( SpawnBehavior );
 #endif // if 0
 
@@ -472,10 +488,14 @@ void ModuleFactory::init( void )
 #if 0
 	addModule( DynamicGeometryInfoUpdate );
 	addModule( FirestormDynamicGeometryInfoUpdate );
+#endif // if 0
 	addModule( LaserUpdate );
+#if 0
 	addModule( PointDefenseLaserUpdate );
 	addModule( CleanupHazardUpdate );
+#endif // if 0
 	addModule( CommandButtonHuntUpdate );
+#if 0
 	addModule( PilotFindVehicleUpdate );
 	addModule( DemoTrapUpdate );
 	addModule( ParticleUplinkCannonUpdate );
@@ -496,11 +516,15 @@ void ModuleFactory::init( void )
 	addModule( SlavedUpdate );
 	addModule( MobMemberSlavedUpdate );
 	addModule( OCLUpdate );
+#endif // if 0
 	addModule( SpecialAbilityUpdate );
+#if 0
 	addModule( MissileLauncherBuildingUpdate );
 	addModule( SupplyCenterProductionExitUpdate );
 	addModule( SupplyCenterDockUpdate );
+#endif // if 0
 	addModule( SupplyWarehouseDockUpdate );
+#if 0
 	addModule( DozerAIUpdate );
 #ifdef ALLOW_SURRENDER
 	addModule( POWTruckAIUpdate );
@@ -509,8 +533,8 @@ void ModuleFactory::init( void )
 	addModule( ProductionUpdate );
 #endif // if 0
 	addModule( ProneUpdate );
-#if 0
 	addModule( StickyBombUpdate );
+#if 0
 	addModule( FireOCLAfterWeaponCooldownUpdate );
 	addModule( HijackerUpdate );
 	addModule( StructureToppleUpdate );

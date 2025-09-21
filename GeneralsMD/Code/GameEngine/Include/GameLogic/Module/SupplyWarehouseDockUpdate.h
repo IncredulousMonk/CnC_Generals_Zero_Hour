@@ -43,12 +43,18 @@ class SupplyWarehouseDockUpdateModuleData : public DockUpdateModuleData
 {
 public:
 
-  SupplyWarehouseDockUpdateModuleData( void );
+	SupplyWarehouseDockUpdateModuleData( void );
 	
 	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	Int m_startingBoxesData;
-	Bool m_deleteWhenEmpty;
+	// MG: Cannot apply offsetof to SupplyWarehouseDockUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int m_startingBoxesData;
+		Bool m_deleteWhenEmpty;
+	};
+
+	IniData m_ini {};
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -75,7 +81,7 @@ public:
 protected:
 
 
-	Int m_boxesStored;
+	Int m_boxesStored {};
 
 };
 

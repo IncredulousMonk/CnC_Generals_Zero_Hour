@@ -47,6 +47,7 @@
 #include <float.h>
 #include <assert.h>
 #include <float.h>
+#include <iostream>
 
 /*
 ** Some global constants.
@@ -389,6 +390,10 @@ WWINLINE float WWMath::Sin(float val)
 
 WWINLINE float WWMath::Fast_Sin(float val)
 {
+(void) val;
+printf("WWMath::Fast_Sin not yet implemented!\n");
+exit(1);
+#if 0
 	val*=float(SIN_TABLE_SIZE) / (2.0f * WWMATH_PI);
 
 	int idx0=Float_To_Int_Floor(val);
@@ -399,6 +404,7 @@ WWINLINE float WWMath::Fast_Sin(float val)
 	idx1 = ((unsigned)idx1) & (SIN_TABLE_SIZE-1);
 	
 	return (1.0f - frac) * _FastSinTable[idx0] + frac * _FastSinTable[idx1];
+#endif // if 0
 }
 
 // ----------------------------------------------------------------------------
@@ -483,6 +489,10 @@ WWINLINE float WWMath::Fast_Inv_Cos(float val)
 
 WWINLINE float WWMath::Fast_Acos(float val)
 {
+(void) val;
+printf("WWMath::Fast_Acos not yet implemented!\n");
+exit(1);
+#if 0
 	// Near -1 and +1, the table becomes too inaccurate
 	if (WWMath::Fabs(val) > 0.975f) {
 		return WWMath::Acos(val);
@@ -503,6 +513,7 @@ WWINLINE float WWMath::Fast_Acos(float val)
 
 	// compute and return the interpolated value
 	return (1.0f - frac) * _FastAcosTable[idx0] + frac * _FastAcosTable[idx1];
+#endif // if 0
 }
 
 // ----------------------------------------------------------------------------

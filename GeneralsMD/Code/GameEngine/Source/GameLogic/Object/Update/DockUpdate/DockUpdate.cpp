@@ -42,19 +42,19 @@
 // ------------------------------------------------------------------------------------------------
 DockUpdateModuleData::DockUpdateModuleData( void )
 {
-	m_numberApproachPositionsData = 0;
-	m_isAllowPassthrough = TRUE;
+	m_ini.m_numberApproachPositionsData = 0;
+	m_ini.m_isAllowPassthrough = TRUE;
 }
 
-/*static*/ void DockUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void DockUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
 
-	UpdateModuleData::buildFieldParse( p );
+	UpdateModuleData::buildFieldParse( what, p );
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "NumberApproachPositions"	,INI::parseInt,		NULL, offsetof( DockUpdateModuleData, m_numberApproachPositionsData ) },
-		{ "AllowsPassthrough"				,INI::parseBool,	NULL, offsetof( DockUpdateModuleData, m_isAllowPassthrough ) },
+		{ "NumberApproachPositions"	,INI::parseInt,		NULL, offsetof( DockUpdateModuleData::IniData, m_numberApproachPositionsData ) },
+		{ "AllowsPassthrough"		,INI::parseBool,	NULL, offsetof( DockUpdateModuleData::IniData, m_isAllowPassthrough ) },
 		{ 0, 0, 0, 0 }
 
 	};
@@ -80,13 +80,13 @@ DockUpdate::DockUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateMod
 	m_dockPosition.zero();
 	m_enterPosition.zero();
 
-	m_numberApproachPositions = md->m_numberApproachPositionsData;
+	m_numberApproachPositions = md->m_ini.m_numberApproachPositionsData;
 	if( m_numberApproachPositions != DYNAMIC_APPROACH_VECTOR_FLAG )
 	{
 		// Not dynamic, so make this the size
-		m_approachPositions.resize(m_numberApproachPositions);
-		m_approachPositionOwners.resize(m_numberApproachPositions);
-		m_approachPositionReached.resize(m_numberApproachPositions);
+		m_approachPositions.resize((size_t)m_numberApproachPositions);
+		m_approachPositionOwners.resize((size_t)m_numberApproachPositions);
+		m_approachPositionReached.resize((size_t)m_numberApproachPositions);
 	}
 	else
 	{
@@ -96,7 +96,7 @@ DockUpdate::DockUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateMod
 		m_approachPositionReached.resize(DEFAULT_APPROACH_VECTOR_SIZE);
 	}
 
-	for( Int vectorIndex = 0; vectorIndex < m_approachPositions.size(); ++vectorIndex )
+	for(size_t vectorIndex = 0; vectorIndex < m_approachPositions.size(); ++vectorIndex )
 	{
 		// Whatever size we are, init everything.
 		m_approachPositions[vectorIndex].zero();
@@ -118,7 +118,7 @@ Bool DockUpdate::isClearToApproach( Object const* docker ) const
 
 	ObjectID dockerID = docker->getID();
 
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == INVALID_ID )
 		{
@@ -146,7 +146,7 @@ Bool DockUpdate::reserveApproachPosition( Object* docker, Coord3D *position, Int
 
 	ObjectID dockerID = docker->getID();
 
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -174,7 +174,7 @@ Bool DockUpdate::reserveApproachPosition( Object* docker, Coord3D *position, Int
 
 		loadDockPositions();// refresh this new one
 
-		positionIndex = m_approachPositionOwners.size() - 1;// The new last spot
+		size_t positionIndex = m_approachPositionOwners.size() - 1;// The new last spot
 		m_approachPositionOwners[positionIndex] = dockerID;
 		*position = computeApproachPosition( positionIndex, docker );
 		*index = positionIndex;
@@ -195,17 +195,17 @@ Bool DockUpdate::advanceApproachPosition( Object* docker, Coord3D *position, Int
 		return FALSE;
 	if( *index <= 0 )
 		return FALSE;
-	if( m_approachPositionOwners[(*index) - 1] != INVALID_ID )
+	if( m_approachPositionOwners.data()[(*index) - 1] != INVALID_ID )
 		return FALSE;
 
 	Int hisIndex = *index;
 	Int previousIndex = hisIndex - 1;
 
-	m_approachPositionOwners[previousIndex] = docker->getID();
-	m_approachPositionReached[previousIndex] = FALSE;
+	m_approachPositionOwners[(size_t)previousIndex] = docker->getID();
+	m_approachPositionReached[(size_t)previousIndex] = FALSE;
 
-	m_approachPositionOwners[hisIndex] = INVALID_ID;
-	m_approachPositionReached[hisIndex] = FALSE;
+	m_approachPositionOwners[(size_t)hisIndex] = INVALID_ID;
+	m_approachPositionReached[(size_t)hisIndex] = FALSE;
 
 	*position = computeApproachPosition( previousIndex, docker );
 	*index = previousIndex;
@@ -224,9 +224,9 @@ Bool DockUpdate::isClearToAdvance( Object const* docker, Int dockerIndex ) const
 		return FALSE;
 
 	ObjectID dockerID = docker->getID();
-	Bool correctRequest = dockerID == m_approachPositionOwners[dockerIndex];
-	Bool approachReached = m_approachPositionReached[dockerIndex];
-	Bool nextSpotFree = (dockerIndex > 0)  &&  (m_approachPositionOwners[dockerIndex - 1] == INVALID_ID);
+	Bool correctRequest = dockerID == m_approachPositionOwners[(size_t)dockerIndex];
+	Bool approachReached = m_approachPositionReached[(size_t)dockerIndex];
+	Bool nextSpotFree = (dockerIndex > 0)  &&  (m_approachPositionOwners[(size_t)dockerIndex - 1] == INVALID_ID);
 	
 	return correctRequest && approachReached && nextSpotFree;
 }
@@ -314,7 +314,7 @@ void DockUpdate::getExitPosition( Object* docker, Coord3D *position )
 void DockUpdate::onApproachReached( Object* docker )
 {
 	ObjectID dockerID = docker->getID();
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -334,7 +334,7 @@ void DockUpdate::onEnterReached( Object* docker )
 	m_dockerInside = TRUE;
 
 	ObjectID dockerID = docker->getID();
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -380,7 +380,7 @@ void DockUpdate::onExitReached( Object* docker )
 void DockUpdate::cancelDock( Object* docker )
 {
 	ObjectID dockerID = docker->getID();
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -417,7 +417,7 @@ UpdateSleepTime DockUpdate::update()
 	if( m_activeDocker == INVALID_ID  &&  !m_dockCrippled )
 	{
 		// if setDockCrippled has been called, I will never give enterance permission.
-		for( Int positionIndex = 0; positionIndex < m_approachPositionReached.size(); ++positionIndex )
+		for( size_t positionIndex = 0; positionIndex < m_approachPositionReached.size(); ++positionIndex )
 		{
 			if( m_approachPositionReached[positionIndex] )
 			{
@@ -456,7 +456,7 @@ Coord3D DockUpdate::computeApproachPosition( Int positionIndex, Object *forWhom 
 	// Start with the pristine bone, then convert it to the world, then find a clean spot around it.
 	
 	Object *us = getObject();
-	us->convertBonePosToWorldPos( &m_approachPositions[positionIndex], NULL, &workingPosition, NULL );
+	us->convertBonePosToWorldPos( &m_approachPositions[(size_t)positionIndex], NULL, &workingPosition, NULL );
 
 	if( m_numberApproachPositionBones == 0 )
 	{
@@ -511,11 +511,11 @@ void DockUpdate::loadDockPositions()
 				// Dynamic means no bones
 				Coord3D approachBones[DEFAULT_APPROACH_VECTOR_SIZE];
 				m_numberApproachPositionBones = myDrawable->getPristineBonePositions( "DockWaiting", 1, approachBones, NULL, m_numberApproachPositions);
-				if( m_numberApproachPositions == m_approachPositions.size() )//safeguard: will always be true
+				if( (size_t)m_numberApproachPositions == m_approachPositions.size() )//safeguard: will always be true
 				{
 					for( Int copyIndex = 0; copyIndex < m_numberApproachPositions; ++copyIndex )
 					{
-						m_approachPositions[copyIndex] = approachBones[copyIndex];
+						m_approachPositions[(size_t)copyIndex] = approachBones[(size_t)copyIndex];
 					}
 				}
 			}
@@ -536,7 +536,7 @@ void DockUpdate::loadDockPositions()
 // ------------------------------------------------------------------------------------------------
 Bool DockUpdate::isAllowPassthroughType()
 {
-	return getDockUpdateModuleData()->m_isAllowPassthrough;
+	return getDockUpdateModuleData()->m_ini.m_isAllowPassthrough;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -582,32 +582,32 @@ void DockUpdate::xfer( Xfer *xfer )
 	// approach positions
 	Int vectorSize = m_approachPositions.size();
 	xfer->xferInt( &vectorSize );
-	m_approachPositions.resize(vectorSize);
+	m_approachPositions.resize((size_t)vectorSize);
 	for( Int vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
 	{
 		// Okay, this is cool.  On save, the size and a bunch of coords will be written.
 		// on load, vectorSize will be at 0 from the .size, but will then get set
 		// by the xfer, and properly control the number of Coords.
-		xfer->xferCoord3D( &m_approachPositions[vectorIndex] );
+		xfer->xferCoord3D( &m_approachPositions[(size_t)vectorIndex] );
 	}
 
 	// approach position owners
 	vectorSize = m_approachPositionOwners.size();
 	xfer->xferInt( &vectorSize );
-	m_approachPositionOwners.resize(vectorSize);
-	for( vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
+	m_approachPositionOwners.resize((size_t)vectorSize);
+	for( Int vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
 	{
-		xfer->xferObjectID( &m_approachPositionOwners[vectorIndex] );
+		xfer->xferObjectID( &m_approachPositionOwners[(size_t)vectorIndex] );
 	}
 
 	// approach positions reached
 	vectorSize = m_approachPositionReached.size();
 	xfer->xferInt( &vectorSize );
-	m_approachPositionReached.resize(vectorSize);
-	for( vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
+	m_approachPositionReached.resize((size_t)vectorSize);
+	for( Int vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
 	{
 		// Vector of Bool gets packed as bitfield internally
-		Bool unpack = m_approachPositionReached[vectorIndex];
+		Bool unpack = m_approachPositionReached[(size_t)vectorIndex];
 		xfer->xferBool( &unpack );
 	}
 
@@ -635,4 +635,3 @@ void DockUpdate::loadPostProcess( void )
 	UpdateModule::loadPostProcess();
 
 }  // end loadPostProcess
-

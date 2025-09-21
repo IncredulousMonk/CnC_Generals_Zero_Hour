@@ -47,7 +47,7 @@
 
 #define DEFINE_BUILDABLE_STATUS_NAMES
 #define DEFINE_OBJECT_STATUS_NAMES
-#define DEFINE_SCIENCE_AVAILABILITY_NAMES
+// #define DEFINE_SCIENCE_AVAILABILITY_NAMES
 
 #include "Common/BorderColors.h"
 #include "Common/DataChunk.h"
@@ -60,7 +60,7 @@
 
 #include "GameClient/ShellHooks.h"
 
-#include "GameLogic/Ai.h"
+#include "GameLogic/AI.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/SidesList.h"
@@ -81,7 +81,7 @@ static ScriptGroup *s_mtGroup = NULL;
 // These strings must be in the same order as they are in their definitions 
 // (See SHELL_SCRIPT_HOOK_* )
 //
-char *TheShellHookNames[]=
+const char *TheShellHookNames[]=
 {
 	"ShellMainMenuCampaignPushed", //SHELL_SCRIPT_HOOK_MAIN_MENU_CAMPAIGN_SELECTED,
 	"ShellMainMenuCampaignHighlighted", //SHELL_SCRIPT_HOOK_MAIN_MENU_CAMPAIGN_HIGHLIGHTED,
@@ -236,7 +236,7 @@ ScriptList::~ScriptList(void)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ScriptList::crc( Xfer *xfer )
+void ScriptList::crc( Xfer* /* xfer */ )
 {
 
 }
@@ -528,7 +528,7 @@ void ScriptList::deleteGroup(ScriptGroup *pGrp)
 *	Input: DataChunkInput 
 *		
 */
-Bool ScriptList::ParseScriptsDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
+Bool ScriptList::ParseScriptsDataChunk(DataChunkInput &file, DataChunkInfo *info, void* /* userData */)
 {
 	Int i;
 	file.registerParser( AsciiString("ScriptList"), info->label, ScriptList::ParseScriptListDataChunk );
@@ -640,13 +640,13 @@ Bool ScriptList::ParseScriptListDataChunk(DataChunkInput &file, DataChunkInfo *i
 */
 ScriptGroup::ScriptGroup(void) :
 m_firstScript(NULL),
-m_hasWarnings(false),
 m_isGroupActive(true),
 m_isGroupSubroutine(false),
 //Added By Sadullah Nader
 //Initializations inserted
-m_nextGroup(NULL)
+m_nextGroup(NULL),
 //
+m_hasWarnings(false)
 {
 	m_groupName.format("Script Group %d", ScriptList::getNextID());
 }
@@ -678,7 +678,7 @@ ScriptGroup::~ScriptGroup(void)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void ScriptGroup::crc( Xfer *xfer )
+void ScriptGroup::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -908,26 +908,7 @@ Bool ScriptGroup::ParseGroupDataChunk(DataChunkInput &file, DataChunkInfo *info,
 /**
   Ctor - initializes members.
 */
-Script::Script(void) :
-m_isActive(true),
-m_isOneShot(true),
-m_easy(true),
-m_normal(true),
-m_hard(true),	
-m_delayEvaluationSeconds(0),
-m_conditionTime(0),
-m_conditionExecutedCount(0),
-m_frameToEvaluateAt(0),
-m_isSubroutine(false),
-m_hasWarnings(false),
-m_nextScript(NULL),
-m_condition(NULL),
-m_action(NULL),
-//Added By Sadullah Nader
-//Initializations inserted
-m_actionFalse(NULL),
-m_curTime(0.0f)
-//
+Script::Script(void)
 {
 }
 
@@ -962,7 +943,7 @@ Script::~Script(void)
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void Script::crc( Xfer *xfer )
+void Script::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -1512,11 +1493,11 @@ Condition *OrCondition::findPreviousCondition( Condition *curCond )
 //-------------------------------------------------------------------------------------------------
 Condition::Condition():
 m_conditionType(CONDITION_FALSE),
+m_numParms(0),
+m_nextAndCondition(NULL),
 m_hasWarnings(false),
 m_customData(0),
-m_customFrame(0),
-m_numParms(0),
-m_nextAndCondition(NULL)
+m_customFrame(0)
 {
 	Int i;
 	for (i = 0; i < MAX_PARMS; i++) 
@@ -1527,11 +1508,11 @@ m_nextAndCondition(NULL)
 
 Condition::Condition(enum ConditionType type):
 m_conditionType(type),
+m_numParms(0),
+m_nextAndCondition(NULL),
 m_hasWarnings(false),
 m_customData(0),
-m_customFrame(0),
-m_numParms(0),
-m_nextAndCondition(NULL)
+m_customFrame(0)
 {
 	Int i;
 	for (i=0; i<MAX_PARMS; i++) {
@@ -1744,6 +1725,8 @@ Bool Condition::ParseConditionDataChunk(DataChunkInput &file, DataChunkInfo *inf
 				pCondition->m_parms[0]->friend_setString(THIS_PLAYER);
 			}
 			break;
+		default:
+			break;
 	}
 #ifdef COUNT_SCRIPT_USAGE
 	const ConditionTemplate* conT = TheScriptEngine->getConditionTemplate(pCondition->m_conditionType);
@@ -1775,12 +1758,12 @@ Bool Condition::ParseConditionDataChunk(DataChunkInput &file, DataChunkInfo *inf
 //-------------------------------------------------------------------------------------------------
 Template::Template() :
 m_numUiStrings(0),
-m_numParameters(0),
+m_numParameters(0)
 #ifdef COUNT_SCRIPT_USAGE
-m_numTimesUsed(0),
+,m_numTimesUsed(0)
 #endif
-m_uiName("UNUSED/(placeholder)/placeholder")
 {
+	m_ini.m_uiName = AsciiString("UNUSED/(placeholder)/placeholder");
 }
 
 Int Template::getUiStrings(AsciiString strings[MAX_PARMS]) const
@@ -1837,6 +1820,7 @@ void Parameter::qualify(const AsciiString& qualifier,
 			if (m_string == THIS_TEAM) {
 				break;
 			}
+			[[fallthrough]];
 			/// otherwise drop down & qualify.
 		case SCRIPT:
 		case COUNTER:
@@ -1922,7 +1906,7 @@ AsciiString Parameter::getUiText(void) const
 			if (m_int >= KINDOF_FIRST && m_int < KINDOF_COUNT )
 				uiText.format("Kind is '%s'", KindOfMaskType::getNameFromSingleBit(m_int));
 			else 
-				uiText.format("Kind is '???'");
+				uiText.format("Kind is '\?\?\?'");
 			break;
 		case SIDE:
 			uiText.format("Player '%s'", uiString.str());
@@ -2054,7 +2038,7 @@ AsciiString Parameter::getUiText(void) const
 			if (m_int >= BSTATUS_YES && m_int < BSTATUS_NUM_TYPES )
 				uiText.format("Buildable (%s)", BuildableStatusNames[m_int - BSTATUS_YES]);
 			else 
-				uiText.format("Buildable (???)");
+				uiText.format("Buildable (\?\?\?)");
 			break;
 		
 		case SURFACES_ALLOWED:
@@ -2078,7 +2062,7 @@ AsciiString Parameter::getUiText(void) const
 		case OBJECT_STATUS:
 		{
 			if (m_string.isEmpty()) {
-				uiText.format("Object Status is '???'");
+				uiText.format("Object Status is '\?\?\?'");
 			} else {
 				uiText.format("Object Status is '%s'", m_string.str());
 			}
@@ -2186,7 +2170,7 @@ Parameter *Parameter::ReadParameter(DataChunkInput &file)
 	if (pParm->getParameterType() == OBJECT_STATUS) 
 	{
 		// Need to change the string to an ObjectStatusMaskType
-		for( int i = 0; i < OBJECT_STATUS_COUNT; ++i ) 
+		for( unsigned int i = 0; i < OBJECT_STATUS_COUNT; ++i ) 
 		{
 			if( !pParm->m_string.compareNoCase( ObjectStatusMaskType::getBitNames()[i] ) ) 
 			{
@@ -2273,12 +2257,12 @@ Parameter *Parameter::ReadParameter(DataChunkInput &file)
 //-------------------------------------------------------------------------------------------------
 ScriptAction::ScriptAction():
 m_actionType(NO_OP),
-m_hasWarnings(false),
 m_numParms(0),
 //Added By Sadullah Nader
 //Initializations inserted
-m_nextAction(NULL)
+m_nextAction(NULL),
 //
+m_hasWarnings(false)
 {
 }
 
@@ -2556,8 +2540,8 @@ ScriptAction *ScriptAction::ParseAction(DataChunkInput &file, DataChunkInfo *inf
 				pScriptAction->m_numParms = 2;
 				// Default it to TRUE, as per conversation with JohnL
 				pScriptAction->m_parms[1] = newInstance(Parameter)(Parameter::BOOLEAN, 1);
-				break;
 			}
+			break;
 		case CAMERA_MOD_SET_FINAL_ZOOM:
 		case CAMERA_MOD_SET_FINAL_PITCH:
 			if (pScriptAction->getNumParameters() == 1)
@@ -2602,6 +2586,8 @@ ScriptAction *ScriptAction::ParseAction(DataChunkInput &file, DataChunkInfo *inf
 				pScriptAction->m_parms[4] = newInstance(Parameter)(Parameter::BOOLEAN, FALSE);
 			}
 
+			break;
+		default:
 			break;
 	}
 

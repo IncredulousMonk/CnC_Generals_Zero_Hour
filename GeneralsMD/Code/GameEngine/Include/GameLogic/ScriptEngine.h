@@ -58,41 +58,41 @@ class ObjectTypes;
 // set by script, so it's as good a place as any.  john a.
 struct BreezeInfo 
 {
-	Real		m_direction;				///< Direction of the breeze in radians. 0 == +x direction.
-	Coord2D	m_directionVec;			///< sin/cos of direction, for efficiency.
-	Real		m_intensity;				///< How far to sway back & forth in radians.  0 = none.
-	Real		m_lean;							///< How far to lean with the wind in radians.  0 = none.
-	Real		m_randomness;				///< Randomness 0=perfectly uniform, 1 = +- up to 50% randomly.
-	Short		m_breezePeriod;			///< How many frames it takes to sway forward & back.
-	Short		m_breezeVersion;		///< Incremented each time the settings are updated.
+	Real		m_direction {};			///< Direction of the breeze in radians. 0 == +x direction.
+	Coord2D		m_directionVec {};		///< sin/cos of direction, for efficiency.
+	Real		m_intensity {};			///< How far to sway back & forth in radians.  0 = none.
+	Real		m_lean {};				///< How far to lean with the wind in radians.  0 = none.
+	Real		m_randomness {};		///< Randomness 0=perfectly uniform, 1 = +- up to 50% randomly.
+	Short		m_breezePeriod {};		///< How many frames it takes to sway forward & back.
+	Short		m_breezeVersion {};		///< Incremented each time the settings are updated.
 };
 
 // This could belong elsewhere, but for now...
 struct NamedReveal
 {
-	AsciiString m_revealName;
-	AsciiString m_waypointName;
-	Real				m_radiusToReveal;
-	AsciiString m_playerName; 
+	AsciiString m_revealName {};
+	AsciiString m_waypointName {};
+	Real		m_radiusToReveal {};
+	AsciiString m_playerName {};
 };
 
 struct TScriptListReadInfo
 {
-	Int numLists;
+	Int numLists {};
 	ScriptList *readLists[MAX_PLAYER_COUNT];
 };
 
 struct TCounter
 {
-	Int value;
-	AsciiString name;
-	Bool isCountdownTimer;
+	Int value {};
+	AsciiString name {};
+	Bool isCountdownTimer {};
 };
 
 struct TFlag
 {
-	Bool value;
-	AsciiString name;
+	Bool value {};
+	AsciiString name {};
 };
 
 typedef std::list<AsciiString> ListAsciiString;
@@ -159,9 +159,9 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	AsciiString m_name;
-	Int	m_defaultPriority;
-	AttackPriorityMap *m_priorityMap;
+	AsciiString m_name {};
+	Int	m_defaultPriority {};
+	AttackPriorityMap *m_priorityMap {};
 
 };
 
@@ -172,21 +172,20 @@ class SequentialScript : public MemoryPoolObject, public Snapshot
 public:
 
 	enum { START_INSTRUCTION = -1 };
-	Team *m_teamToExecOn;
-	ObjectID m_objectID;
-	Script *m_scriptToExecuteSequentially;
-	Int m_currentInstruction;								// Which action within m_scriptToExecuteSequentially am I currently executing?
-	Int m_timesToLoop;											// 0 = do once,  >0, loop till 0, <0, loop infinitely
-	Int m_framesToWait;											// 0 = transition to next instruction, >0 = countdown to 0, <0 = advance on idle only
-	Bool m_dontAdvanceInstruction;					// Must be set every frame by the instruction requesting the wait.
+	Team *m_teamToExecOn {};
+	ObjectID m_objectID {};
+	Script *m_scriptToExecuteSequentially {};
+	Int m_currentInstruction {};								// Which action within m_scriptToExecuteSequentially am I currently executing?
+	Int m_timesToLoop {};											// 0 = do once,  >0, loop till 0, <0, loop infinitely
+	Int m_framesToWait {};											// 0 = transition to next instruction, >0 = countdown to 0, <0 = advance on idle only
+	Bool m_dontAdvanceInstruction {};					// Must be set every frame by the instruction requesting the wait.
 																					// so this parm tells us how many we've been idle so far.
-	SequentialScript *m_nextScriptInSequence;
+	SequentialScript *m_nextScriptInSequence {};
 
 	SequentialScript();
 
-	// No copies allowed!
 	SequentialScript(const SequentialScript&) = delete;
-	SequentialScript& operator=(const SequentialScript&) = delete;
+	SequentialScript& operator=(const SequentialScript&) = default;
 
 protected:
 
@@ -429,7 +428,7 @@ protected:
 	typedef std::vector<SequentialScript*> VecSequentialScriptPtr;
 	typedef VecSequentialScriptPtr::iterator VecSequentialScriptPtrIt;
 
-	VecSequentialScriptPtr m_sequentialScripts;
+	VecSequentialScriptPtr m_sequentialScripts {};
 	
 	void evaluateAndProgressAllSequentialScripts( void );
 	VecSequentialScriptPtrIt cleanupSequentialScript(VecSequentialScriptPtrIt it, Bool cleanDanglers);
@@ -443,63 +442,63 @@ protected:
 protected:
 	ActionTemplate		m_actionTemplates[ScriptAction::NUM_ITEMS];
 	ConditionTemplate	m_conditionTemplates[Condition::NUM_ITEMS];
-	TCounter					m_counters[MAX_COUNTERS];
-	Int								m_numCounters;
-	TFlag							m_flags[MAX_FLAGS];
-	Int								m_numFlags;
-	AttackPriorityInfo m_attackPriorityInfo[MAX_ATTACK_PRIORITIES];
-	Int								m_numAttackInfo;
-	Int								m_endGameTimer;
-	Int								m_closeWindowTimer;
-	Team							*m_callingTeam;					///< Team that is calling script, used for THIS_TEAM
-	Object						*m_callingObject;					///< Object that is calling script, used for THIS_OBJECT
-	Team							*m_conditionTeam;				///< Team that is being used to evaluate conditions, used for THIS_TEAM
-	Object						*m_conditionObject;				///< Unit that is being used to evaluate conditions, used for THIS_OBJECT
-	VecNamedRequests	m_namedObjects;
-	Bool							m_firstUpdate;			
-	Player						*m_currentPlayer;
-	Player						*m_skirmishHumanPlayer;
-	AsciiString				m_currentTrackName;
+	TCounter			m_counters[MAX_COUNTERS];
+	Int					m_numCounters {};
+	TFlag				m_flags[MAX_FLAGS];
+	Int					m_numFlags {};
+	AttackPriorityInfo	m_attackPriorityInfo[MAX_ATTACK_PRIORITIES];
+	Int					m_numAttackInfo {};
+	Int					m_endGameTimer {};
+	Int					m_closeWindowTimer {};
+	Team				*m_callingTeam {};					///< Team that is calling script, used for THIS_TEAM
+	Object				*m_callingObject {};					///< Object that is calling script, used for THIS_OBJECT
+	Team				*m_conditionTeam {};				///< Team that is being used to evaluate conditions, used for THIS_TEAM
+	Object				*m_conditionObject {};				///< Unit that is being used to evaluate conditions, used for THIS_OBJECT
+	VecNamedRequests	m_namedObjects {};
+	Bool				m_firstUpdate {TRUE};
+	Player				*m_currentPlayer {};
+	Player				*m_skirmishHumanPlayer {};
+	AsciiString			m_currentTrackName {};
 
-	TFade							m_fade;
-	Real							m_minFade;
-	Real							m_maxFade;
-	Real							m_curFadeValue;
-	Int								m_curFadeFrame;
-	Int								m_fadeFramesIncrease;
-	Int								m_fadeFramesHold;
-	Int								m_fadeFramesDecrease;
+	TFade				m_fade {FADE_NONE};
+	Real				m_minFade {};
+	Real				m_maxFade {};
+	Real				m_curFadeValue {};
+	Int					m_curFadeFrame {};
+	Int					m_fadeFramesIncrease {};
+	Int					m_fadeFramesHold {};
+	Int					m_fadeFramesDecrease {};
 
-	UnsignedInt				m_frameObjectCountChanged;
+	UnsignedInt			m_frameObjectCountChanged {};
 
 	ObjectTypeCount		m_objectCounts[MAX_PLAYER_COUNT];
 
 	/// These are three separate lists rather than one to increase speed efficiency
-	ListAsciiString				m_completedVideo;
-	ListAsciiStringUINT		m_testingSpeech;
-	ListAsciiStringUINT		m_testingAudio;
+	ListAsciiString			m_completedVideo {};
+	ListAsciiStringUINT		m_testingSpeech {};
+	ListAsciiStringUINT		m_testingAudio {};
 
-	ListAsciiString				m_uiInteractions;
+	ListAsciiString			m_uiInteractions {};
 	
 	ListAsciiStringObjectID	m_triggeredSpecialPowers[MAX_PLAYER_COUNT];
-	ListAsciiStringObjectID	m_midwaySpecialPowers		[MAX_PLAYER_COUNT];
+	ListAsciiStringObjectID	m_midwaySpecialPowers	[MAX_PLAYER_COUNT];
 	ListAsciiStringObjectID	m_finishedSpecialPowers	[MAX_PLAYER_COUNT];
-	ListAsciiStringObjectID	m_completedUpgrades			[MAX_PLAYER_COUNT];
-	ScienceVec							m_acquiredSciences			[MAX_PLAYER_COUNT];
+	ListAsciiStringObjectID	m_completedUpgrades		[MAX_PLAYER_COUNT];
+	ScienceVec				m_acquiredSciences		[MAX_PLAYER_COUNT];
 
-	ListAsciiStringCoord3D m_toppleDirections;
+	ListAsciiStringCoord3D m_toppleDirections {};
 
-	VecNamedReveal		m_namedReveals;
+	VecNamedReveal		m_namedReveals {};
 
-	BreezeInfo				m_breezeInfo;
-	GameDifficulty		m_gameDifficulty;
+	BreezeInfo			m_breezeInfo {};
+	GameDifficulty		m_gameDifficulty {};
 
-	Bool							m_freezeByScript;
-	AllObjectTypes		m_allObjectTypeLists;
-	Bool							m_objectsShouldReceiveDifficultyBonus;
-	Bool							m_ChooseVictimAlwaysUsesNormal;
+	Bool				m_freezeByScript {};
+	AllObjectTypes		m_allObjectTypeLists {};
+	Bool				m_objectsShouldReceiveDifficultyBonus {TRUE};
+	Bool				m_ChooseVictimAlwaysUsesNormal {};
 	
-	Bool							m_shownMPLocalDefeatWindow;
+	Bool				m_shownMPLocalDefeatWindow {};
 
 #ifdef SPECIAL_SCRIPT_PROFILING
 #ifdef DEBUG_LOGGING
@@ -513,6 +512,5 @@ protected:
 };  // end class ScriptEngine
 
 extern ScriptEngine *TheScriptEngine;   ///< singleton definition
-																				
 
 #endif  // end __SCRIPTENGINE_H_

@@ -262,7 +262,6 @@ public:
 	virtual const WaterHandle* getWaterHandle( Real x, Real y );					///< get water handle at this location
 	virtual const WaterHandle* getWaterHandleByName( AsciiString name );	///< get water handle by name
 	virtual Real getWaterHeight( const WaterHandle *water );							///< get height of water table
-#if 0
 	virtual void setWaterHeight( const WaterHandle *water, 
 															 Real height, 
 															 Real damageAmount,
@@ -271,7 +270,6 @@ public:
 																					Real finalHeight,
 																					Real transitionTimeInSeconds,
 																					Real damageAmount );///< change water height over time
-#endif // if 0
 
 	virtual Waypoint *getFirstWaypoint(void) { return m_waypointListHead; }
 
@@ -281,13 +279,11 @@ public:
 	/// Return the waypoint with the given ID
 	virtual Waypoint *getWaypointByID( UnsignedInt id );
 
-#if 0
 	/// Return the closest waypoint on the labeled path
 	virtual Waypoint *getClosestWaypointOnPath( const Coord3D *pos, AsciiString label );
 
 	/// Return true if the waypoint path containint pWay is labeled with the label.
 	virtual Bool isPurposeOfPath( Waypoint *pWay, AsciiString label );
-#endif // if 0
 
 	/// Return the trigger area with the given name
 	virtual PolygonTrigger *getTriggerAreaByName( AsciiString name );
@@ -317,11 +313,9 @@ public:
 
 	virtual void updateBridgeDamageStates(void); ///< Updates bridge's damage info.
 
-#if 0
 	Bool anyBridgesDamageStatesChanged(void) {return m_bridgeDamageStatesChanged; } ///< Bridge damage states updated.
 	Bool isBridgeRepaired(const Object *bridge); ///< Is bridge repaired?
 	Bool isBridgeBroken(const Object *bridge); ///< Is bridge Broken?
-#endif // if 0
 	void getBridgeAttackPoints(const Object *bridge, TBridgeAttackInfo *info); ///< Get bridge attack points.
 
 	PathfindLayerEnum getLayerForDestination(const Coord3D *pos);
@@ -332,16 +326,14 @@ public:
 
 #if 0
 	void enableWaterGrid( Bool enable );			///< enable/disable the water grid
+#endif // if 0
 
 	// This is stuff to get the currently active boundary information
 	Int getActiveBoundary(void) { return m_activeBoundary; }
 	void setActiveBoundary(Int newActiveBoundary);
-#endif // if 0
 
 	void flattenTerrain(Object *obj);  ///< Flatten the terrain under a building.
-#if 0
 	void createCraterInTerrain(Object *obj);  ///< Flatten the terrain under a building.
-#endif // if 0
 
 protected:
 
@@ -363,10 +355,8 @@ protected:
 	/// Deletes all bridges.
 	void deleteBridges(void);
 
-#if 0
 	/// find the axis aligned region bounding the water table
 	void findAxisAlignedBoundingRect( const WaterHandle *waterHandle, Region3D *region );
-#endif // if 0
 
 	UnsignedByte	*m_mapData {};									///< array of height samples
 	Int	m_mapDX {};															///< width of map samples

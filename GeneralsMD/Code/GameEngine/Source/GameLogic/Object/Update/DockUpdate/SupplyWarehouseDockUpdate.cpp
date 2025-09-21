@@ -47,25 +47,27 @@
 // ------------------------------------------------------------------------------------------------
 SupplyWarehouseDockUpdateModuleData::SupplyWarehouseDockUpdateModuleData( void )
 {
-	m_startingBoxesData = 1;
-	m_deleteWhenEmpty = FALSE;
+	m_ini.m_startingBoxesData = 1;
+	m_ini.m_deleteWhenEmpty = FALSE;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void SupplyWarehouseDockUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void SupplyWarehouseDockUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
 
-	DockUpdateModuleData::buildFieldParse( p );
+	DockUpdateModuleData::buildFieldParse( what, p );
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "StartingBoxes",	INI::parseInt,	NULL, offsetof( SupplyWarehouseDockUpdateModuleData, m_startingBoxesData ) },
-		{ "DeleteWhenEmpty",	INI::parseBool,	NULL, offsetof( SupplyWarehouseDockUpdateModuleData, m_deleteWhenEmpty ) },
+		{ "StartingBoxes",		INI::parseInt,	NULL, offsetof( SupplyWarehouseDockUpdateModuleData::IniData, m_startingBoxesData ) },
+		{ "DeleteWhenEmpty",	INI::parseBool,	NULL, offsetof( SupplyWarehouseDockUpdateModuleData::IniData, m_deleteWhenEmpty ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	SupplyWarehouseDockUpdateModuleData* self {static_cast<SupplyWarehouseDockUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -74,7 +76,7 @@ SupplyWarehouseDockUpdateModuleData::SupplyWarehouseDockUpdateModuleData( void )
 // ------------------------------------------------------------------------------------------------
 SupplyWarehouseDockUpdate::SupplyWarehouseDockUpdate( Thing *thing, const ModuleData* moduleData ) : DockUpdate( thing, moduleData )
 {
-	m_boxesStored = getSupplyWarehouseDockUpdateModuleData()->m_startingBoxesData;
+	m_boxesStored = getSupplyWarehouseDockUpdateModuleData()->m_ini.m_startingBoxesData;
 }
 
 SupplyWarehouseDockUpdate::~SupplyWarehouseDockUpdate()
@@ -86,11 +88,11 @@ void SupplyWarehouseDockUpdate::onObjectCreated()
 	Drawable *draw = getObject()->getDrawable();
 	if( draw )
 	{
-		draw->updateDrawableSupplyStatus( getSupplyWarehouseDockUpdateModuleData()->m_startingBoxesData, m_boxesStored );
+		draw->updateDrawableSupplyStatus( getSupplyWarehouseDockUpdateModuleData()->m_ini.m_startingBoxesData, m_boxesStored );
 	}
 }
 
-Bool SupplyWarehouseDockUpdate::action( Object* docker, Object *drone )
+Bool SupplyWarehouseDockUpdate::action( Object* docker, Object* /* drone */ )
 {
 	if( m_boxesStored == 0 )
 		return FALSE;
@@ -115,7 +117,7 @@ Bool SupplyWarehouseDockUpdate::action( Object* docker, Object *drone )
 	SupplyTruckAIInterface *ai = docker->getAIUpdateInterface()->getSupplyTruckAIInterface();
 	if( ai && ai->gainOneBox( m_boxesStored ) )
 	{
-		if( m_boxesStored == 0 && getSupplyWarehouseDockUpdateModuleData()->m_deleteWhenEmpty )
+		if( m_boxesStored == 0 && getSupplyWarehouseDockUpdateModuleData()->m_ini.m_deleteWhenEmpty )
 		{
 			TheGameLogic->destroyObject( getObject() );
 			return FALSE; //Yer done.  And so am I.
@@ -125,7 +127,7 @@ Bool SupplyWarehouseDockUpdate::action( Object* docker, Object *drone )
 			Drawable *draw = getObject()->getDrawable();
 			if( draw )
 			{
-				draw->updateDrawableSupplyStatus( getSupplyWarehouseDockUpdateModuleData()->m_startingBoxesData, m_boxesStored );
+				draw->updateDrawableSupplyStatus( getSupplyWarehouseDockUpdateModuleData()->m_ini.m_startingBoxesData, m_boxesStored );
 			}
 		}
 
@@ -175,11 +177,11 @@ void SupplyWarehouseDockUpdate::setDockCrippled( Bool setting )
 void SupplyWarehouseDockUpdate::setCashValue( Int cashValue )
 {
 	// A script can tell us our set value, and we need to figure out the boxes needed to provide that.
-	m_boxesStored = ceil(cashValue / (float)TheGlobalData->m_baseValuePerSupplyBox);
+	m_boxesStored = ceil(cashValue / (float)TheGlobalData->m_data.m_baseValuePerSupplyBox);
 	Drawable *draw = getObject()->getDrawable();
 	if( draw )
 	{
-		draw->updateDrawableSupplyStatus( getSupplyWarehouseDockUpdateModuleData()->m_startingBoxesData, m_boxesStored );
+		draw->updateDrawableSupplyStatus( getSupplyWarehouseDockUpdateModuleData()->m_ini.m_startingBoxesData, m_boxesStored );
 	}
 }
 
@@ -229,6 +231,6 @@ void SupplyWarehouseDockUpdate::loadPostProcess( void )
 	Object *us = getObject();
 	Drawable *draw = us->getDrawable();
 	if( draw )
-		draw->updateDrawableSupplyStatus( modData->m_startingBoxesData, m_boxesStored );
+		draw->updateDrawableSupplyStatus( modData->m_ini.m_startingBoxesData, m_boxesStored );
 
 }  // end loadPostProcess

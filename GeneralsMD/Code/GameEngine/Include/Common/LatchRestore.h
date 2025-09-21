@@ -110,8 +110,11 @@ class LatchRestore
 		{
 			whereToRestore = valueToRestore;
 		}
+
+		// No copies allowed!
+		LatchRestore(const LatchRestore&) = delete;
+		LatchRestore& operator=(const LatchRestore&) = delete;
 };
 
 
 #endif /* __LATCHRESTORE_H__ */
-

@@ -152,10 +152,10 @@ public:
 #if 0
 	void setObjectIDCounter( ObjectID nextObjID ) { m_nextObjID = nextObjID; }
 	ObjectID getObjectIDCounter( void ) { return m_nextObjID; }
+#endif // if 0
 
 	//-----------------------------------------------------------------------------------------------
 	void setBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus bs);
-#endif // if 0
 	Bool findBuildableStatusOverride(const ThingTemplate* tt, BuildableStatus& bs) const;
 
 	void setControlBarOverride(const AsciiString& commandSetName, Int slot, ConstCommandButtonPtr commandButton);
@@ -206,21 +206,19 @@ public:
 	void enableScoring(Bool score) { m_isScoringEnabled = score; }
 	Bool isScoringEnabled() const { return m_isScoringEnabled; }
 
-#if 0
 	void setShowBehindBuildingMarkers(Bool b) { m_showBehindBuildingMarkers = b; }
 	Bool getShowBehindBuildingMarkers() const { return m_showBehindBuildingMarkers; }
-#endif // if 0
 
 	void setDrawIconUI(Bool b) { m_drawIconUI = b; }
 	Bool getDrawIconUI() const { return m_drawIconUI; }
 
-#if 0
 	void setShowDynamicLOD(Bool b) { m_showDynamicLOD = b; }
 	Bool getShowDynamicLOD() const { return m_showDynamicLOD; }
 
 	void setHulkMaxLifetimeOverride(Int b) { m_scriptHulkMaxLifetimeOverride = b; }
 	Int getHulkMaxLifetimeOverride() const { return m_scriptHulkMaxLifetimeOverride; }
 
+#if 0
 	Bool isIntroMoviePlaying();
 #endif // if 0
 
@@ -306,6 +304,7 @@ private:
 	Int rebalanceChildSleepyUpdate(Int i);
 	void remakeSleepyUpdate();
 	void validateSleepyUpdate() const;
+#endif // if 0
 
 private:
 
@@ -314,8 +313,7 @@ private:
 		but has to go somewhere. (srj)
 	*/
 	typedef std::unordered_map< AsciiString, BuildableStatus, rts::hash<AsciiString>, rts::equal_to<AsciiString> > BuildableMap;
-	BuildableMap m_thingTemplateBuildableOverrides;
-#endif // if 0
+	BuildableMap m_thingTemplateBuildableOverrides {};
 
 	/**
 		overrides to control bars. doesn't really belong here, but has to go somewhere. (srj)
@@ -323,16 +321,14 @@ private:
 	typedef std::unordered_map< AsciiString, ConstCommandButtonPtr, rts::hash<AsciiString>, rts::equal_to<AsciiString> > ControlBarOverrideMap;
 	ControlBarOverrideMap m_controlBarOverrides {};
 
-	Real m_width {}, m_height {};																	///< Dimensions of the world
-	UnsignedInt m_frame {};																		///< Simulation frame number
+	Real m_width {}, m_height {};					///< Dimensions of the world
+	UnsignedInt m_frame {};							///< Simulation frame number
 
-#if 0
 	// CRC cache system -----------------------------------------------------------------------------
-	UnsignedInt	m_CRC;																			///< Cache of previous CRC value
-	std::map<Int, UnsignedInt> m_cachedCRCs;								///< CRCs we've seen this frame
-	Bool m_shouldValidateCRCs;															///< Should we validate CRCs this frame?
+	UnsignedInt	m_CRC {};							///< Cache of previous CRC value
+	std::map<Int, UnsignedInt> m_cachedCRCs {};		///< CRCs we've seen this frame
+	Bool m_shouldValidateCRCs {};					///< Should we validate CRCs this frame?
 	//-----------------------------------------------------------------------------------------------
-#endif // if 0
 
 	//Added By Sadullah Nader
 	//Used to for load scene
@@ -370,7 +366,7 @@ private:
 	std::list<UpdateModulePtr> m_normalUpdates;
 #endif
 
-	UpdateModulePtr					 m_curUpdateModule {};
+	UpdateModulePtr m_curUpdateModule {};
 
 	ObjectPointerList m_objectsToDestroy {};										///< List of things that need to be destroyed at end of frame
 
@@ -401,18 +397,16 @@ private:
 
 	Bool m_progressComplete[MAX_SLOTS];
 	enum { PROGRESS_COMPLETE_TIMEOUT = 60000 };							///< Timeout we wait for when we've completed our Load
-	std::chrono::time_point<std::chrono::steady_clock> m_progressCompleteTimeout[MAX_SLOTS];
+	TimePoint m_progressCompleteTimeout[MAX_SLOTS];
 #if 0
 	void testTimeOut( void );
 #endif // if 0
 	void lastHeardFrom( Int playerId );
-#if 0
-	Bool m_forceGameStartByTimeOut;													///< If we timeout someone we're waiting to load, set this flag to start the game
+	Bool m_forceGameStartByTimeOut {};													///< If we timeout someone we're waiting to load, set this flag to start the game
 
 #ifdef DUMP_PERF_STATS
 	UnsignedInt m_overallFailedPathfinds;
 #endif
-#endif // if 0
 
 	UnsignedInt m_frameObjectsChangedTriggerAreas {};					///< Last frame objects moved into/outof trigger areas, or were created/destroyed. jba.
 

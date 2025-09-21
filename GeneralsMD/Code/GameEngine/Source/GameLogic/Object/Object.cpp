@@ -90,7 +90,7 @@
 #include "GameLogic/Module/SpecialPowerModule.h"
 #include "GameLogic/Module/SpecialAbilityUpdate.h"
 // #include "GameLogic/Module/StatusDamageHelper.h"
-// #include "GameLogic/Module/StickyBombUpdate.h"
+#include "GameLogic/Module/StickyBombUpdate.h"
 // #include "GameLogic/Module/SubdualDamageHelper.h"
 // #include "GameLogic/Module/TempWeaponBonusHelper.h"
 // #include "GameLogic/Module/ToppleUpdate.h"
@@ -697,7 +697,6 @@ void Object::onRemovedFrom( Object* /* removedFrom */ )
 
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Int Object::getTransportSlotCount() const
@@ -718,7 +717,6 @@ Int Object::getTransportSlotCount() const
 	}
 	return count;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Run from GameLogic::destroyObject */
@@ -914,6 +912,7 @@ void Object::setOrRestoreTeam( Team* team, Bool restoring )
 	if (oldPlayerIndex != newPlayerIndex)
 		TheInGameUI->objectChangedTeam(this, oldPlayerIndex, newPlayerIndex);
 }
+#endif // if 0
 
 //=============================================================================
 enum 
@@ -932,7 +931,7 @@ Bool Object::checkAndDetonateBoobyTrap(const Object *victim)
 	filters[1] = &filterMapStatus;
 	filters[2] = NULL;
 
-	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( getPosition(), BOOBY_TRAP_SCAN_RANGE + getGeometryInfo().getBoundingCircleRadius(), 
+	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( getPosition(), (Real)BOOBY_TRAP_SCAN_RANGE + getGeometryInfo().getBoundingCircleRadius(), 
 		FROM_CENTER_2D, filters, ITER_SORTED_NEAR_TO_FAR );
 	MemoryPoolObjectHolder hold(iter);// This is the magic thing that frees the dynamically made iter in its destructor
 
@@ -962,7 +961,6 @@ Bool Object::checkAndDetonateBoobyTrap(const Object *victim)
 
 	return FALSE;
 }
-#endif // if 0
 
 //=============================================================================
 void Object::setStatus( ObjectStatusMaskType objectStatus, Bool set )
@@ -1411,13 +1409,13 @@ const Weapon* Object::getCurrentWeapon(WeaponSlotType* wslot) const
 	return m_weaponSet.getCurWeapon();
 }
 
-#if 0
 //=============================================================================
 Weapon* Object::findWaypointFollowingCapableWeapon()
 {
 	return m_weaponSet.findWaypointFollowingCapableWeapon();
 }
 
+#if 0
 //=============================================================================
 Bool Object::getAmmoPipShowingInfo(Int& numTotal, Int& numFull) const
 {
@@ -1635,7 +1633,6 @@ void Object::setProducer(const Object* obj)
 //		m_indicatorColor = obj->m_indicatorColor;
 }
 
-#if 0
 //=============================================================================
 void Object::setBuilder( const Object *obj )
 {
@@ -1660,7 +1657,6 @@ void Object::removeCustomIndicatorColor()
 { 
 	setCustomIndicatorColor(0); 
 }
-#endif // if 0
 
 //=============================================================================
 // Object::getIndicatorColor
@@ -1686,7 +1682,6 @@ Color Object::getIndicatorColor() const
 	}
 }
 
-#if 0
 //=============================================================================
 // Object::getNightIndicatorColor - used to make blue/purple easier to see on night models.
 //=============================================================================
@@ -1710,7 +1705,6 @@ Color Object::getNightIndicatorColor() const
 		return m_indicatorColor;
 	}
 }
-#endif // if 0
 
 //=============================================================================
 // Object::isLocallyControlled
@@ -2094,6 +2088,7 @@ Bool Object::isHero(void) const
 	}
 	return isKindOf( KINDOF_HERO );
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::setReceivingDifficultyBonus(Bool receive)
@@ -2105,7 +2100,6 @@ void Object::setReceivingDifficultyBonus(Bool receive)
 	m_isReceivingDifficultyBonus = receive;
 	getControllingPlayer()->friend_applyDifficultyBonusesForObject(this, m_isReceivingDifficultyBonus);
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //- DISABLEDNESS STUFF ----------------------------------------------------------------------------
@@ -2544,6 +2538,7 @@ void Object::forceRefreshSubObjectUpgradeStatus()
 		}
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Returns whether an object entered or exited an area. */
@@ -2612,7 +2607,6 @@ Bool Object::isInside(const PolygonTrigger *pTrigger) const
 	}
 	return false;
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Get production exit interface in object is present */
@@ -2860,6 +2854,7 @@ Real Object::calculateHeightAboveTerrain(void) const
 	Real myZ = pos->z;
 	return myZ - terrainZ;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -2903,6 +2898,7 @@ void Object::friend_notifyOfNewMapBoundary(void)
 }
 
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void Object::calcNaturalRallyPoint(Coord2D *pt)
@@ -3084,6 +3080,7 @@ void Object::friend_bindToDrawable( Drawable *draw )
 		(*b)->onDrawableBoundToObject();
 	}
 }	
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::setSelectable(Bool selectable) 
@@ -3094,7 +3091,6 @@ void Object::setSelectable(Bool selectable)
 		m_drawable->setSelectable(selectable);
 	}
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool Object::isSelectable() const
@@ -6001,7 +5997,6 @@ DockUpdateInterface *Object::getDockUpdateInterface( void )
 
 }  // end getDockUpdateInterface
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 // Search our special power modules for a specific one.
 // ------------------------------------------------------------------------------------------------
@@ -6014,7 +6009,7 @@ SpecialPowerModuleInterface* Object::findSpecialPowerModuleInterface( SpecialPow
 			continue;
 
 		const SpecialPowerTemplate *spTemplate = sp->getSpecialPowerTemplate();
-		if (spTemplate && spTemplate->getSpecialPowerType() == type || type == SPECIAL_INVALID )
+		if ((spTemplate && spTemplate->getSpecialPowerType() == type) || type == SPECIAL_INVALID )
 		{
 			return sp; 
 		}
@@ -6041,7 +6036,6 @@ SpecialPowerModuleInterface* Object::findAnyShortcutSpecialPowerModuleInterface(
 	}
 	return NULL;
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Get spawn behavior interface from object */
@@ -6174,7 +6168,6 @@ Bool Object::getSingleLogicalBonePosition(const char* boneName, Coord3D* positio
 	}
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Bool Object::getSingleLogicalBonePositionOnTurret( WhichTurretType whichTurret, const char* boneName, Coord3D* position, Matrix3D* transform ) const
@@ -6250,7 +6243,6 @@ Int Object::getMultiLogicalBonePosition(const char* boneNamePrefix, Int maxBones
 		return 0;
 	}
 }
-#endif // if 0
 
 //=============================================================================
 const AsciiString& Object::getCommandSetString() const 
@@ -6282,7 +6274,6 @@ return false;
 #endif // if 0
 }
 
-#if 0
 //=============================================================================
 // Object::defect, and related methods                                        =
 //=============================================================================
@@ -6396,7 +6387,6 @@ void Object::defect( Team* newTeam, UnsignedInt detectionTime )
 	}
 
 }
-#endif // if 0
 
 //=============================================================================
 // Object::goInvulnerable

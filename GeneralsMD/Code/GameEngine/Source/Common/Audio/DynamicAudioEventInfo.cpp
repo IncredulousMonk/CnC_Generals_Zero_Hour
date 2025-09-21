@@ -69,11 +69,11 @@ const DynamicAudioEventInfo * DynamicAudioEventInfo::getDynamicAudioEventInfo() 
 void DynamicAudioEventInfo::overrideAudioName( const AsciiString & newName )
 {
   // Record new name. Needed later for load & save
-  m_originalName = m_audioName;
+  m_originalName = m_data.m_audioName;
 
   m_overriddenFields.set( OVERRIDE_NAME );
 
-  m_audioName = newName;
+  m_data.m_audioName = newName;
 }
 
 /** Override; change the looping property of this audio event */
@@ -82,9 +82,9 @@ void DynamicAudioEventInfo::overrideLoopFlag( Bool newLoopFlag )
   m_overriddenFields.set( OVERRIDE_LOOP_FLAG );
   
   if ( newLoopFlag)
-    BitSet( m_control, AC_LOOP );
+    BitSet( m_data.m_control, AC_LOOP );
   else
-    BitClear( m_control, AC_LOOP );
+    BitClear( m_data.m_control, AC_LOOP );
 }
 
 /** Override; change the looping properties of this audio event*/
@@ -92,7 +92,7 @@ void DynamicAudioEventInfo::overrideLoopCount( Int newLoopCount )
 {
   m_overriddenFields.set( OVERRIDE_LOOP_COUNT );
 
-  m_loopCount = newLoopCount;
+  m_data.m_loopCount = newLoopCount;
 }
 
 /** Override; change the volume of this audio event*/
@@ -100,7 +100,7 @@ void DynamicAudioEventInfo::overrideVolume( Real newVolume )
 {
   m_overriddenFields.set( OVERRIDE_VOLUME );
   
-  m_volume = newVolume;
+  m_data.m_volume = newVolume;
 }
 
 /** Override; change the minimum volume of this audio event*/
@@ -108,7 +108,7 @@ void DynamicAudioEventInfo::overrideMinVolume( Real newMinVolume )
 {
   m_overriddenFields.set( OVERRIDE_MIN_VOLUME );
   
-  m_minVolume = newMinVolume;
+  m_data.m_minVolume = newMinVolume;
 }
 
 /** Override; change the name of this audio event*/
@@ -116,7 +116,7 @@ void DynamicAudioEventInfo::overrideMinRange( Real newMinRange )
 {
   m_overriddenFields.set( OVERRIDE_MIN_RANGE );
   
-  m_minDistance = newMinRange;
+  m_data.m_minDistance = newMinRange;
 }
 
 /** Override; change the name of this audio event*/
@@ -124,7 +124,7 @@ void DynamicAudioEventInfo::overrideMaxRange( Real newMaxRange )
 {
   m_overriddenFields.set( OVERRIDE_MAX_RANGE );
   
-  m_maxDistance = newMaxRange;
+  m_data.m_maxDistance = newMaxRange;
 }
 
 /** Override; change the name of this audio event*/
@@ -132,7 +132,7 @@ void DynamicAudioEventInfo::overridePriority( AudioPriority newPriority )
 {
   m_overriddenFields.set( OVERRIDE_PRIORITY );
   
-  m_priority = newPriority;
+  m_data.m_priority = newPriority;
 }
 
 /** Get the name of the INI entry this event info was derived from */
@@ -144,7 +144,7 @@ const AsciiString & DynamicAudioEventInfo::getOriginalName() const
   }
   else
   {
-    return m_audioName;
+    return m_data.m_audioName;
   }
 }
 
@@ -164,7 +164,7 @@ void DynamicAudioEventInfo::xferNoName( Xfer * xfer )
     UnsignedByte overriddenFlags;
     DEBUG_ASSERTCRASH( OVERRIDE_COUNT <= sizeof( overriddenFlags ) * 8, ("Save/load code assumes override flags can fit into UnsignedByte, but it doesn't work anymore! Move up to larger integer type") );
     xfer->xferUnsignedByte( &overriddenFlags );
-    Int field;
+    UnsignedInt field;
     for ( field = 0; field < OVERRIDE_COUNT; field++ )
     {
       m_overriddenFields.set( field, BitTest( overriddenFlags, 1 << field ) );
@@ -174,7 +174,7 @@ void DynamicAudioEventInfo::xferNoName( Xfer * xfer )
   {
     UnsignedByte overriddenFlags = 0;
     DEBUG_ASSERTCRASH( OVERRIDE_COUNT <= sizeof( overriddenFlags ) * 8, ("Save/load code assumes override flags can fit into UnsignedByte, but it doesn't work anymore! Move up to larger integer type") );
-    Int field;
+    UnsignedInt field;
     for ( field = 0; field < OVERRIDE_COUNT; field++ )
     {
       if ( m_overriddenFields.test( field ) )
@@ -187,47 +187,47 @@ void DynamicAudioEventInfo::xferNoName( Xfer * xfer )
 
   if ( wasLoopFlagOverriden() )
   {
-    Bool loopFlag = BitTest( m_control, AC_LOOP );
+    Bool loopFlag = BitTest( m_data.m_control, AC_LOOP );
     xfer->xferBool( &loopFlag );
     if ( loopFlag )
     {
-      BitSet( m_control, AC_LOOP );
+      BitSet( m_data.m_control, AC_LOOP );
     }
     else
     {
-      BitClear( m_control, AC_LOOP );
+      BitClear( m_data.m_control, AC_LOOP );
     }
   }
 
   if ( wasLoopCountOverriden() )
   {
-    xfer->xferInt( &m_loopCount );
+    xfer->xferInt( &m_data.m_loopCount );
   }
   
   if ( wasVolumeOverriden() )
   {
-    xfer->xferReal( &m_volume );
+    xfer->xferReal( &m_data.m_volume );
   }
   
   if ( wasMinVolumeOverriden() )
   {
-    xfer->xferReal( &m_minVolume );
+    xfer->xferReal( &m_data.m_minVolume );
   }
   
   if ( wasMinRangeOverriden() )
   {
-    xfer->xferReal( &m_minDistance );
+    xfer->xferReal( &m_data.m_minDistance );
   }
   
   if ( wasMaxRangeOverriden() )
   {
-    xfer->xferReal( &m_maxDistance );
+    xfer->xferReal( &m_data.m_maxDistance );
   }
   
   if ( wasPriorityOverriden() )
   {
-    UnsignedByte priority = (UnsignedByte)m_priority;
+    UnsignedByte priority = (UnsignedByte)m_data.m_priority;
     xfer->xferUnsignedByte( &priority );
-    m_priority = (AudioPriority)priority;
+    m_data.m_priority = (AudioPriority)priority;
   }
 }

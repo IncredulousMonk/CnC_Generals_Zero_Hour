@@ -1601,7 +1601,6 @@ Waypoint *TerrainLogic::getWaypointByID( UnsignedInt id )
 	return NULL;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Return the closest waypoint on the labeled path. */
 //-------------------------------------------------------------------------------------------------
@@ -1652,7 +1651,6 @@ Bool TerrainLogic::isPurposeOfPath( Waypoint *pWay, AsciiString label )
 
 	return match;
 }
-#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -1893,7 +1891,6 @@ void TerrainLogic::updateBridgeDamageStates( void )
 	m_bridgeDamageStatesChanged = true;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Checks if a bridge is repaired. */
 //-------------------------------------------------------------------------------------------------
@@ -1943,7 +1940,6 @@ Bool TerrainLogic::isBridgeBroken( const Object *bridge )
 	}
 	return false;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Gets the attack points for a bridge. */
@@ -2320,7 +2316,6 @@ Real TerrainLogic::getWaterHeight( const WaterHandle *water )
 
 }  // end getWaterHeight
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** Set the water height.  If the water rises, then any objects that now find themselves
 	* underwater will be damaged by the amount provided in the parameter 'damageAmount' */
@@ -2328,6 +2323,12 @@ Real TerrainLogic::getWaterHeight( const WaterHandle *water )
 void TerrainLogic::setWaterHeight( const WaterHandle *water, Real height, Real damageAmount,
 																	 Bool forcePathfindUpdate )
 {
+(void) water;
+(void) height;
+(void) damageAmount;
+(void) forcePathfindUpdate;
+DEBUG_CRASH(("TerrainLogic::setWaterHeight not yet implemented!"));
+#if 0
 
 	// sanity
 	if( water == NULL )
@@ -2442,6 +2443,7 @@ void TerrainLogic::setWaterHeight( const WaterHandle *water, Real height, Real d
 
 	}  // end if, water has risen
 
+#endif // if 0
 }  // end setWaterHeight
 
 // ------------------------------------------------------------------------------------------------
@@ -2494,8 +2496,7 @@ void TerrainLogic::changeWaterHeightOverTime( const WaterHandle *water,
 
 	// add the entry into the array of water to update
 	m_waterToUpdate[ m_numWaterToUpdate ].waterTable = water;
-	m_waterToUpdate[ m_numWaterToUpdate ].changePerFrame = (finalHeight - currentHeight) / 
-																												 (LOGICFRAMES_PER_SECOND * transitionTimeInSeconds);
+	m_waterToUpdate[ m_numWaterToUpdate ].changePerFrame = (finalHeight - currentHeight) / ((Real)LOGICFRAMES_PER_SECOND * transitionTimeInSeconds);
 	m_waterToUpdate[ m_numWaterToUpdate ].targetHeight = finalHeight;
 	m_waterToUpdate[ m_numWaterToUpdate ].damageAmount = damageAmount;
 	m_waterToUpdate[ m_numWaterToUpdate ].currentHeight = currentHeight;
@@ -2511,6 +2512,10 @@ void TerrainLogic::changeWaterHeightOverTime( const WaterHandle *water,
 void TerrainLogic::findAxisAlignedBoundingRect( const WaterHandle *water, Region3D *region )
 {
 
+(void) water;
+(void) region;
+DEBUG_CRASH(("TerrainLogic::findAxisAlignedBoundingRect not yet implemented!"));
+#if 0
 	// sanity
 	if( water == NULL || region == NULL )
 		return;
@@ -2596,11 +2601,15 @@ void TerrainLogic::findAxisAlignedBoundingRect( const WaterHandle *water, Region
 				
 	}  // end else
 
+#endif // if 0
 }  // end findAxisAlignedBoundingRect
 
 void TerrainLogic::setActiveBoundary(Int newActiveBoundary)
 {
-	if (newActiveBoundary < 0 || newActiveBoundary >= m_boundaries.size()) {
+(void) newActiveBoundary;
+DEBUG_CRASH(("TerrainLogic::setActiveBoundary not yet implemented!"));
+#if 0
+	if (newActiveBoundary < 0 || newActiveBoundary >= (Int)m_boundaries.size()) {
 		// probably should DEBUG_ASSERT here
 		return;
 	}
@@ -2611,7 +2620,7 @@ void TerrainLogic::setActiveBoundary(Int newActiveBoundary)
 		return;
 	}
 
-	if (m_boundaries[newActiveBoundary].x == 0 || m_boundaries[newActiveBoundary].y == 0) {
+	if (m_boundaries.data()[newActiveBoundary].x == 0 || m_boundaries.data()[newActiveBoundary].y == 0) {
 		return;
 	}
 
@@ -2668,8 +2677,8 @@ void TerrainLogic::setActiveBoundary(Int newActiveBoundary)
 	//TheAI->pathfinder()->newMap();
 
 	TheTacticalView->forceCameraConstraintRecalc();
-}
 #endif // if 0
+}
 
 // ------------------------------------------------------------------------------------------------
 /** Flatten the terrain beneath a struture. */
@@ -2893,56 +2902,58 @@ DEBUG_CRASH(("TerrainLogic::flattenTerrain not yet implemented!"));
 }
 
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** Dig a deep circular gorge into the terrain beneath an object. */
 // ------------------------------------------------------------------------------------------------
 void TerrainLogic::createCraterInTerrain(Object *obj) 
 {
+(void) obj;
+DEBUG_CRASH(("TerrainLogic::createCraterInTerrain not yet implemented!"));
+#if 0
 	if (obj->getGeometryInfo().getIsSmall()) 
 		return;
 
 	const Coord3D *pos = obj->getPosition();
-  Real radius = obj->getGeometryInfo().getMajorRadius();	
+	Real radius = obj->getGeometryInfo().getMajorRadius();	
 
-  if ( radius <= 0.0f )
-    return; // sanity
+	if ( radius <= 0.0f )
+		return; // sanity
 
-  ICoord2D iMin, iMax;
-  iMin.x = REAL_TO_INT_FLOOR( ( pos->x - radius ) / MAP_XY_FACTOR );
-  iMin.y = REAL_TO_INT_FLOOR( ( pos->y - radius ) / MAP_XY_FACTOR );
-  iMax.x = REAL_TO_INT_FLOOR( ( pos->x + radius ) / MAP_XY_FACTOR );
+	ICoord2D iMin, iMax;
+	iMin.x = REAL_TO_INT_FLOOR( ( pos->x - radius ) / MAP_XY_FACTOR );
+	iMin.y = REAL_TO_INT_FLOOR( ( pos->y - radius ) / MAP_XY_FACTOR );
+	iMax.x = REAL_TO_INT_FLOOR( ( pos->x + radius ) / MAP_XY_FACTOR );
 	iMax.y = REAL_TO_INT_FLOOR( ( pos->y + radius ) / MAP_XY_FACTOR );
 
-  Real deltaX, deltaY;
+	Real deltaX, deltaY;
 
 	for (Int i = iMin.x; i <= iMax.x; i++ ) 
-  {
+	{
 		for ( Int j=0; j <= iMax.y; j++ ) 
-    {
+		{
 			deltaX = ( i * MAP_XY_FACTOR ) - pos->x;
 			deltaY = ( j * MAP_XY_FACTOR ) - pos->y;
 
-      Real distance = sqrt( sqr( deltaX ) + sqr( deltaY ) );
+			Real distance = sqrt( sqr( deltaX ) + sqr( deltaY ) );
 
 			if ( distance < radius ) //inside circle
-      {
+			{
 				ICoord2D gridPos;
 				gridPos.x = i;
 				gridPos.y = j;
 
 
-        Real displacementAmount = radius * (1.0f - distance / radius );
+				Real displacementAmount = radius * (1.0f - distance / radius );
 
-        Int targetHeight = MAX( 1, TheTerrainVisual->getRawMapHeight( &gridPos ) - displacementAmount );
+				Int targetHeight = MAX( 1, TheTerrainVisual->getRawMapHeight( &gridPos ) - displacementAmount );
 
 				TheTerrainVisual->setRawMapHeight( &gridPos, targetHeight );
 			}
-    } // next j
-  } // next i
+		} // next j
+	} // next i
 
-}
 #endif // if 0
+}
 
 
 // ------------------------------------------------------------------------------------------------

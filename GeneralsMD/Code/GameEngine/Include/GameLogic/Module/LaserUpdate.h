@@ -39,7 +39,7 @@
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Thing;
 class Vector3;
-enum ParticleSystemID;
+enum ParticleSystemID: int;
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -100,25 +100,24 @@ protected:
 	void updateEndPos(); ///< figures out and sets endPos
 
 	//If the master dies, so will this laser (although if it has a fade delay, it'll just skip to the fade)
-	Coord3D m_startPos;
-	Coord3D m_endPos;
+	Coord3D m_startPos {};
+	Coord3D m_endPos {};
 
-	DrawableID m_parentID;
-	DrawableID m_targetID;
+	DrawableID m_parentID {};
+	DrawableID m_targetID {};
 
-	Bool m_dirty;
-	ParticleSystemID m_particleSystemID;
-	ParticleSystemID m_targetParticleSystemID;
-	Bool m_widening;
-	Bool m_decaying;
-	UnsignedInt m_widenStartFrame;
-	UnsignedInt m_widenFinishFrame;
-	Real m_currentWidthScalar;
-	UnsignedInt m_decayStartFrame;
-	UnsignedInt m_decayFinishFrame;
-	AsciiString m_parentBoneName;
+	Bool m_dirty {};
+	ParticleSystemID m_particleSystemID {};
+	ParticleSystemID m_targetParticleSystemID {};
+	Bool m_widening {};
+	Bool m_decaying {};
+	UnsignedInt m_widenStartFrame {};
+	UnsignedInt m_widenFinishFrame {};
+	Real m_currentWidthScalar {};
+	UnsignedInt m_decayStartFrame {};
+	UnsignedInt m_decayFinishFrame {};
+	AsciiString m_parentBoneName {};
 };
 
 
 #endif
-

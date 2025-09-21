@@ -29,12 +29,12 @@
   
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-// #include "Common/AudioEventInfo.h"
-// #include "Common/DynamicAudioEventInfo.h"
+#include "Common/AudioEventInfo.h"
+#include "Common/DynamicAudioEventInfo.h"
 // #include "Common/AudioSettings.h"
 // #include "Common/BitFlagsIO.h"
 // #include "Common/BuildAssistant.h"
-// #include "Common/ClientUpdateModule.h"
+#include "Common/ClientUpdateModule.h"
 #include "Common/DrawModule.h"
 // #include "Common/GameAudio.h"
 // #include "Common/GameEngine.h"
@@ -43,10 +43,10 @@
 // #include "Common/GlobalData.h"
 // #include "Common/ModuleFactory.h"
 // #include "Common/PerfTimer.h"
-// #include "Common/Player.h"
-// #include "Common/PlayerList.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
 // #include "Common/ThingFactory.h"
-// #include "Common/ThingTemplate.h"
+#include "Common/ThingTemplate.h"
 // #include "Common/Xfer.h"
 
 // #include "GameLogic/ExperienceTracker.h"
@@ -54,7 +54,7 @@
 #include "GameLogic/Object.h"
 // #include "GameLogic/Locomotor.h"
 // #include "GameLogic/Module/AIUpdate.h"
-// #include "GameLogic/Module/BodyModule.h"
+#include "GameLogic/Module/BodyModule.h"
 // #include "GameLogic/Module/ContainModule.h"
 // #include "GameLogic/Module/PhysicsUpdate.h"
 // #include "GameLogic/Module/StealthUpdate.h"
@@ -114,6 +114,7 @@ static const char *TheDrawableIconNames[] =
 	"CarBomb",
 	NULL
 };
+#endif // if 0
 
 
 /** 
@@ -125,17 +126,16 @@ static const char *TheDrawableIconNames[] =
  */
 static DynamicAudioEventInfo  * getNoSoundMarker()
 {
-  static DynamicAudioEventInfo  * marker = NULL;
-   
-  if ( marker == NULL )
-  {
-    // Initialize first time function is called
-    marker = newInstance( DynamicAudioEventInfo  );
-  }
+	static DynamicAudioEventInfo  * marker = NULL;
 
-  return marker;
+	if ( marker == NULL )
+	{
+		// Initialize first time function is called
+		marker = newInstance( DynamicAudioEventInfo  );
+	}
+
+	return marker;
 }
-#endif // if 0
 
 
 // ------------------------------------------------------------------------------------------------
@@ -683,10 +683,20 @@ Bool Drawable::clientOnly_getFirstRenderObjInfo(Coord3D* pos, Real* boundingSphe
 	}
 	return false;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool Drawable::getProjectileLaunchOffset(WeaponSlotType wslot, Int specificBarrelToUse, Matrix3D* launchPos, WhichTurretType tur, Coord3D* turretRotPos, Coord3D* turretPitchPos) const
 {
+(void) wslot;
+(void) specificBarrelToUse;
+(void) launchPos;
+(void) tur;
+(void) turretRotPos;
+(void) turretPitchPos;
+DEBUG_CRASH(("Drawable::getProjectileLaunchOffset not yet implemented!"));
+return false;
+#if 0
 	for (const DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		const ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
@@ -694,8 +704,8 @@ Bool Drawable::getProjectileLaunchOffset(WeaponSlotType wslot, Int specificBarre
 			return true;
 	}
 	return false;
-}
 #endif // if 0
+}
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::setAnimationLoopDuration(UnsignedInt numFrames)
@@ -712,30 +722,36 @@ DEBUG_CRASH(("Drawable::setAnimationLoopDuration not yet implemented!"));
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::setAnimationCompletionTime(UnsignedInt numFrames)
 {
+(void) numFrames;
+DEBUG_CRASH(("Drawable::setAnimationCompletionTime not yet implemented!"));
+#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
 		if (di)
 			di->setAnimationCompletionTime(numFrames);
 	}
+#endif // if 0
 }
 
 //Kris: Manually set a drawable's current animation to specific frame.
 //-------------------------------------------------------------------------------------------------
 void Drawable::setAnimationFrame( int frame )
 {
+(void) frame;
+DEBUG_CRASH(("Drawable::setAnimationFrame not yet implemented!"));
+#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
 		if (di)
 			di->setAnimationFrame( frame );
 	}
-}
 #endif // if 0
+}
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::updateSubObjects()
@@ -860,10 +876,16 @@ Int Drawable::getCurrentClientBonePositions(const char* boneNamePrefix, Int star
 	}
 	return count;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool Drawable::getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const
 {
+(void) boneName;
+(void) transform;
+DEBUG_CRASH(("Drawable::getCurrentWorldspaceClientBonePositions not yet implemented!"));
+return false;
+#if 0
 	for (const DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		const ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
@@ -871,6 +893,7 @@ Bool Drawable::getCurrentWorldspaceClientBonePositions(const char* boneName, Mat
 			return true;
 	}
 	return false;
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -891,6 +914,7 @@ void Drawable::setTerrainDecal(TerrainDecalType type)
 
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::setTerrainDecalSize(Real x, Real y)
 {
@@ -2556,6 +2580,7 @@ void Drawable::calcPhysicsXformMotorcycle( const Locomotor *locomotor, PhysicsXf
 		info.m_totalZ += fabs(rollHeight)/divisor;
 	}
 }
+#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -2577,6 +2602,7 @@ const AudioEventRTS& Drawable::getAmbientSoundByDamage(BodyDamageType dt)
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 #ifdef _DEBUG
@@ -4260,7 +4286,9 @@ void Drawable::friend_bindToObject( Object *obj ) ///< bind this drawable to an 
 	{
 		(*dm)->onDrawableBoundToObject();
 	}
-}					
+}
+#endif // if 0
+
 //-------------------------------------------------------------------------------------------------
 	// when our Object changes teams, it calls us to let us know, so
 	// we can update our model, etc., if necessary. NOTE, we don't guarantee
@@ -4287,6 +4315,7 @@ void Drawable::changedTeam()
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::setPosition(const Coord3D *pos) 
 {
@@ -4539,6 +4568,7 @@ void Drawable::clearCustomSoundAmbient( bool restartSound )
     startAmbientSound(); // Note: checks for enabled flag
   }
 }
+#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -4548,80 +4578,80 @@ void Drawable::startAmbientSound(BodyDamageType dt, TimeOfDay tod, Bool onlyIfPe
 {
 	stopAmbientSound();
 
-  Bool trySound = FALSE;
+	Bool trySound = FALSE;
 
-  // Look for customized sound info
-  if ( dt != BODY_RUBBLE && m_customSoundAmbientInfo != NULL )
-  {
-    if ( m_customSoundAmbientInfo != getNoSoundMarker() )
-    {
-      if (m_ambientSound == NULL)
-        m_ambientSound = newInstance(DynamicAudioEventRTS);
+	// Look for customized sound info
+	if ( dt != BODY_RUBBLE && m_customSoundAmbientInfo != NULL )
+	{
+		if ( m_customSoundAmbientInfo != getNoSoundMarker() )
+		{
+			if (m_ambientSound == NULL)
+				m_ambientSound = newInstance(DynamicAudioEventRTS);
 
-      // Make sure m_event will accept the custom info
-      m_ambientSound->m_event.setEventName( m_customSoundAmbientInfo->m_audioName );
-      m_ambientSound->m_event.setAudioEventInfo( m_customSoundAmbientInfo );
-      trySound = TRUE;
-    }       
-  }
-  else
-  {
-    // Didn't get customized sound
-    //Get the specific ambient sound for the damage type.
-	  const AudioEventRTS& audio = getAmbientSoundByDamage(dt);
-	  if( audio.getEventName().isNotEmpty() )
-	  {
-		  if (m_ambientSound == NULL)
-			  m_ambientSound = newInstance(DynamicAudioEventRTS);
+			// Make sure m_event will accept the custom info
+			m_ambientSound->m_event.setEventName( m_customSoundAmbientInfo->m_data.m_audioName );
+			m_ambientSound->m_event.setAudioEventInfo( m_customSoundAmbientInfo );
+			trySound = TRUE;
+		}
+	}
+	else
+	{
+		// Didn't get customized sound
+		//Get the specific ambient sound for the damage type.
+		const AudioEventRTS& audio = getAmbientSoundByDamage(dt);
+		if( audio.getEventName().isNotEmpty() )
+		{
+			if (m_ambientSound == NULL)
+				m_ambientSound = newInstance(DynamicAudioEventRTS);
 
-		  (m_ambientSound->m_event) = audio;
-		  trySound = TRUE;
-	  }
-	  else if( dt != BODY_PRISTINE && dt != BODY_RUBBLE )
-	  {
-		  //If the ambient sound was absent in the case of non-pristine damage types,
-		  //try getting the pristine one. Most of our cases actually specify just the
-		  //pristine sound and want to use it for all states (except dead/rubble).
-		  const AudioEventRTS& pristineAudio = getAmbientSoundByDamage( BODY_PRISTINE );
-		  if( pristineAudio.getEventName().isNotEmpty() )
-		  {
-			  if (m_ambientSound == NULL)
-				  m_ambientSound = newInstance(DynamicAudioEventRTS);
-			  (m_ambientSound->m_event) = pristineAudio;
-			  trySound = TRUE;
-		  }
-	  }
-  }
-  
-	
+			(m_ambientSound->m_event) = audio;
+			trySound = TRUE;
+		}
+		else if( dt != BODY_PRISTINE && dt != BODY_RUBBLE )
+		{
+			//If the ambient sound was absent in the case of non-pristine damage types,
+			//try getting the pristine one. Most of our cases actually specify just the
+			//pristine sound and want to use it for all states (except dead/rubble).
+			const AudioEventRTS& pristineAudio = getAmbientSoundByDamage( BODY_PRISTINE );
+			if( pristineAudio.getEventName().isNotEmpty() )
+			{
+				if (m_ambientSound == NULL)
+					m_ambientSound = newInstance(DynamicAudioEventRTS);
+				(m_ambientSound->m_event) = pristineAudio;
+				trySound = TRUE;
+			}
+		}
+	}
+
+
 	if( trySound && m_ambientSound )
 	{
 		const AudioEventInfo *info = m_ambientSound->m_event.getAudioEventInfo();
 		if( info )
 		{
-      if ( !onlyIfPermanent || info->isPermanentSound() )
-      {
-			  if( BitTest( info->m_type, ST_GLOBAL) || info->m_priority == AP_CRITICAL )
-			  {
-				  //Play it anyways.
-				  m_ambientSound->m_event.setDrawableID(getID());
-				  m_ambientSound->m_event.setTimeOfDay(tod);
-				  m_ambientSound->m_event.setPlayingHandle(TheAudio->addAudioEvent( &m_ambientSound->m_event ));
-			  }
-			  else
-			  {
-				  //Check if it's close enough to try playing (optimization)
-				  Coord3D vector = *getPosition();
-				  vector.sub( TheAudio->getListenerPosition() );
-				  Real distSqr = vector.lengthSqr();
-				  if( distSqr < sqr( info->m_maxDistance ) )
-				  {
-					  m_ambientSound->m_event.setDrawableID(getID());
-					  m_ambientSound->m_event.setTimeOfDay(tod);
-					  m_ambientSound->m_event.setPlayingHandle(TheAudio->addAudioEvent( &m_ambientSound->m_event ));
-				  }
-			  }
-      }
+			if ( !onlyIfPermanent || info->isPermanentSound() )
+			{
+				if( BitTest( info->m_data.m_type, ST_GLOBAL) || info->m_data.m_priority == AP_CRITICAL )
+				{
+					//Play it anyways.
+					m_ambientSound->m_event.setDrawableID(getID());
+					m_ambientSound->m_event.setTimeOfDay(tod);
+					m_ambientSound->m_event.setPlayingHandle(TheAudio->addAudioEvent( &m_ambientSound->m_event ));
+				}
+				else
+				{
+					//Check if it's close enough to try playing (optimization)
+					Coord3D vector = *getPosition();
+					vector.sub( TheAudio->getListenerPosition() );
+					Real distSqr = vector.lengthSqr();
+					if( distSqr < sqr( info->m_data.m_maxDistance ) )
+					{
+						m_ambientSound->m_event.setDrawableID(getID());
+						m_ambientSound->m_event.setTimeOfDay(tod);
+						m_ambientSound->m_event.setPlayingHandle(TheAudio->addAudioEvent( &m_ambientSound->m_event ));
+					}
+				}
+			}
 		}
 		else
 		{
@@ -4637,11 +4667,11 @@ void Drawable::startAmbientSound(BodyDamageType dt, TimeOfDay tod, Bool onlyIfPe
 //-------------------------------------------------------------------------------------------------
 void Drawable::startAmbientSound( Bool onlyIfPermanent )
 {
-  // Must go through enableAmbientSound() if sound is disabled
-  if ( !m_ambientSoundEnabled || !m_ambientSoundEnabledFromScript )
-    return;
-  
-  stopAmbientSound();
+	// Must go through enableAmbientSound() if sound is disabled
+	if ( !m_ambientSoundEnabled || !m_ambientSoundEnabledFromScript )
+		return;
+
+	stopAmbientSound();
 	BodyDamageType bodyCondition = BODY_PRISTINE;
 	Object *obj = getObject();
 	if( obj )
@@ -4654,14 +4684,15 @@ void Drawable::startAmbientSound( Bool onlyIfPermanent )
 //-------------------------------------------------------------------------------------------------
 /** Stop playing the drawables ambient sound if it has one */
 //-------------------------------------------------------------------------------------------------
-void	Drawable::stopAmbientSound( void )
+void Drawable::stopAmbientSound( void )
 {
 	if (m_ambientSound)
-  {
+	{
 		TheAudio->removeAudioEvent(m_ambientSound->m_event.getPlayingHandle());
-  }
+	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 // Enable and disable ambient sound from the game logic
 void Drawable::enableAmbientSound( Bool enable )
@@ -4684,29 +4715,31 @@ void Drawable::enableAmbientSound( Bool enable )
 		stopAmbientSound();
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 // Enable and disable sound because the map designer wants us too
 void Drawable::enableAmbientSoundFromScript( Bool enable )
 {
-  // Note: deliberately skipping if( m_ambientSoundEnabledFromScript == enable ) check here
-  // Allow ENABLE_OBJECT_SOUND to trigger one-shot attached sound multiple times
+	// Note: deliberately skipping if( m_ambientSoundEnabledFromScript == enable ) check here
+	// Allow ENABLE_OBJECT_SOUND to trigger one-shot attached sound multiple times
 
-  m_ambientSoundEnabledFromScript = enable;
-  if( enable )
-  {
-    if ( m_ambientSoundEnabled )
-    {
-      startAmbientSound();
-    }
-  }
-  else
-  {
-    stopAmbientSound();
-  }
+	m_ambientSoundEnabledFromScript = enable;
+	if( enable )
+	{
+		if ( m_ambientSoundEnabled )
+		{
+			startAmbientSound();
+		}
+	}
+	else
+	{
+		stopAmbientSound();
+	}
 }
 
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** add self to the linked list */
 //-------------------------------------------------------------------------------------------------
@@ -4802,13 +4835,17 @@ void Drawable::notifyDrawableDependencyCleared()
 			di->notifyDrawModuleDependencyCleared();
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Set as selectable or not. */
 //-------------------------------------------------------------------------------------------------
 void Drawable::setSelectable( Bool selectable )
 {
-	// unselct drawable if it is no longer selectable.
+(void) selectable;
+DEBUG_CRASH(("Drawable::setSelectable not yet implemented!"));
+#if 0
+	// unselect drawable if it is no longer selectable.
 	if( !selectable )
 		TheInGameUI->deselectDrawable( this );
 
@@ -4818,6 +4855,7 @@ void Drawable::setSelectable( Bool selectable )
 		if (di)
 			di->setSelectable(selectable);
 	}
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -4828,6 +4866,7 @@ Bool Drawable::isSelectable( void ) const
 	return getObject() && getObject()->isSelectable();
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Return whether or not this Drawable is selectable as part of a group. */
 //-------------------------------------------------------------------------------------------------
@@ -4848,6 +4887,7 @@ void Drawable::preloadAssets( TimeOfDay timeOfDay )
 			(*m)->preloadAssets( timeOfDay );
 
 }  // end preloadAssets
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 // Simply searches for the first occurrence of a specified client update module.
@@ -4867,7 +4907,6 @@ ClientUpdateModule* Drawable::findClientUpdateModule( NameKeyType key )
 	}
 	return NULL;
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** CRC */

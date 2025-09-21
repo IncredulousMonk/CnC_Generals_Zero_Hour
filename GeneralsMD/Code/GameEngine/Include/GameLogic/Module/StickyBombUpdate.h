@@ -43,7 +43,7 @@ class StickyBombUpdateModuleData : public UpdateModuleData
 {
 public:
 	// MG: Cannot apply offsetof to StickyBombUpdateModuleData, so had to move data into an embedded struct.
-	struct Data
+	struct IniData
 	{
 		AsciiString		m_attachToBone {};
 		Real			m_offsetZ {};
@@ -51,32 +51,33 @@ public:
 		FXList*			m_geometryBasedDamageFX {};
 	};
 
-	Data m_data {};
+	IniData m_ini {};
 
 	StickyBombUpdateModuleData()
 	{
-		m_data.m_offsetZ = 10.0f;
-		m_data.m_geometryBasedDamageWeaponTemplate = NULL;
-		m_data.m_geometryBasedDamageFX = NULL;
+		m_ini.m_offsetZ = 10.0f;
+		m_ini.m_geometryBasedDamageWeaponTemplate = NULL;
+		m_ini.m_geometryBasedDamageFX = NULL;
 	}
 
 	// No copies allowed!
 	StickyBombUpdateModuleData(const StickyBombUpdateModuleData&) = delete;
 	StickyBombUpdateModuleData& operator=(const StickyBombUpdateModuleData&) = delete;
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-DEBUG_CRASH(("StickyBombUpdateModuleData.buildFieldParse won't work because of offsets!"));
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "AttachToTargetBone",			INI::parseAsciiString,		NULL, offsetof( StickyBombUpdateModuleData::Data, m_attachToBone ) },
-			{ "OffsetZ",					INI::parseReal,				NULL, offsetof( StickyBombUpdateModuleData::Data, m_offsetZ ) },
-			{ "GeometryBasedDamageWeapon",	INI::parseWeaponTemplate,	NULL, offsetof( StickyBombUpdateModuleData::Data, m_geometryBasedDamageWeaponTemplate ) },
-			{ "GeometryBasedDamageFX",		INI::parseFXList,			NULL, offsetof( StickyBombUpdateModuleData::Data, m_geometryBasedDamageFX ) },
+			{ "AttachToTargetBone",			INI::parseAsciiString,		NULL, offsetof( StickyBombUpdateModuleData::IniData, m_attachToBone ) },
+			{ "OffsetZ",					INI::parseReal,				NULL, offsetof( StickyBombUpdateModuleData::IniData, m_offsetZ ) },
+			{ "GeometryBasedDamageWeapon",	INI::parseWeaponTemplate,	NULL, offsetof( StickyBombUpdateModuleData::IniData, m_geometryBasedDamageWeaponTemplate ) },
+			{ "GeometryBasedDamageFX",		INI::parseFXList,			NULL, offsetof( StickyBombUpdateModuleData::IniData, m_geometryBasedDamageFX ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		StickyBombUpdateModuleData* self {static_cast<StickyBombUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -105,9 +106,9 @@ public:
 
 private:
 
-	ObjectID			m_targetID;
-	UnsignedInt		m_dieFrame;
-	UnsignedInt   m_nextPingFrame;
+	ObjectID		m_targetID {};
+	UnsignedInt		m_dieFrame {};
+	UnsignedInt		m_nextPingFrame {};
 };
 
 #endif // __STICK_BOMB_UPDATE_H

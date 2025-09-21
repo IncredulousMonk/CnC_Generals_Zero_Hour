@@ -134,7 +134,7 @@ private:
 	static void parseInitiateSound(INI* ini, void *instance, void* store, const void* userData);
 	static void parseInitiateAtLocationSound(INI* ini, void *instance, void* store, const void* userData);
 
-	// MG: Cannot apply offsetof to DeletionUpdateModuleData, so had to move data into an embedded struct.
+	// MG: Cannot apply offsetof to SpecialPowerTemplate, so had to move data into an embedded struct.
 	struct IniData
 	{
 		SpecialPowerType			m_type;							///< enum allowing for fast type checking for ability processing.

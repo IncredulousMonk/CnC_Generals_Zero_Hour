@@ -329,8 +329,10 @@ public:
 
 
 	void imitateStealthLook( Drawable& otherDraw );
+#endif // if 0
 
 	void setTerrainDecal(TerrainDecalType type);	///<decal that is to appear under the drawable
+#if 0
 	void setTerrainDecalSize(Real x, Real y);
 	void setTerrainDecalFadeTarget(Real target, Real rate = 0.1f);
 #endif // if 0
@@ -349,9 +351,9 @@ public:
 	//
 	inline Bool isDrawableEffectivelyHidden() const { return m_hidden || m_hiddenByStealth; }
 
-#if 0
 	void setSelectable( Bool selectable );												///< Changes the drawables selectability	
 	Bool isSelectable( void ) const;
+#if 0
 	Bool isMassSelectable( void ) const;
 
 
@@ -376,6 +378,7 @@ public:
 	void reactToBodyDamageStateChange(BodyDamageType newState);
 	
 	Real getScale (void) const ;
+#endif // if 0
 
 	// access to modules
 	//---------------------------------------------------------------------------
@@ -383,7 +386,6 @@ public:
 	ClientUpdateModule** getClientUpdateModules() { return (ClientUpdateModule**)getModuleList(MODULETYPE_CLIENT_UPDATE); }
 	ClientUpdateModule const** getClientUpdateModules() const { return (ClientUpdateModule const**)getModuleList(MODULETYPE_CLIENT_UPDATE); }
 	ClientUpdateModule* findClientUpdateModule( NameKeyType key );
-#endif // if 0
 
 	DrawModule** getDrawModulesNonDirty();
 	DrawModule** getDrawModules();
@@ -444,9 +446,11 @@ public:
 	void updateDrawable();														///< update the drawable
 
 	void drawIconUI( void );													///< draw "icon"(s) needed on drawable (health bars, veterency, etc)
+#endif // if 0
 
 	void startAmbientSound( Bool onlyIfPermanent = false );
 	void stopAmbientSound( void );
+#if 0
 	void enableAmbientSound( Bool enable );
 	void setTimeOfDay( TimeOfDay tod );
 	Bool getAmbientSoundEnabledFromScript( void ) const { return m_ambientSoundEnabledFromScript; }
@@ -485,6 +489,7 @@ public:
 							);
 
 	Int getBarrelCount(WeaponSlotType wslot) const;
+#endif // if 0
 
 	// when our Object changes teams, it calls us to let us know, so
 	// we can update our model, etc., if necessary. NOTE, we don't guarantee
@@ -492,6 +497,7 @@ public:
 	// that the team is nonnull.
 	void changedTeam();
 
+#if 0
 	const TWheelInfo *getWheelInfo(void) const { return m_locoInfo ? &m_locoInfo->m_wheelInfo : NULL; }
 	
 	const DrawableLocoInfo *getLocoInfo() const { return m_locoInfo; }
@@ -516,12 +522,12 @@ public:
 	Int getPristineBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
 #if 0
 	Int getCurrentClientBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
+#endif // if 0
 	
 	// this is a special-purpose call for W3DModelDraw. (srj)
 	Bool getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const;
 
 	Bool getProjectileLaunchOffset(WeaponSlotType wslot, Int specificBarrelToUse, Matrix3D* launchPos, WhichTurretType tur, Coord3D* turretRotPos, Coord3D* turretPitchPos = NULL) const;
-#endif // if 0
 
 	/**
 		This call says, "I want the current animation (if any) to take n frames to complete a single cycle". 
@@ -535,12 +541,10 @@ public:
 		and is smart about transition states... if there is a transition state 
 		"inbetween", it is included in the completion time.
 	*/
-#if 0
 	void setAnimationCompletionTime(UnsignedInt numFrames);
 	
 	//Kris: Manually set a drawable's current animation to specific frame.
 	virtual void setAnimationFrame( int frame );
-#endif // if 0
 
 	void updateSubObjects();
 	void showSubObject( const AsciiString& name, Bool show );
@@ -567,9 +571,9 @@ public:
 
 	const Vector3 * getTintColor( void ) const;					///< get FX color value to add to ALL LIGHTS when drawing
 	const Vector3 * getSelectionColor( void ) const;					///< get FX color value to add to ALL LIGHTS when drawing
+#endif // if 0
 
 	inline TerrainDecalType getTerrainDecalType( void ) const { return m_terrainDecalType; }
-#endif // if 0
 
 	inline void setDrawableOpacity( Real value ) { m_explicitOpacity = value; }	///< set alpha/opacity value used to override defaults when drawing.
 
@@ -591,12 +595,12 @@ public:
 	Bool isVisible();											///< for limiting tree sway, etc to visible objects
 
 	Bool getShouldAnimate( Bool considerPower ) const;
+#endif // if 0
 
 	// flash drawable methods ---------------------------------------------------------
 	Int getFlashCount( void ) { return m_flashCount; }
 	void setFlashCount( Int count ) { m_flashCount = count; }
 	void setFlashColor( Color color ) { m_flashColor = color; }
-#endif // if 0
 	void saturateRGB(RGBColor& color, Real factor);// not strictly for flash color, but it is the only practical use for this
 	//---------------------------------------------------------------------------------
 
@@ -620,7 +624,9 @@ public:
 	//---------------------------------------------------------------------------------
 	// Stuff for overriding ambient sound
 	const AudioEventInfo * getBaseSoundAmbientInfo() const; //< Possible starting point if only some parameters are customized
+#endif // if 0
 	void enableAmbientSoundFromScript( Bool enable );
+#if 0
 	const AudioEventRTS * getAmbientSound() const { return m_ambientSound == NULL ? NULL : &m_ambientSound->m_event; }
 	void setCustomSoundAmbientOff(); //< Kill the ambient sound
 	void setCustomSoundAmbientInfo( DynamicAudioEventInfo * customAmbientInfo ); //< Set ambient sound.
@@ -642,9 +648,11 @@ protected:
 	virtual void loadPostProcess( void );
 #if 0
 	void xferDrawableModules( Xfer *xfer );
+#endif // if 0
 
-	void	startAmbientSound( BodyDamageType dt, TimeOfDay tod, Bool onlyIfPermanent = false );
+	void startAmbientSound( BodyDamageType dt, TimeOfDay tod, Bool onlyIfPermanent = false );
 
+#if 0
 	Drawable *asDrawableMeth() { return this; }
 	const Drawable *asDrawableMeth() const { return this; }
 #endif // if 0
@@ -680,10 +688,12 @@ protected:
 	void calcPhysicsXformTreads(const Locomotor *locomotor, PhysicsXformInfo& info);
 	void calcPhysicsXformWheels(const Locomotor *locomotor, PhysicsXformInfo& info);
 	void calcPhysicsXformMotorcycle( const Locomotor *locomotor, PhysicsXformInfo& info );
+#endif // if 0
 
 	const AudioEventRTS& getAmbientSoundByDamage(BodyDamageType dt);
 
-  void clearCustomSoundAmbient( bool restartSound ); //< Return to using defaults
+#if 0
+	void clearCustomSoundAmbient( bool restartSound ); //< Return to using defaults
 
 #ifdef _DEBUG
 	void validatePos() const;
@@ -704,9 +714,7 @@ private:
 																//   zero = no effect
 																//   1    = full effect
 
-#if 0
 	TerrainDecalType m_terrainDecalType {}; ///<current decal in use by m_terrainDecal
-#endif // if 0
 
 	Real m_explicitOpacity {};			///< opacity level. 1.0f == Solid/Opaque.
 	Real m_stealthOpacity {};			///< <<minimum>> opacity due to stealth. pulse is between opaque and this
@@ -722,9 +730,7 @@ private:
 	Drawable *m_nextDrawable {}; 
 	Drawable *m_prevDrawable {};		///< list links
 
-#if 0
 	DynamicAudioEventInfo *m_customSoundAmbientInfo {}; ///< If not NULL, info about the ambient sound to attach to this object
-#endif // if 0
 
 	UnsignedInt m_status {};				///< status bits (see DrawableStatus enum)
 	UnsignedInt m_tintStatus {};				///< tint color status bits (see TintStatus enum)
@@ -744,15 +750,14 @@ private:
 	UnsignedInt		m_shroudClearFrame {};						///< Last frame the local player saw this drawable "OBJECTSHROUD_CLEAR"
 
 	DrawableLocoInfo*	m_locoInfo {};	// lazily allocated
+#endif // if 0
 
 	DynamicAudioEventRTS*	m_ambientSound {};		///< sound module for ambient sound (lazily allocated)
-#endif // if 0
 
 	Module** m_modules[NUM_DRAWABLE_MODULE_TYPES] {};
 
 	StealthLookType m_stealthLook {};
 
-#if 0
 	Int m_flashCount {};           ///< number of times to flash the drawable
 	Color m_flashColor {};					///< color to flash the drawable
 
@@ -760,7 +765,6 @@ private:
 	Real m_instanceScale {};				///< the uniform scale factor applied to the instance matrix before it is sent to W3D. 
 
 	DrawableInfo			m_drawableInfo {};		///< structure pointed to by W3D render objects so they know which drawable they belong to.
-#endif // if 0
 
 	ModelConditionFlags		m_conditionState {};				///< The Drawables current behavior state
 	Real					m_lastConstructDisplayed {};						///< last construct percent used to make the string
@@ -781,14 +785,12 @@ private:
 	Bool m_ambientSoundEnabled {};
 	Bool m_ambientSoundEnabledFromScript {};
 
-#if 0
 	Bool m_receivesDynamicLights {};
 
 #ifdef DIRTY_CONDITION_FLAGS
 	mutable Bool m_isModelDirty {};				///< if true, must call replaceModelConditionState() before drawing or accessing drawmodule info
 #endif
 
-#endif // if 0
 	//*******************************************
 	//Perhaps we can move this out of Drawable???
 public:
@@ -827,15 +829,17 @@ private:
 	void drawBattlePlans( const IRegion2D* healthBarRegion );				///< Icons rendering for active battle plan statii
 
 	Bool drawsAnyUIText( void );
+#endif // if 0
 	
-	static Bool							s_staticImagesInited;
-	static const Image*			s_veterancyImage[LEVEL_COUNT];
-	static const Image*			s_fullAmmo;
-	static const Image*			s_emptyAmmo;
-	static const Image*			s_fullContainer;
-	static const Image*			s_emptyContainer;
+	static Bool				s_staticImagesInited;
+	static const Image*		s_veterancyImage[LEVEL_COUNT];
+	static const Image*		s_fullAmmo;
+	static const Image*		s_emptyAmmo;
+	static const Image*		s_fullContainer;
+	static const Image*		s_emptyContainer;
 	static Anim2DTemplate**	s_animationTemplates;
 
+#if 0
 #ifdef DIRTY_CONDITION_FLAGS
 	static Int							s_modelLockCount;
 #endif

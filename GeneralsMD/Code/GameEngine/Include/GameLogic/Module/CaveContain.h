@@ -45,23 +45,31 @@ class Team;
 class CaveContainModuleData : public OpenContainModuleData
 {
 public:
-	Int m_caveIndexData;
+	// MG: Cannot apply offsetof to CaveContainModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int m_caveIndexData;
+	};
+
+	IniData m_ini {};
 
 	CaveContainModuleData()
 	{
-		m_caveIndexData = 0;// By default, all Caves will be grouped together as number 0
+		m_ini.m_caveIndexData = 0;// By default, all Caves will be grouped together as number 0
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    OpenContainModuleData::buildFieldParse(p);
+		OpenContainModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "CaveIndex", INI::parseInt, NULL, offsetof( CaveContainModuleData, m_caveIndexData ) },
+			{ "CaveIndex", INI::parseInt, NULL, offsetof( CaveContainModuleData::IniData, m_caveIndexData ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		CaveContainModuleData* self {static_cast<CaveContainModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -71,11 +79,15 @@ class CaveContain : public OpenContain, public CreateModuleInterface, public Cav
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( CaveContain, "CaveContain" )
 	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( CaveContain, CaveContainModuleData )
-	
+
 public:
 
 	CaveContain( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	CaveContain(const CaveContain&) = delete;
+	CaveContain& operator=(const CaveContain&) = delete;
 
 	virtual CreateModuleInterface* getCreate() { return this; }
 	virtual CaveInterface* getCaveInterface() { return this; }
@@ -121,10 +133,10 @@ protected:
 
 	void changeTeamOnAllConnectedCaves( Team *newTeam, Bool setOriginalTeams );	///< When one gets captured, all connected ones get captured.  DistributedGarrison.
 
-	Bool m_needToRunOnBuildComplete; 
-	Int m_caveIndex;
+	Bool m_needToRunOnBuildComplete {};
+	Int m_caveIndex {};
 
-	Team *m_originalTeam;												///< our original team before we were garrisoned
+	Team *m_originalTeam {};												///< our original team before we were garrisoned
 
 };
 

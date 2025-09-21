@@ -70,6 +70,38 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+//-------------------------------------------------------------------------------------------------
+void SpecialAbilityUpdateModuleData::parsePackSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
+	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_packSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void SpecialAbilityUpdateModuleData::parseUnpackSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
+	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_unpackSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void SpecialAbilityUpdateModuleData::parsePrepSoundLoop(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
+	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_prepSoundLoop);
+}
+
+//-------------------------------------------------------------------------------------------------
+void SpecialAbilityUpdateModuleData::parseTriggerSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
+	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_triggerSound);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 SpecialAbilityUpdate::SpecialAbilityUpdate( Thing *thing, const ModuleData* moduleData ) : SpecialPowerUpdateModule( thing, moduleData )
@@ -111,10 +143,10 @@ that has every option will do the following in order:
 
   1 -- APPROACH: If I'm not close enough to the target, then approach it
   2 -- UNPACK: If I need to unpack before I can prepare, then do so now (this uses the model
-       condition unpack).
+	   condition unpack).
   3 -- PREPARE: If I need to perform a task for a period of time before I can trigger my special
-       ability, then do so now. A good example is aiming with a targetting laser for a few 
-       seconds before firing your special weapon.
+	   ability, then do so now. A good example is aiming with a targetting laser for a few 
+	   seconds before firing your special weapon.
   4 -- TRIGGER: Once preparation is complete, fire your special ability now.
   5 -- PACK: If I need to pack after finishing my attack, do so now.
   6 -- FINISH: Clean up the states, and turn off the update.
@@ -122,60 +154,60 @@ that has every option will do the following in order:
 Variations:
 
   Persistent Specials -- A persistent special will continually trigger it's effect every so often
-     and never end. A good example of this is the disable building hack. The hacker will run up
-     to the target building, unpack, prepare (firing hack stream), then after a period of time,
-     the building becomes disabled. But because it's persistent, we reset the preparation and 
-     trigger the building disabled code over and over again -- which is on a timer.
+	 and never end. A good example of this is the disable building hack. The hacker will run up
+	 to the target building, unpack, prepare (firing hack stream), then after a period of time,
+	 the building becomes disabled. But because it's persistent, we reset the preparation and 
+	 trigger the building disabled code over and over again -- which is on a timer.
   No Target Specials -- You can link two different main specials together. Colonel Burton has the
-     ability to lay C4 charges on multiple targets. Activating these specials require a target.
-     The non-target version is actually the detonator, which goes through all the special objects
-     and detonates each one of them.
+	 ability to lay C4 charges on multiple targets. Activating these specials require a target.
+	 The non-target version is actually the detonator, which goes through all the special objects
+	 and detonates each one of them.
 
 Options:
   SpecialPowerTemplate -- Defines the special power template that links to a command.
   StartAbilityRange    -- Specify how far you want your unit to be from the target before
-                          start your special ability.
+						  start your special ability.
   AbilityAbortRange    -- After starting an attack, it'll allow preparation unless the target goes
-                          beyond this range. If this happens, the ability is aborted outright.
+						  beyond this range. If this happens, the ability is aborted outright.
   PreparationTime      -- How long it takes to prepare your special once in position and unpacked.
   PersistentPrepTime   -- This value defines whether or not you are using a persistent special. 
-                          Once the special ability is triggered, it'll wait until this specified
-                          delay occurs and it'll trigger it again, for ever until the unit dies, 
-                          the target dies, or the unit decides to do something else.
+						  Once the special ability is triggered, it'll wait until this specified
+						  delay occurs and it'll trigger it again, for ever until the unit dies, 
+						  the target dies, or the unit decides to do something else.
   PackTime             -- How long it takes to pack up the unit after triggering a non persistent
-                          special ability or after ordering the unit to do something else, or the
-                          target dies (if applicable).
+						  special ability or after ordering the unit to do something else, or the
+						  target dies (if applicable).
   PackUnpackVariationFactor -- Randomizes the pack and unpack time by specified range. The closer
-                          to zero, the smaller the variation. 0.2 would have a pack or unpack range
-                          of xTime +/- 20%. This is important because it represents averages.
+						  to zero, the smaller the variation. 0.2 would have a pack or unpack range
+						  of xTime +/- 20%. This is important because it represents averages.
   UnpackTime           -- Same as PackTime, except used once entering range of target.
   SkipPackingWithNoTarget -- This option is used by the No Target Special variation, and only uses
-                          packing/unpacking when you have a specific target. In the case of Colonel
-                          Burton, this value is set to true. When he plants a C4 charge, he has a
-                          target, therefore he requires unpacking (laying the charge). When he runs
-                          away and decides to detonate the charge, he calls the same special
-                          ability, but without a target -- therefore the packing is skipped and
-                          detonates it right away.
+						  packing/unpacking when you have a specific target. In the case of Colonel
+						  Burton, this value is set to true. When he plants a C4 charge, he has a
+						  target, therefore he requires unpacking (laying the charge). When he runs
+						  away and decides to detonate the charge, he calls the same special
+						  ability, but without a target -- therefore the packing is skipped and
+						  detonates it right away.
   SpecialObject        -- Defines the special object the unit will create via the special ability.
-                          In one case, it creates and maintains the laser or binary stream during
-                          preparation. In Colonel Burton's case, it keeps track of the C4 charges
-                          that he has placed.
+						  In one case, it creates and maintains the laser or binary stream during
+						  preparation. In Colonel Burton's case, it keeps track of the C4 charges
+						  that he has placed.
   MaxSpecialObjects    -- Defines the max number of special objects that can exist at any given
-                          time. The laser example only has one, but the C4 charges can have more.
+						  time. The laser example only has one, but the C4 charges can have more.
   SpecialObjectsPersistent -- If this flag is set, then the objects will remain should the owner
-                          decides to do something else... C4 charges are a good example.
+						  decides to do something else... C4 charges are a good example.
   EffectDuration       -- Defines the duration of the special ability. In the case of disabling 
-                          the building (hacker), this value will dictate how long the building
-                          will be disabled should the hacker die or stop the attack.
+						  the building (hacker), this value will dictate how long the building
+						  will be disabled should the hacker die or stop the attack.
   UniqueSpecialObjectTargets -- Prevents the owner from placing multiple special objects on the
-                          same target. C4 charges once again.
+						  same target. C4 charges once again.
   SpecialObjectsPersistWhenOwnerDies -- If the owner dies, the special objects will remain in
-                          the world. Timed C4 charges is a good example, but remote C4 charges
-                          is a bad example -- because it requires the owner to detonate them.
+						  the world. Timed C4 charges is a good example, but remote C4 charges
+						  is a bad example -- because it requires the owner to detonate them.
   FlipObjectAfterPacking -- Simply rotates the object 180 degrees after packing (due to special
-                          animation case).
+						  animation case).
   FlipObjectAfterUnPacking -- Simply rotates the object 180 degrees after unpacking (due to 
-                          special animation case). Used by colonel burton after planting charge.
+						  special animation case). Used by colonel burton after planting charge.
 
 
   Lets use the Age of Kings Trebuchet as a simple example:
@@ -212,32 +244,32 @@ UpdateSleepTime SpecialAbilityUpdate::update( void )
   //This also means some things might be left around like timed charges to detonate.
   if( getObject()->isEffectivelyDead() )
   {
-    onExit( TRUE );
-    return calcSleepTime();
+	onExit( TRUE );
+	return calcSleepTime();
   }
 
   if( !m_active ) // Not active.
-    return calcSleepTime();
+	return calcSleepTime();
   
   AIUpdateInterface *ai = getObject()->getAIUpdateInterface();
   if( !ai )
   {
-    onExit( false );
-    return calcSleepTime();
+	onExit( false );
+	return calcSleepTime();
   }
   if( ai->getLastCommandSource() != CMD_FROM_AI )
   {
-    onExit( false );
-    return calcSleepTime();
+	onExit( false );
+	return calcSleepTime();
   }
 	if( ai->isMoving() && isPowerCurrentlyInUse() && !m_facingInitiated )
   {
 		// Capture is broken by movement just as if we had been given a direct command (above check).
 		// However, the time of Facing the target is considered isPowerCurrentlyInUse, but isMoving.  So let that slide.
-		switch(data->m_specialPowerTemplate->getSpecialPowerType() )
+		switch(data->m_ini.m_specialPowerTemplate->getSpecialPowerType() )
 		{
-      case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
-      case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
+	  case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
+	  case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
 			{
 				onExit( false );
 				return calcSleepTime();
@@ -255,7 +287,7 @@ UpdateSleepTime SpecialAbilityUpdate::update( void )
   //will never be handled, nor do things that aren't in a packing state.
   if( handlePackingProcessing() )
   {
-    return calcSleepTime();
+	return calcSleepTime();
   }
 
   Bool shouldAbort = false;
@@ -263,67 +295,71 @@ UpdateSleepTime SpecialAbilityUpdate::update( void )
   // A dead target will end our special (if we are using a target).
   if (m_targetID != INVALID_ID)
   {
-    Object* target = TheGameLogic->findObjectByID(m_targetID);
+	Object* target = TheGameLogic->findObjectByID(m_targetID);
 
-    if (target != NULL)
-    {
-      if (target->isEffectivelyDead())
-        shouldAbort = TRUE;
-      else switch (data->m_specialPowerTemplate->getSpecialPowerType())
-      {
-        case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
-        case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
-        case SPECIAL_HACKER_DISABLE_BUILDING:
-        {
-          if (target->getTeam() == getObject()->getTeam())
-          {
-            // it's been captured by a colleague! we should stop.
-            shouldAbort = TRUE;
-          }
-          //deliberately falling through...
-        }
-        case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
-        case SPECIAL_BOOBY_TRAP:
-        {
-          if ( target->testStatus( OBJECT_STATUS_STEALTHED ) && (target->testStatus( OBJECT_STATUS_DETECTED ) == FALSE ) )
-          {
-				    if ( !isPreparationComplete() )
-              shouldAbort = TRUE;
-          }
-          break;
-        }
-        case SPECIAL_REMOTE_CHARGES:
-        case SPECIAL_TIMED_CHARGES:
-        {
-          if ( ! needToUnpack() )
-          {
-            if ( target->testStatus( OBJECT_STATUS_STEALTHED ) && (target->testStatus( OBJECT_STATUS_DETECTED ) == FALSE ) )
-            {
-				      if ( !isPreparationComplete() )
-                shouldAbort = TRUE;
-            }
-          }
-          break;
-        }
-        case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
-        {
-          if ( target->isKindOf( KINDOF_STRUCTURE ) )
-            shouldAbort = TRUE;
-          //deliberately falling through
-        }
-        case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
-        {
-          if ( target->testStatus( OBJECT_STATUS_STEALTHED ) && (target->testStatus( OBJECT_STATUS_DETECTED ) == FALSE ) )
-          {
-            // where'd my target go? 'Twas here just a second ago.
-				    shouldAbort = TRUE;
-          }
-          break;
-        }
+	if (target != NULL)
+	{
+	  if (target->isEffectivelyDead())
+		shouldAbort = TRUE;
+	  else switch (data->m_ini.m_specialPowerTemplate->getSpecialPowerType())
+	  {
+		case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
+		case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
+		case SPECIAL_HACKER_DISABLE_BUILDING:
+		{
+			if (target->getTeam() == getObject()->getTeam())
+			{
+				// it's been captured by a colleague! we should stop.
+				shouldAbort = TRUE;
+			}
+			//deliberately falling through...
+			[[fallthrough]];
+		}
+		case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
+		case SPECIAL_BOOBY_TRAP:
+		{
+		  if ( target->testStatus( OBJECT_STATUS_STEALTHED ) && (target->testStatus( OBJECT_STATUS_DETECTED ) == FALSE ) )
+		  {
+					if ( !isPreparationComplete() )
+			  shouldAbort = TRUE;
+		  }
+		  break;
+		}
+		case SPECIAL_REMOTE_CHARGES:
+		case SPECIAL_TIMED_CHARGES:
+		{
+		  if ( ! needToUnpack() )
+		  {
+			if ( target->testStatus( OBJECT_STATUS_STEALTHED ) && (target->testStatus( OBJECT_STATUS_DETECTED ) == FALSE ) )
+			{
+					  if ( !isPreparationComplete() )
+				shouldAbort = TRUE;
+			}
+		  }
+		  break;
+		}
+		case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
+		{
+			if ( target->isKindOf( KINDOF_STRUCTURE ) )
+				shouldAbort = TRUE;
+			//deliberately falling through
+			[[fallthrough]];
+		}
+		case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
+		{
+		  if ( target->testStatus( OBJECT_STATUS_STEALTHED ) && (target->testStatus( OBJECT_STATUS_DETECTED ) == FALSE ) )
+		  {
+			// where'd my target go? 'Twas here just a second ago.
+					shouldAbort = TRUE;
+		  }
+		  break;
+		}
 
-      }
+		default:
+			break;
+	  }
 
-    }
+	}
 
   }
 
@@ -331,10 +367,10 @@ UpdateSleepTime SpecialAbilityUpdate::update( void )
 
   if ( shouldAbort || spm == NULL )
   {
-    // doh, a colleague has already captured it. just stop.
-    ai->aiIdle( CMD_FROM_AI );
-    onExit( false );
-    return calcSleepTime();
+	// doh, a colleague has already captured it. just stop.
+	ai->aiIdle( CMD_FROM_AI );
+	onExit( false );
+	return calcSleepTime();
   }
 
 
@@ -342,153 +378,153 @@ UpdateSleepTime SpecialAbilityUpdate::update( void )
   //DETERMINE OUR PHASE! BRAIN LOGIC
   if( !isPreparationComplete() )
   {
-    //The special ability has fired, now continue to process the special ability
-    //until it expires
+	//The special ability has fired, now continue to process the special ability
+	//until it expires
 
-    Bool SPMReady = TRUE;// normally considered ready since this ability has just been initiated
-    // Lorenzen added this additional flag to support the NapalmBombDrop
-    // It causes this update to force a recharge of the SPM between drops
-    if( isPersistentAbility() && getDoesPersistenceRequireRecharge() )//unless I intend to persist in this ability's effect, whereupon I must verify that power is recharged
-      SPMReady = ( spm->isReady() && spm->getReadyFrame() < TheGameLogic->getFrame() );
+	Bool SPMReady = TRUE;// normally considered ready since this ability has just been initiated
+	// Lorenzen added this additional flag to support the NapalmBombDrop
+	// It causes this update to force a recharge of the SPM between drops
+	if( isPersistentAbility() && getDoesPersistenceRequireRecharge() )//unless I intend to persist in this ability's effect, whereupon I must verify that power is recharged
+	  SPMReady = ( spm->isReady() && spm->getReadyFrame() < TheGameLogic->getFrame() );
 
-    if ( SPMReady )// if power requires recharging, lets freeze prep countdown until power is ready
-      m_prepFrames--;
+	if ( SPMReady )// if power requires recharging, lets freeze prep countdown until power is ready
+	  m_prepFrames--;
 
-    if( isPreparationComplete() )
-    {
-      //STEP 4 -- TRIGGER (with preparation)
-      triggerAbilityEffect();
-      if( isPersistentAbility() )
-      {
-        //VARIATION -- PERSISTENCE (repeats preparation)
-        resetPreparation();
+	if( isPreparationComplete() )
+	{
+	  //STEP 4 -- TRIGGER (with preparation)
+	  triggerAbilityEffect();
+	  if( isPersistentAbility() )
+	  {
+		//VARIATION -- PERSISTENCE (repeats preparation)
+		resetPreparation();
 
-        //tell the special power module to restart the recharge timer
-        if ( getDoesPersistenceRequireRecharge() )
-          spm->startPowerRecharge();
+		//tell the special power module to restart the recharge timer
+		if ( getDoesPersistenceRequireRecharge() )
+		  spm->startPowerRecharge();
 
 
-      }
-      else
-      {
-        endPreparation();
-        if( needToPack() )
-        {
-          //STEP 5 -- PACK 
-          //Note: If we actually do pack, then cleanup will be handled in 
-          //handlePackingProcess(), near the top of this function.
-          startPacking(true);
-        }
-        else
-        {
-          //STEP 6 -- FINISH
-          finishAbility();
-        }
-      }
-    }
-    else
-    {
-      //Process the preparation if it's still not complete.
-      Bool continuePrep = continuePreparation();
-      if( !continuePrep )
-      {
-        //We failed so abort!
-        endPreparation();
-        if( needToPack() )
-        {
-          //STEP 5 -- PACK 
-          //Note: If we actually do pack, then cleanup will be handled in 
-          //handlePackingProcess(), near the top of this function.
-          startPacking(false);
-        }
-        else
-        {
-          //STEP 6 -- FINISH
-          finishAbility();
-        }
-      }
-    }
+	  }
+	  else
+	  {
+		endPreparation();
+		if( needToPack() )
+		{
+		  //STEP 5 -- PACK 
+		  //Note: If we actually do pack, then cleanup will be handled in 
+		  //handlePackingProcess(), near the top of this function.
+		  startPacking(true);
+		}
+		else
+		{
+		  //STEP 6 -- FINISH
+		  finishAbility();
+		}
+	  }
+	}
+	else
+	{
+	  //Process the preparation if it's still not complete.
+	  Bool continuePrep = continuePreparation();
+	  if( !continuePrep )
+	  {
+		//We failed so abort!
+		endPreparation();
+		if( needToPack() )
+		{
+		  //STEP 5 -- PACK 
+		  //Note: If we actually do pack, then cleanup will be handled in 
+		  //handlePackingProcess(), near the top of this function.
+		  startPacking(false);
+		}
+		else
+		{
+		  //STEP 6 -- FINISH
+		  finishAbility();
+		}
+	  }
+	}
   }
   else if( isWithinStartAbilityRange() )
   {
-    m_withinStartAbilityRange = true;
-    if( !isFacing() && needToFace() )
-    {
-      startFacing();
-      return calcSleepTime();
-    }
+	m_withinStartAbilityRange = true;
+	if( !isFacing() && needToFace() )
+	{
+	  startFacing();
+	  return calcSleepTime();
+	}
 
-    if( needToUnpack() )
-    {
-      //STEP 2 -- UNPACK
-      startUnpacking();
-      return calcSleepTime();
-    }
+	if( needToUnpack() )
+	{
+	  //STEP 2 -- UNPACK
+	  startUnpacking();
+	  return calcSleepTime();
+	}
 
-    if( m_packingState == STATE_UNPACKED )
-    {
-      //STEP 3 -- PREPARE
-      startPreparation();
+	if( m_packingState == STATE_UNPACKED )
+	{
+	  //STEP 3 -- PREPARE
+	  startPreparation();
 
-      if( isPreparationComplete() )
-      {
-        //STEP 4 -- TRIGGER (skipping preparation)
-        triggerAbilityEffect();
+	  if( isPreparationComplete() )
+	  {
+		//STEP 4 -- TRIGGER (skipping preparation)
+		triggerAbilityEffect();
 
 
-        // Lorenzen added this additional flag to support the NapalmBombDrop
-        // It causes this update to force a recharge of the SPM between drops
-        if( isPersistentAbility() && getDoesPersistenceRequireRecharge())
-        {
-          //VARIATION -- PERSISTENCE (repeats preparation)
-          resetPreparation();
+		// Lorenzen added this additional flag to support the NapalmBombDrop
+		// It causes this update to force a recharge of the SPM between drops
+		if( isPersistentAbility() && getDoesPersistenceRequireRecharge())
+		{
+		  //VARIATION -- PERSISTENCE (repeats preparation)
+		  resetPreparation();
 
-          //tell the special power module to restart the recharge timer
-          spm->startPowerRecharge();
+		  //tell the special power module to restart the recharge timer
+		  spm->startPowerRecharge();
 
-          return calcSleepTime();
+		  return calcSleepTime();
 
-        }
-        else
-          endPreparation();
+		}
+		else
+		  endPreparation();
 
-        if( needToPack() )
-        {
-          //STEP 5 -- PACK 
-          //Note: If we actually do pack, then cleanup will be handled in 
-          //handlePackingProcess(), near the top of this function.
-          startPacking(true);
-        }
-        else
-        {
-          //STEP 6 -- FINISH
-          finishAbility();
-        }
-      }
-    }
+		if( needToPack() )
+		{
+		  //STEP 5 -- PACK 
+		  //Note: If we actually do pack, then cleanup will be handled in 
+		  //handlePackingProcess(), near the top of this function.
+		  startPacking(true);
+		}
+		else
+		{
+		  //STEP 6 -- FINISH
+		  finishAbility();
+		}
+	  }
+	}
   }
   else if( ai->isIdle() )
   {
-    //STEP 1 -- APPROACH
-    approachTarget();
+	//STEP 1 -- APPROACH
+	approachTarget();
   }
   return calcSleepTime();
 }
 
 //-------------------------------------------------------------------------------------------------
 Bool SpecialAbilityUpdate::initiateIntentToDoSpecialPower( const SpecialPowerTemplate *specialPowerTemplate, 
-                                                           const Object *targetObj, 
-                                                           const Coord3D *targetPos, 
-                                                           const Waypoint *way, 
-                                                           UnsignedInt commandOptions )
+														   const Object *targetObj, 
+														   const Coord3D *targetPos, 
+														   const Waypoint* /* way */, 
+														   UnsignedInt /* commandOptions */ )
 {
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-  const SpecialPowerTemplate *spTemplate = data->m_specialPowerTemplate;
+  const SpecialPowerTemplate *spTemplate = data->m_ini.m_specialPowerTemplate;
 
   if( spTemplate != specialPowerTemplate )
   {
-    //Check to make sure our modules are connected.
-    return FALSE;
+	//Check to make sure our modules are connected.
+	return FALSE;
   }
 
   //Clear target values
@@ -505,33 +541,33 @@ Bool SpecialAbilityUpdate::initiateIntentToDoSpecialPower( const SpecialPowerTem
 //  getObject()->getControllingPlayer()->getAcademyStats()->recordSpecialPowerUsed( specialPowerTemplate );
 
   getObject()->clearModelConditionFlags( 
-    MAKE_MODELCONDITION_MASK4( MODELCONDITION_UNPACKING, MODELCONDITION_PACKING, MODELCONDITION_FIRING_A, MODELCONDITION_RAISING_FLAG ) );
+	MAKE_MODELCONDITION_MASK4( MODELCONDITION_UNPACKING, MODELCONDITION_PACKING, MODELCONDITION_FIRING_A, MODELCONDITION_RAISING_FLAG ) );
 
   if( targetObj )
   {
-    //Get the target!
-    m_targetID = targetObj ? targetObj->getID() : INVALID_ID;
+	//Get the target!
+	m_targetID = targetObj ? targetObj->getID() : INVALID_ID;
   }
   else if( targetPos )
   {
-    //Get the position!
-    m_targetPos = *targetPos;
+	//Get the position!
+	m_targetPos = *targetPos;
   }
   
   //Clear any old AI before starting this special ability.
   if( !getObject()->getAIUpdateInterface() )
   {
-    return FALSE;
+	return FALSE;
   }
   getObject()->getAIUpdateInterface()->aiIdle( CMD_FROM_AI );
 
   //Determine whether we are triggering a command (rather than executing special at location or target)
   m_noTargetCommand = !targetObj && !targetPos;
 
-  if( data->m_unpackTime == 0 || m_noTargetCommand && data->m_skipPackingWithNoTarget )
+  if( data->m_ini.m_unpackTime == 0 || (m_noTargetCommand && data->m_ini.m_skipPackingWithNoTarget) )
   {
-    //Only unpack if we need to -- setting it to unpacked will skip step 2 in the update
-    m_packingState = STATE_UNPACKED;
+	//Only unpack if we need to -- setting it to unpacked will skip step 2 in the update
+	m_packingState = STATE_UNPACKED;
   }
   
   m_active = true;
@@ -540,25 +576,25 @@ Bool SpecialAbilityUpdate::initiateIntentToDoSpecialPower( const SpecialPowerTem
   SpecialAbilityUpdate *disableSA;
   disableSA = getObject()->findSpecialAbilityUpdate( SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK );
   if( disableSA && disableSA != this )
-    disableSA->onExit( FALSE );
+	disableSA->onExit( FALSE );
   disableSA = getObject()->findSpecialAbilityUpdate( SPECIAL_BLACKLOTUS_STEAL_CASH_HACK );
   if( disableSA && disableSA != this ) 
-    disableSA->onExit( FALSE );
+	disableSA->onExit( FALSE );
   disableSA = getObject()->findSpecialAbilityUpdate( SPECIAL_BLACKLOTUS_CAPTURE_BUILDING );
   if( disableSA && disableSA != this ) 
-    disableSA->onExit( FALSE );
+	disableSA->onExit( FALSE );
   disableSA = getObject()->findSpecialAbilityUpdate( SPECIAL_REMOTE_CHARGES );
   if( disableSA && disableSA != this ) 
-    disableSA->onExit( FALSE );
+	disableSA->onExit( FALSE );
   disableSA = getObject()->findSpecialAbilityUpdate( SPECIAL_TIMED_CHARGES );
   if( disableSA && disableSA != this ) 
-    disableSA->onExit( FALSE );
+	disableSA->onExit( FALSE );
   disableSA = getObject()->findSpecialAbilityUpdate( SPECIAL_INFANTRY_CAPTURE_BUILDING );
   if( disableSA && disableSA != this ) 
-    disableSA->onExit( FALSE );
+	disableSA->onExit( FALSE );
   disableSA = getObject()->findSpecialAbilityUpdate( SPECIAL_BOOBY_TRAP );
   if( disableSA && disableSA != this ) 
-    disableSA->onExit( FALSE );
+	disableSA->onExit( FALSE );
 
 
   setWakeFrame(getObject(), UPDATE_SLEEP_NONE);
@@ -571,29 +607,29 @@ Bool SpecialAbilityUpdate::isPowerCurrentlyInUse( const CommandButton *command )
 {
   if( command )
   {
-    if( command->getSpecialPowerTemplate() && command->getSpecialPowerTemplate()->getSpecialPowerType() == SPECIAL_REMOTE_CHARGES )
-    {
-      if( !BitTest( command->getOptions(), CONTEXTMODE_COMMAND ) )
-      {
-        //This is the detonate charge button. Treat it backwards saying it's in use when we don't have any special objects (charges).
-        //That way, the button will be grayed out.
-        return getSpecialObjectCount() == 0;
-      }
-    }
+	if( command->getSpecialPowerTemplate() && command->getSpecialPowerTemplate()->getSpecialPowerType() == SPECIAL_REMOTE_CHARGES )
+	{
+	  if( !BitTest( command->getOptions(), CONTEXTMODE_COMMAND ) )
+	  {
+		//This is the detonate charge button. Treat it backwards saying it's in use when we don't have any special objects (charges).
+		//That way, the button will be grayed out.
+		return getSpecialObjectCount() == 0;
+	  }
+	}
   }
 
 
   if( m_packingState != STATE_NONE )
   {
-    //exception for powers with zero reload time... they are ready to use immediately!
-    if ( (m_packingState == STATE_PACKING || m_packingState == STATE_PACKED) && 
-                    command && command->getSpecialPowerTemplate()->getReloadTime() == 0 )
-      return false;
+	//exception for powers with zero reload time... they are ready to use immediately!
+	if ( (m_packingState == STATE_PACKING || m_packingState == STATE_PACKED) && 
+					command && command->getSpecialPowerTemplate()->getReloadTime() == 0 )
+	  return false;
 
-    if ( m_withinStartAbilityRange )
-    {
-      return true;
-    }
+	if ( m_withinStartAbilityRange )
+	{
+	  return true;
+	}
   }
   
   return false;
@@ -605,17 +641,17 @@ void SpecialAbilityUpdate::onExit( Bool cleanup )
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
 
   getObject()->clearModelConditionFlags( 
-    MAKE_MODELCONDITION_MASK4( MODELCONDITION_UNPACKING, MODELCONDITION_PACKING, MODELCONDITION_FIRING_A, MODELCONDITION_RAISING_FLAG ) );
+	MAKE_MODELCONDITION_MASK4( MODELCONDITION_UNPACKING, MODELCONDITION_PACKING, MODELCONDITION_FIRING_A, MODELCONDITION_RAISING_FLAG ) );
   getObject()->clearStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_IS_USING_ABILITY ) );
 
   TheAudio->removeAudioEvent( m_prepSoundLoop.getPlayingHandle() );
   endPreparation();
 
-  if( !data->m_specialObjectsPersistent || cleanup && !data->m_specialObjectsPersistWhenOwnerDies )
+  if( !data->m_ini.m_specialObjectsPersistent || (cleanup && !data->m_ini.m_specialObjectsPersistWhenOwnerDies) )
   {
-    //Delete special objects that aren't considered persistent whenever we turn off
-    //leave the special ability update.
-    killSpecialObjects();
+	//Delete special objects that aren't considered persistent whenever we turn off
+	//leave the special ability update.
+	killSpecialObjects();
   }
 
   m_active = false;
@@ -644,58 +680,58 @@ Bool SpecialAbilityUpdate::handlePackingProcessing()
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
   if( m_animFrames > 0 )
   {
-    m_animFrames--;
-    if( m_animFrames == 0 )
-    {
-      // We're done, so clear the states.
-      getObject()->clearModelConditionFlags( MAKE_MODELCONDITION_MASK2( MODELCONDITION_UNPACKING, MODELCONDITION_PACKING ) );
+	m_animFrames--;
+	if( m_animFrames == 0 )
+	{
+	  // We're done, so clear the states.
+	  getObject()->clearModelConditionFlags( MAKE_MODELCONDITION_MASK2( MODELCONDITION_UNPACKING, MODELCONDITION_PACKING ) );
 
-      if( m_packingState == STATE_UNPACKING )
-      {
-        if( data->m_flipObjectAfterUnpacking )
-        {
-          getObject()->setOrientation( getObject()->getOrientation() + PI );
-        }
-        m_packingState = STATE_UNPACKED;
-      }
-      else if( m_packingState == STATE_PACKING )
-      {
-        if( data->m_flipObjectAfterPacking )
-        {
-          getObject()->setOrientation( getObject()->getOrientation() + PI );
-        }
-        //We just finished packing up, therefore
-        //we have completed our special ability.
-        m_packingState = STATE_PACKED;
+	  if( m_packingState == STATE_UNPACKING )
+	  {
+		if( data->m_ini.m_flipObjectAfterUnpacking )
+		{
+		  getObject()->setOrientation( getObject()->getOrientation() + PI );
+		}
+		m_packingState = STATE_UNPACKED;
+	  }
+	  else if( m_packingState == STATE_PACKING )
+	  {
+		if( data->m_ini.m_flipObjectAfterPacking )
+		{
+		  getObject()->setOrientation( getObject()->getOrientation() + PI );
+		}
+		//We just finished packing up, therefore
+		//we have completed our special ability.
+		m_packingState = STATE_PACKED;
 
-        //Do exit preparation.
-        finishAbility();
+		//Do exit preparation.
+		finishAbility();
 
-        //Complete the special ability now
-        return true;
-      }
+		//Complete the special ability now
+		return true;
+	  }
 
-      //We're finished processing
-      return false;
-    }
-
-
-
-    //This is new... the ability to disable stealth before triggering
-    if( getSpecialAbilityUpdateModuleData()->m_loseStealthOnTrigger &&
-      m_animFrames < getSpecialAbilityUpdateModuleData()->m_preTriggerUnstealthFrames)
-    {
-      StealthUpdate* stealth = getObject()->getStealth();
-      if( stealth )
-      {
-        stealth->markAsDetected();
-      }
-    }
+	  //We're finished processing
+	  return false;
+	}
 
 
 
-    //We're still processing
-    return true;
+	//This is new... the ability to disable stealth before triggering
+	if( getSpecialAbilityUpdateModuleData()->m_ini.m_loseStealthOnTrigger &&
+	  m_animFrames < getSpecialAbilityUpdateModuleData()->m_ini.m_preTriggerUnstealthFrames)
+	{
+	  StealthUpdate* stealth = getObject()->getStealth();
+	  if( stealth )
+	  {
+		stealth->markAsDetected();
+	  }
+	}
+
+
+
+	//We're still processing
+	return true;
   }
   //We're not processing
   return false;
@@ -707,14 +743,14 @@ Bool SpecialAbilityUpdate::needToPack() const
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
   if( m_packingState == STATE_UNPACKED )
   {
-    if( data->m_skipPackingWithNoTarget && m_noTargetCommand )
-    {
-      return false;
-    }
-    if( data->m_packTime )
-    {
-      return true;
-    }
+	if( data->m_ini.m_skipPackingWithNoTarget && m_noTargetCommand )
+	{
+	  return false;
+	}
+	if( data->m_ini.m_packTime )
+	{
+	  return true;
+	}
   }
   return false;
 }
@@ -725,14 +761,14 @@ Bool SpecialAbilityUpdate::needToUnpack() const
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
   if( m_packingState == STATE_PACKED )
   {
-    if( data->m_skipPackingWithNoTarget && m_noTargetCommand )
-    {
-      return false;
-    }
-    if( data->m_unpackTime )
-    {
-      return true;
-    }
+	if( data->m_ini.m_skipPackingWithNoTarget && m_noTargetCommand )
+	{
+	  return false;
+	}
+	if( data->m_ini.m_unpackTime )
+	{
+	  return true;
+	}
   }
   return false;
 }
@@ -740,15 +776,18 @@ Bool SpecialAbilityUpdate::needToUnpack() const
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdate::startPacking(Bool success)
 {
+(void) success;
+DEBUG_CRASH(("SpecialAbilityUpdate::startPacking not yet implemented!"));
+#if 0
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
   m_packingState = STATE_PACKING;
-  Real variation = GameLogicRandomValueReal( 1.0f - data->m_packUnpackVariationFactor, 1.0f + data->m_packUnpackVariationFactor );
-  m_animFrames = data->m_packTime * variation;
+  Real variation = GameLogicRandomValueReal( 1.0f - data->m_ini.m_packUnpackVariationFactor, 1.0f + data->m_ini.m_packUnpackVariationFactor );
+  m_animFrames = data->m_ini.m_packTime * variation;
 
   //Set the animation state
   getObject()->clearAndSetModelConditionFlags( 
-        MAKE_MODELCONDITION_MASK2( MODELCONDITION_UNPACKING, MODELCONDITION_RAISING_FLAG ), 
-        MAKE_MODELCONDITION_MASK( MODELCONDITION_PACKING ) );
+		MAKE_MODELCONDITION_MASK2( MODELCONDITION_UNPACKING, MODELCONDITION_RAISING_FLAG ), 
+		MAKE_MODELCONDITION_MASK( MODELCONDITION_PACKING ) );
 
   AudioEventRTS sound = data->m_packSound;
   sound.setObjectID( getObject()->getID() );
@@ -757,51 +796,54 @@ void SpecialAbilityUpdate::startPacking(Bool success)
   //Sync the animation length to the time it'll take to pack.
   Drawable* draw = getObject()->getDrawable();
   if (draw)
-    draw->setAnimationCompletionTime( m_animFrames );
+	draw->setAnimationCompletionTime( m_animFrames );
   AIUpdateInterface *ai = getObject()->getAIUpdateInterface();
   if (ai)
-    ai->aiBusy(CMD_FROM_AI);
+	ai->aiBusy(CMD_FROM_AI);
 
   if (success)
   {
-    AudioEventRTS event;
-    switch( data->m_specialPowerTemplate->getSpecialPowerType() )
-    {
-      //case SPECIAL_HACKER_DISABLE_BUILDING:// Awaiting Mical's new sound
-      //  event = *getObject()->getTemplate()->getPerUnitSound( "VoiceDisableBuildingComplete" );
-      //  break;
-      case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
-        event = *getObject()->getTemplate()->getPerUnitSound( "VoiceCaptureBuildingComplete" );
-        break;
-      case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
-        event = *getObject()->getTemplate()->getPerUnitSound( "VoiceDisableVehicleComplete" );
-        break;
-      case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
-        event = *getObject()->getTemplate()->getPerUnitSound( "VoiceStealCashComplete" );
-        break;
-      default:
-        event = *getObject()->getTemplate()->getVoiceTaskComplete();
-        break;
-    }
+	AudioEventRTS event;
+	switch( data->m_ini.m_specialPowerTemplate->getSpecialPowerType() )
+	{
+	  //case SPECIAL_HACKER_DISABLE_BUILDING:// Awaiting Mical's new sound
+	  //  event = *getObject()->getTemplate()->getPerUnitSound( "VoiceDisableBuildingComplete" );
+	  //  break;
+	  case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
+		event = *getObject()->getTemplate()->getPerUnitSound( "VoiceCaptureBuildingComplete" );
+		break;
+	  case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
+		event = *getObject()->getTemplate()->getPerUnitSound( "VoiceDisableVehicleComplete" );
+		break;
+	  case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
+		event = *getObject()->getTemplate()->getPerUnitSound( "VoiceStealCashComplete" );
+		break;
+	  default:
+		event = *getObject()->getTemplate()->getVoiceTaskComplete();
+		break;
+	}
 
-    event.setObjectID(getObject()->getID());
-    TheAudio->addAudioEvent(&event);
+	event.setObjectID(getObject()->getID());
+	TheAudio->addAudioEvent(&event);
   }
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdate::startUnpacking()
 {
+DEBUG_CRASH(("SpecialAbilityUpdate::startUnpacking not yet implemented!"));
+#if 0
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
   m_packingState = STATE_UNPACKING;
-  Real variation = GameLogicRandomValueReal( 1.0f - data->m_packUnpackVariationFactor, 1.0f + data->m_packUnpackVariationFactor );
-  m_animFrames = data->m_unpackTime * variation;
+  Real variation = GameLogicRandomValueReal( 1.0f - data->m_ini.m_packUnpackVariationFactor, 1.0f + data->m_ini.m_packUnpackVariationFactor );
+  m_animFrames = data->m_ini.m_unpackTime * variation;
 
   //Set the animation state
   getObject()->clearAndSetModelConditionFlags( 
-        MAKE_MODELCONDITION_MASK( MODELCONDITION_PACKING ), 
-        MAKE_MODELCONDITION_MASK( MODELCONDITION_UNPACKING ) );
+		MAKE_MODELCONDITION_MASK( MODELCONDITION_PACKING ), 
+		MAKE_MODELCONDITION_MASK( MODELCONDITION_UNPACKING ) );
 
 
   AudioEventRTS sound = data->m_unpackSound;
@@ -811,10 +853,11 @@ void SpecialAbilityUpdate::startUnpacking()
   //Sync the animation length to the time it'll take to unpack.
   Drawable* draw = getObject()->getDrawable();
   if (draw)
-    draw->setAnimationCompletionTime( m_animFrames );
+	draw->setAnimationCompletionTime( m_animFrames );
   AIUpdateInterface *ai = getObject()->getAIUpdateInterface();
   if (ai)
-    ai->aiBusy(CMD_FROM_AI);
+	ai->aiBusy(CMD_FROM_AI);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -825,74 +868,74 @@ Bool SpecialAbilityUpdate::isWithinStartAbilityRange() const
 
   //Quickly convert very short range approachs to "contact" class requiring collision before
   //stopping.
-  Real range = data->m_startAbilityRange;
+  Real range = data->m_ini.m_startAbilityRange;
   const Real UNDERSIZE = PATHFIND_CELL_SIZE_F * 0.25f;
-  range = __max( 0.0f, range - UNDERSIZE );
+  range = max( 0.0f, range - UNDERSIZE );
 
   if( m_withinStartAbilityRange )
   {
-    //Only get within range once.
-    return true;
+	//Only get within range once.
+	return true;
   }
 
   Real fDistSquared = 0.0f;
   Object *target = NULL;
   if( m_targetID != INVALID_ID )
   {
-    target = TheGameLogic->findObjectByID( m_targetID );
-    if( target )
-    {
-      fDistSquared = ThePartitionManager->getDistanceSquared( self, target, FROM_BOUNDINGSPHERE_2D );
-    }
+	target = TheGameLogic->findObjectByID( m_targetID );
+	if( target )
+	{
+	  fDistSquared = ThePartitionManager->getDistanceSquared( self, target, FROM_BOUNDINGSPHERE_2D );
+	}
   }
   else if( m_targetPos.x || m_targetPos.y || m_targetPos.z ) //It's zero if not used...
   {
-    fDistSquared = ThePartitionManager->getDistanceSquared( self, &m_targetPos, FROM_BOUNDINGSPHERE_2D );
+	fDistSquared = ThePartitionManager->getDistanceSquared( self, &m_targetPos, FROM_BOUNDINGSPHERE_2D );
   }
   else
   {
-    //No position, so this step is useless
-    return true;
+	//No position, so this step is useless
+	return true;
   }
 
   //Check to see how far we are from the target!
-  Real fStartRangeSquared = data->m_startAbilityRange * data->m_startAbilityRange;
+  Real fStartRangeSquared = data->m_ini.m_startAbilityRange * data->m_ini.m_startAbilityRange;
   if( fDistSquared <= fStartRangeSquared )
   {
-    if( range == 0.0f && m_targetID != INVALID_ID )
-    {
-      //We want to ensure we collided with our target first!
-      ObjectIterator *iter = ThePartitionManager->iteratePotentialCollisions( self->getPosition(), self->getGeometryInfo(), 0.0f );
-      MemoryPoolObjectHolder hold(iter);
-      for( Object *them = iter->first(); them; them = iter->next() )
-      {
-        if( target == them )
-        {
-          return true;
-        }
-      }  
-      return false;
-    }
-    
-    if( data->m_approachRequiresLOS )
-    {
-      //Make sure we can see the target!
-      PartitionFilterLineOfSight  filterLOS( self );
-      PartitionFilter *filters[] = { &filterLOS, NULL };
-      ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( self, range, FROM_BOUNDINGSPHERE_2D, filters, ITER_SORTED_NEAR_TO_FAR );
-      for( Object *theTarget = iter->first(); theTarget; theTarget = iter->next() ) 
-      {
-        //LOS check succeeded.
-        if( target == theTarget )
-        {
-          return true;
-        }
-      }
-    }
-    else
-    {
-      return true;
-    }
+	if( range == 0.0f && m_targetID != INVALID_ID )
+	{
+	  //We want to ensure we collided with our target first!
+	  ObjectIterator *iter = ThePartitionManager->iteratePotentialCollisions( self->getPosition(), self->getGeometryInfo(), 0.0f );
+	  MemoryPoolObjectHolder hold(iter);
+	  for( Object *them = iter->first(); them; them = iter->next() )
+	  {
+		if( target == them )
+		{
+		  return true;
+		}
+	  }  
+	  return false;
+	}
+	
+	if( data->m_ini.m_approachRequiresLOS )
+	{
+	  //Make sure we can see the target!
+	  PartitionFilterLineOfSight  filterLOS( self );
+	  PartitionFilter *filters[] = { &filterLOS, NULL };
+	  ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( self, range, FROM_BOUNDINGSPHERE_2D, filters, ITER_SORTED_NEAR_TO_FAR );
+	  for( Object *theTarget = iter->first(); theTarget; theTarget = iter->next() ) 
+	  {
+		//LOS check succeeded.
+		if( target == theTarget )
+		{
+		  return true;
+		}
+	  }
+	}
+	else
+	{
+	  return true;
+	}
   }
   return false;
 }
@@ -905,50 +948,50 @@ Bool SpecialAbilityUpdate::isWithinAbilityAbortRange() const
 
   //Quickly convert very short range approachs to "contact" class requiring collision before
   //stopping.
-  Real range = data->m_startAbilityRange;
+  Real range = data->m_ini.m_startAbilityRange;
   const Real UNDERSIZE = PATHFIND_CELL_SIZE_F * 0.25f;
-  range = __max( 0.0f, range - UNDERSIZE );
+  range = max( 0.0f, range - UNDERSIZE );
 
   Real fDistSquared = 0.0f;
   Object *target = NULL;
   if( m_targetID != INVALID_ID )
   {
-    target = TheGameLogic->findObjectByID( m_targetID );
-    if( target )
-    {
-      fDistSquared = ThePartitionManager->getDistanceSquared( self, target, FROM_BOUNDINGSPHERE_2D );
-    }
+	target = TheGameLogic->findObjectByID( m_targetID );
+	if( target )
+	{
+	  fDistSquared = ThePartitionManager->getDistanceSquared( self, target, FROM_BOUNDINGSPHERE_2D );
+	}
   }
   else if( m_targetPos.x || m_targetPos.y || m_targetPos.z ) //It's zero if not used...
   {
-    fDistSquared = ThePartitionManager->getDistanceSquared( self, &m_targetPos, FROM_BOUNDINGSPHERE_2D );
+	fDistSquared = ThePartitionManager->getDistanceSquared( self, &m_targetPos, FROM_BOUNDINGSPHERE_2D );
   }
   else
   {
-    //No position, so this step is useless
-    return true;
+	//No position, so this step is useless
+	return true;
   }
 
   //Check to see how far we are from the target!
-  Real fStartRangeSquared = data->m_abilityAbortRange * data->m_abilityAbortRange;
+  Real fStartRangeSquared = data->m_ini.m_abilityAbortRange * data->m_ini.m_abilityAbortRange;
   if( fDistSquared <= fStartRangeSquared )
   {
-    if( range == 0.0f && m_targetID != INVALID_ID )
-    {
-      //We want to ensure we collided with our target first!
-      ObjectIterator *iter = ThePartitionManager->iteratePotentialCollisions( self->getPosition(), self->getGeometryInfo(), 0.0f );
-      MemoryPoolObjectHolder hold(iter);
-      for( Object *them = iter->first(); them; them = iter->next() )
-      {
-        if( target == them )
-        {
-          return true;
-        }
-      }  
-      return false;
-    }
+	if( range == 0.0f && m_targetID != INVALID_ID )
+	{
+	  //We want to ensure we collided with our target first!
+	  ObjectIterator *iter = ThePartitionManager->iteratePotentialCollisions( self->getPosition(), self->getGeometryInfo(), 0.0f );
+	  MemoryPoolObjectHolder hold(iter);
+	  for( Object *them = iter->first(); them; them = iter->next() )
+	  {
+		if( target == them )
+		{
+		  return true;
+		}
+	  }  
+	  return false;
+	}
 
-    return true;
+	return true;
   }
   return false;
 }
@@ -959,26 +1002,26 @@ Bool SpecialAbilityUpdate::approachTarget()
   Object *self = getObject();
   if( m_targetID != INVALID_ID )
   {
-    Object *target = TheGameLogic->findObjectByID( m_targetID );
-    if( target )
-    {
-      AIUpdateInterface *ai = self->getAIUpdateInterface();
-      if( ai )
-      {
-        ai->ignoreObstacle( target );
-        ai->aiMoveToObject( target, CMD_FROM_AI );
-        return true;
-      }
-    }
+	Object *target = TheGameLogic->findObjectByID( m_targetID );
+	if( target )
+	{
+	  AIUpdateInterface *ai = self->getAIUpdateInterface();
+	  if( ai )
+	  {
+		ai->ignoreObstacle( target );
+		ai->aiMoveToObject( target, CMD_FROM_AI );
+		return true;
+	  }
+	}
   }
   else if( m_targetPos.x || m_targetPos.y || m_targetPos.z ) //It's zero if not used...
   {
-    AIUpdateInterface *ai = self->getAIUpdateInterface();
-    if( ai )
-    {
-      ai->aiMoveToPosition( &m_targetPos, CMD_FROM_AI );
-      return true;
-    }
+	AIUpdateInterface *ai = self->getAIUpdateInterface();
+	if( ai )
+	{
+	  ai->aiMoveToPosition( &m_targetPos, CMD_FROM_AI );
+	  return true;
+	}
   }
   return false;
 }
@@ -986,39 +1029,41 @@ Bool SpecialAbilityUpdate::approachTarget()
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdate::startPreparation()
 {
+DEBUG_CRASH(("SpecialAbilityUpdate::startPreparation not yet implemented!"));
+#if 0
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-  const SpecialPowerTemplate *spTemplate = data->m_specialPowerTemplate;
+  const SpecialPowerTemplate *spTemplate = data->m_ini.m_specialPowerTemplate;
 
   //Set the preparation timer
-  m_prepFrames = data->m_preparationFrames;
+  m_prepFrames = data->m_ini.m_preparationFrames;
 
   switch( spTemplate->getSpecialPowerType() )
   {
-    case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
-      if( target )
-      {
-        //Specialized code that specifically creates and looks up a laser update.
-        Object *specialObject = createSpecialObject();
-        if( specialObject )
-        {
-          if (!initLaser(specialObject, target))
-            return;
-        }
-      }
-      break;
-    }
-    case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
-      if (target)
-      {
-        if (target->getTeam() == getObject()->getTeam())
-        {
-          // it's been captured by a colleague! we should stop.
-          return;
-        }
+	case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  if( target )
+	  {
+		//Specialized code that specifically creates and looks up a laser update.
+		Object *specialObject = createSpecialObject();
+		if( specialObject )
+		{
+		  if (!initLaser(specialObject, target))
+			return;
+		}
+	  }
+	  break;
+	}
+	case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  if (target)
+	  {
+		if (target->getTeam() == getObject()->getTeam())
+		{
+		  // it's been captured by a colleague! we should stop.
+		  return;
+		}
 				if( target->checkAndDetonateBoobyTrap(getObject()) )
 				{
 					// Whoops, it was mined.  Cancel if it is now dead.
@@ -1027,71 +1072,74 @@ void SpecialAbilityUpdate::startPreparation()
 						return;
 					}
 				}
-      }
+	  }
 
 
-      getObject()->clearAndSetModelConditionFlags( MAKE_MODELCONDITION_MASK( MODELCONDITION_UNPACKING ),
-                                                   MAKE_MODELCONDITION_MASK( MODELCONDITION_RAISING_FLAG ) );
-      Drawable* draw = getObject()->getDrawable();
-      if (draw)
-        draw->setAnimationCompletionTime(data->m_preparationFrames);
+	  getObject()->clearAndSetModelConditionFlags( MAKE_MODELCONDITION_MASK( MODELCONDITION_UNPACKING ),
+												   MAKE_MODELCONDITION_MASK( MODELCONDITION_RAISING_FLAG ) );
+	  Drawable* draw = getObject()->getDrawable();
+	  if (draw)
+		draw->setAnimationCompletionTime(data->m_ini.m_preparationFrames);
 
-      //Warn the victim so he might have a chance to react!
-      if( target && target->isLocallyControlled() )
-      {
-        TheEva->setShouldPlay( EVA_BuildingBeingStolen );
-      }
-      TheRadar->tryInfiltrationEvent( target );
-      
-      break;
-    }
+	  //Warn the victim so he might have a chance to react!
+	  if( target && target->isLocallyControlled() )
+	  {
+		TheEva->setShouldPlay( EVA_BuildingBeingStolen );
+	  }
+	  TheRadar->tryInfiltrationEvent( target );
+	  
+	  break;
+	}
 
-    case SPECIAL_HACKER_DISABLE_BUILDING:
-    case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
-    case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
-    case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
-      if( target )
-      {
+	case SPECIAL_HACKER_DISABLE_BUILDING:
+	case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
+	case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
+	case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  if( target )
+	  {
 
-        Relationship r = getObject()->getRelationship(target);
-        if( r == ALLIES )
-          return;
+		Relationship r = getObject()->getRelationship(target);
+		if( r == ALLIES )
+		  return;
 
-        //Specialized code that specifically creates and looks up a laser update.
-        Object *specialObject = createSpecialObject();
-        if( specialObject )
-        {
-          if (!initLaser(specialObject, target))
-            return;
-          
-          //For the hacker this sets up the looping typing animation.
-          getObject()->clearAndSetModelConditionFlags( MAKE_MODELCONDITION_MASK( MODELCONDITION_UNPACKING ),
-                                                       MAKE_MODELCONDITION_MASK( MODELCONDITION_FIRING_A ) );
-        }
+		//Specialized code that specifically creates and looks up a laser update.
+		Object *specialObject = createSpecialObject();
+		if( specialObject )
+		{
+		  if (!initLaser(specialObject, target))
+			return;
+		  
+		  //For the hacker this sets up the looping typing animation.
+		  getObject()->clearAndSetModelConditionFlags( MAKE_MODELCONDITION_MASK( MODELCONDITION_UNPACKING ),
+													   MAKE_MODELCONDITION_MASK( MODELCONDITION_FIRING_A ) );
+		}
 
-        //Warn the victim so he might have a chance to react!
-        if( spTemplate->getSpecialPowerType() == SPECIAL_BLACKLOTUS_CAPTURE_BUILDING && target && target->isLocallyControlled() )
-        {
-          TheEva->setShouldPlay( EVA_BuildingBeingStolen );
-        }
-        TheRadar->tryInfiltrationEvent( target );
+		//Warn the victim so he might have a chance to react!
+		if( spTemplate->getSpecialPowerType() == SPECIAL_BLACKLOTUS_CAPTURE_BUILDING && target && target->isLocallyControlled() )
+		{
+		  TheEva->setShouldPlay( EVA_BuildingBeingStolen );
+		}
+		TheRadar->tryInfiltrationEvent( target );
 
-      }
-      break;
-    }
+	  }
+	  break;
+	}
+
+	default:
+		break;
   }
 
   //Trigger the reset timer on the special power because we're officially starting it now!
   SpecialPowerModuleInterface *spmInterface = getMySPM();
   if( spmInterface )
   {
-    spmInterface->markSpecialPowerTriggered(NULL);// Null for not creating a view object
+	spmInterface->markSpecialPowerTriggered(NULL);// Null for not creating a view object
   }
   
   if (getObject()->getAI()) {
-    getObject()->getAI()->aiIdle( CMD_FROM_AI ); // just in case.  jba.
+	getObject()->getAI()->aiIdle( CMD_FROM_AI ); // just in case.  jba.
   }
   getObject()->setStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_IS_USING_ABILITY ) );
 
@@ -1099,13 +1147,14 @@ void SpecialAbilityUpdate::startPreparation()
   m_prepSoundLoop.setObjectID( getObject()->getID() );
   m_prepSoundLoop.setPlayingHandle( TheAudio->addAudioEvent( &m_prepSoundLoop ) );
 
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 SpecialPowerModuleInterface* SpecialAbilityUpdate::getMySPM()
 {
   const SpecialAbilityUpdateModuleData* d = getSpecialAbilityUpdateModuleData();
-  return getObject()->getSpecialPowerModule(d->m_specialPowerTemplate);
+  return getObject()->getSpecialPowerModule(d->m_ini.m_specialPowerTemplate);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1116,33 +1165,33 @@ Bool SpecialAbilityUpdate::initLaser(Object* specialObject, Object* target )
   Drawable *draw = specialObject->getDrawable();
   if( !draw )
   {
-    killSpecialObjects();
-    return false;
+	killSpecialObjects();
+	return false;
   }
   LaserUpdate *update = (LaserUpdate*)draw->findClientUpdateModule( key_LaserUpdate );
   if( !update )
   {
-    killSpecialObjects();
-    return false;
+	killSpecialObjects();
+	return false;
   }
 
   Coord3D startPos;
-  if( !getObject()->getSingleLogicalBonePosition( data->m_specialObjectAttachToBoneName.str(), &startPos, NULL ) )
+  if( !getObject()->getSingleLogicalBonePosition( data->m_ini.m_specialObjectAttachToBoneName.str(), &startPos, NULL ) )
   {
-    //If we can't find the bone, then set it to our current position.
-    startPos.set( getObject()->getPosition() );
+	//If we can't find the bone, then set it to our current position.
+	startPos.set( getObject()->getPosition() );
   }
   
   Coord3D endPos;
   if (target)
   {
-    target->getGeometryInfo().getCenterPosition( *target->getPosition(), endPos );
+	target->getGeometryInfo().getCenterPosition( *target->getPosition(), endPos );
   }
   else
   {
-    endPos = startPos;
+	endPos = startPos;
   }
-  update->initLaser( getObject(), target, &startPos, &endPos, data->m_specialObjectAttachToBoneName );
+  update->initLaser( getObject(), target, &startPos, &endPos, data->m_ini.m_specialObjectAttachToBoneName );
   return true;
 }
 
@@ -1150,112 +1199,116 @@ Bool SpecialAbilityUpdate::initLaser(Object* specialObject, Object* target )
 Bool SpecialAbilityUpdate::continuePreparation()
 {
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-  const SpecialPowerTemplate *spTemplate = data->m_specialPowerTemplate;
+  const SpecialPowerTemplate *spTemplate = data->m_ini.m_specialPowerTemplate;
 
   //Check if we are within the abort distance, otherwise abort!
-  if( data->m_abilityAbortRange < SPECIAL_ABILITY_HUGE_DISTANCE )
+  if( data->m_ini.m_abilityAbortRange < SPECIAL_ABILITY_HUGE_DISTANCE )
   {
-    if( !isWithinAbilityAbortRange() )
-    {
-      return false;
-    }
+	if( !isWithinAbilityAbortRange() )
+	{
+	  return false;
+	}
   }
 
   switch( spTemplate->getSpecialPowerType() )
   {
-    case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
-    case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
+	case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
+	case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
 
-      if( !target )
-      {
-        //Target is dead, stop.
-        return false;
-      }
+	  if( !target )
+	  {
+		//Target is dead, stop.
+		return false;
+	  }
 
-      Relationship r = getObject()->getRelationship(target);
-      if( r == ALLIES )
-      {
-        //It's been captured by a colleague, so cancel!
-        return false;
-      }
-        
-      //Specialized code that specifically creates and looks up a laser update.
-      for( std::list<ObjectID>::iterator it = m_specialObjectIDList.begin(); it != m_specialObjectIDList.end(); ++it )
-      {
-        Object* specialObject = TheGameLogic->findObjectByID( *it );
-        if( specialObject )
-        {
-          if( !initLaser( specialObject, target ) )
-          {
-            return false;
-          }
-        }
-      }
-      break;
-    }
+	  Relationship r = getObject()->getRelationship(target);
+	  if( r == ALLIES )
+	  {
+		//It's been captured by a colleague, so cancel!
+		return false;
+	  }
+		
+	  //Specialized code that specifically creates and looks up a laser update.
+	  for( std::list<ObjectID>::iterator it = m_specialObjectIDList.begin(); it != m_specialObjectIDList.end(); ++it )
+	  {
+		Object* specialObject = TheGameLogic->findObjectByID( *it );
+		if( specialObject )
+		{
+		  if( !initLaser( specialObject, target ) )
+		  {
+			return false;
+		  }
+		}
+	  }
+	  break;
+	}
 
-    case SPECIAL_INFANTRY_CAPTURE_BUILDING:
-    case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
+	case SPECIAL_INFANTRY_CAPTURE_BUILDING:
+	case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
+	{
+	  // PROCESS THE FLASHING WHILE GETTING CAPTURED FX HERE
+	  Object* target = TheGameLogic->findObjectByID( m_targetID );
 
-      // PROCESS THE FLASHING WHILE GETTING CAPTURED FX HERE
-      Object* target = TheGameLogic->findObjectByID( m_targetID );
+	  if( !target )
+	  {
+		//Target is dead, stop.
+		return false;
+	  }
 
-      if( !target )
-      {
-        //Target is dead, stop.
-        return false;
-      }
+	  Relationship r = getObject()->getRelationship(target);
+	  if( r == ALLIES )
+	  {
+		//It's been captured by a colleague, so cancel!
+		return false;
+	  }
 
-      Relationship r = getObject()->getRelationship(target);
-      if( r == ALLIES )
-      {
-        //It's been captured by a colleague, so cancel!
-        return false;
-      }
+	  if (data->m_ini.m_doCaptureFX)
+	  {
+		Drawable *targetDraw = target->getDrawable();
 
-      if (data->m_doCaptureFX)
-      {
-        Drawable *targetDraw = target->getDrawable();
+		if (targetDraw) // skip fx if merely 'invulnerable'
+		{
+		  Bool lastPhase = ( ((Int)m_captureFlashPhase) & 1 );// were we in a flashy phase last frame?
+		  
+		  Real denominator = MAX(1, data->m_ini.m_preparationFrames);
+		  Real increment = 1.0f - ((Real)m_prepFrames / denominator );
+		  m_captureFlashPhase += increment / 3.0f;
 
-        if (targetDraw) // skip fx if merely 'invulnerable'
-        {
-          Bool lastPhase = ( ((Int)m_captureFlashPhase) & 1 );// were we in a flashy phase last frame?
-          
-          Real denominator = MAX(1, data->m_preparationFrames);
-          Real increment = 1.0f - ((Real)m_prepFrames / denominator );
-          m_captureFlashPhase += increment / 3.0f;
+		  Bool thisPhase = ( ((Int)m_captureFlashPhase) & 1 );// are we in a flashy phase this frame?
 
-          Bool thisPhase = ( ((Int)m_captureFlashPhase) & 1 );// are we in a flashy phase this frame?
+		  if ( lastPhase && ( ! thisPhase ) ) 
+		  {
 
-          if ( lastPhase && ( ! thisPhase ) ) 
-          {
+			RGBColor myHouseColor; 
+			myHouseColor.setFromInt( (Int)getObject()->getIndicatorColor() );
 
-            RGBColor myHouseColor; 
-            myHouseColor.setFromInt( getObject()->getIndicatorColor() );
+			Real saturation = TheGlobalData->m_data.m_selectionFlashSaturationFactor;
+			targetDraw->saturateRGB( myHouseColor, saturation );
 
-            Real saturation = TheGlobalData->m_selectionFlashSaturationFactor;
-            targetDraw->saturateRGB( myHouseColor, saturation );
+			targetDraw->flashAsSelected( &myHouseColor ); //In MY house color, not his!
 
-            targetDraw->flashAsSelected( &myHouseColor ); //In MY house color, not his!
+			AudioEventRTS defectorTimerSound = TheAudio->getMiscAudio()->m_defectorTimerTickSound;
+			defectorTimerSound.setObjectID( m_targetID );
+			TheAudio->addAudioEvent(&defectorTimerSound);
 
-            AudioEventRTS defectorTimerSound = TheAudio->getMiscAudio()->m_defectorTimerTickSound;
-            defectorTimerSound.setObjectID( m_targetID );
-            TheAudio->addAudioEvent(&defectorTimerSound);
-
-          }
-        }
-      }
+		  }
+		}
+	  }
 
 
-      SpecialPowerModuleInterface *spmInterface = getMySPM();
-      if (spmInterface && spTemplate->getSpecialPowerType() == SPECIAL_INFANTRY_CAPTURE_BUILDING )
-      {
-        // these keep resetting the recharge timer while in use. (srj) // only for infantry capture, not black lotus which resets in triggerAbilityEffect()
-        spmInterface->startPowerRecharge();
-      }
-      break;
+	  SpecialPowerModuleInterface *spmInterface = getMySPM();
+	  if (spmInterface && spTemplate->getSpecialPowerType() == SPECIAL_INFANTRY_CAPTURE_BUILDING )
+	  {
+		// these keep resetting the recharge timer while in use. (srj) // only for infantry capture, not black lotus which resets in triggerAbilityEffect()
+		spmInterface->startPowerRecharge();
+	  }
+	  break;
+	}
+
+	default:
+	  break;
   }
   return true;
 }
@@ -1263,85 +1316,87 @@ Bool SpecialAbilityUpdate::continuePreparation()
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdate::triggerAbilityEffect()
 {
+DEBUG_CRASH(("SpecialAbilityUpdate::triggerAbilityEffect not yet implemented!"));
+#if 0
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-  const SpecialPowerTemplate *spTemplate = data->m_specialPowerTemplate;
+  const SpecialPowerTemplate *spTemplate = data->m_ini.m_specialPowerTemplate;
   Object *object = getObject();
 
   //Award experience to units for triggering the ability (optional and ini specified).
   //NOTE: Be award of persistant abilities that call trigger over and over again!
-  if( data->m_awardXPForTriggering )
+  if( data->m_ini.m_awardXPForTriggering )
   {
-    ExperienceTracker *xpTracker = object->getExperienceTracker();
-    if( xpTracker )
-    {
-      xpTracker->addExperiencePoints( data->m_awardXPForTriggering );
-    }
+	ExperienceTracker *xpTracker = object->getExperienceTracker();
+	if( xpTracker )
+	{
+	  xpTracker->addExperiencePoints( data->m_ini.m_awardXPForTriggering );
+	}
   }
   //Also add skill points. If unspecified, it'll use the award experience to units for triggering value.
-  Int skillPoints = data->m_skillPointsForTriggering != -1 ? data->m_skillPointsForTriggering : data->m_awardXPForTriggering;
+  Int skillPoints = data->m_ini.m_skillPointsForTriggering != -1 ? data->m_ini.m_skillPointsForTriggering : data->m_ini.m_awardXPForTriggering;
   if( skillPoints > 0 )
   {
-    Player *player = object->getControllingPlayer();
-    if( player )
-    {
-      player->addSkillPoints( skillPoints );
-    }
+	Player *player = object->getControllingPlayer();
+	if( player )
+	{
+	  player->addSkillPoints( skillPoints );
+	}
   }
 
   AudioEventRTS sound = data->m_triggerSound;
   sound.setObjectID( object->getID() );
   TheAudio->addAudioEvent( &sound );
-  
+
 
   Bool okToLoseStealth = TRUE;
 
   switch( spTemplate->getSpecialPowerType() )
   {
-    case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
-      if( target )
-      {
-        const Weapon *weapon = object->getWeaponInWeaponSlot( SECONDARY_WEAPON );
-        if( weapon )
-        {
-          // lock it just till the weapon is empty or the attack is "done"
-          object->setWeaponLock( SECONDARY_WEAPON, LOCKED_TEMPORARILY );
-          AIUpdateInterface *ai = object->getAIUpdateInterface();
-          if( ai )
-          {
-            ai->aiAttackObject( target, NO_MAX_SHOTS_LIMIT, CMD_FROM_AI );
-          }
-        }
-      }
-      break;
-    }
-    case SPECIAL_HELIX_NAPALM_BOMB:
-    {
-      // Couldn't be simpler... the special object is the bomb
-      createSpecialObject();
-      break;
-    }
-    case SPECIAL_TANKHUNTER_TNT_ATTACK:
-    case SPECIAL_TIMED_CHARGES:
-    case SPECIAL_BOOBY_TRAP:
-    {
-      //Place new tnt.
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
-      //sanity
-      if( !target )
-      {
-        return;
-      }
+	case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  if( target )
+	  {
+		const Weapon *weapon = object->getWeaponInWeaponSlot( SECONDARY_WEAPON );
+		if( weapon )
+		{
+		  // lock it just till the weapon is empty or the attack is "done"
+		  object->setWeaponLock( SECONDARY_WEAPON, LOCKED_TEMPORARILY );
+		  AIUpdateInterface *ai = object->getAIUpdateInterface();
+		  if( ai )
+		  {
+			ai->aiAttackObject( target, NO_MAX_SHOTS_LIMIT, CMD_FROM_AI );
+		  }
+		}
+	  }
+	  break;
+	}
+	case SPECIAL_HELIX_NAPALM_BOMB:
+	{
+	  // Couldn't be simpler... the special object is the bomb
+	  createSpecialObject();
+	  break;
+	}
+	case SPECIAL_TANKHUNTER_TNT_ATTACK:
+	case SPECIAL_TIMED_CHARGES:
+	case SPECIAL_BOOBY_TRAP:
+	{
+	  //Place new tnt.
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  //sanity
+	  if( !target )
+	  {
+		return;
+	  }
 
-      if( target->checkAndDetonateBoobyTrap(getObject()) )
-      {
-        // Whoops, it was mined.  Cancel if it or us is now dead.
-        if( target->isEffectivelyDead() || getObject()->isEffectivelyDead() )
-        {
-          return;
-        }
-      }
+	  if( target->checkAndDetonateBoobyTrap(getObject()) )
+	  {
+		// Whoops, it was mined.  Cancel if it or us is now dead.
+		if( target->isEffectivelyDead() || getObject()->isEffectivelyDead() )
+		{
+		  return;
+		}
+	  }
 			
 			if( (spTemplate->getSpecialPowerType() == SPECIAL_BOOBY_TRAP)  &&  target->testStatus(OBJECT_STATUS_BOOBY_TRAPPED) )
 			{
@@ -1350,274 +1405,278 @@ void SpecialAbilityUpdate::triggerAbilityEffect()
 				return;
 			}
 
-      Object *charge = createSpecialObject();
-      if( charge )
-      {
-        static NameKeyType key_StickyBombUpdate = NAMEKEY( "StickyBombUpdate" );
-        StickyBombUpdate *update = (StickyBombUpdate*)charge->findUpdateModule( key_StickyBombUpdate );
-        if( !update )
-        {
-          DEBUG_ASSERTCRASH( 0, 
-            ("Unit '%s' attempted to place %s on %s but the bomb requires a StickyBombUpdate module.", 
-            object->getTemplate()->getName().str(),
-            charge->getTemplate()->getName().str(),
-            target->getTemplate()->getName().str() ) );
-          killSpecialObjects();
-          return;
-        }
-        //Setting the producer ID allows the sticky bomb update module to initialize
-        //and setup timers, etc.
-        update->initStickyBomb( target, object );
-        
+	  Object *charge = createSpecialObject();
+	  if( charge )
+	  {
+		static NameKeyType key_StickyBombUpdate = NAMEKEY( "StickyBombUpdate" );
+		StickyBombUpdate *update = (StickyBombUpdate*)charge->findUpdateModule( key_StickyBombUpdate );
+		if( !update )
+		{
+		  DEBUG_ASSERTCRASH( 0, 
+			("Unit '%s' attempted to place %s on %s but the bomb requires a StickyBombUpdate module.", 
+			object->getTemplate()->getName().str(),
+			charge->getTemplate()->getName().str(),
+			target->getTemplate()->getName().str() ) );
+		  killSpecialObjects();
+		  return;
+		}
+		//Setting the producer ID allows the sticky bomb update module to initialize
+		//and setup timers, etc.
+		update->initStickyBomb( target, object );
+		
 
-      }
-      break;
-    }
-    case SPECIAL_HACKER_DISABLE_BUILDING:
-    case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK: 
-    {
-      //Disable the target temporarily.
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  }
+	  break;
+	}
+	case SPECIAL_HACKER_DISABLE_BUILDING:
+	case SPECIAL_BLACKLOTUS_DISABLE_VEHICLE_HACK: 
+	{
+	  //Disable the target temporarily.
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
 
-      //sanity
-      if( !target )
-      {
-        return;
-      }
+	  //sanity
+	  if( !target )
+	  {
+		return;
+	  }
 
-      Relationship r = object->getRelationship(target);
-      if ( r == ALLIES)
-        return;
+	  Relationship r = object->getRelationship(target);
+	  if ( r == ALLIES)
+		return;
 
-      //Disable the target for a specified amount of time.
-      target->setDisabledUntil( DISABLED_HACKED, TheGameLogic->getFrame() + data->m_effectDuration );
+	  //Disable the target for a specified amount of time.
+	  target->setDisabledUntil( DISABLED_HACKED, TheGameLogic->getFrame() + data->m_ini.m_effectDuration );
 
-      UnsignedInt durationInterleaveFactor = 1;
-      Real targetFootprintArea = target->getGeometryInfo().getFootprintArea();
+	  UnsignedInt durationInterleaveFactor = 1;
+	  Real targetFootprintArea = target->getGeometryInfo().getFootprintArea();
 
-      if ( ( targetFootprintArea < 300) && target->isKindOf( KINDOF_STRUCTURE ))
-      {
-        m_doDisableFXParticles = !m_doDisableFXParticles; // toggle if small building
-        durationInterleaveFactor = 2;
-      }
+	  if ( ( targetFootprintArea < 300) && target->isKindOf( KINDOF_STRUCTURE ))
+	  {
+		m_doDisableFXParticles = !m_doDisableFXParticles; // toggle if small building
+		durationInterleaveFactor = 2;
+	  }
 
-      
-      if ( m_doDisableFXParticles )
-      {
-        const ParticleSystemTemplate *tmp = data->m_disableFXParticleSystem;
-        if (tmp)
-        {
-          ParticleSystem *sys = TheParticleSystemManager->createParticleSystem(tmp);
-          if (sys)
-          {
-            Coord3D offs = {0,0,0};
-            target->getGeometryInfo().makeRandomOffsetWithinFootprint( offs );
+	  
+	  if ( m_doDisableFXParticles )
+	  {
+		const ParticleSystemTemplate *tmp = data->m_ini.m_disableFXParticleSystem;
+		if (tmp)
+		{
+		  ParticleSystem *sys = TheParticleSystemManager->createParticleSystem(tmp);
+		  if (sys)
+		  {
+			Coord3D offs = {0,0,0};
+			target->getGeometryInfo().makeRandomOffsetWithinFootprint( offs );
 
-            sys->attachToObject(target);
-            sys->setPosition( &offs );
-            sys->setSystemLifetime( data->m_effectDuration * durationInterleaveFactor ); //lifetime of the system, not the particles
+			sys->attachToObject(target);
+			sys->setPosition( &offs );
+			sys->setSystemLifetime( data->m_ini.m_effectDuration * durationInterleaveFactor ); //lifetime of the system, not the particles
 
-          }
-        }
-      }
-      break;
-    }
+		  }
+		}
+	  }
+	  break;
+	}
 
-    case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
-    case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
+	case SPECIAL_INFANTRY_CAPTURE_BUILDING: 
+	case SPECIAL_BLACKLOTUS_CAPTURE_BUILDING:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
 
-      //sanity
-      if( !target )
-      {
-        return;
-      }
-      
-      if( target->checkAndDetonateBoobyTrap(getObject()) )
-      {
-        // Whoops, it was mined.  Cancel if it or us is now dead.
-        if( target->isEffectivelyDead() || getObject()->isEffectivelyDead() )
-        {
-          return;
-        }
-      }
+	  //sanity
+	  if( !target )
+	  {
+		return;
+	  }
+	  
+	  if( target->checkAndDetonateBoobyTrap(getObject()) )
+	  {
+		// Whoops, it was mined.  Cancel if it or us is now dead.
+		if( target->isEffectivelyDead() || getObject()->isEffectivelyDead() )
+		{
+		  return;
+		}
+	  }
 
-      if (target->getTeam() == object->getTeam())
-      {
-        // it's been captured by a colleague! we should stop.
-        return;
-      }
+	  if (target->getTeam() == object->getTeam())
+	  {
+		// it's been captured by a colleague! we should stop.
+		return;
+	  }
 
-      // Just in case we are capturing a building which is already garrisoned by other
-      ContainModuleInterface * contain =  target->getContain();
-      if ( contain && contain->isGarrisonable() )
-      {
-        contain->removeAllContained( TRUE );
-        break; // we do not want to set a neutral building to our team if we are not in it, that would be confusing!
-      }
+	  // Just in case we are capturing a building which is already garrisoned by other
+	  ContainModuleInterface * contain =  target->getContain();
+	  if ( contain && contain->isGarrisonable() )
+	  {
+		contain->removeAllContained( TRUE );
+		break; // we do not want to set a neutral building to our team if we are not in it, that would be confusing!
+	  }
 
-      //Play the "building stolen" EVA event if the local player is the victim!
-      if( target && target->isLocallyControlled() )
-      {
-        TheEva->setShouldPlay( EVA_BuildingStolen );
-      }
+	  //Play the "building stolen" EVA event if the local player is the victim!
+	  if( target && target->isLocallyControlled() )
+	  {
+		TheEva->setShouldPlay( EVA_BuildingStolen );
+	  }
 
-      target->defect( object->getControllingPlayer()->getDefaultTeam(), 1); // one frame of flash! 
+	  target->defect( object->getControllingPlayer()->getDefaultTeam(), 1); // one frame of flash! 
 
-      SpecialPowerModuleInterface *spmInterface = getMySPM();
-      if (spmInterface && spTemplate->getSpecialPowerType() == SPECIAL_BLACKLOTUS_CAPTURE_BUILDING )
-      {
-        // only for black lotus, not infantry capture which resets in contunueprep()
-        spmInterface->startPowerRecharge();
-      }
-      
-      object->getControllingPlayer()->getAcademyStats()->recordBuildingCapture();
-      break;
-    }
-    case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  SpecialPowerModuleInterface *spmInterface = getMySPM();
+	  if (spmInterface && spTemplate->getSpecialPowerType() == SPECIAL_BLACKLOTUS_CAPTURE_BUILDING )
+	  {
+		// only for black lotus, not infantry capture which resets in contunueprep()
+		spmInterface->startPowerRecharge();
+	  }
+	  
+	  object->getControllingPlayer()->getAcademyStats()->recordBuildingCapture();
+	  break;
+	}
+	case SPECIAL_BLACKLOTUS_STEAL_CASH_HACK:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
 
-      //sanity
-      if( !target )
-      {
-        return;
-      }
+	  //sanity
+	  if( !target )
+	  {
+		return;
+	  }
 
-      //Steal a thousand cash from the other team!
-      Money *targetMoney = target->getControllingPlayer()->getMoney();
-      Money *objectMoney = object->getControllingPlayer()->getMoney();
-      if( targetMoney && objectMoney )
-      {
-        UnsignedInt cash = targetMoney->countMoney();
-        UnsignedInt desiredAmount = 1000;
-        //Check to see if they have 1000 cash, otherwise, take the remainder!
-        cash = min( desiredAmount, cash );
-        if( cash > 0 )
-        {
-          //Steal the cash
-          targetMoney->withdraw( cash );
-          objectMoney->deposit( cash );
-          Player* controller = object->getControllingPlayer();
-          if (controller)
-            controller->getScoreKeeper()->addMoneyEarned( cash );
+	  //Steal a thousand cash from the other team!
+	  Money *targetMoney = target->getControllingPlayer()->getMoney();
+	  Money *objectMoney = object->getControllingPlayer()->getMoney();
+	  if( targetMoney && objectMoney )
+	  {
+		UnsignedInt cash = targetMoney->countMoney();
+		UnsignedInt desiredAmount = 1000;
+		//Check to see if they have 1000 cash, otherwise, take the remainder!
+		cash = min( desiredAmount, cash );
+		if( cash > 0 )
+		{
+		  //Steal the cash
+		  targetMoney->withdraw( cash );
+		  objectMoney->deposit( cash );
+		  Player* controller = object->getControllingPlayer();
+		  if (controller)
+			controller->getScoreKeeper()->addMoneyEarned( (Int)cash );
 
-          //Play the "cash stolen" EVA event if the local player is the victim!
-          if( target && target->isLocallyControlled() )
-          {
-            TheEva->setShouldPlay( EVA_CashStolen );
-          }
+		  //Play the "cash stolen" EVA event if the local player is the victim!
+		  if( target && target->isLocallyControlled() )
+		  {
+			TheEva->setShouldPlay( EVA_CashStolen );
+		  }
 
-          //Display cash income floating over the blacklotus
-          UnicodeString moneyString;
-          moneyString.format( TheGameText->fetch( "GUI:AddCash" ), cash );
-          Coord3D pos;
-          pos.set( object->getPosition() );
-          pos.z += 20.0f; //add a little z to make it show up above the unit.
-          TheInGameUI->addFloatingText( moneyString, &pos, GameMakeColor( 0, 255, 0, 255 ) );
-        
-          //Display cash lost floating over the target
-          moneyString.format( TheGameText->fetch( "GUI:LoseCash" ), cash );
-          pos.set( target->getPosition() );
-          pos.z += 30.0f; //add a little z to make it show up above the unit.
-          TheInGameUI->addFloatingText( moneyString, &pos, GameMakeColor( 255, 0, 0, 255 ) );
-        }
-      }
-      break;
-    }
+		  //Display cash income floating over the blacklotus
+		  UnicodeString moneyString;
+		  moneyString.format( TheGameText->fetch( "GUI:AddCash" ), cash );
+		  Coord3D pos;
+		  pos.set( object->getPosition() );
+		  pos.z += 20.0f; //add a little z to make it show up above the unit.
+		  TheInGameUI->addFloatingText( moneyString, &pos, GameMakeColor( 0, 255, 0, 255 ) );
+		
+		  //Display cash lost floating over the target
+		  moneyString.format( TheGameText->fetch( "GUI:LoseCash" ), cash );
+		  pos.set( target->getPosition() );
+		  pos.z += 30.0f; //add a little z to make it show up above the unit.
+		  TheInGameUI->addFloatingText( moneyString, &pos, GameMakeColor( 255, 0, 0, 255 ) );
+		}
+	  }
+	  break;
+	}
 
-    case SPECIAL_REMOTE_CHARGES:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
+	case SPECIAL_REMOTE_CHARGES:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
 
-      if( target && target->checkAndDetonateBoobyTrap(getObject()) )
-      {
-        // Whoops, it was mined.  Cancel if it or us is now dead.
-        if( target->isEffectivelyDead() || getObject()->isEffectivelyDead() )
-        {
-          return;
-        }
-      }
+	  if( target && target->checkAndDetonateBoobyTrap(getObject()) )
+	  {
+		// Whoops, it was mined.  Cancel if it or us is now dead.
+		if( target->isEffectivelyDead() || getObject()->isEffectivelyDead() )
+		{
+		  return;
+		}
+	  }
 
-      static NameKeyType key_StickyBombUpdate = NAMEKEY( "StickyBombUpdate" );
-      if( m_targetID == INVALID_ID && !m_targetPos.x && !m_targetPos.y && !m_targetPos.z ) 
-      {
-        //If there is no target object nor position, then we are detonating the existing charges.
-        std::list<ObjectID>::iterator i;
-        for( i = m_specialObjectIDList.begin(); i != m_specialObjectIDList.end(); ++i )
-        {
-          Object *specialObject = TheGameLogic->findObjectByID( *i );
-          if( specialObject )
-          {
-            StickyBombUpdate *update = (StickyBombUpdate*)specialObject->findUpdateModule( key_StickyBombUpdate );
-            if( update )
-            {
-              //Blow it up!!!
-              update->detonate();
-              okToLoseStealth = FALSE;
-              //Note: while the objects are detonating, they will still exist in the game.
-              //Our update will be responsible for validating their existance and removing them.. 
-              //in case either the enemy player cleans one up, or after it's gone.
-            }
-          }
-        }
-      }
-      else
-      {
-        //Place a new charge.
-        //sanity
-        if( !target )
-        {
-          return;
-        }
+	  static NameKeyType key_StickyBombUpdate = NAMEKEY( "StickyBombUpdate" );
+	  if( m_targetID == INVALID_ID && !m_targetPos.x && !m_targetPos.y && !m_targetPos.z ) 
+	  {
+		//If there is no target object nor position, then we are detonating the existing charges.
+		std::list<ObjectID>::iterator i;
+		for( i = m_specialObjectIDList.begin(); i != m_specialObjectIDList.end(); ++i )
+		{
+		  Object *specialObject = TheGameLogic->findObjectByID( *i );
+		  if( specialObject )
+		  {
+			StickyBombUpdate *update = (StickyBombUpdate*)specialObject->findUpdateModule( key_StickyBombUpdate );
+			if( update )
+			{
+			  //Blow it up!!!
+			  update->detonate();
+			  okToLoseStealth = FALSE;
+			  //Note: while the objects are detonating, they will still exist in the game.
+			  //Our update will be responsible for validating their existance and removing them.. 
+			  //in case either the enemy player cleans one up, or after it's gone.
+			}
+		  }
+		}
+	  }
+	  else
+	  {
+		//Place a new charge.
+		//sanity
+		if( !target )
+		{
+		  return;
+		}
 
-        Object *charge = createSpecialObject();
-        if( charge )
-        {
-          StickyBombUpdate *update = (StickyBombUpdate*)charge->findUpdateModule( key_StickyBombUpdate );
-          if( !update )
-          {
-            DEBUG_ASSERTCRASH( 0, 
-              ("Unit '%s' attempted to place remote charge but the charge '%s' requires a StickyBombUpdate module.", 
-              object->getTemplate()->getName().str(),
-              charge->getTemplate()->getName().str() ) );
-            killSpecialObjects();
-            return;
-          }
-          //Setting the producer ID allows the sticky bomb update module to initialize
-          //and setup timers, etc.
-          update->initStickyBomb( target, object );
-        }
-      }
-      break;
-    }
-    
-    case SPECIAL_DISGUISE_AS_VEHICLE:
-    {
-      Object *target = TheGameLogic->findObjectByID( m_targetID );
-      if( target )
-      {
-        StealthUpdate* update = getObject()->getStealth();
+		Object *charge = createSpecialObject();
+		if( charge )
+		{
+		  StickyBombUpdate *update = (StickyBombUpdate*)charge->findUpdateModule( key_StickyBombUpdate );
+		  if( !update )
+		  {
+			DEBUG_ASSERTCRASH( 0, 
+			  ("Unit '%s' attempted to place remote charge but the charge '%s' requires a StickyBombUpdate module.", 
+			  object->getTemplate()->getName().str(),
+			  charge->getTemplate()->getName().str() ) );
+			killSpecialObjects();
+			return;
+		  }
+		  //Setting the producer ID allows the sticky bomb update module to initialize
+		  //and setup timers, etc.
+		  update->initStickyBomb( target, object );
+		}
+	  }
+	  break;
+	}
+	
+	case SPECIAL_DISGUISE_AS_VEHICLE:
+	{
+	  Object *target = TheGameLogic->findObjectByID( m_targetID );
+	  if( target )
+	  {
+		StealthUpdate* update = getObject()->getStealth();
 
-        if( update )
-        {
-          update->disguiseAsObject( target );
-        }
-      }
+		if( update )
+		{
+		  update->disguiseAsObject( target );
+		}
+	  }
 
-      break;
-    }
+	  break;
+	}
+
+	default:
+		break;
   }
 
-  if( data->m_loseStealthOnTrigger && okToLoseStealth)
+  if( data->m_ini.m_loseStealthOnTrigger && okToLoseStealth)
   {
-    StealthUpdate* stealth = getObject()->getStealth();
-    if( stealth )
-    {
-      stealth->markAsDetected();
-    }
+	StealthUpdate* stealth = getObject()->getStealth();
+	if( stealth )
+	{
+	  stealth->markAsDetected();
+	}
   }
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1626,57 +1685,57 @@ Object* SpecialAbilityUpdate::createSpecialObject()
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
   Object *specialObject = NULL;
 
-  if( m_specialObjectEntries == data->m_maxSpecialObjects )
+  if( m_specialObjectEntries == data->m_ini.m_maxSpecialObjects )
   {
-    if( data->m_specialObjectsPersistent )
-    {
-      //If we are dealing with persistent objects, and we have reached our
-      //limit we can have, then don't allow any more to be created....
-      //We could add recycling code if need be.. but the logic that handles 
-      //canDoSpecialPowerXXX should prevent this triggering.
-      return NULL;
-    }
-    else
-    {
-      //We've reached our limit with non-persistent object(s), so remove them.
-      killSpecialObjects();
-    }
+	if( data->m_ini.m_specialObjectsPersistent )
+	{
+	  //If we are dealing with persistent objects, and we have reached our
+	  //limit we can have, then don't allow any more to be created....
+	  //We could add recycling code if need be.. but the logic that handles 
+	  //canDoSpecialPowerXXX should prevent this triggering.
+	  return NULL;
+	}
+	else
+	{
+	  //We've reached our limit with non-persistent object(s), so remove them.
+	  killSpecialObjects();
+	}
   }
 
   //Get the template of the special object
-  const ThingTemplate* thingTemplate = TheThingFactory->findTemplate( data->m_specialObjectName );
+  const ThingTemplate* thingTemplate = TheThingFactory->findTemplate( data->m_ini.m_specialObjectName );
   if( thingTemplate )
   {
-    //Create a new special object
-    specialObject = TheThingFactory->newObject( thingTemplate, getObject()->getTeam() );
-    if( specialObject )
-    {
-      m_specialObjectIDList.push_back( specialObject->getID() );
-      m_specialObjectEntries++;
-      specialObject->setPosition( getObject()->getPosition() );
+	//Create a new special object
+	specialObject = TheThingFactory->newObject( thingTemplate, getObject()->getTeam() );
+	if( specialObject )
+	{
+	  m_specialObjectIDList.push_back( specialObject->getID() );
+	  m_specialObjectEntries++;
+	  specialObject->setPosition( getObject()->getPosition() );
 
-      specialObject->setOrientation( getObject()->getOrientation() );
-      
-      //So we can get experience from it when it blows up (if applicable)
-      //specialObject->setProducer( getObject() ); --This causes it to be an enemy which is naughty.
-      ExperienceTracker *xpTracker = specialObject->getExperienceTracker();
-      if( xpTracker )
-      {
-        xpTracker->setExperienceSink( getObject()->getID() );
-      }
-      
+	  specialObject->setOrientation( getObject()->getOrientation() );
+	  
+	  //So we can get experience from it when it blows up (if applicable)
+	  //specialObject->setProducer( getObject() ); --This causes it to be an enemy which is naughty.
+	  ExperienceTracker *xpTracker = specialObject->getExperienceTracker();
+	  if( xpTracker )
+	  {
+		xpTracker->setExperienceSink( getObject()->getID() );
+	  }
+	  
 
-      PhysicsBehavior* specialObjectPhysics = specialObject->getPhysics();
-      if (specialObjectPhysics)
-      {
-        Real pitchRate = specialObjectPhysics->getCenterOfMassOffset();
-        specialObjectPhysics->setPitchRate( pitchRate );
-        specialObjectPhysics->setAllowAirborneFriction( false );
-      }
+	  PhysicsBehavior* specialObjectPhysics = specialObject->getPhysics();
+	  if (specialObjectPhysics)
+	  {
+		Real pitchRate = specialObjectPhysics->getCenterOfMassOffset();
+		specialObjectPhysics->setPitchRate( pitchRate );
+		specialObjectPhysics->setAllowAirborneFriction( false );
+	  }
 
 
 
-    }
+	}
   }
   return specialObject;
 }
@@ -1685,18 +1744,18 @@ Object* SpecialAbilityUpdate::createSpecialObject()
 void SpecialAbilityUpdate::killSpecialObjects()
 {
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-  const SpecialPowerTemplate *spTemplate = data->m_specialPowerTemplate;
+  const SpecialPowerTemplate *spTemplate = data->m_ini.m_specialPowerTemplate;
   Object *specialObject;
 
   std::list<ObjectID>::iterator i;
   for( i = m_specialObjectIDList.begin(); i != m_specialObjectIDList.end(); ++i )
   {
-    specialObject = TheGameLogic->findObjectByID( *i );
-    if( specialObject )
-    {
-      //Delete the old one!
-      TheGameLogic->destroyObject( specialObject );
-    }
+	specialObject = TheGameLogic->findObjectByID( *i );
+	if( specialObject )
+	{
+	  //Delete the old one!
+	  TheGameLogic->destroyObject( specialObject );
+	}
   }
   
   //Reset the list
@@ -1705,16 +1764,21 @@ void SpecialAbilityUpdate::killSpecialObjects()
 
   switch( spTemplate->getSpecialPowerType() )
   {
-    case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
-      //The instant we remove the laser, reset the weaponset!
-      Object *object = getObject();
-      const Weapon *weapon = object->getWeaponInWeaponSlot( PRIMARY_WEAPON );
-      if( weapon )
-      {
-        // lock it just till the weapon is empty or the attack is "done"
-        object->setWeaponLock( PRIMARY_WEAPON, LOCKED_TEMPORARILY );
-      }
-      break;
+	case SPECIAL_MISSILE_DEFENDER_LASER_GUIDED_MISSILES:
+	{
+	  //The instant we remove the laser, reset the weaponset!
+	  Object *object = getObject();
+	  const Weapon *weapon = object->getWeaponInWeaponSlot( PRIMARY_WEAPON );
+	  if( weapon )
+	  {
+		// lock it just till the weapon is empty or the attack is "done"
+		object->setWeaponLock( PRIMARY_WEAPON, LOCKED_TEMPORARILY );
+	  }
+	  break;
+	}
+	
+	default:
+	  break;
   }
 
 }
@@ -1729,7 +1793,7 @@ UnsignedInt SpecialAbilityUpdate::getSpecialObjectCount() const
 UnsignedInt SpecialAbilityUpdate::getSpecialObjectMax() const 
 {
   const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-  return data->m_maxSpecialObjects;
+  return data->m_ini.m_maxSpecialObjects;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1741,15 +1805,15 @@ void SpecialAbilityUpdate::validateSpecialObjects()
 
   while( i != m_specialObjectIDList.end() )
   {
-    std::list<ObjectID>::iterator prev = i;
-    specialObject = TheGameLogic->findObjectByID( *i );
-    i++;
-    if( !specialObject )
-    {
-      //Remove it from the list, and decrement our counter.
-      m_specialObjectIDList.erase( prev );
-      --m_specialObjectEntries;
-    }
+	std::list<ObjectID>::iterator prev = i;
+	specialObject = TheGameLogic->findObjectByID( *i );
+	i++;
+	if( !specialObject )
+	{
+	  //Remove it from the list, and decrement our counter.
+	  m_specialObjectIDList.erase( prev );
+	  --m_specialObjectEntries;
+	}
   }
 }
 
@@ -1766,19 +1830,19 @@ void SpecialAbilityUpdate::finishAbility()
   //uses his remote charge special ability. With a target, he will plant the charge then flee. Without
   //a target, he simply detonates it without fleeing.
   Bool validTarget = m_targetPos.x || m_targetPos.y || m_targetPos.z || m_targetID != INVALID_ID;
-  if( data->m_fleeRangeAfterCompletion && validTarget )
+  if( data->m_ini.m_fleeRangeAfterCompletion && validTarget )
   {
-    Coord3D pos;
-    pos.set( getObject()->getPosition() );
+	Coord3D pos;
+	pos.set( getObject()->getPosition() );
 
-    AIUpdateInterface *ai = getObject()->getAIUpdateInterface();
-    if( ai )
-    {
-      Coord3D dir;
-      dir.set( getObject()->getUnitDirectionVector2D() );
-			dir.scale( data->m_fleeRangeAfterCompletion );
+	AIUpdateInterface *ai = getObject()->getAIUpdateInterface();
+	if( ai )
+	{
+	  Coord3D dir;
+	  dir.set( getObject()->getUnitDirectionVector2D() );
+			dir.scale( data->m_ini.m_fleeRangeAfterCompletion );
 
-			if( data->m_flipObjectAfterUnpacking || data->m_flipObjectAfterPacking )
+			if( data->m_ini.m_flipObjectAfterUnpacking || data->m_ini.m_flipObjectAfterPacking )
 			{
 				pos.add( &dir );
 			}
@@ -1796,11 +1860,11 @@ void SpecialAbilityUpdate::finishAbility()
 					PartitionFilterSamePlayer filterPlayer( contPlayer );	// Look for our own mines.
 					PartitionFilterAcceptByKindOf filterKind(MAKE_KINDOF_MASK(KINDOF_MINE), KINDOFMASK_NONE);
 					PartitionFilter *filters[] = { &filterKind, &filterPlayer, NULL };
-					Object *mine = ThePartitionManager->getClosestObject( &pos, data->m_fleeRangeAfterCompletion, FROM_CENTER_2D, filters );// could be null. this is ok.
+					Object *mine = ThePartitionManager->getClosestObject( &pos, data->m_ini.m_fleeRangeAfterCompletion, FROM_CENTER_2D, filters );// could be null. this is ok.
 					if (mine) {
 						dir.set(pos.x-mine->getPosition()->x, pos.y-mine->getPosition()->y, 0);
 						dir.normalize();
-						dir.scale(data->m_fleeRangeAfterCompletion);
+						dir.scale(data->m_ini.m_fleeRangeAfterCompletion);
 						pos = *mine->getPosition();
 						pos.add(&dir);
 					}
@@ -1882,8 +1946,8 @@ Bool SpecialAbilityUpdate::needToFace() const
 
 	const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
 
-  if ( !data->m_needToFaceTarget )
-    return false;
+	if ( !data->m_ini.m_needToFaceTarget )
+		return false;
 
 	//Return true if we haven't initiated facing or if we haven't completed it.
 	return !m_facingInitiated || !m_facingComplete;
@@ -1924,7 +1988,7 @@ void SpecialAbilityUpdate::startFacing()
 const SpecialPowerTemplate* SpecialAbilityUpdate::getTemplate() const
 {
 	const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-	return data->m_specialPowerTemplate;
+	return data->m_ini.m_specialPowerTemplate;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1965,7 +2029,7 @@ void SpecialAbilityUpdate::endPreparation()
 	// Note that persistant specials will not call this until preparation is complete (not
 	// recycling).
 	const SpecialAbilityUpdateModuleData* data = getSpecialAbilityUpdateModuleData();
-	const SpecialPowerTemplate *spTemplate = data->m_specialPowerTemplate;
+	const SpecialPowerTemplate *spTemplate = data->m_ini.m_specialPowerTemplate;
 	switch( spTemplate->getSpecialPowerType() )
 	{
 		case SPECIAL_TANKHUNTER_TNT_ATTACK:
@@ -1987,6 +2051,8 @@ void SpecialAbilityUpdate::endPreparation()
 			killSpecialObjects();
 			break;
 
+		default:
+			break;
 	}
 }
 

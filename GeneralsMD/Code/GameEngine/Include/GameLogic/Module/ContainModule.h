@@ -80,7 +80,7 @@ typedef void (*ContainIterateFunc)( Object *obj, void *userData );		///< callbac
 class ContainModuleInterface
 {
 public:
-	virtual ~ContainModuleInterface();
+	virtual ~ContainModuleInterface() = default;
 
 	// we have a two basic container types that it is convenient to query and use
 	virtual OpenContain *asOpenContain() = 0;
@@ -103,8 +103,8 @@ public:
 	virtual Bool isTunnelContain() const = 0;
 	virtual Bool isRiderChangeContain() const = 0;
 	virtual Bool isImmuneToClearBuildingAttacks() const = 0;
-  virtual Bool isSpecialOverlordStyleContainer() const = 0;
-  virtual Bool isAnyRiderAttacking() const = 0;
+	virtual Bool isSpecialOverlordStyleContainer() const = 0;
+	virtual Bool isAnyRiderAttacking() const = 0;
 	
 	///< if my object gets selected, then my visible passengers should, too
 	///< this gets called from
@@ -163,7 +163,7 @@ public:
 	virtual void removeFromContain( Object *obj, Bool exposeStealthUnits = FALSE ) = 0;			///< remove 'obj' from contain list
 	virtual void removeAllContained( Bool exposeStealthUnits = FALSE ) = 0;									///< remove all objects on contain list
 	virtual void killAllContained( void ) = 0;									///< kill all objects on contain list
-  virtual void harmAndForceExitAllContained( DamageInfo *info ) = 0; // apply canned damage against those containes 
+	virtual void harmAndForceExitAllContained( DamageInfo *info ) = 0; // apply canned damage against those containes 
 	virtual Bool isEnclosingContainerFor( const Object *obj ) const = 0;	///< Does this type of Contain Visibly enclose its contents?
 	virtual Bool isPassengerAllowedToFire( ObjectID id = INVALID_ID ) const = 0;	///< Hey, can I shoot out of this container?
 	virtual void setPassengerAllowedToFire( Bool permission = TRUE ) = 0;	///< Hey, can I shoot out of this container?
@@ -188,11 +188,11 @@ public:
 	virtual PlayerMaskType getPlayerWhoEntered(void) const = 0;
 
 	virtual void processDamageToContained(Real percentDamage) = 0; ///< Do our % damage to units now.
-  virtual Object* getClosestRider ( const Coord3D *pos ) = 0;
+	virtual Object* getClosestRider ( const Coord3D *pos ) = 0;
 
 	virtual void enableLoadSounds( Bool enable ) = 0;
 
-  virtual void setEvacDisposition( EvacDisposition disp ) = 0;
+	virtual void setEvacDisposition( EvacDisposition disp ) = 0;
 
 	virtual Bool isWeaponBonusPassedToPassengers() const = 0;
 	virtual WeaponBonusConditionFlags getWeaponBonusPassedToPassengers() const = 0;

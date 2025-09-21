@@ -36,8 +36,8 @@ endif
 
 .PHONY: run debug clean
 
-$(PROG): Main/main.cpp $(ENGINE_LIB) $(ENGINE_DEVICE_LIB) $(COMPRESSION_LIB) $(OGL_LIB) $(WWDEBUG_LIB) $(WWLIB_LIB) $(WW3D2_LIB)
-	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:GameEngineDevice.a -l:OGL.a -l:WWLib.a -l:WW3D2.a -l:Compression.a $(LDFLAGS)
+$(PROG): Main/main.cpp $(ENGINE_LIB) $(ENGINE_DEVICE_LIB) $(COMPRESSION_LIB) $(OGL_LIB) $(WWDEBUG_LIB) $(WWLIB_LIB) $(WW3D2_LIB) $(WWMATH_LIB)
+	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:GameEngineDevice.a -l:OGL.a -l:WWLib.a -l:WWMath.a -l:WW3D2.a -l:Compression.a $(LDFLAGS)
 
 
 # ===== Compression =====
@@ -353,23 +353,24 @@ $(GEDO)/LinuxTerrainLogic.o: $(GEDSLD)/GameLogic/LinuxTerrainLogic.cpp GameEngin
 
 # ===== GameEngine =====
 
-ENGINE_OBJS = $(GEO)/BitFlags.o $(GEO)/CommandLine.o $(GEO)/CRCDebug.o $(GEO)/DamageFX.o $(GEO)/Dict.o $(GEO)/DiscreteCircle.o $(GEO)/GameEngine.o $(GEO)/GameLOD.o \
-   $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/MultiplayerSettings.o $(GEO)/NameKeyGenerator.o $(GEO)/RandomValue.o \
+ENGINE_OBJS = $(GEO)/BitFlags.o $(GEO)/CommandLine.o $(GEO)/crc.o $(GEO)/CRCDebug.o $(GEO)/DamageFX.o $(GEO)/Dict.o $(GEO)/DiscreteCircle.o $(GEO)/GameEngine.o $(GEO)/GameLOD.o \
+   $(GEO)/GameMain.o $(GEO)/GlobalData.o $(GEO)/Language.o $(GEO)/MessageStream.o $(GEO)/MultiplayerSettings.o $(GEO)/NameKeyGenerator.o $(GEO)/PartitionSolver.o $(GEO)/RandomValue.o \
    $(GEO)/Recorder.o $(GEO)/StateMachine.o $(GEO)/TerrainTypes.o $(GEO)/UserPreferences.o $(GEO)/Version.o \
-$(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
+$(GEO)/AudioEventRTS.o $(GEO)/AudioRequest.o $(GEO)/DynamicAudioEventInfo.o $(GEO)/GameAudio.o $(GEO)/GameMusic.o $(GEO)/GameSounds.o \
 $(GEO)/INI.o $(GEO)/INIAnimation.o $(GEO)/INIAiData.o $(GEO)/INIAudioEventInfo.o $(GEO)/INICommandButton.o $(GEO)/INICrate.o $(GEO)/INIDamageFX.o $(GEO)/INIDrawGroupInfo.o \
-   $(GEO)/INIGameData.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INISpecialPower.o $(GEO)/INITerrain.o \
-   $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIUpgrade.o $(GEO)/INIVideo.o $(GEO)/INIWater.o $(GEO)/INIWeapon.o \
-$(GEO)/AcademyStats.o $(GEO)/Energy.o $(GEO)/Handicap.o $(GEO)/MissionStats.o $(GEO)/Money.o $(GEO)/ProductionPrerequisite.o $(GEO)/Player.o $(GEO)/PlayerList.o $(GEO)/PlayerTemplate.o \
-   $(GEO)/ResourceGatheringManager.o $(GEO)/Science.o $(GEO)/ScoreKeeper.o $(GEO)/SpecialPower.o $(GEO)/Team.o $(GEO)/TunnelTracker.o \
+   $(GEO)/INIGameData.o $(GEO)/INIMapCache.o $(GEO)/INIMappedImage.o $(GEO)/INIMiscAudio.o $(GEO)/INIMultiplayer.o $(GEO)/INIObject.o $(GEO)/INIParticleSys.o $(GEO)/INISpecialPower.o \
+   $(GEO)/INITerrain.o $(GEO)/INITerrainBridge.o $(GEO)/INITerrainRoad.o $(GEO)/INIUpgrade.o $(GEO)/INIVideo.o $(GEO)/INIWater.o $(GEO)/INIWeapon.o \
+$(GEO)/ActionManager.o $(GEO)/AcademyStats.o $(GEO)/Energy.o $(GEO)/Handicap.o $(GEO)/MissionStats.o $(GEO)/Money.o $(GEO)/ProductionPrerequisite.o $(GEO)/Player.o $(GEO)/PlayerList.o \
+   $(GEO)/PlayerTemplate.o $(GEO)/ResourceGatheringManager.o $(GEO)/Science.o $(GEO)/ScoreKeeper.o $(GEO)/SpecialPower.o $(GEO)/Team.o $(GEO)/TunnelTracker.o \
 $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/BuildAssistant.o $(GEO)/CriticalSection.o $(GEO)/DataChunk.o $(GEO)/Debug.o $(GEO)/DisabledTypes.o $(GEO)/File.o \
    $(GEO)/FileSystem.o $(GEO)/FunctionLexicon.o $(GEO)/GameCommon.o $(GEO)/GameMemory.o $(GEO)/GameType.o $(GEO)/Geometry.o $(GEO)/KindOf.o $(GEO)/LocalFileSystem.o $(GEO)/MemoryInit.o \
-   $(GEO)/ObjectStatusTypes.o $(GEO)/Radar.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/Trig.o $(GEO)/UnicodeString.o $(GEO)/Upgrade.o \
+   $(GEO)/ObjectStatusTypes.o $(GEO)/QuotedPrintable.o $(GEO)/Radar.o $(GEO)/RAMFile.o $(GEO)/Snapshot.o $(GEO)/StreamingArchiveFile.o $(GEO)/SubsystemInterface.o $(GEO)/Trig.o \
+   $(GEO)/UnicodeString.o $(GEO)/Upgrade.o \
 $(GEO)/GameState.o \
 $(GEO)/DrawModule.o $(GEO)/Module.o $(GEO)/ModuleFactory.o $(GEO)/Thing.o $(GEO)/ThingFactory.o $(GEO)/ThingTemplate.o \
 $(GEO)/Color.o $(GEO)/Credits.o $(GEO)/Display.o $(GEO)/DisplayString.o $(GEO)/DisplayStringManager.o $(GEO)/Drawable.o $(GEO)/DrawGroupInfo.o $(GEO)/FXList.o $(GEO)/GameClient.o \
-   $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/InGameUI.o $(GEO)/LanguageFilter.o $(GEO)/Line2D.o $(GEO)/RadiusDecal.o $(GEO)/Snow.o \
-   $(GEO)/VideoPlayer.o $(GEO)/View.o $(GEO)/Water.o \
+   $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/InGameUI.o $(GEO)/LanguageFilter.o $(GEO)/Line2D.o $(GEO)/MapUtil.o $(GEO)/RadiusDecal.o $(GEO)/Snow.o \
+   $(GEO)/Statistics.o $(GEO)/VideoPlayer.o $(GEO)/View.o $(GEO)/Water.o \
 $(GEO)/AnimateWindowManager.o $(GEO)/GameFont.o $(GEO)/GameWindow.o $(GEO)/GameWindowGlobal.o $(GEO)/GameWindowManager.o $(GEO)/GameWindowManagerScript.o $(GEO)/GameWindowTransitions.o \
    $(GEO)/GameWindowTransitionsStyles.o $(GEO)/HeaderTemplate.o $(GEO)/IMEManager.o $(GEO)/LoadScreen.o $(GEO)/ProcessAnimateWindow.o $(GEO)/WinInstanceData.o $(GEO)/WindowLayout.o \
    $(GEO)/WindowVideoManager.o \
@@ -385,19 +386,22 @@ $(GEO)/Anim2D.o $(GEO)/CampaignManager.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
 $(GEO)/TerrainRoads.o \
 $(GEO)/AI.o $(GEO)/AIDock.o $(GEO)/AIGroup.o $(GEO)/AIGuard.o $(GEO)/AIGuardRetaliate.o $(GEO)/AIPathfind.o $(GEO)/AIStates.o $(GEO)/AITNGuard.o $(GEO)/Squad.o $(GEO)/TurretAI.o \
 $(GEO)/PolygonTrigger.o $(GEO)/SidesList.o $(GEO)/TerrainLogic.o \
-$(GEO)/Armor.o $(GEO)/ExperienceTracker.o $(GEO)/Locomotor.o $(GEO)/Object.o $(GEO)/ObjectCreationList.o $(GEO)/PartitionManager.o $(GEO)/SimpleObjectIterator.o \
+$(GEO)/Armor.o $(GEO)/ExperienceTracker.o $(GEO)/Locomotor.o $(GEO)/Object.o $(GEO)/ObjectCreationList.o $(GEO)/ObjectTypes.o $(GEO)/PartitionManager.o $(GEO)/SimpleObjectIterator.o \
    $(GEO)/Weapon.o $(GEO)/WeaponSet.o \
 $(GEO)/AutoHealBehavior.o $(GEO)/BehaviorModule.o $(GEO)/BridgeScaffoldBehavior.o $(GEO)/BridgeTowerBehavior.o $(GEO)/BridgeBehavior.o $(GEO)/GenerateMinefieldBehavior.o \
 $(GEO)/BodyModule.o $(GEO)/InactiveBody.o \
 $(GEO)/CollideModule.o $(GEO)/SquishCollide.o \
 $(GEO)/CrateCollide.o $(GEO)/MoneyCrateCollide.o $(GEO)/SalvageCrateCollide.o $(GEO)/UnitCrateCollide.o $(GEO)/VeterancyCrateCollide.o \
+$(GEO)/CaveContain.o $(GEO)/OpenContain.o \
 $(GEO)/DamageModule.o \
 $(GEO)/DestroyDie.o $(GEO)/DieModule.o $(GEO)/SpecialPowerCompletionDie.o \
 $(GEO)/ObjectHelper.o $(GEO)/ObjectDefectionHelper.o \
-$(GEO)/AIUpdate.o $(GEO)/DeletionUpdate.o $(GEO)/PhysicsUpdate.o $(GEO)/ProneUpdate.o $(GEO)/RadiusDecalUpdate.o $(GEO)/SmartBombTargetHomingUpdate.o $(GEO)/StealthUpdate.o $(GEO)/UpdateModule.o \
-$(GEO)/DeliverPayloadAIUpdate.o $(GEO)/HackInternetAIUpdate.o $(GEO)/SupplyTruckAIUpdate.o \
+$(GEO)/AIUpdate.o $(GEO)/CommandButtonHuntUpdate.o $(GEO)/DeletionUpdate.o $(GEO)/LaserUpdate.o $(GEO)/PhysicsUpdate.o $(GEO)/ProneUpdate.o $(GEO)/RadiusDecalUpdate.o \
+   $(GEO)/SmartBombTargetHomingUpdate.o $(GEO)/SpecialAbilityUpdate.o $(GEO)/SpecialPowerUpdateModule.o $(GEO)/StealthUpdate.o $(GEO)/StickyBombUpdate.o $(GEO)/UpdateModule.o \
+$(GEO)/DeliverPayloadAIUpdate.o $(GEO)/HackInternetAIUpdate.o $(GEO)/RailroadGuideAIUpdate.o $(GEO)/SupplyTruckAIUpdate.o \
+$(GEO)/DockUpdate.o $(GEO)/SupplyWarehouseDockUpdate.o \
 $(GEO)/UpgradeModule.o \
-$(GEO)/VictoryConditions.o \
+$(GEO)/ScriptActions.o $(GEO)/ScriptConditions.o $(GEO)/ScriptEngine.o $(GEO)/Scripts.o $(GEO)/VictoryConditions.o \
 $(GEO)/CaveSystem.o $(GEO)/CrateSystem.o $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/GameLogicDispatch.o $(GEO)/RankInfo.o \
 $(GEO)/GameInfo.o \
 $(GEO)/Chat.o
@@ -411,6 +415,9 @@ $(GEO)/BitFlags.o: $(GES)/Common/BitFlags.cpp
 
 $(GEO)/CommandLine.o: $(GES)/Common/CommandLine.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CommandLine.o $(GES)/Common/CommandLine.cpp
+
+$(GEO)/crc.o: $(GES)/Common/crc.cpp GameEngine/Include/Common/CRC.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/crc.o $(GES)/Common/crc.cpp
 
 $(GEO)/CRCDebug.o: $(GES)/Common/CRCDebug.cpp GameEngine/Include/Common/CRCDebug.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CRCDebug.o $(GES)/Common/CRCDebug.cpp
@@ -448,6 +455,9 @@ $(GEO)/MultiplayerSettings.o: $(GES)/Common/MultiplayerSettings.cpp GameEngine/I
 $(GEO)/NameKeyGenerator.o: $(GES)/Common/NameKeyGenerator.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/NameKeyGenerator.o $(GES)/Common/NameKeyGenerator.cpp
 
+$(GEO)/PartitionSolver.o: $(GES)/Common/PartitionSolver.cpp GameEngine/Include/Common/PartitionSolver.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PartitionSolver.o $(GES)/Common/PartitionSolver.cpp
+
 $(GEO)/RandomValue.o: $(GES)/Common/RandomValue.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RandomValue.o $(GES)/Common/RandomValue.cpp
 
@@ -472,6 +482,9 @@ $(GEO)/AudioEventRTS.o: $(GES)/Common/Audio/AudioEventRTS.cpp
 
 $(GEO)/AudioRequest.o: $(GES)/Common/Audio/AudioRequest.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AudioRequest.o $(GES)/Common/Audio/AudioRequest.cpp
+
+$(GEO)/DynamicAudioEventInfo.o: $(GES)/Common/Audio/DynamicAudioEventInfo.cpp GameEngine/Include/Common/DynamicAudioEventInfo.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DynamicAudioEventInfo.o $(GES)/Common/Audio/DynamicAudioEventInfo.cpp
 
 $(GEO)/GameAudio.o: $(GES)/Common/Audio/GameAudio.cpp GameEngine/Include/Common/AudioEventInfo.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GameAudio.o $(GES)/Common/Audio/GameAudio.cpp
@@ -509,6 +522,9 @@ $(GEO)/INIDrawGroupInfo.o: $(GES)/Common/INI/INIDrawGroupInfo.cpp
 
 $(GEO)/INIGameData.o: $(GES)/Common/INI/INIGameData.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIGameData.o $(GES)/Common/INI/INIGameData.cpp
+
+$(GEO)/INIMapCache.o: $(GES)/Common/INI/INIMapCache.cpp
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIMapCache.o $(GES)/Common/INI/INIMapCache.cpp
 
 $(GEO)/INIMappedImage.o: $(GES)/Common/INI/INIMappedImage.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIMappedImage.o $(GES)/Common/INI/INIMappedImage.cpp
@@ -550,6 +566,9 @@ $(GEO)/INIWeapon.o: $(GES)/Common/INI/INIWeapon.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/INIWeapon.o $(GES)/Common/INI/INIWeapon.cpp
 
 # --- GameEngine/Source/Common/RTS ---
+$(GEO)/ActionManager.o: $(GES)/Common/RTS/ActionManager.cpp GameEngine/Include/Common/ActionManager.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ActionManager.o $(GES)/Common/RTS/ActionManager.cpp
+
 $(GEO)/AcademyStats.o: $(GES)/Common/RTS/AcademyStats.cpp GameEngine/Include/Common/AcademyStats.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AcademyStats.o $(GES)/Common/RTS/AcademyStats.cpp
 
@@ -653,6 +672,9 @@ $(GEO)/MemoryInit.o: $(GES)/Common/System/MemoryInit.cpp
 $(GEO)/ObjectStatusTypes.o: $(GES)/Common/System/ObjectStatusTypes.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ObjectStatusTypes.o $(GES)/Common/System/ObjectStatusTypes.cpp
 
+$(GEO)/QuotedPrintable.o: $(GES)/Common/System/QuotedPrintable.cpp GameEngine/Include/Common/QuotedPrintable.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/QuotedPrintable.o $(GES)/Common/System/QuotedPrintable.cpp
+
 $(GEO)/Radar.o: $(GES)/Common/System/Radar.cpp GameEngine/Include/Common/Radar.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Radar.o $(GES)/Common/System/Radar.cpp
 
@@ -752,14 +774,17 @@ $(GEO)/LanguageFilter.o: $(GES)/GameClient/LanguageFilter.cpp
 $(GEO)/Line2D.o: $(GES)/GameClient/Line2D.cpp GameEngine/Include/GameClient/Line2D.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Line2D.o $(GES)/GameClient/Line2D.cpp
 
-#$(GEO)/MapUtil.o: $(GES)/GameClient/MapUtil.cpp GameEngine/Include/GameClient/MapUtil.h
-#	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MapUtil.o $(GES)/GameClient/MapUtil.cpp
+$(GEO)/MapUtil.o: $(GES)/GameClient/MapUtil.cpp GameEngine/Include/GameClient/MapUtil.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MapUtil.o $(GES)/GameClient/MapUtil.cpp
 
 $(GEO)/RadiusDecal.o: $(GES)/GameClient/RadiusDecal.cpp GameEngine/Include/GameClient/RadiusDecal.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RadiusDecal.o $(GES)/GameClient/RadiusDecal.cpp
 
 $(GEO)/Snow.o: $(GES)/GameClient/Snow.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Snow.o $(GES)/GameClient/Snow.cpp
+
+$(GEO)/Statistics.o: $(GES)/GameClient/Statistics.cpp GameEngine/Include/GameClient/Statistics.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Statistics.o $(GES)/GameClient/Statistics.cpp
 
 $(GEO)/VideoPlayer.o: $(GES)/GameClient/VideoPlayer.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/VideoPlayer.o $(GES)/GameClient/VideoPlayer.cpp
@@ -1002,6 +1027,9 @@ $(GEO)/Object.o: $(GES)/GameLogic/Object/Object.cpp GameEngine/Include/GameLogic
 $(GEO)/ObjectCreationList.o: $(GES)/GameLogic/Object/ObjectCreationList.cpp GameEngine/Include/GameLogic/ObjectCreationList.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ObjectCreationList.o $(GES)/GameLogic/Object/ObjectCreationList.cpp
 
+$(GEO)/ObjectTypes.o: $(GES)/GameLogic/Object/ObjectTypes.cpp GameEngine/Include/GameLogic/ObjectTypes.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ObjectTypes.o $(GES)/GameLogic/Object/ObjectTypes.cpp
+
 $(GEO)/PartitionManager.o: $(GES)/GameLogic/Object/PartitionManager.cpp GameEngine/Include/GameLogic/PartitionManager.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PartitionManager.o $(GES)/GameLogic/Object/PartitionManager.cpp
 
@@ -1063,6 +1091,13 @@ $(GEO)/UnitCrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/UnitCrat
 $(GEO)/VeterancyCrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/VeterancyCrateCollide.cpp GameEngine/Include/GameLogic/Module/VeterancyCrateCollide.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/VeterancyCrateCollide.o $(GES)/GameLogic/Object/Collide/CrateCollide/VeterancyCrateCollide.cpp
 
+# --- GameEngine/Source/GameLogic/Object/Contain ---
+$(GEO)/CaveContain.o: $(GES)/GameLogic/Object/Contain/CaveContain.cpp GameEngine/Include/GameLogic/Module/CaveContain.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CaveContain.o $(GES)/GameLogic/Object/Contain/CaveContain.cpp
+
+$(GEO)/OpenContain.o: $(GES)/GameLogic/Object/Contain/OpenContain.cpp GameEngine/Include/GameLogic/Module/OpenContain.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/OpenContain.o $(GES)/GameLogic/Object/Contain/OpenContain.cpp
+
 # --- GameEngine/Source/GameLogic/Object/Damage ---
 $(GEO)/DamageModule.o: $(GES)/GameLogic/Object/Damage/DamageModule.cpp GameEngine/Include/GameLogic/Module/DamageModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DamageModule.o $(GES)/GameLogic/Object/Damage/DamageModule.cpp
@@ -1088,8 +1123,14 @@ $(GEO)/ObjectDefectionHelper.o: $(GES)/GameLogic/Object/Helper/ObjectDefectionHe
 $(GEO)/AIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate.cpp GameEngine/Include/GameLogic/Module/AIUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate.cpp
 
+$(GEO)/CommandButtonHuntUpdate.o: $(GES)/GameLogic/Object/Update/CommandButtonHuntUpdate.cpp GameEngine/Include/GameLogic/Module/CommandButtonHuntUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CommandButtonHuntUpdate.o $(GES)/GameLogic/Object/Update/CommandButtonHuntUpdate.cpp
+
 $(GEO)/DeletionUpdate.o: $(GES)/GameLogic/Object/Update/DeletionUpdate.cpp GameEngine/Include/GameLogic/Module/DeletionUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DeletionUpdate.o $(GES)/GameLogic/Object/Update/DeletionUpdate.cpp
+
+$(GEO)/LaserUpdate.o: $(GES)/GameLogic/Object/Update/LaserUpdate.cpp GameEngine/Include/GameLogic/Module/LaserUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/LaserUpdate.o $(GES)/GameLogic/Object/Update/LaserUpdate.cpp
 
 $(GEO)/PhysicsUpdate.o: $(GES)/GameLogic/Object/Update/PhysicsUpdate.cpp GameEngine/Include/GameLogic/Module/PhysicsUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PhysicsUpdate.o $(GES)/GameLogic/Object/Update/PhysicsUpdate.cpp
@@ -1103,8 +1144,17 @@ $(GEO)/RadiusDecalUpdate.o: $(GES)/GameLogic/Object/Update/RadiusDecalUpdate.cpp
 $(GEO)/SmartBombTargetHomingUpdate.o: $(GES)/GameLogic/Object/Update/SmartBombTargetHomingUpdate.cpp GameEngine/Include/GameLogic/Module/SmartBombTargetHomingUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SmartBombTargetHomingUpdate.o $(GES)/GameLogic/Object/Update/SmartBombTargetHomingUpdate.cpp
 
+$(GEO)/SpecialAbilityUpdate.o: $(GES)/GameLogic/Object/Update/SpecialAbilityUpdate.cpp GameEngine/Include/GameLogic/Module/SpecialAbilityUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpecialAbilityUpdate.o $(GES)/GameLogic/Object/Update/SpecialAbilityUpdate.cpp
+
+$(GEO)/SpecialPowerUpdateModule.o: $(GES)/GameLogic/Object/Update/SpecialPowerUpdateModule.cpp GameEngine/Include/GameLogic/Module/SpecialPowerUpdateModule.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpecialPowerUpdateModule.o $(GES)/GameLogic/Object/Update/SpecialPowerUpdateModule.cpp
+
 $(GEO)/StealthUpdate.o: $(GES)/GameLogic/Object/Update/StealthUpdate.cpp GameEngine/Include/GameLogic/Module/StealthUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StealthUpdate.o $(GES)/GameLogic/Object/Update/StealthUpdate.cpp
+
+$(GEO)/StickyBombUpdate.o: $(GES)/GameLogic/Object/Update/StickyBombUpdate.cpp GameEngine/Include/GameLogic/Module/StickyBombUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StickyBombUpdate.o $(GES)/GameLogic/Object/Update/StickyBombUpdate.cpp
 
 $(GEO)/UpdateModule.o: $(GES)/GameLogic/Object/Update/UpdateModule.cpp GameEngine/Include/GameLogic/Module/UpdateModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UpdateModule.o $(GES)/GameLogic/Object/Update/UpdateModule.cpp
@@ -1116,14 +1166,36 @@ $(GEO)/DeliverPayloadAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/Deliver
 $(GEO)/HackInternetAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/HackInternetAIUpdate.cpp GameEngine/Include/GameLogic/Module/HackInternetAIUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/HackInternetAIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate/HackInternetAIUpdate.cpp
 
+$(GEO)/RailroadGuideAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/RailroadGuideAIUpdate.cpp GameEngine/Include/GameLogic/Module/RailroadGuideAIUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RailroadGuideAIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate/RailroadGuideAIUpdate.cpp
+
 $(GEO)/SupplyTruckAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/SupplyTruckAIUpdate.cpp GameEngine/Include/GameLogic/Module/SupplyTruckAIUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SupplyTruckAIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate/SupplyTruckAIUpdate.cpp
+
+# --- GameEngine/Source/GameLogic/Object/Update/DockUpdate ---
+$(GEO)/DockUpdate.o: $(GES)/GameLogic/Object/Update/DockUpdate/DockUpdate.cpp GameEngine/Include/GameLogic/Module/DockUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DockUpdate.o $(GES)/GameLogic/Object/Update/DockUpdate/DockUpdate.cpp
+
+$(GEO)/SupplyWarehouseDockUpdate.o: $(GES)/GameLogic/Object/Update/DockUpdate/SupplyWarehouseDockUpdate.cpp GameEngine/Include/GameLogic/Module/SupplyWarehouseDockUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SupplyWarehouseDockUpdate.o $(GES)/GameLogic/Object/Update/DockUpdate/SupplyWarehouseDockUpdate.cpp
 
 # --- GameEngine/Source/GameLogic/Object/Upgrade ---
 $(GEO)/UpgradeModule.o: $(GES)/GameLogic/Object/Upgrade/UpgradeModule.cpp GameEngine/Include/GameLogic/Module/UpgradeModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UpgradeModule.o $(GES)/GameLogic/Object/Upgrade/UpgradeModule.cpp
 
 # --- GameEngine/Source/GameLogic/ScriptEngine ---
+$(GEO)/ScriptActions.o: $(GES)/GameLogic/ScriptEngine/ScriptActions.cpp GameEngine/Include/GameLogic/ScriptActions.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ScriptActions.o $(GES)/GameLogic/ScriptEngine/ScriptActions.cpp
+
+$(GEO)/ScriptConditions.o: $(GES)/GameLogic/ScriptEngine/ScriptConditions.cpp GameEngine/Include/GameLogic/ScriptConditions.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ScriptConditions.o $(GES)/GameLogic/ScriptEngine/ScriptConditions.cpp
+
+$(GEO)/ScriptEngine.o: $(GES)/GameLogic/ScriptEngine/ScriptEngine.cpp GameEngine/Include/GameLogic/ScriptEngine.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ScriptEngine.o $(GES)/GameLogic/ScriptEngine/ScriptEngine.cpp
+
+$(GEO)/Scripts.o: $(GES)/GameLogic/ScriptEngine/Scripts.cpp GameEngine/Include/GameLogic/Scripts.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Scripts.o $(GES)/GameLogic/ScriptEngine/Scripts.cpp
+
 $(GEO)/VictoryConditions.o: $(GES)/GameLogic/ScriptEngine/VictoryConditions.cpp GameEngine/Include/GameLogic/VictoryConditions.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/VictoryConditions.o $(GES)/GameLogic/ScriptEngine/VictoryConditions.cpp
 

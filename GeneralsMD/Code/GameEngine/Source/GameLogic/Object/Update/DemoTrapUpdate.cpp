@@ -32,18 +32,18 @@
 #define DEFINE_WEAPONSLOTTYPE_NAMES
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
-#include "Common\BitFlagsIO.h"
-#include "Common\ThingTemplate.h"
-#include "Common\Xfer.h"
-#include "GameClient\Drawable.h"
-#include "GameLogic\GameLogic.h"
-#include "GameLogic\PartitionManager.h"
-#include "GameLogic\Object.h"
-#include "GameLogic\ObjectIter.h"
-#include "GameLogic\Module\DemoTrapUpdate.h"
-#include "GameLogic\Module\PhysicsUpdate.h"
-#include "GameLogic\Weaponset.h"
-#include "GameLogic\Weapon.h"
+#include "Common/BitFlagsIO.h"
+#include "Common/ThingTemplate.h"
+#include "Common/Xfer.h"
+#include "GameClient/Drawable.h"
+#include "GameLogic/GameLogic.h"
+#include "GameLogic/PartitionManager.h"
+#include "GameLogic/Object.h"
+#include "GameLogic/ObjectIter.h"
+#include "GameLogic/Module/DemoTrapUpdate.h"
+#include "GameLogic/Module/PhysicsUpdate.h"
+#include "GameLogic/WeaponSet.h"
+#include "GameLogic/Weapon.h"
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -61,18 +61,18 @@ DemoTrapUpdateModuleData::DemoTrapUpdateModuleData()
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void DemoTrapUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void DemoTrapUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-    { "DefaultProximityMode",      INI::parseBool,								NULL, offsetof( DemoTrapUpdateModuleData, m_defaultsToProximityMode ) },
-    { "DetonationWeaponSlot",      INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_detonationWeaponSlot ) },
-    { "ProximityModeWeaponSlot",   INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_proximityModeWeaponSlot ) },
-    { "ManualModeWeaponSlot",      INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_manualModeWeaponSlot ) },
-    { "TriggerDetonationRange",    INI::parseReal,								NULL, offsetof( DemoTrapUpdateModuleData, m_triggerDetonationRange ) },
-    { "IgnoreTargetTypes",         KindOfMaskType::parseFromINI,							NULL, offsetof( DemoTrapUpdateModuleData, m_ignoreKindOf ) },
+		{ "DefaultProximityMode",      INI::parseBool,								NULL, offsetof( DemoTrapUpdateModuleData, m_defaultsToProximityMode ) },
+		{ "DetonationWeaponSlot",      INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_detonationWeaponSlot ) },
+		{ "ProximityModeWeaponSlot",   INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_proximityModeWeaponSlot ) },
+		{ "ManualModeWeaponSlot",      INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_manualModeWeaponSlot ) },
+		{ "TriggerDetonationRange",    INI::parseReal,								NULL, offsetof( DemoTrapUpdateModuleData, m_triggerDetonationRange ) },
+		{ "IgnoreTargetTypes",         KindOfMaskType::parseFromINI,							NULL, offsetof( DemoTrapUpdateModuleData, m_ignoreKindOf ) },
 		{ "ScanRate",									 INI::parseDurationUnsignedInt,	NULL, offsetof( DemoTrapUpdateModuleData, m_scanFrames ) },
 		{ "AutoDetonationWithFriendsInvolved", INI::parseBool,				NULL, offsetof( DemoTrapUpdateModuleData, m_friendlyDetonation ) },
 		{ "DetonationWeapon",					 INI::parseWeaponTemplate,			NULL, offsetof( DemoTrapUpdateModuleData, m_detonationWeaponTemplate ) },

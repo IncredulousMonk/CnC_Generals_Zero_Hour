@@ -32,7 +32,7 @@
 
 void CRC::addCRC( UnsignedByte val )
 {
-	int hibit;
+	unsigned int hibit;
 
 	//cout << "\t\t" << hex << val;
 //	val = htonl(val);

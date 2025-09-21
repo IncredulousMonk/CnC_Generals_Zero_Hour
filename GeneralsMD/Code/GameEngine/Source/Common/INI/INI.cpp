@@ -113,7 +113,7 @@ static const BlockParse theTypeTable[] =
 	{ "InGameUI",						INI::parseInGameUIDefinition },
 	{ "Locomotor",						INI::parseLocomotorTemplateDefinition },
 	{ "Language",						INI::parseLanguageDefinition },
-// 	{ "MapCache",						INI::parseMapCacheDefinition },
+	{ "MapCache",						INI::parseMapCacheDefinition },
 // 	{ "MapData",						INI::parseMapDataDefinition },
 	{ "MappedImage",					INI::parseMappedImageDefinition },
 	{ "MiscAudio",						INI::parseMiscAudio},

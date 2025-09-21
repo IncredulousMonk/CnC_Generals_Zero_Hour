@@ -30,8 +30,8 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Common\Player.h"
-#include "Common\PlayerList.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
 #include "Common/Xfer.h"
 #include "Common/DrawModule.h"
 #include "Common/ThingTemplate.h"
@@ -41,7 +41,7 @@
 #include "GameLogic/Object.h" 
 #include "GameLogic/GameLogic.h" // For frame number
 #include "GameLogic/Module/LaserUpdate.h"
-#include "WWMath/Vector3.h"
+#include "WWMath/vector3.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -53,19 +53,19 @@
 //-------------------------------------------------------------------------------------------------
 LaserUpdateModuleData::LaserUpdateModuleData()
 {
-	m_punchThroughScalar = 0.0f;
+	m_ini.m_punchThroughScalar = 0.0f;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void LaserUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void LaserUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "MuzzleParticleSystem",		INI::parseAsciiString,	NULL, offsetof( LaserUpdateModuleData, m_particleSystemName ) },
-		{ "TargetParticleSystem",		INI::parseAsciiString,  NULL, offsetof( LaserUpdateModuleData, m_targetParticleSystemName ) },
-		{ "PunchThroughScalar",			INI::parseReal,					NULL, offsetof( LaserUpdateModuleData, m_punchThroughScalar ) },
+		{ "MuzzleParticleSystem",		INI::parseAsciiString,	NULL, offsetof( LaserUpdateModuleData::IniData, m_particleSystemName ) },
+		{ "TargetParticleSystem",		INI::parseAsciiString,	NULL, offsetof( LaserUpdateModuleData::IniData, m_targetParticleSystemName ) },
+		{ "PunchThroughScalar",			INI::parseReal,			NULL, offsetof( LaserUpdateModuleData::IniData, m_punchThroughScalar ) },
 		{ 0, 0, 0, 0 }
 	};
 	p.add(dataFieldParse);
@@ -171,12 +171,12 @@ void LaserUpdate::updateEndPos()
 	{
 		// If here, we used to track something, but now it is gone.  So make our end point pierce through
 		// the old spot, and then stop trying to find a target Drawable
-		if( data->m_punchThroughScalar > 0 )
+		if( data->m_ini.m_punchThroughScalar > 0 )
 		{
 			Vector3 laserVector;
 			laserVector.Set(m_endPos.x, m_endPos.y, m_endPos.z);
 			laserVector = laserVector - Vector3(m_startPos.x, m_startPos.y, m_startPos.z);
-			laserVector *= data->m_punchThroughScalar;
+			laserVector *= data->m_ini.m_punchThroughScalar;
 			laserVector = laserVector + Vector3(m_startPos.x, m_startPos.y, m_startPos.z);
 			m_endPos.x = laserVector.X;
 			m_endPos.y = laserVector.Y;
@@ -252,14 +252,14 @@ void LaserUpdate::initLaser( const Object *parent, const Object *target, const C
 	{
 		m_widening = true;
 		m_widenStartFrame = TheGameLogic->getFrame();
-		m_widenFinishFrame = m_widenStartFrame + sizeDeltaFrames;
+		m_widenFinishFrame = m_widenStartFrame + (UnsignedInt)sizeDeltaFrames;
 		m_currentWidthScalar = 0.0f;
 	}
 	else if( sizeDeltaFrames < 0 )
 	{
 		m_decaying = true;
 		m_decayStartFrame = TheGameLogic->getFrame();
-		m_decayFinishFrame = m_decayStartFrame - sizeDeltaFrames;
+		m_decayFinishFrame = m_decayStartFrame - (UnsignedInt)sizeDeltaFrames;
 		m_currentWidthScalar = 1.0f;
 	}
 
@@ -318,9 +318,9 @@ void LaserUpdate::initLaser( const Object *parent, const Object *target, const C
 		{
 
 			//If we don't have a particle system for the lense flare (muzzle flare), create it.
-			if( data->m_particleSystemName.isNotEmpty() )
+			if( data->m_ini.m_particleSystemName.isNotEmpty() )
 			{
-				const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( data->m_particleSystemName );
+				const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( data->m_ini.m_particleSystemName );
 				if( tmp )
 				{
 					system = TheParticleSystemManager->createParticleSystem( tmp );
@@ -332,9 +332,9 @@ void LaserUpdate::initLaser( const Object *parent, const Object *target, const C
 			}
 
 			//If we don't have a particle system for the target effect, create it.
-			if( data->m_targetParticleSystemName.isNotEmpty() )
+			if( data->m_ini.m_targetParticleSystemName.isNotEmpty() )
 			{
-				const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( data->m_targetParticleSystemName );
+				const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( data->m_ini.m_targetParticleSystemName );
 				if( tmp )
 				{
 					system = TheParticleSystemManager->createParticleSystem( tmp );

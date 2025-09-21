@@ -28,7 +28,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file in the GameEngine
 
-// #include "Common/ActionManager.h"
+#include "Common/ActionManager.h"
 #include "Common/AudioAffect.h"
 #include "Common/BuildAssistant.h"
 // #include "Common/CRCDebug.h"
@@ -49,7 +49,7 @@
 // #include "Common/CDManager.h"
 #include "Common/GlobalData.h"
 // #include "Common/PerfTimer.h"
-// #include "Common/RandomValue.h"
+#include "Common/RandomValue.h"
 #include "Common/NameKeyGenerator.h"
 #include "Common/ModuleFactory.h"
 // #include "Common/Debug.h"
@@ -96,7 +96,7 @@
 #include "GameClient/Snow.h" // MG: Only needed to delete TheWeatherSetting
 #include "GameClient/TerrainRoads.h"
 // #include "GameClient/MetaEvent.h"
-// #include "GameClient/MapUtil.h"
+#include "GameClient/MapUtil.h"
 // #include "GameClient/GameWindowManager.h"
 #include "GameClient/GlobalLanguage.h"
 // #include "GameClient/Drawable.h"
@@ -212,8 +212,8 @@ GameEngine::~GameEngine()
 	((WeatherSetting*)TheWeatherSetting.getNonOverloadedPointer())->deleteInstance();
 	TheWeatherSetting = NULL;
 
-	// delete TheMapCache;
-	// TheMapCache = NULL;
+	delete TheMapCache;
+	TheMapCache = NULL;
 
 //	delete TheShell;
 //	TheShell = NULL;
@@ -546,7 +546,7 @@ void GameEngine::init( int argc, char *argv[] )
 #endif
 
 
-		// initSubsystem(TheActionManager,"TheActionManager", MSGNEW("GameEngineSubsystem") ActionManager(), NULL);
+		initSubsystem(TheActionManager,"TheActionManager", MSGNEW("GameEngineSubsystem") ActionManager(), NULL);
 		// //initSubsystem((CComObject<WebBrowser> *)TheWebBrowser,"(CComObject<WebBrowser> *)TheWebBrowser", (CComObject<WebBrowser> *)createWebBrowser(), NULL);
 		// initSubsystem(TheGameStateMap,"TheGameStateMap", MSGNEW("GameEngineSubsystem") GameStateMap, NULL, NULL, NULL );
 		initSubsystem(TheGameState,"TheGameState", MSGNEW("GameEngineSubsystem") GameState, NULL, NULL, NULL );
@@ -615,9 +615,9 @@ void GameEngine::init( int argc, char *argv[] )
 #endif
 
 
-		// // initialize the MapCache
-		// TheMapCache = MSGNEW("GameEngineSubsystem") MapCache;
-		// TheMapCache->updateCache();
+		// initialize the MapCache
+		TheMapCache = MSGNEW("GameEngineSubsystem") MapCache;
+		TheMapCache->updateCache();
 
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
@@ -628,56 +628,56 @@ void GameEngine::init( int argc, char *argv[] )
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	// 	if (TheGlobalData->m_buildMapCache)
-	// 	{
-	// 		// just quit, since the map cache has already updated
-	// 		//populateMapListbox(NULL, true, true);
-	// 		m_quitting = TRUE;
-	// 	}
+		if (TheGlobalData->m_data.m_buildMapCache)
+		{
+			// just quit, since the map cache has already updated
+			//populateMapListbox(NULL, true, true);
+			m_quitting = TRUE;
+		}
 		
-	// 	// load the initial shell screen
-	// 	//TheShell->push( AsciiString("Menus/MainMenu.wnd") );
+		// load the initial shell screen
+		//TheShell->push( AsciiString("Menus/MainMenu.wnd") );
 		
-	// 	// This allows us to run a map/reply from the command line
-	// 	if (TheGlobalData->m_initialFile.isEmpty() == FALSE)
-	// 	{
-	// 		AsciiString fname = TheGlobalData->m_initialFile;
-	// 		fname.toLower();
+		// This allows us to run a map/reply from the command line
+		if (TheGlobalData->m_data.m_initialFile.isEmpty() == FALSE)
+		{
+			AsciiString fname = TheGlobalData->m_data.m_initialFile;
+			fname.toLower();
 
-	// 		if (fname.endsWithNoCase(".map"))
-	// 		{
-	// 			TheWritableGlobalData->m_shellMapOn = FALSE;
-	// 			TheWritableGlobalData->m_playIntro = FALSE;
-	// 			TheWritableGlobalData->m_pendingFile = TheGlobalData->m_initialFile;
+			if (fname.endsWithNoCase(".map"))
+			{
+				TheWritableGlobalData->m_data.m_shellMapOn = FALSE;
+				TheWritableGlobalData->m_data.m_playIntro = FALSE;
+				TheWritableGlobalData->m_data.m_pendingFile = TheGlobalData->m_data.m_initialFile;
 
-	// 			// shutdown the top, but do not pop it off the stack
-	// //			TheShell->hideShell();
+				// shutdown the top, but do not pop it off the stack
+	//			TheShell->hideShell();
 
-	// 			// send a message to the logic for a new game
-	// 			GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_NEW_GAME );
-	// 			msg->appendIntegerArgument(GAME_SINGLE_PLAYER);
-	// 			msg->appendIntegerArgument(DIFFICULTY_NORMAL);
-	// 			msg->appendIntegerArgument(0);
-	// 			InitRandom(0);
-	// 		}
-	// 		else if (fname.endsWithNoCase(".rep"))
-	// 		{
-	// 			TheRecorder->playbackFile(fname);
-	// 		}
-	// 	}
+				// send a message to the logic for a new game
+				GameMessage *msg = TheMessageStream->appendMessage( GameMessage::MSG_NEW_GAME );
+				msg->appendIntegerArgument(GAME_SINGLE_PLAYER);
+				msg->appendIntegerArgument(DIFFICULTY_NORMAL);
+				msg->appendIntegerArgument(0);
+				InitRandom(0);
+			}
+			else if (fname.endsWithNoCase(".rep"))
+			{
+				TheRecorder->playbackFile(fname);
+			}
+		}
 
-	// 	// 
-	// 	if (TheMapCache && TheGlobalData->m_shellMapOn)
-	// 	{
-	// 		AsciiString lowerName = TheGlobalData->m_shellMapName;
-	// 		lowerName.toLower();
+		// 
+		if (TheMapCache && TheGlobalData->m_data.m_shellMapOn)
+		{
+			AsciiString lowerName = TheGlobalData->m_data.m_shellMapName;
+			lowerName.toLower();
 
-	// 		MapCache::const_iterator it = TheMapCache->find(lowerName);
-	// 		if (it == TheMapCache->end())
-	// 		{
-	// 			TheWritableGlobalData->m_shellMapOn = FALSE;
-	// 		}
-	// 	}
+			MapCache::const_iterator it = TheMapCache->find(lowerName);
+			if (it == TheMapCache->end())
+			{
+				TheWritableGlobalData->m_data.m_shellMapOn = FALSE;
+			}
+		}
 
 	// 	if(!TheGlobalData->m_playIntro)
 	// 		TheWritableGlobalData->m_afterIntro = TRUE;

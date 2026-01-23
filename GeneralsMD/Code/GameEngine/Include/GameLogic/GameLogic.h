@@ -137,13 +137,11 @@ public:
 	void addObjectToLookupTable( Object *obj );			///< add object ID to hash lookup table
 	void removeObjectFromLookupTable( Object *obj );///< remove object ID from hash lookup table
 	
-#if 0
 	/// @todo Change this to refer to a Region3D as an extent of the world
 	void setWidth( Real width );										///< Sets the width of the world
 	Real getWidth( void );													///< Returns the width of the world
 	void setHeight( Real height );									///< Sets the height of the world
 	Real getHeight( void );													///< Returns the height of the world
-#endif // if 0
 
 	Bool isInGameLogicUpdate( void ) const { return m_isInUpdate; }
 	UnsignedInt getFrame( void );										///< Returns the current simulation frame number
@@ -429,13 +427,11 @@ private:
 #endif // if 0
 };
 
-#if 0
 // INLINE /////////////////////////////////////////////////////////////////////////////////////////
 inline void GameLogic::setWidth( Real width ) { m_width = width; }
 inline Real GameLogic::getWidth( void ) { return m_width; }
 inline void GameLogic::setHeight( Real height ) { m_height = height; }
 inline Real GameLogic::getHeight( void ) { return m_height; }
-#endif // if 0
 inline UnsignedInt GameLogic::getFrame( void ) { return m_frame; }
 
 inline Bool GameLogic::isInGame( void ) { return !(m_gameMode == GAME_NONE); }

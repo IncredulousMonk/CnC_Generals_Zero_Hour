@@ -63,7 +63,7 @@ enum WaypointID: UnsignedInt
 */
 class Waypoint : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Waypoint, "Waypoint")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Waypoint, "Waypoint")
 
 // friends do not play well with MPO (srj)
 //friend class TerrainLogic;
@@ -324,9 +324,7 @@ public:
 	// (unlike getLayerForDestination, which will return the closest layer)
 	PathfindLayerEnum getHighestLayerForDestination(const Coord3D *pos, Bool onlyHealthyBridges = false);
 
-#if 0
 	void enableWaterGrid( Bool enable );			///< enable/disable the water grid
-#endif // if 0
 
 	// This is stuff to get the currently active boundary information
 	Int getActiveBoundary(void) { return m_activeBoundary; }

@@ -55,6 +55,8 @@
 #include "wwstring.h"
 #include "vector3.h"
 #include "texturefilter.h"
+#include "OpenGLTexture.h"
+#include "OpenGLSampler.h"
 
 struct IDirect3DBaseTexture8;
 struct IDirect3DTexture8;
@@ -167,8 +169,8 @@ public:
 	void Invalidate();
 
 	// texture accessors (dx8)
-	IDirect3DBaseTexture8 *Peek_D3D_Base_Texture() const;
-	void Set_D3D_Base_Texture(IDirect3DBaseTexture8* tex);
+	OpenGLTexture* Peek_GL_Base_Texture() const;
+	void Set_GL_Base_Texture(OpenGLTexture* tex);
 
 	PoolType Get_Pool() const { return Pool; }
 
@@ -207,14 +209,18 @@ public:
 	virtual CubeTextureClass* As_CubeTextureClass() { return NULL; }
 	virtual VolumeTextureClass* As_VolumeTextureClass() { return NULL; }
 
-	IDirect3DTexture8* Peek_D3D_Texture() const { return (IDirect3DTexture8*)Peek_D3D_Base_Texture(); }
+	OpenGLTexture* Peek_GL_Texture() const { return GLTexture; }
+	OpenGLSampler* Peek_GL_Sampler() const { return GLSampler; }
+#if 0
 	IDirect3DVolumeTexture8* Peek_D3D_VolumeTexture() const { return (IDirect3DVolumeTexture8*)Peek_D3D_Base_Texture(); }
 	IDirect3DCubeTexture8* Peek_D3D_CubeTexture() const { return (IDirect3DCubeTexture8*)Peek_D3D_Base_Texture(); }
+#endif // if 0
 
 protected:
 
 	void Load_Locked_Surface();
-	void Poke_Texture(IDirect3DBaseTexture8* tex) { D3DTexture = tex; }
+	void Poke_Texture(OpenGLTexture* tex) { GLTexture = tex; }
+	void Poke_Sampler(OpenGLSampler* sam) { GLSampler = sam; }
 
 	bool Initialized;
 
@@ -240,8 +246,11 @@ protected:
 
 private:
 
-	// Direct3D texture object
-	IDirect3DBaseTexture8 *D3DTexture;
+	// OpenGL texture object
+	OpenGLTexture* GLTexture;
+
+	// OpenGL sampler object
+	OpenGLSampler* GLSampler {};
 
 	// Name
 	StringClass Name;

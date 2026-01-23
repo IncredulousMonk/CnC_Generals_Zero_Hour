@@ -74,7 +74,7 @@
 // #include "GameClient/SelectionXlat.h"
 #include "GameClient/Shell.h"
 // #include "GameClient/Snow.h"
-// #include "GameClient/TerrainVisual.h"
+#include "GameClient/TerrainVisual.h"
 // #include "GameClient/View.h"
 #include "GameClient/VideoPlayer.h"
 #include "GameClient/WindowXlat.h"
@@ -196,13 +196,13 @@ GameClient::~GameClient()
 	delete TheMouse;
 	TheMouse = NULL;
 
-	// ///@todo :  TheTerrainVisual used to be the first thing destroyed.
-	// //I had to put in here so that drawables free their track marks before
-	// //the terrain visual deletes the track laying system. MW
+	///@todo :  TheTerrainVisual used to be the first thing destroyed.
+	//I had to put in here so that drawables free their track marks before
+	//the terrain visual deletes the track laying system. MW
 
-	// // destroy the terrain visual representation
-	// delete TheTerrainVisual;
-	// TheTerrainVisual = NULL;
+	// destroy the terrain visual representation
+	delete TheTerrainVisual;
+	TheTerrainVisual = NULL;
 
 	// destroy the display
 	delete TheDisplay;
@@ -383,12 +383,12 @@ void GameClient::init( void )
 //  		TheHotKeyManager->setName("TheHotKeyManager");
 // 	}
 
-// 	// instantiate the terrain visual display
-// 	TheTerrainVisual = createTerrainVisual();
-// 	if( TheTerrainVisual ) {
-// 		TheTerrainVisual->init();
-//  		TheTerrainVisual->setName("TheTerrainVisual");
-// 	}
+	// instantiate the terrain visual display
+	TheTerrainVisual = createTerrainVisual();
+	if( TheTerrainVisual ) {
+		TheTerrainVisual->init();
+ 		TheTerrainVisual->setName("TheTerrainVisual");
+	}
 
 // 	// allocate the ray effects manager
 // 	TheRayEffects = MSGNEW("GameClientSubsystem") RayEffectSystem;
@@ -576,8 +576,7 @@ void GameClient::update( void )
 				
 // 			}
 
-			TheShell->showShellMap(FALSE); // MG: Just show the background for the moment.
-			// TheShell->showShellMap(TRUE);
+			TheShell->showShellMap(TRUE);
 			TheShell->showShell();
 			TheWritableGlobalData->m_data.m_afterIntro = FALSE;
 		}

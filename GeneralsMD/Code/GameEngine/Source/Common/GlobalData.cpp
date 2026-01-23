@@ -47,12 +47,12 @@
 #include "Common/UserPreferences.h"
 // #include "Common/Version.h"
 
-// #include "GameLogic/AI.h"
+#include "GameLogic/AI.h"
 #include "GameLogic/Weapon.h"
 // #include "GameLogic/Module/BodyModule.h"
 
 #include "GameClient/Color.h"
-// #include "GameClient/TerrainVisual.h"
+#include "GameClient/TerrainVisual.h"
 
 #include "GameNetwork/FirewallHelper.h"
 
@@ -92,8 +92,7 @@ GlobalData* GlobalData::m_theOriginal = NULL;
 	
 	
 	{ "DrawEntireTerrain",					INI::parseBool,				NULL,			offsetof( GlobalData::Data, m_drawEntireTerrain ) },
-	// FIXME: Fix me later!
-	// { "TerrainLOD",									INI::parseIndexList,	TerrainLODNames,	offsetof( GlobalData::Data, m_terrainLOD ) },
+	{ "TerrainLOD",									INI::parseIndexList,	TerrainLODNames,	offsetof( GlobalData::Data, m_terrainLOD ) },
 	{ "TerrainLODTargetTimeMS",			INI::parseInt,				NULL,			offsetof( GlobalData::Data, m_terrainLODTargetTimeMS ) },
 	{ "RightMouseAlwaysScrolls",		INI::parseBool,				NULL,			offsetof( GlobalData::Data, m_rightMouseAlwaysScrolls ) },
 	{ "UseWaterPlane",							INI::parseBool,				NULL,			offsetof( GlobalData::Data, m_useWaterPlane ) },
@@ -400,8 +399,7 @@ GlobalData* GlobalData::m_theOriginal = NULL;
 	{ "EnforceMaxCameraHeight",			INI::parseBool,				NULL,			offsetof( GlobalData::Data, m_enforceMaxCameraHeight ) },
 	{ "KeyboardScrollSpeedFactor",	INI::parseReal,				NULL,			offsetof( GlobalData::Data, m_keyboardScrollFactor ) },
 	{ "KeyboardDefaultScrollSpeedFactor",	INI::parseReal,				NULL,			offsetof( GlobalData::Data, m_keyboardDefaultScrollFactor ) },
-	// FIXME: Fix me later!
-	// { "MovementPenaltyDamageState",	INI::parseIndexList,	TheBodyDamageTypeNames,	 offsetof( GlobalData::Data, m_movementPenaltyDamageState ) },
+	{ "MovementPenaltyDamageState",	INI::parseIndexList,	TheBodyDamageTypeNames,	 offsetof( GlobalData::Data, m_movementPenaltyDamageState ) },
 
 // you cannot set this; it always has a value of 100%.
 //{ "HealthBonus_Regular",				INI::parsePercentToReal, NULL,	offsetof( GlobalData, m_healthBonus[LEVEL_REGULAR]) },
@@ -623,8 +621,7 @@ GlobalData::GlobalData()
 	m_data.m_adjustCliffTextures = FALSE;
 	m_data.m_stretchTerrain = FALSE;
 	m_data.m_useHalfHeightMap = FALSE;
-	// FIXME: Fix me later!
-	// m_data.m_terrainLOD = TERRAIN_LOD_AUTOMATIC;
+	m_data.m_terrainLOD = TERRAIN_LOD_AUTOMATIC;
 	m_data.m_terrainLODTargetTimeMS = 0;
 	m_data.m_enableDynamicLOD = TRUE;
 	m_data.m_enableStaticLOD = TRUE;
@@ -815,7 +812,7 @@ GlobalData::GlobalData()
 	
 	// End Add
 
-	// m_data.m_debugAI = AI_DEBUG_NONE; // FIXME: Once AI header is fixed.
+	m_data.m_debugAI = AI_DEBUG_NONE;
 	m_data.m_debugSupplyCenterPlacement = FALSE;
 	m_data.m_debugAIObstacles = FALSE;
 	m_data.m_showClientPhysics = TRUE;
@@ -966,8 +963,7 @@ GlobalData::GlobalData()
 	}
 
 	m_data.m_defaultStructureRubbleHeight = 1.0f;
-	// FIXME: Fix this.
-	// m_data.m_weaponBonusSet = newInstance(WeaponBonusSet);
+	m_data.m_weaponBonusSet = newInstance(WeaponBonusSet);
 
 	m_data.m_shellMapName.set("Maps\\ShellMap1\\ShellMap1.map");
 	m_data.m_shellMapOn =TRUE;
@@ -1041,8 +1037,7 @@ GlobalData::GlobalData()
 	DEBUG_LOG(("EXE CRC: 0x%8.8X\n", m_data.m_exeCRC));
 #endif
 
-	// FIXME: Fix me later!
-	// m_data.m_movementPenaltyDamageState = BODY_REALLYDAMAGED;
+	m_data.m_movementPenaltyDamageState = BODY_REALLYDAMAGED;
 
 	m_data.m_shouldUpdateTGAToDDS = FALSE;
 	
@@ -1081,9 +1076,8 @@ GlobalData::~GlobalData( void )
 {
 	DEBUG_ASSERTCRASH( TheWritableGlobalData->m_next == NULL, ("~GlobalData: theOriginal is not original\n") );
 
-	// FIXME: Fix this.
-	// if (m_data.m_weaponBonusSet)
-	// 	m_data.m_weaponBonusSet->deleteInstance();
+	if (m_data.m_weaponBonusSet)
+		m_data.m_weaponBonusSet->deleteInstance();
 
 	if( m_theOriginal == this )	{
 		m_theOriginal = NULL;

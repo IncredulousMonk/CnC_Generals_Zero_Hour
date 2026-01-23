@@ -28,7 +28,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-// #include "Common/DataChunk.h"
+#include "Common/DataChunk.h"
 #include "Common/MapObject.h"
 #include "Common/MapReaderWriterInfo.h"
 #include "Common/Xfer.h"
@@ -92,7 +92,7 @@ PolygonTrigger::~PolygonTrigger(void)
  the poly triggers don't change.
 */
 void PolygonTrigger::reallocate(void)
-{	
+{
 	DEBUG_ASSERTCRASH(m_numPoints <= m_sizePoints, ("Invalid m_numPoints."));
 	if (m_numPoints == m_sizePoints) {
 		// Reallocate.
@@ -132,11 +132,6 @@ PolygonTrigger *PolygonTrigger::getPolygonTriggerByID(Int triggerID)
 */
 Bool PolygonTrigger::ParsePolygonTriggersDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /* userData */)
 {
-(void) file;
-(void) info;
-DEBUG_CRASH(("PolygonTrigger::ParsePolygonTriggersDataChunk not yet implemented!"));
-return false;
-#if 0
 	Int count;
 	Int numPoints;
 	Int triggerID;
@@ -170,7 +165,7 @@ return false;
 		}
 
 		numPoints = file.readInt(); 
-		PolygonTrigger *pTrig = newInstance(PolygonTrigger)(numPoints+1);	
+		PolygonTrigger *pTrig = newInstance(PolygonTrigger)(numPoints+1);
 		pTrig->setTriggerName(triggerName);
 		if (info->version >= K_TRIGGERS_VERSION_4) {
 			pTrig->setLayerName(layerName);
@@ -231,7 +226,6 @@ return false;
 	s_currentID = maxTriggerId+1;
 	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Incorrect data file length."));
 	return true;
-#endif // if 0
 }
 
 /**

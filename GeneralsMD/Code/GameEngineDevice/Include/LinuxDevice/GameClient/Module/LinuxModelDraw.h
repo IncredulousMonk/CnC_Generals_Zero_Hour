@@ -31,7 +31,6 @@
 #include "Common/ModelState.h"
 #include "Common/DrawModule.h"
 
-#define BRUTAL_TIMING_HACK // MG: Avoid rendobj.h for the moment
 #ifdef BRUTAL_TIMING_HACK // hack for collecting model timing info.  jba.
 class RenderObjClass {
 public:
@@ -360,6 +359,10 @@ public:
    LinuxModelDraw(Thing* thing, const ModuleData* moduleData);
    // virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	LinuxModelDraw(const LinuxModelDraw&) = delete;
+	LinuxModelDraw& operator=(const LinuxModelDraw&) = delete;
+
 #if 0
    /// preloading assets
    virtual void preloadAssets( TimeOfDay timeOfDay );
@@ -385,7 +388,9 @@ public:
    // this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
    virtual Bool clientOnly_getRenderObjInfo(Coord3D* pos, Real* boundingSphereRadius, Matrix3D* transform) const;
    virtual Bool clientOnly_getRenderObjBoundBox(OBBoxClass * boundbox) const;
+#endif // if 0
    virtual Bool clientOnly_getRenderObjBoneTransform(const AsciiString & boneName,Matrix3D * set_tm) const;
+#if 0
    virtual Int getPristineBonePositionsForConditionState(const ModelConditionFlags& condition, const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
    virtual Int getCurrentBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
    virtual Bool getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const;
@@ -504,7 +509,7 @@ private:
    typedef std::vector<ParticleSysTrackerType>	ParticleSystemIDVec;
    //typedef std::vector<ParticleSystemID>	ParticleSystemIDVec;
 
-   
+
    const ModelConditionInfo*			m_curState;
    const ModelConditionInfo*			m_nextState;
    UnsignedInt										m_nextStateAnimLoopDuration;			
@@ -514,7 +519,9 @@ private:
    Bool													m_needRecalcBoneParticleSystems;
    Bool													m_fullyObscuredByShroud;
    Bool													m_shadowEnabled;	///< cached state of shadow.  Used to determine if shadows should be enabled via options screen.
-   RenderObjClass*								m_renderObject;										///< Linux Render object for this drawable
+#endif // if 0
+   RenderObjClass*   m_renderObject {};      ///< Linux Render object for this drawable
+#if 0
    Shadow*												m_shadow;													///< Updates/Renders shadows of this object
    Shadow*												m_terrainDecal;
    TerrainTracksRenderObjClass*	m_trackRenderObject;							///< This is rendered under object

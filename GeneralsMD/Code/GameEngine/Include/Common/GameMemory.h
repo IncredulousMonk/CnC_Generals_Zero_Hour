@@ -91,19 +91,19 @@
 		#define MEMORYPOOL_BOUNDINGWALL
 	#endif
 
-	#define DECLARE_LITERALSTRING_ARG1										const char * debugLiteralTagString
-	#define PASS_LITERALSTRING_ARG1												debugLiteralTagString
-	#define DECLARE_LITERALSTRING_ARG2										, [[maybe_unused]] const char * debugLiteralTagString
-	#define PASS_LITERALSTRING_ARG2												, debugLiteralTagString
+	#define DECLARE_LITERALSTRING_ARG1					const char * debugLiteralTagString
+	#define PASS_LITERALSTRING_ARG1						debugLiteralTagString
+	#define DECLARE_LITERALSTRING_ARG2					, [[maybe_unused]] const char * debugLiteralTagString
+	#define PASS_LITERALSTRING_ARG2						, debugLiteralTagString
 
-	#define MP_LOC_SUFFIX																/*" [" DEBUG_FILENLINE "]"*/
+	#define MP_LOC_SUFFIX								/*" [" DEBUG_FILENLINE "]"*/
 
-	#define allocateBlock(ARGLITERAL)										allocateBlockImplementation(ARGLITERAL MP_LOC_SUFFIX)
-	#define allocateBlockDoNotZero(ARGLITERAL)					allocateBlockDoNotZeroImplementation(ARGLITERAL MP_LOC_SUFFIX)
-	#define allocateBytes(ARGCOUNT,ARGLITERAL)					allocateBytesImplementation(ARGCOUNT, ARGLITERAL MP_LOC_SUFFIX)
+	#define allocateBlock(ARGLITERAL)					allocateBlockImplementation(ARGLITERAL MP_LOC_SUFFIX)
+	#define allocateBlockDoNotZero(ARGLITERAL)			allocateBlockDoNotZeroImplementation(ARGLITERAL MP_LOC_SUFFIX)
+	#define allocateBytes(ARGCOUNT,ARGLITERAL)			allocateBytesImplementation(ARGCOUNT, ARGLITERAL MP_LOC_SUFFIX)
 	#define allocateBytesDoNotZero(ARGCOUNT,ARGLITERAL)	allocateBytesDoNotZeroImplementation(ARGCOUNT, ARGLITERAL MP_LOC_SUFFIX)
-	#define newInstanceDesc(ARGCLASS,ARGLITERAL)				new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED, ARGLITERAL MP_LOC_SUFFIX) ARGCLASS
-	#define newInstance(ARGCLASS)												new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED, __FILE__) ARGCLASS
+	#define newInstanceDesc(ARGCLASS,ARGLITERAL)		new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED, ARGLITERAL MP_LOC_SUFFIX) ARGCLASS
+	#define newInstance(ARGCLASS)						new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED, __FILE__) ARGCLASS
 
 	#if !defined(MEMORYPOOL_STACKTRACE) && !defined(DISABLE_MEMORYPOOL_STACKTRACE)
 		#define MEMORYPOOL_STACKTRACE
@@ -199,12 +199,12 @@
 	#define DECLARE_LITERALSTRING_ARG2
 	#define PASS_LITERALSTRING_ARG2
 
-	#define allocateBlock(ARGLITERAL)										allocateBlockImplementation()
-	#define allocateBlockDoNotZero(ARGLITERAL)					allocateBlockDoNotZeroImplementation()
-	#define allocateBytes(ARGCOUNT,ARGLITERAL)					allocateBytesImplementation(ARGCOUNT)
+	#define allocateBlock(ARGLITERAL)					allocateBlockImplementation()
+	#define allocateBlockDoNotZero(ARGLITERAL)			allocateBlockDoNotZeroImplementation()
+	#define allocateBytes(ARGCOUNT,ARGLITERAL)			allocateBytesImplementation(ARGCOUNT)
 	#define allocateBytesDoNotZero(ARGCOUNT,ARGLITERAL)	allocateBytesDoNotZeroImplementation(ARGCOUNT)
-	#define newInstanceDesc(ARGCLASS,ARGLITERAL)				new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED) ARGCLASS
-	#define newInstance(ARGCLASS)												new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED) ARGCLASS
+	#define newInstanceDesc(ARGCLASS,ARGLITERAL)		new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED) ARGCLASS
+	#define newInstance(ARGCLASS)						new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED) ARGCLASS
 
 #endif
 
@@ -287,18 +287,18 @@ class MemoryPool
 {
 private:
 
-	MemoryPoolFactory	*m_factory;									///< the factory that created us
-	MemoryPool				*m_nextPoolInFactory;				///< linked list node, managed by factory
-	const char				*m_poolName;								///< name of this pool. (literal string; must not be freed)
-	size_t							m_allocationSize;						///< size of the blocks allocated by this pool, in bytes
-	size_t								m_initialAllocationCount;		///< number of blocks to be allocated in initial blob
-	size_t								m_overflowAllocationCount;	///< number of blocks to be allocated in any subsequent blob(s)
-	size_t								m_usedBlocksInPool;					///< total number of blocks in use in the pool.
-	size_t								m_totalBlocksInPool;				///< total number of blocks in all blobs of this pool (used or not).
-	size_t								m_peakUsedBlocksInPool;			///< high-water mark of m_usedBlocksInPool
-	MemoryPoolBlob		*m_firstBlob;								///< head of linked list: first blob for this pool.
-	MemoryPoolBlob		*m_lastBlob;								///< tail of linked list: last blob for this pool. (needed for efficiency)
-	MemoryPoolBlob		*m_firstBlobWithFreeBlocks;	///< first blob in this pool that has at least one unallocated block.
+	MemoryPoolFactory*	m_factory;									///< the factory that created us
+	MemoryPool*			m_nextPoolInFactory;				///< linked list node, managed by factory
+	const char*			m_poolName;								///< name of this pool. (literal string; must not be freed)
+	size_t				m_allocationSize;						///< size of the blocks allocated by this pool, in bytes
+	size_t				m_initialAllocationCount;		///< number of blocks to be allocated in initial blob
+	size_t				m_overflowAllocationCount;	///< number of blocks to be allocated in any subsequent blob(s)
+	size_t				m_usedBlocksInPool;					///< total number of blocks in use in the pool.
+	size_t				m_totalBlocksInPool;				///< total number of blocks in all blobs of this pool (used or not).
+	size_t				m_peakUsedBlocksInPool;			///< high-water mark of m_usedBlocksInPool
+	MemoryPoolBlob*		m_firstBlob;								///< head of linked list: first blob for this pool.
+	MemoryPoolBlob*		m_lastBlob;								///< tail of linked list: last blob for this pool. (needed for efficiency)
+	MemoryPoolBlob*		m_firstBlobWithFreeBlocks;	///< first blob in this pool that has at least one unallocated block.
 
 private:
 	/// create a new blob with the given number of blocks.
@@ -400,12 +400,12 @@ class DynamicMemoryAllocator
 #endif
 {
 private:
-	MemoryPoolFactory					*m_factory;						///< the factory that created us
-	DynamicMemoryAllocator		*m_nextDmaInFactory;	///< linked list node, managed by factory
-	Int												m_numPools;						///< number of subpools (up to MAX_DYNAMICMEMORYALLOCATOR_SUBPOOLS)
-	Int												m_usedBlocksInDma;		///< total number of blocks allocated, from subpools and "raw"
-	MemoryPool								*m_pools[MAX_DYNAMICMEMORYALLOCATOR_SUBPOOLS];	///< the subpools
-	MemoryPoolSingleBlock			*m_rawBlocks;					///< linked list of "raw" blocks allocated directly from system
+	MemoryPoolFactory*			m_factory;						///< the factory that created us
+	DynamicMemoryAllocator*		m_nextDmaInFactory;	///< linked list node, managed by factory
+	Int							m_numPools;						///< number of subpools (up to MAX_DYNAMICMEMORYALLOCATOR_SUBPOOLS)
+	Int							m_usedBlocksInDma;		///< total number of blocks allocated, from subpools and "raw"
+	MemoryPool*					m_pools[MAX_DYNAMICMEMORYALLOCATOR_SUBPOOLS];	///< the subpools
+	MemoryPoolSingleBlock*		m_rawBlocks;					///< linked list of "raw" blocks allocated directly from system
 
 	/// return the best pool for the given allocSize, or null if none are suitable
 	MemoryPool *findPoolForSize(size_t allocSize);
@@ -497,20 +497,20 @@ enum { MAX_SPECIAL_USED = 256 };
 class MemoryPoolFactory
 {
 private:
-	MemoryPool								*m_firstPoolInFactory;		///< linked list of pools
-	DynamicMemoryAllocator		*m_firstDmaInFactory;			///< linked list of dmas
+	MemoryPool*					m_firstPoolInFactory;		///< linked list of pools
+	DynamicMemoryAllocator*		m_firstDmaInFactory;		///< linked list of dmas
 #ifdef MEMORYPOOL_CHECKPOINTING
-	Int												m_curCheckpoint;					///< most recent checkpoint value
+	Int							m_curCheckpoint;					///< most recent checkpoint value
 #endif
 #ifdef MEMORYPOOL_DEBUG
-	size_t											m_usedBytes;							///< total bytes in use
-	size_t											m_physBytes;							///< total bytes allocated to all pools (includes unused blocks)
-	size_t											m_peakUsedBytes;					///< high-water mark of m_usedBytes
-	size_t											m_peakPhysBytes;					///< high-water mark of m_physBytes
-	size_t											m_usedBytesSpecial[MAX_SPECIAL_USED];
-	size_t											m_usedBytesSpecialPeak[MAX_SPECIAL_USED];
-	size_t											m_physBytesSpecial[MAX_SPECIAL_USED];
-	size_t											m_physBytesSpecialPeak[MAX_SPECIAL_USED];
+	size_t						m_usedBytes;						///< total bytes in use
+	size_t						m_physBytes;						///< total bytes allocated to all pools (includes unused blocks)
+	size_t						m_peakUsedBytes;					///< high-water mark of m_usedBytes
+	size_t						m_peakPhysBytes;					///< high-water mark of m_physBytes
+	size_t						m_usedBytesSpecial[MAX_SPECIAL_USED];
+	size_t						m_usedBytesSpecialPeak[MAX_SPECIAL_USED];
+	size_t						m_physBytesSpecial[MAX_SPECIAL_USED];
+	size_t						m_physBytesSpecialPeak[MAX_SPECIAL_USED];
 #endif
 
 public:

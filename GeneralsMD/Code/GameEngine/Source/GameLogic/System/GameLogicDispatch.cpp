@@ -330,6 +330,8 @@ void GameLogic::prepareNewGame( Int gameMode, GameDifficulty diff, Int rankPoint
 	// FIXME: TheScriptEngine.
 	// TheScriptEngine->setGlobalDifficulty(diff);
 
+// FIXME: Background window is a problem, because it covers the 3D display.  How is this supposed to work?
+#if 0
 	if(!m_background)
 	{
 		m_background = TheWindowManager->winCreateLayout("Menus/BlankWindow.wnd");
@@ -338,6 +340,7 @@ void GameLogic::prepareNewGame( Int gameMode, GameDifficulty diff, Int rankPoint
 		m_background->bringForward();
 	}
 	m_background->getFirstWindow()->winClearStatus(WIN_STATUS_IMAGE);
+#endif // if 0
 	TheGameLogic->setGameMode( gameMode );
 	if (!TheGlobalData->m_data.m_pendingFile.isEmpty())
 	{
@@ -462,7 +465,6 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void* /* userData */ )
 
 		}  // end new game
 
-#if 0
 		//---------------------------------------------------------------------------------------------
 		case GameMessage::MSG_CLEAR_GAME_DATA:
 		{
@@ -472,14 +474,18 @@ void GameLogic::logicMessageDispatcher( GameMessage *msg, void* /* userData */ )
 				TheDisplay->dumpAssetUsage(TheGlobalData->m_data.m_mapName.str());
 #endif
 
+//FIXME: TheAI
+#if 0
 			if (currentlySelectedGroup)
 				TheAI->destroyGroup(currentlySelectedGroup);
 			currentlySelectedGroup = NULL;
+#endif // if 0
 			TheGameLogic->clearGameData();
 			break;
 
 		}  // end clear game data
 
+#if 0
 		//---------------------------------------------------------------------------------------------
 		case GameMessage::MSG_META_BEGIN_PATH_BUILD:
 		{

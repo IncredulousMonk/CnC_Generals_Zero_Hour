@@ -246,11 +246,6 @@ void SidesList::clear(void)
 */
 Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /*userData*/)
 {
-(void) file;
-(void) info;
-DEBUG_CRASH(("TerrainLogic::isUnderwater not yet implemented!"));
-return false;
-#if 0
 	DEBUG_ASSERTCRASH(TheSidesList, ("TheSidesList is null"));
 
 	if (TheSidesList==NULL) 
@@ -303,21 +298,27 @@ return false;
 		}
 	}
 	
+DEBUG_LOG(("----- Start parsing PlayerScriptsList\n"));
 	file.registerParser( AsciiString("PlayerScriptsList"), info->label, ScriptList::ParseScriptsDataChunk );
 	if (!file.parse(NULL)) {
 		throw(ERROR_CORRUPT_FILE_FORMAT);
 	}
+DEBUG_LOG(("----- Finished parsing PlayerScriptsList\n"));
 	ScriptList *scripts[MAX_PLAYER_COUNT];
 	count = ScriptList::getReadScripts(scripts);
 	for (i=0; i<count; i++) {
 		if (i<TheSidesList->getNumSides()) {
 			ScriptList *pSL = TheSidesList->getSideInfo(i)->getScriptList();
-			pSL->deleteInstance();
+			if (pSL) {
+				pSL->deleteInstance();
+			}
 			TheSidesList->getSideInfo(i)->setScriptList(scripts[i]);
 			scripts[i] = NULL;
 		} else {
 			// Read in more players worth than we have.
-			scripts[i]->deleteInstance();
+			if (scripts[i]) {
+				scripts[i]->deleteInstance();
+			}
 			scripts[i] = NULL;
 		}
 	}
@@ -325,7 +326,6 @@ return false;
 
 	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Incorrect data file length."));
 	return true;
-#endif // if 0
 }
 
 

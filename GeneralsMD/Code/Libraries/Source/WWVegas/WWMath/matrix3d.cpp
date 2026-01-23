@@ -328,28 +328,28 @@ Vector3 Matrix3D::Inverse_Rotate_Vector(const Vector3 &vect) const
 	);
 }
 
-/*********************************************************************************************** 
- * M3DC::Look_At -- Creates a "look at" transformation.                                        * 
- *                                                                                             * 
- *	Builds a transformation matrix which positions the origin at p,                             *
- *	points the negative z-axis towards a target t, and rolls about the z-axis                   *
- *	by the angle specified by roll.  														                 *
- *																							                          *
- *	This can be useful for creating a camera matrix, just invert 							           *
- *	the matrix after initializing it with this function...									           *
- *																							                          *
- * INPUT:                                                                                      * 
- * p - position of the coordinate system                                                       * 
- * t - target of the coordinate system                                                         * 
- * roll - roll angle (in radians)                                                              * 
- *                                                                                             * 
- * OUTPUT:                                                                                     * 
- *                                                                                             * 
- * WARNINGS:                                                                                   * 
- * This function is written assuming the convention that the "ground" is the X-Y plane and     * 
+/***********************************************************************************************
+ * M3DC::Look_At -- Creates a "look at" transformation.                                        *
+ *                                                                                             *
+ * Builds a transformation matrix which positions the origin at p,                             *
+ * points the negative z-axis towards a target t, and rolls about the z-axis                   *
+ * by the angle specified by roll.                                                             *
+ *                                                                                             *
+ * This can be useful for creating a camera matrix, just invert                                *
+ * the matrix after initializing it with this function...                                      *
+ *                                                                                             *
+ * INPUT:                                                                                      *
+ * p - position of the coordinate system                                                       *
+ * t - target of the coordinate system                                                         *
+ * roll - roll angle (in radians)                                                              *
+ *                                                                                             *
+ * OUTPUT:                                                                                     *
+ *                                                                                             *
+ * WARNINGS:                                                                                   *
+ * This function is written assuming the convention that the "ground" is the X-Y plane and     *
  * Z is altitude.                                                                              *
- *                                                                                             * 
- * HISTORY:                                                                                    * 
+ *                                                                                             *
+ * HISTORY:                                                                                    *
  *=============================================================================================*/
 void Matrix3D::Look_At(const Vector3 &p,const Vector3 &t,float roll)
 {
@@ -499,7 +499,6 @@ void Matrix3D::Obj_Look_At(const Vector3 &p,const Vector3 &t,float roll)
 }
 
 
-#if 0
 /***********************************************************************************************
  * Matrix3D::Get_Inverse -- calculate the inverse of this matrix                               *
  *                                                                                             *
@@ -514,9 +513,11 @@ void Matrix3D::Obj_Look_At(const Vector3 &p,const Vector3 &t,float roll)
  *=============================================================================================*/
 void Matrix3D::Get_Inverse(Matrix3D & inv) const
 {
+	DEBUG_LOG(("!!!!! WARNING: Matrix3D::Get_Inverse is calling Matrix3D::Get_Orthogonal_Inverse.  May want to check this !!!!!\n"));
 	// TODO: Implement the general purpose inverse function here (once we need it :-)
-	//Get_Orthogonal_Inverse(inv);
+	Get_Orthogonal_Inverse(inv);
 
+#if 0
 	Matrix4x4	mat4(*this);
 	Matrix4x4	mat4Inv;
 
@@ -537,8 +538,8 @@ void Matrix3D::Get_Inverse(Matrix3D & inv) const
 	inv.Row[2][1]=mat4Inv[2][1];
 	inv.Row[2][2]=mat4Inv[2][2];
 	inv.Row[2][3]=mat4Inv[2][3];
-}
 #endif // if 0
+}
 
 /*********************************************************************************************** 
  * Matrix3D::Get_Orthogonal_Inverse -- Returns the inverse of the matrix                       *  

@@ -104,9 +104,9 @@ DECLARE_PERF_TIMER(MemoryPoolInitFilling)
 		#define NO_MEMORYPOOL_CHECK_BLOCK_OWNERSHIP
 	#endif
 
-	static const char* FREE_SINGLEBLOCK_TAG_STRING			= "FREE_SINGLEBLOCK_TAG_STRING";
-	const Short SINGLEBLOCK_MAGIC_COOKIE								= 12345;
-	const UnsignedInt GARBAGE_FILL_VALUE											= 0xdeadbeef;
+	static const char* FREE_SINGLEBLOCK_TAG_STRING	= "FREE_SINGLEBLOCK_TAG_STRING";
+	const Short SINGLEBLOCK_MAGIC_COOKIE			= 12345;
+	const UnsignedInt GARBAGE_FILL_VALUE			= 0xdeadbeef;
 
 	// flags for m_debugFlags
 	enum
@@ -146,7 +146,7 @@ DECLARE_PERF_TIMER(MemoryPoolInitFilling)
 
 #ifdef MEMORYPOOL_STACKTRACE
 
-	#define MEMORYPOOL_STACKTRACE_SIZE				(20)
+	#define MEMORYPOOL_STACKTRACE_SIZE			(20)
 	#define MEMORYPOOL_STACKTRACE_SKIP_SIZE		(6)
 	#define MEMORYPOOL_STACKTRACE_SIZE_BYTES	(MEMORYPOOL_STACKTRACE_SIZE * sizeof(void*))
 
@@ -1026,7 +1026,7 @@ Int MemoryPoolSingleBlock::debugSingleBlockReportLeak(const char* owner)
 	}
 	else
 	{
-		DEBUG_LOG(("Leaked a block of size %d, tagstring %s, from pool/dma %s\n",m_logicalSize,m_debugLiteralTagString,owner));
+		DEBUG_LOG(("Leaked a block of size %d, tagstring \"%s\", from pool/dma %s\n",m_logicalSize,m_debugLiteralTagString,owner));
 	}
 
 	#ifdef MEMORYPOOL_SINGLEBLOCK_GETS_STACKTRACE
@@ -3609,7 +3609,6 @@ static void preMainInitMemoryManager()
 	{
 		DEBUG_INIT(DEBUG_FLAGS_DEFAULT);
 		DEBUG_LOG(("*** Initing Memory Manager prior to main!\n"));
-printf("*** Initing Memory Manager prior to main!\n");
 
 		Int numSubPools;
 		const PoolInitRec *pParms;
@@ -3670,6 +3669,7 @@ void shutdownMemoryManager()
 //-----------------------------------------------------------------------------
 void* createW3DMemPool(const char *poolName, size_t allocationSize)
 {
+	DEBUG_LOG(("Creating the W3D memory pool: %s\n", poolName));
 	++theLinkTester;
 	preMainInitMemoryManager();
 	MemoryPool* pool = TheMemoryPoolFactory->createMemoryPool(poolName, allocationSize, 0, 0);

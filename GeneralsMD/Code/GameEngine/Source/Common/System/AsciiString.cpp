@@ -182,10 +182,39 @@ void AsciiString::translate(const UnicodeString& stringSrc)
 {
 	validate();
 	/// @todo srj put in a real translation here; this will only work for 7-bit ascii
+	// MG: Now converts UTF-32 to UTF-8.
 	clear();
 	Int len = stringSrc.getLength();
-	for (Int i = 0; i < len; i++)
-		concat((char)stringSrc.getCharAt(i));
+	for (Int i = 0; i < len; i++) {
+		WideChar wc {stringSrc.getCharAt(i)};
+		if (wc <= 0x7f) {
+			Byte c {static_cast<Byte>(wc)};
+			concat(c);
+		} else if (wc <= 0x7ff) {
+			Byte b1 {static_cast<Byte>((wc >> 6) | 0b11000000)};
+			Byte b2 {static_cast<Byte>((wc & 0b00111111) | 0b10000000)};
+			concat(b1);
+			concat(b2);
+		} else if (wc <= 0xffff) {
+			Byte b1 {static_cast<Byte>((wc >> 12) | 0b11100000)};
+			Byte b2 {static_cast<Byte>(((wc >> 6) & 0b00111111) | 0b10000000)};
+			Byte b3 {static_cast<Byte>((wc & 0b00111111) | 0b10000000)};
+			concat(b1);
+			concat(b2);
+			concat(b3);
+		} else if (wc <= 0x10ffff) {
+			Byte b1 {static_cast<Byte>((wc >> 18) | 0b11110000)};
+			Byte b2 {static_cast<Byte>(((wc >> 12) & 0b00111111) | 0b10000000)};
+			Byte b3 {static_cast<Byte>(((wc >> 6) & 0b00111111) | 0b10000000)};
+			Byte b4 {static_cast<Byte>((wc & 0b00111111) | 0b10000000)};
+			concat(b1);
+			concat(b2);
+			concat(b3);
+			concat(b4);
+		} else {
+			concat('#');
+		}
+	}
 	validate();
 }
 
@@ -231,7 +260,7 @@ void AsciiString::toLower()
 	validate();
 	if (m_data)
 	{
-		char buf[MAX_FORMAT_BUF_LEN];
+		char buf[MAX_LEN];
 		strcpy(buf, peek());
 
 		char *c = buf;
@@ -266,9 +295,9 @@ void AsciiString::format(AsciiString format, ...)
 {
 	validate();
 	va_list args;
-  va_start(args, format);
+	va_start(args, format);
 	format_va(format, args);
-  va_end(args);
+	va_end(args);
 	validate();
 }
 
@@ -277,9 +306,9 @@ void AsciiString::format(const char* format, ...)
 {
 	validate();
 	va_list args;
-  va_start(args, format);
+	va_start(args, format);
 	format_va(format, args);
-  va_end(args);
+	va_end(args);
 	validate();
 }
 
@@ -288,7 +317,7 @@ void AsciiString::format_va(const AsciiString& format, va_list args)
 {
 	validate();
 	char buf[MAX_FORMAT_BUF_LEN];
-  if (vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format.str(), args) < 0)
+	if (vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format.str(), args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();
@@ -299,7 +328,7 @@ void AsciiString::format_va(const char* format, va_list args)
 {
 	validate();
 	char buf[MAX_FORMAT_BUF_LEN];
-  if (vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format, args) < 0)
+	if (vsnprintf(buf, sizeof(buf)/sizeof(char)-1, format, args) < 0)
 			throw ERROR_OUT_OF_MEMORY;
 	set(buf);
 	validate();

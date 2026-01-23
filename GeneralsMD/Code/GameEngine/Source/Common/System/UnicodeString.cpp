@@ -191,6 +191,17 @@ void UnicodeString::set(const WideChar* s)
 }
 
 // -----------------------------------------------------
+void UnicodeString::set(const char16_t* s)
+{
+	validate();
+	size_t len {std::char_traits<char16_t>::length(s)};
+	for (size_t i {0}; i < len; ++i) {
+		concat(s[i]);
+	}
+	validate();
+}
+
+// -----------------------------------------------------
 WideChar* UnicodeString::getBufferForRead(Int len)
 {
 	validate();
@@ -351,7 +362,7 @@ Bool UnicodeString::nextToken(UnicodeString* tok, UnicodeString delimiters)
 	{
 		size_t len = static_cast<size_t>(end - start);
 		WideChar* tmp = tok->getBufferForRead(len + 1);
-		memcpy(tmp, start, len*2);
+		memcpy(tmp, start, len * sizeof(WideChar));
 		tmp[len] = 0;
 
 		this->set(end);

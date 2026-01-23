@@ -24,6 +24,7 @@
 #include "Common/Debug.h"
 #include <SDL3/SDL.h>
 #include <vector>
+#include <cmath>
 
 // GLOBALS ////////////////////////////////////////////////////////////////////////////////////////
 OpenGLRenderer* TheOpenGLRenderer {nullptr};
@@ -53,7 +54,7 @@ void main(void)
 static const char* guiFragSource {R"(
 #version 460 core
 
-uniform sampler2D Texture;
+layout(binding = 0) uniform sampler2D Texture;
 
 in vec2 TexCoordF;
 
@@ -116,13 +117,6 @@ void OpenGLRenderer::init() {
    glEnable(GL_DEBUG_OUTPUT);
    glDebugMessageCallback(messageCallback, nullptr);
 
-   m_progGui = glCreateProgram();
-   addShader(m_progGui, guiVertSource, GL_VERTEX_SHADER);
-   addShader(m_progGui, guiFragSource, GL_FRAGMENT_SHADER);
-   buildShader(m_progGui);
-   glUseProgram(m_progGui);
-   glUniform1i(glGetUniformLocation(m_progGui, "Texture"), 0);
-
    constexpr GLfloat triStripData[] {
       -1.0,  1.0, 0.0,   0.0, 0.0,
        1.0,  1.0, 0.0,   800.0 / 1024.0, 0.0,
@@ -130,26 +124,34 @@ void OpenGLRenderer::init() {
        1.0, -1.0, 0.0,   800.0 / 1024.0, 600.0 / 1024.0
    };
 
-   glGenVertexArrays(1, &m_vaoGui);
-   glBindVertexArray(m_vaoGui);
-   glGenBuffers(1, &m_vboGui);
-   glBindBuffer(GL_ARRAY_BUFFER, m_vboGui);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(triStripData), triStripData, GL_STATIC_DRAW);
-   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * 4, reinterpret_cast<void*>(0));
-   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * 4, reinterpret_cast<void*>(3 * 4));
-   glEnableVertexAttribArray(0);
-   glEnableVertexAttribArray(1);
+   glCreateBuffers(1, &m_vboGui);
+   glNamedBufferStorage(m_vboGui, sizeof(triStripData), triStripData, 0);
+   glCreateVertexArrays(1, &m_vaoGui);
+   glEnableVertexArrayAttrib(m_vaoGui, 0);
+   glEnableVertexArrayAttrib(m_vaoGui, 1);
+   glVertexArrayAttribFormat(m_vaoGui, 0, 3, GL_FLOAT, GL_FALSE, 0);
+   glVertexArrayAttribFormat(m_vaoGui, 1, 2, GL_FLOAT, GL_FALSE, 3 * 4);
+   glVertexArrayAttribBinding(m_vaoGui, 0, 0);
+   glVertexArrayAttribBinding(m_vaoGui, 1, 0);
+   glVertexArrayVertexBuffer(m_vaoGui, 0, m_vboGui, 0, 5 * 4);
 
-   glActiveTexture(GL_TEXTURE0);
-   glGenTextures(1, &m_texGui);
-   glBindTexture(GL_TEXTURE_2D, m_texGui);
+   glCreateTextures(GL_TEXTURE_2D, 1, &m_texGui);
    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+   glTextureStorage2D(m_texGui, 1, GL_RGBA8, 1024, 1024);
+   glTextureSubImage2D(m_texGui, 0, 0, 0, 1024, 1024, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+   glCreateSamplers(1, &m_samGui);
+   glSamplerParameteri(m_samGui, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glSamplerParameteri(m_samGui, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-   glClearColor(0.0, 0.0, 0.0, 1.0);
-   // glEnable(GL_DEPTH_TEST);
+   glBindVertexArray(m_vaoGui);
+   m_progGui = glCreateProgram();
+   addShader(m_progGui, guiVertSource, GL_VERTEX_SHADER);
+   addShader(m_progGui, guiFragSource, GL_FRAGMENT_SHADER);
+   buildShader(m_progGui);
+   glUseProgram(m_progGui);
+
+   glClearColor(0.0, 0.0, 0.25, 1.0);
+   glEnable(GL_DEPTH_TEST);
    // glViewport(0, 0, 800, 600); // Need to call glViewport if window is resized.
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -168,6 +170,8 @@ void OpenGLRenderer::drawSplashImage() {
    glTextureSubImage2D(m_texGui, 0, 0, 0, 1024, 1024, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
    glUseProgram(m_progGui);
    glBindVertexArray(m_vaoGui);
+   glBindTextureUnit(0, m_texGui);
+   glBindSampler(0, m_samGui);
    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
    SDL_GL_SwapWindow(window);
 }
@@ -186,6 +190,8 @@ void OpenGLRenderer::endRender() {
    glTextureSubImage2D(m_texGui, 0, 0, 0, 1024, 1024, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
    glUseProgram(m_progGui);
    glBindVertexArray(m_vaoGui);
+   glBindTextureUnit(0, m_texGui);
+   glBindSampler(0, m_samGui);
    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
    SDL_GL_SwapWindow(window);
 }
@@ -231,4 +237,87 @@ void OpenGLRenderer::buildShader(GLuint program) {
    if (linked == GL_FALSE) {
       DEBUG_CRASH(("Failed to build shader.  Program InfoLog: %s\n", programInfoLog.c_str()));
    }
+}
+
+//-------------------------------------------------------------------------------------------------
+/// Create a matrix for a perspective-view frustum.
+Mat4 OpenGLRenderer::frustum(double left, double right, double bottom, double top, double near, double far) {
+   Mat4 result {};
+   result[0] = 2.0 * near / (right - left);
+   result[5] = 2.0 * near / (top - bottom);
+   result[8] = (right + left) / (right - left);
+   result[9] = (top + bottom) / (top - bottom);
+   result[10] = -(far + near) / (far - near);
+   result[11] = -1.0;
+   result[14] = -2.0 * far * near / (far - near);
+   return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+/// Create a matrix for a symmetric perspective-view frustum.
+Mat4 OpenGLRenderer::perspective(double fieldOfViewY, double aspect, double near, double far) {
+   double top {near * std::tan(fieldOfViewY * M_PI / 360.0)};
+   double bottom {-top};
+   double right {top * aspect};
+   double left {-right};
+   return frustum(left, right, bottom, top, near, far);
+}
+
+
+using Vector3 = std::array<double, 3>;
+
+Vector3 cross(const Vector3& v1, const Vector3& v2) {
+   double x {v1[1] * v2[2] - v1[2] * v2[1]};
+   double y {v1[2] * v2[0] - v1[0] * v2[2]};
+   double z {v1[0] * v2[1] - v1[1] * v2[0]};
+   return {x, y, z};
+}
+
+double length(Vector3 v) {
+   return std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+}
+
+Vector3 normalise(Vector3 v) {
+   Vector3 result {};
+   double len {length(v)};
+   if (len < 1e-6) {
+      result[0] = 0.0;
+      result[1] = 0.0;
+      result[2] = 0.0;
+   } else {
+      double inverse {1.0 / len};
+      result[0] = v[0] * inverse;
+      result[1] = v[1] * inverse;
+      result[2] = v[2] * inverse;
+   }
+   return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+Mat4 OpenGLRenderer::lookat(double eyeX, double eyeY, double eyeZ, double centreX, double centreY, double centreZ, double upX, double upY, double upZ) {
+   Vector3 eye {eyeX, eyeY, eyeZ};
+   Vector3 centre {centreX, centreY, centreZ};
+   Vector3 worldUp {upX, upY, upZ};
+   Vector3 front {centre[0] - eye[0], centre[1] - eye[1], centre[2] - eye[2]};
+   front = normalise(front);
+   Vector3 right {cross(front, worldUp)};
+   Vector3 up {cross(right, front)};
+   Mat4 result {};
+   result[0] = right[0];
+   result[1] = up[0];
+   result[2] = -front[0];
+   result[3] = 0.0f;
+   result[4] = right[1];
+   result[5] = up[1];
+   result[6] = -front[1];
+   result[7] = 0.0f;
+   result[8] = right[2];
+   result[9] = up[2];
+   result[10] = -front[2];
+   result[11] = 0.0f;
+   result[12] = -right[0] * eyeX - right[1] * eyeY - right[2] * eyeZ;
+   result[13] = -up[0] * eyeX - up[1] * eyeY - up[2] * eyeZ;
+   result[14] = front[0] * eyeX + front[1] * eyeY + front[2] * eyeZ;
+   result[15] = 1.0f;
+   return result;
 }

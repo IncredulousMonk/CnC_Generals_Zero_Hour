@@ -37,7 +37,7 @@ endif
 .PHONY: run debug clean
 
 $(PROG): Main/main.cpp $(ENGINE_LIB) $(ENGINE_DEVICE_LIB) $(COMPRESSION_LIB) $(OGL_LIB) $(WWDEBUG_LIB) $(WWLIB_LIB) $(WW3D2_LIB) $(WWMATH_LIB)
-	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:GameEngineDevice.a -l:OGL.a -l:WWLib.a -l:WWMath.a -l:WW3D2.a -l:Compression.a $(LDFLAGS)
+	g++ $(CXXFLAGS) $(INCS) -o $(PROG) Main/main.cpp $(LDPATHS) -l:GameEngineDevice.a -l:GameEngine.a -l:GameEngineDevice.a -l:WWLib.a -l:WW3D2.a -l:WWMath.a -l:OGL.a -l:Compression.a $(LDFLAGS)
 
 
 # ===== Compression =====
@@ -71,13 +71,19 @@ $(LIBO)/refencode.o: $(COMPS)/EAC/refencode.cpp
 
 # ===== OGL =====
 
-OGL_OBJS = $(LIBO)/OpenGLRenderer.o
+OGL_OBJS = $(LIBO)/OpenGLRenderer.o $(LIBO)/OpenGLTexture.o $(LIBO)/OpenGLSampler.o
 
 $(OGL_LIB): $(OGL_OBJS)
 	ar rcs $(OGL_LIB)  $(OGL_OBJS)
 
 $(LIBO)/OpenGLRenderer.o: $(OGLS)/OpenGLRenderer.cpp $(OGLS)/OpenGLRenderer.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/OpenGLRenderer.o $(OGLS)/OpenGLRenderer.cpp
+
+$(LIBO)/OpenGLTexture.o: $(OGLS)/OpenGLTexture.cpp $(OGLS)/OpenGLTexture.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/OpenGLTexture.o $(OGLS)/OpenGLTexture.cpp
+
+$(LIBO)/OpenGLSampler.o: $(OGLS)/OpenGLSampler.cpp $(OGLS)/OpenGLSampler.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/OpenGLSampler.o $(OGLS)/OpenGLSampler.cpp
 
 
 # ===== WWDebug =====
@@ -100,7 +106,7 @@ $(LIBO)/wwprofile.o: $(WWDS)/wwprofile.cpp $(WWDS)/wwprofile.h
 
 # ===== WWLib =====
 
-WWLIB_OBJS = $(LIBO)/bufffile.o $(LIBO)/ffactory.o $(LIBO)/mutex.o $(LIBO)/rawfile.o $(LIBO)/refcount.o $(LIBO)/targa.o $(LIBO)/wwfile.o $(LIBO)/wwstring.o
+WWLIB_OBJS = $(LIBO)/bufffile.o $(LIBO)/ffactory.o $(LIBO)/multilist.o $(LIBO)/mutex.o $(LIBO)/rawfile.o $(LIBO)/refcount.o $(LIBO)/targa.o $(LIBO)/wwfile.o $(LIBO)/wwstring.o
 
 $(WWLIB_LIB): $(WWLIB_OBJS)
 	ar rcs $(WWLIB_LIB)  $(WWLIB_OBJS)
@@ -111,6 +117,9 @@ $(LIBO)/bufffile.o: $(WWLS)/bufffile.cpp $(WWLS)/bufffile.h
 
 $(LIBO)/ffactory.o: $(WWLS)/ffactory.cpp $(WWLS)/ffactory.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/ffactory.o $(WWLS)/ffactory.cpp
+
+$(LIBO)/multilist.o: $(WWLS)/multilist.cpp $(WWLS)/multilist.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/multilist.o $(WWLS)/multilist.cpp
 
 $(LIBO)/mutex.o: $(WWLS)/mutex.cpp $(WWLS)/mutex.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/mutex.o $(WWLS)/mutex.cpp
@@ -133,22 +142,40 @@ $(LIBO)/wwstring.o: $(WWLS)/wwstring.cpp $(WWLS)/wwstring.h
 
 # ===== WWMath =====
 
-WWMATH_OBJS = $(LIBO)/matrix3d.o $(LIBO)/quat.o
+WWMATH_OBJS = $(LIBO)/colmath.o $(LIBO)/colmathfrustum.o $(LIBO)/colmathplane.o $(LIBO)/frustum.o $(LIBO)/matrix3.o $(LIBO)/matrix3d.o $(LIBO)/quat.o $(LIBO)/wwmath.o
 
 $(WWMATH_LIB): $(WWMATH_OBJS)
 	ar rcs $(WWMATH_LIB)  $(WWMATH_OBJS)
 
 # --- Libraries/Source/WWVegas/WWMath ---
+$(LIBO)/colmath.o: $(WWMS)/colmath.cpp $(WWMS)/colmath.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/colmath.o $(WWMS)/colmath.cpp
+
+$(LIBO)/colmathfrustum.o: $(WWMS)/colmathfrustum.cpp $(WWMS)/colmathfrustum.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/colmathfrustum.o $(WWMS)/colmathfrustum.cpp
+
+$(LIBO)/colmathplane.o: $(WWMS)/colmathplane.cpp $(WWMS)/colmathplane.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/colmathplane.o $(WWMS)/colmathplane.cpp
+
+$(LIBO)/frustum.o: $(WWMS)/frustum.cpp $(WWMS)/frustum.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/frustum.o $(WWMS)/frustum.cpp
+
+$(LIBO)/matrix3.o: $(WWMS)/matrix3.cpp $(WWMS)/matrix3.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/matrix3.o $(WWMS)/matrix3.cpp
+
 $(LIBO)/matrix3d.o: $(WWMS)/matrix3d.cpp $(WWMS)/matrix3d.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/matrix3d.o $(WWMS)/matrix3d.cpp
 
 $(LIBO)/quat.o: $(WWMS)/quat.cpp $(WWMS)/quat.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/quat.o $(WWMS)/quat.cpp
 
+$(LIBO)/wwmath.o: $(WWMS)/wwmath.cpp $(WWMS)/wwmath.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/wwmath.o $(WWMS)/wwmath.cpp
+
 
 # ===== WW3D2 =====
 
-WW3D2_OBJS = $(LIBO)/bitmaphandler.o $(LIBO)/ddsfile.o $(LIBO)/formconv.o $(LIBO)/texture.o $(LIBO)/texturefilter.o $(LIBO)/ww3dformat.o
+WW3D2_OBJS = $(LIBO)/bitmaphandler.o $(LIBO)/camera.o $(LIBO)/ddsfile.o $(LIBO)/formconv.o $(LIBO)/rendobj.o $(LIBO)/rinfo.o $(LIBO)/texture.o $(LIBO)/texturefilter.o $(LIBO)/ww3dformat.o
 
 $(WW3D2_LIB): $(WW3D2_OBJS)
 	ar rcs $(WW3D2_LIB)  $(WW3D2_OBJS)
@@ -157,11 +184,20 @@ $(WW3D2_LIB): $(WW3D2_OBJS)
 $(LIBO)/bitmaphandler.o: $(WW3S)/bitmaphandler.cpp $(WW3S)/bitmaphandler.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/bitmaphandler.o $(WW3S)/bitmaphandler.cpp
 
+$(LIBO)/camera.o: $(WW3S)/camera.cpp $(WW3S)/camera.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/camera.o $(WW3S)/camera.cpp
+
 $(LIBO)/ddsfile.o: $(WW3S)/ddsfile.cpp $(WW3S)/ddsfile.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/ddsfile.o $(WW3S)/ddsfile.cpp
 
 $(LIBO)/formconv.o: $(WW3S)/formconv.cpp $(WW3S)/formconv.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/formconv.o $(WW3S)/formconv.cpp
+
+$(LIBO)/rendobj.o: $(WW3S)/rendobj.cpp $(WW3S)/rendobj.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/rendobj.o $(WW3S)/rendobj.cpp
+
+$(LIBO)/rinfo.o: $(WW3S)/rinfo.cpp $(WW3S)/rinfo.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/rinfo.o $(WW3S)/rinfo.cpp
 
 $(LIBO)/texture.o: $(WW3S)/texture.cpp $(WW3S)/texture.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(LIBO)/texture.o $(WW3S)/texture.cpp
@@ -176,12 +212,13 @@ $(LIBO)/ww3dformat.o: $(WW3S)/ww3dformat.cpp $(WW3S)/ww3dformat.h
 # ===== GameEngineDevice =====
 
 ENGINE_DEVICE_OBJS = $(GEDO)/SdlAudioManager.o \
-$(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o $(GEDO)/SdlFileStream.o \
+$(GEDO)/LinuxBIGFile.o $(GEDO)/LinuxBIGFileSystem.o $(GEDO)/LinuxConvert.o $(GEDO)/LinuxGameEngine.o $(GEDO)/LinuxLocalFile.o $(GEDO)/LinuxLocalFileSystem.o $(GEDO)/SdlFileStream.o \
 $(GEDO)/LinuxFunctionLexicon.o $(GEDO)/LinuxRadar.o \
 $(GEDO)/LinuxModuleFactory.o \
 $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/FrameQueue.o $(GEDO)/Decoder.o $(GEDO)/Clock.o \
-$(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxFileSystem.o $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o \
-   $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxView.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o $(GEDO)/TerrainTex.o $(GEDO)/TileData.o $(GEDO)/WorldHeightMap.o \
+$(GEDO)/BaseHeightMap.o $(GEDO)/CameraShakeSystem.o $(GEDO)/HeightMap.o $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxFileSystem.o \
+   $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxTerrainVisual.o $(GEDO)/LinuxView.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
+   $(GEDO)/TerrainTex.o $(GEDO)/TileData.o $(GEDO)/WorldHeightMap.o \
 $(GEDO)/LinuxDefaultDraw.o $(GEDO)/LinuxModelDraw.o $(GEDO)/LinuxScienceModelDraw.o \
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
 $(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
@@ -202,6 +239,9 @@ $(GEDO)/LinuxBIGFile.o: $(GEDSLDC)/LinuxBIGFile.cpp
 
 $(GEDO)/LinuxBIGFileSystem.o: $(GEDSLDC)/LinuxBIGFileSystem.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxBIGFileSystem.o $(GEDSLDC)/LinuxBIGFileSystem.cpp
+
+$(GEDO)/LinuxConvert.o: $(GEDSLDC)/LinuxConvert.cpp GameEngineDevice/Include/LinuxDevice/Common/LinuxConvert.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxConvert.o $(GEDSLDC)/LinuxConvert.cpp
 
 $(GEDO)/LinuxGameEngine.o: $(GEDSLDC)/LinuxGameEngine.cpp GameEngineDevice/Include/LinuxDevice/Common/LinuxGameEngine.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxGameEngine.o $(GEDSLDC)/LinuxGameEngine.cpp
@@ -246,6 +286,15 @@ $(GEDO)/Clock.o: $(GEDSLDF)/Clock.cpp GameEngineDevice/Include/LinuxDevice/FFmpe
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/Clock.o $(GEDSLDF)/Clock.cpp
 
 # --- GameEngineDevice/Source/LinuxDevice/GameClient ---
+$(GEDO)/BaseHeightMap.o: $(GEDSLD)/GameClient/BaseHeightMap.cpp GameEngineDevice/Include/LinuxDevice/GameClient/BaseHeightMap.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/BaseHeightMap.o $(GEDSLD)/GameClient/BaseHeightMap.cpp
+
+$(GEDO)/CameraShakeSystem.o: $(GEDSLD)/GameClient/CameraShakeSystem.cpp GameEngineDevice/Include/LinuxDevice/GameClient/CameraShakeSystem.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/CameraShakeSystem.o $(GEDSLD)/GameClient/CameraShakeSystem.cpp
+
+$(GEDO)/HeightMap.o: $(GEDSLD)/GameClient/HeightMap.cpp GameEngineDevice/Include/LinuxDevice/GameClient/HeightMap.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/HeightMap.o $(GEDSLD)/GameClient/HeightMap.cpp
+
 $(GEDO)/LinuxDisplay.o: $(GEDSLD)/GameClient/LinuxDisplay.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxDisplay.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxDisplay.o $(GEDSLD)/GameClient/LinuxDisplay.cpp
 
@@ -266,6 +315,9 @@ $(GEDO)/LinuxInGameUI.o: $(GEDSLD)/GameClient/LinuxInGameUI.cpp GameEngineDevice
 
 $(GEDO)/LinuxParticleSys.o: $(GEDSLD)/GameClient/LinuxParticleSys.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxParticleSys.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxParticleSys.o $(GEDSLD)/GameClient/LinuxParticleSys.cpp
+
+$(GEDO)/LinuxTerrainVisual.o: $(GEDSLD)/GameClient/LinuxTerrainVisual.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxTerrainVisual.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxTerrainVisual.o $(GEDSLD)/GameClient/LinuxTerrainVisual.cpp
 
 $(GEDO)/LinuxView.o: $(GEDSLD)/GameClient/LinuxView.cpp GameEngineDevice/Include/LinuxDevice/GameClient/LinuxView.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxView.o $(GEDSLD)/GameClient/LinuxView.cpp
@@ -369,8 +421,8 @@ $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/Buil
 $(GEO)/GameState.o \
 $(GEO)/DrawModule.o $(GEO)/Module.o $(GEO)/ModuleFactory.o $(GEO)/Thing.o $(GEO)/ThingFactory.o $(GEO)/ThingTemplate.o \
 $(GEO)/Color.o $(GEO)/Credits.o $(GEO)/Display.o $(GEO)/DisplayString.o $(GEO)/DisplayStringManager.o $(GEO)/Drawable.o $(GEO)/DrawGroupInfo.o $(GEO)/FXList.o $(GEO)/GameClient.o \
-   $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/InGameUI.o $(GEO)/LanguageFilter.o $(GEO)/Line2D.o $(GEO)/MapUtil.o $(GEO)/RadiusDecal.o $(GEO)/Snow.o \
-   $(GEO)/Statistics.o $(GEO)/VideoPlayer.o $(GEO)/View.o $(GEO)/Water.o \
+   $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/InGameUI.o $(GEO)/LanguageFilter.o $(GEO)/Line2D.o $(GEO)/MapUtil.o $(GEO)/ParabolicEase.o \
+   $(GEO)/RadiusDecal.o $(GEO)/Snow.o $(GEO)/Statistics.o $(GEO)/VideoPlayer.o $(GEO)/View.o $(GEO)/Water.o \
 $(GEO)/AnimateWindowManager.o $(GEO)/GameFont.o $(GEO)/GameWindow.o $(GEO)/GameWindowGlobal.o $(GEO)/GameWindowManager.o $(GEO)/GameWindowManagerScript.o $(GEO)/GameWindowTransitions.o \
    $(GEO)/GameWindowTransitionsStyles.o $(GEO)/HeaderTemplate.o $(GEO)/IMEManager.o $(GEO)/LoadScreen.o $(GEO)/ProcessAnimateWindow.o $(GEO)/WinInstanceData.o $(GEO)/WindowLayout.o \
    $(GEO)/WindowVideoManager.o \
@@ -383,7 +435,7 @@ $(GEO)/CreditsMenu.o $(GEO)/MainMenu.o $(GEO)/OptionsMenu.o \
 $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
 $(GEO)/Anim2D.o $(GEO)/CampaignManager.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
-$(GEO)/TerrainRoads.o \
+$(GEO)/TerrainRoads.o $(GEO)/TerrainVisual.o \
 $(GEO)/AI.o $(GEO)/AIDock.o $(GEO)/AIGroup.o $(GEO)/AIGuard.o $(GEO)/AIGuardRetaliate.o $(GEO)/AIPathfind.o $(GEO)/AIStates.o $(GEO)/AITNGuard.o $(GEO)/Squad.o $(GEO)/TurretAI.o \
 $(GEO)/PolygonTrigger.o $(GEO)/SidesList.o $(GEO)/TerrainLogic.o \
 $(GEO)/Armor.o $(GEO)/ExperienceTracker.o $(GEO)/Locomotor.o $(GEO)/Object.o $(GEO)/ObjectCreationList.o $(GEO)/ObjectTypes.o $(GEO)/PartitionManager.o $(GEO)/SimpleObjectIterator.o \
@@ -621,7 +673,7 @@ $(GEO)/ArchiveFile.o: $(GES)/Common/System/ArchiveFile.cpp
 $(GEO)/ArchiveFileSystem.o: $(GES)/Common/System/ArchiveFileSystem.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ArchiveFileSystem.o $(GES)/Common/System/ArchiveFileSystem.cpp
 
-$(GEO)/AsciiString.o: $(GES)/Common/System/AsciiString.cpp
+$(GEO)/AsciiString.o: $(GES)/Common/System/AsciiString.cpp GameEngine/Include/Common/AsciiString.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AsciiString.o $(GES)/Common/System/AsciiString.cpp
 
 $(GEO)/BuildAssistant.o: $(GES)/Common/System/BuildAssistant.cpp GameEngine/Include/Common/BuildAssistant.h
@@ -776,6 +828,9 @@ $(GEO)/Line2D.o: $(GES)/GameClient/Line2D.cpp GameEngine/Include/GameClient/Line
 
 $(GEO)/MapUtil.o: $(GES)/GameClient/MapUtil.cpp GameEngine/Include/GameClient/MapUtil.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MapUtil.o $(GES)/GameClient/MapUtil.cpp
+
+$(GEO)/ParabolicEase.o: $(GES)/GameClient/ParabolicEase.cpp GameEngine/Include/GameClient/ParabolicEase.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ParabolicEase.o $(GES)/GameClient/ParabolicEase.cpp
 
 $(GEO)/RadiusDecal.o: $(GES)/GameClient/RadiusDecal.cpp GameEngine/Include/GameClient/RadiusDecal.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RadiusDecal.o $(GES)/GameClient/RadiusDecal.cpp
@@ -969,6 +1024,9 @@ $(GEO)/ParticleSys.o: $(GES)/GameClient/System/ParticleSys.cpp GameEngine/Includ
 # --- GameEngine/Source/GameClient/Terrain ---
 $(GEO)/TerrainRoads.o: $(GES)/GameClient/Terrain/TerrainRoads.cpp GameEngine/Include/GameClient/TerrainRoads.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainRoads.o $(GES)/GameClient/Terrain/TerrainRoads.cpp
+
+$(GEO)/TerrainVisual.o: $(GES)/GameClient/Terrain/TerrainVisual.cpp GameEngine/Include/GameClient/TerrainVisual.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TerrainVisual.o $(GES)/GameClient/Terrain/TerrainVisual.cpp
 
 # --- GameEngine/Source/GameLogic/AI ---
 $(GEO)/AI.o: $(GES)/GameLogic/AI/AI.cpp GameEngine/Include/GameLogic/AI.h

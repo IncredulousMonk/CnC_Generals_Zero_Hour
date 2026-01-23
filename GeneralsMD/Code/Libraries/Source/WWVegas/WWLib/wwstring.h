@@ -798,4 +798,3 @@ StringClass::Store_Length (int length)
 }
 
 #endif //__WWSTRING_H
-

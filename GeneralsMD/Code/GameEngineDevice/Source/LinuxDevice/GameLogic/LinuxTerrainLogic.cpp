@@ -23,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Common/GameMemory.h"
-// #include "LinuxDevice/GameClient/HeightMap.h"
+#include "LinuxDevice/GameClient/HeightMap.h"
 #include "LinuxDevice/GameLogic/LinuxTerrainLogic.h"
 #include "LinuxDevice/GameClient/WorldHeightMap.h"
 #include "Common/PerfTimer.h"
@@ -47,9 +47,7 @@ LinuxTerrainLogic::LinuxTerrainLogic(): m_mapMinZ(0), m_mapMaxZ(1)
 //-------------------------------------------------------------------------------------------------
 LinuxTerrainLogic::~LinuxTerrainLogic()
 {
-
-   // free terrain data
-
+   reset();
 }  // end LinuxTerrainLogic
 
 //-------------------------------------------------------------------------------------------------
@@ -85,13 +83,10 @@ void LinuxTerrainLogic::reset( void )
 //-------------------------------------------------------------------------------------------------
 void LinuxTerrainLogic::newMap(Bool saveGame)
 {
-(void) saveGame;
-DEBUG_CRASH(("LinuxTerrainLogic::newMap not yet implemented!"));
 #if 0
-
-   TheTerrainRenderObject->loadRoadsAndBridges( this, saveGame );
-   TerrainLogic::newMap( saveGame );
+   TheTerrainRenderObject->loadRoadsAndBridges(this, saveGame);
 #endif // if 0
+   TerrainLogic::newMap(saveGame);
 }  // end update
 
 //-------------------------------------------------------------------------------------------------
@@ -111,7 +106,7 @@ Bool LinuxTerrainLogic::loadMap( AsciiString filename , Bool query )
    if(!TheMapCache)
       return FALSE;
 
-   WorldHeightMap *terrainHeightMap;				///< holds raw heightmap data samples
+   WorldHeightMap *terrainHeightMap;   ///< holds raw heightmap data samples
 
    char tempBuf[PATH_MAX];
    char filenameBuf[PATH_MAX];
@@ -141,12 +136,13 @@ Bool LinuxTerrainLogic::loadMap( AsciiString filename , Bool query )
    terrainHeightMap = NEW WorldHeightMap(pStrm, true);
 
    if (terrainHeightMap)
-   {	//copy loaded data
+   {
+      //copy loaded data
       // Get the whole map, because we don't know which boundary is active yet
       m_mapDX=terrainHeightMap->getXExtent();
       m_mapDY=terrainHeightMap->getYExtent();
 
-      // now, get all the boudnaries, and set the current active boundary to boundary 0.
+      // now, get all the boundaries, and set the current active boundary to boundary 0.
       m_boundaries = terrainHeightMap->getAllBoundaries();
       m_activeBoundary = 0;
 
@@ -170,14 +166,18 @@ Bool LinuxTerrainLogic::loadMap( AsciiString filename , Bool query )
    else
       return FALSE;	//could not create heightmap object.  File not found?
 
+   // MG: Moving this to before the VBOs get created; otherwise, the diffuse colour won't be set properly.
+   if( TheWritableGlobalData->setTimeOfDay( TheGlobalData->m_data.m_timeOfDay ) )
+      TheGameClient->setTimeOfDay( TheGlobalData->m_data.m_timeOfDay );
+
    // Note - It is very important that this get called AFTER the map is read in.  jba.
    // enhancing functionality
    if( TerrainLogic::loadMap( filename, query ) == false )
       return FALSE;
 
    // Map file now contains lighting & time of day info.
-   if( TheWritableGlobalData->setTimeOfDay( TheGlobalData->m_data.m_timeOfDay ) )
-      TheGameClient->setTimeOfDay( TheGlobalData->m_data.m_timeOfDay );
+   // if( TheWritableGlobalData->setTimeOfDay( TheGlobalData->m_data.m_timeOfDay ) )
+   //    TheGameClient->setTimeOfDay( TheGlobalData->m_data.m_timeOfDay );
 
    return TRUE;  // success
 
@@ -275,33 +275,22 @@ return false;
 //-------------------------------------------------------------------------------------------------
 /** Linux specific get height function for logical terrain */
 //-------------------------------------------------------------------------------------------------
-Real LinuxTerrainLogic::getGroundHeight( Real x, Real y, Coord3D* normal ) const
+Real LinuxTerrainLogic::getGroundHeight(Real x, Real y, Coord3D* normal) const
 {
-(void) x;
-(void) y;
-(void) normal;
-DEBUG_CRASH(("LinuxTerrainLogic::getGroundHeight not yet implemented!"));
-return 0.0;
-#if 0
 #define USE_THE_TERRAIN_OBJECT
 #ifdef USE_THE_TERRAIN_OBJECT
-   if (TheTerrainRenderObject) 
-   {
-      return TheTerrainRenderObject->getHeightMapHeight(x,y,normal);
-   }	
-   else 
-   {
-      if (normal)
-      {	
+   if (TheTerrainRenderObject) {
+      return TheTerrainRenderObject->getHeightMapHeight(x, y, normal);
+   } else {
+      if (normal) {
          //return a default normal pointing up
-         normal->x=0.0f;
-         normal->y=0.0f;
-         normal->z=1.0f;
+         normal->x = 0.0f;
+         normal->y = 0.0f;
+         normal->z = 1.0f;
       }
       return 0;
    }
 #endif
-#endif // if 0
 }  // end getHight
 
 //-------------------------------------------------------------------------------------------------

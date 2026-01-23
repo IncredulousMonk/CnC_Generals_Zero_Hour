@@ -572,13 +572,12 @@ void GameLODManager::applyStaticLODLevel(StaticGameLODLevel level)
 		TheWritableGlobalData->m_data.m_useCloudMap=lodInfo->m_useCloudMap;
 		TheWritableGlobalData->m_data.m_useLightMap=lodInfo->m_useLightMap;
 		TheWritableGlobalData->m_data.m_showSoftWaterEdge=lodInfo->m_showSoftWaterEdge;
-		// FIXME: TheTerrainVisual
-		// //Check if shoreline blending mode has changed
-		// if (m_currentStaticLOD == STATIC_GAME_LOD_UNKNOWN || lodInfo->m_showSoftWaterEdge != prevLodInfo->m_showSoftWaterEdge)
-		// {
-		// 	if (TheTerrainVisual)
-		// 		TheTerrainVisual->setShoreLineDetail();
-		// }
+		//Check if shoreline blending mode has changed
+		if (m_currentStaticLOD == STATIC_GAME_LOD_UNKNOWN || lodInfo->m_showSoftWaterEdge != prevLodInfo->m_showSoftWaterEdge)
+		{
+			if (TheTerrainVisual)
+				TheTerrainVisual->setShoreLineDetail();
+		}
 
 		TheWritableGlobalData->m_data.m_maxTankTrackEdges=lodInfo->m_maxTankTrackEdges;
 		TheWritableGlobalData->m_data.m_maxTankTrackOpaqueEdges=lodInfo->m_maxTankTrackOpaqueEdges;
@@ -593,9 +592,8 @@ void GameLODManager::applyStaticLODLevel(StaticGameLODLevel level)
 	if (!m_memPassed || isReallyLowMHz()) {
 		TheWritableGlobalData->m_data.m_shellMapOn = false;
 	}
-	// FIXME: TheTerrainVisual
-	// if (TheTerrainVisual)
-	// 	TheTerrainVisual->setTerrainTracksDetail();
+	if (TheTerrainVisual)
+		TheTerrainVisual->setTerrainTracksDetail();
 
 }
 

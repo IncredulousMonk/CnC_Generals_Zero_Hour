@@ -187,4 +187,3 @@ CollisionMath::Overlap_Test(const FrustumClass & frustum,const OBBoxClass & box,
 	}
 	return OVERLAPPED;
 }
-

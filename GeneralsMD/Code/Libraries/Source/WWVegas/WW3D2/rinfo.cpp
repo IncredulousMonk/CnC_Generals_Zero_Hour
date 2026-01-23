@@ -40,7 +40,7 @@
 
 #include "rinfo.h"
 #include "camera.h"
-#include "matpass.h"
+// #include "matpass.h"
 
 
 /***********************************************************************************************
@@ -49,7 +49,8 @@
 **
 ***********************************************************************************************/
 RenderInfoClass::RenderInfoClass(CameraClass & cam) :
-	Camera(cam), 
+	Camera(cam) //,
+#if 0
 	fog_start(0.0f),
 	fog_end(0.0f),
 	fog_scale(0.0f),
@@ -61,15 +62,20 @@ RenderInfoClass::RenderInfoClass(CameraClass & cam) :
 	alphaOverride(1.0f),
 	materialPassAlphaOverride(1.0f),
 	materialPassEmissiveOverride(1.0f)
-{ 
+#endif // if 0
+{
+#if 0
 	// Need to have one entry in the override flags stack, initialize it to default values.
 	OverrideFlag[OverrideFlagLevel]=RINFO_OVERRIDE_DEFAULT;
+#endif // if 0
+
 }
 
 RenderInfoClass::~RenderInfoClass(void)
 {
 }
 
+#if 0
 void RenderInfoClass::Push_Material_Pass(MaterialPassClass * matpass)
 {
 	// add to the end of the array
@@ -148,3 +154,4 @@ SpecialRenderInfoClass::~SpecialRenderInfoClass(void)
 {
 }
 
+#endif // if 0

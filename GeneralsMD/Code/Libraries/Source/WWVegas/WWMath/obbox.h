@@ -109,9 +109,9 @@ public:
 	void		Compute_Point(float params[3],Vector3 * set_point) const;
 	void		Compute_Axis_Aligned_Extent(Vector3 * set_extent) const;
 
-	Matrix3x3	Basis;
-	Vector3		Center;
-	Vector3		Extent;
+	Matrix3x3	Basis {};
+	Vector3		Center {};
+	Vector3		Extent {};
 
 	static void	Transform(const Matrix3D & tm,const OBBoxClass & in,OBBoxClass * out);
 };
@@ -265,7 +265,7 @@ inline bool OBBoxClass::operator== (const OBBoxClass &src)
  *=============================================================================================*/
 inline bool OBBoxClass::operator!= (const OBBoxClass &src)
 {
-	return (Center != src.Center) || (Extent != src.Extent) && (Basis == src.Basis);
+	return (Center != src.Center) || ((Extent != src.Extent) && (Basis == src.Basis));
 }
 
 #endif

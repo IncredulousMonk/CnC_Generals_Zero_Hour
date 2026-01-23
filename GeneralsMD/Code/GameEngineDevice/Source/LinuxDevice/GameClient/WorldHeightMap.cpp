@@ -516,20 +516,20 @@ WorldHeightMap::WorldHeightMap(ChunkInputStream *pStrm, Bool logicalDataOnly)
 		file.registerParser( AsciiString("GlobalLighting"), AsciiString::TheEmptyString, ParseLightingDataChunk );
 	}
 	if (!file.parse(this)) {
-    
+
 		throw(ERROR_CORRUPT_FILE_FORMAT);
 	}
 	// patch bad maps. 
 	if (!logicalDataOnly) {
 		for(i=0; i<m_dataSize; i++) {
 			if (m_cliffInfoNdxes[i]<0 || m_cliffInfoNdxes[i]>= m_numCliffInfo) {
-				m_cliffInfoNdxes[i] = 0;		
+				m_cliffInfoNdxes[i] = 0;
 			}
 			if (m_blendTileNdxes[i]<0 || m_blendTileNdxes[i]>= m_numBlendedTiles) {
-				m_blendTileNdxes[i] = 0;		
+				m_blendTileNdxes[i] = 0;
 			}
 			if (m_extraBlendTileNdxes[i]<0 || m_extraBlendTileNdxes[i]>= m_numBlendedTiles) {
-				m_extraBlendTileNdxes[i] = 0;		
+				m_extraBlendTileNdxes[i] = 0;
 			}
 		}
 	}
@@ -861,8 +861,8 @@ Bool WorldHeightMap::ParseHeightMapDataChunk(DataChunkInput &file, DataChunkInfo
 * WorldHeightMap::ParseHeightMapData - read a height map chunk.
 * Format is the newer CHUNKY format.
 *	See WHeightMapEdit.cpp for the writer.
-*	Input: DataChunkInput 
-*		
+*	Input: DataChunkInput
+*
 */
 Bool WorldHeightMap::ParseHeightMapData(DataChunkInput &file, DataChunkInfo *info, void* /* userData */)
 {
@@ -876,6 +876,7 @@ Bool WorldHeightMap::ParseHeightMapData(DataChunkInput &file, DataChunkInfo *inf
 
 	if (info->version >= K_HEIGHT_MAP_VERSION_4) {
 		Int numBorders = file.readInt();
+DEBUG_LOG(("Height map: width = %d, height = %d, border size = %d, boundaries = %d\n", m_width, m_height, m_borderSize, numBorders));
 		m_boundaries.resize((size_t)numBorders);
 		for (size_t i = 0; i < (size_t)numBorders; ++i) {
 			m_boundaries[i].x = file.readInt();
@@ -886,6 +887,7 @@ Bool WorldHeightMap::ParseHeightMapData(DataChunkInput &file, DataChunkInfo *inf
 		m_boundaries[0].x = m_width - 2 * m_borderSize;
 		m_boundaries[0].y = m_height - 2 * m_borderSize;
 	}
+DEBUG_LOG(("Height map: boundary[0] = %d x %d\n", m_boundaries[0].x, m_boundaries[0].y));
 
 	m_dataSize = file.readInt();
 	m_data = MSGNEW("WorldHeightMap_ParseHeightMapData") UnsignedByte[m_dataSize];
@@ -894,16 +896,16 @@ Bool WorldHeightMap::ParseHeightMapData(DataChunkInput &file, DataChunkInfo *inf
 	}
 
 	Int numBytesX = (m_width+7)/8;	//how many bytes to fit all bitflags
-	Int numBytesY = m_height;	
+	Int numBytesY = m_height;
 	m_seismicUpdateWidth = (UnsignedInt)numBytesX;
 	m_seismicUpdateFlag	= MSGNEW("WorldHeightMap::ParseHeightMapData _ m_seismicUpdateFlag allocated") UnsignedByte[numBytesX*numBytesY];
 	clearSeismicUpdateFlags();
 	m_seismicZVelocities = MSGNEW("WorldHeightMap_ParseHeightMapData _ zvelocities allocated") Real[m_dataSize];
 	fillSeismicZVelocities( 0 );
 
-
 	file.readArrayOfBytes((char *)m_data, m_dataSize);
-	// Resize me. 
+
+	// Resize me.
 	if (info->version == K_HEIGHT_MAP_VERSION_1) {
 		Int newWidth = (m_width+1)/2;
 		Int newHeight = (m_height+1)/2;
@@ -923,7 +925,7 @@ Bool WorldHeightMap::ParseHeightMapData(DataChunkInput &file, DataChunkInfo *inf
 * Format is the newer CHUNKY format.
 *	See WHeightMapEdit.cpp for the writer.
 *	Input: DataChunkInput 
-*		
+*
 */
 Bool WorldHeightMap::ParseSizeOnlyInChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
 {
@@ -936,7 +938,7 @@ Bool WorldHeightMap::ParseSizeOnlyInChunk(DataChunkInput &file, DataChunkInfo *i
 * Format is the newer CHUNKY format.
 *	See WHeightMapEdit.cpp for the writer.
 *	Input: DataChunkInput 
-*		
+*
 */
 Bool WorldHeightMap::ParseSizeOnly(DataChunkInput &file, DataChunkInfo *info, void* /* userData */)
 {
@@ -988,7 +990,7 @@ Bool WorldHeightMap::ParseSizeOnly(DataChunkInput &file, DataChunkInfo *info, vo
 * Format is the newer CHUNKY format.
 *	See WHeightMapEdit.cpp for the writer.
 *	Input: DataChunkInput 
-*		
+*
 */
 Bool WorldHeightMap::ParseBlendTileDataChunk(DataChunkInput &file, DataChunkInfo *info, void *userData)
 {
@@ -1016,6 +1018,7 @@ void WorldHeightMap::readTexClass(TXTextureClass *texClass, TileData **tileData)
 	{
 		sprintf( texturePath, "%s%s", TERRAIN_TGA_DIR_PATH, terrain->getTexture().str() );
 		theFile = TheFileSystem->openFile( texturePath, File::READ|File::BINARY);
+DEBUG_LOG(("Terrain texture: %s = %s\n", texClass->name.str(), texturePath));
 	}
 
 	if (theFile != NULL) {
@@ -1023,7 +1026,7 @@ void WorldHeightMap::readTexClass(TXTextureClass *texClass, TileData **tileData)
 		InputStream *pStr = &theStream;
 		Int numTiles = WorldHeightMap::countTiles(pStr);
 		theFile->seek(0, File::START);
-		if (numTiles >= texClass->numTiles) { 
+		if (numTiles >= texClass->numTiles) {
 			numTiles = texClass->numTiles;
 			Int width;
 			for (width = 10; width >= 1; width--) {
@@ -1032,7 +1035,7 @@ void WorldHeightMap::readTexClass(TXTextureClass *texClass, TileData **tileData)
 					break;
 				}
 			}
-			WorldHeightMap::readTiles(pStr, tileData+texClass->firstTile, width);						
+			WorldHeightMap::readTiles(pStr, tileData+texClass->firstTile, width);
 		}
 		theFile->close();
 	}
@@ -1043,7 +1046,7 @@ void WorldHeightMap::readTexClass(TXTextureClass *texClass, TileData **tileData)
 * Format is the newer CHUNKY format.
 *	See WHeightMapEdit.cpp for the writer.
 *	Input: DataChunkInput 
-*		
+*
 */
 Bool WorldHeightMap::ParseBlendTileData(DataChunkInput &file, DataChunkInfo *info, void* /* userData */)
 {
@@ -1091,6 +1094,7 @@ Bool WorldHeightMap::ParseBlendTileData(DataChunkInput &file, DataChunkInfo *inf
 					m_cellCliffState[j*m_flipStateWidth + i] = data[j*byteWidth + i];
 				}
 			}
+			delete data;
 		} else {
 			file.readArrayOfBytes((char*)m_cellCliffState, m_height*m_flipStateWidth);
 		}
@@ -1136,6 +1140,8 @@ Bool WorldHeightMap::ParseBlendTileData(DataChunkInput &file, DataChunkInfo *inf
 			readTexClass(&m_edgeTextureClasses[i], m_edgeTiles);
 		}
 	}
+	DEBUG_LOG(("m_numBitmapTiles = %d, m_numBlendedTiles = %d, m_numTextureClasses = %d, m_numEdgeTiles = %d, m_numEdgeTextureClasses = %d\n",
+		m_numBitmapTiles, m_numBlendedTiles, m_numTextureClasses, m_numEdgeTiles, m_numEdgeTextureClasses));
 	for (i=1; i<m_numBlendedTiles; i++) {
 		Int flag;
 		m_blendedTiles[i].blendNdx = (UnsignedByte)file.readInt();
@@ -1248,7 +1254,7 @@ Bool WorldHeightMap::ParseObjectData(DataChunkInput &file, DataChunkInfo *info, 
 	if (readDict)
 	{
 		d = file.readDict();
-	}		 
+	}
 
 	if (loc.z<minZ || loc.z>maxZ) {
 		DEBUG_LOG(("Removing object at z height %f\n", loc.z));
@@ -1257,6 +1263,7 @@ Bool WorldHeightMap::ParseObjectData(DataChunkInput &file, DataChunkInfo *info, 
 
 	MapObject *pThisOne;
 	
+DEBUG_LOG(("Creating MapObject called \"%s\" at (%f, %f, %f)\n", name.str(), loc.x, loc.y, loc.z));
 	// create the map object
 	pThisOne = newInstance( MapObject )( loc, name, angle, flags, &d, 
 														TheThingFactory->findTemplate( name, FALSE ) );
@@ -1462,7 +1469,7 @@ Int WorldHeightMap::updateTileTexturePositions(Int *edgeHeight)
 			m_sourceTiles[i]->m_tileLocationInTexture.x = 0;
 			m_sourceTiles[i]->m_tileLocationInTexture.y = 0;
 		}
-	}	 
+	}
 
 	/* put the normal tiles into the terrain texture */
 	Int texClass;
@@ -1523,7 +1530,7 @@ Int WorldHeightMap::updateTileTexturePositions(Int *edgeHeight)
 			m_edgeTiles[i]->m_tileLocationInTexture.x = 0;
 			m_edgeTiles[i]->m_tileLocationInTexture.y = 0;
 		}
-	}	 
+	}
 
 	/* put the blend edge tiles into the blend edges texture */
 	Int maxEdgeHeight = 0;
@@ -1657,7 +1664,7 @@ Bool WorldHeightMap::isCliffMappedTexture(Int x, Int y) {
 
 /** getUVData - Gets the texture coordinates to use.  See getTerrainTexture.
 		xIndex and yIndex are the integer coorddinates into the height map.
-		U and V are the texture coordiantes for the 4 corners of a height map cell.
+		U and V are the texture coordinates for the 4 corners of a height map cell.
 		fullTile is true if we are doing 1/2 resolution height map, and require a full
 		tile to texture  a cell.  Otherwise, we use quarter tiles per cell.
 */
@@ -1697,7 +1704,7 @@ Bool WorldHeightMap::getUVData(Int xIndex, Int yIndex, float U[4], float V[4], B
 /** getUVForTileIndex - Gets the texture coordinates to use.  See getTerrainTexture.
 		ndx is the index into the linear height array.
 		tileNdx is the index into the texture tiles array.
-		U and V are the texture coordiantes for the 4 corners of a height map cell.
+		U and V are the texture coordinates for the 4 corners of a height map cell.
 		fullTile is true if we are doing 1/2 resolution height map, and require a full
 		tile to texture  a cell.  Otherwise, we use quarter tiles per cell.
 */
@@ -2033,8 +2040,8 @@ Bool WorldHeightMap::getExtraAlphaUVData(Int xIndex, Int yIndex, float U[4], flo
 }
 
 /** getUVData - Gets the texture coordinates to use with the alpha texture.  
-		xIndex and yIndex are the integer coorddinates into the height map.
-		U and V are the texture coordiantes for the 4 corners of a height map cell.
+		xIndex and yIndex are the integer coordinates into the height map.
+		U and V are the texture coordinates for the 4 corners of a height map cell.
 		fullTile is true if we are doing 1/2 resolution height map, and require a full
 		tile to texture  a cell.  Otherwise, we use quarter tiles per cell.
 		flip is set if we need to flip the diagonal across the cell to make the 

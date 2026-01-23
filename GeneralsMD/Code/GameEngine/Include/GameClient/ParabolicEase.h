@@ -85,7 +85,7 @@ class ParabolicEase
 		Real operator ()(Real param) const;
 
 	private:
-		Real m_in, m_out;
+		Real m_in {}, m_out {};
 };
 
 // ============================================================================

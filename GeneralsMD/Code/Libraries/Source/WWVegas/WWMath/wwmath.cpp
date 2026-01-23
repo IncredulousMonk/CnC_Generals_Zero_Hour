@@ -37,11 +37,12 @@
 
 #include "wwmath.h"
 #include "wwhack.h"
-#include "lookuptable.h"
+// #include "lookuptable.h"
 #include <stdlib.h>
 #include "wwdebug.h"
 #include "wwprofile.h"
 
+#if 0
 // TODO: convert to use loouptablemanager...
 float _FastAcosTable[ARC_TABLE_SIZE];
 float _FastAsinTable[ARC_TABLE_SIZE];
@@ -58,7 +59,7 @@ void		WWMath::Init(void)
 		_FastAsinTable[a]=asin(cv);
 	}
 
-	for (a=0;a<SIN_TABLE_SIZE;++a) {
+	for (int a=0;a<SIN_TABLE_SIZE;++a) {
 		float cv= (float)a * 2.0f * WWMATH_PI / SIN_TABLE_SIZE; //float(a-SIN_TABLE_SIZE/2)*(1.0f/(SIN_TABLE_SIZE/2));
 		_FastSinTable[a]=sin(cv);
 		
@@ -74,13 +75,14 @@ void		WWMath::Shutdown(void)
 {
 	LookupTableMgrClass::Shutdown();
 }
+#endif // if 0
 
 float		WWMath::Random_Float(void) 
 { 
 	return ((float)(rand() & 0xFFF)) / (float)(0xFFF); 
 }
 
-
+#if 0
 /*
 ** Force link some modules from this library.
 */
@@ -92,4 +94,4 @@ void Do_Force_Links(void)
 	FORCE_LINK(cardinalspline);
 	FORCE_LINK(tcbspline);
 }
-
+#endif // if 0

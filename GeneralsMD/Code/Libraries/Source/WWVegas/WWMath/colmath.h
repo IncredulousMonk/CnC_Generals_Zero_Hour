@@ -209,23 +209,23 @@ public:
 		ColmathStatsStruct(void);
 		void Reset(void);
 
-		int TotalCollisionCount;
-		int TotalCollisionHitCount;
+		int TotalCollisionCount {};
+		int TotalCollisionHitCount {};
 
-		int CollisionRayTriCount;
-		int CollisionRayTriHitCount;
+		int CollisionRayTriCount {};
+		int CollisionRayTriHitCount {};
 
-		int CollisionAABoxTriCount;
-		int CollisionAABoxTriHitCount;
-		int CollisionAABoxAABoxCount;
-		int CollisionAABoxAABoxHitCount;
+		int CollisionAABoxTriCount {};
+		int CollisionAABoxTriHitCount {};
+		int CollisionAABoxAABoxCount {};
+		int CollisionAABoxAABoxHitCount {};
 
-		int CollisionOBBoxTriCount;
-		int CollisionOBBoxTriHitCount;
-		int CollisionOBBoxAABoxCount;
-		int CollisionOBBoxAABoxHitCount;
-		int CollisionOBBoxOBBoxCount;
-		int CollisionOBBoxOBBoxHitCount;
+		int CollisionOBBoxTriCount {};
+		int CollisionOBBoxTriHitCount {};
+		int CollisionOBBoxAABoxCount {};
+		int CollisionOBBoxAABoxHitCount {};
+		int CollisionOBBoxOBBoxCount {};
+		int CollisionOBBoxOBBoxHitCount {};
 	};
 	
 	static void									Reset_Stats(void)				{ Stats.Reset(); }

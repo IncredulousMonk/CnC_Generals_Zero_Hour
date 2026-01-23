@@ -55,7 +55,7 @@
 #include "Common/ThingTemplate.h"
 // #include "GameClient/Water.h"
 // #include "GameClient/Snow.h"
-// #include "Common/WellKnownKeys.h"
+#include "Common/WellKnownKeys.h"
 // #include "Common/Xfer.h"
 // #include "Common/XferCRC.h"
 // #include "Common/XferDeepCRC.h"
@@ -180,6 +180,7 @@ enum
 	LOAD_PROGRESS_POST_STARTING_CAMERA_2 = LOAD_PROGRESS_POST_STARTING_CAMERA + 1,
 	LOAD_PROGRESS_END = 100,
 };
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -195,6 +196,7 @@ static Waypoint * findNamedWaypoint(AsciiString name)
 	return NULL;
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void setFPMode( void )
@@ -1315,7 +1317,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	// loadMapINI( TheGlobalData->m_data.m_mapName );
 
 	// load a map
-	// TheTerrainLogic->loadMap( TheGlobalData->m_data.m_mapName, false );
+	TheTerrainLogic->loadMap( TheGlobalData->m_data.m_mapName, false );
 	// anytime the world's size changes, must reset the partition mgr
 	//ThePartitionManager->init();
 
@@ -1507,7 +1509,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 		d.setBool(TheKey_teamIsSingleton, true);
 		TheSidesList->addTeam(&d);
 	//}
-	TheSidesList->validateSides();		
+	TheSidesList->validateSides();
 
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_SIDE_LIST_INIT);
@@ -1656,6 +1658,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_VICTORY_CONDITION_SET_VICTORY_CONDITION);
+#endif // if 0
 
 	// set the world extents to that of the map
 	Region3D extent;
@@ -1664,6 +1667,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	TheGameLogic->setWidth( extent.hi.x - extent.lo.x );
 	TheGameLogic->setHeight( extent.hi.y - extent.lo.y );
 
+#if 0
 	// anytime the world's size changes, must reset the partition mgr
 	ThePartitionManager->init();
 	ThePartitionManager->refreshShroudForLocalPlayer();// Can't do this until after init, and doesn't seem right to do in init
@@ -1673,10 +1677,12 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_GHOST_OBJECT_MANAGER_RESET);
+#endif // if 0
 
 	// update the terrain logic now that all is loaded
 	TheTerrainLogic->newMap( loadingSaveGame );
 
+#if 0
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_TERRAIN_LOGIC_NEW_MAP);
 
@@ -1830,8 +1836,8 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 				}
 			}
 		}
-	} 
-	else 
+	}
+	else
 	{
 
 		for (pMapObj = MapObject::getFirstMapObject(); pMapObj; pMapObj = pMapObj->getNext()) 
@@ -2005,18 +2011,14 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 					continue;
 
 				// prevent from loading disallowed templates, in case your peer hacked their GUI.
-        
 
-        // So that the global flag for restricting factions to "OLD" is applied only in the appropriate context!
-        // Trouble was that skirmish games would get no command centers upon start, if this was set true in a GameSpyMenu
-        if ( isInInternetGame() )
-        {
-				  if ( game->oldFactionsOnly() && !pt->isOldFaction() )
-				    continue;
-        }
-
-
-
+				// So that the global flag for restricting factions to "OLD" is applied only in the appropriate context!
+				// Trouble was that skirmish games would get no command centers upon start, if this was set true in a GameSpyMenu
+				if ( isInInternetGame() )
+				{
+					if ( game->oldFactionsOnly() && !pt->isOldFaction() )
+						continue;
+				}
 
 				placeNetworkBuildingsForPlayer(i, slot, player, pt);
 			}
@@ -2051,17 +2053,21 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_PRELOAD_ASSETS);
+#endif // if 0
 
 	TheTacticalView->setAngleAndPitchToDefault();
 	TheTacticalView->setZoomToDefault();
 
+#if 0
 	if( TheRecorder )
 		TheRecorder->initControls();
+#endif // if 0
 
 	// Note - WorldBuilderDoc.cpp also uses initial camera position, so if changed, update both.  jba
 	// Note - We construct the multiplayer start spot name manually here, so change this if you
 	//        change TheKey_Player_1_Start etc.  mdc
 	AsciiString startingCamName = TheNameKeyGenerator->keyToName(TheKey_InitialCameraPosition);
+#if 0
 	if (game)
 	{
 		GameSlot *slot = game->getSlot(localSlot);
@@ -2077,6 +2083,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_STARTING_CAMERA);
+#endif // if 0
 
 	Waypoint *way = findNamedWaypoint(startingCamName);
 	if (way)
@@ -2101,6 +2108,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	TheTacticalView->setAngleAndPitchToDefault();
 	TheTacticalView->setZoomToDefault();
 
+#if 0
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_STARTING_CAMERA_2);
 

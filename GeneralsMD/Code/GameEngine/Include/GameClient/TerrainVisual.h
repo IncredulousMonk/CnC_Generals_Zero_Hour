@@ -173,18 +173,18 @@ class DomeStyleSeismicFilter : public SeismicSimulationFilterBase
 //-------------------------------------------------------------------------------------------------
 enum TerrainLOD: int
 { 
-	TERRAIN_LOD_INVALID								= 0,
-	TERRAIN_LOD_MIN										= 1,  // note that this is less than max
-	TERRAIN_LOD_STRETCH_NO_CLOUDS			= 2,
-	TERRAIN_LOD_HALF_CLOUDS						= 3,
-	TERRAIN_LOD_NO_CLOUDS							= 4,
-	TERRAIN_LOD_STRETCH_CLOUDS				= 5,
-	TERRAIN_LOD_NO_WATER							= 6,
-	TERRAIN_LOD_MAX										= 7,  // note that this is larger than min
-	TERRAIN_LOD_AUTOMATIC							= 8,
-	TERRAIN_LOD_DISABLE								= 9,
+	TERRAIN_LOD_INVALID				= 0,
+	TERRAIN_LOD_MIN					= 1,  // note that this is less than max
+	TERRAIN_LOD_STRETCH_NO_CLOUDS	= 2,
+	TERRAIN_LOD_HALF_CLOUDS			= 3,
+	TERRAIN_LOD_NO_CLOUDS			= 4,
+	TERRAIN_LOD_STRETCH_CLOUDS		= 5,
+	TERRAIN_LOD_NO_WATER			= 6,
+	TERRAIN_LOD_MAX					= 7,  // note that this is larger than min
+	TERRAIN_LOD_AUTOMATIC			= 8,
+	TERRAIN_LOD_DISABLE				= 9,
 
-	TERRAIN_LOD_NUM_TYPES								// keep this last
+	TERRAIN_LOD_NUM_TYPES			// keep this last
 
 };
 #ifdef DEFINE_TERRAIN_LOD_NAMES
@@ -208,8 +208,7 @@ static const char * TerrainLODNames[] =
 //-------------------------------------------------------------------------------------------------
 /** Device independent implementation for visual terrain */
 //-------------------------------------------------------------------------------------------------
-class TerrainVisual : public Snapshot,
-											public SubsystemInterface
+class TerrainVisual : public Snapshot, public SubsystemInterface
 {
 
 public:
@@ -317,7 +316,7 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	AsciiString m_filenameString;							///< file with terrain data
+	AsciiString m_filenameString {};							///< file with terrain data
 
 };  // end class TerrainVisual
 

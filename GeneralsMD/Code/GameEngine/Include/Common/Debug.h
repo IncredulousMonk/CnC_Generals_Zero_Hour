@@ -67,7 +67,7 @@ class AsciiString;
 #endif
 
 // These are stolen from the WW3D Debug file. REALLY useful. :-)
-#define STRING_IT(a) #a																				  
+#define STRING_IT(a) #a
 #define TOKEN_IT(a) STRING_IT(,##a)
 #define MESSAGE(a) message (__FILE__ "(" TOKEN_IT(__LINE__) ") : " a)
 
@@ -108,6 +108,12 @@ class AsciiString;
 
 // INLINING ///////////////////////////////////////////////////////////////////
 
+/// Break into the debugger.
+__inline__ static void trap_instruction(void)
+{
+	__asm__ volatile("int $0x03");
+}
+
 // EXTERNALS //////////////////////////////////////////////////////////////////
 
 /// @todo: the standard line-to-string trick isn't working correctly in vc6; figure out why
@@ -137,13 +143,13 @@ class AsciiString;
 	DEBUG_EXTERN_C int DebugGetFlags();
 	DEBUG_EXTERN_C void DebugSetFlags(int flags);
 
-	#define DEBUG_INIT(f)						do { DebugInit(f); } while (0)
-	#define DEBUG_SHUTDOWN()				do { DebugShutdown(); } while (0)
+	#define DEBUG_INIT(f)		do { DebugInit(f); } while (0)
+	#define DEBUG_SHUTDOWN()	do { DebugShutdown(); } while (0)
 
 #else
 
-	#define DEBUG_INIT(f)						((void)0)
-	#define DEBUG_SHUTDOWN()				((void)0)
+	#define DEBUG_INIT(f)		((void)0)
+	#define DEBUG_SHUTDOWN()	((void)0)
 
 #endif
 
@@ -151,12 +157,12 @@ class AsciiString;
 
 	DEBUG_EXTERN_C void DebugLog(const char *format, ...);
 
-	#define DEBUG_LOG(m)						do { { DebugLog m ; } } while (0)
+	#define DEBUG_LOG(m)				do { { DebugLog m ; } } while (0)
 	#define DEBUG_ASSERTLOG(c, m)		do { { if (!(c)) DebugLog m ; } } while (0)
 
 #else
 
-	#define DEBUG_LOG(m)						((void)0)
+	#define DEBUG_LOG(m)				((void)0)
 	#define DEBUG_ASSERTLOG(c, m)		((void)0)
 
 #endif

@@ -37,6 +37,7 @@
 #include "Common/Snapshot.h"
 #include "Lib/BaseType.h"
 #include "WW3D2/coltype.h"			///< we don't generally do this, but we need the W3D collision types
+#include "rendobj.h"
 
 #define DEFAULT_VIEW_WIDTH 640
 #define DEFAULT_VIEW_HEIGHT 480
@@ -210,13 +211,13 @@ public:
 	virtual void screenToTerrain( const ICoord2D* /* screen */, Coord3D* /* world */ ) {};  ///< transform screen coord to a point on the 3D terrain
 	virtual void screenToWorldAtZ( const ICoord2D* /* s */, Coord3D* /* w */, Real /* z */ ) {};  ///< transform screen point to world point at the specified world Z value
 
-	virtual void getLocation ( ViewLocation *location );								///< write the view's current location in to the view location object
+	virtual void getLocation ( ViewLocation *location );						///< write the view's current location in to the view location object
 	virtual void setLocation ( const ViewLocation *location );					///< set the view's current location from to the view location object
 
 
-	virtual void drawView( void ) = 0;															///< Render the world visible in this view.
+	virtual void drawView(void) = 0;					///< Render the world visible in this view.
 	virtual void updateView(void) = 0;					///<called once per frame to determine the final camera and object transforms
-
+	virtual void add3dObject(RenderObjClass* obj) = 0;
 
 
 
@@ -248,10 +249,10 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void ) { }
 
-	void setPosition( const Coord3D *pos ) { m_pos = *pos; }					
-	const Coord3D *getPosition( void ) const { return &m_pos; }					
+	void setPosition( const Coord3D *pos ) { m_pos = *pos; }
+	const Coord3D *getPosition( void ) const { return &m_pos; }
 
-	virtual View *prependViewToList( View *list );							///< Prepend this view to the given list, return the new list
+	virtual View *prependViewToList( View *list );						///< Prepend this view to the given list, return the new list
 	virtual View *getNextView( void ) { return m_next; }				///< Return next view in the set
 
 
@@ -263,7 +264,7 @@ protected:
 	static UnsignedInt m_idNext;			///< Used for allocating view ID's for all views
 
 	Coord3D m_pos {};						///< Position of this view, in world coordinates
-	Int m_width {}, m_height {};				///< Dimensions of the view
+	Int m_width {}, m_height {};			///< Dimensions of the view
 	Int m_originX {}, m_originY {};			///< Location of top/left view corner
 
 	Real m_angle {};						///< Angle at which view has been rotated about the Z axis

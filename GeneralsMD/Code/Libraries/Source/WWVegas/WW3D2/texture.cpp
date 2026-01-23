@@ -100,7 +100,7 @@ TextureBaseClass::TextureBaseClass
 	HSVShift(0.0f,0.0f,0.0f),
 	Width((int)width),
 	Height((int)height),
-	D3DTexture(NULL),
+	GLTexture(NULL),
 	Name(""),
 	FullPath(""),
 	texture_id(unused_texture_id++),
@@ -123,12 +123,17 @@ TextureBaseClass::~TextureBaseClass(void)
 	delete ThumbnailLoadTask;
 	ThumbnailLoadTask=NULL;
 
-	// FIXME: DX8 stuff.
-	// if (D3DTexture) 
-	// {
-	// 	D3DTexture->Release();
-	// 	D3DTexture = NULL;
-	// }
+	if (GLTexture) 
+	{
+		GLTexture->Release_Ref();
+		GLTexture = nullptr;
+	}
+
+	if (GLSampler) 
+	{
+		GLSampler->Release_Ref();
+		GLSampler = nullptr;
+	}
 
 	// DX8TextureManagerClass::Remove(this);
 }
@@ -263,37 +268,33 @@ DEBUG_CRASH(("TextureBaseClass::Invalidate not yet implemented!"));
 //! Returns a pointer to the d3d texture
 /*! 
 */
-IDirect3DBaseTexture8 * TextureBaseClass::Peek_D3D_Base_Texture() const 
+OpenGLTexture* TextureBaseClass::Peek_GL_Base_Texture() const 
 {
-DEBUG_CRASH(("TextureBaseClass::Peek_D3D_Base_Texture not yet implemented!"));
-return nullptr;
 #if 0
 	LastAccessed=WW3D::Get_Sync_Time(); 
-	return D3DTexture; 
 #endif // if 0
+	return GLTexture; 
 }
 
 //**********************************************************************************************
 //! Set the d3d texture pointer.  Handles ref counts properly.
 /*! 
 */
-void TextureBaseClass::Set_D3D_Base_Texture(IDirect3DBaseTexture8* tex) 
+void TextureBaseClass::Set_GL_Base_Texture(OpenGLTexture* tex) 
 {
-(void) tex;
-DEBUG_CRASH(("TextureBaseClass::Set_D3D_Base_Texture not yet implemented!"));
 #if 0
 	// (gth) Generals does stuff directly with the D3DTexture pointer so lets
-	// reset the access timer whenever someon messes with this pointer.
+	// reset the access timer whenever someone messes with this pointer.
 	LastAccessed=WW3D::Get_Sync_Time();
-	
-	if (D3DTexture != NULL) {
-		D3DTexture->Release();
-	}
-	D3DTexture = tex;
-	if (D3DTexture != NULL) {
-		D3DTexture->AddRef();
-	}
 #endif // if 0
+	
+	if (GLTexture != NULL) {
+		GLTexture->Release_Ref();
+	}
+	GLTexture = tex;
+	if (GLTexture != NULL) {
+		GLTexture->Add_Ref();
+	}
 }
 
 
@@ -679,8 +680,6 @@ TextureClass::TextureClass
 	TextureFormat(format),
 	Filter(mip_level_count)
 {
-DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
-#if 0
 	Initialized=true;
 	IsProcedural=true;
 	IsReducible=false;
@@ -696,7 +695,8 @@ DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
 		break;
 	default : break;
 	}
-		
+
+#if 0
 	D3DPOOL d3dpool=(D3DPOOL)0;
 	switch(pool)
 	{
@@ -705,20 +705,12 @@ DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
 	case POOL_SYSTEMMEM	: d3dpool=D3DPOOL_SYSTEMMEM; break;
 	default: WWASSERT(0);
 	}
+#endif // if 0
 
-	Poke_Texture
-	(
-		DX8Wrapper::_Create_DX8_Texture
-		(
-			width, 
-			height, 
-			format, 
-			mip_level_count,
-			d3dpool,
-			rendertarget
-		)
-	);
+	Poke_Texture(newInstance(OpenGLTexture)(width, height));
+	Poke_Sampler(newInstance(OpenGLSampler));
 
+#if 0
 	if (pool==POOL_DEFAULT)
 	{
 		Set_Dirty();

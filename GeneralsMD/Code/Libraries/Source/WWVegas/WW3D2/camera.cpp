@@ -89,7 +89,8 @@
  * HISTORY:                                                                                    *
  *   3/21/98    GTH : Created.                                                                 *
  *=============================================================================================*/
-CameraClass::CameraClass(void) :
+CameraClass::CameraClass(void) //:
+#if 0
 	Projection(PERSPECTIVE),
 	Viewport(Vector2(0,0),Vector2(1,1)),		// pixel viewport to render into
 	AspectRatio(4.0f/3.0f),
@@ -98,9 +99,12 @@ CameraClass::CameraClass(void) :
 	ZBufferMin(0.0f),									// smallest value we'll write into the z-buffer
 	ZBufferMax(1.0f),									// largest value we'll write into the z-buffer
 	FrustumValid(false)
+#endif // if 0
 {
+#if 0
 	Set_Transform(Matrix3D(1));
 	Set_View_Plane(DEG_TO_RADF(50.0f));
+#endif // if 0
 }
 
 
@@ -117,8 +121,9 @@ CameraClass::CameraClass(void) :
  *   3/21/98    GTH : Created.                                                                 *
  *   4/13/2001  hy : added in copy code for new member functions                               *
  *=============================================================================================*/
-CameraClass::CameraClass(const CameraClass & src) : 
-	RenderObjClass(src),
+CameraClass::CameraClass(const CameraClass & src) :
+	RenderObjClass(src)//,
+#if 0
 	Projection(src.Projection),
 	Viewport(src.Viewport),
 	ViewPlane(src.ViewPlane),
@@ -132,9 +137,12 @@ CameraClass::CameraClass(const CameraClass & src) :
 	AspectRatio(src.AspectRatio),
 	ZBufferMin(src.ZBufferMin),
 	ZBufferMax(src.ZBufferMax)
+#endif // if 0
 {
-	// just being paraniod in case any parent class doesn't completely copy the entire state...
+#if 0
+	// just being paranoid in case any parent class doesn't completely copy the entire state...
 	FrustumValid = false;
+#endif // if 0
 }
 
 
@@ -154,7 +162,8 @@ CameraClass & CameraClass::operator = (const CameraClass & that)
 {
 	if (this != &that) {
 		RenderObjClass::operator = (that);
-	
+
+#if 0
 		Projection = that.Projection;
 		Viewport = that.Viewport;
 		ViewPlane = that.ViewPlane;
@@ -166,12 +175,13 @@ CameraClass & CameraClass::operator = (const CameraClass & that)
 		ProjectionTransform = that.ProjectionTransform;
 		CameraInvTransform = that.CameraInvTransform;
 		
-		// just being paraniod in case any parent class doesn't completely copy the entire state...
+		// just being paranoid in case any parent class doesn't completely copy the entire state...
 		FrustumValid = false;
+#endif // if 0
 	}
 
 	return * this;
-}  	
+}
 
 
 /***********************************************************************************************
@@ -208,7 +218,7 @@ RenderObjClass * CameraClass::Clone(void) const
 	return NEW_REF( CameraClass, (*this) );
 }
 
-
+#if 0
 /***********************************************************************************************
  * CameraClass::Get_Obj_Space_Bounding_Sphere -- returns the object space bounding sphere      *
  *                                                                                             *
@@ -245,6 +255,7 @@ void CameraClass::Get_Obj_Space_Bounding_Box(AABoxClass & box) const
 	box.Center.Set(0,0,0);
 	box.Extent.Set(ZFar,ZFar,ZFar);	// could optimize this but its not really used.
 }
+#endif // if 0
 
 
 /***********************************************************************************************
@@ -384,6 +395,7 @@ void CameraClass::Get_View_Plane(Vector2 & set_min,Vector2 & set_max) const
 }
 
 
+#if 0
 /***********************************************************************************************
  * CameraClass::Project -- project a point from ws to the view plane                           *
  *                                                                                             *
@@ -471,6 +483,7 @@ CameraClass::Project_Camera_Space_Point(Vector3 & dest,const Vector3 & cam_point
 
 	return INSIDE_FRUSTUM;
 }
+#endif // if 0
 
 /***********************************************************************************************
  * CameraClass::Un_Project -- "unproject" a point from the view plane to world space           *
@@ -505,8 +518,9 @@ void CameraClass::Un_Project(Vector3 & dest,const Vector2 & view_point) const
 
 	Matrix3D::Transform_Vector(Transform,point,&dest);
 }
-	
 
+
+#if 0
 /***********************************************************************************************
  * CameraClass::Transform_To_View_Space -- transforms the given world space point to camera sp *
  *                                                                                             *
@@ -582,6 +596,7 @@ bool CameraClass::Cull_Box(const AABoxClass & box) const
 	const FrustumClass & frustum = Get_Frustum();
 	return CollisionMath::Overlap_Test(frustum,box) == CollisionMath::OUTSIDE;
 }
+#endif // if 0
 
 
 /***********************************************************************************************
@@ -600,17 +615,17 @@ void CameraClass::Update_Frustum(void) const
 {
 	if (FrustumValid) return;
 
-   Vector2 vpmin,vpmax;
-   float znear,zfar;
+	Vector2 vpmin,vpmax;
+	float znear,zfar;
 	float znear_dist,zfar_dist;
 
-   Matrix3D cam_mat = Get_Transform();
-   Get_View_Plane(vpmin, vpmax); // Normalized view plane at a depth of 1.0
-   Get_Clip_Planes(znear_dist, zfar_dist);
+	Matrix3D cam_mat = Get_Transform();
+	Get_View_Plane(vpmin, vpmax); // Normalized view plane at a depth of 1.0
+	Get_Clip_Planes(znear_dist, zfar_dist);
 
-   // Forward is negative Z in our viewspace coordinate system.
-   znear = -znear_dist;
-   zfar = -zfar_dist;
+	// Forward is negative Z in our viewspace coordinate system.
+	znear = -znear_dist;
+	zfar = -zfar_dist;
 
 	// Update the frustum
 	FrustumValid = true;
@@ -646,6 +661,7 @@ void CameraClass::Update_Frustum(void) const
 }
 
 
+#if 0
 /***********************************************************************************************
  * CameraClass::Device_To_View_Space -- converts the given device coordinate to view space     *
  *                                                                                             *
@@ -718,6 +734,8 @@ void CameraClass::Device_To_World_Space(const Vector2 & device_coord,Vector3 * w
  *=============================================================================================*/
 void CameraClass::Apply(void)
 {
+DEBUG_CRASH(("CameraClass::Apply not yet implemented!"));
+#if 0
 	Update_Frustum();
 
 	int width,height,bits;
@@ -737,9 +755,11 @@ void CameraClass::Apply(void)
 	Get_D3D_Projection_Matrix(&d3dprojection);
 	DX8Wrapper::Set_Projection_Transform_With_Z_Bias(d3dprojection,ZNear,ZFar);
 	DX8Wrapper::Set_Transform(D3DTS_VIEW,CameraInvTransform);
+#endif // if 0
 }
+#endif // if 0
 
-void CameraClass::Set_Clip_Planes(float znear,float zfar)						
+void CameraClass::Set_Clip_Planes(float znear,float zfar)
 { 
 	FrustumValid = false;
 	ZNear = znear;
@@ -752,6 +772,7 @@ void CameraClass::Get_Clip_Planes(float & znear,float & zfar) const
 	zfar = ZFar;
 }
 
+#if 0
 float CameraClass::Get_Horizontal_FOV(void) const 
 { 
 	float width = ViewPlane.Max.X - ViewPlane.Min.X;
@@ -828,3 +849,4 @@ float CameraClass::Compute_Projected_Sphere_Radius(float dist,float radius)
 	Vector4 result = ProjectionTransform * Vector4(radius,0.0f,dist,1.0f);
 	return result.X / result.W;
 }
+#endif // if 0

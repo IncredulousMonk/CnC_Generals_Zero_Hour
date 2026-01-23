@@ -169,25 +169,25 @@ private:
 };
 
 // RenderObjClass definition
-class RenderObjClass : public RefCountClass , public PersistClass, public MultiListObjectClass
+class RenderObjClass : public RefCountClass //, public PersistClass, public MultiListObjectClass
 {
 public:
 
- 	//Integer flag placed at the start of structure pointed to by
- 	//User_Data to signal that it points at custom mesh material settings.
+	//Integer flag placed at the start of structure pointed to by
+	//User_Data to signal that it points at custom mesh material settings.
 	//Added for 'Generals' - MW
- 	enum	{USER_DATA_MATERIAL_OVERRIDE = 0x01234567};
- 
- 	//This strucutre is used to pass custom rendering parameters into the W3D
- 	//mesh renderer so it can override settings which are usually shared across
- 	//all instances of a model - typically material settings like alpha, texture
- 	//animation, texture uv scrolling, etc.  Added for 'Generals' -MW 
- 	struct Material_Override
- 	{	Material_Override(void)	: Struct_ID(USER_DATA_MATERIAL_OVERRIDE),customUVOffset(0,0) {}
- 
- 		int Struct_ID;	//ID used to identify this structure from a pointer to it.
- 		Vector2 customUVOffset;
- 	};
+	enum	{USER_DATA_MATERIAL_OVERRIDE = 0x01234567};
+
+	//This strucutre is used to pass custom rendering parameters into the W3D
+	//mesh renderer so it can override settings which are usually shared across
+	//all instances of a model - typically material settings like alpha, texture
+	//animation, texture uv scrolling, etc.  Added for 'Generals' -MW 
+	struct Material_Override
+	{	Material_Override(void)	: Struct_ID(USER_DATA_MATERIAL_OVERRIDE),customUVOffset(0,0) {}
+
+		int Struct_ID;	//ID used to identify this structure from a pointer to it.
+		Vector2 customUVOffset;
+	};
 
 	//
 	//	Note:  It is very important that these values NEVER CHANGE.  That means
@@ -271,6 +271,7 @@ public:
 	virtual void					Restart(void)											{ }
 
 
+#if 0
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - "Scene Graph"
 	// Some of the functions in this group are non-virtual as they are meant 
@@ -283,6 +284,7 @@ public:
 	virtual SceneClass *			Get_Scene(void);
 	virtual SceneClass *			Peek_Scene(void)																{ return Scene; }
 	virtual void					Set_Container(RenderObjClass * con);
+#endif // if 0
 	virtual void					Validate_Transform(void) const;
 
 #define GET_CONTAINER_INLINE
@@ -303,10 +305,11 @@ public:
 	bool						Is_Transform_Identity_No_Validity_Check() const;
 	Vector3						Get_Position(void) const;
 
+#if 0
 	virtual void				Notify_Added(SceneClass * scene);
 	virtual void				Notify_Removed(SceneClass * scene);
 
-	virtual int					Get_Num_Sub_Objects(void) const												{ return 0; } 					
+	virtual int					Get_Num_Sub_Objects(void) const												{ return 0; }
 	virtual RenderObjClass *	Get_Sub_Object(int /* index */) const										{ return NULL; }
 	virtual int					Add_Sub_Object(RenderObjClass * /* subobj */)								{ return 0; }
 	virtual int					Remove_Sub_Object(RenderObjClass * /* robj */)								{ return 0; }
@@ -320,6 +323,7 @@ public:
 	virtual int					Add_Sub_Object_To_Bone(RenderObjClass * subobj,const char * bname);
 	virtual int					Remove_Sub_Objects_From_Bone(int boneindex);
 	virtual int					Remove_Sub_Objects_From_Bone(const char * bname);
+#endif // if 0
 
 	// This is public only so objects can recursively call this on their sub-objects
 	virtual void				Update_Sub_Object_Transforms(void);
@@ -338,6 +342,7 @@ public:
 		ANIM_MODE_ONCE_BACKWARDS,
 	};
 
+#if 0
 	virtual void					Set_Animation( void )														{ }
 	virtual void					Set_Animation( HAnimClass * /* motion */,
 															float /* frame */, int /* anim_mode */ = ANIM_MODE_MANUAL)	{ }
@@ -345,22 +350,22 @@ public:
 															float /* frame0 */,
 															HAnimClass * /* motion1 */,
 															float /* frame1 */,
-															float /* percentage */)											{ }
+															float /* percentage */)								{ }
 	virtual void					Set_Animation( HAnimComboClass * /* anim_combo */)							{ }
 
 	virtual HAnimClass *			Peek_Animation( void )														{ return NULL; }
+#endif // if 0
 	virtual int						Get_Num_Bones(void)															{ return 0; }
-	virtual const char *			Get_Bone_Name(int /* bone_index */)												{ return NULL; }
+	virtual const char *			Get_Bone_Name(int /* bone_index */)											{ return NULL; }
 	virtual int						Get_Bone_Index(const char * /* bonename */)									{ return 0; }
-	virtual const Matrix3D &	Get_Bone_Transform(const char * /* bonename */)    						{ return Get_Transform(); }
-	virtual const Matrix3D &	Get_Bone_Transform(int /* boneindex */)      								{ return Get_Transform(); }
-	virtual void					Capture_Bone(int /* bindex */)													{ }
-	
-
-	virtual void					Release_Bone(int /* bindex */)													{ }
-	virtual bool					Is_Bone_Captured(int /* bindex */) const										{ return false; }
-	virtual void					Control_Bone(int /* bindex */,const Matrix3D & /* objtm */,bool /* world_space_translation */ = false)						{ }
-	virtual const HTreeClass *	Get_HTree(void) const														{ return NULL; }
+	virtual const Matrix3D &		Get_Bone_Transform(const char * /* bonename */)    							{ return Get_Transform(); }
+	virtual const Matrix3D &		Get_Bone_Transform(int /* boneindex */)      								{ return Get_Transform(); }
+#if 0
+	virtual void					Capture_Bone(int /* bindex */)												{ }
+	virtual void					Release_Bone(int /* bindex */)												{ }
+	virtual bool					Is_Bone_Captured(int /* bindex */) const									{ return false; }
+	virtual void					Control_Bone(int /* bindex */,const Matrix3D & /* objtm */,bool /* world_space_translation */ = false)	{ }
+	virtual const HTreeClass *	Get_HTree(void) const															{ return NULL; }
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Collision Detection
@@ -389,9 +394,9 @@ public:
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual const SphereClass & Get_Bounding_Sphere(void) const;
 	virtual const AABoxClass &	Get_Bounding_Box(void) const;
-	virtual void		 			Get_Obj_Space_Bounding_Sphere(SphereClass & sphere) const;
-	virtual void					Get_Obj_Space_Bounding_Box(AABoxClass & box) const;
-   virtual void               Update_Obj_Space_Bounding_Volumes(void)								{ };
+	virtual void				Get_Obj_Space_Bounding_Sphere(SphereClass & sphere) const;
+	virtual void				Get_Obj_Space_Bounding_Box(AABoxClass & box) const;
+	virtual void				Update_Obj_Space_Bounding_Volumes(void)								{ };
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -405,7 +410,7 @@ public:
 	static const float	AT_MAX_LOD;
 
 	virtual void	Prepare_LOD(CameraClass &camera);
-	virtual void   Recalculate_Static_LOD_Factors(void)													{ }
+	virtual void	Recalculate_Static_LOD_Factors(void)													{ }
 	virtual void	Increment_LOD(void)																			{ }
 	virtual void	Decrement_LOD(void)																			{ }
 	virtual float	Get_Cost(void) const;
@@ -458,7 +463,8 @@ public:
 
 	virtual int					Get_Sort_Level(void) const													{ return 0; /* SORT_LEVEL_NONE */ }
 	virtual void				Set_Sort_Level(int /* level */)													{ }
-	
+#endif // if 0
+
 	virtual int					Is_Really_Visible(void)														{ return ((Bits & IS_REALLY_VISIBLE) == IS_REALLY_VISIBLE); }
 	virtual int					Is_Not_Hidden_At_All(void)													{ return ((Bits & IS_NOT_HIDDEN_AT_ALL) == IS_NOT_HIDDEN_AT_ALL); }
 	virtual int					Is_Visible(void) const														{ return (Bits & IS_VISIBLE); }
@@ -501,6 +507,7 @@ public:
 	void						Unset_Is_Self_Shadowed()													{ Bits&=~IS_SELF_SHADOWED; }
 	int							Is_Self_Shadowed() const													{ return (Bits&IS_SELF_SHADOWED); }
 
+#if 0
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Persistant object save-load interface
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -510,7 +517,7 @@ public:
 
 	// Application-specific render hook:
 	RenderHookClass *				Get_Render_Hook(void) { return RenderHook; }
-	void								Set_Render_Hook(RenderHookClass *hook) { if (RenderHook) delete RenderHook; RenderHook = hook; }
+	void							Set_Render_Hook(RenderHookClass *hook) { if (RenderHook) delete RenderHook; RenderHook = hook; }
 
 protected:
 
@@ -518,7 +525,8 @@ protected:
 
 	virtual void					Update_Cached_Bounding_Volumes(void) const;
 	virtual void					Update_Sub_Object_Bits(void);
-	
+#endif // if 0
+
 	bool								Bounding_Volumes_Valid(void) const										{ return (Bits & BOUNDING_VOLUMES_VALID) != 0; }
 	void								Invalidate_Cached_Bounding_Volumes(void) const						{ Bits &= ~BOUNDING_VOLUMES_VALID; }
 	void								Validate_Cached_Bounding_Volumes(void)	const							{ Bits |= BOUNDING_VOLUMES_VALID; }
@@ -545,25 +553,28 @@ protected:
 		DEFAULT_BITS =				COLL_TYPE_ALL | IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
 	};
 
-	mutable unsigned long		Bits;
-	Matrix3D							Transform;
-	float						ObjectScale;					//user applied scaling factor inside Transform matrix.
-	unsigned int				ObjectColor;					//user applied coloring to the asset/prototype used to make this robj. - For Generals -MW
-	mutable SphereClass			CachedBoundingSphere;
-	mutable AABoxClass			CachedBoundingBox;
-	float								NativeScreenSize;		// The screen size at which the object was designed to be viewed (used in texture resizing).
-	mutable bool					IsTransformIdentity;
+	mutable unsigned long		Bits {};
+	Matrix3D					Transform {};
+	float						ObjectScale {};					//user applied scaling factor inside Transform matrix.
+	unsigned int				ObjectColor {};					//user applied coloring to the asset/prototype used to make this robj. - For Generals -MW
+	mutable SphereClass			CachedBoundingSphere {};
+	mutable AABoxClass			CachedBoundingBox {};
+	float						NativeScreenSize {};		// The screen size at which the object was designed to be viewed (used in texture resizing).
+	mutable bool				IsTransformIdentity {};
 
-	SceneClass *					Scene;
-	RenderObjClass *				Container;
-	void *							User_Data;
+	SceneClass *				Scene {};
+	RenderObjClass *			Container {};
+	void *						User_Data {};
 
-	RenderHookClass *				RenderHook;
-	
+	RenderHookClass *			RenderHook {};
+
+#if 0
 	friend class SceneClass;
 	friend class RenderObjProxyClass;
+#endif // if 0
 };
 
+#if 0
 WWINLINE const SphereClass & RenderObjClass::Get_Bounding_Sphere(void) const
 {
 	if (!(Bits & BOUNDING_VOLUMES_VALID)) {
@@ -598,6 +609,7 @@ WWINLINE float Bound_Degrees(float angle)
 	while (angle < 0) angle += 360;
 	return angle;
 }
+#endif // if 0
 
 /***********************************************************************************************
  * RenderObjClass::Get_Transform -- returns the transform for the object                       *

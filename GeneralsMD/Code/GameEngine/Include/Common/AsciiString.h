@@ -95,11 +95,11 @@ private:
 #if defined(_DEBUG) || defined(_INTERNAL)
 		const char* m_debugptr;	// just makes it easier to read in the debugger
 #endif
-		std::atomic<unsigned short>	m_refCount {0};						// reference count
-		unsigned short	m_numCharsAllocated;  // length of data allocated
-		// char m_stringdata[];
+		std::atomic<unsigned short>	m_refCount {0};		// reference count
+		unsigned short	m_numCharsAllocated;			// length of data allocated
+		// |----- string data stored in extra memory allocated here -----|
 
-		inline char* peek() { return (char*)(this+1); }
+		inline char* peek() { return (char*)(this+1); }	// "this" is an AsciiStringData*, so +1 means +1 * sizeof(AsciiStringData)
 	};
 
 	#ifdef _DEBUG

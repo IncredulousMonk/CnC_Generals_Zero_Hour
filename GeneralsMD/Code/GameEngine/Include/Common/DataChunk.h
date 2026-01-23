@@ -47,7 +47,7 @@ class DataChunkTableOfContents;
 //----------------------------------------------------------------------
 class Mapping : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Mapping, "Mapping")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Mapping, "Mapping")
 public:
 	Mapping*		next {};
 	AsciiString		name {};
@@ -60,7 +60,7 @@ EMPTY_DTOR(Mapping)
 //----------------------------------------------------------------------
 class OutputChunk : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(OutputChunk, "OutputChunk")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(OutputChunk, "OutputChunk")
 public:
 	OutputChunk*	next {};
 	UnsignedInt		id {};			// chunk symbol type from table of contents
@@ -73,7 +73,7 @@ EMPTY_DTOR(OutputChunk)
 //----------------------------------------------------------------------
 class InputChunk : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(InputChunk, "InputChunk")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(InputChunk, "InputChunk")
 public:
 	InputChunk*				next {};
 	UnsignedInt				id {};				// chunk symbol type from table of contents

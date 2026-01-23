@@ -200,6 +200,11 @@ public:
 		Note that a copy of the string is made; the input ptr is not saved.
 	*/
 	void set(const WideChar* s);
+	/**
+		Replace the contents of self with the given string.
+		Note that a copy of the string is made; the input ptr is not saved.
+	*/
+	void set(const char16_t* s);
 
 	/**
 		replace contents of self with the given string. Note the

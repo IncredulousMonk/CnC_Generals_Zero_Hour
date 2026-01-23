@@ -45,7 +45,7 @@
 #define MULTILIST_H
 
 #include "always.h"
-#include "mempool.h"
+// #include "mempool.h"
 #include <assert.h>
 
 class MultiListNodeClass;
@@ -100,7 +100,7 @@ private:
 ** given list and the other dimension is the list of lists that a given object
 ** is in.
 */
-class MultiListNodeClass : public AutoPoolClass<MultiListNodeClass, 256>
+class MultiListNodeClass //: public AutoPoolClass<MultiListNodeClass, 256> // MG: The DynamicMemoryAllocator should take care of pooling.
 {
 public:
 	MultiListNodeClass(void) { Prev = Next = NextList = 0; Object = 0; List = 0; }

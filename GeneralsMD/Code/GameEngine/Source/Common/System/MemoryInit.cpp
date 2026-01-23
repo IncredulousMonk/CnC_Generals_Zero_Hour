@@ -633,6 +633,10 @@ static PoolSizeRec sizes[] =
 	{ "WaterTransparencySetting", 1, 1 },
 	{ "WeatherSetting", 1, 1 },
 	
+	// OpenGL pools!
+	{ "OpenGLTexture", 4, 1 },
+	{ "OpenGLSampler", 4, 1 },
+	
 	// W3D pools!
 	{ "BoxPrototypeClass", 128, 128 },
 	{ "SpherePrototypeClass", 32, 32 },

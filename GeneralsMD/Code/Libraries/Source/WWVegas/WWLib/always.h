@@ -72,17 +72,17 @@
 #endif	//_MSC_VER
 #endif	//_DEBUG
 
-#if 0 // (gth) killing the Generals Memory Manager!
+#if 1 // (gth) killing the Generals Memory Manager!
 
 #ifndef _OPERATOR_NEW_DEFINED_
 
 	#define _OPERATOR_NEW_DEFINED_
 
 	extern void * operator new		(size_t size);
-	extern void operator delete		(void *p);
+	extern void operator delete		(void *p) noexcept;
 
 	extern void * operator new[]	(size_t size);
-	extern void operator delete[]	(void *p);
+	extern void operator delete[]	(void *p) noexcept;
 
 	// additional overloads to account for VC/MFC funky versions
 	extern void* operator new			(size_t nSize, const char *, int);
@@ -94,8 +94,8 @@
 	// additional overloads for 'placement new'
 	//inline void* operator new							(size_t s, void *p) { return p; }
 	//inline void operator delete						(void *, void *p)		{ }
-	inline void* operator new[]						(size_t /* s */, void *p) { return p; }
-	inline void operator delete[]					(void *, void* /* p */)		{ }
+	// inline void* operator new[]						(size_t /* s */, void *p) { return p; }
+	// inline void operator delete[]					(void *, void* /* p */)		{ }
 
 #endif
 
@@ -112,9 +112,9 @@
 #endif
 
 // ----------------------------------------------------------------------------
-extern void* createW3DMemPool(const char *poolName, int allocationSize);
-extern void* allocateFromW3DMemPool(void* p, int allocationSize);
-extern void* allocateFromW3DMemPool(void* p, int allocationSize, const char* msg, int unused);
+extern void* createW3DMemPool(const char *poolName, size_t allocationSize);
+extern void* allocateFromW3DMemPool(void* p, size_t allocationSize);
+extern void* allocateFromW3DMemPool(void* p, size_t allocationSize, const char* msg, int unused);
 extern void freeFromW3DMemPool(void* pool, void* p);
 
 // ----------------------------------------------------------------------------

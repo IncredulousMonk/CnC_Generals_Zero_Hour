@@ -28,6 +28,9 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/glcorearb.h>
 #include <string>
+#include <array>
+
+using Mat4 = std::array<GLfloat, 16>;
 
 class OpenGLRenderer {
 private:
@@ -35,6 +38,7 @@ private:
    GLuint m_vboGui {};
    GLuint m_progGui {};
    GLuint m_texGui {};
+   GLuint m_samGui {};
 public:
    void init();
    void drawSplashImage();
@@ -43,6 +47,9 @@ public:
 
    static void addShader(GLuint program, const char* source, GLenum shaderType);
    static void buildShader(GLuint program);
+   static Mat4 frustum(double left, double right, double bottom, double top, double near, double far);
+   static Mat4 perspective(double fieldOfViewY, double aspect, double near, double far);
+   static Mat4 lookat(double eyeX, double eyeY, double eyeZ, double centreX, double centreY, double centreZ, double upX, double upY, double upZ);
 };
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////

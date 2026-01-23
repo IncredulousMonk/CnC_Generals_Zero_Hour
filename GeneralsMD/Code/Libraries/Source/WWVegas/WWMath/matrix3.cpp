@@ -390,4 +390,3 @@ void Matrix3x3::Re_Orthogonalize(void)
 	Row[2][1] = z.Y;
 	Row[2][2] = z.Z;
 }
-

@@ -373,7 +373,7 @@ void GameEngine::init( int argc, char *argv[] )
 	#endif/////////////////////////////////////////////////////////////////////////////////////////////
 
 
-		initSubsystem(TheWritableGlobalData, "TheWritableGlobalData", MSGNEW("GameEngineSubsystem") GlobalData(), nullptr /*&xferCRC, "Data\\INI\\Default\\GameData.ini", "Data\\INI\\GameData.ini"*/);
+		initSubsystem(TheWritableGlobalData, "TheWritableGlobalData", MSGNEW("GameEngineSubsystem") GlobalData(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\GameData.ini", "Data\\INI\\GameData.ini");
 
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////

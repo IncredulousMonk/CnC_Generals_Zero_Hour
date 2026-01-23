@@ -454,7 +454,7 @@ Mapping *DataChunkTableOfContents::findMapping( const AsciiString& name )
 }
 
 // convert name to integer identifier
-UnsignedInt DataChunkTableOfContents::getID( const AsciiString& name )		
+UnsignedInt DataChunkTableOfContents::getID( const AsciiString& name )
 {
 	Mapping *m = findMapping( name );
 
@@ -466,7 +466,7 @@ UnsignedInt DataChunkTableOfContents::getID( const AsciiString& name )
 }
 
 // convert integer identifier to name
-AsciiString DataChunkTableOfContents::getName( UnsignedInt id )	
+AsciiString DataChunkTableOfContents::getName( UnsignedInt id )
 {
 	Mapping *m;
 
@@ -653,6 +653,8 @@ Bool DataChunkInput::parse( void *userData )
 		}
 		// open the chunk
 		label = openDataChunk( &ver );
+DEBUG_LOG(("$$$$$ Found chunk called \"%s\", ID = %d, version = %d, start = 0x%x, size = %d (0x%x)\n",
+	label.str(), m_chunkStack->id, m_chunkStack->version, m_chunkStack->chunkStart, m_chunkStack->dataSize, m_chunkStack->dataSize));
 		if (atEndOfFile()) { // FILE * returns eof after you read past end of file, so check.
 			break;
 		}
@@ -754,7 +756,7 @@ AsciiString DataChunkInput::openDataChunk(DataChunkVersionType *ver )
 
 // close chunk and move to start of next chunk
 void DataChunkInput::closeDataChunk( void )
-{										
+{
 	if (m_chunkStack == NULL)
 	{
 		// TODO: Throw exception
@@ -950,8 +952,8 @@ Dict DataChunkInput::readDict()
 }
 
 AsciiString DataChunkInput::readAsciiString(void) 
-{ 
-	UnsignedShort len;	
+{
+	UnsignedShort len;
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(UnsignedShort), ("Read past end of chunk."));
 	m_file->read( &len, sizeof(UnsignedShort) );
 	decrementDataLeft( sizeof(UnsignedShort) );
@@ -969,19 +971,26 @@ AsciiString DataChunkInput::readAsciiString(void)
 }
 
 UnicodeString DataChunkInput::readUnicodeString(void) 
-{ 
-	UnsignedShort len;	
+{
+	UnsignedShort len;
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(UnsignedShort), ("Read past end of chunk."));
 	m_file->read( &len, sizeof(UnsignedShort) );
 	decrementDataLeft( sizeof(UnsignedShort) );
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=len, ("Read past end of chunk."));
 	UnicodeString theString;
 	if (len>0) {
-		WideChar *str = theString.getBufferForRead(len);
-		m_file->read( (char*)str, len*sizeof(WideChar) );
-		decrementDataLeft( len*sizeof(WideChar) );
-		// add null delimiter to string.  Note that getBufferForRead allocates space for terminating null.
-		str[len] = '\000';
+		size_t size {(len + 1) * sizeof(char16_t)};
+		char16_t* str {static_cast<char16_t*>(TheDynamicMemoryAllocator->allocateBytes(size, "DataChunkInput::readUnicodeString"))};
+		m_file->read( (char*)str, len*sizeof(char16_t) );
+		decrementDataLeft( len*sizeof(char16_t) );
+		str[len] = u'\0';
+		theString.set(str);
+		TheDynamicMemoryAllocator->freeBytes(str);
+		// WideChar *str = theString.getBufferForRead(len);
+		// m_file->read( (char*)str, len*sizeof(WideChar) );
+		// decrementDataLeft( len*sizeof(WideChar) );
+		// // add null delimiter to string.  Note that getBufferForRead allocates space for terminating null.
+		// str[len] = '\000';
 	}
 
 	return theString; 

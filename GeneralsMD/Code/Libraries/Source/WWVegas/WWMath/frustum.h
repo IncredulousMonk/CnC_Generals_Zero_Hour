@@ -60,14 +60,13 @@ public:
 
 public:
 
-	Matrix3D				CameraTransform;
-	PlaneClass			Planes[6];
-	Vector3				Corners[8];
-	Vector3				BoundMin;
-	Vector3				BoundMax;
+	Matrix3D	CameraTransform {};
+	PlaneClass	Planes[6];
+	Vector3		Corners[8];
+	Vector3		BoundMin {};
+	Vector3		BoundMax {};
 };
 
 
 
 #endif
-

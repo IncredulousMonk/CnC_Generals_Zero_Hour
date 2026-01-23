@@ -68,18 +68,6 @@
 // #include "WW3D2/MeshMdl.h"
 #include "Common/BitFlagsIO.h"
 
-// FIXME: Remove this once rendobj.h is sorted.
-static const char* TheAnimModeNames[] =
-{
-	"MANUAL",
-	"LOOP",
-	"ONCE",
-	"LOOP_PINGPONG",
-	"LOOP_BACKWARDS",
-	"ONCE_BACKWARDS",
-	NULL
-};
-
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
@@ -3577,12 +3565,13 @@ Bool LinuxModelDraw::clientOnly_getRenderObjBoundBox(OBBoxClass * boundbox) cons
 
    return true;
 }
+#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
 // (gth) C&C3 Added this accessor for a bone transform in the render object
 // this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
-Bool LinuxModelDraw::clientOnly_getRenderObjBoneTransform(const AsciiString & boneName,Matrix3D * set_tm) const
+Bool LinuxModelDraw::clientOnly_getRenderObjBoneTransform(const AsciiString& boneName, Matrix3D* set_tm) const
 {
    if (!m_renderObject) {
       return false;
@@ -3599,6 +3588,7 @@ Bool LinuxModelDraw::clientOnly_getRenderObjBoneTransform(const AsciiString & bo
 }
 
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Bool LinuxModelDraw::getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const
 {

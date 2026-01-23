@@ -63,8 +63,8 @@ public:
 
 public:
 
-	AxisEnum			Normal;
-	float				Dist;
+	AxisEnum			Normal {};
+	float				Dist {};
 
 };
 

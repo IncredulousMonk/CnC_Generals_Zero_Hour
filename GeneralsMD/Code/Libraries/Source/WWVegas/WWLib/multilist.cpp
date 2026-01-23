@@ -42,7 +42,7 @@
 /*
 ** Delcare the pool for ListNodes
 */
-DEFINE_AUTO_POOL(MultiListNodeClass, 256);
+// DEFINE_AUTO_POOL(MultiListNodeClass, 256);
 
 
 /***********************************************************************************************

@@ -150,7 +150,7 @@ public:
 		const Vector3	&x,		// x-axis unit vector
 		const Vector3	&y,		// y-axis unit vector
 		const Vector3	&z,		// z-axis unit vector
-		const Vector3	&pos		// position
+		const Vector3	&pos	// position
 	);
 
 	WWINLINE explicit Matrix3D(
@@ -196,7 +196,7 @@ public:
 		const Vector3	&x,		// x-axis unit vector
 		const Vector3	&y,		// y-axis unit vector
 		const Vector3	&z,		// z-axis unit vector
-		const Vector3	&pos		// position
+		const Vector3	&pos	// position
 	);
 
 	WWINLINE void Set(const Vector3 & axis,float angle);
@@ -236,7 +236,7 @@ public:
 
 	// These functions will give you the approximate amount that the
 	// matrix has been rotated about a given axis.  These functions
-	// cannot be used to re-build a matrx.  Use the EulerAnglesClass
+	// cannot be used to re-build a matrix.  Use the EulerAnglesClass
 	// to convert a matrix into a set of three Euler angles.
 	float Get_X_Rotation(void) const;
 	float Get_Y_Rotation(void) const;
@@ -248,12 +248,12 @@ public:
 	WWINLINE void	Make_Identity(void);
 	void	Translate(float x,float y,float z);
 	void	Translate(const Vector3 &t);
-   void  Translate_X(float x);
-   void  Translate_Y(float y);
-   void  Translate_Z(float z);
+	void	Translate_X(float x);
+	void	Translate_Y(float y);
+	void	Translate_Z(float z);
 	void	Rotate_X(float theta);
 	void	Rotate_Y(float theta);
-	void 	Rotate_Z(float theta);
+	void	Rotate_Z(float theta);
 	void	Rotate_X(float s,float c);
 	void	Rotate_Y(float s,float c);
 	void	Rotate_Z(float s,float c);
@@ -315,9 +315,7 @@ public:
 	// the special case Orthogonal inverse functions.  Also, when we implement
 	// general case, check where we were using Get_Inverse since usually it should
 	// be changed to Get_Orthogonal_Inverse...
-#if 0
 	void Get_Inverse(Matrix3D & set_inverse) const;
-#endif // if 0
 	void Get_Orthogonal_Inverse(Matrix3D & set_inverse) const;
 	
 	// used for importing SurRender matrices

@@ -16,6 +16,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - The credits menu works (including the music!)
 - The options menu mostly works (the IP address stuff doesn't, because I haven't implemented the network code yet. Also the resolution picker needs work... see below).
 - I have added the skeleton of an OpenGL renderer, which is a prerequisite to doing any 3D rendering.
+- I have made a start on rendering the "shell map" (the 3D scene that plays behind the main menu).  **New screenshot in the wiki.**
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -60,6 +61,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheAnim2DCollection
     - TheFontLibrary
     - TheHeaderTemplateManager
+    - TheTerrainVisual
     - TheWindowManager
     - TheVideoPlayer
     - TheLanguageFilter

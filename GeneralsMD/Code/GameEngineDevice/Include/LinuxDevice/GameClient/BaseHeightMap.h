@@ -28,14 +28,15 @@
 #ifndef __BASE_HEIGHTMAP_H_
 #define __BASE_HEIGHTMAP_H_
 
-#include "always.h"
+// #include "always.h"
 #include "rendobj.h"
-#include "w3d_file.h"
+// #include "w3d_file.h"
 // #include "dx8vertexbuffer.h"
 // #include "dx8indexbuffer.h"
 // #include "dx8wrapper.h"
-#include "shader.h"
-#include "vertmaterial.h"
+// #include "shader.h"
+// #include "vertmaterial.h"
+#include "dx8fvf.h"
 #include "Lib/BaseType.h"
 #include "Common/GameType.h"
 #include "WorldHeightMap.h"
@@ -57,8 +58,8 @@ class W3DTreeDrawModuleData;
 class GeometryInfo;
 
 // FIXME: Once headers are sorted out.
-class DX8VertexBufferClass;
-class DX8IndexBufferClass;
+class DX8VertexBufferClass {};
+class DX8IndexBufferClass {};
 
 #define no_TIMING_TESTS	1
 
@@ -81,16 +82,13 @@ class W3DDynamicLight;
 #ifdef DO_SCORCH
 typedef struct {
 	Vector3 location;
-	Real		radius;
-	Int			scorchType;
+	Real radius;
+	Int scorchType;
 } TScorch;
 #endif
 
-// #define VERTEX_FORMAT VertexFormatXYZDUV2
-// #define DX8_VERTEX_FORMAT DX8_FVF_XYZDUV2
-
-// FIXME: Figure out vertex formats.
-#define VERTEX_FORMAT int
+#define VERTEX_FORMAT VertexFormatXYZRGBAUV2
+#define DX8_VERTEX_FORMAT OGL_FVF_XYZRGBAUV2
 
 /// Custom render object that draws the heightmap and handles intersection tests.
 /**
@@ -99,7 +97,7 @@ virtually everything to do with the terrain, including: drawing, lighting,
 scorchmarks and intersection tests.
 */
 class BaseHeightMapRenderObjClass : public RenderObjClass, /* public DX8_CleanupHook, */ public Snapshot
-{	
+{
 
 public:
 
@@ -110,32 +108,37 @@ public:
 	BaseHeightMapRenderObjClass(const BaseHeightMapRenderObjClass&) = delete;
 	BaseHeightMapRenderObjClass& operator=(const BaseHeightMapRenderObjClass&) = delete;
 
+#if 0
 	// DX8_CleanupHook methods
 	virtual void ReleaseResources(void);	///< Release all dx8 resources so the device can be reset.
 	virtual void ReAcquireResources(void);  ///< Reacquire all resources after device reset.
+#endif // if 0
 
 
 	/////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface (W3D methods)
 	/////////////////////////////////////////////////////////////////////////////
 	virtual RenderObjClass *	Clone(void) const;
-	virtual int						Class_ID(void) const;
-	virtual void					Render(RenderInfoClass & rinfo) = 0;
-	virtual bool					Cast_Ray(RayCollisionTestClass & raytest); // This CANNOT be Bool, as it will not inherit properly if you make Bool == Int
-	virtual void					Get_Obj_Space_Bounding_Sphere(SphereClass & sphere) const;
-	virtual void					Get_Obj_Space_Bounding_Box(AABoxClass & aabox) const;
+	virtual int					Class_ID(void) const;
+	virtual void				Render(RenderInfoClass & rinfo) = 0;
+#if 0
+	virtual bool				Cast_Ray(RayCollisionTestClass & raytest); // This CANNOT be Bool, as it will not inherit properly if you make Bool == Int
+	virtual void				Get_Obj_Space_Bounding_Sphere(SphereClass & sphere) const;
+	virtual void				Get_Obj_Space_Bounding_Box(AABoxClass & aabox) const;
 
 
-	virtual void					On_Frame_Update(void); 
-	virtual void					Notify_Added(SceneClass * scene);
+	virtual void				On_Frame_Update(void); 
+	virtual void				Notify_Added(SceneClass * scene);
 
 	// Other VIRTUAL methods. [3/20/2003]
+#endif // if 0
 
 	///allocate resources needed to render heightmap
 	virtual int initHeightData(Int width, Int height, WorldHeightMap *pMap, RefRenderObjListIterator *pLightsIterator, Bool updateExtraPassTiles=TRUE);
 	virtual Int freeMapResources(void);	///< free resources used to render heightmap
 	virtual void updateCenter(CameraClass *camera, RefRenderObjListIterator *pLightsIterator);
- 	virtual void adjustTerrainLOD(Int adj);
+#if 0
+	virtual void adjustTerrainLOD(Int adj);
 	virtual void doPartialUpdate(const IRegion2D &partialRange, WorldHeightMap *htMap, RefRenderObjListIterator *pLightsIterator) = 0;
 	virtual void staticLightingChanged(void);
 	virtual void oversizeTerrain(Int tilesToOversize);
@@ -146,6 +149,7 @@ public:
 		REF_PTR_RELEASE( m_map );
 		REF_PTR_SET(m_map, pMap);	//update our heightmap pointer in case it changed since last call.
 	}
+#endif // if 0
 
 
 	inline UnsignedByte getClipHeight(Int x, Int y) const
@@ -166,12 +170,15 @@ public:
 		return m_map->getDataPtr()[x + y*m_map->getXExtent()];
 	}
 
+#if 0
 	/// Update the macro texture (pass 3).
 	void setTextureLOD(Int lod);	///<change the maximum mip-level sent to the hardware.
 	void updateMacroTexture(AsciiString textureName);
 	void doTextures(Bool flag) {m_disableTextures = !flag;};
+#endif // if 0
 	/// Update the diffuse value from static light info for one vertex.
 	void doTheLight(VERTEX_FORMAT *vb, Vector3*light, Vector3*normal, RefRenderObjListIterator *pLightsIterator, UnsignedByte alpha);
+#if 0
 	void addScorch(Vector3 location, Real radius, Scorches type);
 	void addTree(DrawableID id, Coord3D location, Real scale, Real angle,
 								Real randomScaleAmount,  const W3DTreeDrawModuleData *data);
@@ -219,7 +226,9 @@ public:
 	Int getNumShoreLineTiles(Bool visible)	{ return visible?m_numVisibleShoreLineTiles:m_numShoreLineTiles;}
 	void setShoreLineDetail(void);	///<update shoreline tiles in case the feature was toggled by user.
 	Bool getMaximumVisibleBox(const FrustumClass &frustum,  AABoxClass *box, Bool ignoreMaxHeight);	///<3d extent of visible terrain.
+#endif // if 0
 	Real getHeightMapHeight(Real x, Real y, Coord3D* normal) const;	///<return height and normal at given point
+#if 0
 	Bool isCliffCell(Real x, Real y);	///<return height and normal at given point
 	Real getMinHeight(void) const {return m_minHeight;}	///<return minimum height of entire terrain
 	Real getMaxHeight(void) const {return m_maxHeight;}	///<return maximum height of entire terrain
@@ -241,6 +250,7 @@ public:
 
 
 	virtual int updateBlock(Int x0, Int y0, Int x1, Int y1, WorldHeightMap *pMap, RefRenderObjListIterator *pLightsIterator) = 0;
+#endif // if 0
 
 protected:
 	// snapshot methods
@@ -249,9 +259,10 @@ protected:
 	virtual void loadPostProcess( void );
 
 protected:
-	Int	m_x;	///< dimensions of heightmap 
-	Int	m_y;	///< dimensions of heightmap
+	Int	m_x {};	///< dimensions of heightmap 
+	Int	m_y {};	///< dimensions of heightmap
 
+#if 0
 #ifdef DO_SCORCH
 	enum { MAX_SCORCH_VERTEX=8194, 
 					MAX_SCORCH_INDEX=6*8194, 
@@ -276,25 +287,28 @@ protected:
 	void freeScorchBuffers(void);		 ///< frees up scorch buffers.
 	void drawScorches(void);		///< Draws the scorch mark polygons in m_vertexScorch.
 #endif
-	WorldHeightMap *m_map;
-	Bool m_useDepthFade;	///<fade terrain lighting under water
-	Bool m_updating;
-	Vector3 m_depthFade;	///<depth based fall off values for r,g,b
-	Bool m_disableTextures;
-	Bool m_needFullUpdate; ///< True if lighting changed, and we need to update all instead of what moved.
-	Bool m_doXNextTime; ///< True if we updated y scroll, and need to do x scroll next frame.
-	Real	m_minHeight;	///<minimum value of height samples in heightmap
-	Real	m_maxHeight;	///<maximum value of height samples in heightmap
-	Bool m_showImpassableAreas; ///< If true, shade impassable areas.
+#endif // if 0
+	WorldHeightMap *m_map {};
+	Bool m_useDepthFade {};	///<fade terrain lighting under water
+	Bool m_updating {};
+	Vector3 m_depthFade {};	///<depth based fall off values for r,g,b
+	Bool m_disableTextures {};
+	Bool m_needFullUpdate {}; ///< True if lighting changed, and we need to update all instead of what moved.
+	Bool m_doXNextTime {}; ///< True if we updated y scroll, and need to do x scroll next frame.
+	Real m_minHeight {};	///<minimum value of height samples in heightmap
+	Real m_maxHeight {};	///<maximum value of height samples in heightmap
+	Bool m_showImpassableAreas {}; ///< If true, shade impassable areas.
 
 	// STL is "smart." This is a variable sized bitset. Very memory efficient.
-	std::vector<bool> m_showAsVisibleCliff;
+	std::vector<bool> m_showAsVisibleCliff {};
 
-
+#if 0
 	ShaderClass m_shaderClass; ///<shader or rendering state for heightmap
-	VertexMaterialClass	  	  *m_vertexMaterialClass;	///< vertex shader (lighting) for terrain
-	TextureClass *m_stageZeroTexture;	///<primary texture
-	TextureClass *m_stageOneTexture;	///<transparent edging texture
+	VertexMaterialClass* m_vertexMaterialClass;	///< vertex shader (lighting) for terrain
+#endif // if 0
+	TextureClass *m_stageZeroTexture {};	///<primary texture
+	TextureClass *m_stageOneTexture {};	///<transparent edging texture
+#if 0
 	CloudMapTerrainTextureClass *m_stageTwoTexture;	///<Cloud map texture
 	TextureClass *m_stageThreeTexture;	///<light/noise map texture
 	AsciiString m_macroTextureName; ///< Name for stage 3 texture.
@@ -339,7 +353,8 @@ protected:
 	void initDestAlphaLUT(void);	///<initialize water depth LUT stored in m_destAlphaTexture
 	void renderShoreLines(CameraClass *pCamera);	///<re-render parts of terrain that need custom blending into water edge
 	void renderShoreLinesSorted(CameraClass *pCamera);	///<optimized version for game usage.
+#endif // if 0
 };
 
 extern BaseHeightMapRenderObjClass *TheTerrainRenderObject;
-#endif  // end __FLAT_HEIGHTMAP_H_
+#endif  // end __BASE_HEIGHTMAP_H_

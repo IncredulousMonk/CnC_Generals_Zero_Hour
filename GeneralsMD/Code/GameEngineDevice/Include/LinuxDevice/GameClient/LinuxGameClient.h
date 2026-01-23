@@ -31,6 +31,7 @@
 #include "LinuxDevice/GameClient/LinuxDisplayStringManager.h"
 #include "LinuxDevice/GameClient/LinuxGameFont.h"
 #include "LinuxDevice/GameClient/LinuxGameWindowManager.h"
+#include "LinuxDevice/GameClient/LinuxTerrainVisual.h"
 #include "LinuxDevice/FFmpeg/FFmpegVideoPlayer.h"
 
 class LinuxGameClient: public GameClient {
@@ -75,7 +76,7 @@ protected:
    virtual VideoPlayerInterface *createVideoPlayer() { return NEW FFmpegVideoPlayer; }
 
    /// factory for creating the TerrainVisual
-   virtual TerrainVisual *createTerrainVisual() { printf("!!! Creating NULL TerrainVisual !!!\n"); return nullptr; }
+   virtual TerrainVisual *createTerrainVisual() { return NEW LinuxTerrainVisual; }
 
    /// factory for creating the snow manager
    virtual SnowManager *createSnowManager() { printf("!!! Creating NULL SnowManager !!!\n"); return nullptr; }

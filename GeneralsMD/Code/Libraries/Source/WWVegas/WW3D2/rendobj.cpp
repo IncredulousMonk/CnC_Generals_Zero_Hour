@@ -73,25 +73,25 @@
 
 
 #include "rendobj.h"
-#include "assetmgr.h"
-#include "_mono.h"
-#include "bsurface.h"
-#include "pot.h"
-#include "scene.h"
-#include "colmath.h"
-#include "coltest.h"
-#include "inttest.h"
-#include "wwdebug.h"
-#include "matinfo.h"
-#include "htree.h"
-#include "predlod.h"
-#include "camera.h"
-#include "ww3d.h"
-#include "chunkio.h"
-#include "persistfactory.h"
-#include "saveload.h"
-#include "ww3dids.h"
-#include "intersec.h"
+// #include "assetmgr.h"
+// #include "_mono.h"
+// #include "bsurface.h"
+// #include "pot.h"
+// #include "scene.h"
+// #include "colmath.h"
+// #include "coltest.h"
+// #include "inttest.h"
+// #include "wwdebug.h"
+// #include "matinfo.h"
+// #include "htree.h"
+// #include "predlod.h"
+// #include "camera.h"
+// #include "ww3d.h"
+// #include "chunkio.h"
+// #include "persistfactory.h"
+// #include "saveload.h"
+// #include "ww3dids.h"
+// #include "intersec.h"
 
 
 #ifdef _INTERNAL
@@ -100,6 +100,7 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#if 0
 // Definitions of static members:
 const float	RenderObjClass::AT_MIN_LOD = FLT_MAX;
 const float	RenderObjClass::AT_MAX_LOD = -1.0f;
@@ -132,6 +133,7 @@ Filename_From_Asset_Name (const char *asset_name)
 
 	return filename;
 }
+#endif // if 0
 
 static inline bool Check_Is_Transform_Identity(const Matrix3D& m)
 {
@@ -168,18 +170,22 @@ static inline bool Check_Is_Transform_Identity(const Matrix3D& m)
  *   11/04/1997 GH  : Created.                                                                 * 
  *=============================================================================================*/
 RenderObjClass::RenderObjClass(void) :
+#if 0
 	Bits(DEFAULT_BITS),
 	Transform(1),
 	NativeScreenSize(WW3D::Get_Default_Native_Screen_Size()),
 	Scene(NULL),
 	Container(NULL),
 	User_Data(NULL),
-	RenderHook(NULL),
+#endif // if 0
+	RenderHook(NULL) //,
+#if 0
 	ObjectScale(1.0),
 	ObjectColor(0),
 	CachedBoundingSphere(Vector3(0,0,0),1.0f),
 	CachedBoundingBox(Vector3(0,0,0),Vector3(1,1,1)),
 	IsTransformIdentity(false)
+#endif // if 0
 {
 }
 
@@ -197,18 +203,23 @@ RenderObjClass::RenderObjClass(void) :
  *   1/28/98    EHC : Created.                                                                 *
  *=============================================================================================*/
 RenderObjClass::RenderObjClass(const RenderObjClass & src) :
+	RefCountClass(src),
+#if 0
 	Bits(src.Bits),
 	Transform(src.Transform),
 	NativeScreenSize(src.NativeScreenSize),
 	Scene(NULL),
 	Container(NULL),
 	User_Data(NULL),
-	RenderHook(NULL),
+#endif // if 0
+	RenderHook(NULL) //,
+#if 0
 	ObjectScale(1.0),
 	ObjectColor(0),
 	CachedBoundingSphere(src.CachedBoundingSphere),
 	CachedBoundingBox(src.CachedBoundingBox),
 	IsTransformIdentity(src.IsTransformIdentity)
+#endif // if 0
 {
 	// Even though we're copying an object which might be in a scene
 	// this copy won't be so I'm clearing the scene pointer, same logic
@@ -233,12 +244,14 @@ RenderObjClass & RenderObjClass::operator = (const RenderObjClass & that)
 {
 	// don't do anything if we're assigning this to this
 	if (this != &that) {
+#if 0
 		Set_Hidden(that.Is_Hidden());
 		Set_Animation_Hidden(that.Is_Animation_Hidden());
 		Set_Force_Visible(that.Is_Force_Visible());
 		Set_Collision_Type(that.Get_Collision_Type());
 		Set_Native_Screen_Size(that.Get_Native_Screen_Size());
 		IsTransformIdentity=false;
+#endif // if 0
 	}
 	return *this;
 }
@@ -309,6 +322,7 @@ void RenderObjClass::Set_Texture_Reduction_Factor(float trf)
 }
 */
 
+#if 0
 /***********************************************************************************************
  * RenderObjClass::Get_Screen_Size -- get normalized area of object.                           *
  *                                                                                             *
@@ -407,6 +421,7 @@ RenderObjClass * RenderObjClass::Get_Container(void) const
 	return Container; 
 }
 #endif
+#endif // if 0
 
 /***********************************************************************************************
  * RenderObjClass::Set_Transform -- set the transform for this object                          *
@@ -512,6 +527,7 @@ Vector3 RenderObjClass::Get_Position(void) const
 }
 
 
+#if 0
 /***********************************************************************************************
  * RenderObjClass::Get_Sub_Object -- returns pointer to first sub-obj with given name          *
  *                                                                                             *
@@ -757,6 +773,7 @@ void RenderObjClass::Update_Sub_Object_Bits(void)
 		Container->Update_Sub_Object_Bits();
 	}
 }
+#endif // if 0
 
 
 /***********************************************************************************************
@@ -778,7 +795,8 @@ void RenderObjClass::Update_Sub_Object_Transforms(void)
 {
 }
 
-	
+
+#if 0
 /*********************************************************************************************** 
  * RenderObjClass::Add -- Generic add for render objects                                       *
  *                                                                                             * 
@@ -1315,5 +1333,4 @@ bool RenderObjClass::Load (ChunkLoadClass &cload)
 	WWASSERT(0); // this should never hit with the persist factory we're using.
 	return true;
 }
-
-
+#endif // if 0

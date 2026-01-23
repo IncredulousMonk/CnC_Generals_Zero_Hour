@@ -1003,7 +1003,7 @@ TerrainLogic::TerrainLogic()
 TerrainLogic::~TerrainLogic()
 {
 
-	reset(); // just in case
+	// reset(); // just in case
 
 }  // end ~TerrainLogic
 
@@ -1021,12 +1021,10 @@ void TerrainLogic::init( void )
 void TerrainLogic::reset( void )
 {
 
-#if 0
 	deleteWaypoints();
 	deleteBridges();
 	PolygonTrigger::deleteTriggers();
 	m_numWaterToUpdate = 0;
-#endif // if 0
 
 }  // end reset
 
@@ -1134,7 +1132,7 @@ void TerrainLogic::update( void )
 //-------------------------------------------------------------------------------------------------
 /** newMap */
 //-------------------------------------------------------------------------------------------------
-void TerrainLogic::newMap( Bool saveGame )
+void TerrainLogic::newMap( Bool /* saveGame */ )
 {
 
 	// Set waypoint's z value, now that the height map is loaded.
@@ -1149,22 +1147,22 @@ void TerrainLogic::newMap( Bool saveGame )
 	// water grid
 	/// @todo Mark W, remove this when you have water plane placements in the map done (Colin)
 	//
-	// FIXME: TheTerrainVisual
-	(void) saveGame;
-	// Waypoint *waypoint = getWaypointByName( "WaveGuide1" );
-	// Bool enable = FALSE;
-	// if( waypoint )
-	// 	enable = TRUE;
-	// enableWaterGrid( enable );
+	Waypoint *waypoint = getWaypointByName( "WaveGuide1" );
+	Bool enable = FALSE;
+	if (waypoint) {
+		enable = TRUE;
+	}
+	enableWaterGrid( enable );
 
 }  // end newMap
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void TerrainLogic::enableWaterGrid( Bool enable )
 {
 
+(void) enable;
+#if 0
 	// set our internal variable we can query
 	m_waterGridEnabled = enable;
 
@@ -1258,9 +1256,9 @@ void TerrainLogic::enableWaterGrid( Bool enable )
 
 	// notify the terrain visual of the change
 	TheTerrainVisual->enableWaterGrid( enable );
+#endif // if 0
 
 }  // end enableWaterGrid
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** device independent terrain logic load.  If query is true, we are just loading it to get
@@ -1310,10 +1308,9 @@ Bool TerrainLogic::loadMap( AsciiString filename, Bool query )
 	int count = 0;
 	for (pWay = getFirstWaypoint(); pWay; pWay = pWay->getNext()) {
 		count++;
-		Coord3D loc;
-		pWay->getLocation(&loc);
+		const Coord3D* loc = pWay->getLocation();
 		DEBUG_LOG(("Waypoint %d - '%s' id=%d ", count, pWay->getName().str(), pWay->getID()));
-		DEBUG_LOG(("{%.2f, %.2f, %.2f} ", loc.x, loc.y, loc.z));
+		DEBUG_LOG(("{%.2f, %.2f, %.2f} ", loc->x, loc->y, loc->z));
 		Int i;
 		if (pWay->getNumLinks()) {
 			DEBUG_LOG(("Links to: "));
@@ -1331,8 +1328,7 @@ Bool TerrainLogic::loadMap( AsciiString filename, Bool query )
 
 	if (!query) {
 		// tell the game interface a new terrain file has been loaded up
-		// FIXME: TheTerrainVisual.
-		// TheTerrainVisual->load( getSourceFilename() );
+		TheTerrainVisual->load( getSourceFilename() );
 	}
 
 	return TRUE;  // success
@@ -1370,6 +1366,7 @@ Bool TerrainLogic::parseWaypointData(DataChunkInput &file, DataChunkInfo* /* inf
 void TerrainLogic::addWaypoint(MapObject *pMapObj)
 {
 	Coord3D loc = *pMapObj->getLocation();
+DEBUG_LOG((">>>>> Adding waypoint called \"%s\" at (%f, %f, %f)\n", pMapObj->getWaypointName().str(), loc.x, loc.y, loc.z));
 	// Snap the waypoint down to the terrain.
 	loc.z = getGroundHeight(loc.x, loc.y);
 	Bool exists;
@@ -2001,12 +1998,14 @@ Drawable *TerrainLogic::pickBridge(const Vector3 &from, const Vector3 &to, Vecto
 	*pos = curPos;
 	return(curDraw);
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Deletes the bridges list. */
 //-------------------------------------------------------------------------------------------------
 void TerrainLogic::deleteBridges(void)
 {
+#if 0
 	Bridge *pNext = NULL;
 	Bridge *pBridge;
 	// Traverse all waypoints.
@@ -2016,8 +2015,10 @@ void TerrainLogic::deleteBridges(void)
 		pBridge->deleteInstance();
 	}
 	m_bridgeListHead = NULL;
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Delete the bridge specified */
 //-------------------------------------------------------------------------------------------------
@@ -2155,7 +2156,6 @@ Coord3D TerrainLogic::findFarthestEdgePoint( const Coord3D *farthestFrom ) const
 //-------------------------------------------------------------------------------------------------
 Bool TerrainLogic::isUnderwater( Real x, Real y, Real *waterZ, Real *terrainZ )
 {
-
 (void) x;
 (void) y;
 (void) waterZ;

@@ -800,10 +800,11 @@ void ScriptActions::doCreateReinforcements(const AsciiString& team, const AsciiS
 //-------------------------------------------------------------------------------------------------
 void ScriptActions::doMoveCameraTo(const AsciiString& waypoint, Real sec, Real cameraStutterSec, Real easeIn, Real easeOut)
 {
+	DEBUG_LOG((">>>>>> doMoveCameraTo: %s, %f, %f, %f, %f\n", waypoint.str(), sec, cameraStutterSec, easeIn, easeOut));
 	for (Waypoint *way = TheTerrainLogic->getFirstWaypoint(); way; way = way->getNext()) {
 		if (way->getName() == waypoint) {
 			Coord3D destination = *way->getLocation();
-			TheTacticalView->moveCameraTo(&destination, sec*1000, cameraStutterSec*1000, true, easeIn*1000.0f, easeOut*1000.0f);			
+			TheTacticalView->moveCameraTo(&destination, sec*1000, cameraStutterSec*1000, true, easeIn*1000.0f, easeOut*1000.0f);
 			break;
 		}
 	}
@@ -855,8 +856,8 @@ void ScriptActions::doSetupCamera(const AsciiString& waypoint, Real zoom, Real p
 	Waypoint *lookat = TheTerrainLogic->getWaypointByName(lookAtWaypoint); 
 	if (lookat==NULL) return;
 	Coord3D destination = *lookat->getLocation();
-	TheTacticalView->moveCameraTo(&pos, 0, 0, true, 0.0f, 0.0f);			
-	TheTacticalView->cameraModLookToward(&destination);			
+	TheTacticalView->moveCameraTo(&pos, 0, 0, true, 0.0f, 0.0f);
+	TheTacticalView->cameraModLookToward(&destination);
 	TheTacticalView->cameraModFinalPitch(pitch, 0.0f, 0.0f);
 	TheTacticalView->cameraModFinalZoom(zoom, 0.0f, 0.0f);
 }
@@ -866,10 +867,11 @@ void ScriptActions::doSetupCamera(const AsciiString& waypoint, Real zoom, Real p
 //-------------------------------------------------------------------------------------------------
 void ScriptActions::doModCameraLookToward(const AsciiString& waypoint)
 {
+	DEBUG_LOG((">>>>>> doModCameraLookToward: %s\n", waypoint.str()));
 	for (Waypoint *way = TheTerrainLogic->getFirstWaypoint(); way; way = way->getNext()) {
 		if (way->getName() == waypoint) {
 			Coord3D destination = *way->getLocation();
-			TheTacticalView->cameraModLookToward(&destination);			
+			TheTacticalView->cameraModLookToward(&destination);
 			break;
 		}
 	}
@@ -883,7 +885,7 @@ void ScriptActions::doModCameraFinalLookToward(const AsciiString& waypoint)
 	for (Waypoint *way = TheTerrainLogic->getFirstWaypoint(); way; way = way->getNext()) {
 		if (way->getName() == waypoint) {
 			Coord3D destination = *way->getLocation();
-			TheTacticalView->cameraModFinalLookToward(&destination);			
+			TheTacticalView->cameraModFinalLookToward(&destination);
 			break;
 		}
 	}
@@ -956,9 +958,12 @@ void ScriptActions::doRotateCameraTowardObject(const AsciiString& unitName, Real
 //-------------------------------------------------------------------------------------------------
 void ScriptActions::doRotateCameraTowardWaypoint(const AsciiString& waypointName, Real sec, Real easeIn, Real easeOut, Bool reverseRotation)
 {
+	DEBUG_LOG((">>>>>> doRotateCameraTowardWaypoint: %s, %f, %f, %f, %d\n", waypointName.str(), sec, easeIn, easeOut, reverseRotation));
+#if 0
 	Waypoint *way = TheTerrainLogic->getWaypointByName(waypointName);
 	if (way==NULL) return;
-	TheTacticalView->rotateCameraTowardPosition(way->getLocation(), sec*1000.0f, easeIn*1000.0f, easeOut*1000.0f, reverseRotation);			
+	TheTacticalView->rotateCameraTowardPosition(way->getLocation(), sec*1000.0f, easeIn*1000.0f, easeOut*1000.0f, reverseRotation);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -4504,7 +4509,6 @@ void ScriptActions::doTeamUseCommandButtonAbilityAtWaypoint( const AsciiString& 
 	theGroup->groupDoCommandButtonAtPosition( commandButton, pWaypoint->getLocation(), CMD_FROM_SCRIPT );
 }
 
-		
 
 
 
@@ -6420,9 +6424,11 @@ void ScriptActions::doNamedSetTrainHeld( const AsciiString &locoName, const Bool
 //-------------------------------------------------------------------------------------------------
 void ScriptActions::executeAction( ScriptAction *pAction )
 {
+DEBUG_LOG((">>> Execute script action: %s\n", pAction->getUiText().str()));
 	switch (pAction->getActionType()) {
 		default: 
-			DEBUG_CRASH(("Unknown ScriptAction type %d", pAction->getActionType())); return;
+			/* DEBUG_CRASH(("Unknown ScriptAction type %d", pAction->getActionType())); */ return;
+#if 0
 		case ScriptAction::DEBUG_MESSAGE_BOX: 
 			doDebugMessage(pAction->getParameter(0)->getString(), true);
 			return;
@@ -6497,9 +6503,11 @@ void ScriptActions::executeAction( ScriptAction *pAction )
 		case ScriptAction::PLAY_SOUND_EFFECT: 
 			doPlaySoundEffect(pAction->getParameter(0)->getString());
 			return;
+#endif // if 0
 		case ScriptAction::MOVE_CAMERA_TO: 
 			doMoveCameraTo(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getReal(), pAction->getParameter(2)->getReal(), pAction->getParameter(3)->getReal(), pAction->getParameter(4)->getReal());
 			return;
+#if 0
 		case ScriptAction::SETUP_CAMERA: 
 			doSetupCamera(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getReal(), pAction->getParameter(2)->getReal(), pAction->getParameter(3)->getString());
 			return;
@@ -6518,9 +6526,11 @@ void ScriptActions::executeAction( ScriptAction *pAction )
 		case ScriptAction::OVERSIZE_TERRAIN:  
 			doOversizeTheTerrain(pAction->getParameter(0)->getInt());
 			return;
+#endif // if 0
 		case ScriptAction::CAMERA_MOD_LOOK_TOWARD: 
 			doModCameraLookToward(pAction->getParameter(0)->getString());
 			return;
+#if 0
 		case ScriptAction::CAMERA_MOD_FINAL_LOOK_TOWARD: 
 			doModCameraFinalLookToward(pAction->getParameter(0)->getString());
 			return;
@@ -6533,9 +6543,11 @@ void ScriptActions::executeAction( ScriptAction *pAction )
 		case ScriptAction::CAMERA_LOOK_TOWARD_OBJECT:
 			doRotateCameraTowardObject(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getReal(), pAction->getParameter(2)->getReal(), pAction->getParameter(3)->getReal(), pAction->getParameter(4)->getReal());
 			return;
+#endif // if 0
 		case ScriptAction::CAMERA_LOOK_TOWARD_WAYPOINT:
 			doRotateCameraTowardWaypoint(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getReal(), pAction->getParameter(2)->getReal(), pAction->getParameter(3)->getReal(), pAction->getParameter(4)->getInt());
 			return;
+#if 0
 		case ScriptAction::RESET_CAMERA: 
 			doResetCamera(pAction->getParameter(0)->getString(), pAction->getParameter(1)->getReal(), pAction->getParameter(2)->getReal(), pAction->getParameter(3)->getReal());
 			return;
@@ -7571,13 +7583,14 @@ void ScriptActions::executeAction( ScriptAction *pAction )
 			doNamedSetTrainHeld( pAction->getParameter( 0 )->getString(), (Bool)pAction->getParameter( 1 )->getInt() );
 			return;
 
-  	case ScriptAction::ENABLE_OBJECT_SOUND:
- 			doEnableObjectSound(pAction->getParameter(0)->getString(), true);
+		case ScriptAction::ENABLE_OBJECT_SOUND:
+			doEnableObjectSound(pAction->getParameter(0)->getString(), true);
 			return;
 
 		case ScriptAction::DISABLE_OBJECT_SOUND:
 			doEnableObjectSound(pAction->getParameter(0)->getString(), false);
-			return;			
+			return;
 
-	}  
+#endif // if 0
+	}
 }

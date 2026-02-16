@@ -82,7 +82,7 @@ void SlavedUpdate::onObjectCreated()
 {
 	const SlavedUpdateModuleData* data = getSlavedUpdateModuleData();
 
-	if( data->m_repairRatePerSecond > 0.0f )
+	if( data->m_ini.m_repairRatePerSecond > 0.0f )
 	{
 		//If this object can repair, pack it up at init.
 		getObject()->setModelConditionState( MODELCONDITION_PACKING );
@@ -96,7 +96,7 @@ void SlavedUpdate::onEnslave( const Object *slaver )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SlavedUpdate::onSlaverDie( const DamageInfo *info )
+void SlavedUpdate::onSlaverDie( const DamageInfo* /* info */ )
 {
 	stopSlavedEffects();
 }
@@ -178,7 +178,7 @@ UpdateSleepTime SlavedUpdate::update( void )
 
 	}
 	
-	if (data->m_stayOnSameLayerAsMaster)
+	if (data->m_ini.m_stayOnSameLayerAsMaster)
 		me->setLayer(master->getLayer());
 	
 	//Clear the drone spotting bonus to the master. Up to the drone
@@ -198,7 +198,7 @@ UpdateSleepTime SlavedUpdate::update( void )
 	//NOTE: Health percentage will always be 100 should the drone be incapable of
 	//repairing.
 	Int healthPercentage = 100;
-	if( data->m_repairRatePerSecond > 0.0f )
+	if( data->m_ini.m_repairRatePerSecond > 0.0f )
 	{
 		BodyModuleInterface *body = master->getBodyModule();
 		if( body )
@@ -210,14 +210,14 @@ UpdateSleepTime SlavedUpdate::update( void )
 	}
 		
 	//Determine whether or not we need to go back to the master to repair him
-	if( healthPercentage <= data->m_repairWhenHealthBelowPercentage )
+	if( healthPercentage <= data->m_ini.m_repairWhenHealthBelowPercentage )
 	{
 		//1ST PRIORITY: Go to the master's position to repair him because he needs it.
 		doRepairLogic();
 		return UPDATE_SLEEP_NONE;
 	}
 
-	if( data->m_attackRange )
+	if( data->m_ini.m_attackRange )
 	{
 		//2ND PRIORITY: Go to the master's current victim (as close as wander distance allows)
 		if( target )
@@ -229,7 +229,7 @@ UpdateSleepTime SlavedUpdate::update( void )
 		}
 	}
 
-	if( data->m_scoutRange )
+	if( data->m_ini.m_scoutRange )
 	{
 		//3RD PRIORITY: Hover above master's current move destination (as close as wander distance
 		//allows).
@@ -239,7 +239,7 @@ UpdateSleepTime SlavedUpdate::update( void )
 
 			//Check to see if master is close to the goal position.
 			Real distSqr = ThePartitionManager->getDistanceSquared( master, masterDest, FROM_BOUNDINGSPHERE_2D );
-			if( distSqr > (data->m_guardMaxRange * 0.5f) * (data->m_guardMaxRange * 0.5f) )
+			if( distSqr > (data->m_ini.m_guardMaxRange * 0.5f) * (data->m_ini.m_guardMaxRange * 0.5f) )
 			{
 				//If the master's distance to destination is more than half of the guarding range of the slave,
 				//then order the slave to scout it.
@@ -265,7 +265,7 @@ UpdateSleepTime SlavedUpdate::update( void )
 	pinnedPosition.y += m_guardPointOffset.y;
 	m_guardPointOffset.z = TheTerrainLogic->getGroundHeight( pinnedPosition.x, pinnedPosition.y );
 
-	if( data->m_guardMaxRange )
+	if( data->m_ini.m_guardMaxRange )
 	{
 		//3RD PRIORITY: Guard the master's area.
 		if( myAI->isIdle() && ThePartitionManager->getDistanceSquared(me, &pinnedPosition, FROM_CENTER_3D) > CLOSE_ENOUGH_SQR )
@@ -274,7 +274,7 @@ UpdateSleepTime SlavedUpdate::update( void )
 			endRepair();
 			doGuardLogic( &pinnedPosition );
 		}
-		else if( ThePartitionManager->getDistanceSquared( me, master, FROM_CENTER_3D ) > sqr(STRAY_MULTIPLIER * data->m_guardMaxRange ) )
+		else if( ThePartitionManager->getDistanceSquared( me, master, FROM_CENTER_3D ) > sqr(STRAY_MULTIPLIER * data->m_ini.m_guardMaxRange ) )
 		{
 			//I'm too far away, no matter what I'm doing.
 			endRepair();
@@ -298,14 +298,14 @@ void SlavedUpdate::doAttackLogic( const Object *target )
 	//calculate the closest allowable position.
 	const Coord3D *targetPos = target->getPosition();
 	Real dist = ThePartitionManager->getDistanceSquared( me, targetPos, FROM_BOUNDINGSPHERE_2D );
-	if( dist > sqr( data->m_attackRange ) )
+	if( dist > sqr( data->m_ini.m_attackRange ) )
 	{
 		//The distance is too far, so calculate the best allowable position.
 		Coord3D vector;
 		vector.set( targetPos );
 		vector.sub( master->getPosition() );
 		vector.normalize();
-		vector.scale( data->m_attackRange );
+		vector.scale( data->m_ini.m_attackRange );
 
 		//Now that we have calculated the vector relative to me, add it to my position to get my goal.
 		attackPosition.set( master->getPosition() );
@@ -319,13 +319,13 @@ void SlavedUpdate::doAttackLogic( const Object *target )
 
 	//Finally, if we have a wander distance, then randomly select a point within
 	//the wander range radius of the pinned position, and we'll go there.
-	if( data->m_attackWanderRange )
+	if( data->m_ini.m_attackWanderRange )
 	{
 		//Allow me to wander away from the pinnedPosition.
 		Real randomDirection = GameLogicRandomValue( 0, 2*PI );
 		m_guardPointOffset.zero();
-		m_guardPointOffset.x += data->m_attackWanderRange * Cos( randomDirection );
-		m_guardPointOffset.y += data->m_attackWanderRange * Sin( randomDirection );
+		m_guardPointOffset.x += data->m_ini.m_attackWanderRange * Cos( randomDirection );
+		m_guardPointOffset.y += data->m_ini.m_attackWanderRange * Sin( randomDirection );
 
 		//Offset our pinned position by our random offset.
 		attackPosition.x += m_guardPointOffset.x;
@@ -340,7 +340,7 @@ void SlavedUpdate::doAttackLogic( const Object *target )
 		ai->aiMoveToPosition( &attackPosition, CMD_FROM_AI );
 	}
 
-	if( dist < sqr( data->m_distToTargetToGrantRangeBonus ) )
+	if( dist < sqr( data->m_ini.m_distToTargetToGrantRangeBonus ) )
 	{
 		//Finally, seeing we are close enough to the target, grant our 
 		//master extended weapon range!
@@ -361,14 +361,14 @@ void SlavedUpdate::doScoutLogic( const Coord3D *mastersDestination )
 	//First, determine the scout position. If our master's destination is too far away, then we'll 
 	//calculate the closest allowable position.
 	Real dist = ThePartitionManager->getDistanceSquared( me, mastersDestination, FROM_BOUNDINGSPHERE_2D );
-	if( dist > sqr( data->m_scoutRange ) )
+	if( dist > sqr( data->m_ini.m_scoutRange ) )
 	{
 		//The distance is too far, so calculate the best allowable position.
 		Coord3D vector;
 		vector.set( mastersDestination );
 		vector.sub( master->getPosition() );
 		vector.normalize();
-		vector.scale( data->m_scoutRange );
+		vector.scale( data->m_ini.m_scoutRange );
 
 		//Now that we have calculated the vector relative to me, add it to my position to get my goal.
 		scoutPosition.set( master->getPosition() );
@@ -382,13 +382,13 @@ void SlavedUpdate::doScoutLogic( const Coord3D *mastersDestination )
 
 	//Finally, if we have a wander distance, then randomly select a point within
 	//the wander range radius of the pinned position, and we'll go there.
-	if( data->m_scoutWanderRange )
+	if( data->m_ini.m_scoutWanderRange )
 	{
 		//Allow me to wander away from the pinnedPosition.
 		Real randomDirection = GameLogicRandomValue( 0, 2*PI );
 		m_guardPointOffset.zero();
-		m_guardPointOffset.x += data->m_scoutWanderRange * Cos( randomDirection );
-		m_guardPointOffset.y += data->m_scoutWanderRange * Sin( randomDirection );
+		m_guardPointOffset.x += data->m_ini.m_scoutWanderRange * Cos( randomDirection );
+		m_guardPointOffset.y += data->m_ini.m_scoutWanderRange * Sin( randomDirection );
 
 		//Offset our pinned position by our random offset.
 		scoutPosition.x += m_guardPointOffset.x;
@@ -412,13 +412,13 @@ void SlavedUpdate::doGuardLogic( Coord3D *pinnedPosition )
 	const SlavedUpdateModuleData* data = getSlavedUpdateModuleData();
 	Object *me = getObject();
 
-	if( data->m_guardWanderRange )
+	if( data->m_ini.m_guardWanderRange )
 	{
 		// recalc where we want to be if we wander around
 		Real randomDirection = GameLogicRandomValue( 0, 2*PI );
 		m_guardPointOffset.zero();
-		m_guardPointOffset.x += data->m_guardMaxRange * Cos( randomDirection );
-		m_guardPointOffset.y += data->m_guardMaxRange * Sin( randomDirection );
+		m_guardPointOffset.x += data->m_ini.m_guardMaxRange * Cos( randomDirection );
+		m_guardPointOffset.y += data->m_ini.m_guardMaxRange * Sin( randomDirection );
 
 		pinnedPosition->x += m_guardPointOffset.x;
 		pinnedPosition->y += m_guardPointOffset.y;
@@ -473,6 +473,8 @@ void SlavedUpdate::doRepairLogic()
 					setRepairState( REPAIRSTATE_READY );
 				}
 				break;
+			default:
+				break;
 		}
 	}
 	else
@@ -489,7 +491,7 @@ void SlavedUpdate::doRepairLogic()
 		}
 		Coord3D pos;
 		pos.set( master->getPosition() );
-		Real altitude = GameLogicRandomValueReal( data->m_repairMinAltitude, data->m_repairMaxAltitude );
+		Real altitude = GameLogicRandomValueReal( data->m_ini.m_repairMinAltitude, data->m_ini.m_repairMaxAltitude );
 		pos.z += altitude;
 		ai->aiMoveToPosition( &pos, CMD_FROM_AI );
 
@@ -508,7 +510,7 @@ void SlavedUpdate::doRepairLogic()
 		if( body )
 		{
 			//Calculate the repair rate per frame.
-			Real repairAmount = data->m_repairRatePerSecond / LOGICFRAMES_PER_SECOND;
+			Real repairAmount = data->m_ini.m_repairRatePerSecond / (Real)LOGICFRAMES_PER_SECOND;
 			
 			DamageInfo healingInfo;
 			healingInfo.in.m_amount = repairAmount;
@@ -603,7 +605,7 @@ void SlavedUpdate::setRepairState( RepairStates repairState )
 					break;
 				default:
 					m_repairState = REPAIRSTATE_READY;
-					m_framesToWait = GameLogicRandomValue( data->m_minReadyFrames, data->m_maxReadyFrames );
+					m_framesToWait = GameLogicRandomValue( data->m_ini.m_minReadyFrames, data->m_ini.m_maxReadyFrames );
 					break;
 			}
 			break;
@@ -620,12 +622,12 @@ void SlavedUpdate::setRepairState( RepairStates repairState )
 			else
 			{
 				m_repairState = REPAIRSTATE_WELDING;
-				m_framesToWait = GameLogicRandomValue( data->m_minWeldFrames, data->m_maxWeldFrames );
+				m_framesToWait = GameLogicRandomValue( data->m_ini.m_minWeldFrames, data->m_ini.m_maxWeldFrames );
 
 				//Make sparks!
-				if( !data->m_weldingSysName.isEmpty() )
+				if( !data->m_ini.m_weldingSysName.isEmpty() )
 				{
-					const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( data->m_weldingSysName );
+					const ParticleSystemTemplate *tmp = TheParticleSystemManager->findTemplate( data->m_ini.m_weldingSysName );
 					if( tmp )
 					{
 						ParticleSystem *weldingSys = TheParticleSystemManager->createParticleSystem(tmp);
@@ -633,7 +635,7 @@ void SlavedUpdate::setRepairState( RepairStates repairState )
 						{
 							Coord3D pos;
 							//Get the bone position
-							if( draw->getPristineBonePositions( data->m_weldingFXBone.str(), 0, &pos, NULL, 1 ) )
+							if( draw->getPristineBonePositions( data->m_ini.m_weldingFXBone.str(), 0, &pos, NULL, 1 ) )
 							{
 								pos.add( obj->getPosition() );
 							}
@@ -667,6 +669,9 @@ void SlavedUpdate::setRepairState( RepairStates repairState )
 			}
 			break;
 		}
+
+		default:
+			break;
 	}
 }
 
@@ -679,15 +684,15 @@ void SlavedUpdate::moveToNewRepairSpot()
 
 	//Finally, if we have a wander distance, then randomly select a point within
 	//the wander range radius of the pinned position, and we'll go there.
-	if( data->m_repairRange )
+	if( data->m_ini.m_repairRange )
 	{
 		//Allow me to wander away from the pinnedPosition.
 		Real randomDirection = GameLogicRandomValue( 0, 2*PI );
 		m_guardPointOffset.set( master->getPosition() );
-		m_guardPointOffset.x += data->m_repairRange * Cos( randomDirection );
-		m_guardPointOffset.y += data->m_repairRange * Sin( randomDirection );
+		m_guardPointOffset.x += data->m_ini.m_repairRange * Cos( randomDirection );
+		m_guardPointOffset.y += data->m_ini.m_repairRange * Sin( randomDirection );
 		m_guardPointOffset.z = TheTerrainLogic->getGroundHeight( m_guardPointOffset.x, m_guardPointOffset.y );
-		Real altitude = GameLogicRandomValueReal( data->m_repairMinAltitude, data->m_repairMaxAltitude );
+		Real altitude = GameLogicRandomValueReal( data->m_ini.m_repairMinAltitude, data->m_ini.m_repairMaxAltitude );
 		m_guardPointOffset.z += altitude;
 
 		AIUpdateInterface *ai = me->getAIUpdateInterface();
@@ -718,8 +723,8 @@ void SlavedUpdate::startSlavedEffects( const Object *slaver )
 	// Decide where our pinned stray point is
 	Real randomDirection = GameLogicRandomValue( 0, 2*PI );
 	m_guardPointOffset.zero();
-	m_guardPointOffset.x += data->m_guardMaxRange * Cos( randomDirection );
-	m_guardPointOffset.y += data->m_guardMaxRange * Sin( randomDirection );
+	m_guardPointOffset.x += data->m_ini.m_guardMaxRange * Cos( randomDirection );
+	m_guardPointOffset.y += data->m_ini.m_guardMaxRange * Sin( randomDirection );
 	
 	// mark selves as not selectable
 	getObject()->setStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_UNSELECTABLE ) );

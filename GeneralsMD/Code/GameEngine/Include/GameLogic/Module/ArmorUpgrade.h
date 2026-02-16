@@ -70,7 +70,7 @@ class ArmorUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ArmorUpgrade, "ArmorUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO( ArmorUpgrade );
+	MAKE_STANDARD_MODULE_MACRO( ArmorUpgrade )
 
 public:
 

@@ -29,7 +29,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_STEALTHLEVEL_NAMES
+// #define DEFINE_STEALTHLEVEL_NAMES
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "Common/MiscAudio.h"
@@ -58,40 +58,57 @@
 #endif
 
 //-------------------------------------------------------------------------------------------------
-void StealthDetectorUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void StealthDetectorUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "DetectionRate",							INI::parseDurationUnsignedInt,			NULL, offsetof( StealthDetectorUpdateModuleData, m_updateRate ) },
-		{ "DetectionRange",							INI::parseReal,											NULL, offsetof( StealthDetectorUpdateModuleData, m_detectionRange ) },
-		{ "InitiallyDisabled",					INI::parseBool,											NULL, offsetof( StealthDetectorUpdateModuleData, m_initiallyDisabled ) },
-		{ "PingSound",									INI::parseAudioEventRTS,						NULL, offsetof( StealthDetectorUpdateModuleData, m_pingSound ) },
-		{ "LoudPingSound",							INI::parseAudioEventRTS,						NULL, offsetof( StealthDetectorUpdateModuleData, m_loudPingSound ) },
-		{ "IRBeaconParticleSysName",		INI::parseParticleSystemTemplate,		NULL, offsetof( StealthDetectorUpdateModuleData, m_IRBeaconParticleSysTmpl ) },
-		{ "IRParticleSysName",					INI::parseParticleSystemTemplate,		NULL, offsetof( StealthDetectorUpdateModuleData, m_IRParticleSysTmpl ) },
-		{ "IRBrightParticleSysName",		INI::parseParticleSystemTemplate,		NULL, offsetof( StealthDetectorUpdateModuleData, m_IRBrightParticleSysTmpl ) },
-		{ "IRGridParticleSysName",			INI::parseParticleSystemTemplate,		NULL, offsetof( StealthDetectorUpdateModuleData, m_IRGridParticleSysTmpl ) },
-		{ "IRParticleSysBone",					INI::parseAsciiString,							NULL, offsetof( StealthDetectorUpdateModuleData, m_IRParticleSysBone ) },
-		{ "ExtraRequiredKindOf",				KindOfMaskType::parseFromINI,				NULL, offsetof( StealthDetectorUpdateModuleData, m_extraDetectKindof ) },
-		{ "ExtraForbiddenKindOf",				KindOfMaskType::parseFromINI,				NULL, offsetof( StealthDetectorUpdateModuleData, m_extraDetectKindofNot ) },
-		{ "CanDetectWhileGarrisoned",		INI::parseBool,											NULL, offsetof( StealthDetectorUpdateModuleData, m_canDetectWhileGarrisoned ) },
-		{ "CanDetectWhileContained",		INI::parseBool,											NULL, offsetof( StealthDetectorUpdateModuleData, m_canDetectWhileTransported ) },
+		{ "DetectionRate",				INI::parseDurationUnsignedInt,		NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_updateRate ) },
+		{ "DetectionRange",				INI::parseReal,						NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_detectionRange ) },
+		{ "InitiallyDisabled",			INI::parseBool,						NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_initiallyDisabled ) },
+		{ "PingSound",					StealthDetectorUpdateModuleData::parsePingSound, NULL, 0 },
+		{ "LoudPingSound",				StealthDetectorUpdateModuleData::parseLoudPingSound, NULL, 0 },
+		{ "IRBeaconParticleSysName",	INI::parseParticleSystemTemplate,	NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_IRBeaconParticleSysTmpl ) },
+		{ "IRParticleSysName",			INI::parseParticleSystemTemplate,	NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_IRParticleSysTmpl ) },
+		{ "IRBrightParticleSysName",	INI::parseParticleSystemTemplate,	NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_IRBrightParticleSysTmpl ) },
+		{ "IRGridParticleSysName",		INI::parseParticleSystemTemplate,	NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_IRGridParticleSysTmpl ) },
+		{ "IRParticleSysBone",			INI::parseAsciiString,				NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_IRParticleSysBone ) },
+		{ "ExtraRequiredKindOf",		KindOfMaskType::parseFromINI,		NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_extraDetectKindof ) },
+		{ "ExtraForbiddenKindOf",		KindOfMaskType::parseFromINI,		NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_extraDetectKindofNot ) },
+		{ "CanDetectWhileGarrisoned",	INI::parseBool,						NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_canDetectWhileGarrisoned ) },
+		{ "CanDetectWhileContained",	INI::parseBool,						NULL, offsetof( StealthDetectorUpdateModuleData::IniData, m_canDetectWhileTransported ) },
 
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	StealthDetectorUpdateModuleData* self {static_cast<StealthDetectorUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
+
+//-------------------------------------------------------------------------------------------------
+void StealthDetectorUpdateModuleData::parsePingSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	StealthDetectorUpdateModuleData* self = (StealthDetectorUpdateModuleData*) instance;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_pingSound);
+}
+
+//-------------------------------------------------------------------------------------------------
+void StealthDetectorUpdateModuleData::parseLoudPingSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
+{
+	StealthDetectorUpdateModuleData* self = (StealthDetectorUpdateModuleData*) instance;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_loudPingSound);
+}
+
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 StealthDetectorUpdate::StealthDetectorUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateModule( thing, moduleData )
 {
 	const StealthDetectorUpdateModuleData *data = getStealthDetectorUpdateModuleData();
-	m_enabled = !data->m_initiallyDisabled;
+	m_enabled = !data->m_ini.m_initiallyDisabled;
 	// start these guys with random phasings so that we don't
 	// have all of 'em check on the same frame.
-	setWakeFrame(getObject(), m_enabled ? UPDATE_SLEEP(GameLogicRandomValue(1, data->m_updateRate)) : UPDATE_SLEEP_FOREVER);
+	setWakeFrame(getObject(), m_enabled ? UPDATE_SLEEP(GameLogicRandomValueUnsigned(1, data->m_ini.m_updateRate)) : UPDATE_SLEEP_FOREVER);
 } 
 
 //-------------------------------------------------------------------------------------------------
@@ -146,6 +163,8 @@ Bool PartitionFilterStealthedOrStealthGarrisoned::allow( Object *objOther)
 //-------------------------------------------------------------------------------------------------
 UpdateSleepTime StealthDetectorUpdate::update( void )
 {
+DEBUG_CRASH(("StealthDetectorUpdate::update not yet implemented!"));
+#if 0
 	const StealthDetectorUpdateModuleData *data = getStealthDetectorUpdateModuleData();
 	Object* self = getObject();
 
@@ -171,16 +190,16 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 			if( contain->isGarrisonable() )
 			{
 				//We are in a garrisonable structure.
-				if( !data->m_canDetectWhileGarrisoned )
+				if( !data->m_ini.m_canDetectWhileGarrisoned )
 				{
 					//But we can't detect stuff while inside.
-					return UPDATE_SLEEP(data->m_updateRate);
+					return UPDATE_SLEEP(data->m_ini.m_updateRate);
 				}
 			}
-			else if( !data->m_canDetectWhileTransported )
+			else if( !data->m_ini.m_canDetectWhileTransported )
 			{
 				//We are in a normal container and can't detect!
-				return UPDATE_SLEEP(data->m_updateRate);	
+				return UPDATE_SLEEP(data->m_ini.m_updateRate);
 			}
 		}
 	}
@@ -189,14 +208,14 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 	PartitionFilterStealthedOrStealthGarrisoned		filterStealthOrStealthGarrisoned;
 	//PartitionFilterAcceptByObjectStatus		filterStatus(OBJECT_STATUS_STEALTHED, 0);
 	PartitionFilterRelationship						filterTeam(self, PartitionFilterRelationship::ALLOW_ENEMIES | PartitionFilterRelationship::ALLOW_NEUTRAL );
-	PartitionFilterAcceptByKindOf					filterKindof(data->m_extraDetectKindof, data->m_extraDetectKindofNot);
+	PartitionFilterAcceptByKindOf					filterKindof(data->m_ini.m_extraDetectKindof, data->m_ini.m_extraDetectKindofNot);
 	PartitionFilterSameMapStatus					filterMapStatus(getObject());
 	PartitionFilter*											filters[] = { &filterStealthOrStealthGarrisoned, &filterTeam, &filterKindof, &filterMapStatus, NULL };
 
 	Real visionRange = self->getVisionRange();
-	if( data->m_detectionRange > 0.0f )
+	if( data->m_ini.m_detectionRange > 0.0f )
 	{
-		visionRange = data->m_detectionRange;
+		visionRange = data->m_ini.m_detectionRange;
 	}
 	Bool foundSomeone = FALSE;
 
@@ -303,7 +322,7 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 			}  // end if, them was not previously detected
 
 			// updateRate PLUS 1 is necessary to ensure it stays detected 'till we are called again...
-			stealth->markAsDetected(data->m_updateRate + 1);
+			stealth->markAsDetected(data->m_ini.m_updateRate + 1);
 			
 			/** @todo srj -- evil hack here... this whole heat-vision thing is fucked.
 				don't want it on mines but no good way to do that. hack for now. */
@@ -313,9 +332,9 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 				theirDraw->setSecondMaterialPassOpacity( 1.0f );
 			}
 
-			if (data->m_IRGridParticleSysTmpl)
+			if (data->m_ini.m_IRGridParticleSysTmpl)
 			{
-				const ParticleSystemTemplate *gridTemplate = data->m_IRGridParticleSysTmpl;
+				const ParticleSystemTemplate *gridTemplate = data->m_ini.m_IRGridParticleSysTmpl;
 				if (gridTemplate)
 				{
 					ParticleSystem *sys = TheParticleSystemManager->createParticleSystem( gridTemplate );//GRID
@@ -349,7 +368,7 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 						foundSomeone = TRUE;
 						if( self->getControllingPlayer() != rider->getControllingPlayer() && self->getRelationship( rider ) != ALLIES )
 						{
-							stealth->markAsDetected(data->m_updateRate + 2);
+							stealth->markAsDetected(data->m_ini.m_updateRate + 2);
 						}
 
 					}
@@ -369,13 +388,13 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 		  Drawable *myDraw = self->getDrawable();
 		  Coord3D bonePosition = {-1.66f,5.5f,15};
 		  if (myDraw)
-			  myDraw->getPristineBonePositions( data->m_IRParticleSysBone.str(), 0, &bonePosition, NULL, 1);
+			  myDraw->getPristineBonePositions( data->m_ini.m_IRParticleSysBone.str(), 0, &bonePosition, NULL, 1);
 
 		  const ParticleSystemTemplate *pingTemplate;
 		  if ( foundSomeone )
-			  pingTemplate = data->m_IRBrightParticleSysTmpl;
+			  pingTemplate = data->m_ini.m_IRBrightParticleSysTmpl;
 		  else
-			  pingTemplate = data->m_IRParticleSysTmpl;
+			  pingTemplate = data->m_ini.m_IRParticleSysTmpl;
 
 		  if (pingTemplate)
 		  {
@@ -391,7 +410,7 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 			  }
 		  }
 
-		  const ParticleSystemTemplate *beaconTemplate = data->m_IRBeaconParticleSysTmpl;
+		  const ParticleSystemTemplate *beaconTemplate = data->m_ini.m_IRBeaconParticleSysTmpl;
 		  if (beaconTemplate)
 		  {
 			  ParticleSystem *sys = TheParticleSystemManager->createParticleSystem( beaconTemplate );//BEACON
@@ -421,8 +440,9 @@ UpdateSleepTime StealthDetectorUpdate::update( void )
 	} // end if doIRFX
 
 
-	return UPDATE_SLEEP(data->m_updateRate);
-
+	return UPDATE_SLEEP(data->m_ini.m_updateRate);
+#endif // if 0
+return UPDATE_SLEEP(0);
 }
 
 // ------------------------------------------------------------------------------------------------

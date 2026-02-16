@@ -44,8 +44,14 @@ class Thing;
 class VeterancyGainCreateModuleData : public CreateModuleData
 {
 public:
-	VeterancyLevel m_startingLevel;			///< Level to set Object at
-	ScienceType m_scienceRequired;			///< The science you must have to trigger this
+	// MG: Cannot apply offsetof to VeterancyGainCreateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		VeterancyLevel m_startingLevel;			///< Level to set Object at
+		ScienceType m_scienceRequired;			///< The science you must have to trigger this
+	};
+
+	IniData m_ini {};
 
 	VeterancyGainCreateModuleData();
 	static void buildFieldParse(void* what, MultiIniFieldParse& p);
@@ -56,8 +62,8 @@ public:
 class VeterancyGainCreate : public CreateModule
 {
 
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( VeterancyGainCreate, "VeterancyGainCreate" );
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( VeterancyGainCreate, VeterancyGainCreateModuleData );
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( VeterancyGainCreate, "VeterancyGainCreate" )
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( VeterancyGainCreate, VeterancyGainCreateModuleData )
 
 public:
 

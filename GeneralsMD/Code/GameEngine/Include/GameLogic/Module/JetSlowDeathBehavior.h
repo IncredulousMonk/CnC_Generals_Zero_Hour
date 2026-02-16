@@ -46,35 +46,44 @@ class JetSlowDeathBehaviorModuleData : public SlowDeathBehaviorModuleData
 {
 
 public:
+	// MG: Cannot apply offsetof to JetSlowDeathBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const FXList *m_fxOnGroundDeath;				///< fx list executed on death when destoyed on ground
+		const ObjectCreationList *m_oclOnGroundDeath;	///< ocl list executed on death when destroyed on ground
+
+		const FXList *m_fxInitialDeath;					///< FXList for initial death
+		const ObjectCreationList *m_oclInitialDeath;	///< OCL for initial death
+
+		UnsignedInt m_delaySecondaryFromInitialDeath;	///< delay (in frames) from initial death, to the secondary event
+		const FXList *m_fxSecondary;					///< FXList for secondary event
+		const ObjectCreationList *m_oclSecondary;		///< OCL for secondary event
+
+		const FXList *m_fxHitGround;					///< FXList for hit ground
+		const ObjectCreationList *m_oclHitGround;		///< OCL for hit ground
+
+		UnsignedInt m_delayFinalBlowUpFromHitGround;	///< delay (in frames) from hit ground, to final explosion
+		const FXList *m_fxFinalBlowUp;					///< FxList for final blow up
+		const ObjectCreationList *m_oclFinalBlowUp;		///< OCL for final blow up
+
+		Real m_rollRate;								///< our initial roll rate
+		Real m_rollRateDelta;							///< how our roll rate changes over time
+		Real m_pitchRate;								///< spin speed on another axis after hitting the ground
+		Real m_fallHowFast;								///< a fraction of gravity we use to modify the jet locmotor lift
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS m_deathLoopSound {};					///< looping death sound
 
 	JetSlowDeathBehaviorModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	// // No copies allowed!
+	// JetSlowDeathBehaviorModuleData(const JetSlowDeathBehaviorModuleData&) = delete;
+	// JetSlowDeathBehaviorModuleData& operator=(const JetSlowDeathBehaviorModuleData&) = delete;
 
-	const FXList *m_fxOnGroundDeath;							///< fx list executed on death when destoyed on ground
-	const ObjectCreationList *m_oclOnGroundDeath;	///< ocl list executed on death when destroyed on ground
-
-	const FXList *m_fxInitialDeath;								///< FXList for initial death
-	const ObjectCreationList *m_oclInitialDeath;	///< OCL for initial death
-
-	UnsignedInt m_delaySecondaryFromInitialDeath;	///< delay (in frames) from initial death, to the secondary event
-	const FXList *m_fxSecondary;									///< FXList for secondary event
-	const ObjectCreationList *m_oclSecondary;			///< OCL for secondary event
-
-	const FXList *m_fxHitGround;									///< FXList for hit ground
-	const ObjectCreationList *m_oclHitGround;			///< OCL for hit ground
-	
-	UnsignedInt m_delayFinalBlowUpFromHitGround;	///< delay (in frames) from hit ground, to final explosion
-	const FXList *m_fxFinalBlowUp;								///< FxList for final blow up
-	const ObjectCreationList *m_oclFinalBlowUp;		///< OCL for final blow up
-
-	Real m_rollRate;															///< our initial roll rate
-	Real m_rollRateDelta;													///< how our roll rate changes over time
-	Real m_pitchRate;															///< spin speed on another axis after hitting the ground
-	Real m_fallHowFast;														///< a fraction of gravity we use to modify the jet locmotor lift
-
-	AudioEventRTS m_deathLoopSound;								///< looping death sound
-
+	static void buildFieldParse(void* what, MultiIniFieldParse &p);
+	static void parseDeathLoopSound(INI* ini, void *instance, void* store, const void* userData);
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -97,12 +106,12 @@ public:
 
 protected:
 
-	UnsignedInt m_timerDeathFrame;					///< fame we died on
-	UnsignedInt m_timerOnGroundFrame;				///< frame we landed on the ground on
+	UnsignedInt m_timerDeathFrame {};		///< fame we died on
+	UnsignedInt m_timerOnGroundFrame {};	///< frame we landed on the ground on
 
-	Real m_rollRate;												///< our roll rate
+	Real m_rollRate {};						///< our roll rate
 
-	AudioEventRTS m_deathLoopSound;					///< death loop sound
+	AudioEventRTS m_deathLoopSound {};		///< death loop sound
 
 };
 

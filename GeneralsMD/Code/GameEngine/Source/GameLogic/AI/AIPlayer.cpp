@@ -76,22 +76,22 @@
 // ------------------------------------------------------------------------------------------------
 AIPlayer::AIPlayer( Player *p ) :
 m_player(p),
-m_buildDelay(0), 
-m_teamDelay(0),	
-m_teamTimer(2),	// Important - don't start building teams until frame 1.
-m_structureTimer(2), // Important - don't start building structures until frame 1.
 m_readyToBuildTeam(false),
 m_readyToBuildStructure(false),
-m_structuresInQueue(0),
-m_repairDozer(INVALID_ID),
+m_teamTimer(2),	// Important - don't start building teams until frame 1.
+m_structureTimer(2), // Important - don't start building structures until frame 1.
+m_teamSeconds(10),
+m_buildDelay(0), 
+m_teamDelay(0),	
 m_skillsetSelector(INVALID_SKILLSET_SELECTION),
+m_repairDozer(INVALID_ID),
+m_structuresInQueue(0),
 m_dozerQueuedForRepair(false),
 m_supplySourceAttackCheckFrame(0),
 m_attackedSupplyCenter(INVALID_ID),
-m_teamSeconds(10),
 m_curWarehouseID(INVALID_ID)
 {
-	m_frameLastBuildingBuilt = TheGameLogic->getFrame();
+	m_frameLastBuildingBuilt = (Int)TheGameLogic->getFrame();
 	p->setCanBuildUnits(false); // turn off ai production by default.
 
 	Int i;
@@ -102,7 +102,7 @@ m_curWarehouseID(INVALID_ID)
 	m_baseCenter.zero();
 	m_baseCenterSet = false;
 	m_difficulty = TheScriptEngine->getGlobalDifficulty(); 
-	m_teamSeconds = TheAI->getAiData()->m_teamSeconds;
+	m_teamSeconds = TheAI->getAiData()->m_ini.m_teamSeconds;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ AIPlayer::~AIPlayer()
 // ------------------------------------------------------------------------------------------------
 /** Invoked when a structure I am building is finished building. */
 // ------------------------------------------------------------------------------------------------
-void AIPlayer::onStructureProduced( Object *factory, Object *bldg )
+void AIPlayer::onStructureProduced( Object* /* factory */, Object *bldg )
 {
 	m_teamDelay = 0; // Cause the update queues & selection to happen immediately.
 	m_buildDelay = 0; // Cause 
@@ -140,7 +140,7 @@ void AIPlayer::onStructureProduced( Object *factory, Object *bldg )
 
 		TheScriptEngine->addObjectToCache(bldg);
 		TheScriptEngine->runObjectScript(info->getScript(), bldg);
-		if (TheGlobalData->m_debugAI) {
+		if (TheGlobalData->m_data.m_debugAI) {
 			AsciiString bldgName = bldg->getTemplate()->getName();
 			bldgName.concat(" - Building completed.");
 			TheScriptEngine->AppendDebugMessage(bldgName, false);
@@ -199,16 +199,16 @@ void AIPlayer::checkForSupplyCenter( BuildListInfo *info, Object *bldg )
 		Int desiredGatherers = 0;
 		const AISideInfo *resInfo = TheAI->getAiData()->m_sideInfo;
 		while (resInfo) {
-			if (resInfo->m_side == m_player->getSide()) {
+			if (resInfo->m_ini.m_side == m_player->getSide()) {
 				GameDifficulty difficulty = m_difficulty;
 				if (difficulty == DIFFICULTY_EASY) {
-					desiredGatherers = resInfo->m_easy;
+					desiredGatherers = resInfo->m_ini.m_easy;
 				}
 				if (difficulty == DIFFICULTY_NORMAL) {
-					desiredGatherers = resInfo->m_normal;
+					desiredGatherers = resInfo->m_ini.m_normal;
 				}
 				if (difficulty == DIFFICULTY_HARD) {
-					desiredGatherers = resInfo->m_hard;	 
+					desiredGatherers = resInfo->m_ini.m_hard;	 
 				}
 			}
 			resInfo = resInfo->m_next;
@@ -299,7 +299,7 @@ void AIPlayer::queueSupplyTruck( void )
 				static const NameKeyType key_warehouseUpdate = NAMEKEY("SupplyWarehouseDockUpdate");
 				SupplyWarehouseDockUpdate *warehouseModule = (SupplyWarehouseDockUpdate*)supplySource->findUpdateModule( key_warehouseUpdate );
 				if( warehouseModule )	{	 
-					Int availableCash = warehouseModule->getBoxesStored()*TheGlobalData->m_baseValuePerSupplyBox;
+					Int availableCash = warehouseModule->getBoxesStored()*TheGlobalData->m_data.m_baseValuePerSupplyBox;
 					if (availableCash<=0) continue;
 					if( m_player->getRelationship(supplySource->getTeam()) == ENEMIES ) {
 						continue;
@@ -406,7 +406,7 @@ void AIPlayer::queueSupplyTruck( void )
 						prependTo_TeamBuildQueue(team);
 						team->m_priorityBuild = true;
 						team->m_workOrders = order;
-						team->m_frameStarted = TheGameLogic->getFrame();
+						team->m_frameStarted = (Int)TheGameLogic->getFrame();
 						// Stick it on the default team
 						team->m_team = m_player->getDefaultTeam(); 
 						AsciiString teamName = "Supply truck - building one at the ";
@@ -481,7 +481,7 @@ Object *AIPlayer::buildStructureNow(const ThingTemplate *bldgPlan, BuildListInfo
 		// UnderConstruction just cleared, so update our upgrades
 		bldg->updateUpgradeModules();
 
-		if (TheGlobalData->m_debugAI) {
+		if (TheGlobalData->m_data.m_debugAI) {
 			AsciiString bldgName = bldgPlan->getName();
 			bldgName.concat(" - Building completed.");
 			TheScriptEngine->AppendDebugMessage(bldgName, false);
@@ -495,7 +495,7 @@ Object *AIPlayer::buildStructureNow(const ThingTemplate *bldgPlan, BuildListInfo
 			Coord3D rallyPoint;
 			Bool gotOffset = false;
 			if (fabs(info->getRallyOffset()->x) > 1.0f || fabs(info->getRallyOffset()->y)>1.0f) {
-				gotOffset;
+				gotOffset = true; // MG: was just "gotOffset", which does nothing.  Was that a bug?
 			}
 			if (!exitInterface->getNaturalRallyPoint(rallyPoint)) {
 				rallyPoint = *info->getLocation();
@@ -521,7 +521,7 @@ Object *AIPlayer::buildStructureWithDozer(const ThingTemplate *bldgPlan, BuildLi
 	}
 	// Check available funds.
 	Money *money = m_player->getMoney();
-	if (money->countMoney()<bldgPlan->calcCostToBuild(m_player)) {
+	if ((Int)money->countMoney()<bldgPlan->calcCostToBuild(m_player)) {
 		return NULL;
 	}
 	// construct the building
@@ -634,7 +634,7 @@ Object *AIPlayer::buildStructureWithDozer(const ThingTemplate *bldgPlan, BuildLi
 
 
 #if defined _DEBUG || defined _INTERNAL
-	if (TheGlobalData->m_debugAI == AI_DEBUG_PATHS)
+	if (TheGlobalData->m_data.m_debugAI == AI_DEBUG_PATHS)
 	{
 		extern void addIcon(const Coord3D *pos, Real width, Int numFramesDuration, RGBColor color);
  		RGBColor color;
@@ -675,7 +675,7 @@ Object *AIPlayer::buildStructureWithDozer(const ThingTemplate *bldgPlan, BuildLi
 			Coord3D rallyPoint;
 			Bool gotOffset = false;
 			if (fabs(info->getRallyOffset()->x) > 1.0f || fabs(info->getRallyOffset()->y)>1.0f) {
-				gotOffset;
+				gotOffset = true; // MG: was just "gotOffset", which does nothing.  Was that a bug?
 			}
 			if (!exitInterface->getNaturalRallyPoint(rallyPoint)) {
 				rallyPoint = *info->getLocation();
@@ -690,7 +690,7 @@ Object *AIPlayer::buildStructureWithDozer(const ThingTemplate *bldgPlan, BuildLi
 		info->setObjectTimestamp( TheGameLogic->getFrame()+1 );	// Has to be non-zero, so add 1.
 		info->setUnderConstruction(true);
 
-		if (TheGlobalData->m_debugAI) {
+		if (TheGlobalData->m_data.m_debugAI) {
 			AsciiString bldgName = bldgPlan->getName();
 			bldgName.concat(" - Building started.");
 			TheScriptEngine->AppendDebugMessage(bldgName, false);
@@ -774,7 +774,7 @@ void AIPlayer::processBaseBuilding( void )
 			if (info->getObjectID()==INVALID_ID && info->getObjectTimestamp()>0) {
 				// this object was built at some time, and got destroyed at or near objectTimestamp.
 				// Wait a few seconds before initiating a rebuild.
-				if (info->getObjectTimestamp()+TheAI->getAiData()->m_rebuildDelaySeconds*LOGICFRAMES_PER_SECOND > TheGameLogic->getFrame()) {
+				if (info->getObjectTimestamp()+(UnsignedInt)TheAI->getAiData()->m_ini.m_rebuildDelaySeconds*LOGICFRAMES_PER_SECOND > TheGameLogic->getFrame()) {
 					continue;
 				}	else {
 					DEBUG_LOG(("Enabling rebuild for %s\n", info->getTemplateName().str()));
@@ -800,13 +800,13 @@ void AIPlayer::processBaseBuilding( void )
 						info->decrementNumRebuilds();
 
 						m_readyToBuildStructure = false;
-						m_structureTimer = TheAI->getAiData()->m_structureSeconds*LOGICFRAMES_PER_SECOND;
-						if (m_player->getMoney()->countMoney() < TheAI->getAiData()->m_resourcesPoor) {
-							m_structureTimer = m_structureTimer/TheAI->getAiData()->m_structuresPoorMod;
-						}	else if (m_player->getMoney()->countMoney() > TheAI->getAiData()->m_resourcesWealthy) {
-							m_structureTimer = m_structureTimer/TheAI->getAiData()->m_structuresWealthyMod;
+						m_structureTimer = TheAI->getAiData()->m_ini.m_structureSeconds*(Real)LOGICFRAMES_PER_SECOND;
+						if ((Int)m_player->getMoney()->countMoney() < TheAI->getAiData()->m_ini.m_resourcesPoor) {
+							m_structureTimer = m_structureTimer/TheAI->getAiData()->m_ini.m_structuresPoorMod;
+						}	else if ((Int)m_player->getMoney()->countMoney() > TheAI->getAiData()->m_ini.m_resourcesWealthy) {
+							m_structureTimer = m_structureTimer/TheAI->getAiData()->m_ini.m_structuresWealthyMod;
 						}
-						m_frameLastBuildingBuilt = TheGameLogic->getFrame();
+						m_frameLastBuildingBuilt = (Int)TheGameLogic->getFrame();
 						// only build one building per delay loop
 						break;
 					} // bldg built
@@ -1000,7 +1000,7 @@ Bool AIPlayer::isLocationSafe(const Coord3D *pos, const ThingTemplate *tthing )
 	if (tthing == NULL) return 0;
 
 	// See if we have enemies.
-	Real radius = TheAI->getAiData()->m_supplyCenterSafeRadius;
+	Real radius = TheAI->getAiData()->m_ini.m_supplyCenterSafeRadius;
 	radius += tthing->getTemplateGeometryInfo().getBoundingCircleRadius();
 
 	// only consider enemies.
@@ -1389,7 +1389,7 @@ Bool AIPlayer::startTraining( WorkOrder *order, Bool busyOK, AsciiString teamNam
 		ProductionUpdateInterface *pu = factory->getProductionUpdateInterface();
 		if (pu && pu->queueCreateUnit( order->m_thing, pu->requestUniqueUnitID() )) {
 			order->m_factoryID = factory->getID(); 
-			if (TheGlobalData->m_debugAI) {
+			if (TheGlobalData->m_data.m_debugAI) {
 				AsciiString teamStr = "Queuing ";
 				teamStr.concat(order->m_thing->getName());
 				teamStr.concat(" for ");
@@ -1471,8 +1471,8 @@ Bool AIPlayer::isPossibleToBuildTeam( TeamPrototype *proto, Bool requireIdleFact
 			cost += thingCost * ((unitInfo[i].maxUnits+unitInfo[i].minUnits)/2.0f);
 		}
 	}
-	cost *= TheAI->getAiData()->m_teamResourcesToBuild;
-	if (m_player->getMoney()->countMoney() < cost)	{
+	cost *= TheAI->getAiData()->m_ini.m_teamResourcesToBuild;
+	if ((Int)m_player->getMoney()->countMoney() < cost)	{
 		notEnoughMoney = true;
 		return false; // too expensive
 	}
@@ -1500,7 +1500,7 @@ Bool AIPlayer::isAGoodIdeaToBuildTeam( TeamPrototype *proto )
 	}
 	// check build limit
 	if (proto->countTeamInstances() >= proto->getTemplateInfo()->m_maxInstances){
-		if (TheGlobalData->m_debugAI) {	
+		if (TheGlobalData->m_data.m_debugAI) {	
 			AsciiString str;
 			str.format("Team %s not chosen - %d already exist.", proto->getName().str(), proto->countTeamInstances());
 			TheScriptEngine->AppendDebugMessage(str, false);
@@ -1517,7 +1517,7 @@ Bool AIPlayer::isAGoodIdeaToBuildTeam( TeamPrototype *proto )
 	}
 	Bool needMoney;
 	if (!isPossibleToBuildTeam( proto, true, needMoney)) {
-		if (TheGlobalData->m_debugAI) {	
+		if (TheGlobalData->m_data.m_debugAI) {	
 			AsciiString str;
 			if (needMoney) {
 				str.format("Team %s not chosen - Not enough money.", proto->getName().str());
@@ -1601,7 +1601,7 @@ Bool AIPlayer::selectTeamToReinforce( Int minPriority )
 		// prepend to head of list
 		order->m_next = NULL;
 		teamQ->m_workOrders = order;
-		teamQ->m_frameStarted = TheGameLogic->getFrame();
+		teamQ->m_frameStarted = (Int)TheGameLogic->getFrame();
 		teamQ->m_team = curTeam; 
 
 		AsciiString teamName = curTeam->getPrototype()->getName();
@@ -1616,7 +1616,7 @@ Bool AIPlayer::selectTeamToReinforce( Int minPriority )
 		{
 			origin = *curTeam->getFirstItemIn_TeamMemberList()->getPosition();
 		}
-		Object *unit = curTeam->tryToRecruit(curThing, &origin, TheAI->getAiData()->m_maxRecruitDistance);
+		Object *unit = curTeam->tryToRecruit(curThing, &origin, TheAI->getAiData()->m_ini.m_maxRecruitDistance);
 		if (unit) 
 		{
 			order->m_numCompleted = 1;
@@ -1682,7 +1682,7 @@ Bool AIPlayer::selectTeamToBuild( void )
 	if (hiPri == invalidPri)
 		return false;
 
-	if (TheGlobalData->m_debugAI) {
+	if (TheGlobalData->m_data.m_debugAI) {
 		TheScriptEngine->AppendDebugMessage("**AI** Selecting team to build", false);
 	}
 
@@ -1724,10 +1724,10 @@ Bool AIPlayer::selectTeamToBuild( void )
 		buildSpecificAITeam(teamProto, false);
 		m_readyToBuildTeam = false;
 		m_teamTimer = m_teamSeconds*LOGICFRAMES_PER_SECOND;
-		if (m_player->getMoney()->countMoney() < TheAI->getAiData()->m_resourcesPoor) {
-			m_teamTimer = m_teamTimer/TheAI->getAiData()->m_teamPoorMod;
-		}	else if (m_player->getMoney()->countMoney() > TheAI->getAiData()->m_resourcesWealthy) {
-			m_teamTimer = m_teamTimer/TheAI->getAiData()->m_teamWealthyMod;
+		if ((Int)m_player->getMoney()->countMoney() < TheAI->getAiData()->m_ini.m_resourcesPoor) {
+			m_teamTimer = m_teamTimer/TheAI->getAiData()->m_ini.m_teamPoorMod;
+		}	else if ((Int)m_player->getMoney()->countMoney() > TheAI->getAiData()->m_ini.m_resourcesWealthy) {
+			m_teamTimer = m_teamTimer/TheAI->getAiData()->m_ini.m_teamWealthyMod;
 		}
 		return true;
 	}
@@ -1898,7 +1898,7 @@ void AIPlayer::buildBySupplies(Int minimumCash, const AsciiString& thingName)
 													warehouseLocation->y
 													);
 			TheScriptEngine->AppendDebugMessage(debugMessage, false);
-			if( TheGlobalData->m_debugSupplyCenterPlacement )
+			if( TheGlobalData->m_data.m_debugSupplyCenterPlacement )
 				DEBUG_LOG(("%s", debugMessage.str()));
 			// try to fix.
 			Real posOffset;
@@ -1916,7 +1916,7 @@ void AIPlayer::buildBySupplies(Int minimumCash, const AsciiString& thingName)
 																							 BuildAssistant::NO_OBJECT_OVERLAP,
 																							 NULL, m_player ) == LBC_OK;
 					if (valid) break;
-					if( TheGlobalData->m_debugSupplyCenterPlacement )
+					if( TheGlobalData->m_data.m_debugSupplyCenterPlacement )
 						DEBUG_LOG(("buildBySupplies -- Fail at (%.2f,%.2f)\n", newPos.x, newPos.y));
 					newPos.y = yPos+posOffset;
 					valid = TheBuildAssistant->isLocationLegalToBuild( &newPos, tTemplate, angle,
@@ -1925,7 +1925,7 @@ void AIPlayer::buildBySupplies(Int minimumCash, const AsciiString& thingName)
 																							 BuildAssistant::NO_OBJECT_OVERLAP,
 																							 NULL, m_player ) == LBC_OK;
 					if (valid) break;
-					if( TheGlobalData->m_debugSupplyCenterPlacement )
+					if( TheGlobalData->m_data.m_debugSupplyCenterPlacement )
 						DEBUG_LOG(("buildBySupplies -- Fail at (%.2f,%.2f)\n", newPos.x, newPos.y));
 				}
 				if (valid) break;
@@ -1939,7 +1939,7 @@ void AIPlayer::buildBySupplies(Int minimumCash, const AsciiString& thingName)
 																							 BuildAssistant::NO_OBJECT_OVERLAP,
 																							 NULL, m_player ) == LBC_OK;
 					if (valid) break;
-					if( TheGlobalData->m_debugSupplyCenterPlacement )
+					if( TheGlobalData->m_data.m_debugSupplyCenterPlacement )
 						DEBUG_LOG(("buildBySupplies -- Fail at (%.2f,%.2f)\n", newPos.x, newPos.y));
 					newPos.x = xPos+posOffset;
 					valid = TheBuildAssistant->isLocationLegalToBuild( &newPos, tTemplate, angle,
@@ -1948,7 +1948,7 @@ void AIPlayer::buildBySupplies(Int minimumCash, const AsciiString& thingName)
 																							 BuildAssistant::NO_OBJECT_OVERLAP,
 																							 NULL, m_player ) == LBC_OK;
 					if (valid) break;
-					if( TheGlobalData->m_debugSupplyCenterPlacement )
+					if( TheGlobalData->m_data.m_debugSupplyCenterPlacement )
 						DEBUG_LOG(("buildBySupplies -- Fail at (%.2f,%.2f)\n", newPos.x, newPos.y));
 				}
 				if (valid) break;
@@ -1956,7 +1956,7 @@ void AIPlayer::buildBySupplies(Int minimumCash, const AsciiString& thingName)
 		}
 		if (valid) 
 		{
-			if( TheGlobalData->m_debugSupplyCenterPlacement )
+			if( TheGlobalData->m_data.m_debugSupplyCenterPlacement )
 				DEBUG_LOG(("buildAISupplyCenter -- SUCCESS at (%.2f,%.2f)\n", newPos.x, newPos.y));
 			location = newPos;
 		}
@@ -2199,7 +2199,7 @@ Object *AIPlayer::findSupplyCenter(Int minimumCash)
 			static const NameKeyType key_warehouseUpdate = NAMEKEY("SupplyWarehouseDockUpdate");
 			SupplyWarehouseDockUpdate *warehouseModule = (SupplyWarehouseDockUpdate*)obj->findUpdateModule( key_warehouseUpdate );
 			if( warehouseModule )	{	 
-				Int availableCash = warehouseModule->getBoxesStored()*TheGlobalData->m_baseValuePerSupplyBox;
+				Int availableCash = warehouseModule->getBoxesStored()*TheGlobalData->m_data.m_baseValuePerSupplyBox;
 				if (availableCash<minimumCash) continue;
 				if( m_player->getRelationship(obj->getTeam()) == ENEMIES ) {
 					continue;
@@ -2255,7 +2255,7 @@ Object *AIPlayer::findSupplyCenter(Int minimumCash)
 // ------------------------------------------------------------------------------------------------
 /**  Build a base defense. */
 // ------------------------------------------------------------------------------------------------
-void AIPlayer::buildAIBaseDefense(Bool flank)
+void AIPlayer::buildAIBaseDefense(Bool /* flank */)
 {
 	//
 	AsciiString teamStr = "Error : Solo ai doesn't support buildAIBaseDefense. '";
@@ -2265,7 +2265,7 @@ void AIPlayer::buildAIBaseDefense(Bool flank)
 // ------------------------------------------------------------------------------------------------
 /** Build a base defense. */
 // ------------------------------------------------------------------------------------------------
-void AIPlayer::buildAIBaseDefenseStructure(const AsciiString &thingName, Bool flank)
+void AIPlayer::buildAIBaseDefenseStructure(const AsciiString& /* thingName */, Bool /* flank */)
 {
 	//
 	AsciiString teamStr = "Error : Solo ai doesn't support buildAIBaseDefenseStructure. '";
@@ -2509,7 +2509,7 @@ void AIPlayer::buildSpecificAITeam( TeamPrototype *teamProto, Bool priorityBuild
 				team->m_priorityBuild = false;
 			}
 			team->m_workOrders = orders;
-			team->m_frameStarted = TheGameLogic->getFrame();
+			team->m_frameStarted = (Int)TheGameLogic->getFrame();
 			// create inactive team to place members into as they are built
 			// when team is complete, the team is activated
 			team->m_team = TheTeamFactory->createInactiveTeam( teamProto->getName() ); 
@@ -2524,7 +2524,7 @@ void AIPlayer::buildSpecificAITeam( TeamPrototype *teamProto, Bool priorityBuild
 				}
 			}
 		} else {
-			if (TheGlobalData->m_debugAI) {
+			if (TheGlobalData->m_data.m_debugAI) {
 				AsciiString teamName = teamProto->getName();
 				teamName.concat(" - contains 0 buildable units.");
 				TheScriptEngine->AppendDebugMessage(teamName, false);
@@ -2620,7 +2620,7 @@ void AIPlayer::recruitSpecificAITeam(TeamPrototype *teamProto, Real recruitRadiu
 			prependTo_TeamReadyQueue(team);
 			team->m_priorityBuild = false;
 			team->m_workOrders = NULL;
-			team->m_frameStarted = TheGameLogic->getFrame();
+			team->m_frameStarted = (Int)TheGameLogic->getFrame();
 			team->m_team = theTeam; 
 			AsciiString teamName = teamProto->getName();
 			teamName.concat(" - Finished recruiting.");
@@ -2675,7 +2675,7 @@ void AIPlayer::queueUnits( void )
 			}
 			while (order->isWaitingToBuild()) {
 				
-				Object *unit = team->m_team->tryToRecruit(order->m_thing, &home, TheAI->getAiData()->m_maxRecruitDistance);
+				Object *unit = team->m_team->tryToRecruit(order->m_thing, &home, TheAI->getAiData()->m_ini.m_maxRecruitDistance);
 				if (unit) 
 				{
 					order->m_numCompleted++;
@@ -2758,7 +2758,7 @@ void AIPlayer::checkReadyTeams( void )
 		{
 			TeamInQueue *team = iter.cur();
 			// If 60 seconds passed, start anyway.
-			Bool timeExpired = team->m_frameStarted+60*LOGICFRAMES_PER_SECOND < TheGameLogic->getFrame();
+			Bool timeExpired = team->m_frameStarted+60*LOGICFRAMES_PER_SECOND < (Int)TheGameLogic->getFrame();
 			Bool allIdle=TRUE;	
 			Bool anyIdle = FALSE;
 			if (team->m_reinforcement) {
@@ -2814,7 +2814,7 @@ void AIPlayer::checkReadyTeams( void )
 					if (isSkirmishAI()) {
 						TheScriptEngine->clearTeamFlags();
 					}
-					if (TheGlobalData->m_debugAI) {
+					if (TheGlobalData->m_data.m_debugAI) {
 						AsciiString teamName = team->m_team->getPrototype()->getName();
 						teamName.concat(" - team activated.");
 						TheScriptEngine->AppendDebugMessage(teamName, false);
@@ -2942,7 +2942,7 @@ void AIPlayer::doUpgradesAndSkills( void )
 	}
 	const AISideInfo *sideInfo = TheAI->getAiData()->m_sideInfo;
 	while (sideInfo) {
-		if (sideInfo->m_side == m_player->getSide()) {
+		if (sideInfo->m_ini.m_side == m_player->getSide()) {
 			break;
 		}
 		sideInfo = sideInfo->m_next;
@@ -2953,13 +2953,13 @@ void AIPlayer::doUpgradesAndSkills( void )
 		Int limit = 0;		
 		// Pick randomly among the skillsets that have skills.
 		// Designers sometimes only define skillset 1 & 2, or some such.  jba.
-		if (sideInfo->m_skillSet2.m_numSkills>0) {
+		if (sideInfo->m_ini.m_skillSet2.m_numSkills>0) {
 			limit = 1;
-			if (sideInfo->m_skillSet3.m_numSkills>0) {
+			if (sideInfo->m_ini.m_skillSet3.m_numSkills>0) {
 				limit = 2;
-				if (sideInfo->m_skillSet4.m_numSkills>0) {
+				if (sideInfo->m_ini.m_skillSet4.m_numSkills>0) {
 					limit = 3;
-					if (sideInfo->m_skillSet5.m_numSkills>0) {
+					if (sideInfo->m_ini.m_skillSet5.m_numSkills>0) {
 						limit = 4;
 					}
 				}
@@ -2977,11 +2977,11 @@ void AIPlayer::doUpgradesAndSkills( void )
 		const TSkillSet *skillset;
 		switch(m_skillsetSelector) {
 			default:
-			case 0: skillset = &sideInfo->m_skillSet1; break;
-			case 1: skillset = &sideInfo->m_skillSet2; break;
-			case 2: skillset = &sideInfo->m_skillSet3; break;
-			case 3: skillset = &sideInfo->m_skillSet4; break;
-			case 4: skillset = &sideInfo->m_skillSet5; break;
+			case 0: skillset = &sideInfo->m_ini.m_skillSet1; break;
+			case 1: skillset = &sideInfo->m_ini.m_skillSet2; break;
+			case 2: skillset = &sideInfo->m_ini.m_skillSet3; break;
+			case 3: skillset = &sideInfo->m_ini.m_skillSet4; break;
+			case 4: skillset = &sideInfo->m_ini.m_skillSet5; break;
 		}
 		Int i;
 		for (i=0; i<skillset->m_numSkills; i++) {
@@ -3177,7 +3177,7 @@ void AIPlayer::queueDozer( void )
 				prependTo_TeamBuildQueue(team);
 				team->m_priorityBuild = true;
 				team->m_workOrders = order;
-				team->m_frameStarted = TheGameLogic->getFrame();
+				team->m_frameStarted = (Int)TheGameLogic->getFrame();
 				// Stick it on the default team
 				team->m_team = m_player->getDefaultTeam(); 
 				AsciiString teamName = "DOZER - building one at the ";
@@ -3285,7 +3285,7 @@ Object * AIPlayer::findDozer( const Coord3D *pos )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AIPlayer::crc( Xfer *xfer )
+void AIPlayer::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -3514,7 +3514,7 @@ Bool TeamInQueue::isBuildTimeExpired()
 	if (m_team->getPrototype()->getTemplateInfo()->m_initialIdleFrames<1) {
 		return false; // Unlimited time.
 	}
-	if (TheGameLogic->getFrame() > m_frameStarted + m_team->getPrototype()->getTemplateInfo()->m_initialIdleFrames) {
+	if ((Int)TheGameLogic->getFrame() > m_frameStarted + m_team->getPrototype()->getTemplateInfo()->m_initialIdleFrames) {
 		return true;
 	}
 	return false;
@@ -3593,7 +3593,7 @@ void TeamInQueue::disband()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void TeamInQueue::crc( Xfer *xfer )
+void TeamInQueue::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -3728,7 +3728,7 @@ void WorkOrder::validateFactory( Player *thisPlayer )
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void WorkOrder::crc( Xfer *xfer )
+void WorkOrder::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc

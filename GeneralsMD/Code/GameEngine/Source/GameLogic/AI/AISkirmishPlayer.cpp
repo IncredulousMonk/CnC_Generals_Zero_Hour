@@ -71,8 +71,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 AISkirmishPlayer::AISkirmishPlayer( Player *p ) :	AIPlayer(p), 
-m_curFlankBaseDefense(0),
 m_curFrontBaseDefense(0),
+m_curFlankBaseDefense(0),
 m_curFrontLeftDefenseAngle(0),
 m_curFrontRightDefenseAngle(0),
 m_curLeftFlankLeftDefenseAngle(0),
@@ -83,7 +83,7 @@ m_frameToCheckEnemy(0),
 m_currentEnemy(NULL)
 
 {
-	m_frameLastBuildingBuilt = TheGameLogic->getFrame();
+	m_frameLastBuildingBuilt = (Int)TheGameLogic->getFrame();
 	p->setCanBuildUnits(true); // turn on ai production by default.
 }
 
@@ -187,7 +187,7 @@ void AISkirmishPlayer::processBaseBuilding( void )
 			if (info->getObjectID()==INVALID_ID && info->getObjectTimestamp()>0) {
 				// this object was built at some time, and got destroyed at or near objectTimestamp.
 				// Wait a few seconds before initiating a rebuild.
-				if (info->getObjectTimestamp()+TheAI->getAiData()->m_rebuildDelaySeconds*LOGICFRAMES_PER_SECOND > TheGameLogic->getFrame()) {
+				if ((Int)info->getObjectTimestamp()+TheAI->getAiData()->m_ini.m_rebuildDelaySeconds*LOGICFRAMES_PER_SECOND > (Int)TheGameLogic->getFrame()) {
 					continue;
 				}	else {
 					DEBUG_LOG(("Enabling rebuild for %s\n", info->getTemplateName().str()));
@@ -262,13 +262,13 @@ void AISkirmishPlayer::processBaseBuilding( void )
 				bldgInfo->decrementNumRebuilds();
 
 				m_readyToBuildStructure = false;
-				m_structureTimer = TheAI->getAiData()->m_structureSeconds*LOGICFRAMES_PER_SECOND;
-				if (m_player->getMoney()->countMoney() < TheAI->getAiData()->m_resourcesPoor) {
-					m_structureTimer = m_structureTimer/TheAI->getAiData()->m_structuresPoorMod;
-				}	else if (m_player->getMoney()->countMoney() > TheAI->getAiData()->m_resourcesWealthy) {
-					m_structureTimer = m_structureTimer/TheAI->getAiData()->m_structuresWealthyMod;
+				m_structureTimer = TheAI->getAiData()->m_ini.m_structureSeconds*(Real)LOGICFRAMES_PER_SECOND;
+				if ((Int)m_player->getMoney()->countMoney() < TheAI->getAiData()->m_ini.m_resourcesPoor) {
+					m_structureTimer = m_structureTimer/TheAI->getAiData()->m_ini.m_structuresPoorMod;
+				}	else if ((Int)m_player->getMoney()->countMoney() > TheAI->getAiData()->m_ini.m_resourcesWealthy) {
+					m_structureTimer = m_structureTimer/TheAI->getAiData()->m_ini.m_structuresWealthyMod;
 				}
-				m_frameLastBuildingBuilt = TheGameLogic->getFrame();
+				m_frameLastBuildingBuilt = (Int)TheGameLogic->getFrame();
 				// only build one building per delay loop
 			} // bldg built
 
@@ -335,7 +335,7 @@ Bool AISkirmishPlayer::startTraining( WorkOrder *order, Bool busyOK, AsciiString
 		ProductionUpdateInterface *pu = factory->getProductionUpdateInterface();
 		if (pu && pu->queueCreateUnit( order->m_thing, pu->requestUniqueUnitID() )) {
 			order->m_factoryID = factory->getID(); 
-			if (TheGlobalData->m_debugAI) {
+			if (TheGlobalData->m_data.m_debugAI) {
 				AsciiString teamStr = "Queuing ";
 				teamStr.concat(order->m_thing->getName());
 				teamStr.concat(" for ");
@@ -362,7 +362,7 @@ Bool AISkirmishPlayer::isAGoodIdeaToBuildTeam( TeamPrototype *proto )
 	}
 	// check build limit
 	if (proto->countTeamInstances() >= proto->getTemplateInfo()->m_maxInstances){
-		if (TheGlobalData->m_debugAI) {	
+		if (TheGlobalData->m_data.m_debugAI) {	
 			AsciiString str;
 			str.format("Team %s not chosen - %d already exist.", proto->getName().str(), proto->countTeamInstances());
 			TheScriptEngine->AppendDebugMessage(str, false);
@@ -379,7 +379,7 @@ Bool AISkirmishPlayer::isAGoodIdeaToBuildTeam( TeamPrototype *proto )
 	}
 	Bool needMoney;
 	if (!isPossibleToBuildTeam( proto, true, needMoney)) {
-		if (TheGlobalData->m_debugAI) {	
+		if (TheGlobalData->m_data.m_debugAI) {	
 			AsciiString str;
 			if (needMoney) {
 				str.format("Team %s not chosen - Not enough money.", proto->getName().str());
@@ -568,14 +568,14 @@ void AISkirmishPlayer::buildAIBaseDefense(Bool flank)
 	const AISideInfo *resInfo = TheAI->getAiData()->m_sideInfo;
 	AsciiString defenseTemplateName;
 	while (resInfo) {
-		if (resInfo->m_side == m_player->getSide()) {
-			defenseTemplateName = resInfo->m_baseDefenseStructure1;
+		if (resInfo->m_ini.m_side == m_player->getSide()) {
+			defenseTemplateName = resInfo->m_ini.m_baseDefenseStructure1;
 			break;
 		}
 		resInfo = resInfo->m_next;
 	}
 	if (resInfo) {
-		buildAIBaseDefenseStructure(resInfo->m_baseDefenseStructure1, flank);
+		buildAIBaseDefenseStructure(resInfo->m_ini.m_baseDefenseStructure1, flank);
 	}
 }
 
@@ -636,7 +636,7 @@ void AISkirmishPlayer::buildAIBaseDefenseStructure(const AsciiString &thingName,
 		offset.y = goalPos.y-m_baseCenter.y;
 		offset.normalize();
 		Real defenseDistance = m_baseRadius;
-		defenseDistance += TheAI->getAiData()->m_skirmishBaseDefenseExtraDistance;
+		defenseDistance += TheAI->getAiData()->m_ini.m_skirmishBaseDefenseExtraDistance;
 		offset.x *= defenseDistance;
 		offset.y *= defenseDistance;
 
@@ -832,7 +832,7 @@ void AISkirmishPlayer::recruitSpecificAITeam(TeamPrototype *teamProto, Real recr
 			prependTo_TeamReadyQueue(team);
 			team->m_priorityBuild = false;
 			team->m_workOrders = NULL;
-			team->m_frameStarted = TheGameLogic->getFrame();
+			team->m_frameStarted = (Int)TheGameLogic->getFrame();
 			team->m_team = theTeam; 
 			AsciiString teamName = teamProto->getName();
 			teamName.concat(" - Finished recruiting.");
@@ -990,13 +990,13 @@ void AISkirmishPlayer::adjustBuildList(BuildListInfo *list)
 		return;
 	}
 	// Find the location of the command center in the build list.
-	Bool foundInBuildList = false;
+	// Bool foundInBuildList = false;
 	Coord3D buildPos;
 	BuildListInfo *cur = list;
 	while (cur) {
 		const ThingTemplate *tTemplate = TheThingFactory->findTemplate(cur->getTemplateName());
 		if (tTemplate && tTemplate->isKindOf(KINDOF_COMMANDCENTER)) {
-			foundInBuildList = true;
+			// foundInBuildList = true;
 			buildPos = *cur->getLocation();
 			cur->setInitiallyBuilt(true);
 		}
@@ -1025,7 +1025,7 @@ void AISkirmishPlayer::adjustBuildList(BuildListInfo *list)
 	}
 
 	Real angle = 0;
-	if (TheAI->getAiData()->m_rotateSkirmishBases) {
+	if (TheAI->getAiData()->m_ini.m_rotateSkirmishBases) {
 		switch (gridIndex) {
 			case 0 : angle = 0; break;
 			case 1 : angle = PI/4; break;// 45 degrees.
@@ -1048,7 +1048,7 @@ void AISkirmishPlayer::adjustBuildList(BuildListInfo *list)
 	while (cur) {
 		const ThingTemplate *tTemplate = TheThingFactory->findTemplate(list->getTemplateName());
 		if (tTemplate && tTemplate->isKindOf(KINDOF_COMMANDCENTER)) {
-			foundInBuildList = true;
+			// foundInBuildList = true;
 			Coord3D curPos = *cur->getLocation();
 			// Transform to new coords.
 			curPos.x -= buildPos.x;
@@ -1181,7 +1181,7 @@ Bool AISkirmishPlayer::computeSuperweaponTarget(const SpecialPowerTemplate *powe
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void AISkirmishPlayer::crc( Xfer *xfer )
+void AISkirmishPlayer::crc( Xfer* /* xfer */ )
 {
 
 }  // end crc
@@ -1235,4 +1235,3 @@ void AISkirmishPlayer::loadPostProcess( void )
 {
 
 }  // end loadPostProcess
-

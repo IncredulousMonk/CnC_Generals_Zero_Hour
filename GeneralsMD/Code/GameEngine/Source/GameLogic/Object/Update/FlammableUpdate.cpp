@@ -43,35 +43,37 @@
 //-------------------------------------------------------------------------------------------------
 FlammableUpdateModuleData::FlammableUpdateModuleData()
 {
-	m_burnedDelay = 0;
-	m_aflameDuration = 0;
-	m_aflameDamageDelay = 0;
-	m_aflameDamageAmount = 0;
+	m_ini.m_burnedDelay = 0;
+	m_ini.m_aflameDuration = 0;
+	m_ini.m_aflameDamageDelay = 0;
+	m_ini.m_aflameDamageAmount = 0;
 	// Enabled By Sadullah Nader
 	// Initialization needed
-	m_burningSoundName.clear();
+	m_ini.m_burningSoundName.clear();
 	//
-	m_flameDamageLimitData = 20.0f;
-	m_flameDamageExpirationDelay = LOGICFRAMES_PER_SECOND * 2;
+	m_ini.m_flameDamageLimitData = 20.0f;
+	m_ini.m_flameDamageExpirationDelay = LOGICFRAMES_PER_SECOND * 2;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void FlammableUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void FlammableUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "BurnedDelay",						INI::parseDurationUnsignedInt,	NULL, offsetof( FlammableUpdateModuleData, m_burnedDelay ) },
-		{ "AflameDuration",					INI::parseDurationUnsignedInt,	NULL, offsetof( FlammableUpdateModuleData, m_aflameDuration ) },
-		{ "AflameDamageDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( FlammableUpdateModuleData, m_aflameDamageDelay ) },
-		{ "AflameDamageAmount",			INI::parseInt,									NULL, offsetof( FlammableUpdateModuleData, m_aflameDamageAmount ) },
-		{ "BurningSoundName",				INI::parseAsciiString,					NULL,	offsetof( FlammableUpdateModuleData, m_burningSoundName) },
-		{ "FlameDamageLimit",				INI::parseReal,									NULL,	offsetof( FlammableUpdateModuleData, m_flameDamageLimitData ) },
-		{ "FlameDamageExpiration",	INI::parseDurationUnsignedInt,	NULL,	offsetof( FlammableUpdateModuleData, m_flameDamageExpirationDelay ) },
+		{ "BurnedDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( FlammableUpdateModuleData::IniData, m_burnedDelay ) },
+		{ "AflameDuration",			INI::parseDurationUnsignedInt,	NULL, offsetof( FlammableUpdateModuleData::IniData, m_aflameDuration ) },
+		{ "AflameDamageDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( FlammableUpdateModuleData::IniData, m_aflameDamageDelay ) },
+		{ "AflameDamageAmount",		INI::parseInt,					NULL, offsetof( FlammableUpdateModuleData::IniData, m_aflameDamageAmount ) },
+		{ "BurningSoundName",		INI::parseAsciiString,			NULL, offsetof( FlammableUpdateModuleData::IniData, m_burningSoundName) },
+		{ "FlameDamageLimit",		INI::parseReal,					NULL, offsetof( FlammableUpdateModuleData::IniData, m_flameDamageLimitData ) },
+		{ "FlameDamageExpiration",	INI::parseDurationUnsignedInt,	NULL, offsetof( FlammableUpdateModuleData::IniData, m_flameDamageExpirationDelay ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	FlammableUpdateModuleData* self {static_cast<FlammableUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -82,8 +84,8 @@ FlammableUpdate::FlammableUpdate( Thing *thing, const ModuleData* moduleData ) :
 	m_aflameEndFrame = 0;
 	m_burnedEndFrame = 0;
 	m_damageEndFrame = 0;
-	m_audioHandle = NULL;
-	m_flameDamageLimit = getFlammableUpdateModuleData()->m_flameDamageLimitData;
+	m_audioHandle = 0;
+	m_flameDamageLimit = getFlammableUpdateModuleData()->m_ini.m_flameDamageLimitData;
 	m_lastFlameDamageDealt = 0;
 
 	setWakeFrame(getObject(), UPDATE_SLEEP_FOREVER);
@@ -104,10 +106,10 @@ void FlammableUpdate::onDamage( DamageInfo *damageInfo )
 	if( damageInfo->in.m_damageType == DAMAGE_FLAME || damageInfo->in.m_damageType == DAMAGE_PARTICLE_BEAM )
 	{
 		UnsignedInt now = TheGameLogic->getFrame();
-		if( now - getFlammableUpdateModuleData()->m_flameDamageExpirationDelay > m_lastFlameDamageDealt )
+		if( now - getFlammableUpdateModuleData()->m_ini.m_flameDamageExpirationDelay > m_lastFlameDamageDealt )
 		{
 			// If it has been a long time since our last flame damage, reset the threshold
-			m_flameDamageLimit = getFlammableUpdateModuleData()->m_flameDamageLimitData;
+			m_flameDamageLimit = getFlammableUpdateModuleData()->m_ini.m_flameDamageLimitData;
 		}
 		m_lastFlameDamageDealt = now;
 		
@@ -136,7 +138,7 @@ UpdateSleepTime FlammableUpdate::update( void )
 
 	if( m_damageEndFrame != 0 && now >= m_damageEndFrame )
 	{
-		m_damageEndFrame = now + data->m_aflameDamageDelay;
+		m_damageEndFrame = now + data->m_ini.m_aflameDamageDelay;
 		doAflameDamage();
 	}
 
@@ -213,9 +215,9 @@ void FlammableUpdate::tryToIgnite()
 
 		const FlammableUpdateModuleData *data = getFlammableUpdateModuleData();
 		UnsignedInt now = TheGameLogic->getFrame();
-		m_aflameEndFrame = now + data->m_aflameDuration;
-		m_burnedEndFrame = data->m_burnedDelay ? now + data->m_burnedDelay : 0;
-		m_damageEndFrame = data->m_aflameDamageDelay ? now + data->m_aflameDamageDelay : 0;
+		m_aflameEndFrame = now + data->m_ini.m_aflameDuration;
+		m_burnedEndFrame = data->m_ini.m_burnedDelay ? now + data->m_ini.m_burnedDelay : 0;
+		m_damageEndFrame = data->m_ini.m_aflameDamageDelay ? now + data->m_ini.m_aflameDamageDelay : 0;
 
 		setWakeFrame(getObject(), calcSleepTime());
 	}
@@ -228,7 +230,7 @@ void FlammableUpdate::doAflameDamage()
 	const FlammableUpdateModuleData *data = getFlammableUpdateModuleData();
 
 	DamageInfo info;
-	info.in.m_amount = data->m_aflameDamageAmount;
+	info.in.m_amount = data->m_ini.m_aflameDamageAmount;
 	info.in.m_sourceID = getObject()->getID();
 	info.in.m_damageType = DAMAGE_FLAME;
 	info.in.m_deathType = DEATH_BURNED;
@@ -242,7 +244,7 @@ void FlammableUpdate::startBurningSound()
 {
 	const FlammableUpdateModuleData *data = getFlammableUpdateModuleData();
 
-	AudioEventRTS audio(data->m_burningSoundName, getObject()->getID());
+	AudioEventRTS audio(data->m_ini.m_burningSoundName, getObject()->getID());
 	m_audioHandle = TheAudio->addAudioEvent( &audio );
 }
 
@@ -253,7 +255,7 @@ void FlammableUpdate::stopBurningSound()
 	if (m_audioHandle)
 	{
 		TheAudio->removeAudioEvent( m_audioHandle );
-		m_audioHandle = NULL;
+		m_audioHandle = 0;
 	}
 }
 

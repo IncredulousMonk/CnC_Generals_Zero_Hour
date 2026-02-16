@@ -35,19 +35,13 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "GameLogic/Module/ObjectHelper.h"
 
-enum WeaponBonusConditionType;
+enum WeaponBonusConditionType: int;
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 class TempWeaponBonusHelperModuleData : public ModuleData
 {
 public:
-	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
-	struct IniData
-	{
-	};
-
-	IniData m_ini {};
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -69,8 +63,8 @@ public:
 	void doTempWeaponBonus( WeaponBonusConditionType status, UnsignedInt duration );
 
 protected:
-	WeaponBonusConditionType m_currentBonus;
-	UnsignedInt m_frameToRemove;
+	WeaponBonusConditionType m_currentBonus {};
+	UnsignedInt m_frameToRemove {};
 	void clearTempWeaponBonus();
 };
 

@@ -79,7 +79,7 @@ void StatusDamageHelper::clearStatusCondition()
 // ------------------------------------------------------------------------------------------------
 void StatusDamageHelper::doStatusDamage( ObjectStatusTypes status, Real duration )
 {
-	Int durationAsInt = REAL_TO_INT_FLOOR(duration);
+	UnsignedInt durationAsInt = REAL_TO_UNSIGNEDINT_FLOOR(duration);
 	
 	// Clear any different status we may have.  Re-getting the same status will just reset the timer
 	if( m_statusToHeal != status )

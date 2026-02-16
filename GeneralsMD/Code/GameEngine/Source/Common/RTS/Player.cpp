@@ -71,13 +71,13 @@
 #include "Common/BitFlagsIO.h"
 #include "Common/SpecialPower.h"
 
-// #include "GameClient/ControlBar.h"
+#include "GameClient/ControlBar.h"
 #include "GameClient/Drawable.h"
 #include "GameClient/Eva.h"
 #include "GameClient/GameClient.h"
 #include "GameClient/GameText.h"
 
-// #include "GameLogic/AI.h"
+#include "GameLogic/AI.h"
 #include "GameLogic/AIPathfind.h"
 #include "GameLogic/AISkirmishPlayer.h"
 #include "GameLogic/ExperienceTracker.h"
@@ -85,9 +85,9 @@
 #include "GameLogic/Scripts.h"
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/SidesList.h"
-// #include "GameLogic/Squad.h"
+#include "GameLogic/Squad.h"
 #include "GameLogic/RankInfo.h"
-// #include "GameLogic/ScriptEngine.h"
+#include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
 // #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/ContainModule.h"
@@ -319,9 +319,7 @@ Player::Player( Int playerIndex )
 
 	m_upgradeList = NULL;
 	m_pBuildList = NULL;
-#if 0
 	m_ai = NULL;
-#endif // if 0
 	m_resourceGatheringManager = NULL;
 	m_defaultTeam = NULL;
 	m_radarCount = 0;
@@ -368,10 +366,9 @@ Player::Player( Int playerIndex )
 void Player::init(const PlayerTemplate* pt)
 {
 
-(void) pt;
-DEBUG_LOG(("Player::init not yet implemented!\n"));
-#if 0
-	DEBUG_ASSERTCRASH(m_playerTeamPrototypes.size() == 0, ("Player::m_playerTeamPrototypes is not empty at game start!\n"));
+	// FIXME: Haven't worked out where this gets reset.  Disabling the crash for now.
+	// DEBUG_ASSERTCRASH(m_playerTeamPrototypes.size() == 0, ("Player::m_playerTeamPrototypes is not empty at game start!\n"));
+	DEBUG_ASSERTLOG(m_playerTeamPrototypes.size() == 0, ("Player::m_playerTeamPrototypes is not empty at game start!\n"));
 	m_skillPointsModifier = 1.0f;
 	m_attackedFrame = 0;
 
@@ -542,14 +539,11 @@ DEBUG_LOG(("Player::init not yet implemented!\n"));
 	//Always off at the beginning of a game! Only GameLogic::update has
 	//the power to turn it on. Don't want to cause desyncs!
 	m_logicalRetaliationModeEnabled = FALSE;
-#endif // if 0
 }
 
 //=============================================================================
 Player::~Player()
 {
-DEBUG_LOG(("Player::~Player not yet implemented!\n"));
-#if 0
 	m_defaultTeam = NULL;
 	m_playerTemplate = NULL;
 
@@ -559,13 +553,11 @@ DEBUG_LOG(("Player::~Player not yet implemented!\n"));
 		(*it)->friend_setOwningPlayer(NULL);
 	}
 	m_playerTeamPrototypes.clear();	// empty, but don't free the contents
-#endif // if 0
 
 	// delete the relation maps (the destructor clears the actual map if any data is present)
 	m_teamRelations->deleteInstance();
 	m_playerRelations->deleteInstance();
 
-#if 0
 	for (Int i = 0; i < NUM_HOTKEY_SQUADS; ++i) {
 		if (m_squads[i] != NULL) {
 			m_squads[i]->deleteInstance();
@@ -583,7 +575,6 @@ DEBUG_LOG(("Player::~Player not yet implemented!\n"));
 		m_battlePlanBonuses->deleteInstance();
 		m_battlePlanBonuses = NULL;
 	}
-#endif // if 0
 }
 
 //=============================================================================
@@ -780,20 +771,13 @@ DEBUG_CRASH(("Player::update not yet implemented!"));
 //=============================================================================
 void Player::newMap()
 {
-DEBUG_CRASH(("Player::newMap not yet implemented!"));
-#if 0
 	if (m_ai)
 		m_ai->newMap();
-#endif // if 0
 }
 
 //=============================================================================
 void Player::setPlayerType(PlayerType t, Bool skirmish)
 {
-(void) t;
-(void) skirmish;
-DEBUG_CRASH(("Player::setPlayerType not yet implemented!"));
-#if 0
 	m_playerType = t;
 
 	if (m_ai)
@@ -804,7 +788,7 @@ DEBUG_CRASH(("Player::setPlayerType not yet implemented!"));
 
 	if (t == PLAYER_COMPUTER)
 	{
-		if (skirmish || TheAI->getAiData()->m_forceSkirmishAI) {
+		if (skirmish || TheAI->getAiData()->m_ini.m_forceSkirmishAI) {
 			// create AIPlayer and attach to this Player
 			m_ai = newInstance(AISkirmishPlayer)( this );
 		} else {
@@ -812,7 +796,6 @@ DEBUG_CRASH(("Player::setPlayerType not yet implemented!"));
 			m_ai = newInstance(AIPlayer)( this );
 		}
 	}
-#endif // if 0
 }
 
 //=============================================================================
@@ -835,9 +818,6 @@ void Player::setDefaultTeam(void) {
 //
 void Player::initFromDict(const Dict* d)
 {
-(void) d;
-DEBUG_CRASH(("Player::initFromDict not yet implemented!"));
-#if 0
 	AsciiString tmplname = d->getAsciiString(TheKey_playerFaction);
 	const PlayerTemplate* pt = ThePlayerTemplateStore->findPlayerTemplate(NAMEKEY(tmplname));
 	DEBUG_ASSERTCRASH(pt != NULL, ("PlayerTemplate %s not found -- this is an obsolete map (please open and resave in WB)\n",tmplname.str()));
@@ -1085,7 +1065,6 @@ DEBUG_CRASH(("Player::initFromDict not yet implemented!"));
 		m_currentSelection = NULL;
 	}
 	m_currentSelection = newInstance( Squad );
-#endif // if 0
 }
 
 //=============================================================================
@@ -1228,11 +1207,7 @@ DEBUG_LOG(("Player::becomingLocalPlayer not yet implemented!\n"));
 //-------------------------------------------------------------------------------------------------
 Bool Player::isSkirmishAIPlayer( void )
 {
-DEBUG_CRASH(("Player::isSkirmishAIPlayer not yet implemented!"));
-return false;
-#if 0
 	return m_ai ? m_ai->isSkirmishAI() : false; 
-#endif // if 0
 }
 
 
@@ -1242,19 +1217,11 @@ return false;
  */
 Bool Player::computeSuperweaponTarget(const SpecialPowerTemplate *power, Coord3D *retPos, Int playerNdx, Real weaponRadius)
 {
-(void) power;
-(void) retPos;
-(void) playerNdx;
-(void) weaponRadius;
-DEBUG_CRASH(("Player::computeSuperweaponTarget not yet implemented!"));
-return false;
-#if 0
 	if (m_ai) {
 		return m_ai->computeSuperweaponTarget(power, retPos, playerNdx, weaponRadius);
 	}
 
 	return FALSE;
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1262,11 +1229,7 @@ return false;
 //-------------------------------------------------------------------------------------------------
 Player *Player::getCurrentEnemy( void )
 {
-DEBUG_CRASH(("Player::getCurrentEnemy not yet implemented!"));
-return nullptr;
-#if 0
 	return m_ai?m_ai->getAiEnemy():NULL; 
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1622,15 +1585,11 @@ Int Player::countReadyShortcutSpecialPowersOfType( SpecialPowerType spType )
 //-------------------------------------------------------------------------------------------------
 GameDifficulty Player::getPlayerDifficulty(void) const
 {
-DEBUG_CRASH(("Player::getPlayerDifficulty not yet implemented!"));
-return DIFFICULTY_EASY;
-#if 0
 	if (m_ai) 
 	{
 		return m_ai->getAIDifficulty();
 	}
 	return TheScriptEngine->getGlobalDifficulty();
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1638,13 +1597,7 @@ return DIFFICULTY_EASY;
 //-------------------------------------------------------------------------------------------------
 Bool Player::checkBridges(Object *unit, Waypoint *way)
 {
-(void) unit;
-(void) way;
-DEBUG_CRASH(("Player::checkBridges not yet implemented!"));
-return false;
-#if 0
 	return m_ai?m_ai->checkBridges(unit, way):false; 
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1652,12 +1605,7 @@ return false;
 //-------------------------------------------------------------------------------------------------
 Bool Player::getAiBaseCenter(Coord3D *pos)
 {
-(void) pos;
-DEBUG_CRASH(("Player::getAiBaseCenter not yet implemented!"));
-return false;
-#if 0
 	return m_ai?m_ai->getBaseCenter(pos):false; 
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1665,14 +1613,10 @@ return false;
 //-------------------------------------------------------------------------------------------------
 void Player::repairStructure(ObjectID structureID)
 {
-(void) structureID;
-DEBUG_CRASH(("Player::repairStructure not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		m_ai->repairStructure(structureID); 
 	}
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1703,15 +1647,10 @@ DEBUG_CRASH(("Player::onUnitCreated not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 Bool Player::isSupplySourceSafe( Int minSupplies )
 {
-(void) minSupplies;
-DEBUG_CRASH(("Player::isSupplySourceSafe not yet implemented!"));
-return false;
-#if 0
 	// ai query
 	if( m_ai )
 		return m_ai->isSupplySourceSafe( minSupplies );
 	return true;
-#endif // if 0
 }  // isSupplySourceSafe
 
 //-------------------------------------------------------------------------------------------------
@@ -1719,14 +1658,10 @@ return false;
 //-------------------------------------------------------------------------------------------------
 Bool Player::isSupplySourceAttacked( void )
 {
-DEBUG_CRASH(("Player::isSupplySourceAttacked not yet implemented!"));
-return false;
-#if 0
 	// ai query
 	if( m_ai )
 		return m_ai->isSupplySourceAttacked( );
 	return false;
-#endif // if 0
 }  // isSupplySourceSafe
 
 //-------------------------------------------------------------------------------------------------
@@ -1734,13 +1669,9 @@ return false;
 //-------------------------------------------------------------------------------------------------
 void Player::setTeamDelaySeconds(Int delay  )
 {
-(void) delay;
-DEBUG_CRASH(("Player::setTeamDelaySeconds not yet implemented!"));
-#if 0
 	// ai action
 	if( m_ai )
 		m_ai->setTeamDelaySeconds( delay );
-#endif // if 0
 }  // guardSupplyCenter
 
 //-------------------------------------------------------------------------------------------------
@@ -1748,14 +1679,9 @@ DEBUG_CRASH(("Player::setTeamDelaySeconds not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 void Player::guardSupplyCenter( Team *team, Int minSupplies  )
 {
-(void) team;
-(void) minSupplies;
-DEBUG_CRASH(("Player::guardSupplyCenter not yet implemented!"));
-#if 0
 	// ai action
 	if( m_ai )
 		m_ai->guardSupplyCenter( team, minSupplies );
-#endif // if 0
 }  // guardSupplyCenter
 
 //-------------------------------------------------------------------------------------------------
@@ -1763,13 +1689,9 @@ DEBUG_CRASH(("Player::guardSupplyCenter not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 void Player::preTeamDestroy( const Team *team )
 {
-(void) team;
-DEBUG_CRASH(("Player::preTeamDestroy not yet implemented!"));
-#if 0
 	// ai notification callback
 	if( m_ai )
 		m_ai->aiPreTeamDestroy( team );
-#endif // if 0
 }  // preTeamDestroy
 
 //-------------------------------------------------------------------------------------------------
@@ -2126,13 +2048,9 @@ VeterancyLevel Player::getProductionVeterancyLevel( AsciiString buildTemplateNam
 //=============================================================================
 void Player::friend_setSkillset(Int skillSet)
 {
-(void) skillSet;
-DEBUG_CRASH(("Player::friend_setSkillset not yet implemented!"));
-#if 0
 	if (m_ai) {
 		m_ai->selectSkillset(skillSet);
 	}
-#endif // if 0
 }
 
 //=============================================================================
@@ -2498,114 +2416,78 @@ Bool Player::allowedToBuild(const ThingTemplate *tmplate) const
 //=============================================================================
 void Player::buildSpecificTeam( TeamPrototype *teamProto) 
 {
-(void) teamProto;
-DEBUG_CRASH(("Player::buildSpecificTeam not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildSpecificAITeam(teamProto, true);
 	}
-#endif // if 0
 }
 
 //=============================================================================
 void Player::buildBaseDefense(Bool flank) 
 {
-(void) flank;
-DEBUG_CRASH(("Player::buildBaseDefense not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildAIBaseDefense(flank);
 	}
-#endif // if 0
 }
 
 //=============================================================================
 void Player::buildBaseDefenseStructure(const AsciiString &thingName, Bool flank) 
 {
-(void) thingName;
-(void) flank;
-DEBUG_CRASH(("Player::buildBaseDefenseStructure not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildAIBaseDefenseStructure(thingName, flank);
 	}
-#endif // if 0
 }
 
 //=============================================================================
 void Player::buildSpecificBuilding(const AsciiString &thingName) 
 {
-(void) thingName;
-DEBUG_CRASH(("Player::buildSpecificBuilding not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->buildSpecificAIBuilding(thingName);
 	}
-#endif // if 0
 }
 
 //=============================================================================
 void Player::buildBySupplies(Int minimumCash, const AsciiString &thingName) 
 {
-(void) minimumCash;
-(void) thingName;
-DEBUG_CRASH(("Player::buildBySupplies not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		m_ai->buildBySupplies(minimumCash, thingName);
 	}
-#endif // if 0
 }
 
 //=============================================================================
 void Player::buildSpecificBuildingNearestTeam( const AsciiString &thingName, const Team *team )
 {
-(void) thingName;
-(void) team;
-DEBUG_CRASH(("Player::buildSpecificBuildingNearestTeam not yet implemented!"));
-#if 0
 	if( m_ai )
 	{
 		m_ai->buildSpecificBuildingNearestTeam( thingName, team );
 	}
-#endif // if 0
 }
 
 //=============================================================================
 void Player::buildUpgrade( const AsciiString &upgrade) 
 {
-(void) upgrade;
-DEBUG_CRASH(("Player::buildUpgrade not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		m_ai->buildUpgrade(upgrade);
 	}
-#endif // if 0
 }
 
 //=============================================================================
 void Player::recruitSpecificTeam( TeamPrototype *teamProto, Real recruitRadius) 
 {
-(void) teamProto;
-(void) recruitRadius;
-DEBUG_CRASH(("Player::recruitSpecificTeam not yet implemented!"));
-#if 0
 	if (m_ai) 
 	{
 		// Do a priority build.
 		m_ai->recruitSpecificAITeam(teamProto, recruitRadius);
 	}
-#endif // if 0
 }
 
 
@@ -2614,18 +2496,12 @@ DEBUG_CRASH(("Player::recruitSpecificTeam not yet implemented!"));
 //=============================================================================
 Bool Player::calcClosestConstructionZoneLocation( const ThingTemplate *constructTemplate, Coord3D *location )
 {
-(void) constructTemplate;
-(void) location;
-DEBUG_CRASH(("Player::calcClosestConstructionZoneLocation not yet implemented!"));
-return false;
-#if 0
 	if( m_ai )
 	{
 		return m_ai->calcClosestConstructionZoneLocation( constructTemplate, location );
 	}
 
-  return FALSE;
-#endif // if 0
+	return FALSE;
 }
 
 //=============================================================================
@@ -2714,8 +2590,6 @@ Bool Player::addSkillPointsForKill(const Object* killer, const Object* victim)
 //=============================================================================
 void Player::resetSciences()
 {
-DEBUG_CRASH(("Player::resetSciences not yet implemented!"));
-#if 0
 	m_sciences.clear();
 
 	if (getPlayerTemplate())
@@ -2735,17 +2609,12 @@ DEBUG_CRASH(("Player::resetSciences not yet implemented!"));
 
 	for (ScienceVec::const_iterator it = m_sciences.begin(); it != m_sciences.end(); ++it)
 		TheScriptEngine->notifyOfAcquiredScience(getPlayerIndex(), *it);
-#endif // if 0
 }
 
 //=============================================================================
 /// returns TRUE if sciences were gained/lost.
 Bool Player::addScience(ScienceType science)
 {
-(void) science;
-DEBUG_CRASH(("Player::killPlayer not yet implemented!"));
-return false;
-#if 0
 	if (hasScience(science))
 		return false;
 
@@ -2785,7 +2654,8 @@ return false;
 			}
 		}
 
-		TheControlBar->markUIDirty();// Refresh the UI to show new cameos, etc
+		if (TheControlBar)
+			TheControlBar->markUIDirty();// Refresh the UI to show new cameos, etc
 
 	}
 
@@ -2793,7 +2663,6 @@ return false;
 	TheScriptEngine->notifyOfAcquiredScience(getPlayerIndex(), science);
 	
 	return true;
-#endif // if 0
 }
 
 //=============================================================================

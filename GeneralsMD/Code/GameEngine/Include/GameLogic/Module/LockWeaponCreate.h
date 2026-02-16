@@ -44,10 +44,16 @@
 class LockWeaponCreateModuleData : public CreateModuleData
 {
 public:
-	WeaponSlotType m_slotToLock; ///< slot to lock
+	// MG: Cannot apply offsetof to LockWeaponCreateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		WeaponSlotType m_slotToLock; ///< slot to lock
+	};
+
+	IniData m_ini {};
 
 	LockWeaponCreateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -55,8 +61,8 @@ public:
 class LockWeaponCreate : public CreateModule
 {
 
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( LockWeaponCreate, "LockWeaponCreate" );
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( LockWeaponCreate, LockWeaponCreateModuleData );
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( LockWeaponCreate, "LockWeaponCreate" )
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( LockWeaponCreate, LockWeaponCreateModuleData )
 
 
 public:

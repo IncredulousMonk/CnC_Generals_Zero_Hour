@@ -29,7 +29,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-// #define DEFINE_LOCOMOTORSET_NAMES					// for TheLocomotorSetNames[]
+#define DEFINE_LOCOMOTORSET_NAMES					// for TheLocomotorSetNames[]
 #define DEFINE_AUTOACQUIRE_NAMES
 
 // #include "Common/ActionManager.h"
@@ -54,7 +54,7 @@
 
 #include "GameLogic/AI.h"
 #include "GameLogic/AIPathfind.h"
-// #include "GameLogic/Locomotor.h"
+#include "GameLogic/Locomotor.h"
 #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/BodyModule.h"
 #include "GameLogic/Module/ContainModule.h"
@@ -166,11 +166,8 @@ const LocomotorTemplateVector* AIUpdateModuleData::findLocomotorTemplateVector(L
 //-------------------------------------------------------------------------------------------------
 /*static*/ void AIUpdateModuleData::parseLocomotorSet(INI* ini, void *instance, void * /*store*/, const void* /*userData*/)
 {
-(void) ini;
-(void) instance;
-DEBUG_CRASH(("AIUpdateModuleData::parseLocomotorSet not yet implemented!"));
-#if 0
-	ThingTemplate *tt = (ThingTemplate *)instance;
+	ThingTemplate::IniData* data = (ThingTemplate::IniData*) instance;
+	ThingTemplate* tt = data->m_obj;
 	AIUpdateModuleData *self = tt->friend_getAIModuleInfo();
 	if (!self) 
 	{
@@ -203,7 +200,6 @@ DEBUG_CRASH(("AIUpdateModuleData::parseLocomotorSet not yet implemented!"));
 		}
 		self->m_locomotorTemplates[set].push_back(lt);
 	}
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -106,7 +106,7 @@ class ScriptGroup : public MemoryPoolObject, public Snapshot
 // This is a list of scripts that are grouped and named, with some 
 // additional properties.
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ScriptGroup, "ScriptGroup")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ScriptGroup, "ScriptGroup")
 protected:
 	
 	// snapshot methods
@@ -205,7 +205,7 @@ enum {MAX_PARMS=12};
 
 class ScriptAction : public MemoryPoolObject // This is the action class.
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ScriptAction, "ScriptAction")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(ScriptAction, "ScriptAction")
 // friend bad for MPOs. (srj)
 //friend class EditAction;
 public:
@@ -587,7 +587,7 @@ public:
 	void setWarnings(Bool warnings) { m_hasWarnings = warnings;}
 	ScriptActionType getActionType(void) {return m_actionType;}
 	ScriptAction * getNext(void) {return m_nextAction;}
-	AsciiString getUiText(void);				
+	AsciiString getUiText(void);
 	Parameter *getParameter(Int ndx) 
 	{
 		if (ndx>=0 && ndx<m_numParms) 
@@ -616,7 +616,7 @@ protected:
 or clauses is true, the m_action list is executed.  . */
 class Script : public MemoryPoolObject, public Snapshot
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Script, "Script")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Script, "Script")
 protected:	// Note - If you add any member vars, you must take them into account in duplicate() and updateFrom(), as well as file read/write.
 
 	// snapshot methods
@@ -730,7 +730,7 @@ public:
 /** This is a parameter, in either a condition or an action. */
 class Parameter : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Parameter, "Parameter")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Parameter, "Parameter")
 // friend bad for MPOs. (srj)
 //friend class EditParameter;
 //friend class EditCoordParameter;
@@ -792,7 +792,7 @@ public:
 		OBJECT_TYPE_LIST,		// String, Special case of Object Type.
 		REVEALNAME,					// String, the name of the look taking place.
 		SCIENCE_AVAILABILITY, // String, the name of the different science availabilities.
-    LEFT_OR_RIGHT,        // 1=left, 2=right, okay?
+		LEFT_OR_RIGHT,        // 1=left, 2=right, okay?
 		PERCENT,						// Real.  A percentage.
 		NUM_ITEMS	
 	};
@@ -869,12 +869,12 @@ extern const char* TheObjectFlagsNames[];
 ConditionTemplates created in ScriptEngine::init. 
 
 // SPECIAL NOTE ABOUT Skirmish Scripts: Please note that ALL Skirmish conditions should first pass a pSkirmishPlayerParm to 
-// prevet the necessity of having to write additional scripts for other players / skirmish types later.
+// prevent the necessity of having to write additional scripts for other players / skirmish types later.
 */
 
 class Condition : public MemoryPoolObject  // This is the conditional class.
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Condition, "Condition")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(Condition, "Condition")
 // friend bad for MPOs. (srj)
 //friend class EditCondition;
 public:

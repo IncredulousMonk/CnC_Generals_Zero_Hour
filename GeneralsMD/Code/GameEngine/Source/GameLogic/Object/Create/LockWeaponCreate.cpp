@@ -30,7 +30,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_WEAPONSLOTTYPE_NAMES
+#define DEFINE_WEAPONSLOTTYPE_NAMES_LOOKUP
 #include "Common/Xfer.h"
 #include "GameLogic/Module/LockWeaponCreate.h"
 #include "GameLogic/Object.h"
@@ -40,22 +40,24 @@
 // ------------------------------------------------------------------------------------------------
 LockWeaponCreateModuleData::LockWeaponCreateModuleData()
 {
-	m_slotToLock = PRIMARY_WEAPON;
+	m_ini.m_slotToLock = PRIMARY_WEAPON;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void LockWeaponCreateModuleData::buildFieldParse(MultiIniFieldParse& p)
+void LockWeaponCreateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-  CreateModuleData::buildFieldParse(p);
+	CreateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "SlotToLock",	INI::parseLookupList,	TheWeaponSlotTypeNamesLookupList, offsetof( LockWeaponCreateModuleData, m_slotToLock ) },
+		{ "SlotToLock",	INI::parseLookupList,	TheWeaponSlotTypeNamesLookupList, offsetof( LockWeaponCreateModuleData::IniData, m_slotToLock ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	LockWeaponCreateModuleData* self {static_cast<LockWeaponCreateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +91,7 @@ void LockWeaponCreate::onBuildComplete( void )
 	CreateModule::onBuildComplete(); // extend
 
 	Object *me = getObject();
-	WeaponSlotType slot = getLockWeaponCreateModuleData()->m_slotToLock;
+	WeaponSlotType slot = getLockWeaponCreateModuleData()->m_ini.m_slotToLock;
 	me->setWeaponLock( slot, LOCKED_PERMANENTLY );
 }  // end onBuildComplete
 

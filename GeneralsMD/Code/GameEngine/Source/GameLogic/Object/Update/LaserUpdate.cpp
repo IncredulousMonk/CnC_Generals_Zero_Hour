@@ -68,7 +68,9 @@ LaserUpdateModuleData::LaserUpdateModuleData()
 		{ "PunchThroughScalar",			INI::parseReal,			NULL, offsetof( LaserUpdateModuleData::IniData, m_punchThroughScalar ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	LaserUpdateModuleData* self {static_cast<LaserUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------

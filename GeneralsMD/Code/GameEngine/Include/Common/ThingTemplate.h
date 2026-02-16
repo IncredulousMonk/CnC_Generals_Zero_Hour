@@ -359,7 +359,7 @@ public:
 	ThingTemplate();
 
 	ThingTemplate(const ThingTemplate&) = delete;
-	ThingTemplate& operator=(const ThingTemplate&) = default;
+	ThingTemplate& operator=(const ThingTemplate&);
 
 	// copy the guts of that into this, but preserve this' name, id, and list-links.
 	void copyFrom(const ThingTemplate* that);
@@ -509,14 +509,14 @@ public:
 
 	UnsignedInt getThreatValue() const								{ return m_ini.m_threatValue; }
 
-  //-------------------------------------------------------------------------------------------------
-  /** If this is not NAMEKEY_INVALID, it indicates that all the templates which return the same name key
-    * should be counted as the same "type" when looking at getMaxSimultaneousOfType(). For instance, 
-    * a Scud Storm and a Scud Storm rebuild hole will return the same value, so that the player
-    * can't build another Scud Storm while waiting for the rebuild hole to start rebuilding */
-  //-------------------------------------------------------------------------------------------------
-  NameKeyType getMaxSimultaneousLinkKey() const { return m_ini.m_maxSimultaneousLinkKey; }
-  UnsignedInt getMaxSimultaneousOfType() const;
+	//-------------------------------------------------------------------------------------------------
+	/** If this is not NAMEKEY_INVALID, it indicates that all the templates which return the same name key
+		* should be counted as the same "type" when looking at getMaxSimultaneousOfType(). For instance, 
+		* a Scud Storm and a Scud Storm rebuild hole will return the same value, so that the player
+		* can't build another Scud Storm while waiting for the rebuild hole to start rebuilding */
+	//-------------------------------------------------------------------------------------------------
+	NameKeyType getMaxSimultaneousLinkKey() const { return m_ini.m_maxSimultaneousLinkKey; }
+	UnsignedInt getMaxSimultaneousOfType() const;
 
 	void validate();
 
@@ -576,10 +576,8 @@ public:
 
 	Bool isBuildableItem(void) const;
 
-#if 0
 	/// calculate how long (in logic frames) it will take the given player to build this unit
 	Int calcTimeToBuild( const Player* player) const;
-#endif // if 0
 
 	/// calculate how much money it will take the given player to build this unit
 	Int calcCostToBuild( const Player* player) const;
@@ -789,6 +787,7 @@ private:
 	PerUnitFXMap				m_perUnitFX {};						///< An additional set of fx that only apply for this template.
 
 	friend class ThingFactory;
+	friend class AIUpdateModuleData;
 };
 
 //-----------------------------------------------------------------------------

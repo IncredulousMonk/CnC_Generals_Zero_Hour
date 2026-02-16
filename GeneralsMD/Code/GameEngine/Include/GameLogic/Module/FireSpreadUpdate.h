@@ -41,14 +41,20 @@ class ObjectCreationList;
 class FireSpreadUpdateModuleData : public UpdateModuleData
 {
 public:
-	const ObjectCreationList *m_oclEmbers;
-	UnsignedInt m_minSpreadTryDelayData;
-	UnsignedInt m_maxSpreadTryDelayData;
-	Real m_spreadTryRange;
+	// MG: Cannot apply offsetof to FireSpreadUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const ObjectCreationList *m_oclEmbers;
+		UnsignedInt m_minSpreadTryDelayData;
+		UnsignedInt m_maxSpreadTryDelayData;
+		Real m_spreadTryRange;
+	};
+
+	IniData m_ini {};
 
 	FireSpreadUpdateModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 
@@ -78,4 +84,3 @@ protected:
 };
 
 #endif
-

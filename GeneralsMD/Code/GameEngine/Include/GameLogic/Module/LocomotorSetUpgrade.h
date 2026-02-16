@@ -45,7 +45,7 @@ class LocomotorSetUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( LocomotorSetUpgrade, "LocomotorSetUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO( LocomotorSetUpgrade );
+	MAKE_STANDARD_MODULE_MACRO( LocomotorSetUpgrade )
 
 public:
 
@@ -60,4 +60,3 @@ protected:
 
 
 #endif // __LocomotorSetUpgrade_H_
-

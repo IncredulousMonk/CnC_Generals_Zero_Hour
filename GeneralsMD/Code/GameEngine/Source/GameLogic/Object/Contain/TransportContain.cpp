@@ -57,67 +57,69 @@
 TransportContainModuleData::TransportContainModuleData()
 {
 
-	m_slotCapacity = 0;
-	m_scatterNearbyOnExit = true;
-	m_orientLikeContainerOnExit = false;
-	m_keepContainerVelocityOnExit = false;
-	m_goAggressiveOnExit = FALSE;
-  m_armedRidersUpgradeWeaponSet = FALSE;
-	m_resetMoodCheckTimeOnExit = true;
-	m_destroyRidersWhoAreNotFreeToExit = false;
-	m_exitPitchRate = 0.0f;
-	m_initialPayload.count = 0;
-	m_healthRegen = 0.0f;
-	m_exitDelay = 0;
-	m_isDelayExitInAir = FALSE;
+	m_ini.m_slotCapacity = 0;
+	m_ini.m_scatterNearbyOnExit = true;
+	m_ini.m_orientLikeContainerOnExit = false;
+	m_ini.m_keepContainerVelocityOnExit = false;
+	m_ini.m_goAggressiveOnExit = FALSE;
+	m_ini.m_armedRidersUpgradeWeaponSet = FALSE;
+	m_ini.m_resetMoodCheckTimeOnExit = true;
+	m_ini.m_destroyRidersWhoAreNotFreeToExit = false;
+	m_ini.m_exitPitchRate = 0.0f;
+	m_ini.m_initialPayload.count = 0;
+	m_ini.m_healthRegen = 0.0f;
+	m_ini.m_exitDelay = 0;
+	m_ini.m_isDelayExitInAir = FALSE;
 
 	//
 	// by default we say that transports can have infantry inside them, this will be totally
 	// overwritten by any data provided from the INI entry tho
 	//
-	m_allowInsideKindOf = MAKE_KINDOF_MASK( KINDOF_INFANTRY );
+	OpenContainModuleData::m_ini.m_allowInsideKindOf = MAKE_KINDOF_MASK( KINDOF_INFANTRY );
 
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void TransportContainModuleData::parseInitialPayload( INI* ini, void *instance, void *store, const void* /*userData*/ )
+void TransportContainModuleData::parseInitialPayload( INI* ini, void* instance, void* /* store */, const void* /*userData*/ )
 {
 	TransportContainModuleData* self = (TransportContainModuleData*)instance;
 	const char* name = ini->getNextToken();
 	const char* countStr = ini->getNextTokenOrNull();
 	Int count = countStr ? INI::scanInt(countStr) : 1;
 	
-	self->m_initialPayload.name.set(name);
-	self->m_initialPayload.count = count;
+	self->m_ini.m_initialPayload.name.set(name);
+	self->m_ini.m_initialPayload.count = count;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void TransportContainModuleData::buildFieldParse(MultiIniFieldParse& p)
+void TransportContainModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-  OpenContainModuleData::buildFieldParse(p);
+	OpenContainModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "Slots",	INI::parseInt,		NULL, offsetof( TransportContainModuleData, m_slotCapacity ) },
-		{ "ScatterNearbyOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_scatterNearbyOnExit ) },
-		{ "OrientLikeContainerOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_orientLikeContainerOnExit ) },
-		{ "KeepContainerVelocityOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_keepContainerVelocityOnExit ) },
-		{ "GoAggressiveOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_goAggressiveOnExit ) },
-		{ "ResetMoodCheckTimeOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_resetMoodCheckTimeOnExit ) },
-		{ "DestroyRidersWhoAreNotFreeToExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_destroyRidersWhoAreNotFreeToExit ) },
-		{ "ExitBone",	INI::parseAsciiString,		NULL, offsetof( TransportContainModuleData, m_exitBone ) },
-		{ "ExitPitchRate",	INI::parseAngularVelocityReal,		NULL, offsetof( TransportContainModuleData, m_exitPitchRate ) },
-		{ "InitialPayload", parseInitialPayload, NULL, 0 },
-		{ "HealthRegen%PerSec", INI::parseReal, NULL, offsetof( TransportContainModuleData, m_healthRegen ) },
-		{ "ExitDelay",	INI::parseDurationUnsignedInt,		NULL, offsetof( TransportContainModuleData, m_exitDelay ) },
-		{ "ArmedRidersUpgradeMyWeaponSet",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_armedRidersUpgradeWeaponSet ) },
-		{ "DelayExitInAir",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_isDelayExitInAir ) },
+		{ "Slots",								INI::parseInt,					NULL, offsetof( TransportContainModuleData::IniData, m_slotCapacity ) },
+		{ "ScatterNearbyOnExit",				INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_scatterNearbyOnExit ) },
+		{ "OrientLikeContainerOnExit",			INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_orientLikeContainerOnExit ) },
+		{ "KeepContainerVelocityOnExit",		INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_keepContainerVelocityOnExit ) },
+		{ "GoAggressiveOnExit",					INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_goAggressiveOnExit ) },
+		{ "ResetMoodCheckTimeOnExit",			INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_resetMoodCheckTimeOnExit ) },
+		{ "DestroyRidersWhoAreNotFreeToExit",	INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_destroyRidersWhoAreNotFreeToExit ) },
+		{ "ExitBone",							INI::parseAsciiString,			NULL, offsetof( TransportContainModuleData::IniData, m_exitBone ) },
+		{ "ExitPitchRate",						INI::parseAngularVelocityReal,	NULL, offsetof( TransportContainModuleData::IniData, m_exitPitchRate ) },
+		{ "InitialPayload",						parseInitialPayload, NULL, 0 },
+		{ "HealthRegen%PerSec",					INI::parseReal,					NULL, offsetof( TransportContainModuleData::IniData, m_healthRegen ) },
+		{ "ExitDelay",							INI::parseDurationUnsignedInt,	NULL, offsetof( TransportContainModuleData::IniData, m_exitDelay ) },
+		{ "ArmedRidersUpgradeMyWeaponSet",		INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_armedRidersUpgradeWeaponSet ) },
+		{ "DelayExitInAir",						INI::parseBool,					NULL, offsetof( TransportContainModuleData::IniData, m_isDelayExitInAir ) },
 	
-    { 0, 0, 0, 0 }
-  };
-  p.add(dataFieldParse);
+		{ 0, 0, 0, 0 }
+	};
+	TransportContainModuleData* self {static_cast<TransportContainModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 
@@ -129,7 +131,7 @@ void TransportContainModuleData::buildFieldParse(MultiIniFieldParse& p)
 Int TransportContain::getContainMax( void ) const 
 { 
 	if (getTransportContainModuleData())
-		return getTransportContainModuleData()->m_slotCapacity;
+		return getTransportContainModuleData()->m_ini.m_slotCapacity;
 
 	return 0;
 }
@@ -204,9 +206,9 @@ Bool TransportContain::isValidContainerFor(const Object* rider, Bool checkCapaci
 
 	if (checkCapacity)
 	{
-    Int containMax = getContainMax();
-    Int containCount = getContainCount();
-    
+		Int containMax = getContainMax();
+		Int containCount = (Int)getContainCount();
+
 		return (m_extraSlotsInUse + containCount + transportSlotCount <= containMax);
 
 	}
@@ -225,7 +227,7 @@ void TransportContain::letRidersUpgradeWeaponSet( void )
 
   const TransportContainModuleData * d = getTransportContainModuleData();
 
-  if ( ! d->m_armedRidersUpgradeWeaponSet )
+  if ( ! d->m_ini.m_armedRidersUpgradeWeaponSet )
     return;
 
   Object *self = getObject();
@@ -291,7 +293,7 @@ void TransportContain::onContaining( Object *rider, Bool wasSelected )
 
 	DEBUG_ASSERTCRASH(transportSlotCount > 0, ("Hmm, this object isnt transportable"));
 	m_extraSlotsInUse += transportSlotCount - 1;
-	DEBUG_ASSERTCRASH(m_extraSlotsInUse >= 0 && m_extraSlotsInUse + getContainCount() <= getContainMax(), ("Hmm, bad slot count"));
+	DEBUG_ASSERTCRASH(m_extraSlotsInUse >= 0 && m_extraSlotsInUse + (Int)getContainCount() <= getContainMax(), ("Hmm, bad slot count"));
 
 	//
 	// when we go from holding nothing to holding something we have a model condition
@@ -306,7 +308,7 @@ void TransportContain::onContaining( Object *rider, Bool wasSelected )
 
 	}  // end if
 
-  if ( getTransportContainModuleData()->m_armedRidersUpgradeWeaponSet )
+  if ( getTransportContainModuleData()->m_ini.m_armedRidersUpgradeWeaponSet )
     letRidersUpgradeWeaponSet();
 
 	//Kris: October 20, 2003 - Patch 1.01
@@ -336,13 +338,13 @@ void TransportContain::onRemoving( Object *rider )
 
 	const TransportContainModuleData* d = getTransportContainModuleData();
 
-	if (!d->m_exitBone.isEmpty())
+	if (!d->m_ini.m_exitBone.isEmpty())
 	{
 		Drawable* draw = getObject()->getDrawable();
 		if (draw)
 		{
 			Coord3D bonePos, worldPos;
-			if (draw->getPristineBonePositions(d->m_exitBone.str(), 0, &bonePos, NULL, 1) == 1)
+			if (draw->getPristineBonePositions(d->m_ini.m_exitBone.str(), 0, &bonePos, NULL, 1) == 1)
 			{
 				getObject()->convertBonePosToWorldPos(&bonePos, NULL, &worldPos, NULL);
 				rider->setPosition(&worldPos);
@@ -350,12 +352,12 @@ void TransportContain::onRemoving( Object *rider )
 		}
 	}
 
-	if (d->m_orientLikeContainerOnExit)
+	if (d->m_ini.m_orientLikeContainerOnExit)
 	{
 		rider->setOrientation(getObject()->getOrientation());
 	}
 
-	if (d->m_keepContainerVelocityOnExit)
+	if (d->m_ini.m_keepContainerVelocityOnExit)
 	{
 		PhysicsBehavior* parent = getObject()->getPhysics();
 		PhysicsBehavior* child = rider->getPhysics();
@@ -368,7 +370,7 @@ void TransportContain::onRemoving( Object *rider )
 			startingForce.z *= mass;
 			child->applyMotiveForce( &startingForce );
 
-			Real pitchRate = child->getCenterOfMassOffset() * d->m_exitPitchRate;
+			Real pitchRate = child->getCenterOfMassOffset() * d->m_ini.m_exitPitchRate;
 			child->setPitchRate( pitchRate );
 		}
 	}
@@ -378,8 +380,8 @@ void TransportContain::onRemoving( Object *rider )
 	m_extraSlotsInUse -= transportSlotCount - 1;
 
 #if (defined(_DEBUG) || defined(_INTERNAL))
-	UnsignedInt containCount = getContainCount();
-	UnsignedInt containMax = getContainMax();
+	Int containCount = (Int)getContainCount();
+	Int containMax = getContainMax();
 	DEBUG_ASSERTCRASH(m_extraSlotsInUse >= 0 && m_extraSlotsInUse + containCount <= containMax, ("Hmm, bad slot count"));
 #endif
 
@@ -405,22 +407,22 @@ void TransportContain::onRemoving( Object *rider )
 
 	// AI might need help using this transport in a good way.  Make the passengers aggressive.
 	//There is no computer player check since Aggressive only means something for computer players anyway
-	if( d->m_goAggressiveOnExit && rider->getAI() )
+	if( d->m_ini.m_goAggressiveOnExit && rider->getAI() )
 	{
 		rider->getAI()->setAttitude( AI_AGGRESSIVE );
 	}
 	if (getObject()->isEffectivelyDead()) {
 		scatterToNearbyPosition(rider);
 	}
-	if( d->m_resetMoodCheckTimeOnExit && rider->getAI() )
+	if( d->m_ini.m_resetMoodCheckTimeOnExit && rider->getAI() )
 	{
 		rider->getAI()->wakeUpAndAttemptToTarget();
 	}
 
-	m_frameExitNotBusy = TheGameLogic->getFrame() + d->m_exitDelay;
+	m_frameExitNotBusy = TheGameLogic->getFrame() + d->m_ini.m_exitDelay;
 
 
-  if ( d->m_armedRidersUpgradeWeaponSet )
+  if ( d->m_ini.m_armedRidersUpgradeWeaponSet )
     letRidersUpgradeWeaponSet();
 
 	//Kris: October 20, 2003 - Patch 1.01
@@ -445,8 +447,8 @@ void TransportContain::createPayload()
 {
 	TransportContainModuleData* self = (TransportContainModuleData*)getTransportContainModuleData();
 
-	Int count = self->m_initialPayload.count;
-	const ThingTemplate* payloadTemplate = TheThingFactory->findTemplate( self->m_initialPayload.name );
+	Int count = self->m_ini.m_initialPayload.count;
+	const ThingTemplate* payloadTemplate = TheThingFactory->findTemplate( self->m_ini.m_initialPayload.name );
 	Object* object = getObject();
 	ContainModuleInterface *contain = object->getContain();
 	
@@ -463,7 +465,7 @@ void TransportContain::createPayload()
 			}
 			else
 			{
-				DEBUG_CRASH( ( "DeliverPayload: PutInContainer %s is full, or not valid for the payload %s!", object->getName().str(), self->m_initialPayload.name.str() ) );
+				DEBUG_CRASH( ( "DeliverPayload: PutInContainer %s is full, or not valid for the payload %s!", object->getName().str(), self->m_ini.m_initialPayload.name.str() ) );
 			}
 		}
 		contain->enableLoadSounds( TRUE );
@@ -482,7 +484,7 @@ UpdateSleepTime TransportContain::update()
 	if( m_payloadCreated == FALSE )
 		createPayload();
 
-	if( moduleData && moduleData->m_healthRegen )
+	if( moduleData && moduleData->m_ini.m_healthRegen )
 	{
 		ContainModuleInterface *contain = getObject()->getContain();
 		if( contain )
@@ -506,7 +508,7 @@ UpdateSleepTime TransportContain::update()
 					if( body->getHealth() < body->getMaxHealth() )
 					{
 						//Calculate the health to be regenerated on each unit.
-						Real regen = body->getMaxHealth() * moduleData->m_healthRegen / 100.0f * SECONDS_PER_LOGICFRAME_REAL;
+						Real regen = body->getMaxHealth() * moduleData->m_ini.m_healthRegen / 100.0f * SECONDS_PER_LOGICFRAME_REAL;
 
 						//Perform the actual healing for this frame.
 //						DamageInfo damageInfo;
@@ -526,7 +528,7 @@ UpdateSleepTime TransportContain::update()
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void TransportContain::unreserveDoorForExit( ExitDoorType exitDoor )
+void TransportContain::unreserveDoorForExit( ExitDoorType /* exitDoor */ )
 {
 	/* nothing */
 }
@@ -547,7 +549,7 @@ void TransportContain::killRidersWhoAreNotFreeToExit()
 		if (!isSpecificRiderFreeToExit(obj)) // only TransportContain has a meaningful failure for isFreeToExit
 		{
 			// If we cannot exit this guy legally, kill the bastard before removeAllContained forces him out.
-			if (d->m_destroyRidersWhoAreNotFreeToExit)
+			if (d->m_ini.m_destroyRidersWhoAreNotFreeToExit)
 				TheGameLogic->destroyObject(obj);
 			else
 				obj->kill();
@@ -564,31 +566,31 @@ Bool TransportContain::isSpecificRiderFreeToExit(Object* specificObject)
 
 	// This is a override, not an extend.  I will check for game legality for
 	// okaying the call to exitObjectViaDoor.
-  const Object* me = getObject();
- 
+	const Object* me = getObject();
+
 	// this is present solely for some transports to override, so that they can land before 
 	// allowing people to exit...
 	const AIUpdateInterface* ai = me->getAIUpdateInterface();
 	if (ai && ai->getAiFreeToExit(specificObject) != FREE_TO_EXIT)
 		return FALSE;
 
-  // I can always kick people out if I am in the air, I know what I'm doing
-  if (me->isUsingAirborneLocomotor())
-   	return TRUE;
- 
-  const Coord3D *myPosition = me->getPosition();
- 	if (!specificObject->getAIUpdateInterface())
+	// I can always kick people out if I am in the air, I know what I'm doing
+	if (me->isUsingAirborneLocomotor())
+		return TRUE;
+
+	const Coord3D *myPosition = me->getPosition();
+	if (!specificObject->getAIUpdateInterface())
 		return FALSE;
 
 	const Locomotor *hisLocomotor = specificObject->getAIUpdateInterface()->getCurLocomotor();
-	if( hisLocomotor == FALSE )
-   	return FALSE;
+	if( hisLocomotor == nullptr )
+		return FALSE;
  
-  // He can't get to this spot naturally, so I can't force him there.  (amphib transport)
-  if (!TheAI->pathfinder()->validMovementTerrain(me->getLayer(), hisLocomotor, myPosition))
-   	return FALSE;
- 
-  return TRUE;
+	// He can't get to this spot naturally, so I can't force him there.  (amphib transport)
+	if (!TheAI->pathfinder()->validMovementTerrain(me->getLayer(), hisLocomotor, myPosition))
+		return FALSE;
+
+	return TRUE;
 }
 
 Bool TransportContain::isPassengerAllowedToFire( ObjectID id ) const
@@ -624,7 +626,7 @@ Bool TransportContain::isPassengerAllowedToFire( ObjectID id ) const
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-ExitDoorType TransportContain::reserveDoorForExit( const ThingTemplate* objType, Object *specificObject )
+ExitDoorType TransportContain::reserveDoorForExit( const ThingTemplate* /* objType */, Object *specificObject )
 {
 	return isSpecificRiderFreeToExit(specificObject) ? DOOR_1 : DOOR_NONE_AVAILABLE;
 }
@@ -634,7 +636,7 @@ ExitDoorType TransportContain::reserveDoorForExit( const ThingTemplate* objType,
 Bool TransportContain::isExitBusy() const	///< Contain style exiters are getting the ability to space out exits, so ask this before reserveDoor as a kind of no-commitment check.
 {
 	const TransportContainModuleData *data = getTransportContainModuleData();
-	if( data->m_isDelayExitInAir && getObject()->isAboveTerrain() )
+	if( data->m_ini.m_isDelayExitInAir && getObject()->isAboveTerrain() )
 		return TRUE;
 
 	return TheGameLogic->getFrame() < m_frameExitNotBusy;

@@ -451,6 +451,7 @@ void GameLogic::init( void )
 //-------------------------------------------------------------------------------------------------
 void GameLogic::reset( void )
 {
+DEBUG_LOG(("GameLogic::reset not yet implemented!\n"));
 #if 0
 	m_thingTemplateBuildableOverrides.clear();
 	m_controlBarOverrides.clear();
@@ -1513,17 +1514,21 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_SIDE_LIST_INIT);
+#endif // if 0
 
 	// update the player list to match the new map.
 	TheTeamFactory->reset();
 	ThePlayerList->newGame();
-	
+
+#if 0
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_PLAYER_LIST_RESET);
+#endif // if 0
 
-	// Tell the script engine that a newe set of scripts is loaded.
+	// Tell the script engine that a new set of scripts is loaded.
 	TheScriptEngine->newMap();
 
+#if 0
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_SCRIPT_ENGINE_NEW_MAP);
 
@@ -3681,12 +3686,12 @@ void GameLogic::update( void )
 	UnsignedInt now = TheGameLogic->getFrame();
 	TheGameClient->setFrame(now);
 
-#if 0
 	// update (execute) scripts
 	{
 		TheScriptEngine->UPDATE();
 	}
 
+#if 0
 	Bool freezeTime = TheTacticalView->isTimeFrozen() && !TheTacticalView->isCameraMovementFinished();
 	freezeTime = freezeTime || TheScriptEngine->isTimeFrozenDebug() || TheScriptEngine->isTimeFrozenScript();
 	

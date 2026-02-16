@@ -38,7 +38,7 @@
 #include "Common/INI.h"
 #include "WWMath/matrix3d.h"
 
-enum ParticleSystemID;
+enum ParticleSystemID: int;
 class FXList;
 
 
@@ -46,27 +46,33 @@ class FXList;
 class MissileAIUpdateModuleData : public AIUpdateModuleData
 {
 public:
-	Bool						m_tryToFollowTarget;	///< if true, attack object, not pos
-	UnsignedInt			m_fuelLifetime;				///< num frames till missile runs out of motive power (0 == inf)
-	UnsignedInt			m_ignitionDelay;			///< delay in frames from when missile is 'fired', to when it starts moving		15
-	Real						m_initialVel;			
-	Real						m_initialDist;
-	Real						m_diveDistance;				///< If I get this close to my target, start ignoring my preferred height
-	const FXList*		m_ignitionFX;					///< FXList to do when missile 'ignites'
-	Bool						m_useWeaponSpeed;			///< if true, limit speed of projectile to the Weapon's info
-	Bool						m_detonateOnNoFuel;		///< If true, don't just stop thrusting, blow up when out of gas
-	Int							m_garrisonHitKillCount;
-	KindOfMaskType	m_garrisonHitKillKindof;			///< the kind(s) of units that can be collided with
-	KindOfMaskType	m_garrisonHitKillKindofNot;		///< the kind(s) of units that CANNOT be collided with
-	const FXList*		m_garrisonHitKillFX;
-	Real						m_distanceScatterWhenJammed;	///< How far I scatter when Jammed
+	// MG: Cannot apply offsetof to MissileAIUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Bool			m_tryToFollowTarget;			///< if true, attack object, not pos
+		UnsignedInt		m_fuelLifetime;					///< num frames till missile runs out of motive power (0 == inf)
+		UnsignedInt		m_ignitionDelay;				///< delay in frames from when missile is 'fired', to when it starts moving		15
+		Real			m_initialVel;			
+		Real			m_initialDist;
+		Real			m_diveDistance;					///< If I get this close to my target, start ignoring my preferred height
+		const FXList*	m_ignitionFX;					///< FXList to do when missile 'ignites'
+		Bool			m_useWeaponSpeed;				///< if true, limit speed of projectile to the Weapon's info
+		Bool			m_detonateOnNoFuel;				///< If true, don't just stop thrusting, blow up when out of gas
+		Int				m_garrisonHitKillCount;
+		KindOfMaskType	m_garrisonHitKillKindof;		///< the kind(s) of units that can be collided with
+		KindOfMaskType	m_garrisonHitKillKindofNot;		///< the kind(s) of units that CANNOT be collided with
+		const FXList*	m_garrisonHitKillFX;
+		Real			m_distanceScatterWhenJammed;	///< How far I scatter when Jammed
 
-	Real						m_lockDistance;				///< If I get this close to my target, guaranteed hit.
-	Bool						m_detonateCallsKill;			///< if true, kill() will be called, instead of KILL_SELF state, which calls destroy.
-  Int             m_killSelfDelay;      ///< If I have detonated and entered the KILL-SELF state, how ling do I wait before I Kill/destroy self?
+		Real			m_lockDistance;					///< If I get this close to my target, guaranteed hit.
+		Bool			m_detonateCallsKill;			///< if true, kill() will be called, instead of KILL_SELF state, which calls destroy.
+		Int				m_killSelfDelay;				///< If I have detonated and entered the KILL-SELF state, how ling do I wait before I Kill/destroy self?
+	};
+
+	IniData m_ini {};
 	MissileAIUpdateModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 };
 
@@ -79,16 +85,20 @@ class MissileAIUpdate : public AIUpdateInterface, public ProjectileUpdateInterfa
 public:
 	MissileAIUpdate( Thing *thing, const ModuleData* moduleData );
 
+	// No copies allowed!
+	MissileAIUpdate(const MissileAIUpdate&) = delete;
+	MissileAIUpdate& operator=(const MissileAIUpdate&) = delete;
+
 	enum MissileStateType	 // Stored in save file, don't renumber.
 	{
-		PRELAUNCH			= 0,
-		LAUNCH				= 1, ///< released from launcher, falling
-		IGNITION			= 2, ///< engines ignite
+		PRELAUNCH		= 0,
+		LAUNCH			= 1, ///< released from launcher, falling
+		IGNITION		= 2, ///< engines ignite
 		ATTACK_NOTURN	= 3, ///< fly toward victim
-		ATTACK				= 4, ///< fly toward victim
-		DEAD					= 5,
-		KILL					= 6, ///< Hit victim (cheat).
-		KILL_SELF			= 7, ///< Destroy self.
+		ATTACK			= 4, ///< fly toward victim
+		DEAD			= 5,
+		KILL			= 6, ///< Hit victim (cheat).
+		KILL_SELF		= 7, ///< Destroy self.
 	};
 
 	virtual ProjectileUpdateInterface* getProjectileUpdateInterface() { return this; }
@@ -112,25 +122,25 @@ protected:
 
 private:
 
-	MissileStateType			m_state;									///< the behavior state of the missile
-	UnsignedInt						m_stateTimestamp;					///< time of state change
-	UnsignedInt						m_nextTargetTrackTime;		///< if nonzero, how often we update our target pos
-	ObjectID							m_launcherID;							///< ID of object that launched us (INVALID_ID if not yet launched)
-	ObjectID							m_victimID;								///< ID of object that I am rocketing towards (INVALID_ID if not yet launched)
-	UnsignedInt						m_fuelExpirationDate;			///< how long 'til we run out of fuel
-	Real									m_noTurnDistLeft;					///< when zero, ok to start turning
-	Real									m_maxAccel;
-	Coord3D								m_originalTargetPos;			///< When firing uphill, we aim high to clear the brow of the hill.  jba.
-	Coord3D								m_prevPos;
-	WeaponBonusConditionFlags		m_extraBonusFlags;
-	const WeaponTemplate*	m_detonationWeaponTmpl;		///< weapon to fire at end (or null)
-	const ParticleSystemTemplate* m_exhaustSysTmpl;
-	ParticleSystemID			m_exhaustID;								///< our exhaust particle system (if any)
-	UnsignedInt						m_framesTillDecoyed;			///< Number of frames before missile will get distracted by decoy countermeasures.
-	Bool									m_isTrackingTarget;				///< Was I originally shot at a moving object?
-	Bool									m_isArmed;								///< if true, missile will explode on contact
-	Bool									m_noDamage;								///< if true, missile will not cause damage when it detonates. (Used for flares).
-	Bool									m_isJammed;								///< No target, just shooting at a scattered position
+	MissileStateType				m_state {};					///< the behavior state of the missile
+	UnsignedInt						m_stateTimestamp {};		///< time of state change
+	UnsignedInt						m_nextTargetTrackTime {};	///< if nonzero, how often we update our target pos
+	ObjectID						m_launcherID {};			///< ID of object that launched us (INVALID_ID if not yet launched)
+	ObjectID						m_victimID {};				///< ID of object that I am rocketing towards (INVALID_ID if not yet launched)
+	UnsignedInt						m_fuelExpirationDate {};	///< how long 'til we run out of fuel
+	Real							m_noTurnDistLeft {};		///< when zero, ok to start turning
+	Real							m_maxAccel {};
+	Coord3D							m_originalTargetPos {};		///< When firing uphill, we aim high to clear the brow of the hill.  jba.
+	Coord3D							m_prevPos {};
+	WeaponBonusConditionFlags		m_extraBonusFlags {};
+	const WeaponTemplate*			m_detonationWeaponTmpl {};	///< weapon to fire at end (or null)
+	const ParticleSystemTemplate*	m_exhaustSysTmpl {};
+	ParticleSystemID				m_exhaustID {};				///< our exhaust particle system (if any)
+	UnsignedInt						m_framesTillDecoyed {};		///< Number of frames before missile will get distracted by decoy countermeasures.
+	Bool							m_isTrackingTarget {};		///< Was I originally shot at a moving object?
+	Bool							m_isArmed {};				///< if true, missile will explode on contact
+	Bool							m_noDamage {};				///< if true, missile will not cause damage when it detonates. (Used for flares).
+	Bool							m_isJammed {};				///< No target, just shooting at a scattered position
 	
 	void doPrelaunchState();
 	void doLaunchState();

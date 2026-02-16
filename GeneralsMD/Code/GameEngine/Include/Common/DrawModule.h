@@ -75,8 +75,10 @@ public:
 // FIXME: Deal with this later!
 #if 0
 	virtual void doDrawModule(const Matrix3D* transformMtx) = 0;
+#endif // if 0
 
 	virtual void setShadowsEnabled(Bool enable) = 0;
+#if 0
 	virtual void releaseShadows(void) = 0;	///< frees all shadow resources used by this module - used by Options screen.
 	virtual void allocateShadows(void) = 0; ///< create shadow resources if not already present. Used by Options screen.
 #endif // if 0
@@ -95,10 +97,8 @@ public:
 	
 	virtual Bool isVisible() const { return true; }	///< for limiting tree sway, etc to visible objects
 
-#if 0
 	virtual void reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle) = 0;
 	virtual void reactToGeometryChange() = 0;
-#endif // if 0
 	
 	virtual Bool isLaser() const { return false; }
 
@@ -158,7 +158,7 @@ public:
 class LaserDrawInterface
 {
 public:
-	virtual ~LaserDrawInterface();
+	virtual ~LaserDrawInterface() {};
 	virtual Real getLaserTemplateWidth() const = 0;
 };
 
@@ -198,9 +198,9 @@ public:
 	virtual void updateProjectileClipStatus( UnsignedInt shotsRemaining, UnsignedInt maxShots, WeaponSlotType slot ) = 0; ///< This will do the show/hide work if ProjectileBoneFeedbackEnabled is set.
 #endif // if 0
 	virtual void updateDrawModuleSupplyStatus( Int maxSupply, Int currentSupply ) = 0; ///< This will do visual feedback on Supplies carried
-#if 0
 	virtual void notifyDrawModuleDependencyCleared( ) = 0; ///< if you were waiting for something before you drew, it's ready now
 
+#if 0
 	virtual void setHidden(Bool h) = 0;
 	virtual void replaceModelConditionState(const ModelConditionFlags& a) = 0;
 	virtual void replaceIndicatorColor(Color color) = 0;

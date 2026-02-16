@@ -69,7 +69,7 @@
 #include "GameLogic/Module/BodyModule.h"
 // #include "GameLogic/Module/CollideModule.h"
 #include "GameLogic/Module/ContainModule.h"
-// #include "GameLogic/Module/CountermeasuresBehavior.h"
+#include "GameLogic/Module/CountermeasuresBehavior.h"
 // #include "GameLogic/Module/CreateModule.h"
 // #include "GameLogic/Module/DamageModule.h"
 // #include "GameLogic/Module/DeletionUpdate.h"
@@ -89,10 +89,10 @@
 // #include "GameLogic/Module/SpawnBehavior.h"
 #include "GameLogic/Module/SpecialPowerModule.h"
 #include "GameLogic/Module/SpecialAbilityUpdate.h"
-// #include "GameLogic/Module/StatusDamageHelper.h"
+#include "GameLogic/Module/StatusDamageHelper.h"
 #include "GameLogic/Module/StickyBombUpdate.h"
-// #include "GameLogic/Module/SubdualDamageHelper.h"
-// #include "GameLogic/Module/TempWeaponBonusHelper.h"
+#include "GameLogic/Module/SubdualDamageHelper.h"
+#include "GameLogic/Module/TempWeaponBonusHelper.h"
 // #include "GameLogic/Module/ToppleUpdate.h"
 #include "GameLogic/Module/UpdateModule.h"
 #include "GameLogic/Module/UpgradeModule.h"
@@ -745,7 +745,6 @@ void Object::onDestroy()
 #endif // if 0
 }  // end onDestroy
 
-#if 0
 //=============================================================================
 //=============================================================================
 void Object::setGeometryInfo(const GeometryInfo& geom) 
@@ -774,7 +773,6 @@ void Object::setGeometryInfoZ( Real newZ )
 	if (m_drawable)
 		m_drawable->reactToGeometryChange();
 }
-#endif // if 0
 
 //=============================================================================
 void Object::friend_setUndetectedDefector( Bool status )
@@ -3412,7 +3410,6 @@ Bool Object::isAbleToAttack() const
 	return false;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /**
 	* Mask/Un-Mask an object
@@ -3434,7 +3431,6 @@ void Object::maskObject( Bool mask )
 		TheGameLogic->deselectObject(this, ~getControllingPlayer()->getPlayerMask(), TRUE);
 
 }  // end maskObject
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /*
@@ -5247,7 +5243,6 @@ Real Object::getVisionRange() const
 	return m_visionRange;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::setVisionRange( Real newVisionRange )
 {
@@ -5320,6 +5315,7 @@ void Object::setShroudClearingRange( Real newShroudClearingRange )
  	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Real Object::getShroudRange() const
 {
@@ -5389,7 +5385,6 @@ DEBUG_CRASH(("Object::setVisionSpied not yet implemented!"));
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::doStatusDamage( ObjectStatusTypes status, Real duration )
 {
@@ -5419,7 +5414,6 @@ void Object::notifySubdualDamage( Real amount )
 			getDrawable()->clearTintStatus(TINT_STATUS_GAINING_SUBDUAL_DAMAGE);
 	}
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Given a special power template, find the module in the object that can implement it.
@@ -6553,6 +6547,7 @@ void Object::reportMissileForCountermeasures( Object *missile )
 		}
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 ObjectID Object::calculateCountermeasureToDivertTo( const Object& victim )
@@ -6572,4 +6567,3 @@ ObjectID Object::calculateCountermeasureToDivertTo( const Object& victim )
 	}
 	return INVALID_ID;
 }
-#endif // if 0

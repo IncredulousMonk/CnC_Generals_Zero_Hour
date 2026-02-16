@@ -41,21 +41,23 @@
 //-------------------------------------------------------------------------------------------------
 UnpauseSpecialPowerUpgradeModuleData::UnpauseSpecialPowerUpgradeModuleData( void )
 {
-	m_specialPower = NULL;
-} 
+	m_ini.m_specialPower = NULL;
+}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-/* static */ void UnpauseSpecialPowerUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p)
+/* static */ void UnpauseSpecialPowerUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	UpgradeModuleData::buildFieldParse( p );
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "SpecialPowerTemplate", INI::parseSpecialPowerTemplate, NULL, offsetof( UnpauseSpecialPowerUpgradeModuleData, m_specialPower ) },
+		{ "SpecialPowerTemplate", INI::parseSpecialPowerTemplate, NULL, offsetof( UnpauseSpecialPowerUpgradeModuleData::IniData, m_specialPower ) },
 		{ 0, 0, 0, 0 } 
 	};
-	p.add(dataFieldParse);
+	UnpauseSpecialPowerUpgradeModuleData* self {static_cast<UnpauseSpecialPowerUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -69,7 +71,7 @@ UnpauseSpecialPowerUpgrade::UnpauseSpecialPowerUpgrade( Thing *thing, const Modu
 							UpgradeModule( thing, moduleData )
 {
 
-}  
+}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -88,7 +90,7 @@ void UnpauseSpecialPowerUpgrade::upgradeImplementation( void )
 		if (!sp)
 			continue;
 
-		if( sp->getSpecialPowerTemplate() == getUnpauseSpecialPowerUpgradeModuleData()->m_specialPower )
+		if( sp->getSpecialPowerTemplate() == getUnpauseSpecialPowerUpgradeModuleData()->m_ini.m_specialPower )
 			sp->pauseCountdown( FALSE );
 	}
 }

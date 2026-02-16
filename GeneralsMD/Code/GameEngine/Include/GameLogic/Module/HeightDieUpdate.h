@@ -44,14 +44,20 @@ public:
 
 	HeightDieUpdateModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	Real m_targetHeightAboveTerrain;				///< die at this height above terrain
-	Bool m_targetHeightIncludesStructures;	///< target height considers terrain AND structure height underneath us
-	Bool m_onlyWhenMovingDown;							///< don't detonate unless moving in downward z dir
-	Real m_destroyAttachedParticlesAtHeight;  ///< HACK, destroy any attached particle system of object when below this height
-	Bool m_snapToGroundOnDeath;							///< snap to the ground when killed
-	UnsignedInt m_initialDelay;							///< Don't explode before this time
+	// MG: Cannot apply offsetof to HeightDieUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_targetHeightAboveTerrain;			///< die at this height above terrain
+		Bool m_targetHeightIncludesStructures;		///< target height considers terrain AND structure height underneath us
+		Bool m_onlyWhenMovingDown;					///< don't detonate unless moving in downward z dir
+		Real m_destroyAttachedParticlesAtHeight;	///< HACK, destroy any attached particle system of object when below this height
+		Bool m_snapToGroundOnDeath;					///< snap to the ground when killed
+		UnsignedInt m_initialDelay;					///< Don't explode before this time
+	};
+
+	IniData m_ini {};
 
 };
 
@@ -73,10 +79,10 @@ public:
 protected:
 	
 
-	Bool m_hasDied;							///< TRUE once we have triggered death
-	Bool m_particlesDestroyed;	///< TRUE once we destroy attached systems (so we do it only once)
-	Coord3D m_lastPosition;			///< we record our last position for logic that needs to know our direction of travel
-	UnsignedInt m_earliestDeathFrame; ///< Earliest we are allowed to think about dying
+	Bool m_hasDied {};						///< TRUE once we have triggered death
+	Bool m_particlesDestroyed {};			///< TRUE once we destroy attached systems (so we do it only once)
+	Coord3D m_lastPosition {};				///< we record our last position for logic that needs to know our direction of travel
+	UnsignedInt m_earliestDeathFrame {};	///< Earliest we are allowed to think about dying
 
 };
 

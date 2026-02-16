@@ -945,12 +945,12 @@ const Image* ControlBar::calculateVeterancyOverlayForThing( const ThingTemplate 
 			if( data )
 			{ 
 				//If no science is specified, he gets it automatically (or check the science).
-				if( data->m_scienceRequired == SCIENCE_INVALID || player->hasScience( data->m_scienceRequired ) )
+				if( data->m_ini.m_scienceRequired == SCIENCE_INVALID || player->hasScience( data->m_ini.m_scienceRequired ) )
 				{
 					//We do! So now check to see what the veterancy level would be.
-					if( data->m_startingLevel > level )
+					if( data->m_ini.m_startingLevel > level )
 					{
-						level = data->m_startingLevel;
+						level = data->m_ini.m_startingLevel;
 					}
 				}
 			}

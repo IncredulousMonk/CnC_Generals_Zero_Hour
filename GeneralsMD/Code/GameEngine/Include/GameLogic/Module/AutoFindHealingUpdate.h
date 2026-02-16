@@ -46,13 +46,19 @@ class WeaponTemplate;
 class AutoFindHealingUpdateModuleData : public ModuleData
 {
 public:
-	UnsignedInt			m_scanFrames;
-	Real						m_scanRange;
-	Real						m_neverHeal;
-	Real						m_alwaysHeal;
+	// MG: Cannot apply offsetof to AutoFindHealingUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt	m_scanFrames;
+		Real		m_scanRange;
+		Real		m_neverHeal;
+		Real		m_alwaysHeal;
+	};
+
+	IniData m_ini {};
 
 	AutoFindHealingUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private: 
 
@@ -65,7 +71,7 @@ class AutoFindHealingUpdate : public UpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( AutoFindHealingUpdate, "AutoFindHealingUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( AutoFindHealingUpdate, AutoFindHealingUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( AutoFindHealingUpdate, AutoFindHealingUpdateModuleData )
 
 public:
 
@@ -78,9 +84,8 @@ public:
 	Object* scanClosestTarget();
 
 protected:
-	Int m_nextScanFrames;
+	Int m_nextScanFrames {};
 };
 
 
 #endif
-

@@ -91,7 +91,7 @@ private:
 
 	UnsignedInt calcSleepDelay(UnsignedInt minFrames, UnsignedInt maxFrames);
 
-	UnsignedInt m_dieFrame;
+	UnsignedInt m_dieFrame {};
 };
 
 #endif // __LIFETIMEUPDATE_H_

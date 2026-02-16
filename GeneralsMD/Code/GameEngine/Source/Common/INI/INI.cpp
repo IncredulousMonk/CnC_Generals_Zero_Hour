@@ -56,7 +56,7 @@
 #include "GameLogic/Armor.h"
 // #include "GameLogic/ExperienceTracker.h"
 // #include "GameLogic/FPUControl.h"
-// #include "GameLogic/ObjectCreationList.h"
+#include "GameLogic/ObjectCreationList.h"
 // #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
 
@@ -1331,20 +1331,17 @@ void INI::parseDamageFX( INI* ini, void * /*instance*/, void *store, const void*
 //-------------------------------------------------------------------------------------------------
 void INI::parseObjectCreationList( INI* ini, void * /*instance*/, void *store, const void* /*userData*/ )
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseObjectCreationList not yet implemented"));
-	// const char *token = ini->getNextToken();
+	const char *token = ini->getNextToken();
 
-	// typedef const ObjectCreationList *ConstObjectCreationListPtr;
-	// ConstObjectCreationListPtr* theObjectCreationList = (ConstObjectCreationListPtr*)store;		
+	typedef const ObjectCreationList *ConstObjectCreationListPtr;
+	ConstObjectCreationListPtr* theObjectCreationList = (ConstObjectCreationListPtr*)store;
 
-	// const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null!
-	// DEBUG_ASSERTCRASH(ocl || strcasecmp(token, "None") == 0, ("ObjectCreationList %s not found!\n",token));
-	// // assign it, even if null!
-	// *theObjectCreationList = ocl;
+	const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null!
+	DEBUG_ASSERTCRASH(ocl || strcasecmp(token, "None") == 0, ("ObjectCreationList %s not found!\n",token));
+	// assign it, even if null!
+	*theObjectCreationList = ocl;
 
-} 
+}
 
 //-------------------------------------------------------------------------------------------------
 /** Parse a upgrade template string and store as template pointer */

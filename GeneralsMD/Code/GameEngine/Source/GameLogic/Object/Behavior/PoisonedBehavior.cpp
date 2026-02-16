@@ -49,23 +49,25 @@
 //-------------------------------------------------------------------------------------------------
 PoisonedBehaviorModuleData::PoisonedBehaviorModuleData()
 {
-	m_poisonDamageIntervalData = 0; // How often I retake poison damage dealt me
-	m_poisonDurationData = 0;				// And how long after the last poison dose I am poisoned
+	m_ini.m_poisonDamageIntervalData = 0;	// How often I retake poison damage dealt me
+	m_ini.m_poisonDurationData = 0;			// And how long after the last poison dose I am poisoned
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void PoisonedBehaviorModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void PoisonedBehaviorModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "PoisonDamageInterval", INI::parseDurationUnsignedInt, NULL, offsetof(PoisonedBehaviorModuleData, m_poisonDamageIntervalData) },
-		{ "PoisonDuration", INI::parseDurationUnsignedInt, NULL, offsetof(PoisonedBehaviorModuleData, m_poisonDurationData) },
+		{ "PoisonDamageInterval", INI::parseDurationUnsignedInt,	NULL, offsetof(PoisonedBehaviorModuleData::IniData, m_poisonDamageIntervalData) },
+		{ "PoisonDuration", INI::parseDurationUnsignedInt,			NULL, offsetof(PoisonedBehaviorModuleData::IniData, m_poisonDurationData) },
 		{ 0, 0, 0, 0 }
 	};
 
-  UpdateModuleData::buildFieldParse(p);
-  p.add(dataFieldParse);
+	UpdateModuleData::buildFieldParse(what, p);
+	PoisonedBehaviorModuleData* self {static_cast<PoisonedBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -96,7 +98,7 @@ void PoisonedBehavior::onDamage( DamageInfo *damageInfo )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void PoisonedBehavior::onHealing( DamageInfo *damageInfo )
+void PoisonedBehavior::onHealing( DamageInfo* /* damageInfo */ )
 {
 	stopPoisonedEffects();
 
@@ -128,7 +130,7 @@ UpdateSleepTime PoisonedBehavior::update()
 		damage.in.m_deathType = m_deathType;
 		getObject()->attemptDamage( &damage );
 
-		m_poisonDamageFrame = now + d->m_poisonDamageIntervalData;
+		m_poisonDamageFrame = now + d->m_ini.m_poisonDamageIntervalData;
 	}
 
 	// If we are now at zero we need to turn off our special effects... 
@@ -164,13 +166,13 @@ void PoisonedBehavior::startPoisonedEffects( const DamageInfo *damageInfo )
 	// We are going to take the damage dealt by the original poisoner every so often for a while.
 	m_poisonDamageAmount = damageInfo->out.m_actualDamageDealt;
 	
-	m_poisonOverallStopFrame = now + d->m_poisonDurationData;
+	m_poisonOverallStopFrame = now + d->m_ini.m_poisonDurationData;
 
 	// If we are getting re-poisoned, don't reset the damage counter if running, but do set it if unset
 	if( m_poisonDamageFrame != 0 )
-		m_poisonDamageFrame = min( m_poisonDamageFrame, now + d->m_poisonDamageIntervalData );
+		m_poisonDamageFrame = min( m_poisonDamageFrame, now + d->m_ini.m_poisonDamageIntervalData );
 	else
-		m_poisonDamageFrame = now + d->m_poisonDamageIntervalData;
+		m_poisonDamageFrame = now + d->m_ini.m_poisonDamageIntervalData;
 
 	m_deathType = damageInfo->in.m_deathType;
 

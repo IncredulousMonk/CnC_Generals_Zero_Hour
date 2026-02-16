@@ -45,13 +45,18 @@ class CreateObjectDieModuleData : public DieModuleData
 {
 
 public:
+	// MG: Cannot apply offsetof to CreateObjectDieModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const ObjectCreationList* m_ocl;	///< object creation list to make
+		Bool m_transferPreviousHealth;		///< Transfers previous health before death to the new object created.
+	};
 
-	const ObjectCreationList* m_ocl;			///< object creaton list to make
-	Bool m_transferPreviousHealth; ///< Transfers previous health before death to the new object created.
+	IniData m_ini {};
 
 	CreateObjectDieModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 };
 

@@ -46,12 +46,18 @@ class WeaponTemplate;
 class PilotFindVehicleUpdateModuleData : public ModuleData
 {
 public:
-	UnsignedInt			m_scanFrames;
-	Real						m_scanRange;
-	Real						m_minHealth;
+	// MG: Cannot apply offsetof to DieModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt		m_scanFrames;
+		Real			m_scanRange;
+		Real			m_minHealth;
+	};
+
+	IniData m_ini {};
 
 	PilotFindVehicleUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private: 
 
@@ -64,7 +70,7 @@ class PilotFindVehicleUpdate : public UpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( PilotFindVehicleUpdate, "PilotFindVehicleUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( PilotFindVehicleUpdate, PilotFindVehicleUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( PilotFindVehicleUpdate, PilotFindVehicleUpdateModuleData )
 
 public:
 
@@ -77,7 +83,7 @@ public:
 	Object* scanClosestTarget();
 
 protected:
-	Bool		m_didMoveToBase;
+	Bool		m_didMoveToBase {};
 };
 
 

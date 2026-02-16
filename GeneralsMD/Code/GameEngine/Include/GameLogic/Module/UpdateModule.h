@@ -369,7 +369,7 @@ public:
 	virtual void setRallyPoint( const Coord3D *pos ) = 0;				///< define a "rally point" for units to move towards
 	virtual const Coord3D *getRallyPoint( void ) const = 0;			///< define a "rally point" for units to move towards
 	virtual Bool useSpawnRallyPoint( void ) const { return FALSE; }
-	virtual Bool getNaturalRallyPoint( Coord3D& rallyPoint, Bool ) const {rallyPoint.x=rallyPoint.y=rallyPoint.z=0; return false;}	///< get the natural "rally point" for units to move towards
+	virtual Bool getNaturalRallyPoint( Coord3D& rallyPoint, Bool offset = TRUE ) const {(void) offset; rallyPoint.x=rallyPoint.y=rallyPoint.z=0; return false;}	///< get the natural "rally point" for units to move towards
 	virtual Bool getExitPosition( Coord3D& exitPosition ) const {exitPosition.x=exitPosition.y=exitPosition.z=0; return false;};					///< access to the "Door" position of the production object
 };
 

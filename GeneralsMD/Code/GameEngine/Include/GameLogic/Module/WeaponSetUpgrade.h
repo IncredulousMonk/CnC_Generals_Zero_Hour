@@ -45,7 +45,7 @@ class WeaponSetUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( WeaponSetUpgrade, "WeaponSetUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO( WeaponSetUpgrade );
+	MAKE_STANDARD_MODULE_MACRO( WeaponSetUpgrade )
 
 public:
 

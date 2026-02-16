@@ -767,8 +767,7 @@ private:
 	ProductionChangeMap				m_productionCostChanges {};			///< Map to keep track of Faction specific discounts or penalties on prices of units
 	ProductionChangeMap				m_productionTimeChanges {};			///< Map to keep track of Faction specific discounts or penalties on build times of units
 	ProductionVeterancyMap			m_productionVeterancyLevels {};	///< Map to keep track of starting level of produced units
-	// FIXME: AI.
-	// AIPlayer*						m_ai {};													///< if PLAYER_COMPUTER, the entity that does the thinking
+	AIPlayer*						m_ai {};													///< if PLAYER_COMPUTER, the entity that does the thinking
 	Int								m_mpStartIndex {};								///< The player's starting index for multiplayer.
 	ResourceGatheringManager*		m_resourceGatheringManager {};		///< Keeps track of all Supply Centers and Warehouses
 	TunnelTracker*					m_tunnelSystem {};								///< All TunnelContain buildings use this part of me for actual conatinment

@@ -41,24 +41,26 @@
 //-------------------------------------------------------------------------------------------------
 VeterancyGainCreateModuleData::VeterancyGainCreateModuleData()
 {
-	m_startingLevel = LEVEL_REGULAR;
-	m_scienceRequired = SCIENCE_INVALID;
+	m_ini.m_startingLevel = LEVEL_REGULAR;
+	m_ini.m_scienceRequired = SCIENCE_INVALID;
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void VeterancyGainCreateModuleData::buildFieldParse(MultiIniFieldParse& p)
+void VeterancyGainCreateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-  CreateModuleData::buildFieldParse(p);
+	CreateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "StartingLevel",		INI::parseIndexList,	TheVeterancyNames,	offsetof( VeterancyGainCreateModuleData, m_startingLevel ) },
-		{ "ScienceRequired",	INI::parseScience,		NULL,								offsetof( VeterancyGainCreateModuleData, m_scienceRequired ) },
+		{ "StartingLevel",		INI::parseIndexList,	TheVeterancyNames,	offsetof( VeterancyGainCreateModuleData::IniData, m_startingLevel ) },
+		{ "ScienceRequired",	INI::parseScience,		NULL,				offsetof( VeterancyGainCreateModuleData::IniData, m_scienceRequired ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	VeterancyGainCreateModuleData* self {static_cast<VeterancyGainCreateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -85,14 +87,14 @@ void VeterancyGainCreate::onCreate( void )
 
 	const VeterancyGainCreateModuleData *md = getVeterancyGainCreateModuleData();
 	Player *myPlayer = getObject()->getControllingPlayer();
-	if( myPlayer && (md->m_scienceRequired == SCIENCE_INVALID || 
-									 myPlayer->hasScience( md->m_scienceRequired )) )
+	if( myPlayer && (md->m_ini.m_scienceRequired == SCIENCE_INVALID || 
+									 myPlayer->hasScience( md->m_ini.m_scienceRequired )) )
 	{
 		ExperienceTracker* myExp = getObject()->getExperienceTracker();
 		if( myExp  &&  myExp->isTrainable() )
 		{
 			// srj sez: use "setMin" here so that we never lose levels
-			myExp->setMinVeterancyLevel( md->m_startingLevel );// sVL can override isTrainable, but this module should not.
+			myExp->setMinVeterancyLevel( md->m_ini.m_startingLevel );// sVL can override isTrainable, but this module should not.
 		}
 	}
 

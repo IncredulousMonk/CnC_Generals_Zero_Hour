@@ -73,22 +73,28 @@ static const char *TheSlowDeathPhaseNames[] =
 class SlowDeathBehaviorModuleData : public UpdateModuleData
 {
 public:
-	DieMuxData				m_dieMuxData;
-	Real							m_sinkRate;
-	Int								m_probabilityModifier;
-	Real							m_modifierBonusPerOverkillPercent;
-	UnsignedInt				m_sinkDelay;
-	UnsignedInt				m_sinkDelayVariance;
-	Real							m_destructionAltitude;
-	UnsignedInt				m_destructionDelay;
-	UnsignedInt				m_destructionDelayVariance;
-	FXListVec					m_fx[SD_PHASE_COUNT];
-	OCLVec						m_ocls[SD_PHASE_COUNT];
-	WeaponTemplateVec	m_weapons[SD_PHASE_COUNT];
-	Real							m_flingForce;
-	Real							m_flingForceVariance;
-	Real							m_flingPitch;
-	Real							m_flingPitchVariance;
+	// MG: Cannot apply offsetof to SlowDeathBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		DieMuxData			m_dieMuxData;
+		Real				m_sinkRate;
+		Int					m_probabilityModifier;
+		Real				m_modifierBonusPerOverkillPercent;
+		UnsignedInt			m_sinkDelay;
+		UnsignedInt			m_sinkDelayVariance;
+		Real				m_destructionAltitude;
+		UnsignedInt			m_destructionDelay;
+		UnsignedInt			m_destructionDelayVariance;
+		FXListVec			m_fx[SD_PHASE_COUNT];
+		OCLVec				m_ocls[SD_PHASE_COUNT];
+		WeaponTemplateVec	m_weapons[SD_PHASE_COUNT];
+		Real				m_flingForce;
+		Real				m_flingForceVariance;
+		Real				m_flingPitch;
+		Real				m_flingPitchVariance;
+	};
+
+	IniData m_ini {};
 
 	enum 
 	{
@@ -98,10 +104,10 @@ public:
 		HAS_WEAPON					= 4,
 		HAS_NON_LOD_EFFECTS = (HAS_OCL | HAS_WEAPON)
 	};
-	Byte							m_maskOfLoadedEffects;	///<used to keep track of whether m_fx,m_ocls,m_weapons actually contain anything.
+	Byte m_maskOfLoadedEffects {};	///<used to keep track of whether m_fx,m_ocls,m_weapons actually contain anything.
 
 	SlowDeathBehaviorModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	inline Bool hasNonLodEffects() const
 	{
 		return (m_maskOfLoadedEffects & SlowDeathBehaviorModuleData::HAS_NON_LOD_EFFECTS) != 0;
@@ -116,6 +122,7 @@ private:
 class SlowDeathBehaviorInterface
 {
 public:
+	virtual ~SlowDeathBehaviorInterface() {}
 	virtual void beginSlowDeath( const DamageInfo *damageInfo ) = 0;
 	virtual Int getProbabilityModifier( const DamageInfo *damageInfo ) const = 0;
 	virtual Bool isDieApplicable(const DamageInfo *damageInfo) const = 0;
@@ -153,7 +160,7 @@ public:
 	// SlowDeathBehaviorInterface
 	virtual void beginSlowDeath( const DamageInfo *damageInfo );
 	virtual Int getProbabilityModifier( const DamageInfo *damageInfo ) const;
-	virtual Bool isDieApplicable(const DamageInfo *damageInfo) const { return getSlowDeathBehaviorModuleData()->m_dieMuxData.isDieApplicable(getObject(), damageInfo); }
+	virtual Bool isDieApplicable(const DamageInfo *damageInfo) const { return getSlowDeathBehaviorModuleData()->m_ini.m_dieMuxData.isDieApplicable(getObject(), damageInfo); }
 
 protected:
 
@@ -171,12 +178,11 @@ private:
 		BOUNCED
 	};
 
-	UnsignedInt m_sinkFrame;							///< Frame to be sunken into the ground on
-	UnsignedInt m_midpointFrame;					///< The midpoint is between .25 through life and .75 through life (eg)
-	UnsignedInt m_destructionFrame;	
-	Real				m_acceleratedTimeScale;		///<used to speedup deaths when needed to improve game performance.
-	UnsignedInt	m_flags;
+	UnsignedInt m_sinkFrame {};							///< Frame to be sunken into the ground on
+	UnsignedInt m_midpointFrame {};					///< The midpoint is between .25 through life and .75 through life (eg)
+	UnsignedInt m_destructionFrame {};	
+	Real		m_acceleratedTimeScale {};		///<used to speedup deaths when needed to improve game performance.
+	UnsignedInt	m_flags {};
 };
 
 #endif // __SlowDeathBehavior_H_
-

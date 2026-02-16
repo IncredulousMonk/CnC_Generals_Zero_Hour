@@ -54,11 +54,11 @@ LifetimeUpdate::LifetimeUpdate( Thing *thing, const ModuleData* moduleData ) : U
 	UnsignedInt delay;
 	if( getObject()->isKindOf( KINDOF_HULK ) && TheGameLogic->getHulkMaxLifetimeOverride() != -1 )
 	{
-		delay = calcSleepDelay( TheGameLogic->getHulkMaxLifetimeOverride(), TheGameLogic->getHulkMaxLifetimeOverride() );
+		delay = calcSleepDelay( (UnsignedInt)TheGameLogic->getHulkMaxLifetimeOverride(), (UnsignedInt)TheGameLogic->getHulkMaxLifetimeOverride() );
 	}
 	else
 	{
-		delay = calcSleepDelay(d->m_minFrames, d->m_maxFrames);
+		delay = calcSleepDelay(d->m_ini.m_minFrames, d->m_ini.m_maxFrames);
 	}
 
 	setWakeFrame(getObject(), UPDATE_SLEEP(delay));
@@ -82,7 +82,7 @@ void LifetimeUpdate::setLifetimeRange( UnsignedInt minFrames, UnsignedInt maxFra
 //-------------------------------------------------------------------------------------------------
 UnsignedInt LifetimeUpdate::calcSleepDelay(UnsignedInt minFrames, UnsignedInt maxFrames)
 {
-	UnsignedInt delay = GameLogicRandomValue( minFrames, maxFrames );
+	UnsignedInt delay = GameLogicRandomValueUnsigned( minFrames, maxFrames );
 	if (delay < 1) delay = 1;
 	m_dieFrame = TheGameLogic->getFrame() + delay;
 	return delay;

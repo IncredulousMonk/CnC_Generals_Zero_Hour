@@ -320,7 +320,6 @@ public:
 #endif // if 0
 	void setIndicatorColor(Color color);
 	
-#if 0
 	void setTintStatus( TintStatus statusBits ) { BitSet( m_tintStatus, statusBits ); };
 	void clearTintStatus( TintStatus statusBits ) { BitClear( m_tintStatus, statusBits ); };
 	Bool testTintStatus( TintStatus statusBits ) const { return BitTest( m_tintStatus, statusBits ); };
@@ -328,14 +327,13 @@ public:
 	void setColorTintEnvelope( TintEnvelope &source ) { if (m_colorTintEnvelope) *m_colorTintEnvelope = source; }
 
 
+#if 0
 	void imitateStealthLook( Drawable& otherDraw );
 #endif // if 0
 
 	void setTerrainDecal(TerrainDecalType type);	///<decal that is to appear under the drawable
-#if 0
 	void setTerrainDecalSize(Real x, Real y);
 	void setTerrainDecalFadeTarget(Real target, Real rate = 0.1f);
-#endif // if 0
 
 	inline Object *getObject( void ) { return m_object; }								///< return object ID bound to this drawble
 	inline const Object *getObject( void ) const { return m_object; }		///< return object ID bound to this drawble
@@ -366,19 +364,19 @@ public:
 #endif // if 0
 	void updateDrawableSupplyStatus( Int maxSupply, Int currentSupply ); ///< This will do visual feedback on Supplies carried
 	
-#if 0
 	void notifyDrawableDependencyCleared();///< If any of your draw modules were waiting for something, it's ready now.
 
 	// Override.
 	void setPosition( const Coord3D *pos );
 	void reactToGeometryChange();
 
+#if 0
 	const GeometryInfo& getDrawableGeometryInfo() const;
+#endif // if 0
 
 	void reactToBodyDamageStateChange(BodyDamageType newState);
 	
 	Real getScale (void) const ;
-#endif // if 0
 
 	// access to modules
 	//---------------------------------------------------------------------------
@@ -399,10 +397,12 @@ public:
 #if 0
 	void setShroudClearFrame( UnsignedInt frame )  { m_shroudClearFrame = frame; }
 	UnsignedInt getShroudClearFrame( void ) { return m_shroudClearFrame; }
- 
+#endif // if 0
+
 	void setShadowsEnabled(Bool enable);
 	Bool getShadowsEnabled() const { return BitTest(m_status, DRAWABLE_STATUS_SHADOWS); }
 
+#if 0
 	void releaseShadows(void);	///< frees all shadow resources used by this module - used by Options screen.
 	void allocateShadows(void); ///< create shadow resources if not already present. Used by Options screen.
 
@@ -441,8 +441,10 @@ public:
 	void setInstanceScale(Real value) { m_instanceScale = value;}	///< set scale that will be applied to instance matrix before rendering.
 
 	const Matrix3D *getTransformMatrix( void ) const;	///< return the world transform
+#endif // if 0
 
 	void draw( View *view );													///< render the drawable to the given view
+#if 0
 	void updateDrawable();														///< update the drawable
 
 	void drawIconUI( void );													///< draw "icon"(s) needed on drawable (health bars, veterency, etc)

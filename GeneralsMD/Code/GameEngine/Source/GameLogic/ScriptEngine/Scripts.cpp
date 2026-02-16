@@ -561,7 +561,7 @@ Bool ScriptList::ParseScriptsDataChunk(DataChunkInput &file, DataChunkInfo *info
 *		
 */
 Int ScriptList::getReadScripts(ScriptList *scriptLists[MAX_PLAYER_COUNT])
-{		 
+{
 	Int i;
 	Int count = s_numInReadList;
 	s_numInReadList = 0;
@@ -570,7 +570,7 @@ Int ScriptList::getReadScripts(ScriptList *scriptLists[MAX_PLAYER_COUNT])
 		s_readLists[i] = NULL;
 	}
 	return count;
-}								 
+}
 
 /**
 * ScriptList::WriteScriptsDataChunk - Writes a Scripts chunk.
@@ -624,6 +624,7 @@ Bool ScriptList::ParseScriptListDataChunk(DataChunkInput &file, DataChunkInfo *i
 	pInfo->readLists[pInfo->numLists] = newInstance(ScriptList);
 	Int cur = pInfo->numLists;
 	pInfo->numLists++;
+DEBUG_LOG(("$$$$$ Side %d scripts...\n", pInfo->numLists));
 	file.registerParser( AsciiString("Script"), info->label, Script::ParseScriptFromListDataChunk );
 	file.registerParser( AsciiString("ScriptGroup"), info->label, ScriptGroup::ParseGroupDataChunk );
 	return file.parse(pInfo->readLists[cur]);
@@ -1250,13 +1251,13 @@ Script *Script::ParseScript(DataChunkInput &file, unsigned short version)
 	pScript->m_comment = file.readAsciiString();
 	pScript->m_conditionComment = file.readAsciiString();
 	pScript->m_actionComment = file.readAsciiString();
-
 	pScript->m_isActive = file.readByte();
 	pScript->m_isOneShot = file.readByte();
 	pScript->m_easy = file.readByte();
 	pScript->m_normal = file.readByte();
 	pScript->m_hard = file.readByte();
 	pScript->m_isSubroutine = file.readByte();
+DEBUG_LOG(("Script \"%s\" (enabled = %d, subroutine = %d):\n", pScript->m_scriptName.str(), pScript->m_isActive, pScript->m_isSubroutine));
 	if (version>=K_SCRIPT_DATA_VERSION_2) {
 		pScript->m_delayEvaluationSeconds = file.readInt();
 	}
@@ -1267,7 +1268,8 @@ Script *Script::ParseScript(DataChunkInput &file, unsigned short version)
 	{
 		return NULL;
 	}
-	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Unexpected data left over."));	
+	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Unexpected data left over."));
+DEBUG_LOG(("%s\n", pScript->getUiText().str()));
 	return pScript;
 }
 
@@ -1748,7 +1750,7 @@ Bool Condition::ParseConditionDataChunk(DataChunkInput &file, DataChunkInfo *inf
 	} else {
 		pOr->setFirstAndCondition(pCondition);
 	}
-	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Unexpected data left over."));	
+	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Unexpected data left over."));
 	return true;
 }
 
@@ -2428,7 +2430,7 @@ void ScriptAction::WriteActionDataChunk(DataChunkOutput &chunkWriter, ScriptActi
 * Format is the newer CHUNKY format.
 *	See ScriptAction::WriteActionDataChunk for the writer.
 *	Input: DataChunkInput 
-*		
+*
 */
 ScriptAction *ScriptAction::ParseAction(DataChunkInput &file, DataChunkInfo *info, void *userData)
 {
@@ -2597,7 +2599,7 @@ ScriptAction *ScriptAction::ParseAction(DataChunkInput &file, DataChunkInfo *inf
 		pScriptAction->m_actionType = ScriptAction::NO_OP;
 		pScriptAction->m_numParms = 0;
 	}
-	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Unexpected data left over."));	
+	DEBUG_ASSERTCRASH(file.atEndOfChunk(), ("Unexpected data left over."));
 	return pScriptAction;
 }
 
@@ -2673,6 +2675,7 @@ Bool ScriptAction::ParseActionFalseDataChunk(DataChunkInput &file, DataChunkInfo
 {
 	Script *pScript = (Script *)userData;
 
+DEBUG_LOG(("(Action false)\n"));
 	ScriptAction	*pScriptAction = ParseAction(file, info, userData);
 
 	ScriptAction *pLast = pScript->getFalseAction();

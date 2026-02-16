@@ -46,13 +46,17 @@ class UnpauseSpecialPowerUpgradeModuleData : public UpgradeModuleData
 {
 
 public:
+	// MG: Cannot apply offsetof to UnpauseSpecialPowerUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const SpecialPowerTemplate *m_specialPower;
+	};
+
+	IniData m_ini {};
 
 	UnpauseSpecialPowerUpgradeModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
-
-	const SpecialPowerTemplate *m_specialPower;
-
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -62,7 +66,7 @@ class UnpauseSpecialPowerUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( UnpauseSpecialPowerUpgrade, "UnpauseSpecialPowerUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( UnpauseSpecialPowerUpgrade, UnpauseSpecialPowerUpgradeModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( UnpauseSpecialPowerUpgrade, UnpauseSpecialPowerUpgradeModuleData )
 
 public:
 

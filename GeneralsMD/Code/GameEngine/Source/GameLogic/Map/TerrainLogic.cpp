@@ -1349,6 +1349,7 @@ Bool TerrainLogic::parseWaypointDataChunk(DataChunkInput &file, DataChunkInfo *i
 //-------------------------------------------------------------------------------------------------
 Bool TerrainLogic::parseWaypointData(DataChunkInput &file, DataChunkInfo* /* info */, void* /* userData */)
 {
+	DEBUG_LOG(("Parsing waypoint data\n"));
 	Int numWaypointLinks = file.readInt();
 	Int i;
 	for (i=0; i<numWaypointLinks; i++) {
@@ -1366,7 +1367,7 @@ Bool TerrainLogic::parseWaypointData(DataChunkInput &file, DataChunkInfo* /* inf
 void TerrainLogic::addWaypoint(MapObject *pMapObj)
 {
 	Coord3D loc = *pMapObj->getLocation();
-DEBUG_LOG((">>>>> Adding waypoint called \"%s\" at (%f, %f, %f)\n", pMapObj->getWaypointName().str(), loc.x, loc.y, loc.z));
+	DEBUG_LOG((">>>>> Adding waypoint called \"%s\" at (%f, %f, %f)\n", pMapObj->getWaypointName().str(), loc.x, loc.y, loc.z));
 	// Snap the waypoint down to the terrain.
 	loc.z = getGroundHeight(loc.x, loc.y);
 	Bool exists;

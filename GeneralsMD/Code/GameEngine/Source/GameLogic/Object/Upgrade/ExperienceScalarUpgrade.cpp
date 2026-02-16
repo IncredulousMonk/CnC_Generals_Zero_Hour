@@ -39,23 +39,25 @@
 //-------------------------------------------------------------------------------------------------
 ExperienceScalarUpgradeModuleData::ExperienceScalarUpgradeModuleData( void )
 {
-	m_addXPScalar = 0.0f;
+	m_ini.m_addXPScalar = 0.0f;
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void ExperienceScalarUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void ExperienceScalarUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
 
-  UpgradeModuleData::buildFieldParse( p );
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "AddXPScalar",	INI::parseReal,		NULL, offsetof( ExperienceScalarUpgradeModuleData, m_addXPScalar ) },
+		{ "AddXPScalar",	INI::parseReal,		NULL, offsetof( ExperienceScalarUpgradeModuleData::IniData, m_addXPScalar ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	ExperienceScalarUpgradeModuleData* self {static_cast<ExperienceScalarUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -82,7 +84,7 @@ void ExperienceScalarUpgrade::upgradeImplementation( )
 	ExperienceTracker *xpTracker = obj->getExperienceTracker();
 	if( xpTracker )
 	{
-		xpTracker->setExperienceScalar( xpTracker->getExperienceScalar() + data->m_addXPScalar );
+		xpTracker->setExperienceScalar( xpTracker->getExperienceScalar() + data->m_ini.m_addXPScalar );
 	}
 }
 

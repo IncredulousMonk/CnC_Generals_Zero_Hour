@@ -201,8 +201,19 @@ struct ModelConditionInfo
    struct IniData
    {
       AsciiString                      m_modelName {};
+      std::vector<HideShowSubObjInfo>  m_hideShowVec {};
       LinuxAnimationVector             m_animations {};
+      NameKeyType                      m_transitionKey {};
+      NameKeyType                      m_allowToFinishKey {};
+      Int                              m_flags {};
       RenderObjClass::AnimMode         m_mode {};
+      AsciiString                      m_weaponFireFXBoneName[WEAPONSLOT_COUNT];
+      AsciiString                      m_weaponRecoilBoneName[WEAPONSLOT_COUNT];
+      AsciiString                      m_weaponMuzzleFlashName[WEAPONSLOT_COUNT];
+      AsciiString                      m_weaponProjectileLaunchBoneName[WEAPONSLOT_COUNT];
+      AsciiString                      m_weaponProjectileHideShowName[WEAPONSLOT_COUNT];
+
+      mutable TurretInfo               m_turrets[MAX_TURRETS];
 
       ModelConditionInfo* m_obj;
    };
@@ -213,17 +224,18 @@ struct ModelConditionInfo
    AsciiString                      m_description {};
 #endif
    std::vector<ModelConditionFlags> m_conditionsYesVec {};
-   std::vector<HideShowSubObjInfo>  m_hideShowVec {};
+   // AsciiString                      m_modelName {};
+   // std::vector<HideShowSubObjInfo>  m_hideShowVec {};
    mutable std::vector<AsciiString> m_publicBones {};
-   AsciiString                      m_weaponFireFXBoneName[WEAPONSLOT_COUNT];
-   AsciiString                      m_weaponRecoilBoneName[WEAPONSLOT_COUNT];
-   AsciiString                      m_weaponMuzzleFlashName[WEAPONSLOT_COUNT];
-   AsciiString                      m_weaponProjectileLaunchBoneName[WEAPONSLOT_COUNT];
-   AsciiString                      m_weaponProjectileHideShowName[WEAPONSLOT_COUNT];
+   // AsciiString                      m_weaponFireFXBoneName[WEAPONSLOT_COUNT];
+   // AsciiString                      m_weaponRecoilBoneName[WEAPONSLOT_COUNT];
+   // AsciiString                      m_weaponMuzzleFlashName[WEAPONSLOT_COUNT];
+   // AsciiString                      m_weaponProjectileLaunchBoneName[WEAPONSLOT_COUNT];
+   // AsciiString                      m_weaponProjectileHideShowName[WEAPONSLOT_COUNT];
    // LinuxAnimationVector             m_animations {};
-   NameKeyType                      m_transitionKey {};
-   NameKeyType                      m_allowToFinishKey {};
-   Int                              m_flags {};
+   // NameKeyType                      m_transitionKey {};
+   // NameKeyType                      m_allowToFinishKey {};
+   // Int                              m_flags {};
    Int                              m_iniReadFlags {};         // not read from ini, but used for helping with default states
    // RenderObjClass::AnimMode         m_mode {};
    ParticleSysBoneInfoVector        m_particleSysBones {};     ///< Bone names and attached particle systems.
@@ -232,7 +244,7 @@ struct ModelConditionInfo
    Real                             m_animMaxSpeedFactor {};   //Max speed factor (randomized each time it's played)
 
    mutable PristineBoneInfoMap      m_pristineBones {};
-   mutable TurretInfo               m_turrets[MAX_TURRETS];
+   // mutable TurretInfo               m_turrets[MAX_TURRETS];
    mutable WeaponBarrelInfoVec      m_weaponBarrelInfoVec[WEAPONSLOT_COUNT];
    mutable Bool                     m_hasRecoilBonesOrMuzzleFlashes[WEAPONSLOT_COUNT];
    mutable Byte                     m_validStuff {};
@@ -290,6 +302,16 @@ typedef std::map< TransitionSig, ModelConditionInfo, std::less<TransitionSig> > 
 class LinuxModelDrawModuleData: public ModuleData
 {
 public:
+   // MG: Cannot apply offsetof to LinuxModelDrawModuleData, so had to move data into an embedded struct.
+   struct IniData
+   {
+      ModelConditionFlags           m_ignoreConditionStates {};
+      Bool                          m_okToChangeModelColor {false};
+      Bool                          m_particlesAttachedToAnimatedBones {false};
+   };
+
+   IniData m_ini {};
+
    mutable ModelConditionVector  m_conditionStates {};
    mutable SparseMatchFinder<ModelConditionInfo, ModelConditionFlags> m_conditionStateMap {};
    mutable TransitionMap         m_transitionMap {};
@@ -306,15 +328,15 @@ public:
    Real                          m_recoilDamping {};
    Real                          m_recoilSettle {};
    StaticGameLODLevel            m_minLODRequired {};                      ///< minumum game LOD level necessary to use this module.
-   ModelConditionFlags           m_ignoreConditionStates {};
-   Bool                          m_okToChangeModelColor {false};
+   // ModelConditionFlags           m_ignoreConditionStates {};
+   // Bool                          m_okToChangeModelColor {false};
    Bool                          m_animationsRequirePower {true};          ///< Should UnderPowered disable type pause animations in this draw module?
 #ifdef CACHE_ATTACH_BONE
    mutable Bool                  m_attachToDrawableBoneOffsetValid {false};
 #endif
    mutable Byte                  m_validated {0};
 
-   Bool                          m_particlesAttachedToAnimatedBones {false};
+   // Bool                          m_particlesAttachedToAnimatedBones {false};
 
    Bool                          m_receivesDynamicLights {};               ///< just like it sounds... it sets a property of Drawable, actually
 
@@ -348,7 +370,7 @@ public:
 };
 
 //-------------------------------------------------------------------------------------------------
-class LinuxModelDraw : public DrawModule, public ObjectDrawInterface
+class LinuxModelDraw: public DrawModule, public ObjectDrawInterface
 {
 
    MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(LinuxModelDraw, "LinuxModelDraw")
@@ -366,10 +388,12 @@ public:
 #if 0
    /// preloading assets
    virtual void preloadAssets( TimeOfDay timeOfDay );
+#endif // if 0
 
    /// the draw method
    virtual void doDrawModule(const Matrix3D* transformMtx);
    virtual void setShadowsEnabled(Bool enable);
+#if 0
    virtual void releaseShadows(void);	///< frees all shadow resources used by this module - used by Options screen.
    virtual void allocateShadows(void); ///< create shadow resources if not already present. Used by Options screen.
 
@@ -382,9 +406,11 @@ public:
    virtual void setTerrainDecal(TerrainDecalType type);
 
    virtual Bool isVisible() const;
+#endif // if 0
    virtual void reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle);
    virtual void reactToGeometryChange() { }
 
+#if 0
    // this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
    virtual Bool clientOnly_getRenderObjInfo(Coord3D* pos, Real* boundingSphereRadius, Matrix3D* transform) const;
    virtual Bool clientOnly_getRenderObjBoundBox(OBBoxClass * boundbox) const;
@@ -398,10 +424,10 @@ public:
    virtual void updateProjectileClipStatus( UnsignedInt shotsRemaining, UnsignedInt maxShots, WeaponSlotType slot ); ///< This will do the show/hide work if ProjectileBoneFeedbackEnabled is set.
 #endif // if 0
    virtual void updateDrawModuleSupplyStatus( Int maxSupply, Int currentSupply ); ///< This will do visual feedback on Supplies carried
-#if 0
    virtual void notifyDrawModuleDependencyCleared( ){}///< if you were waiting for something before you drew, it's ready now
 
    virtual void setHidden(Bool h);
+#if 0
    virtual void replaceModelConditionState(const ModelConditionFlags& c);
    virtual void replaceIndicatorColor(Color color);
    virtual Bool handleWeaponFireFX(WeaponSlotType wslot, Int specificBarrelToUse, const FXList* fxl, Real weaponSpeed, const Coord3D* victimPos, Real damageRadius);
@@ -518,13 +544,13 @@ private:
    WeaponRecoilInfoVec						m_weaponRecoilInfoVec[WEAPONSLOT_COUNT];
    Bool													m_needRecalcBoneParticleSystems;
    Bool													m_fullyObscuredByShroud;
-   Bool													m_shadowEnabled;	///< cached state of shadow.  Used to determine if shadows should be enabled via options screen.
 #endif // if 0
-   RenderObjClass*   m_renderObject {};      ///< Linux Render object for this drawable
+   Bool                          m_shadowEnabled {};     ///< cached state of shadow.  Used to determine if shadows should be enabled via options screen.
+   RenderObjClass*               m_renderObject {};      ///< Linux Render object for this drawable
+   Shadow*                       m_shadow {};            ///< Updates/Renders shadows of this object
+   Shadow*                       m_terrainDecal {};
 #if 0
-   Shadow*												m_shadow;													///< Updates/Renders shadows of this object
-   Shadow*												m_terrainDecal;
-   TerrainTracksRenderObjClass*	m_trackRenderObject;							///< This is rendered under object
+   TerrainTracksRenderObjClass*  m_trackRenderObject;    ///< This is rendered under object
    ParticleSystemIDVec						m_particleSystemIDs;							///< The ID numbers of the particle systems currently running.
    std::vector<ModelConditionInfo::HideShowSubObjInfo>		m_subObjectVec;
    Bool													m_hideHeadlights;

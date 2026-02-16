@@ -63,19 +63,19 @@ const Real END_MIDPOINT_RATIO = 0.65f;
 //-------------------------------------------------------------------------------------------------
 SlowDeathBehaviorModuleData::SlowDeathBehaviorModuleData()
 {
-	m_sinkRate = 0;
-	m_probabilityModifier = 10;
-	m_modifierBonusPerOverkillPercent = 0;
-	m_sinkDelay = 0;
-	m_sinkDelayVariance = 0;
-	m_destructionDelay = 0;
-	m_destructionDelayVariance = 0;
-	m_destructionAltitude = -10;
+	m_ini.m_sinkRate = 0;
+	m_ini.m_probabilityModifier = 10;
+	m_ini.m_modifierBonusPerOverkillPercent = 0;
+	m_ini.m_sinkDelay = 0;
+	m_ini.m_sinkDelayVariance = 0;
+	m_ini.m_destructionDelay = 0;
+	m_ini.m_destructionDelayVariance = 0;
+	m_ini.m_destructionAltitude = -10;
 	m_maskOfLoadedEffects = 0; //assume no ocl, fx, or weapons.
-	m_flingForce = 0;
-	m_flingForceVariance = 0;
-	m_flingPitch = 0;
-	m_flingPitchVariance = 0;
+	m_ini.m_flingForce = 0;
+	m_ini.m_flingForceVariance = 0;
+	m_ini.m_flingPitch = 0;
+	m_ini.m_flingPitchVariance = 0;
 	// redundant.
 	//m_fx.clear();
 	//m_ocls.clear();
@@ -90,7 +90,7 @@ static void parseFX( INI* ini, void *instance, void * /*store*/, const void* /*u
 	for (const char* token = ini->getNextToken(); token != NULL; token = ini->getNextTokenOrNull())
 	{
 		const FXList *fxl = TheFXListStore->findFXList((token));	// could be null! this is OK!
-		self->m_fx[sdphase].push_back(fxl);
+		self->m_ini.m_fx[sdphase].push_back(fxl);
 		if (fxl)
 			self->m_maskOfLoadedEffects |= SlowDeathBehaviorModuleData::HAS_FX;
 	}
@@ -104,7 +104,7 @@ static void parseOCL( INI* ini, void *instance, void * /*store*/, const void* /*
 	for (const char* token = ini->getNextToken(); token != NULL; token = ini->getNextTokenOrNull())
 	{
 		const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null! this is OK!
-		self->m_ocls[sdphase].push_back(ocl);
+		self->m_ini.m_ocls[sdphase].push_back(ocl);
 		if (ocl)
 			self->m_maskOfLoadedEffects |= SlowDeathBehaviorModuleData::HAS_OCL;
 	}
@@ -118,38 +118,40 @@ static void parseWeapon( INI* ini, void *instance, void * /*store*/, const void*
 	for (const char* token = ini->getNextToken(); token != NULL; token = ini->getNextTokenOrNull())
 	{
 		const WeaponTemplate *wt = TheWeaponStore->findWeaponTemplate(token);	// could be null! this is OK!
-		self->m_weapons[sdphase].push_back(wt);
+		self->m_ini.m_weapons[sdphase].push_back(wt);
 		if (wt)
 			self->m_maskOfLoadedEffects |= SlowDeathBehaviorModuleData::HAS_WEAPON;
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void SlowDeathBehaviorModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void SlowDeathBehaviorModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "SinkRate",													INI::parseVelocityReal,						NULL, offsetof( SlowDeathBehaviorModuleData, m_sinkRate ) },
-		{ "ProbabilityModifier",							INI::parseInt,										NULL, offsetof( SlowDeathBehaviorModuleData, m_probabilityModifier ) },
-		{ "ModifierBonusPerOverkillPercent",	INI::parsePercentToReal,					NULL, offsetof( SlowDeathBehaviorModuleData, m_modifierBonusPerOverkillPercent ) },
-		{ "SinkDelay",												INI::parseDurationUnsignedInt,		NULL, offsetof( SlowDeathBehaviorModuleData, m_sinkDelay ) },
-		{ "SinkDelayVariance",								INI::parseDurationUnsignedInt,		NULL, offsetof( SlowDeathBehaviorModuleData, m_sinkDelayVariance ) },
-		{ "DestructionDelay",									INI::parseDurationUnsignedInt,		NULL, offsetof( SlowDeathBehaviorModuleData, m_destructionDelay ) },
-		{ "DestructionDelayVariance",					INI::parseDurationUnsignedInt,		NULL, offsetof( SlowDeathBehaviorModuleData, m_destructionDelayVariance ) },
-		{ "DestructionAltitude",							INI::parseReal,										NULL, offsetof( SlowDeathBehaviorModuleData, m_destructionAltitude ) },
-		{ "FX",																parseFX,													NULL, 0 },
-		{ "OCL",															parseOCL,													NULL, 0 },
-		{ "Weapon",														parseWeapon,											NULL, 0 },
-		{ "FlingForce",												INI::parseReal,										NULL, offsetof( SlowDeathBehaviorModuleData, m_flingForce) },
-		{ "FlingForceVariance",								INI::parseReal,										NULL, offsetof( SlowDeathBehaviorModuleData, m_flingForceVariance) },
-		{ "FlingPitch",												INI::parseAngleReal,							NULL, offsetof( SlowDeathBehaviorModuleData, m_flingPitch) },
-		{ "FlingPitchVariance",								INI::parseAngleReal,							NULL, offsetof( SlowDeathBehaviorModuleData, m_flingPitchVariance) },
+		{ "SinkRate",							INI::parseVelocityReal,			NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_sinkRate ) },
+		{ "ProbabilityModifier",				INI::parseInt,					NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_probabilityModifier ) },
+		{ "ModifierBonusPerOverkillPercent",	INI::parsePercentToReal,		NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_modifierBonusPerOverkillPercent ) },
+		{ "SinkDelay",							INI::parseDurationUnsignedInt,	NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_sinkDelay ) },
+		{ "SinkDelayVariance",					INI::parseDurationUnsignedInt,	NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_sinkDelayVariance ) },
+		{ "DestructionDelay",					INI::parseDurationUnsignedInt,	NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_destructionDelay ) },
+		{ "DestructionDelayVariance",			INI::parseDurationUnsignedInt,	NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_destructionDelayVariance ) },
+		{ "DestructionAltitude",				INI::parseReal,					NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_destructionAltitude ) },
+		{ "FX",									parseFX,						NULL, 0 },
+		{ "OCL",								parseOCL,						NULL, 0 },
+		{ "Weapon",								parseWeapon,					NULL, 0 },
+		{ "FlingForce",							INI::parseReal,					NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_flingForce) },
+		{ "FlingForceVariance",					INI::parseReal,					NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_flingForceVariance) },
+		{ "FlingPitch",							INI::parseAngleReal,			NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_flingPitch) },
+		{ "FlingPitchVariance",					INI::parseAngleReal,			NULL, offsetof( SlowDeathBehaviorModuleData::IniData, m_flingPitchVariance) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
-	p.add(DieMuxData::getFieldParse(), offsetof( SlowDeathBehaviorModuleData, m_dieMuxData ));
+	SlowDeathBehaviorModuleData* self {static_cast<SlowDeathBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
+	p.add(DieMuxData::getFieldParse(), offset + offsetof( SlowDeathBehaviorModuleData::IniData, m_dieMuxData ));
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -162,7 +164,7 @@ SlowDeathBehavior::SlowDeathBehavior( Thing *thing, const ModuleData* moduleData
 	m_destructionFrame = 0;
 	m_acceleratedTimeScale = 1.0f;
 
-	if (getSlowDeathBehaviorModuleData()->m_probabilityModifier < 1)
+	if (getSlowDeathBehaviorModuleData()->m_ini.m_probabilityModifier < 1)
 	{
 		DEBUG_CRASH(("ProbabilityModifer must be >= 1.\n"));
 		throw INI_INVALID_DATA;
@@ -186,9 +188,9 @@ Int SlowDeathBehavior::getProbabilityModifier( const DamageInfo *damageInfo ) co
 	// eg ( 200 hp max, had 10 left, took 50 damage, 40 overkill, (40/200) * 100 = 20 overkill %)
 	Int overkillDamage = damageInfo->out.m_actualDamageDealt - damageInfo->out.m_actualDamageClipped;
 	Real overkillPercent = (float)overkillDamage / (float)getObject()->getBodyModule()->getMaxHealth();
-	Int overkillModifier = overkillPercent * getSlowDeathBehaviorModuleData()->m_modifierBonusPerOverkillPercent;
+	Int overkillModifier = overkillPercent * getSlowDeathBehaviorModuleData()->m_ini.m_modifierBonusPerOverkillPercent;
 
-	return max( getSlowDeathBehaviorModuleData()->m_probabilityModifier + overkillModifier, 1 );
+	return max( getSlowDeathBehaviorModuleData()->m_ini.m_probabilityModifier + overkillModifier, 1 );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -212,14 +214,14 @@ static void calcRandomForce(Real minMag, Real maxMag, Real minPitch, Real maxPit
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void SlowDeathBehavior::beginSlowDeath(const DamageInfo *damageInfo)
+void SlowDeathBehavior::beginSlowDeath(const DamageInfo* /* damageInfo */)
 {
 	if (!isSlowDeathActivated())
 	{
 		const SlowDeathBehaviorModuleData* d = getSlowDeathBehaviorModuleData();
 		Object* obj = getObject();
 
-		if (d->m_sinkRate && obj->isKindOf(KINDOF_INFANTRY))
+		if (d->m_ini.m_sinkRate && obj->isKindOf(KINDOF_INFANTRY))
 		{
 
 			Drawable *draw = getObject()->getDrawable();
@@ -259,16 +261,16 @@ void SlowDeathBehavior::beginSlowDeath(const DamageInfo *damageInfo)
 			}
 			else
 			{
-				m_sinkFrame = timeScale * (d->m_sinkDelay + GameLogicRandomValue(0, d->m_sinkDelayVariance));
-				m_destructionFrame = timeScale * (d->m_destructionDelay + GameLogicRandomValue(0, d->m_destructionDelayVariance));
-				m_midpointFrame = GameLogicRandomValue( BEGIN_MIDPOINT_RATIO * m_destructionFrame, END_MIDPOINT_RATIO * m_destructionFrame );
+				m_sinkFrame = timeScale * (d->m_ini.m_sinkDelay + GameLogicRandomValueUnsigned(0, d->m_ini.m_sinkDelayVariance));
+				m_destructionFrame = timeScale * (d->m_ini.m_destructionDelay + GameLogicRandomValueUnsigned(0, d->m_ini.m_destructionDelayVariance));
+				m_midpointFrame = GameLogicRandomValueUnsigned( BEGIN_MIDPOINT_RATIO * m_destructionFrame, END_MIDPOINT_RATIO * m_destructionFrame );
 				m_acceleratedTimeScale = timeScale;
 			}
 		}
 
 		UnsignedInt now = TheGameLogic->getFrame();
 
-		if (d->m_flingForce > 0)
+		if (d->m_ini.m_flingForce > 0)
 		{
 
 			
@@ -298,8 +300,8 @@ void SlowDeathBehavior::beginSlowDeath(const DamageInfo *damageInfo)
 				}
 
 				Coord3D force;
-				calcRandomForce(d->m_flingForce, d->m_flingForce + d->m_flingForceVariance, 
-												d->m_flingPitch, d->m_flingPitch + d->m_flingPitchVariance, force);
+				calcRandomForce(d->m_ini.m_flingForce, d->m_ini.m_flingForce + d->m_ini.m_flingForceVariance, 
+												d->m_ini.m_flingPitch, d->m_ini.m_flingPitch + d->m_ini.m_flingPitchVariance, force);
 				physics->setAllowToFall(true);
 				physics->applyForce(&force);
 				physics->setExtraBounciness(-1.0);					// we don't want this guy to bounce at all
@@ -316,7 +318,7 @@ void SlowDeathBehavior::beginSlowDeath(const DamageInfo *damageInfo)
 		{
 			// we don't need to wake up immediately, but only when the first of these
 			// counters wants to trigger....
-			Int whenToWakeTime = m_sinkFrame;
+			UnsignedInt whenToWakeTime = m_sinkFrame;
 			if (whenToWakeTime > m_destructionFrame) 
 				whenToWakeTime = m_destructionFrame;
 			if (whenToWakeTime > m_midpointFrame) 
@@ -339,37 +341,37 @@ void SlowDeathBehavior::beginSlowDeath(const DamageInfo *damageInfo)
 void SlowDeathBehavior::doPhaseStuff(SlowDeathPhaseType sdphase)
 {
 	const SlowDeathBehaviorModuleData* d = getSlowDeathBehaviorModuleData();
-	Int idx, listSize;
+	size_t idx, listSize;
 
 	if (!d->m_maskOfLoadedEffects)
 		return;	//has no ocl, fx, or weapons.
 
-	listSize = d->m_fx[sdphase].size();
+	listSize = d->m_ini.m_fx[sdphase].size();
 	if (listSize > 0)
 	{
-		idx = GameLogicRandomValue(0, listSize-1);
-		const FXListVec& v = d->m_fx[sdphase];
-		DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+		idx = GameLogicRandomValueUnsigned(0, listSize-1);
+		const FXListVec& v = d->m_ini.m_fx[sdphase];
+		DEBUG_ASSERTCRASH(idx<v.size(),("bad idx"));
 		const FXList* fxl = v[idx];
 		FXList::doFXObj(fxl, getObject(), NULL);
 	}
 
-	listSize = d->m_ocls[sdphase].size();
+	listSize = d->m_ini.m_ocls[sdphase].size();
 	if (listSize > 0)
 	{
-		idx = GameLogicRandomValue(0, listSize-1);
-		const OCLVec& v = d->m_ocls[sdphase];
-		DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+		idx = GameLogicRandomValueUnsigned(0, listSize-1);
+		const OCLVec& v = d->m_ini.m_ocls[sdphase];
+		DEBUG_ASSERTCRASH(idx<v.size(),("bad idx"));
 		const ObjectCreationList* ocl = v[idx];
 		ObjectCreationList::create(ocl, getObject(), NULL);
 	}
 
-	listSize = d->m_weapons[sdphase].size();
+	listSize = d->m_ini.m_weapons[sdphase].size();
 	if (listSize > 0)
 	{
-		idx = GameLogicRandomValue(0, listSize-1);
-		const WeaponTemplateVec& v = d->m_weapons[sdphase];
-		DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+		idx = GameLogicRandomValueUnsigned(0, listSize-1);
+		const WeaponTemplateVec& v = d->m_ini.m_weapons[sdphase];
+		DEBUG_ASSERTCRASH(idx<v.size(),("bad idx"));
 		const WeaponTemplate* wt = v[idx];
 		if (wt)
 		{
@@ -439,7 +441,7 @@ UpdateSleepTime SlowDeathBehavior::update()
 						obj->clearModelConditionFlags( MAKE_MODELCONDITION_MASK(MODELCONDITION_EXPLODED_FLAILING) ); 
 						obj->clearModelConditionFlags( MAKE_MODELCONDITION_MASK(MODELCONDITION_EXPLODED_BOUNCING) ); 
 						obj->setModelConditionFlags(   MAKE_MODELCONDITION_MASK(MODELCONDITION_PARACHUTING) ); //looks like he is snagged in a tree
-						obj->setPositionZ( obj->getPosition()->z - (d->m_sinkRate * 50.0f) );// make him sink faster
+						obj->setPositionZ( obj->getPosition()->z - (d->m_ini.m_sinkRate * 50.0f) );// make him sink faster
 						if ( !obj->isAboveTerrain() )
 							TheGameLogic->destroyObject(obj);
 
@@ -452,12 +454,12 @@ UpdateSleepTime SlowDeathBehavior::update()
 		}
 	}
 
-	if ( (now >= m_sinkFrame && d->m_sinkRate > 0.0f) )
+	if ( (now >= m_sinkFrame && d->m_ini.m_sinkRate > 0.0f) )
 	{
 		// disable Physics (if any) so that we can control the sink...
 		obj->setDisabled( DISABLED_HELD );
 		Coord3D pos = *obj->getPosition();
-		pos.z -= d->m_sinkRate / m_acceleratedTimeScale;
+		pos.z -= d->m_ini.m_sinkRate / m_acceleratedTimeScale;
 		obj->setPosition( &pos );
 	}
 
@@ -511,7 +513,7 @@ void SlowDeathBehavior::onDie( const DamageInfo *damageInfo )
 	// this returns a value from 1...total, inclusive
 	Int roll = GameLogicRandomValue(1, total);
 
-	for (/* UpdateModuleInterface** */ update = obj->getBehaviorModules(); *update; ++update)
+	for (BehaviorModule** update = obj->getBehaviorModules(); *update; ++update)
 	{
 		SlowDeathBehaviorInterface* sdu = (*update)->getSlowDeathBehaviorInterface();
 		if (sdu != NULL && sdu->isDieApplicable(damageInfo))

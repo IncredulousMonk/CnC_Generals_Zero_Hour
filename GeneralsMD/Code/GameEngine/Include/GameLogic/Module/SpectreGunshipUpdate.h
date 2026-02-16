@@ -53,38 +53,49 @@ enum ParticleSystemID;
 class SpectreGunshipUpdateModuleData : public ModuleData
 {
 public:
-	SpecialPowerTemplate *m_specialPowerTemplate;
-	WeaponTemplate	      *m_howitzerWeaponTemplate;
-//  AsciiString           m_gunshipTemplateName;
-  AsciiString           m_gattlingTemplateName;
-//  AsciiString           m_howitzerTemplateName;
-  RadiusDecalTemplate   m_attackAreaDecalTemplate;
-  RadiusDecalTemplate   m_targetingReticleDecalTemplate;
-  UnsignedInt           m_orbitFrames;
-  UnsignedInt           m_howitzerFiringRate;
-  UnsignedInt           m_howitzerFollowLag;
-  Real                  m_attackAreaRadius;
-  Real                  m_targetingReticleRadius;
-  Real                  m_gunshipOrbitRadius;
-  Real                  m_strafingIncrement;
-  Real                  m_orbitInsertionSlope;
-  Real                  m_randomOffsetForHowitzer;
+	// MG: Cannot apply offsetof to SpectreGunshipUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		SpecialPowerTemplate *m_specialPowerTemplate;
+		WeaponTemplate	      *m_howitzerWeaponTemplate;
+//		AsciiString           m_gunshipTemplateName;
+		AsciiString           m_gattlingTemplateName;
+//		AsciiString           m_howitzerTemplateName;
+		RadiusDecalTemplate   m_attackAreaDecalTemplate;
+		RadiusDecalTemplate   m_targetingReticleDecalTemplate;
+		UnsignedInt           m_orbitFrames;
+		UnsignedInt           m_howitzerFiringRate;
+		UnsignedInt           m_howitzerFollowLag;
+		Real                  m_attackAreaRadius;
+		Real                  m_targetingReticleRadius;
+		Real                  m_gunshipOrbitRadius;
+		Real                  m_strafingIncrement;
+		Real                  m_orbitInsertionSlope;
+		Real                  m_randomOffsetForHowitzer;
 
-	const ParticleSystemTemplate * m_gattlingStrafeFXParticleSystem;
+		const ParticleSystemTemplate * m_gattlingStrafeFXParticleSystem;
+	};
+
+	IniData m_ini {};
 
 	SpectreGunshipUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
 
-private: 
+	// No copies allowed!
+	SpectreGunshipUpdateModuleData(const SpectreGunshipUpdateModuleData&) = delete;
+	SpectreGunshipUpdateModuleData& operator=(const SpectreGunshipUpdateModuleData&) = delete;
+
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
+
+private:
 
 };
 
 enum GunshipStatus
 {
-   GUNSHIP_STATUS_INSERTING,
-   GUNSHIP_STATUS_ORBITING,
-   GUNSHIP_STATUS_DEPARTING,
-   GUNSHIP_STATUS_IDLE,
+	GUNSHIP_STATUS_INSERTING,
+	GUNSHIP_STATUS_ORBITING,
+	GUNSHIP_STATUS_DEPARTING,
+	GUNSHIP_STATUS_IDLE,
 };
 
 
@@ -100,6 +111,10 @@ public:
 
 	SpectreGunshipUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	SpectreGunshipUpdate(const SpectreGunshipUpdate&) = delete;
+	SpectreGunshipUpdate& operator=(const SpectreGunshipUpdate&) = delete;
 
 	// SpecialPowerUpdateInterface
 	virtual Bool initiateIntentToDoSpecialPower(const SpecialPowerTemplate *specialPowerTemplate, const Object *targetObj, const Coord3D *targetPos, const Waypoint *way, UnsignedInt commandOptions );
@@ -126,51 +141,47 @@ public:
 
 protected:
 
-  void setLogicalStatus( GunshipStatus newStatus ) { m_status = newStatus; }
-  void disengageAndDepartAO( Object *gunship );
+	void setLogicalStatus( GunshipStatus newStatus ) { m_status = newStatus; }
+	void disengageAndDepartAO( Object *gunship );
 
-  Bool isPointOffMap( const Coord3D& testPos ) const;
-  Bool isFairDistanceFromShip( Object *target );
+	Bool isPointOffMap( const Coord3D& testPos ) const;
+	Bool isFairDistanceFromShip( Object *target );
 
-	SpecialPowerModuleInterface* m_specialPowerModule;
+	SpecialPowerModuleInterface* m_specialPowerModule {};
 
-  void friend_enableAfterburners(Bool v);
+	void friend_enableAfterburners(Bool v);
 
-  
-
-
-  Coord3D				m_initialTargetPosition;
-	Coord3D				m_overrideTargetDestination;
-  Coord3D       m_satellitePosition;
-  Coord3D       m_gattlingTargetPosition;
-  Coord3D       m_positionToShootAt;
+	Coord3D				m_initialTargetPosition {};
+	Coord3D				m_overrideTargetDestination {};
+	Coord3D       m_satellitePosition {};
+	Coord3D       m_gattlingTargetPosition {};
+	Coord3D       m_positionToShootAt {};
 
 
-	GunshipStatus		m_status;
+	GunshipStatus		m_status {};
 
-  UnsignedInt     m_okToFireHowitzerCounter;
-  UnsignedInt     m_orbitEscapeFrame;
-
-
-//  ObjectID        m_howitzerID;
-  ObjectID        m_gattlingID;
+	UnsignedInt     m_okToFireHowitzerCounter {};
+	UnsignedInt     m_orbitEscapeFrame {};
 
 
-	RadiusDecal			m_attackAreaDecal;
-	RadiusDecal			m_targetingReticleDecal;
+//  ObjectID        m_howitzerID {};
+	ObjectID        m_gattlingID {};
+
+
+	RadiusDecal			m_attackAreaDecal {};
+	RadiusDecal			m_targetingReticleDecal {};
 
 
 
 
 #if defined TRACKERS
-  RadiusDecal			m_howitzerTrackerDecal;
+	RadiusDecal			m_howitzerTrackerDecal {};
 #endif
 
-  AudioEventRTS m_afterburnerSound; 
-  AudioEventRTS m_howitzerFireSound;
+	AudioEventRTS m_afterburnerSound {};
+	AudioEventRTS m_howitzerFireSound {};
 
 };
 
 
 #endif // __SPECTRE_GUNSHIP_UPDATE_H_
-

@@ -44,16 +44,16 @@ class StructureBodyModuleData : public ActiveBodyModuleData
 {
 public:
 
-	StructureBodyModuleData(){}	
+	StructureBodyModuleData(){}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    ActiveBodyModuleData::buildFieldParse(p);
+		ActiveBodyModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		p.add(dataFieldParse);
 	}
 };
 
@@ -76,9 +76,8 @@ public:
 
 protected:
 
-	ObjectID m_constructorObjectID;					///< object that built this structure
+	ObjectID m_constructorObjectID {};					///< object that built this structure
 
 };
 
 #endif // __STRUCTUREBODY_H_
-

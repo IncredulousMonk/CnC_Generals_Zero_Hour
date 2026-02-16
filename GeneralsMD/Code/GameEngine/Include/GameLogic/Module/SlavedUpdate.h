@@ -46,80 +46,88 @@ enum ModelConditionFlagType;
 class SlavedUpdateModuleData : public UpdateModuleData
 {
 public:
-	//Example: Currently used by scout drones owned by rangers AND stinger soldiers owned by stinger sites.
-	Int m_guardMaxRange;		//Distance from master I'm allowed when he's idle. If I go too far away, I'll come back.
-	Int m_guardWanderRange;	//Allowable wander distance from master while guarding master.
+	// MG: Cannot apply offsetof to SlavedUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		//Example: Currently used by scout drones owned by rangers AND stinger soldiers owned by stinger sites.
+		Int m_guardMaxRange;		//Distance from master I'm allowed when he's idle. If I go too far away, I'll come back.
+		Int m_guardWanderRange;	//Allowable wander distance from master while guarding master.
 
-	//Example: Below are only currently used by various drones owned by rangers/vehicles
-	Int m_attackRange;			//When master attacks a target, I'll go to the target -- how far am I allowed to go in this case.
-	Int m_attackWanderRange;//If I'm at the target point, how far can I wander from it.
-	Int m_scoutRange;				//If master is moving somewhere, I'll scout ahead -- how far am I allowed to go?
-	Int m_scoutWanderRange;	//If I'm at the scout point, how far can I wander from it.
-	Int m_distToTargetToGrantRangeBonus;	//How close I have to be to the master's target in order to grant master a range bonus.
-	
-	//Example: Below are used by battle drones
-	Int m_repairRange;
-	Real m_repairMinAltitude;
-	Real m_repairMaxAltitude;
+		//Example: Below are only currently used by various drones owned by rangers/vehicles
+		Int m_attackRange;			//When master attacks a target, I'll go to the target -- how far am I allowed to go in this case.
+		Int m_attackWanderRange;//If I'm at the target point, how far can I wander from it.
+		Int m_scoutRange;				//If master is moving somewhere, I'll scout ahead -- how far am I allowed to go?
+		Int m_scoutWanderRange;	//If I'm at the scout point, how far can I wander from it.
+		Int m_distToTargetToGrantRangeBonus;	//How close I have to be to the master's target in order to grant master a range bonus.
+		
+		//Example: Below are used by battle drones
+		Int m_repairRange;
+		Real m_repairMinAltitude;
+		Real m_repairMaxAltitude;
 
-	Real m_repairRatePerSecond;	//How fast I can repair
-	Int m_repairWhenHealthBelowPercentage; //When should I prioritize repairing my master.
-	Int m_minReadyFrames;
-	Int m_maxReadyFrames;
-	Int m_minWeldFrames;
-	Int m_maxWeldFrames; 
-	AsciiString m_weldingSysName;
-	AsciiString m_weldingFXBone;
+		Real m_repairRatePerSecond;	//How fast I can repair
+		Int m_repairWhenHealthBelowPercentage; //When should I prioritize repairing my master.
+		Int m_minReadyFrames;
+		Int m_maxReadyFrames;
+		Int m_minWeldFrames;
+		Int m_maxWeldFrames; 
+		AsciiString m_weldingSysName;
+		AsciiString m_weldingFXBone;
 
-	Bool m_stayOnSameLayerAsMaster;
+		Bool m_stayOnSameLayerAsMaster;
+	};
+
+	IniData m_ini {};
 
 	SlavedUpdateModuleData()
 	{
-		m_guardMaxRange = 0;
-		m_guardWanderRange = 0;
-		m_attackRange = 0;
-		m_attackWanderRange = 0;
-		m_scoutRange = 0;
-		m_scoutWanderRange = 0;
-		m_distToTargetToGrantRangeBonus = 0;
-		m_repairRatePerSecond = 0.0f;
-		m_repairWhenHealthBelowPercentage = 0;
-		m_repairMinAltitude = 0.0f;
-		m_repairMaxAltitude = 0.0f;
-		m_minWeldFrames = 0;
-		m_maxWeldFrames = 0;
-		m_minReadyFrames = 0;
-		m_maxReadyFrames = 0;
-		m_stayOnSameLayerAsMaster = false;
+		m_ini.m_guardMaxRange = 0;
+		m_ini.m_guardWanderRange = 0;
+		m_ini.m_attackRange = 0;
+		m_ini.m_attackWanderRange = 0;
+		m_ini.m_scoutRange = 0;
+		m_ini.m_scoutWanderRange = 0;
+		m_ini.m_distToTargetToGrantRangeBonus = 0;
+		m_ini.m_repairRatePerSecond = 0.0f;
+		m_ini.m_repairWhenHealthBelowPercentage = 0;
+		m_ini.m_repairMinAltitude = 0.0f;
+		m_ini.m_repairMaxAltitude = 0.0f;
+		m_ini.m_minWeldFrames = 0;
+		m_ini.m_maxWeldFrames = 0;
+		m_ini.m_minReadyFrames = 0;
+		m_ini.m_maxReadyFrames = 0;
+		m_ini.m_stayOnSameLayerAsMaster = false;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "GuardMaxRange",			INI::parseInt,	NULL, offsetof( SlavedUpdateModuleData, m_guardMaxRange ) },
-			{ "GuardWanderRange",		INI::parseInt,	NULL, offsetof( SlavedUpdateModuleData, m_guardWanderRange ) },
-			{ "AttackRange",				INI::parseInt,	NULL, offsetof( SlavedUpdateModuleData, m_attackRange ) },
-			{ "AttackWanderRange",	INI::parseInt,	NULL, offsetof( SlavedUpdateModuleData, m_attackWanderRange ) },
-			{ "ScoutRange",					INI::parseInt,	NULL, offsetof( SlavedUpdateModuleData, m_scoutRange ) },
-			{ "ScoutWanderRange",		INI::parseInt,	NULL, offsetof( SlavedUpdateModuleData, m_scoutWanderRange ) },
-			{ "RepairRange",				INI::parseInt,	NULL, offsetof( SlavedUpdateModuleData, m_repairRange ) },
-			{ "RepairMinAltitude",		  INI::parseReal, NULL, offsetof( SlavedUpdateModuleData, m_repairMinAltitude ) },
-			{ "RepairMaxAltitude",		  INI::parseReal, NULL, offsetof( SlavedUpdateModuleData, m_repairMaxAltitude ) },
-			{ "DistToTargetToGrantRangeBonus", INI::parseInt, NULL, offsetof( SlavedUpdateModuleData, m_distToTargetToGrantRangeBonus ) },
-			{ "RepairRatePerSecond", INI::parseReal, NULL, offsetof( SlavedUpdateModuleData, m_repairRatePerSecond ) },
-			{ "RepairWhenBelowHealth%", INI::parseInt, NULL, offsetof( SlavedUpdateModuleData, m_repairWhenHealthBelowPercentage ) },
-			{ "RepairMinReadyTime", INI::parseDurationUnsignedInt, NULL, offsetof( SlavedUpdateModuleData, m_minReadyFrames ) },
-			{ "RepairMaxReadyTime", INI::parseDurationUnsignedInt, NULL, offsetof( SlavedUpdateModuleData, m_maxReadyFrames ) },
-			{ "RepairMinWeldTime",  INI::parseDurationUnsignedInt, NULL, offsetof( SlavedUpdateModuleData, m_minWeldFrames ) },
-			{ "RepairMaxWeldTime",  INI::parseDurationUnsignedInt, NULL, offsetof( SlavedUpdateModuleData, m_maxWeldFrames ) },
-			{ "RepairWeldingSys",		INI::parseAsciiString,	NULL, offsetof( SlavedUpdateModuleData, m_weldingSysName ) },
-			{ "RepairWeldingFXBone", INI::parseAsciiString, NULL, offsetof( SlavedUpdateModuleData, m_weldingFXBone ) },
-			{ "StayOnSameLayerAsMaster", INI::parseBool, NULL, offsetof( SlavedUpdateModuleData, m_stayOnSameLayerAsMaster ) },
+			{ "GuardMaxRange",					INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_guardMaxRange ) },
+			{ "GuardWanderRange",				INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_guardWanderRange ) },
+			{ "AttackRange",					INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_attackRange ) },
+			{ "AttackWanderRange",				INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_attackWanderRange ) },
+			{ "ScoutRange",						INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_scoutRange ) },
+			{ "ScoutWanderRange",				INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_scoutWanderRange ) },
+			{ "RepairRange",					INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_repairRange ) },
+			{ "RepairMinAltitude",				INI::parseReal,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_repairMinAltitude ) },
+			{ "RepairMaxAltitude",				INI::parseReal,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_repairMaxAltitude ) },
+			{ "DistToTargetToGrantRangeBonus",	INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_distToTargetToGrantRangeBonus ) },
+			{ "RepairRatePerSecond",			INI::parseReal,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_repairRatePerSecond ) },
+			{ "RepairWhenBelowHealth%",			INI::parseInt,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_repairWhenHealthBelowPercentage ) },
+			{ "RepairMinReadyTime",				INI::parseDurationUnsignedInt,	NULL, offsetof( SlavedUpdateModuleData::IniData, m_minReadyFrames ) },
+			{ "RepairMaxReadyTime",				INI::parseDurationUnsignedInt,	NULL, offsetof( SlavedUpdateModuleData::IniData, m_maxReadyFrames ) },
+			{ "RepairMinWeldTime",				INI::parseDurationUnsignedInt,	NULL, offsetof( SlavedUpdateModuleData::IniData, m_minWeldFrames ) },
+			{ "RepairMaxWeldTime",				INI::parseDurationUnsignedInt,	NULL, offsetof( SlavedUpdateModuleData::IniData, m_maxWeldFrames ) },
+			{ "RepairWeldingSys",				INI::parseAsciiString,			NULL, offsetof( SlavedUpdateModuleData::IniData, m_weldingSysName ) },
+			{ "RepairWeldingFXBone",			INI::parseAsciiString,			NULL, offsetof( SlavedUpdateModuleData::IniData, m_weldingFXBone ) },
+			{ "StayOnSameLayerAsMaster",		INI::parseBool,					NULL, offsetof( SlavedUpdateModuleData::IniData, m_stayOnSameLayerAsMaster ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+	SlavedUpdateModuleData* self {static_cast<SlavedUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 	}
 };
 
@@ -171,11 +179,11 @@ private:
 	void startSlavedEffects( const Object *slaver );	///< We have been marked as Slaved, so we can't be selected or move too far or other stuff
 	void stopSlavedEffects();		///< We are no longer slaved.
 
-	ObjectID m_slaver;			///< To whom we are enslaved
-	Coord3D m_guardPointOffset;	///< Where we should go when not busy and still enslaved
-	Int m_framesToWait;
-	RepairStates m_repairState;
-	Bool m_repairing;
+	ObjectID m_slaver {};			///< To whom we are enslaved
+	Coord3D m_guardPointOffset {};	///< Where we should go when not busy and still enslaved
+	Int m_framesToWait {};
+	RepairStates m_repairState {};
+	Bool m_repairing {};
 };
 
 #endif

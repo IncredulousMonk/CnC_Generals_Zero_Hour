@@ -492,7 +492,7 @@ void GameEngine::init( int argc, char *argv[] )
 
 
 		// FIXME: Enable the full object parsing once TheModuleFactory has been sorted out.
-		initSubsystem(TheThingFactory,"TheThingFactory", createThingFactory(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Object.ini", NULL, nullptr /*"Data\\INI\\Object"*/);
+		initSubsystem(TheThingFactory,"TheThingFactory", createThingFactory(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Object.ini", "Data\\INI\\Object\\AmericaInfantry.ini" /* NULL */, nullptr /*"Data\\INI\\Object"*/);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////
@@ -721,7 +721,7 @@ void GameEngine::init( int argc, char *argv[] )
 	*/
 void GameEngine::reset( void )
 {
-
+DEBUG_LOG(("<<< GameEngine::reset >>>\n"));
 	// WindowLayout *background = TheWindowManager->winCreateLayout("Menus/BlankWindow.wnd");
 	// DEBUG_ASSERTCRASH(background,("We Couldn't Load Menus/BlankWindow.wnd"));
 	// background->hide(FALSE);

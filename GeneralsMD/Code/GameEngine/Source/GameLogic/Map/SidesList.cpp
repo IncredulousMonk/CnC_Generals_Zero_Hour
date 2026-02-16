@@ -247,12 +247,14 @@ void SidesList::clear(void)
 Bool SidesList::ParseSidesDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /*userData*/)
 {
 	DEBUG_ASSERTCRASH(TheSidesList, ("TheSidesList is null"));
+	DEBUG_LOG(("Parsing sides data\n"));
 
 	if (TheSidesList==NULL) 
 		return false;
 
 	TheSidesList->clear();
 	Int count = file.readInt();
+	DEBUG_LOG(("Sides count = %d\n", count));
 	Int i, j;
 	TheSidesList->emptySides();
 	for (i=0; i<count; i++) 

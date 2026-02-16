@@ -53,19 +53,25 @@ enum FlammabilityStatusType
 class FlammableUpdateModuleData : public UpdateModuleData
 {
 public:
-	UnsignedInt		m_burnedDelay;	///< How long before I am ::Burned.  0 means never
-	UnsignedInt		m_aflameDuration; ///< How long I stay ::Aflame.  Independent of Burned.  
-	// When aflame wears out is when I check to be normal or burned,  So my model can
-	// change to burned while I am still aflame.
-	UnsignedInt		m_aflameDamageDelay;	///< While ::Aflame, I take damage this often.  If 0, never.
-	Int						m_aflameDamageAmount;	///< And this is how much I take.
-	AsciiString		m_burningSoundName;			///< Sound to loop-play while burning (Not an AudioEventRTS here, since that belongs to the module)
-	Real					m_flameDamageLimitData;
-	UnsignedInt		m_flameDamageExpirationDelay;
+	// MG: Cannot apply offsetof to FlammableUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt		m_burnedDelay;	///< How long before I am ::Burned.  0 means never
+		UnsignedInt		m_aflameDuration; ///< How long I stay ::Aflame.  Independent of Burned.  
+		// When aflame wears out is when I check to be normal or burned,  So my model can
+		// change to burned while I am still aflame.
+		UnsignedInt		m_aflameDamageDelay;	///< While ::Aflame, I take damage this often.  If 0, never.
+		Int				m_aflameDamageAmount;	///< And this is how much I take.
+		AsciiString		m_burningSoundName;			///< Sound to loop-play while burning (Not an AudioEventRTS here, since that belongs to the module)
+		Real			m_flameDamageLimitData;
+		UnsignedInt		m_flameDamageExpirationDelay;
+	};
+
+	IniData m_ini {};
 
 	FlammableUpdateModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 
@@ -94,11 +100,11 @@ public:
 	virtual UpdateSleepTime update();
 
 	//DamageModuleInterface
-	virtual void onDamage( DamageInfo *damageInfo );
-	virtual void onHealing( DamageInfo *damageInfo ) { }
-	virtual void onBodyDamageStateChange( const DamageInfo *damageInfo, 
-																				BodyDamageType oldState, 
-																				BodyDamageType newState ) { }
+	virtual void onDamage( DamageInfo* damageInfo );
+	virtual void onHealing( DamageInfo* /* damageInfo */ ) { }
+	virtual void onBodyDamageStateChange( const DamageInfo* /* damageInfo */, 
+																				BodyDamageType /* oldState */, 
+																				BodyDamageType /* newState */ ) { }
 
 protected:
 	
@@ -107,13 +113,13 @@ protected:
 	void startBurningSound();
 	void stopBurningSound();
 
-	FlammabilityStatusType	m_status;
-	UnsignedInt							m_aflameEndFrame;
-	UnsignedInt							m_burnedEndFrame;
-	UnsignedInt							m_damageEndFrame;
-	AudioHandle							m_audioHandle;
-	Real										m_flameDamageLimit;
-	UnsignedInt							m_lastFlameDamageDealt;
+	FlammabilityStatusType	m_status {};
+	UnsignedInt				m_aflameEndFrame {};
+	UnsignedInt				m_burnedEndFrame {};
+	UnsignedInt				m_damageEndFrame {};
+	AudioHandle				m_audioHandle {};
+	Real					m_flameDamageLimit {};
+	UnsignedInt				m_lastFlameDamageDealt {};
 };
 
 #endif

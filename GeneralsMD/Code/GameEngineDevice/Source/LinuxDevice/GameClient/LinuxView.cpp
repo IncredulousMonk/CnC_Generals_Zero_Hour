@@ -53,7 +53,6 @@
 #include "LinuxDevice/GameLogic/LinuxTerrainLogic.h"
 
 #include "rinfo.h"
-#include "OpenGLRenderer.h"
 
 // 30 fps
 Int TheLinuxFrameLengthInMsec = 1000 / LOGICFRAMES_PER_SECOND; // default is 33msec/frame == 30fps. but we may change it depending on sys config.
@@ -63,6 +62,25 @@ static const Int MAX_REQUEST_CACHE_SIZE = 40;   // Any size larger than 10, or e
 //=================================================================================================
 inline Real minf(Real a, Real b) { if (a < b) return a; else return b; }
 inline Real maxf(Real a, Real b) { if (a > b) return a; else return b; }
+
+//-------------------------------------------------------------------------------------------------
+// Normalizes angle to +- PI.
+//-------------------------------------------------------------------------------------------------
+static void normAngle(Real &angle)
+{
+   if (angle < -10*PI) {
+      angle = 0;
+   }
+   if (angle > 10*PI) {
+      angle = 0;
+   }
+   while (angle < -PI) {
+      angle += 2*PI;
+   }
+   while (angle > PI) {
+      angle -= 2*PI;
+   }
+}
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -174,6 +192,9 @@ void LinuxView::updateView()
 //-------------------------------------------------------------------------------------------------
 void LinuxView::update()
 {
+   if (updateCameraMovements()) {
+      setCameraTransform();
+   }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -280,6 +301,94 @@ void LinuxView::initHeightForMap()
 }
 
 //-------------------------------------------------------------------------------------------------
+/** Move camera to in an interesting fashion.  Sets up parameters that get
+  * evaluated in draw(). */
+//-------------------------------------------------------------------------------------------------
+void LinuxView::moveCameraTo(const Coord3D *o, Int milliseconds, Int /* shutter */, Bool orient, Real easeIn, Real easeOut)
+{
+   m_mcwpInfo.waypoints[0] = *getPosition();
+   m_mcwpInfo.cameraAngle[0] = getAngle();
+   m_mcwpInfo.waySegLength[0] = 0;
+
+   m_mcwpInfo.waypoints[1] = *getPosition();
+   m_mcwpInfo.waySegLength[1] = 0;
+
+   m_mcwpInfo.waypoints[2] = *o;
+   m_mcwpInfo.waySegLength[2] = 0;
+
+   m_mcwpInfo.numWaypoints = 2;
+   if (milliseconds < 1) {
+      milliseconds = 1;
+   }
+   m_mcwpInfo.totalTimeMilliseconds = milliseconds;
+   m_mcwpInfo.shutter = 1;
+   m_mcwpInfo.ease.setEaseTimes(easeIn/milliseconds, easeOut/milliseconds);
+   m_mcwpInfo.curSegment = 1;
+   m_mcwpInfo.curSegDistance = 0;
+   m_mcwpInfo.totalDistance = 0;
+
+   setupWaypointPath(orient);
+   if (m_mcwpInfo.totalTimeMilliseconds==1) {
+      // do it instantly.
+      moveAlongWaypointPath(1);
+      m_doingMoveCameraOnWaypointPath = true;
+      m_CameraArrivedAtWaypointOnPathFlag = false;
+   }
+}
+
+// ------------------------------------------------------------------------------------------------
+/** Sets the look toward point for a camera movement. */
+// ------------------------------------------------------------------------------------------------
+void LinuxView::cameraModLookToward(Coord3D *pLoc) 
+{
+   if (m_doingRotateCamera) {
+      return; // Doesn't apply to rotate about a point.
+   }
+   if (m_doingMoveCameraOnWaypointPath) {
+      Int i;
+//    Real curDistance = 0;
+      for (i=2; i<=m_mcwpInfo.numWaypoints; i++) {
+         Coord3D start, mid, end;
+         Real factor = 0.5;
+         start = m_mcwpInfo.waypoints[i-1];
+         start.x += m_mcwpInfo.waypoints[i].x;
+         start.y += m_mcwpInfo.waypoints[i].y;
+         start.x /= 2;
+         start.y /= 2;
+         mid = m_mcwpInfo.waypoints[i];
+         end = m_mcwpInfo.waypoints[i];
+         end.x += m_mcwpInfo.waypoints[i+1].x;
+         end.y += m_mcwpInfo.waypoints[i+1].y;
+         end.x /= 2;
+         end.y /= 2;
+         Coord3D result = start;
+         result.x += factor*(end.x-start.x);
+         result.y += factor*(end.y-start.y);
+         result.x += (1-factor)*factor*(mid.x-end.x + mid.x-start.x);
+         result.y += (1-factor)*factor*(mid.y-end.y + mid.y-start.y);
+         result.z = 0;
+         Vector2 dir(pLoc->x-result.x, pLoc->y-result.y);
+         const Real dirLength = dir.Length();
+         if (dirLength<0.1f) continue;
+         Real angle = WWMath::Acos(dir.X/dirLength);
+         if (dir.Y<0.0f) {
+            angle = -angle;
+         }
+         // Default camera is rotated 90 degrees, so match.
+         angle -= PI/2;
+         normAngle(angle);
+         m_mcwpInfo.cameraAngle[i] = angle;
+      }
+      if (m_mcwpInfo.totalTimeMilliseconds==1) {
+         // do it instantly.
+         moveAlongWaypointPath(1);
+         m_doingMoveCameraOnWaypointPath = true;
+         m_CameraArrivedAtWaypointOnPathFlag = false;
+      }
+   }
+}
+
+//-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void LinuxView::setZoomToDefault()
 {
@@ -305,6 +414,38 @@ void LinuxView::setZoomToDefault()
    m_doingScriptedCameraLock = false;
    m_cameraConstraintValid = false; // recalc it.
    setCameraTransform();
+}
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+Bool LinuxView::updateCameraMovements()
+{
+   Bool didUpdate = false;
+
+   if (m_doingZoomCamera)
+   {
+      zoomCameraOneFrame();
+      didUpdate = true;
+   }
+   if (m_doingPitchCamera)
+   {
+      pitchCameraOneFrame();
+      didUpdate = true;
+   }
+   if (m_doingRotateCamera) {
+      m_previousLookAtPosition = *getPosition();
+      rotateCameraOneFrame();
+      didUpdate = true;
+   } else if (m_doingMoveCameraOnWaypointPath) {
+      m_previousLookAtPosition = *getPosition();
+      moveAlongWaypointPath(TheLinuxFrameLengthInMsec);
+      didUpdate = true;
+   }
+   if (m_doingScriptedCameraLock)
+   {
+      didUpdate = true;
+   }
+   return didUpdate;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -650,6 +791,150 @@ void LinuxView::calcCameraConstraints()
    }
 }
 
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+void LinuxView::moveAlongWaypointPath(Int milliseconds)
+{
+   m_mcwpInfo.elapsedTimeMilliseconds += milliseconds;
+   if (TheGlobalData->m_data.m_disableCameraMovement) {
+      if (m_mcwpInfo.elapsedTimeMilliseconds>m_mcwpInfo.totalTimeMilliseconds) {
+         m_doingMoveCameraOnWaypointPath = false;
+         m_freezeTimeForCameraMovement = false;
+      }
+      return;
+   }
+   if (m_mcwpInfo.elapsedTimeMilliseconds>m_mcwpInfo.totalTimeMilliseconds) {
+      m_doingMoveCameraOnWaypointPath = false;
+      m_CameraArrivedAtWaypointOnPathFlag = false;
+
+      m_freezeTimeForCameraMovement = false;
+      m_angle = m_mcwpInfo.cameraAngle[m_mcwpInfo.numWaypoints];
+
+      m_groundLevel = m_mcwpInfo.groundHeight[m_mcwpInfo.numWaypoints];
+      /////////////////////m_cameraOffset.z = m_groundLevel+TheGlobalData->m_cameraHeight;
+      m_cameraOffset.y = -(m_cameraOffset.z / tan(TheGlobalData->m_data.m_cameraPitch * (PI / 180.0)));
+      m_cameraOffset.x = -(m_cameraOffset.y * tan(TheGlobalData->m_data.m_cameraYaw * (PI / 180.0)));
+
+      Coord3D pos = m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints];
+      pos.z = 0;
+      setPosition(&pos);
+      // Note - assuming that the scripter knows what he is doing, we adjust the constraints so that
+      // the scripted action can occur.
+      m_cameraConstraint.lo.x = minf(m_cameraConstraint.lo.x, pos.x);
+      m_cameraConstraint.hi.x = maxf(m_cameraConstraint.hi.x, pos.x);
+      m_cameraConstraint.lo.y = minf(m_cameraConstraint.lo.y, pos.y);
+      m_cameraConstraint.hi.y = maxf(m_cameraConstraint.hi.y, pos.y);
+      return;
+   }
+
+   const Real totalTime = m_mcwpInfo.totalTimeMilliseconds;
+   const Real deltaTime = m_mcwpInfo.ease(m_mcwpInfo.elapsedTimeMilliseconds/totalTime) -
+      m_mcwpInfo.ease((m_mcwpInfo.elapsedTimeMilliseconds - milliseconds)/totalTime);
+   m_mcwpInfo.curSegDistance += deltaTime*m_mcwpInfo.totalDistance;
+   while (m_mcwpInfo.curSegDistance >= m_mcwpInfo.waySegLength[m_mcwpInfo.curSegment]) {
+
+      if ( m_doingMoveCameraOnWaypointPath )
+      {
+         //WWDEBUG_SAY(( "MBL TEST: Camera waypoint along path reached!\n" ));
+         m_CameraArrivedAtWaypointOnPathFlag = true;
+      }
+
+      m_mcwpInfo.curSegDistance -= m_mcwpInfo.waySegLength[m_mcwpInfo.curSegment];
+      m_mcwpInfo.curSegment++;
+      if (m_mcwpInfo.curSegment >= m_mcwpInfo.numWaypoints) { 
+         m_mcwpInfo.totalTimeMilliseconds = 0; // Will end following next frame.
+         return;
+      }
+   }
+   Real avgFactor = 1.0/m_mcwpInfo.rollingAverageFrames;
+   m_mcwpInfo.curShutter--;
+   if (m_mcwpInfo.curShutter>0) {
+      return;
+   }
+   m_mcwpInfo.curShutter = m_mcwpInfo.shutter;
+   Real factor = m_mcwpInfo.curSegDistance / m_mcwpInfo.waySegLength[m_mcwpInfo.curSegment];
+   if (m_mcwpInfo.curSegment == m_mcwpInfo.numWaypoints-1) {
+      avgFactor = avgFactor + (1.0-avgFactor)*factor;
+   }
+   Real factor1;
+   Real factor2;
+   factor1 = 1.0-factor;
+   //factor1 = makeQuadraticS(factor1);
+   factor2 = 1.0-factor1;
+   Real angle1 = m_mcwpInfo.cameraAngle[m_mcwpInfo.curSegment];
+   Real angle2 = m_mcwpInfo.cameraAngle[m_mcwpInfo.curSegment+1];
+   if (angle2-angle1 > PI) angle1 += 2*PI;
+   if (angle2-angle1 < -PI) angle1 -= 2*PI;
+   Real angle = angle1 * (factor1) + angle2 * (factor2); 
+
+   normAngle(angle);
+   Real deltaAngle = angle-m_angle;
+   normAngle(deltaAngle);
+   if (fabs(deltaAngle) > PI/10) {
+      DEBUG_LOG(("Huh.\n"));
+   }
+   m_angle += avgFactor*(deltaAngle);
+   normAngle(m_angle);
+
+   Real timeMultiplier = m_mcwpInfo.timeMultiplier[m_mcwpInfo.curSegment]*factor1 + 
+         m_mcwpInfo.timeMultiplier[m_mcwpInfo.curSegment+1]*factor2;
+   m_timeMultiplier = REAL_TO_INT_FLOOR(0.5 + timeMultiplier);
+
+   m_groundLevel = m_mcwpInfo.groundHeight[m_mcwpInfo.curSegment]*factor1 + 
+         m_mcwpInfo.groundHeight[m_mcwpInfo.curSegment+1]*factor2;
+   //////////////m_cameraOffset.z = m_groundLevel+TheGlobalData->m_cameraHeight;
+   m_cameraOffset.y = -(m_cameraOffset.z / tan(TheGlobalData->m_data.m_cameraPitch * (PI / 180.0)));
+   m_cameraOffset.x = -(m_cameraOffset.y * tan(TheGlobalData->m_data.m_cameraYaw * (PI / 180.0)));
+
+   Coord3D start, mid, end;
+   if (factor<0.5) {
+      start = m_mcwpInfo.waypoints[m_mcwpInfo.curSegment-1];
+      start.x += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment].x;
+      start.y += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment].y;
+      start.x /= 2;
+      start.y /= 2;
+      mid = m_mcwpInfo.waypoints[m_mcwpInfo.curSegment];
+      end = m_mcwpInfo.waypoints[m_mcwpInfo.curSegment];
+      end.x += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+1].x;
+      end.y += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+1].y;
+      end.x /= 2;
+      end.y /= 2;
+      factor += 0.5;
+   } else {
+      start = m_mcwpInfo.waypoints[m_mcwpInfo.curSegment];
+      start.x += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+1].x;
+      start.y += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+1].y;
+      start.x /= 2;
+      start.y /= 2;
+      mid = m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+1];
+      end = m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+1];
+      end.x += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+2].x;
+      end.y += m_mcwpInfo.waypoints[m_mcwpInfo.curSegment+2].y;
+      end.x /= 2;
+      end.y /= 2;
+      factor -= 0.5;
+   }
+
+   Coord3D result = start;
+   result.x += factor*(end.x-start.x);
+   result.y += factor*(end.y-start.y);
+   result.x += (1-factor)*factor*(mid.x-end.x + mid.x-start.x);
+   result.y += (1-factor)*factor*(mid.y-end.y + mid.y-start.y);
+   result.z = 0;
+/*
+   static Real prevGround = 0;
+   DEBUG_LOG(("Dx %.2f, dy %.2f, DeltaANgle = %.2f, %.2f DeltaGround %.2f\n", m_pos.x-result.x, m_pos.y-result.y, deltaAngle, m_groundLevel, m_groundLevel-prevGround));
+   prevGround = m_groundLevel;
+*/
+   setPosition(&result);
+   // Note - assuming that the scripter knows what he is doing, we adjust the constraints so that
+   // the scripted action can occur.
+   m_cameraConstraint.lo.x = minf(m_cameraConstraint.lo.x, result.x);
+   m_cameraConstraint.hi.x = maxf(m_cameraConstraint.hi.x, result.x);
+   m_cameraConstraint.lo.y = minf(m_cameraConstraint.lo.y, result.y);
+   m_cameraConstraint.hi.y = maxf(m_cameraConstraint.hi.y, result.y);
+}
+
 //-------------------------------------------------------------------------------------------------
 /** Returns a world-space ray originating at a given screen pixel position
    and ending at the far clip plane for current camera.  Screen coordinates
@@ -668,4 +953,203 @@ void LinuxView::getPickRay(const ICoord2D *screen, Vector3 *rayStart, Vector3 *r
    rayEnd->Normalize(); //make unit vector
    *rayEnd *= m_3dCamera->Get_Depth(); //adjust length to reach far clip plane
    *rayEnd += *rayStart; //get point on far clip plane along ray from camera.
+}
+
+// ------------------------------------------------------------------------------------------------
+/** Calculates angles and distances for moving along a waypoint path.  Sets up parameters that get
+  * evaluated in draw(). */
+// ------------------------------------------------------------------------------------------------
+void LinuxView::setupWaypointPath(Bool orient)
+{
+   m_mcwpInfo.curSegment = 1;
+   m_mcwpInfo.curSegDistance = 0;
+   m_mcwpInfo.totalDistance = 0;
+   m_mcwpInfo.rollingAverageFrames = 1;
+   Int i;
+   Real angle = getAngle();
+   for (i=1; i<m_mcwpInfo.numWaypoints; i++) {
+      Vector2 dir(m_mcwpInfo.waypoints[i+1].x-m_mcwpInfo.waypoints[i].x, m_mcwpInfo.waypoints[i+1].y-m_mcwpInfo.waypoints[i].y);
+      m_mcwpInfo.waySegLength[i] = dir.Length();
+      m_mcwpInfo.totalDistance += m_mcwpInfo.waySegLength[i];
+      if (orient) {
+         angle = WWMath::Acos(dir.X/m_mcwpInfo.waySegLength[i]);
+         if (dir.Y<0.0f) {
+            angle = -angle;
+         }
+
+         // Default camera is rotated 90 degrees, so match.
+         angle -= PI/2;
+         normAngle(angle);
+      }
+      //DEBUG_LOG(("Original Index %d, angle %.2f\n", i, angle*180/PI));
+      m_mcwpInfo.cameraAngle[i] = angle;
+   }
+   m_mcwpInfo.cameraAngle[1] = getAngle();	
+   m_mcwpInfo.cameraAngle[m_mcwpInfo.numWaypoints] = m_mcwpInfo.cameraAngle[m_mcwpInfo.numWaypoints-1];	
+   for (i=m_mcwpInfo.numWaypoints-1; i>1; i--) {
+      m_mcwpInfo.cameraAngle[i] = (m_mcwpInfo.cameraAngle[i] + m_mcwpInfo.cameraAngle[i-1]) / 2;  
+   }
+   m_mcwpInfo.waySegLength[m_mcwpInfo.numWaypoints+1] = m_mcwpInfo.waySegLength[m_mcwpInfo.numWaypoints];	
+
+   // Prevent a possible divide by zero.
+   if (m_mcwpInfo.totalDistance<1.0) {
+      m_mcwpInfo.waySegLength[m_mcwpInfo.numWaypoints-1] += 1.0-m_mcwpInfo.totalDistance;
+      m_mcwpInfo.totalDistance = 1.0;
+   }
+
+   Real curDistance = 0;
+   Coord3D finalPos = m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints];
+   Real newGround = TheTerrainLogic->getGroundHeight(finalPos.x, finalPos.y);
+   for (i=0; i<=m_mcwpInfo.numWaypoints+1; i++) {
+      Real factor2 = curDistance / m_mcwpInfo.totalDistance;
+      Real factor1 = 1.0-factor2;
+      m_mcwpInfo.timeMultiplier[i] = m_timeMultiplier;
+      m_mcwpInfo.groundHeight[i] = m_groundLevel*factor1 + newGround*factor2;
+      curDistance += m_mcwpInfo.waySegLength[i];
+      //DEBUG_LOG(("New Index %d, angle %.2f\n", i, m_mcwpInfo.cameraAngle[i]*180/PI));
+   }
+
+   // Pad the end.
+   m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints+1] = m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints];
+   Coord3D cur = m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints];
+   Coord3D prev = m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints-1];
+   m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints+1].x += cur.x-prev.x;
+   m_mcwpInfo.waypoints[m_mcwpInfo.numWaypoints+1].y += cur.y-prev.y;
+   m_mcwpInfo.cameraAngle[m_mcwpInfo.numWaypoints+1] = m_mcwpInfo.cameraAngle[m_mcwpInfo.numWaypoints];	
+   m_mcwpInfo.groundHeight[m_mcwpInfo.numWaypoints+1] = newGround;	
+
+
+   cur = m_mcwpInfo.waypoints[2];
+   prev = m_mcwpInfo.waypoints[1];
+   m_mcwpInfo.waypoints[0].x -= cur.x-prev.x;
+   m_mcwpInfo.waypoints[0].y -= cur.y-prev.y;
+
+   m_doingMoveCameraOnWaypointPath = m_mcwpInfo.numWaypoints>1;
+   m_CameraArrivedAtWaypointOnPathFlag = false;
+   m_doingRotateCamera = false;
+
+   m_mcwpInfo.elapsedTimeMilliseconds = 0;
+   m_mcwpInfo.curShutter = m_mcwpInfo.shutter;
+}
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+void LinuxView::rotateCameraOneFrame(void)
+{
+   m_rcInfo.curFrame++;
+   if (TheGlobalData->m_data.m_disableCameraMovement) {
+      if (m_rcInfo.curFrame >= m_rcInfo.numFrames + m_rcInfo.numHoldFrames) {
+         m_doingRotateCamera = false;
+         m_freezeTimeForCameraMovement = false;
+      }
+      return;
+   }
+
+   if (m_rcInfo.trackObject)
+   {
+      if (m_rcInfo.curFrame <= m_rcInfo.numFrames + m_rcInfo.numHoldFrames)
+      {
+         const Object *obj = TheGameLogic->findObjectByID(m_rcInfo.target.targetObjectID);
+         if (obj)
+         {
+            // object has not been destroyed
+            m_rcInfo.target.targetObjectPos = *obj->getPosition();
+         }
+
+         const Vector2 dir(m_rcInfo.target.targetObjectPos.x - m_pos.x, m_rcInfo.target.targetObjectPos.y - m_pos.y);
+         const Real dirLength = dir.Length();
+         if (dirLength>=0.1f)
+         {
+            Real angle = WWMath::Acos(dir.X/dirLength);
+            if (dir.Y<0.0f) {
+               angle = -angle;
+            }
+            // Default camera is rotated 90 degrees, so match.
+            angle -= PI/2;
+            normAngle(angle);
+
+            if (m_rcInfo.curFrame <= m_rcInfo.numFrames)
+            {
+               Real factor = m_rcInfo.ease(((Real)m_rcInfo.curFrame)/m_rcInfo.numFrames);
+               Real angleDiff = angle - m_angle;
+               normAngle(angleDiff);
+               angleDiff *= factor;
+               m_angle += angleDiff;
+               normAngle(m_angle);
+               m_timeMultiplier = m_rcInfo.startTimeMultiplier + REAL_TO_INT_FLOOR(0.5 + (m_rcInfo.endTimeMultiplier-m_rcInfo.startTimeMultiplier)*factor);
+            }
+            else
+            {
+               m_angle = angle;
+            }
+         }
+      }
+   }
+   else if (m_rcInfo.curFrame <= m_rcInfo.numFrames)
+   {
+      Real factor = m_rcInfo.ease(((Real)m_rcInfo.curFrame)/m_rcInfo.numFrames);
+      m_angle = WWMath::Lerp(m_rcInfo.angle.startAngle, m_rcInfo.angle.endAngle, factor);
+      normAngle(m_angle);
+      m_timeMultiplier = m_rcInfo.startTimeMultiplier + REAL_TO_INT_FLOOR(0.5 + (m_rcInfo.endTimeMultiplier-m_rcInfo.startTimeMultiplier)*factor);
+   }
+
+
+   if (m_rcInfo.curFrame >= m_rcInfo.numFrames + m_rcInfo.numHoldFrames) {
+      m_doingRotateCamera = false;
+      m_freezeTimeForCameraMovement = false;
+      if (! m_rcInfo.trackObject)
+      {
+         m_angle = m_rcInfo.angle.endAngle;
+      }
+   }
+}
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+void LinuxView::zoomCameraOneFrame(void)
+{
+   m_zcInfo.curFrame++;
+   if (TheGlobalData->m_data.m_disableCameraMovement) {
+      if (m_zcInfo.curFrame >= m_zcInfo.numFrames) {
+         m_doingZoomCamera = false;
+      }
+      return;
+   }
+   if (m_zcInfo.curFrame <= m_zcInfo.numFrames)
+   {
+      // not just holding; do the camera adjustment
+      Real factor = m_zcInfo.ease(((Real)m_zcInfo.curFrame)/m_zcInfo.numFrames);
+      m_zoom = WWMath::Lerp(m_zcInfo.startZoom, m_zcInfo.endZoom, factor);
+   }
+
+   if (m_zcInfo.curFrame >= m_zcInfo.numFrames) {
+      m_doingZoomCamera = false;
+      m_zoom = m_zcInfo.endZoom;
+   }
+
+   //DEBUG_LOG(("W3DView::zoomCameraOneFrame() - m_zoom = %g\n", m_zoom));
+}
+
+// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+void LinuxView::pitchCameraOneFrame(void)
+{
+   m_pcInfo.curFrame++;
+   if (TheGlobalData->m_data.m_disableCameraMovement) {
+      if (m_pcInfo.curFrame >= m_pcInfo.numFrames) {
+         m_doingPitchCamera = false;
+      }
+      return;
+   }
+   if (m_pcInfo.curFrame <= m_pcInfo.numFrames)
+   {
+      // not just holding; do the camera adjustment
+      Real factor = m_pcInfo.ease(((Real)m_pcInfo.curFrame)/m_pcInfo.numFrames);
+      m_FXPitch = WWMath::Lerp(m_pcInfo.startPitch, m_pcInfo.endPitch, factor);
+   }
+
+   if (m_pcInfo.curFrame >= m_pcInfo.numFrames) {
+      m_doingPitchCamera = false;
+      m_FXPitch = m_pcInfo.endPitch;
+   }
 }

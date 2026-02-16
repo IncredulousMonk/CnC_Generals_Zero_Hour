@@ -30,9 +30,9 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file in the GameEngine
 
-#define DEFINE_WEAPONSLOTTYPE_NAMES
+// #define DEFINE_WEAPONSLOTTYPE_NAMES
 
-#include "GameClient\Drawable.h"
+#include "GameClient/Drawable.h"
 
 #include "Common/ActionManager.h"
 #include "Common/Player.h"
@@ -40,13 +40,13 @@
 #include "Common/ThingTemplate.h"
 #include "Common/Xfer.h"
 
-#include "GameLogic\GameLogic.h"
-#include "GameLogic\PartitionManager.h"
-#include "GameLogic\Object.h"
-#include "GameLogic\ObjectIter.h"
-#include "GameLogic\Module\PilotFindVehicleUpdate.h"
-#include "GameLogic\Module\AIUpdate.h"
-#include "GameLogic\Module\CollideModule.h"
+#include "GameLogic/GameLogic.h"
+#include "GameLogic/PartitionManager.h"
+#include "GameLogic/Object.h"
+#include "GameLogic/ObjectIter.h"
+#include "GameLogic/Module/PilotFindVehicleUpdate.h"
+#include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/CollideModule.h"
 
 
 
@@ -54,24 +54,26 @@
 //-------------------------------------------------------------------------------------------------
 PilotFindVehicleUpdateModuleData::PilotFindVehicleUpdateModuleData()
 {
-	m_scanFrames				= 0;
-	m_scanRange					= 0.0f;
-	m_minHealth					= 0.5f;
+	m_ini.m_scanFrames				= 0;
+	m_ini.m_scanRange					= 0.0f;
+	m_ini.m_minHealth					= 0.5f;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void PilotFindVehicleUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void PilotFindVehicleUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "ScanRate",							INI::parseDurationUnsignedInt,	NULL, offsetof( PilotFindVehicleUpdateModuleData, m_scanFrames ) },
-		{ "ScanRange",						INI::parseReal,									NULL, offsetof( PilotFindVehicleUpdateModuleData, m_scanRange ) },
-		{ "MinHealth",						INI::parseReal,									NULL, offsetof( PilotFindVehicleUpdateModuleData, m_minHealth ) },
+		{ "ScanRate",	INI::parseDurationUnsignedInt,	NULL, offsetof( PilotFindVehicleUpdateModuleData::IniData, m_scanFrames ) },
+		{ "ScanRange",	INI::parseReal,					NULL, offsetof( PilotFindVehicleUpdateModuleData::IniData, m_scanRange ) },
+		{ "MinHealth",	INI::parseReal,					NULL, offsetof( PilotFindVehicleUpdateModuleData::IniData, m_minHealth ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	PilotFindVehicleUpdateModuleData* self {static_cast<PilotFindVehicleUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -113,7 +115,7 @@ UpdateSleepTime PilotFindVehicleUpdate::update()
 
 	if(  !ai->isIdle() )
 	{
-		return UPDATE_SLEEP(data->m_scanFrames);
+		return UPDATE_SLEEP(data->m_ini.m_scanFrames);
 	}
 
 	//Periodic scanning (expensive)
@@ -130,7 +132,7 @@ UpdateSleepTime PilotFindVehicleUpdate::update()
 			m_didMoveToBase = true;
 		}
 	}
-	return UPDATE_SLEEP(data->m_scanFrames);
+	return UPDATE_SLEEP(data->m_ini.m_scanFrames);
 }
 
 
@@ -151,7 +153,7 @@ Object* PilotFindVehicleUpdate::scanClosestTarget()
 	filters[3] = &filterMapStatus;
 	filters[4] = NULL;
 
-	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_scanRange, 
+	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_ini.m_scanRange, 
 		FROM_CENTER_2D, filters, ITER_SORTED_NEAR_TO_FAR );
 	MemoryPoolObjectHolder hold(iter);
 
@@ -161,7 +163,7 @@ Object* PilotFindVehicleUpdate::scanClosestTarget()
 		BodyModuleInterface *body = other->getBodyModule();
 		if (!body) continue;
 		//	If we're real healthy, don't bother looking for healing.
-		if (body->getHealth() < body->getMaxHealth()*data->m_minHealth) 
+		if (body->getHealth() < body->getMaxHealth()*data->m_ini.m_minHealth) 
 		{
 			continue;
 		}

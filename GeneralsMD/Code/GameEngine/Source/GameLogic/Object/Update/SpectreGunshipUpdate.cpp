@@ -29,39 +29,39 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_DEATH_NAMES
+// #define DEFINE_DEATH_NAMES
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
-#include "Common\GameAudio.h"
-#include "Common\ThingTemplate.h"
-#include "Common\ThingFactory.h"
-#include "Common\Player.h"
-#include "Common\PlayerList.h"
-#include "Common\Xfer.h"
-#include "Common\ClientUpdateModule.h"
+#include "Common/GameAudio.h"
+#include "Common/ThingTemplate.h"
+#include "Common/ThingFactory.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
+#include "Common/Xfer.h"
+#include "Common/ClientUpdateModule.h"
 
-#include "GameClient\ControlBar.h"
-#include "GameClient\GameClient.h"
-#include "GameClient\Drawable.h"
-#include "GameClient\ParticleSys.h"
-#include "GameClient\FXList.h"
+#include "GameClient/ControlBar.h"
+#include "GameClient/GameClient.h"
+#include "GameClient/Drawable.h"
+#include "GameClient/ParticleSys.h"
+#include "GameClient/FXList.h"
 #include "GameClient/ParticleSys.h"
 
-#include "GameLogic\Locomotor.h"
-#include "GameLogic\GameLogic.h"
-#include "GameLogic\PartitionManager.h"
-#include "GameLogic\Object.h"
-#include "GameLogic\ObjectIter.h"
-#include "GameLogic\Weaponset.h"
-#include "GameLogic\Weapon.h"
-#include "GameLogic\TerrainLogic.h"
-#include "GameLogic\Module\SpecialPowerModule.h"
-#include "GameLogic\Module\SpectreGunshipUpdate.h"
-#include "GameLogic\Module\PhysicsUpdate.h"
-#include "GameLogic\Module\LaserUpdate.h"
-#include "GameLogic\Module\ActiveBody.h"
-#include "GameLogic\Module\AIUpdate.h"
-#include "GameLogic\Module\ContainModule.h"
+#include "GameLogic/Locomotor.h"
+#include "GameLogic/GameLogic.h"
+#include "GameLogic/PartitionManager.h"
+#include "GameLogic/Object.h"
+#include "GameLogic/ObjectIter.h"
+#include "GameLogic/WeaponSet.h"
+#include "GameLogic/Weapon.h"
+#include "GameLogic/TerrainLogic.h"
+#include "GameLogic/Module/SpecialPowerModule.h"
+#include "GameLogic/Module/SpectreGunshipUpdate.h"
+#include "GameLogic/Module/PhysicsUpdate.h"
+#include "GameLogic/Module/LaserUpdate.h"
+#include "GameLogic/Module/ActiveBody.h"
+#include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/ContainModule.h"
 
 
 #ifdef _INTERNAL
@@ -85,50 +85,48 @@
 //-------------------------------------------------------------------------------------------------
 SpectreGunshipUpdateModuleData::SpectreGunshipUpdateModuleData()
 {
-	m_specialPowerTemplate			   = NULL;
-/******BOTH*******//*BOTH*//******BOTH*******//******BOTH*******/  m_attackAreaRadius             = 200.0f;
-/*************/  m_gattlingStrafeFXParticleSystem = NULL;
-/*************/  m_howitzerWeaponTemplate = NULL;
-/*************/  m_orbitFrames                  = 0;
-/*************/  m_targetingReticleRadius       = 25.0f;
-/*************/  m_gunshipOrbitRadius           = 250.0f;
-  m_strafingIncrement = 20.0f;
-  m_orbitInsertionSlope = 0.7f;
-  m_howitzerFiringRate = 10;
-  m_howitzerFollowLag = 0;
-  m_randomOffsetForHowitzer = 20.0f;
+	m_ini.m_specialPowerTemplate			   = NULL;
+/******BOTH*******//*BOTH*//******BOTH*******//******BOTH*******/  m_ini.m_attackAreaRadius             = 200.0f;
+/*************/  m_ini.m_gattlingStrafeFXParticleSystem = NULL;
+/*************/  m_ini.m_howitzerWeaponTemplate = NULL;
+/*************/  m_ini.m_orbitFrames                  = 0;
+/*************/  m_ini.m_targetingReticleRadius       = 25.0f;
+/*************/  m_ini.m_gunshipOrbitRadius           = 250.0f;
+	m_ini.m_strafingIncrement = 20.0f;
+	m_ini.m_orbitInsertionSlope = 0.7f;
+	m_ini.m_howitzerFiringRate = 10;
+	m_ini.m_howitzerFollowLag = 0;
+	m_ini.m_randomOffsetForHowitzer = 20.0f;
 }
 
 static Real zero = 0.0f;
 //-------------------------------------------------------------------------------------------------
-/*static*/ void SpectreGunshipUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void SpectreGunshipUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-    { "SpecialPowerTemplate",           INI::parseSpecialPowerTemplate,   NULL, offsetof( SpectreGunshipUpdateModuleData, m_specialPowerTemplate ) },
-    { "GattlingTemplateName",           INI::parseAsciiString,				    NULL, offsetof( SpectreGunshipUpdateModuleData, m_gattlingTemplateName ) },
-		{ "HowitzerFiringRate",	            INI::parseDurationUnsignedInt,    NULL, offsetof( SpectreGunshipUpdateModuleData, m_howitzerFiringRate ) },
-		{ "OrbitTime",	                    INI::parseDurationUnsignedInt,		NULL, offsetof( SpectreGunshipUpdateModuleData, m_orbitFrames ) },
-		{ "HowitzerFollowLag",	            INI::parseDurationUnsignedInt,		NULL, offsetof( SpectreGunshipUpdateModuleData, m_howitzerFollowLag ) },
-    { "AttackAreaRadius",	              INI::parseReal,				            NULL, offsetof( SpectreGunshipUpdateModuleData, m_attackAreaRadius ) },
-		{ "StrafingIncrement",	            INI::parseReal,				            NULL, offsetof( SpectreGunshipUpdateModuleData, m_strafingIncrement ) },
-		{ "OrbitInsertionSlope",	          INI::parseReal,	  			          NULL, offsetof( SpectreGunshipUpdateModuleData, m_orbitInsertionSlope ) },
-		{ "RandomOffsetForHowitzer",        INI::parseReal,	                  NULL, offsetof( SpectreGunshipUpdateModuleData, m_randomOffsetForHowitzer ) },
-		{ "TargetingReticleRadius",	        INI::parseReal,				            NULL, offsetof( SpectreGunshipUpdateModuleData, m_targetingReticleRadius ) },
-		{ "GunshipOrbitRadius",	            INI::parseReal,				            NULL, offsetof( SpectreGunshipUpdateModuleData, m_gunshipOrbitRadius ) },
-		{ "HowitzerWeaponTemplate",				  INI::parseWeaponTemplate,				  NULL, offsetof( SpectreGunshipUpdateModuleData, m_howitzerWeaponTemplate ) },
-		{ "GattlingStrafeFXParticleSystem",	INI::parseParticleSystemTemplate, NULL, offsetof( SpectreGunshipUpdateModuleData, m_gattlingStrafeFXParticleSystem ) },
-		{ "AttackAreaDecal",		            RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( SpectreGunshipUpdateModuleData, m_attackAreaDecalTemplate ) },
-		{ "TargetingReticleDecal",		      RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( SpectreGunshipUpdateModuleData, m_targetingReticleDecalTemplate ) },
-    
-
-
-
-    { 0, 0, 0, 0 }
+		{ "SpecialPowerTemplate",			INI::parseSpecialPowerTemplate,					NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_specialPowerTemplate ) },
+		{ "GattlingTemplateName",			INI::parseAsciiString,							NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_gattlingTemplateName ) },
+		{ "HowitzerFiringRate",				INI::parseDurationUnsignedInt,					NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_howitzerFiringRate ) },
+		{ "OrbitTime",						INI::parseDurationUnsignedInt,					NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_orbitFrames ) },
+		{ "HowitzerFollowLag",				INI::parseDurationUnsignedInt,					NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_howitzerFollowLag ) },
+		{ "AttackAreaRadius",				INI::parseReal,									NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_attackAreaRadius ) },
+		{ "StrafingIncrement",				INI::parseReal,									NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_strafingIncrement ) },
+		{ "OrbitInsertionSlope",			INI::parseReal,	  								NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_orbitInsertionSlope ) },
+		{ "RandomOffsetForHowitzer",		INI::parseReal,									NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_randomOffsetForHowitzer ) },
+		{ "TargetingReticleRadius",			INI::parseReal,									NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_targetingReticleRadius ) },
+		{ "GunshipOrbitRadius",				INI::parseReal,									NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_gunshipOrbitRadius ) },
+		{ "HowitzerWeaponTemplate",			INI::parseWeaponTemplate,						NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_howitzerWeaponTemplate ) },
+		{ "GattlingStrafeFXParticleSystem",	INI::parseParticleSystemTemplate,				NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_gattlingStrafeFXParticleSystem ) },
+		{ "AttackAreaDecal",				RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_attackAreaDecalTemplate ) },
+		{ "TargetingReticleDecal",			RadiusDecalTemplate::parseRadiusDecalTemplate,	NULL, offsetof( SpectreGunshipUpdateModuleData::IniData, m_targetingReticleDecalTemplate ) },
+		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	SpectreGunshipUpdateModuleData* self {static_cast<SpectreGunshipUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -175,18 +173,18 @@ void SpectreGunshipUpdate::onObjectCreated()
 	const SpectreGunshipUpdateModuleData *data = getSpectreGunshipUpdateModuleData();
 	Object *obj = getObject();
 
-	if( !data->m_specialPowerTemplate )
+	if( !data->m_ini.m_specialPowerTemplate )
 	{
 		DEBUG_CRASH( ("%s object's SpectreGunshipUpdate lacks access to the SpecialPowerTemplate. Needs to be specified in ini.", obj->getTemplate()->getName().str() ) );
 		return;
 	}
 
-	m_specialPowerModule = obj->getSpecialPowerModule( data->m_specialPowerTemplate );
+	m_specialPowerModule = obj->getSpecialPowerModule( data->m_ini.m_specialPowerTemplate );
   m_satellitePosition.set( obj->getPosition() );
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SpectreGunshipUpdate::initiateIntentToDoSpecialPower(const SpecialPowerTemplate *specialPowerTemplate, const Object *targetObj, const Coord3D *targetPos, const Waypoint *way, UnsignedInt commandOptions )
+Bool SpectreGunshipUpdate::initiateIntentToDoSpecialPower(const SpecialPowerTemplate *specialPowerTemplate, const Object* /* targetObj */, const Coord3D *targetPos, const Waypoint* /* way */, UnsignedInt commandOptions )
 {
 	const SpectreGunshipUpdateModuleData *data = getSpectreGunshipUpdateModuleData();
 
@@ -239,7 +237,7 @@ Bool SpectreGunshipUpdate::initiateIntentToDoSpecialPower(const SpecialPowerTemp
     {
 
       Object *newGattling = TheGameLogic->findObjectByID( m_gattlingID );
-	    const ThingTemplate *gattlingTemplate = TheThingFactory->findTemplate( data->m_gattlingTemplateName );
+	    const ThingTemplate *gattlingTemplate = TheThingFactory->findTemplate( data->m_ini.m_gattlingTemplateName );
 	    if( newGattling != NULL )
       {
         m_gattlingID = INVALID_ID;
@@ -263,8 +261,8 @@ Bool SpectreGunshipUpdate::initiateIntentToDoSpecialPower(const SpecialPowerTemp
   }
 
 
-	data->m_attackAreaDecalTemplate.createRadiusDecal( *getObject()->getPosition(), data->m_attackAreaRadius, getObject()->getControllingPlayer(), m_attackAreaDecal);
-	data->m_targetingReticleDecalTemplate.createRadiusDecal( *getObject()->getPosition(), data->m_targetingReticleRadius, getObject()->getControllingPlayer(), m_targetingReticleDecal);
+	data->m_ini.m_attackAreaDecalTemplate.createRadiusDecal( *getObject()->getPosition(), data->m_ini.m_attackAreaRadius, getObject()->getControllingPlayer(), m_attackAreaDecal);
+	data->m_ini.m_targetingReticleDecalTemplate.createRadiusDecal( *getObject()->getPosition(), data->m_ini.m_targetingReticleRadius, getObject()->getControllingPlayer(), m_targetingReticleDecal);
 
 
 #if defined TRACKERS
@@ -283,7 +281,7 @@ Bool SpectreGunshipUpdate::initiateIntentToDoSpecialPower(const SpecialPowerTemp
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SpectreGunshipUpdate::isPowerCurrentlyInUse( const CommandButton *command ) const
+Bool SpectreGunshipUpdate::isPowerCurrentlyInUse( const CommandButton* /* command */ ) const
 {
 	return false;
 }
@@ -326,6 +324,10 @@ private:
 	const Object *m_obj;
 public:
 	PartitionFilterLiveMapEnemies(const Object *obj) : m_obj(obj) { }
+
+	// No copies allowed!
+	PartitionFilterLiveMapEnemies(const PartitionFilterLiveMapEnemies&) = delete;
+	PartitionFilterLiveMapEnemies& operator=(const PartitionFilterLiveMapEnemies&) = delete;
 
 	virtual Bool allow(Object *objOther)
 	{
@@ -393,21 +395,21 @@ UpdateSleepTime SpectreGunshipUpdate::update()
       {
 
 
-  //   init'l    apogee                                          
-  //   target *<-------->*                                               
-  //    posi  ^\         /                                     
-  //          | \      /                                        
-  //  perigee |  \   /                                        
-  //          |   */ declination                                          
-  //          |  / \                                           
-  //          v/    * m_satelliteposition                                         
-  //          *                                                
-  //          |                                              
-  //          |                                              
-  //          |                                              
-  //          |                                              
-  //          |                                              
-  //          * gunship->getPosition()                                             
+  //   init'l    apogee
+  //   target *<-------->*
+  //    posi  ^\         /
+  //          | \      /
+  //  perigee |  \   /
+  //          |   */ declination
+  //          |  / \.
+  //          v/    * m_satelliteposition
+  //          *
+  //          |
+  //          |
+  //          |
+  //          |
+  //          |
+  //          * gunship->getPosition()
 
         //perigee is the point in the orbital arc nearest the satellite being captured
         Coord3D perigee = *gunship->getPosition();
@@ -424,14 +426,14 @@ UpdateSleepTime SpectreGunshipUpdate::update()
 
         // declination intersects line [p][a], given an attack slope of n1/n2
         Coord3D declination;
-        Real n1 = min( ORBIT_INSERTION_SLOPE_MAX, max(ORBIT_INSERTION_SLOPE_MIN, data->m_orbitInsertionSlope) );
+        Real n1 = min( ORBIT_INSERTION_SLOPE_MAX, max(ORBIT_INSERTION_SLOPE_MIN, data->m_ini.m_orbitInsertionSlope) );
         Real n2 = ONE - n1;
         declination.z = zero;
         declination.x = ( perigee.x * n1 ) + ( apogee.x * n2 );
         declination.y = ( perigee.y * n1 ) + ( apogee.y * n2 );
       
         //scale out to the orbital radius
-        Real orbitalRadius = data->m_gunshipOrbitRadius;
+        Real orbitalRadius = data->m_ini.m_gunshipOrbitRadius;
         declination.x *= orbitalRadius;
         declination.y *= orbitalRadius;
 
@@ -443,7 +445,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
            shipAI->aiMoveToPosition( &m_satellitePosition, CMD_FROM_AI ); 
         }
 
-        Real constraintRadius = data->m_attackAreaRadius - data->m_targetingReticleRadius;
+        Real constraintRadius = data->m_ini.m_attackAreaRadius - data->m_ini.m_targetingReticleRadius;
 
         //Constrain Target Override to the targeting radius
         Coord3D overrideTargetDelta = m_initialTargetPosition;
@@ -471,7 +473,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
         if ( (m_status == GUNSHIP_STATUS_INSERTING) && (distanceToTarget < orbitalRadius ) )// close enough to shoot
         {
           setLogicalStatus( GUNSHIP_STATUS_ORBITING );
-          m_orbitEscapeFrame = TheGameLogic->getFrame() + data->m_orbitFrames;
+          m_orbitEscapeFrame = TheGameLogic->getFrame() + data->m_ini.m_orbitFrames;
 
           Object *gattling = TheGameLogic->findObjectByID( m_gattlingID );
           if ( gattling )
@@ -514,7 +516,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
         {
 
           // ONLY EVERY FEW FRAMES DO WE RE_EVALUATE THE TARGET OBJECT
-          if ( TheGameLogic->getFrame() %data->m_howitzerFiringRate < ONE )
+          if ( TheGameLogic->getFrame() %data->m_ini.m_howitzerFiringRate < ONE )
           { 
 
             m_positionToShootAt = m_overrideTargetDestination; // unless we get a hit, below
@@ -535,7 +537,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
 
             // THIS WILL FIND A VALID TARGET WITHIN THE TARGETING RETICLE
 	          ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange(&m_overrideTargetDestination, 
-              data->m_targetingReticleRadius,
+              data->m_ini.m_targetingReticleRadius,
               FROM_BOUNDINGSPHERE_2D, 
               filters, 
               ITER_SORTED_NEAR_TO_FAR);
@@ -560,7 +562,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
                 // set a flag to start the targeting decal fading, since there is nothing to kill there
                 // THIS WILL FIND A VALID TARGET ANYWHERE INSIDE THE TARGETING AREA (THE BIG CIRCLE)
 	              ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange(&m_initialTargetPosition, 
-                  data->m_attackAreaRadius, 
+                  data->m_ini.m_attackAreaRadius, 
                   FROM_BOUNDINGSPHERE_2D, 
                   filters, 
                   ITER_SORTED_NEAR_TO_FAR);
@@ -594,13 +596,13 @@ UpdateSleepTime SpectreGunshipUpdate::update()
 
 
             // IF THE GATTLING GUN HAS BEEN PLINKING THE TARGET LONG ENOUGH, LETS FOLLOW WITH A VOLLEY OF HOWITZER FIRE
-            if ( m_okToFireHowitzerCounter > data->m_howitzerFollowLag )
+            if ( m_okToFireHowitzerCounter > data->m_ini.m_howitzerFollowLag )
             {
-              WeaponTemplate *wt = data->m_howitzerWeaponTemplate;
+              WeaponTemplate *wt = data->m_ini.m_howitzerWeaponTemplate;
               if( wt )
               {
                 Coord3D attackPositionWithRandomOffset;
-                Real offs = data->m_randomOffsetForHowitzer;
+                Real offs = data->m_ini.m_randomOffsetForHowitzer;
                 attackPositionWithRandomOffset.x = m_gattlingTargetPosition.x + GameLogicRandomValue( -offs, offs );
                 attackPositionWithRandomOffset.y = m_gattlingTargetPosition.y + GameLogicRandomValue( -offs, offs );
                 attackPositionWithRandomOffset.z = m_gattlingTargetPosition.z;
@@ -620,7 +622,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
 
 
           // GATTLING TARGETING LOGIC------------------------------------------
-				  const ParticleSystemTemplate *tmp = data->m_gattlingStrafeFXParticleSystem;
+				  const ParticleSystemTemplate *tmp = data->m_ini.m_gattlingStrafeFXParticleSystem;
 				  if (tmp && gattling && gattling->testStatus( OBJECT_STATUS_IS_FIRING_WEAPON) )
 				  {
 
@@ -633,7 +635,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
             Coord3D delta = m_positionToShootAt;
             delta.sub( &m_gattlingTargetPosition );
             Real dist = delta.length();
-            if ( dist < data->m_strafingIncrement )
+            if ( dist < data->m_ini.m_strafingIncrement )
             {
               m_gattlingTargetPosition = m_positionToShootAt;
               ++m_okToFireHowitzerCounter;
@@ -642,7 +644,7 @@ UpdateSleepTime SpectreGunshipUpdate::update()
             {
               m_okToFireHowitzerCounter = ZERO;
               delta.normalize();
-              delta.scale( data->m_strafingIncrement );
+              delta.scale( data->m_ini.m_strafingIncrement );
               m_gattlingTargetPosition.add( &delta );
             }
 
@@ -752,7 +754,7 @@ Bool SpectreGunshipUpdate::isFairDistanceFromShip( Object *target )
   shipToTargetDelta.y = gunshipPosition->y - targetPosition->y;
   shipToTargetDelta.z = 0.0f;
 
-  return (shipToTargetDelta.length() > getSpectreGunshipUpdateModuleData()->m_gunshipOrbitRadius * 0.75f );
+  return (shipToTargetDelta.length() > getSpectreGunshipUpdateModuleData()->m_ini.m_gunshipOrbitRadius * 0.75f );
 
 }
 

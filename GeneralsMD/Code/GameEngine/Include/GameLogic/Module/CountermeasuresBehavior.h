@@ -81,7 +81,7 @@ public:
 		m_ini.m_volleyVelocityFactor  = 1.0f;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
 		static const FieldParse dataFieldParse[] = 
 		{
@@ -100,9 +100,11 @@ public:
 			{ 0, 0, 0, 0 }
 		};
 
-		UpdateModuleData::buildFieldParse(p);
-		p.add(dataFieldParse);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( CountermeasuresBehaviorModuleData::IniData, m_upgradeMuxData ));
+		UpdateModuleData::buildFieldParse(what, p);
+		CountermeasuresBehaviorModuleData* self {static_cast<CountermeasuresBehaviorModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
+		p.add(UpgradeMuxData::getFieldParse(), offset + offsetof( CountermeasuresBehaviorModuleData::IniData, m_upgradeMuxData ));
 	}
 
 };
@@ -190,14 +192,14 @@ protected:
 	void launchVolley();
 
 private:
-	CountermeasuresVec m_counterMeasures;		//vector of countermeasures in the world.
-	UnsignedInt m_availableCountermeasures;	//number of countermeasures that can be launched to divert missiles.
-	UnsignedInt m_activeCountermeasures;		//number of countermeasures currently able to divert missiles.
-	UnsignedInt m_divertedMissiles;					//number of missiles that have been diverted to countermeasures.
-	UnsignedInt m_incomingMissiles;					//grand total of all missiles that were ever fired at me.
-	UnsignedInt m_reactionFrame;						//The frame countermeasures will be launched after initial hostile act.
-	UnsignedInt m_nextVolleyFrame;					//Frame the next volley is fired.
-	UnsignedInt m_reloadFrame;							//The frame countermeasures will be ready to use again.
+	CountermeasuresVec m_counterMeasures {};	//vector of countermeasures in the world.
+	UnsignedInt m_availableCountermeasures {};	//number of countermeasures that can be launched to divert missiles.
+	UnsignedInt m_activeCountermeasures {};		//number of countermeasures currently able to divert missiles.
+	UnsignedInt m_divertedMissiles {};			//number of missiles that have been diverted to countermeasures.
+	UnsignedInt m_incomingMissiles {};			//grand total of all missiles that were ever fired at me.
+	UnsignedInt m_reactionFrame {};				//The frame countermeasures will be launched after initial hostile act.
+	UnsignedInt m_nextVolleyFrame {};			//Frame the next volley is fired.
+	UnsignedInt m_reloadFrame {};				//The frame countermeasures will be ready to use again.
 };
 
 #endif // __COUNTERMEASURES_BEHAVIOR_H

@@ -914,7 +914,6 @@ void Drawable::setTerrainDecal(TerrainDecalType type)
 
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::setTerrainDecalSize(Real x, Real y)
 {
@@ -952,6 +951,7 @@ void Drawable::setShadowsEnabled(Bool enable)
 	}
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /**frees all shadow resources used by this module - used by Options screen.*/
 void Drawable::releaseShadows(void)
@@ -1164,7 +1164,6 @@ void Drawable::fadeIn( UnsignedInt frames )		///< decloak object
 	m_timeElapsedFade = 0;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 Real Drawable::getScale (void) const 
 { 
@@ -1197,7 +1196,6 @@ void Drawable::reactToBodyDamageStateChange(BodyDamageType newState)
   if ( !TheGameLogic->isLoadingMap() )
  	  startAmbientSound(newState, TheGlobalData->m_data.m_timeOfDay);
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::setEffectiveOpacity( Real pulseFactor, Real explicitOpacity /* = -1.0f */)
@@ -2706,6 +2704,7 @@ void Drawable::setStealthLook(StealthLookType look)
 		updateHiddenStatus();
 	}
 }
+#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -2714,6 +2713,9 @@ void Drawable::setStealthLook(StealthLookType look)
 void Drawable::draw( View *view )
 {
 
+(void) view;
+DEBUG_CRASH(("Drawable::draw not yet implemented!"));
+#if 0
   if ( testTintStatus( TINT_STATUS_FRENZY ) == FALSE )
   {
     if ( getObject() && getObject()->isEffectivelyDead() )
@@ -2754,8 +2756,10 @@ void Drawable::draw( View *view )
 	{
 		(*dm)->doDrawModule(&transformMtx);
 	}
+#endif // if 0
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 /** Compute the health bar region based on the health of the object and the
 	* zoom level of the camera */
@@ -4315,7 +4319,6 @@ void Drawable::changedTeam()
 	}
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::setPosition(const Coord3D *pos) 
 {
@@ -4323,23 +4326,16 @@ void Drawable::setPosition(const Coord3D *pos)
 	Thing::setPosition(pos);
 
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle)
 {
-(void) oldMtx;
-(void) oldPos;
-(void) oldAngle;
-#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		(*dm)->reactToTransformChange(oldMtx, oldPos, oldAngle);
 	}
-#endif // if 0
 } 
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::reactToGeometryChange()
 {
@@ -4349,6 +4345,7 @@ void Drawable::reactToGeometryChange()
 	}
 } 
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Bool Drawable::handleWeaponFireFX(WeaponSlotType wslot, Int specificBarrelToUse, const FXList* fxl, Real weaponSpeed, Real recoilAmount, Real recoilAngle, const Coord3D* victimPos, Real damageRadius)
 {	  
@@ -4824,7 +4821,6 @@ void Drawable::updateDrawableSupplyStatus( Int maxSupply, Int currentSupply )
 	}
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::notifyDrawableDependencyCleared()
 {
@@ -4835,7 +4831,6 @@ void Drawable::notifyDrawableDependencyCleared()
 			di->notifyDrawModuleDependencyCleared();
 	}
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Set as selectable or not. */

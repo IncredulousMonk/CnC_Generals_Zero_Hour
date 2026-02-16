@@ -53,7 +53,7 @@
 #include "GameClient/DisplayStringManager.h"
 // #include "GameClient/Drawable.h"
 #include "GameClient/DrawGroupInfo.h"
-// #include "GameClient/Eva.h"
+#include "GameClient/Eva.h"
 #include "GameClient/GameWindowManager.h"
 #include "GameClient/GlobalLanguage.h"
 // #include "GameClient/GraphDraw.h"

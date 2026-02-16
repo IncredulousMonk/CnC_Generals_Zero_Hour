@@ -62,6 +62,7 @@ struct CountermeasuresPlayerScanHelper
 	ObjectPointerList *m_objectList;	
 };
 
+/* Unused
 static void checkForCountermeasures( Object *testObj, void *userData )
 {
 	CountermeasuresPlayerScanHelper *helper = (CountermeasuresPlayerScanHelper*)userData;
@@ -84,6 +85,7 @@ static void checkForCountermeasures( Object *testObj, void *userData )
 
 	listToAddTo->push_back(testObj);
 }
+*/
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -153,13 +155,13 @@ void CountermeasuresBehavior::reportMissileForCountermeasures( Object *missile )
 }
 
 //-------------------------------------------------------------------------------------------------
-ObjectID CountermeasuresBehavior::calculateCountermeasureToDivertTo( const Object& victim )
+ObjectID CountermeasuresBehavior::calculateCountermeasureToDivertTo( const Object& /* victim */ )
 {
 	const CountermeasuresBehaviorModuleData *data = getCountermeasuresBehaviorModuleData();
 
 	//Flares are pushed to the front of the list, but we only want to acquire the "newest" of the flares, therefore
 	//stop iterating after we've reached size of a single volley.
-	Int iteratorMax = MAX( data->m_volleySize, 1 );
+	UnsignedInt iteratorMax = MAX( data->m_ini.m_volleySize, 1 );
 
 	Real closestDist = 1e15f;
 	Object *closestFlare = NULL;
@@ -167,7 +169,7 @@ ObjectID CountermeasuresBehavior::calculateCountermeasureToDivertTo( const Objec
 	//Start at the end of the list and go towards the beginning.
 	CountermeasuresVec::iterator it = m_counterMeasures.end();
 	//end is actually the end so advance the iterator.
-	if( it )
+	if( *it )
 	{
 		--it;
 		while( iteratorMax-- )
@@ -300,7 +302,7 @@ void CountermeasuresBehavior::launchVolley()
 	Object *obj = getObject();
 
 	Real volleySize = (Real)data->m_ini.m_volleySize;
-	for( int i = 0; i < data->m_ini.m_volleySize; i++ )
+	for( UnsignedInt i = 0; i < data->m_ini.m_volleySize; i++ )
 	{
 		//Each flare in a volley will calculate a different vector to fly out. We have a +/- angle to 
 		//spread out equally. With only one flare, it'll come straight out the back. Two flares will
@@ -414,5 +416,3 @@ void CountermeasuresBehavior::loadPostProcess( void )
 	UpgradeMux::upgradeMuxLoadPostProcess();
 
 }  // end loadPostProcess
-
-

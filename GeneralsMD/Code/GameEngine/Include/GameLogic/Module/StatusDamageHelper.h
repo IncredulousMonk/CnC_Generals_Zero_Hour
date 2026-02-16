@@ -40,12 +40,6 @@
 class StatusDamageHelperModuleData : public ModuleData
 {
 public:
-	// MG: Need an embedded struct to be compatible with MAKE_STANDARD_MODULE_DATA_MACRO_ABC.
-	struct IniData
-	{
-	};
-
-	IniData m_ini {};
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -67,8 +61,8 @@ public:
 	void doStatusDamage( ObjectStatusTypes status, Real duration );
 
 protected:
-	ObjectStatusTypes m_statusToHeal;
-	UnsignedInt m_frameToHeal;
+	ObjectStatusTypes m_statusToHeal {};
+	UnsignedInt m_frameToHeal {};
 	void clearStatusCondition();
 };
 

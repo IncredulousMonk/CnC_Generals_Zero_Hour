@@ -271,41 +271,41 @@ protected:
 
 protected:	 
 
-	Player *m_player;									///< the Player we represent
+	Player *m_player {};									///< the Player we represent
 
-	Bool		m_readyToBuildTeam;				///< True if the team select timer has expired.
-	Bool		m_readyToBuildStructure;	///< True if the buildDelay timer has expired.
-	Int			m_teamTimer;							///< Counts out the time between teams, as specified by ini.
-	Int			m_structureTimer;					///< Counts out the time between structures, as specified by ini.
-	Int			m_teamSeconds;						///< How many seconds to delay between teams.
+	Bool		m_readyToBuildTeam {};				///< True if the team select timer has expired.
+	Bool		m_readyToBuildStructure {};	///< True if the buildDelay timer has expired.
+	Int			m_teamTimer {};							///< Counts out the time between teams, as specified by ini.
+	Int			m_structureTimer {};					///< Counts out the time between structures, as specified by ini.
+	Int			m_teamSeconds {};						///< How many seconds to delay between teams.
 
-	Int			m_buildDelay;							///< Delay for building in case we are resource or prereq. limited.
-	Int			m_teamDelay;							///< Delay for teams in case we are resource or factory prereq. limited.
+	Int			m_buildDelay {};							///< Delay for building in case we are resource or prereq. limited.
+	Int			m_teamDelay {};							///< Delay for teams in case we are resource or factory prereq. limited.
 
-	Int			m_frameLastBuildingBuilt;	///< When we built the last building.
+	Int			m_frameLastBuildingBuilt {};	///< When we built the last building.
 
-	GameDifficulty m_difficulty;
+	GameDifficulty m_difficulty {};
 
-	Int			m_skillsetSelector;
+	Int			m_skillsetSelector {};
 
-	Coord3D m_baseCenter; // Center of the initial build list of structures.
-	Bool		m_baseCenterSet; // True if baseCenter is valid.
-	Real m_baseRadius; // Radius of the initial build list of structures.
+	Coord3D m_baseCenter {}; // Center of the initial build list of structures.
+	Bool		m_baseCenterSet {}; // True if baseCenter is valid.
+	Real m_baseRadius {}; // Radius of the initial build list of structures.
 
 	// Bridge repair info.
 	enum {MAX_STRUCTURES_TO_REPAIR = 2};
 	ObjectID m_structuresToRepair[MAX_STRUCTURES_TO_REPAIR];
-	ObjectID m_repairDozer;
-	Coord3D  m_repairDozerOrigin;
-	Int			 m_structuresInQueue;
-	Bool		 m_dozerQueuedForRepair;
-	Bool		 m_dozerIsRepairing;			///< the repair dozer is trying to repair the bridge.
-	Int			 m_bridgeTimer;
+	ObjectID m_repairDozer {};
+	Coord3D  m_repairDozerOrigin {};
+	Int			 m_structuresInQueue {};
+	Bool		 m_dozerQueuedForRepair {};
+	Bool		 m_dozerIsRepairing {};			///< the repair dozer is trying to repair the bridge.
+	Int			 m_bridgeTimer {};
 
-	UnsignedInt	m_supplySourceAttackCheckFrame;
-	ObjectID m_attackedSupplyCenter;
+	UnsignedInt	m_supplySourceAttackCheckFrame {};
+	ObjectID m_attackedSupplyCenter {};
 
-	ObjectID m_curWarehouseID;
+	ObjectID m_curWarehouseID {};
 };
 
 #endif // _AI_PLAYER_H_

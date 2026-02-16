@@ -100,18 +100,18 @@ static const ModelConditionFlagType theWaitingToCloseFlags[DOOR_COUNT_MAX] =
 ProductionUpdateModuleData::ProductionUpdateModuleData( void )
 {
 	// someday, might need separate times for each door. but not yet.
-	m_numDoorAnimations = 0;
-	m_doorOpeningTime = 0;
-	m_doorWaitOpenTime = 0;
-	m_doorClosingTime = 0;
-	m_constructionCompleteDuration = 0;
-	m_quantityModifiers.clear();
-	m_maxQueueEntries = 9;
-	m_disabledTypesToProcess = MAKE_DISABLED_MASK(DISABLED_HELD);
+	m_ini.m_numDoorAnimations = 0;
+	m_ini.m_doorOpeningTime = 0;
+	m_ini.m_doorWaitOpenTime = 0;
+	m_ini.m_doorClosingTime = 0;
+	m_ini.m_constructionCompleteDuration = 0;
+	m_ini.m_quantityModifiers.clear();
+	m_ini.m_maxQueueEntries = 9;
+	m_ini.m_disabledTypesToProcess = MAKE_DISABLED_MASK(DISABLED_HELD);
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void ProductionUpdateModuleData::parseAppendQuantityModifier( INI* ini, void *instance, void *store, const void* /*userData*/ )
+/*static*/ void ProductionUpdateModuleData::parseAppendQuantityModifier( INI* ini, void* instance, void* /* store */, const void* /*userData*/ )
 {
 	ProductionUpdateModuleData* data = (ProductionUpdateModuleData*)instance;
 	const char* name = ini->getNextToken();
@@ -121,28 +121,30 @@ ProductionUpdateModuleData::ProductionUpdateModuleData( void )
 	QuantityModifier qm;
 	qm.m_quantity = count;
 	qm.m_templateName.set( name );
-	data->m_quantityModifiers.push_back( qm );
+	data->m_ini.m_quantityModifiers.push_back( qm );
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-/*static*/ void ProductionUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void ProductionUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse( p );
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "MaxQueueEntries",	INI::parseInt, NULL, offsetof( ProductionUpdateModuleData, m_maxQueueEntries ) },
-		{ "NumDoorAnimations",	INI::parseInt, NULL, offsetof( ProductionUpdateModuleData, m_numDoorAnimations ) },
-		{ "DoorOpeningTime", INI::parseDurationUnsignedInt, NULL, offsetof( ProductionUpdateModuleData, m_doorOpeningTime ) },
-		{ "DoorWaitOpenTime", INI::parseDurationUnsignedInt, NULL, offsetof( ProductionUpdateModuleData, m_doorWaitOpenTime ) },
-		{ "DoorCloseTime", INI::parseDurationUnsignedInt, NULL, offsetof( ProductionUpdateModuleData, m_doorClosingTime ) },
-		{ "ConstructionCompleteDuration", INI::parseDurationUnsignedInt, NULL, offsetof( ProductionUpdateModuleData, m_constructionCompleteDuration ) },
-		{ "QuantityModifier",	parseAppendQuantityModifier, NULL, offsetof( ProductionUpdateModuleData, m_quantityModifiers ) },
-		{ "DisabledTypesToProcess",	DisabledMaskType::parseFromINI, NULL, offsetof( ProductionUpdateModuleData, m_disabledTypesToProcess ) },
+		{ "MaxQueueEntries",				INI::parseInt,					NULL, offsetof( ProductionUpdateModuleData::IniData, m_maxQueueEntries ) },
+		{ "NumDoorAnimations",				INI::parseInt,					NULL, offsetof( ProductionUpdateModuleData::IniData, m_numDoorAnimations ) },
+		{ "DoorOpeningTime",				INI::parseDurationUnsignedInt,	NULL, offsetof( ProductionUpdateModuleData::IniData, m_doorOpeningTime ) },
+		{ "DoorWaitOpenTime",				INI::parseDurationUnsignedInt,	NULL, offsetof( ProductionUpdateModuleData::IniData, m_doorWaitOpenTime ) },
+		{ "DoorCloseTime",					INI::parseDurationUnsignedInt,	NULL, offsetof( ProductionUpdateModuleData::IniData, m_doorClosingTime ) },
+		{ "ConstructionCompleteDuration",	INI::parseDurationUnsignedInt,	NULL, offsetof( ProductionUpdateModuleData::IniData, m_constructionCompleteDuration ) },
+		{ "QuantityModifier",				parseAppendQuantityModifier,	NULL, offsetof( ProductionUpdateModuleData::IniData, m_quantityModifiers ) },
+		{ "DisabledTypesToProcess",			DisabledMaskType::parseFromINI,	NULL, offsetof( ProductionUpdateModuleData::IniData, m_disabledTypesToProcess ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	ProductionUpdateModuleData* self {static_cast<ProductionUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }
 
@@ -225,9 +227,9 @@ ProductionUpdate::~ProductionUpdate( void )
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-CanMakeType ProductionUpdate::canQueueUpgrade( const UpgradeTemplate *upgrade ) const
+CanMakeType ProductionUpdate::canQueueUpgrade( const UpgradeTemplate* /* upgrade */ ) const
 {
-	if (m_productionCount >= getProductionUpdateModuleData()->m_maxQueueEntries)
+	if ((Int)m_productionCount >= getProductionUpdateModuleData()->m_ini.m_maxQueueEntries)
 		return CANMAKE_QUEUE_FULL;
 
 	return CANMAKE_OK;
@@ -250,7 +252,7 @@ CanMakeType ProductionUpdate::canQueueCreateUnit( const ThingTemplate *unitType 
 		}
 	}
 
-	if (m_productionCount >= getProductionUpdateModuleData()->m_maxQueueEntries)
+	if ((Int)m_productionCount >= getProductionUpdateModuleData()->m_ini.m_maxQueueEntries)
 		return CANMAKE_QUEUE_FULL;
 
 	return CANMAKE_OK;
@@ -295,7 +297,7 @@ Bool ProductionUpdate::queueUpgrade( const UpgradeTemplate *upgrade )
       (player->hasUpgradeComplete( upgrade ) || player->hasUpgradeInProduction( upgrade )) ) 
 		return FALSE;
 
-	if (m_productionCount >= getProductionUpdateModuleData()->m_maxQueueEntries)
+	if ((Int)m_productionCount >= getProductionUpdateModuleData()->m_ini.m_maxQueueEntries)
 	{
 		DEBUG_CRASH(("Production Queue is full... how did we get here?"));
 		return FALSE;
@@ -303,7 +305,7 @@ Bool ProductionUpdate::queueUpgrade( const UpgradeTemplate *upgrade )
 
 	// take the cost for the build away from the player
 	Money *money = player->getMoney();
-	money->withdraw( upgrade->calcCostToBuild( player ) );
+	money->withdraw( (UnsignedInt)upgrade->calcCostToBuild( player ) );
 
 	// allocate a new production entry
 	ProductionEntry *production = newInstance(ProductionEntry);
@@ -363,7 +365,7 @@ void ProductionUpdate::cancelUpgrade( const UpgradeTemplate *upgrade )
 
 	// refund money back to the player
 	Money *money = player->getMoney();
-	money->deposit( production->m_upgradeToResearch->calcCostToBuild( player ) );
+	money->deposit( (UnsignedInt)production->m_upgradeToResearch->calcCostToBuild( player ) );
 
 	// remove this production from the queue
 	removeFromProductionQueue( production );
@@ -418,7 +420,7 @@ Bool ProductionUpdate::queueCreateUnit( const ThingTemplate *unitType, Productio
 		}
 	}
 
-	if (m_productionCount >= getProductionUpdateModuleData()->m_maxQueueEntries)
+	if ((Int)m_productionCount >= getProductionUpdateModuleData()->m_ini.m_maxQueueEntries)
 	{
 		DEBUG_CRASH(("Production Queue is full... how did we get here?"));
 		return FALSE;
@@ -427,7 +429,7 @@ Bool ProductionUpdate::queueCreateUnit( const ThingTemplate *unitType, Productio
 	// take the cost for the build away from the player
 	Player *player = getObject()->getControllingPlayer();
 	Money *money = player->getMoney();
-	money->withdraw( unitType->calcCostToBuild( player ) );
+	money->withdraw( (UnsignedInt)unitType->calcCostToBuild( player ) );
 
 	// allocate a new production entry
 	ProductionEntry *production = newInstance(ProductionEntry);
@@ -438,7 +440,7 @@ Bool ProductionUpdate::queueCreateUnit( const ThingTemplate *unitType, Productio
 	// builds four for that price!
 	production->m_productionQuantityTotal = 1;
 	production->m_productionQuantityProduced = 0;
-	for( std::vector<QuantityModifier>::const_iterator it = data->m_quantityModifiers.begin(); it != data->m_quantityModifiers.end(); ++it )
+	for( std::vector<QuantityModifier>::const_iterator it = data->m_ini.m_quantityModifiers.begin(); it != data->m_ini.m_quantityModifiers.end(); ++it )
   {
 		const ThingTemplate* productionTemplate = TheThingFactory->findTemplate( it->m_templateName );
 		if( productionTemplate && productionTemplate->isEquivalentTo( unitType ) )
@@ -479,7 +481,7 @@ void ProductionUpdate::cancelUnitCreate( ProductionID productionID )
 			// give the player the cost of the object back
 			Player *player = getObject()->getControllingPlayer();
 			Money *money = player->getMoney();
-			money->deposit( production->m_objectToProduce->calcCostToBuild( player ) );
+			money->deposit( (UnsignedInt)production->m_objectToProduce->calcCostToBuild( player ) );
 
 			// remove from queue list
 			removeFromProductionQueue( production );
@@ -549,7 +551,7 @@ void ProductionUpdate::updateDoors()
 		if( m_doors[i].m_doorOpenedFrame )
 		{
 
-			if( now - m_doors[i].m_doorOpenedFrame > d->m_doorOpeningTime )
+			if( now - m_doors[i].m_doorOpenedFrame > d->m_ini.m_doorOpeningTime )
 			{
 			
 				// set our frame markers for door states
@@ -569,7 +571,7 @@ void ProductionUpdate::updateDoors()
 		else if( m_doors[i].m_doorWaitOpenFrame )
 		{
 
-			if( now - m_doors[i].m_doorWaitOpenFrame > d->m_doorWaitOpenTime && !m_doors[i].m_holdOpen )
+			if( now - m_doors[i].m_doorWaitOpenFrame > d->m_ini.m_doorWaitOpenTime && !m_doors[i].m_holdOpen )
 			{
 
 				// set our frame marker for closing
@@ -589,7 +591,7 @@ void ProductionUpdate::updateDoors()
 		else if( m_doors[i].m_doorClosedFrame && !m_doors[i].m_holdOpen )
 		{
 
-			if( now - m_doors[i].m_doorClosedFrame > d->m_doorClosingTime )
+			if( now - m_doors[i].m_doorClosedFrame > d->m_ini.m_doorClosingTime )
 			{
 
 				// set our frame marker for the closed door frame
@@ -617,7 +619,7 @@ UpdateSleepTime ProductionUpdate::update( void )
 	Object *us = getObject();
 
 	// update the door behaviors
-	if( d->m_numDoorAnimations > 0 )
+	if( d->m_ini.m_numDoorAnimations > 0 )
 		updateDoors();
 
 	//
@@ -627,7 +629,7 @@ UpdateSleepTime ProductionUpdate::update( void )
 	if( m_constructionCompleteFrame )
 	{
 	
-		if( now - m_constructionCompleteFrame > d->m_constructionCompleteDuration )
+		if( now - m_constructionCompleteFrame > d->m_ini.m_constructionCompleteDuration )
 		{
 
 			// set our frame marker to be out of construction complete state
@@ -764,7 +766,7 @@ UpdateSleepTime ProductionUpdate::update( void )
 						// that had us previously closing a door)
 						//
 						const ProductionUpdateModuleData *d = getProductionUpdateModuleData();
-						if( d->m_numDoorAnimations > 0 && door != NULL )
+						if( d->m_ini.m_numDoorAnimations > 0 && door != NULL )
 						{
 
 							// if the door is closed, open it
@@ -816,7 +818,7 @@ UpdateSleepTime ProductionUpdate::update( void )
 						// animations we will not make the object until the door has been totally
 						// opened
 						//
-						if( d->m_numDoorAnimations == 0 || door == NULL || door->m_doorWaitOpenFrame != 0 )
+						if( d->m_ini.m_numDoorAnimations == 0 || door == NULL || door->m_doorWaitOpenFrame != 0 )
 						{
 							Object *newObj = TheThingFactory->newObject( production->m_objectToProduce, 
 																	creationBuilding->getControllingPlayer()->getDefaultTeam() );
@@ -1130,7 +1132,7 @@ UnsignedInt ProductionUpdate::countUnitTypeInQueue( const ThingTemplate *unitTyp
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void ProductionUpdate::onDie( const DamageInfo *damageInfo )
+void ProductionUpdate::onDie( const DamageInfo* /* damageInfo */ )
 {
 	// we need to cancel all of our production on death
 	cancelAndRefundAllProduction();

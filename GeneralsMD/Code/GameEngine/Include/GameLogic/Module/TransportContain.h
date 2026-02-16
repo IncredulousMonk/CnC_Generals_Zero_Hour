@@ -45,20 +45,26 @@ public:
 		Int count;
 	};
 
-	Int					m_slotCapacity;								///< max units that can be inside us
-	Real				m_exitPitchRate;
-	AsciiString			m_exitBone;
-	InitialPayload		m_initialPayload;
-	Real				m_healthRegen;
-	UnsignedInt			m_exitDelay;
-	Bool				m_scatterNearbyOnExit;
-	Bool				m_orientLikeContainerOnExit;
-	Bool				m_keepContainerVelocityOnExit;
-	Bool				m_goAggressiveOnExit;
-	Bool				m_armedRidersUpgradeWeaponSet;
-	Bool				m_resetMoodCheckTimeOnExit;
-	Bool				m_destroyRidersWhoAreNotFreeToExit;
-	Bool				m_isDelayExitInAir;
+	// MG: Cannot apply offsetof to TransportContainModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int					m_slotCapacity;								///< max units that can be inside us
+		Real				m_exitPitchRate;
+		AsciiString			m_exitBone;
+		InitialPayload		m_initialPayload;
+		Real				m_healthRegen;
+		UnsignedInt			m_exitDelay;
+		Bool				m_scatterNearbyOnExit;
+		Bool				m_orientLikeContainerOnExit;
+		Bool				m_keepContainerVelocityOnExit;
+		Bool				m_goAggressiveOnExit;
+		Bool				m_armedRidersUpgradeWeaponSet;
+		Bool				m_resetMoodCheckTimeOnExit;
+		Bool				m_destroyRidersWhoAreNotFreeToExit;
+		Bool				m_isDelayExitInAir;
+	};
+
+	IniData m_ini {};
 
 	TransportContainModuleData();
 
@@ -87,7 +93,7 @@ public:
 	virtual UpdateSleepTime update();							///< called once per frame
 
 	virtual Bool isRiderChangeContain() const { return FALSE; }
-  virtual Bool isSpecialOverlordStyleContainer() const {return FALSE;}
+	virtual Bool isSpecialOverlordStyleContainer() const {return FALSE;}
 	
 	virtual Int getContainMax( void ) const;
 
@@ -108,12 +114,12 @@ protected:
 	virtual void createPayload();
 	void letRidersUpgradeWeaponSet( void );
 
-	Bool m_payloadCreated;	
+	Bool m_payloadCreated {};
 
 private:
 
-	Int m_extraSlotsInUse;
-	UnsignedInt m_frameExitNotBusy;
+	Int m_extraSlotsInUse {};
+	UnsignedInt m_frameExitNotBusy {};
 
 };
 

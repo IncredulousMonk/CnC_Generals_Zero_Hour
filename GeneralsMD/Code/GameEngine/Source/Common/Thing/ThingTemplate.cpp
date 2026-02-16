@@ -65,7 +65,7 @@
 
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Armor.h"
-// #include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/SpecialPowerModule.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/Powers.h"
@@ -242,9 +242,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] =
 
 	{ "OverrideableByLikeKind",		ThingTemplate::OverrideableByLikeKind,		NULL,			0 },
 
-	// FIXME: AIUpdateModuleData
-	// { "Locomotor",					AIUpdateModuleData::parseLocomotorSet,		NULL, 0 },
-	{ "Locomotor",					ThingTemplate::parseLocomotorSet,			NULL, 0 },
+	{ "Locomotor",					AIUpdateModuleData::parseLocomotorSet,		NULL, 0 },
 	{ "InstanceScaleFuzziness",		INI::parseReal,								NULL, offsetof( ThingTemplate::IniData, m_instanceScaleFuzziness ) },
 	{ "StructureRubbleHeight",		INI::parseUnsignedByte,						NULL, offsetof( ThingTemplate::IniData, m_structureRubbleHeight ) },
 	{ "ThreatValue",				INI::parseUnsignedShort,					NULL, offsetof( ThingTemplate::IniData, m_threatValue ) }, 
@@ -602,7 +600,9 @@ void ThingTemplate::parseModuleName(INI* ini, void *instance, void* store, const
 		throw INI_INVALID_DATA;
 	}
 
+// DEBUG_LOG(("]]] token = %s, tag = %s\n", tokenStr.str(), moduleTagStr.str()));
 	ModuleData* data = TheModuleFactory->newModuleDataFromINI(ini, tokenStr, type, moduleTagStr);
+	DEBUG_ASSERTCRASH(data, ("ThingTemplate::parseModuleName: ModuleData is null (token = %s, tag = %s)", tokenStr.str(), moduleTagStr.str()));
 
 	if (data->isAiModuleData())
 	{
@@ -738,18 +738,6 @@ void ThingTemplate::parsePerUnitSounds(INI* ini, void *instance, void* /* store 
 	};
 
 	ini->initFromINI(mapSounds, myFieldParse);
-}
-
-//-------------------------------------------------------------------------------------------------
-void ThingTemplate::parseLocomotorSet(INI* ini, void *instance, void *store, const void *userData)
-{
-	(void) ini;
-	(void) instance;
-	(void) store;
-	(void) userData;
-	// FIXME: Remove this dummy parse function once AIUpdateModuleData is implemented.
-	DEBUG_LOG(("$$$ Dummy parseLocomotorSet!\n"));
-	ini->getNextToken();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1122,6 +1110,27 @@ ThingTemplate::ThingTemplate() :
 	m_ini.m_crushableLevel = 255; //Unspecified, this object is unable to be crushed by anything!
 
 	m_ini.m_obj = this;
+}
+
+//-------------------------------------------------------------------------------------------------
+ThingTemplate& ThingTemplate::operator=(const ThingTemplate& other)
+{
+	if (this == &other) {
+		return *this;
+	}
+
+	m_ini = other.m_ini;
+	m_ini.m_obj = this;
+
+	m_audioarray = other.m_audioarray;
+	m_geometryInfo = other.m_geometryInfo;
+	m_weaponTemplateSetFinder = other.m_weaponTemplateSetFinder;
+	m_armorTemplateSets = other.m_armorTemplateSets;
+	m_armorTemplateSetFinder = other.m_armorTemplateSetFinder;
+	m_perUnitSounds = other.m_perUnitSounds;
+	m_perUnitFX = other.m_perUnitFX;
+
+	return *this;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1615,7 +1624,6 @@ Int ThingTemplate::calcCostToBuild( const Player* player) const
 	return getBuildCost() * factionModifier * player->getHandicap()->getHandicap(Handicap::BUILDCOST, this);
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** NOTE that we're not paying attention to m_override here, instead the portions
 	* that retrieve template data values use the get() wrappers, which *DO* pay
@@ -1674,7 +1682,6 @@ Int ThingTemplate::calcTimeToBuild( const Player* player) const
 
 	return(buildTime);
 }
-#endif // if 0
 
 //---------------------------------------------------------------------------------------ModuleInfo
 //-------------------------------------------------------------------------------------------------

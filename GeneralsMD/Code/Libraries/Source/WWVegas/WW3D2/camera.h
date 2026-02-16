@@ -72,7 +72,7 @@ class ViewportClass
 public:
 	ViewportClass(void) : Min(0,0), Max(1,1) { }
 	ViewportClass(const Vector2 & min,const Vector2 & max) : Min(min), Max(max) { }
-	ViewportClass(const ViewportClass & vp) : Min(vp.Min), Max(vp.Max) { }
+	// ViewportClass(const ViewportClass & vp) : Min(vp.Min), Max(vp.Max) { }
 	
 	float Width(void) const		{ return Max.X - Min.X; }
 	float Height(void) const	{ return Max.Y - Min.Y; }
@@ -156,11 +156,9 @@ public:
 	// Depth of the scene.
 	float						Get_Depth(void) const;
 
-#if 0
 	// Setting the projection type
 	void						Set_Projection_Type(ProjectionType ptype);
 	ProjectionType				Get_Projection_Type(void);
-#endif // if 0
 
 	// Setting the clipping ranges in world space distances
 	void						Set_Clip_Planes(float znear,float zfar);
@@ -172,15 +170,14 @@ public:
 	void						Get_Zbuffer_Range(float & znear,float & zfar) const {znear=ZBufferMin;zfar=ZBufferMax;}
 #endif // if 0
 
-	// Methods for setting the View Plane.  
+	// Methods for setting the View Plane.
 	// NOTE: View plane is always at a distance of 1.0 from the eye.
 	void						Set_View_Plane(const Vector2 & min,const Vector2 & max);
 	void						Set_View_Plane(float hfov,float vfov = -1);
 	void						Set_Aspect_Ratio(float width_to_height);
 
-	// Methods for querying the View Plane settings.		
+	// Methods for querying the View Plane settings.
 	void						Get_View_Plane(Vector2 & set_min,Vector2 & set_max) const;
-#if 0
 	float						Get_Horizontal_FOV(void) const;
 	float						Get_Vertical_FOV(void) const;
 	float						Get_Aspect_Ratio(void) const;
@@ -192,6 +189,7 @@ public:
 	const Matrix4x4 &			Get_Projection_Matrix(void);
 	const Matrix3D &			Get_View_Matrix(void);
 
+#if 0
 	// Projecting and Un-Projecting a point
 	ProjectionResType			Project(Vector3 & dest,const Vector3 & ws_point) const;
 	ProjectionResType			Project_Camera_Space_Point(Vector3 & dest,const Vector3 & cam_point) const;
@@ -274,7 +272,6 @@ inline float CameraClass::Get_Depth(void) const
 	return ZFar;
 }
 
-#if 0
 inline void CameraClass::Set_Projection_Type(ProjectionType ptype)
 {
 	FrustumValid = false;
@@ -286,6 +283,7 @@ inline CameraClass::ProjectionType CameraClass::Get_Projection_Type(void)
 	return Projection;
 }
 
+#if 0
 inline void CameraClass::Set_Viewport(const Vector2 & min,const Vector2 & max)		
 { 
 	Viewport.Min = min; Viewport.Max = max; 

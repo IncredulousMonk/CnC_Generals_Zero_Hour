@@ -46,14 +46,18 @@ typedef std::vector<AsciiString>::const_iterator TemplateNameIterator;
 class HelixContainModuleData : public TransportContainModuleData
 {
 public:
+	// MG: Cannot apply offsetof to HelixContainModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		TemplateNameList m_payloadTemplateNameData;
+		Bool m_drawPips;
+	};
+
+	IniData m_ini {};
 
 	HelixContainModuleData();
 
-	TemplateNameList m_payloadTemplateNameData;
-  Bool m_drawPips;
-
-
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	static void parseInitialPayload( INI* ini, void *instance, void *store, const void* /*userData*/ );
 };
 
@@ -76,20 +80,20 @@ public:
 	virtual Bool isHealContain() const { return false; } ///< true when container only contains units while healing (not a transport!)
 	virtual Bool isTunnelContain() const { return FALSE; }
 	virtual Bool isImmuneToClearBuildingAttacks() const { return true; }
-  virtual Bool isSpecialOverlordStyleContainer() const {return TRUE;}
+	virtual Bool isSpecialOverlordStyleContainer() const {return TRUE;}
 
 	virtual void onDie( const DamageInfo *damageInfo );  ///< the die callback
 	virtual void onDelete( void );	///< Last possible moment cleanup
 	virtual void onCapture( Player *oldOwner, Player *newOwner ); 
 	virtual void onObjectCreated();
-  virtual void onContaining( Object *obj, Bool wasSelected  );
-  virtual void onRemoving( Object *obj );
+	virtual void onContaining( Object *obj, Bool wasSelected  );
+	virtual void onRemoving( Object *obj );
 
 
-  virtual UpdateSleepTime update();							///< called once per frame
+	virtual UpdateSleepTime update();							///< called once per frame
 
-  
- // virtual void onContaining( Object *obj, Bool wasSelected );		///< object now contains 'obj'
+
+//	virtual void onContaining( Object *obj, Bool wasSelected );		///< object now contains 'obj'
 //	virtual void onRemoving( Object *obj );			///< object no longer contains 'obj'
 
 	virtual Bool isValidContainerFor(const Object* obj, Bool checkCapacity) const;
@@ -107,26 +111,26 @@ public:
 	///< this gets called from
 	virtual void clientVisibleContainedFlashAsSelected(); 
 
-  virtual void redeployOccupants();
+	virtual void redeployOccupants();
 
 	virtual Bool getContainerPipsToShow(Int& numTotal, Int& numFull)
-  {
-    if ( getHelixContainModuleData()->m_drawPips == FALSE )
-    {
-      numTotal = 0;
-      numFull = 0;
-      return FALSE;
-    }
+	{
+		if ( getHelixContainModuleData()->m_ini.m_drawPips == FALSE )
+		{
+		numTotal = 0;
+		numFull = 0;
+		return FALSE;
+		}
 
-    return ContainModuleInterface::getContainerPipsToShow( numTotal, numFull );
-  }
-  
+		return ContainModuleInterface::getContainerPipsToShow( numTotal, numFull );
+	}
+
 	virtual void createPayload();
 
 private:
-  void parseInitialPayload( INI* ini, void *instance, void *store, const void* /*userData*/ );
-  Object *getPortableStructure( void );
-  ObjectID  m_portableStructureID;
+	void parseInitialPayload( INI* ini, void *instance, void *store, const void* /*userData*/ );
+	Object *getPortableStructure( void );
+	ObjectID  m_portableStructureID {};
 
 };
 

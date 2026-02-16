@@ -2568,16 +2568,21 @@ GLint getUniformLocation(GLuint shaderProgram, const char* name)
 }
 
 ///Performs additional terrain rendering pass, blending in the black shroud texture.
-void HeightMapRenderObjClass::renderTerrainPass(CameraClass* /* pCamera */)
+void HeightMapRenderObjClass::renderTerrainPass(CameraClass* pCamera)
 {
 	// DX8Wrapper::Set_Transform(D3DTS_WORLD,Matrix3D(1));
 	glUseProgram(m_progTerrain);
-	Mat4 projectionMatrix {OpenGLRenderer::perspective(30.0, 800.0 / 600.0, 10.0, 10000.0)};
-	glUniformMatrix4fv(getUniformLocation(m_progTerrain, "ProjectionMatrix"), 1, GL_FALSE, projectionMatrix.data());
-	Real x {m_cameraPos.x};
-	Real y {m_cameraPos.y};
-	Real z {m_cameraPos.z};
-	Mat4 viewMatrix {OpenGLRenderer::lookat(x, y, z, x, y + 200.0, z - 100.0, 0.0, 0.0, 1.0)};
+	// Mat4 projectionMatrix {OpenGLRenderer::perspective(30.0, 800.0 / 600.0, 10.0, 10000.0)};
+	// glUniformMatrix4fv(getUniformLocation(m_progTerrain, "ProjectionMatrix"), 1, GL_FALSE, projectionMatrix.data());
+	Matrix4x4 projectionMatrix {pCamera->Get_Projection_Matrix()};
+	projectionMatrix = projectionMatrix.Transpose();
+	glUniformMatrix4fv(getUniformLocation(m_progTerrain, "ProjectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
+	// Real x {m_cameraPos.x};
+	// Real y {m_cameraPos.y};
+	// Real z {m_cameraPos.z};
+	// Mat4 viewMatrix {OpenGLRenderer::lookat(x, y, z, x, y + 200.0, z - 100.0, 0.0, 0.0, 1.0)};
+	Matrix3D view {pCamera->Get_View_Matrix()};
+	Mat4 viewMatrix {view[0][0], view[1][0], view[2][0], 0.0f, view[0][1], view[1][1], view[2][1], 0.0f, view[0][2], view[1][2], view[2][2], 0.0f, view[0][3], view[1][3], view[2][3], 1.0f};
 	glUniformMatrix4fv(getUniformLocation(m_progTerrain, "ViewMatrix"), 1, GL_FALSE, viewMatrix.data());
 
 	//Apply the shader and material

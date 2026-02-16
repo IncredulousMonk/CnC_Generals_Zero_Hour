@@ -521,7 +521,7 @@ Bool GameInfo::amIHost( void ) const
 void GameInfo::setMap( AsciiString mapName )
 {
 (void) mapName;
-DEBUG_LOG(("GameInfo::setMap not yet implemented!\n"));
+DEBUG_LOG(("GameInfo::setMap not yet implemented! (%s)\n", mapName.str()));
 #if 0
 	m_mapName = mapName;
 	if (m_inGame && amIHost())

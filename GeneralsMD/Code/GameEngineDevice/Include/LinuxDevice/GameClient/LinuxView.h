@@ -177,15 +177,13 @@ private:
    void setCameraTransform( void );    ///< set the transform matrix of m_3DCamera, based on m_pos & m_angle
    void buildCameraTransform( Matrix3D *transform ) ;    ///< calculate (but do not set) the transform matrix of m_3DCamera, based on m_pos & m_angle
    void calcCameraConstraints();       ///< recalc m_cameraConstraint
-#if 0
    void moveAlongWaypointPath(Int milliseconds); ///< Move camera along path.
-#endif // if 0
    void getPickRay(const ICoord2D *screen, Vector3 *rayStart, Vector3 *rayEnd);	///<returns a line segment (ray) originating at the given screen position
-#if 0
    void setupWaypointPath(Bool orient);					///< Calculates distances & angles for moving along a waypoint path.
    void rotateCameraOneFrame(void);							///< Do one frame of a rotate camera movement.
    void zoomCameraOneFrame(void);							///< Do one frame of a zoom camera movement.
    void pitchCameraOneFrame(void);							///< Do one frame of a pitch camera movement.
+#if 0
    void getAxisAlignedViewRegion(Region3D &axisAlignedRegion);	///< Find 3D Region enclosing all possible drawables.
    void calcDeltaScroll(Coord2D &screenDelta);
 #endif // if 0
@@ -235,8 +233,8 @@ public:
 
    virtual void lookAt(const Coord3D* o);    ///< Center the view on the given coordinate
    virtual void initHeightForMap( void );    ///<  Init the camera height for the map at the current position.
-#if 0
    virtual void moveCameraTo(const Coord3D *o, Int miliseconds,  Int shutter, Bool orient, Real easeIn, Real easeOut);
+#if 0
    virtual void moveCameraAlongWaypointPath(Waypoint *pWay, Int frames, Int shutter, Bool orient, Real easeIn, Real easeOut);
    virtual Bool isCameraMovementFinished(void);
    virtual Bool isCameraMovementAtWaypointAlongPath(void);
@@ -251,7 +249,9 @@ public:
    virtual void cameraModRollingAverage(Int framesToAverage);			///< Number of frames to average movement for current camera movement.
    virtual void cameraModFinalTimeMultiplier(Int finalMultiplier); ///< Final time multiplier for current camera movement.
    virtual void cameraModFinalPitch(Real finalPitch, Real easeIn, Real easeOut);	///< Final pitch for current camera movement.
+#endif // if 0
    virtual void cameraModLookToward(Coord3D *pLoc);								///< Sets a look at point during camera movement.
+#if 0
    virtual void cameraModFinalLookToward(Coord3D *pLoc);						///< Sets a look at point during camera movement.
    virtual void cameraModFinalMoveTo(Coord3D *pLoc);			///< Sets a final move to.
    // (gth) C&C3 animation controlled camera feature
@@ -299,8 +299,10 @@ public:
    virtual enum FilterTypes getViewFilterType(void) {return m_viewFilter;}			///< Turns on viewport special effect (black & white mode)
    virtual void setFadeParameters(Int fadeFrames, Int direction);
    virtual void set3DWireFrameMode(Bool enable);	///<enables custom wireframe rendering of 3D viewport
+#endif // if 0
 
    Bool updateCameraMovements(void); 
+#if 0
    virtual void forceCameraConstraintRecalc(void) { calcCameraConstraints(); }
 
    virtual void setGuardBandBias( const Coord2D *gb ) { m_guardBandBias.x = gb->x; m_guardBandBias.y = gb->y; }

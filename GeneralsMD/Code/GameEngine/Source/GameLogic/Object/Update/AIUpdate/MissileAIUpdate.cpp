@@ -65,52 +65,53 @@ const Real BIGNUM = 99999.0f;
 //-----------------------------------------------------------------------------
 MissileAIUpdateModuleData::MissileAIUpdateModuleData()
 {
-	m_tryToFollowTarget = true;
-	m_fuelLifetime = 0;
-	m_ignitionDelay = 0;
-	m_initialVel = 0;
-	m_initialDist = 0.0f;
-	m_diveDistance = 0.0f;
-	m_ignitionFX = NULL;
-	m_useWeaponSpeed = false;
-	m_detonateOnNoFuel = FALSE;
-	m_garrisonHitKillCount = 0;
-	m_garrisonHitKillFX = NULL;
-	m_lockDistance = 75.0f;	
-	m_distanceScatterWhenJammed = 75.0f;
-    m_detonateCallsKill = FALSE;
-    m_killSelfDelay   = 3; // just long enough for the contrail to catch up to me
+	m_ini.m_tryToFollowTarget = true;
+	m_ini.m_fuelLifetime = 0;
+	m_ini.m_ignitionDelay = 0;
+	m_ini.m_initialVel = 0;
+	m_ini.m_initialDist = 0.0f;
+	m_ini.m_diveDistance = 0.0f;
+	m_ini.m_ignitionFX = NULL;
+	m_ini.m_useWeaponSpeed = false;
+	m_ini.m_detonateOnNoFuel = FALSE;
+	m_ini.m_garrisonHitKillCount = 0;
+	m_ini.m_garrisonHitKillFX = NULL;
+	m_ini.m_lockDistance = 75.0f;	
+	m_ini.m_distanceScatterWhenJammed = 75.0f;
+	m_ini.m_detonateCallsKill = FALSE;
+	m_ini.m_killSelfDelay   = 3; // just long enough for the contrail to catch up to me
 }
 
 //-----------------------------------------------------------------------------
-void MissileAIUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+void MissileAIUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-  AIUpdateModuleData::buildFieldParse(p);
+	AIUpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "TryToFollowTarget",			INI::parseBool,		NULL, offsetof( MissileAIUpdateModuleData, m_tryToFollowTarget ) },
-		{ "FuelLifetime",						INI::parseDurationUnsignedInt,		NULL, offsetof( MissileAIUpdateModuleData, m_fuelLifetime ) },
-		{ "IgnitionDelay",					INI::parseDurationUnsignedInt,		NULL, offsetof( MissileAIUpdateModuleData, m_ignitionDelay ) },
-		{ "InitialVelocity",				INI::parseVelocityReal,		NULL, offsetof( MissileAIUpdateModuleData, m_initialVel) },
-		{ "DistanceToTravelBeforeTurning",	INI::parseReal,		NULL, offsetof( MissileAIUpdateModuleData, m_initialDist ) },
-		{ "DistanceToTargetBeforeDiving",		INI::parseReal,		NULL, offsetof( MissileAIUpdateModuleData, m_diveDistance ) },
-		{ "DistanceToTargetForLock",INI::parseReal,		NULL, offsetof( MissileAIUpdateModuleData, m_lockDistance ) },
-		{ "IgnitionFX",							INI::parseFXList,		NULL, offsetof( MissileAIUpdateModuleData, m_ignitionFX ) },
-		{ "UseWeaponSpeed",				  INI::parseBool,			NULL, offsetof( MissileAIUpdateModuleData, m_useWeaponSpeed ) },
-		{ "DetonateOnNoFuel",			  INI::parseBool,			NULL, offsetof( MissileAIUpdateModuleData, m_detonateOnNoFuel ) },
-		{ "DistanceScatterWhenJammed",INI::parseReal,		NULL, offsetof( MissileAIUpdateModuleData, m_distanceScatterWhenJammed ) },
-
-		{ "GarrisonHitKillRequiredKindOf", KindOfMaskType::parseFromINI, NULL, offsetof( MissileAIUpdateModuleData, m_garrisonHitKillKindof ) },
-		{ "GarrisonHitKillForbiddenKindOf", KindOfMaskType::parseFromINI, NULL, offsetof( MissileAIUpdateModuleData, m_garrisonHitKillKindofNot ) },
-		{ "GarrisonHitKillCount", INI::parseUnsignedInt, NULL, offsetof( MissileAIUpdateModuleData, m_garrisonHitKillCount ) },
-		{ "GarrisonHitKillFX", INI::parseFXList, NULL, offsetof( MissileAIUpdateModuleData, m_garrisonHitKillFX ) },
-    { "DetonateCallsKill", INI::parseBool,   NULL, offsetof( MissileAIUpdateModuleData, m_detonateCallsKill ) },
-    { "KillSelfDelay",     INI::parseDurationUnsignedInt, NULL, offsetof( MissileAIUpdateModuleData, m_killSelfDelay ) },
-    { 0, 0, 0, 0 }
+		{ "TryToFollowTarget",				INI::parseBool,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_tryToFollowTarget ) },
+		{ "FuelLifetime",					INI::parseDurationUnsignedInt,	NULL, offsetof( MissileAIUpdateModuleData::IniData, m_fuelLifetime ) },
+		{ "IgnitionDelay",					INI::parseDurationUnsignedInt,	NULL, offsetof( MissileAIUpdateModuleData::IniData, m_ignitionDelay ) },
+		{ "InitialVelocity",				INI::parseVelocityReal,			NULL, offsetof( MissileAIUpdateModuleData::IniData, m_initialVel) },
+		{ "DistanceToTravelBeforeTurning",	INI::parseReal,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_initialDist ) },
+		{ "DistanceToTargetBeforeDiving",	INI::parseReal,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_diveDistance ) },
+		{ "DistanceToTargetForLock",		INI::parseReal,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_lockDistance ) },
+		{ "IgnitionFX",						INI::parseFXList,				NULL, offsetof( MissileAIUpdateModuleData::IniData, m_ignitionFX ) },
+		{ "UseWeaponSpeed",					INI::parseBool,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_useWeaponSpeed ) },
+		{ "DetonateOnNoFuel",				INI::parseBool,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_detonateOnNoFuel ) },
+		{ "DistanceScatterWhenJammed",		INI::parseReal,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_distanceScatterWhenJammed ) },
+		{ "GarrisonHitKillRequiredKindOf",	KindOfMaskType::parseFromINI,	NULL, offsetof( MissileAIUpdateModuleData::IniData, m_garrisonHitKillKindof ) },
+		{ "GarrisonHitKillForbiddenKindOf",	KindOfMaskType::parseFromINI,	NULL, offsetof( MissileAIUpdateModuleData::IniData, m_garrisonHitKillKindofNot ) },
+		{ "GarrisonHitKillCount",			INI::parseUnsignedInt,			NULL, offsetof( MissileAIUpdateModuleData::IniData, m_garrisonHitKillCount ) },
+		{ "GarrisonHitKillFX",				INI::parseFXList,				NULL, offsetof( MissileAIUpdateModuleData::IniData, m_garrisonHitKillFX ) },
+		{ "DetonateCallsKill",				INI::parseBool,					NULL, offsetof( MissileAIUpdateModuleData::IniData, m_detonateCallsKill ) },
+		{ "KillSelfDelay",					INI::parseDurationUnsignedInt,	NULL, offsetof( MissileAIUpdateModuleData::IniData, m_killSelfDelay ) },
+		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	MissileAIUpdateModuleData* self {static_cast<MissileAIUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -129,7 +130,7 @@ MissileAIUpdate::MissileAIUpdate( Thing *thing, const ModuleData* moduleData ) :
 	m_victimID = INVALID_ID;
 	m_isArmed = false;
 	m_fuelExpirationDate = 0;
-	m_noTurnDistLeft = d->m_initialDist;
+	m_noTurnDistLeft = d->m_ini.m_initialDist;
 	m_prevPos = *getObject()->getPosition();
 	m_maxAccel = BIGNUM;
 	m_detonationWeaponTmpl = NULL;
@@ -219,8 +220,8 @@ void MissileAIUpdate::projectileFireAtObjectOrPosition( const Object *victim, co
 
 	m_exhaustSysTmpl = exhaustSysOverride;
 	m_detonationWeaponTmpl = detWeap;
-	Real initialVelToUse = d->m_initialVel;
-	if (d->m_useWeaponSpeed)
+	Real initialVelToUse = d->m_ini.m_initialVel;
+	if (d->m_ini.m_useWeaponSpeed)
 	{
 		Real weaponSpeed = detWeap->getWeaponSpeed();
 		initialVelToUse = weaponSpeed;
@@ -272,7 +273,7 @@ void MissileAIUpdate::projectileFireAtObjectOrPosition( const Object *victim, co
 	m_isTrackingTarget = false;
 	// Missiles do their thing by colliding with something and exploding.  So they Move to the target
 	// instead of Attacking the target.
-	if (victim && d->m_tryToFollowTarget)
+	if (victim && d->m_ini.m_tryToFollowTarget)
 	{
 		getStateMachine()->setGoalPosition(victim->getPosition());
 		// ick. const-cast is evil. fix. (srj)
@@ -287,7 +288,7 @@ void MissileAIUpdate::projectileFireAtObjectOrPosition( const Object *victim, co
 		// Otherwise, we are just a Coord shot.
 		Coord3D initialPos = *victimPos;
 		m_originalTargetPos = *victimPos;
-		if (d->m_lockDistance>0.0f) {
+		if (d->m_ini.m_lockDistance>0.0f) {
 			initialPos.z += APPROACH_HEIGHT;
 		}
 		aiMoveToPosition(&initialPos, CMD_FROM_AI );
@@ -337,7 +338,7 @@ Bool MissileAIUpdate::projectileHandleCollision( Object *other )
 			return true;
 		}
 
-		if (d->m_garrisonHitKillCount > 0)
+		if (d->m_ini.m_garrisonHitKillCount > 0)
 		{
 			ContainModuleInterface* contain = other->getContain();
 			if( contain && contain->getContainCount() > 0 && contain->isGarrisonable() && !contain->isImmuneToClearBuildingAttacks() )
@@ -348,10 +349,10 @@ Bool MissileAIUpdate::projectileHandleCollision( Object *other )
 				const ContainedItemsList* items = contain->getContainedItemsList();
 				if (items)
 				{
-					for (ContainedItemsList::const_iterator it = items->begin(); *it != NULL && numKilled < d->m_garrisonHitKillCount; )
+					for (ContainedItemsList::const_iterator it = items->begin(); *it != NULL && numKilled < d->m_ini.m_garrisonHitKillCount; )
 					{
 						Object* thingToKill = *it++;
-						if (!thingToKill->isEffectivelyDead() && thingToKill->isKindOfMulti(d->m_garrisonHitKillKindof, d->m_garrisonHitKillKindofNot))
+						if (!thingToKill->isEffectivelyDead() && thingToKill->isKindOfMulti(d->m_ini.m_garrisonHitKillKindof, d->m_ini.m_garrisonHitKillKindofNot))
 						{
 							//DEBUG_LOG(("Killed a garrisoned unit (%08lx %s) via Flash-Bang!\n",thingToKill,thingToKill->getTemplate()->getName().str()));
 							if (projectileLauncher)
@@ -365,7 +366,7 @@ Bool MissileAIUpdate::projectileHandleCollision( Object *other )
 				if (numKilled > 0)
 				{
 					// note, fx is played at center of building, not at grenade's location
-					FXList::doFXObj(d->m_garrisonHitKillFX, other, NULL);
+					FXList::doFXObj(d->m_ini.m_garrisonHitKillFX, other, NULL);
 
 					// don't do the normal explosion; just destroy ourselves & return
 					TheGameLogic->destroyObject(obj);
@@ -438,7 +439,7 @@ void MissileAIUpdate::doKillSelfState()
 {
   const MissileAIUpdateModuleData *modData = getMissileAIUpdateModuleData();
 
-	if (m_stateTimestamp > TheGameLogic->getFrame() - modData->m_killSelfDelay ) 
+	if (m_stateTimestamp > TheGameLogic->getFrame() - (UnsignedInt)modData->m_ini.m_killSelfDelay ) 
   {
 		// Hold in this state [modData->m_killSelfDelay] frames to let the contrail catch up. jba.
 		return;
@@ -446,7 +447,7 @@ void MissileAIUpdate::doKillSelfState()
 	Object* obj = getObject();
 	if (m_detonationWeaponTmpl)	
   {
-    if ( modData->m_detonateCallsKill )
+    if ( modData->m_ini.m_detonateCallsKill )
       obj->kill(); // kill it (vs destroying it) so that its Die modules are called
     else  
 		  TheGameLogic->destroyObject( obj );	
@@ -464,7 +465,7 @@ void MissileAIUpdate::doLaunchState()
 		curLoco->setMaxTurnRate(0);
 	}
 
-	UnsignedInt delay = getMissileAIUpdateModuleData()->m_ignitionDelay;
+	UnsignedInt delay = getMissileAIUpdateModuleData()->m_ini.m_ignitionDelay;
 	if (TheGameLogic->getFrame() - m_stateTimestamp >= delay)
 	{
 		switchToState(IGNITION);
@@ -483,7 +484,7 @@ void MissileAIUpdate::doIgnitionState()
 		curLoco->setMaxTurnRate(0);
 	}
 
-	FXList::doFXObj(d->m_ignitionFX, getObject());
+	FXList::doFXObj(d->m_ini.m_ignitionFX, getObject());
 	if (m_exhaustSysTmpl != NULL)
 	{
 		m_exhaustID = TheParticleSystemManager->createAttachedParticleSystemID(m_exhaustSysTmpl, getObject());
@@ -492,7 +493,7 @@ void MissileAIUpdate::doIgnitionState()
 	// arm the missile's "warhead"
 	m_isArmed = true;
 	UnsignedInt now = TheGameLogic->getFrame();
-	m_fuelExpirationDate = d->m_fuelLifetime ? (now + d->m_fuelLifetime) : 0x7fffffff;
+	m_fuelExpirationDate = d->m_ini.m_fuelLifetime ? (now + d->m_ini.m_fuelLifetime) : 0x7fffffff;
 
 	switchToState(ATTACK_NOTURN);
 }
@@ -505,7 +506,7 @@ void MissileAIUpdate::doAttackState(Bool turnOK)
 	const MissileAIUpdateModuleData* d = getMissileAIUpdateModuleData();
 	if (TheGameLogic->getFrame() >= m_fuelExpirationDate)
 	{
-		if( d->m_detonateOnNoFuel )
+		if( d->m_ini.m_detonateOnNoFuel )
 		{
 			detonate();
 			return;
@@ -527,9 +528,9 @@ void MissileAIUpdate::doAttackState(Bool turnOK)
 		}
 	}
 
-	if (d->m_lockDistance > 0)
+	if (d->m_ini.m_lockDistance > 0)
 	{
-		Real lockDistanceSquared = d->m_lockDistance;
+		Real lockDistanceSquared = d->m_ini.m_lockDistance;
 		Real distanceToTargetSquared;
 		if (m_isTrackingTarget && (getGoalObject() != NULL)) {
 			distanceToTargetSquared = ThePartitionManager->getDistanceSquared( getObject(), getGoalObject(), FROM_CENTER_2D);
@@ -557,7 +558,7 @@ void MissileAIUpdate::doAttackState(Bool turnOK)
 	{
 		// Am I close enough to the target to ignore my preferred height setting?
 		Real distanceToTargetSquared = ThePartitionManager->getDistanceSquared( getObject(), getGoalPosition(), FROM_CENTER_2D );
-		Real diveDistanceSquared = d->m_diveDistance;
+		Real diveDistanceSquared = d->m_ini.m_diveDistance;
 		if (curLoco && curLoco->getPreferredHeight()) {
 				diveDistanceSquared *= diveDistanceSquared;
 			if( distanceToTargetSquared < diveDistanceSquared )
@@ -582,7 +583,7 @@ void MissileAIUpdate::doKillState(void)
 {		 
 	if (TheGameLogic->getFrame() >= m_fuelExpirationDate)
 	{
-		if( getMissileAIUpdateModuleData()->m_detonateOnNoFuel )
+		if( getMissileAIUpdateModuleData()->m_ini.m_detonateOnNoFuel )
 		{
 			detonate();
 			return;
@@ -702,6 +703,7 @@ UpdateSleepTime MissileAIUpdate::update()
 			if (m_state == IGNITION)
 			{
 				// just fall thru
+				[[fallthrough]];
 			}
 			else
 			{
@@ -771,7 +773,7 @@ UpdateSleepTime MissileAIUpdate::update()
 
 
 //-------------------------------------------------------------------------------------------------
-Bool MissileAIUpdate::processCollision(PhysicsBehavior *physics, Object *other)
+Bool MissileAIUpdate::processCollision(PhysicsBehavior* /* physics */, Object* /* other */)
 /* Returns true if the physics collide should apply the force.  Normally not.  
 Also determines whether objects are blocked, and if so, if they are stuck.  jba.*/
 {
@@ -813,7 +815,7 @@ void MissileAIUpdate::projectileNowJammed()
 	else
 		targetPosition = *getGoalPosition();
 
-	Real scatter = data->m_distanceScatterWhenJammed;
+	Real scatter = data->m_ini.m_distanceScatterWhenJammed;
 	targetPosition.x += GameLogicRandomValue(-scatter, scatter);
 	targetPosition.y += GameLogicRandomValue(-scatter, scatter);
 	targetPosition.z = TheTerrainLogic->getLayerHeight(	targetPosition.x, 

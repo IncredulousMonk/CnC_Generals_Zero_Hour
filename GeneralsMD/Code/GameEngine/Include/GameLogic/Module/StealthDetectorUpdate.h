@@ -42,37 +42,46 @@ class Thing;
 class StealthDetectorUpdateModuleData : public UpdateModuleData
 {
 public:
-	UnsignedInt											m_updateRate;
-	Real														m_detectionRange;
-	Bool														m_initiallyDisabled;
-	AudioEventRTS										m_pingSound;
-	AudioEventRTS										m_loudPingSound;
-	const ParticleSystemTemplate*   m_IRBeaconParticleSysTmpl;
-	const ParticleSystemTemplate*   m_IRParticleSysTmpl;
-	const ParticleSystemTemplate*   m_IRBrightParticleSysTmpl;
-	const ParticleSystemTemplate*   m_IRGridParticleSysTmpl;
-	AsciiString											m_IRParticleSysBone;
-	KindOfMaskType									m_extraDetectKindof;			///< units must match any kindof bits set here, in order to be detected
-	KindOfMaskType									m_extraDetectKindofNot;		///< units must NOT match any kindof bits set here, in order to be detected
-	Bool														m_canDetectWhileGarrisoned;
-	Bool														m_canDetectWhileTransported;
+	// MG: Cannot apply offsetof to StealthDetectorUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt						m_updateRate;
+		Real							m_detectionRange;
+		Bool							m_initiallyDisabled;
+		const ParticleSystemTemplate*	m_IRBeaconParticleSysTmpl;
+		const ParticleSystemTemplate*	m_IRParticleSysTmpl;
+		const ParticleSystemTemplate*	m_IRBrightParticleSysTmpl;
+		const ParticleSystemTemplate*	m_IRGridParticleSysTmpl;
+		AsciiString						m_IRParticleSysBone;
+		KindOfMaskType					m_extraDetectKindof;			///< units must match any kindof bits set here, in order to be detected
+		KindOfMaskType					m_extraDetectKindofNot;		///< units must NOT match any kindof bits set here, in order to be detected
+		Bool							m_canDetectWhileGarrisoned;
+		Bool							m_canDetectWhileTransported;
+	};
+
+	IniData m_ini {};
+
+	AudioEventRTS	m_pingSound {};
+	AudioEventRTS	m_loudPingSound {};
 
 	StealthDetectorUpdateModuleData()
 	{
-		m_updateRate = 1;
-		m_detectionRange = 0.0f;
-		m_initiallyDisabled = false;
-		m_IRBeaconParticleSysTmpl = NULL;
-		m_IRParticleSysTmpl = NULL;
-		m_IRBrightParticleSysTmpl = NULL;
-		m_IRGridParticleSysTmpl = NULL;
-		m_extraDetectKindof.clear();
-		m_extraDetectKindofNot.clear();
-		m_canDetectWhileGarrisoned = false;
-		m_canDetectWhileTransported = false;
+		m_ini.m_updateRate = 1;
+		m_ini.m_detectionRange = 0.0f;
+		m_ini.m_initiallyDisabled = false;
+		m_ini.m_IRBeaconParticleSysTmpl = NULL;
+		m_ini.m_IRParticleSysTmpl = NULL;
+		m_ini.m_IRBrightParticleSysTmpl = NULL;
+		m_ini.m_IRGridParticleSysTmpl = NULL;
+		m_ini.m_extraDetectKindof.clear();
+		m_ini.m_extraDetectKindofNot.clear();
+		m_ini.m_canDetectWhileGarrisoned = false;
+		m_ini.m_canDetectWhileTransported = false;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
+	static void parsePingSound(INI* ini, void *instance, void* store, const void* userData);
+	static void parseLoudPingSound(INI* ini, void *instance, void* store, const void* userData);
 
 };
 
@@ -94,10 +103,9 @@ public:
 	virtual DisabledMaskType getDisabledTypesToProcess() const { return MAKE_DISABLED_MASK( DISABLED_HELD ); }
 
 private:
-	Bool m_enabled;
+	Bool m_enabled {};
 
 };
 
 
 #endif	// __STEALTHDETECTOR_UPDATE_H_
-

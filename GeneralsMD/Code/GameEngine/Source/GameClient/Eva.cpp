@@ -45,40 +45,40 @@ const char *TheEvaMessageNames[] =
 	"SUPERWEAPONDETECTED_OWN_PARTICLECANNON",
 	"SUPERWEAPONDETECTED_OWN_NUKE",
 	"SUPERWEAPONDETECTED_OWN_SCUDSTORM",
-  "SUPERWEAPONDETECTED_ALLY_PARTICLECANNON",
-  "SUPERWEAPONDETECTED_ALLY_NUKE",
-  "SUPERWEAPONDETECTED_ALLY_SCUDSTORM",
-  "SUPERWEAPONDETECTED_ENEMY_PARTICLECANNON",
-  "SUPERWEAPONDETECTED_ENEMY_NUKE",
-  "SUPERWEAPONDETECTED_ENEMY_SCUDSTORM",
+	"SUPERWEAPONDETECTED_ALLY_PARTICLECANNON",
+	"SUPERWEAPONDETECTED_ALLY_NUKE",
+	"SUPERWEAPONDETECTED_ALLY_SCUDSTORM",
+	"SUPERWEAPONDETECTED_ENEMY_PARTICLECANNON",
+	"SUPERWEAPONDETECTED_ENEMY_NUKE",
+	"SUPERWEAPONDETECTED_ENEMY_SCUDSTORM",
 	"SUPERWEAPONLAUNCHED_OWN_PARTICLECANNON",
 	"SUPERWEAPONLAUNCHED_OWN_NUKE",
 	"SUPERWEAPONLAUNCHED_OWN_SCUDSTORM",
-  "SUPERWEAPONLAUNCHED_ALLY_PARTICLECANNON",
-  "SUPERWEAPONLAUNCHED_ALLY_NUKE",
-  "SUPERWEAPONLAUNCHED_ALLY_SCUDSTORM",
-  "SUPERWEAPONLAUNCHED_ENEMY_PARTICLECANNON",
-  "SUPERWEAPONLAUNCHED_ENEMY_NUKE",
-  "SUPERWEAPONLAUNCHED_ENEMY_SCUDSTORM",
-  "SUPERWEAPONREADY_OWN_PARTICLECANNON",
-  "SUPERWEAPONREADY_OWN_NUKE",
-  "SUPERWEAPONREADY_OWN_SCUDSTORM",
-  "SUPERWEAPONREADY_ALLY_PARTICLECANNON",
-  "SUPERWEAPONREADY_ALLY_NUKE",
-  "SUPERWEAPONREADY_ALLY_SCUDSTORM",
-  "SUPERWEAPONREADY_ENEMY_PARTICLECANNON",
-  "SUPERWEAPONREADY_ENEMY_NUKE",
-  "SUPERWEAPONREADY_ENEMY_SCUDSTORM",
+	"SUPERWEAPONLAUNCHED_ALLY_PARTICLECANNON",
+	"SUPERWEAPONLAUNCHED_ALLY_NUKE",
+	"SUPERWEAPONLAUNCHED_ALLY_SCUDSTORM",
+	"SUPERWEAPONLAUNCHED_ENEMY_PARTICLECANNON",
+	"SUPERWEAPONLAUNCHED_ENEMY_NUKE",
+	"SUPERWEAPONLAUNCHED_ENEMY_SCUDSTORM",
+	"SUPERWEAPONREADY_OWN_PARTICLECANNON",
+	"SUPERWEAPONREADY_OWN_NUKE",
+	"SUPERWEAPONREADY_OWN_SCUDSTORM",
+	"SUPERWEAPONREADY_ALLY_PARTICLECANNON",
+	"SUPERWEAPONREADY_ALLY_NUKE",
+	"SUPERWEAPONREADY_ALLY_SCUDSTORM",
+	"SUPERWEAPONREADY_ENEMY_PARTICLECANNON",
+	"SUPERWEAPONREADY_ENEMY_NUKE",
+	"SUPERWEAPONREADY_ENEMY_SCUDSTORM",
 	"BUILDINGLOST",
 	"BASEUNDERATTACK",
 	"ALLYUNDERATTACK",
 	"BEACONDETECTED",
-  "ENEMYBLACKLOTUSDETECTED",
-  "ENEMYJARMENKELLDETECTED",
-  "ENEMYCOLONELBURTONDETECTED",
-  "OWNBLACKLOTUSDETECTED",
-  "OWNJARMENKELLDETECTED",
-  "OWNCOLONELBURTONDETECTED",
+	"ENEMYBLACKLOTUSDETECTED",
+	"ENEMYJARMENKELLDETECTED",
+	"ENEMYCOLONELBURTONDETECTED",
+	"OWNBLACKLOTUSDETECTED",
+	"OWNJARMENKELLDETECTED",
+	"OWNCOLONELBURTONDETECTED",
 	"UNITLOST",
 	"GENERALLEVELUP",
 	"VEHICLESTOLEN",
@@ -87,12 +87,12 @@ const char *TheEvaMessageNames[] =
 	"UPGRADECOMPLETE",
 	"BUILDINGBEINGSTOLEN",
 	"BUILDINGSABOTAGED",
-  "SUPERWEAPONLAUNCHED_OWN_GPS_SCRAMBLER",
-  "SUPERWEAPONLAUNCHED_ALLY_GPS_SCRAMBLER",
-  "SUPERWEAPONLAUNCHED_ENEMY_GPS_SCRAMBLER",
-  "SUPERWEAPONLAUNCHED_OWN_SNEAK_ATTACK",
-  "SUPERWEAPONLAUNCHED_ALLY_SNEAK_ATTACK",
-  "SUPERWEAPONLAUNCHED_ENEMY_SNEAK_ATTACK",
+	"SUPERWEAPONLAUNCHED_OWN_GPS_SCRAMBLER",
+	"SUPERWEAPONLAUNCHED_ALLY_GPS_SCRAMBLER",
+	"SUPERWEAPONLAUNCHED_ENEMY_GPS_SCRAMBLER",
+	"SUPERWEAPONLAUNCHED_OWN_SNEAK_ATTACK",
+	"SUPERWEAPONLAUNCHED_ALLY_SNEAK_ATTACK",
+	"SUPERWEAPONLAUNCHED_ENEMY_SNEAK_ATTACK",
 	
 	//****************************************************************************
 	//Kris: Don't forget to add another handler below -- it's ghey-ly implemented.
@@ -124,39 +124,39 @@ const ShouldPlayFunc Eva::s_shouldPlayFuncs[] =
 	Eva::shouldPlayGenericHandler,	
 	Eva::shouldPlayGenericHandler,	
 	Eva::shouldPlayGenericHandler,	
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
-  Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
+	Eva::shouldPlayGenericHandler,
 	NULL,
 };
 
@@ -177,14 +177,14 @@ void INI::parseEvaEvent( INI* ini )
 	}
 
 	// parse the ini definition
-	ini->initFromINI( check, check->getFieldParse() );
+	ini->initFromINI( &check->m_ini, check->getFieldParse() );
 }
 
 //----------------------------------------------------------------------------------- EvaSideSounds
-static void parseSideSoundsList( INI *ini, void *instance, void *store, const void* userData )
+static void parseSideSoundsList( INI* ini, void* /* instance */, void* store, const void* /* userData */ )
 {
 	std::vector<EvaSideSounds> *sounds = (std::vector<EvaSideSounds>*) store;
-	EvaSideSounds newSounds;
+	EvaSideSounds newSounds {};
 
 	ini->initFromINI( &newSounds, newSounds.getFieldParse() );
 
@@ -195,29 +195,27 @@ static void parseSideSoundsList( INI *ini, void *instance, void *store, const vo
 //----------------------------------------------------------------------------------- EvaSideSounds
 const FieldParse EvaSideSounds::s_evaSideSounds[] =
 {
-	{ "Side",									INI::parseAsciiString,					NULL,			offsetof( EvaSideSounds, m_side) },
-	{ "Sounds",								INI::parseSoundsList,						NULL,			offsetof( EvaSideSounds, m_soundNames) },
+	{ "Side",	INI::parseAsciiString,	NULL, offsetof( EvaSideSounds, m_side) },
+	{ "Sounds",	INI::parseSoundsList,	NULL, offsetof( EvaSideSounds, m_soundNames) },
 	{ 0, 0, 0, 0 },
 };
 
 //------------------------------------------------------------------------------------ EvaCheckInfo
-EvaCheckInfo::EvaCheckInfo() :
-	m_message(EVA_COUNT),
-	m_priority(1), // lowest of all priorities
-	m_framesBetweenChecks(900),	// 30 seconds at 30 fps
-	m_framesToExpire(150) // 5 seconds at 30 fps
+EvaCheckInfo::EvaCheckInfo()
 {
-
-	
+	m_ini.m_message = EVA_COUNT;
+	m_ini.m_priority = 1; // lowest of all priorities
+	m_ini.m_framesBetweenChecks = 900;	// 30 seconds at 30 fps
+	m_ini.m_framesToExpire = 150; // 5 seconds at 30 fps
 }
 
 //-------------------------------------------------------------------------------------------------
 const FieldParse EvaCheckInfo::s_evaEventInfo[] = 
 {
-	{ "Priority",							INI::parseUnsignedInt,					NULL,			offsetof( EvaCheckInfo, m_priority ) },
-	{ "TimeBetweenChecksMS",	INI::parseDurationUnsignedInt,	NULL,			offsetof( EvaCheckInfo, m_framesBetweenChecks ) },
-	{ "ExpirationTimeMS",			INI::parseDurationUnsignedInt,	NULL,			offsetof( EvaCheckInfo, m_framesToExpire) },
-	{ "SideSounds",						parseSideSoundsList,						NULL,			offsetof( EvaCheckInfo, m_evaSideSounds ) },
+	{ "Priority",				INI::parseUnsignedInt,			NULL, offsetof( EvaCheckInfo::IniData, m_priority ) },
+	{ "TimeBetweenChecksMS",	INI::parseDurationUnsignedInt,	NULL, offsetof( EvaCheckInfo::IniData, m_framesBetweenChecks ) },
+	{ "ExpirationTimeMS",		INI::parseDurationUnsignedInt,	NULL, offsetof( EvaCheckInfo::IniData, m_framesToExpire) },
+	{ "SideSounds",				parseSideSoundsList,			NULL, offsetof( EvaCheckInfo::IniData, m_evaSideSounds ) },
 	{ 0, 0, 0, 0 },
 
 };
@@ -322,8 +320,8 @@ void Eva::update()
 EvaMessage Eva::nameToMessage(const AsciiString& name)
 {
   DEBUG_ASSERTCRASH( ELEMENTS_OF( TheEvaMessageNames ) == EVA_COUNT + 1, ("TheEvaMessageNames out of sync" ) );
-  DEBUG_ASSERTCRASH( stricmp( TheEvaMessageNames[ EVA_COUNT ], "EVA_INVALID" ) == 0, ("TheEvaMessageNames out of sync" ) );
-  DEBUG_ASSERTCRASH( stricmp( TheEvaMessageNames[ EVA_COUNT - 1], "EVA_INVALID" ) != 0, ("TheEvaMessageNames out of sync" ) );
+  DEBUG_ASSERTCRASH( strcasecmp( TheEvaMessageNames[ EVA_COUNT ], "EVA_INVALID" ) == 0, ("TheEvaMessageNames out of sync" ) );
+  DEBUG_ASSERTCRASH( strcasecmp( TheEvaMessageNames[ EVA_COUNT - 1], "EVA_INVALID" ) != 0, ("TheEvaMessageNames out of sync" ) );
 
 	for (Int i = EVA_FIRST; i < EVA_COUNT; ++i) {
 		if (name.compareNoCase(TheEvaMessageNames[i]) == 0) {
@@ -339,8 +337,8 @@ EvaMessage Eva::nameToMessage(const AsciiString& name)
 AsciiString Eva::messageToName(EvaMessage message)
 {
   DEBUG_ASSERTCRASH( ELEMENTS_OF( TheEvaMessageNames ) == EVA_COUNT + 1, ("TheEvaMessageNames out of sync" ) );
-  DEBUG_ASSERTCRASH( stricmp( TheEvaMessageNames[ EVA_COUNT ], "EVA_INVALID" ) == 0, ("TheEvaMessageNames out of sync" ) );
-  DEBUG_ASSERTCRASH( stricmp( TheEvaMessageNames[ EVA_COUNT - 1], "EVA_INVALID" ) != 0, ("TheEvaMessageNames out of sync" ) );
+  DEBUG_ASSERTCRASH( strcasecmp( TheEvaMessageNames[ EVA_COUNT ], "EVA_INVALID" ) == 0, ("TheEvaMessageNames out of sync" ) );
+  DEBUG_ASSERTCRASH( strcasecmp( TheEvaMessageNames[ EVA_COUNT - 1], "EVA_INVALID" ) != 0, ("TheEvaMessageNames out of sync" ) );
 
   if (message >= EVA_FIRST && message < EVA_COUNT)
 		return TheEvaMessageNames[message];
@@ -357,13 +355,13 @@ EvaCheckInfo *Eva::newEvaCheckInfo(AsciiString name)
 	// Only return a new one if there isn't an existing one.
 	EvaCheckInfoPtrVecIt it;
 	for (it = m_allCheckInfos.begin(); it != m_allCheckInfos.end(); ++it) {
-		if (*it && (*it)->m_message == mesg)
+		if (*it && (*it)->m_ini.m_message == mesg)
 			return NULL;
 	}
 
 	EvaCheckInfo *checkInfo = newInstance(EvaCheckInfo);
 	m_allCheckInfos.push_back(checkInfo);
-	checkInfo->m_message = mesg;
+	checkInfo->m_ini.m_message = mesg;
 	return checkInfo;
 }
 
@@ -375,7 +373,7 @@ const EvaCheckInfo *Eva::getEvaCheckInfo(AsciiString name)
 	// Only return a new one if there isn't an existing one.
 	EvaCheckInfoPtrVecIt it;
 	for (it = m_allCheckInfos.begin(); it != m_allCheckInfos.end(); ++it) {
-		if (*it && (*it)->m_message == mesg)
+		if (*it && (*it)->m_ini.m_message == mesg)
 			return *it;
 	}
 
@@ -401,11 +399,11 @@ void Eva::setEvaEnabled(Bool enabled)
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool Eva::isTimeForCheck(EvaMessage messageToTest, UnsignedInt currentFrame) const
+Bool Eva::isTimeForCheck(EvaMessage messageToTest, UnsignedInt /* currentFrame */) const
 {
 	EvaCheckVec::const_iterator it;
 	for (it = m_checks.begin(); it != m_checks.end(); ++it) {
-		if (it->m_evaInfo->m_message == messageToTest) {
+		if (it->m_evaInfo->m_ini.m_message == messageToTest) {
 			return FALSE;
 		}
 	}
@@ -414,7 +412,7 @@ Bool Eva::isTimeForCheck(EvaMessage messageToTest, UnsignedInt currentFrame) con
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool Eva::messageShouldPlay(EvaMessage messageToTest, UnsignedInt currentFrame) const
+Bool Eva::messageShouldPlay(EvaMessage messageToTest, UnsignedInt /* currentFrame */) const
 {
 	if (m_localPlayer == NULL) {
 		return FALSE;
@@ -465,7 +463,7 @@ void Eva::playMessage(EvaMessage messageToTest, UnsignedInt currentFrame)
 		return;
 	}
 
-	check.m_timeForNextCheck = currentFrame + check.m_evaInfo->m_framesBetweenChecks;
+	check.m_timeForNextCheck = currentFrame + check.m_evaInfo->m_ini.m_framesBetweenChecks;
 	check.m_triggeredOnFrame = currentFrame;
 	check.m_alreadyPlayed = FALSE;
 
@@ -485,7 +483,7 @@ void Eva::processPlayingMessages(UnsignedInt currentFrame)
 		}
 
 		// These are requests that never got a chance to play and have since expired.
-		if (it->m_triggeredOnFrame + it->m_evaInfo->m_framesToExpire <= currentFrame && !it->m_alreadyPlayed) {
+		if (it->m_triggeredOnFrame + it->m_evaInfo->m_ini.m_framesToExpire <= currentFrame && !it->m_alreadyPlayed) {
 			it = m_checks.erase(it);
 			continue;
 		}
@@ -508,9 +506,9 @@ void Eva::processPlayingMessages(UnsignedInt currentFrame)
 
 	UnsignedInt highestPriority = 0;
 	for (it = m_checks.begin(); it != m_checks.end(); ++it) {
-		if (it->m_evaInfo->m_priority > highestPriority && !it->m_alreadyPlayed) {
+		if (it->m_evaInfo->m_ini.m_priority > highestPriority && !it->m_alreadyPlayed) {
 			storedIt = it;
-			highestPriority = it->m_evaInfo->m_priority;
+			highestPriority = it->m_evaInfo->m_ini.m_priority;
 		}
 	}
 
@@ -521,25 +519,25 @@ void Eva::processPlayingMessages(UnsignedInt currentFrame)
 
 	// We've got a winner!
 	AsciiString side = ThePlayerList->getLocalPlayer()->getSide();
-	Int numSides = storedIt->m_evaInfo->m_evaSideSounds.size();
+	size_t numSides = storedIt->m_evaInfo->m_ini.m_evaSideSounds.size();
 
-  // clear it. If we can't find the side we want, don't play anything
-  m_evaSpeech.setEventName(AsciiString::TheEmptyString);
+	// clear it. If we can't find the side we want, don't play anything
+	m_evaSpeech.setEventName(AsciiString::TheEmptyString);
 
-	for (Int i = 0; i < numSides; ++i) {
-		if (side.compareNoCase(storedIt->m_evaInfo->m_evaSideSounds[i].m_side) == 0) {
+	for (size_t i = 0; i < numSides; ++i) {
+		if (side.compareNoCase(storedIt->m_evaInfo->m_ini.m_evaSideSounds[i].m_side) == 0) {
 			// Its this one.
-			if (storedIt->m_evaInfo->m_evaSideSounds[i].m_soundNames.size() > 0) {
-				Int soundToPlay = GameClientRandomValue(0, storedIt->m_evaInfo->m_evaSideSounds[i].m_soundNames.size() - 1);
-				m_evaSpeech.setEventName(storedIt->m_evaInfo->m_evaSideSounds[i].m_soundNames[soundToPlay]);
+			if (storedIt->m_evaInfo->m_ini.m_evaSideSounds[i].m_soundNames.size() > 0) {
+				size_t soundToPlay = (size_t)GameClientRandomValue(0, (Int)storedIt->m_evaInfo->m_ini.m_evaSideSounds[i].m_soundNames.size() - 1);
+				m_evaSpeech.setEventName(storedIt->m_evaInfo->m_ini.m_evaSideSounds[i].m_soundNames[soundToPlay]);
 			}
-      break;
+	  break;
 		}
 	}
 
 	// Update the entry
 	storedIt->m_alreadyPlayed = true;
-	storedIt->m_timeForNextCheck = currentFrame + storedIt->m_evaInfo->m_framesBetweenChecks;
+	storedIt->m_timeForNextCheck = currentFrame + storedIt->m_evaInfo->m_ini.m_framesBetweenChecks;
 	
 	// Now that we correctly filter messages, we need to set the player index for who should hear the
 	// sound to the local player.
@@ -551,20 +549,19 @@ void Eva::processPlayingMessages(UnsignedInt currentFrame)
 //-------------------------------------------------------------------------------------------------
 /** Parses the name of an Eva message from an INI file */
 //-------------------------------------------------------------------------------------------------
-/*static*/void Eva::parseEvaMessageFromIni( INI * ini, void *instance, void *store, const void* userData )
+/*static*/void Eva::parseEvaMessageFromIni( INI* ini, void* /* instance */, void* store, const void* /* userData */ )
 {
-  const char *token = ini->getNextToken();
-   
-  EvaMessage message = nameToMessage( token );
-  if ( message == EVA_Invalid )
-  {
-    // debug message already displayed
-    throw ERROR_BAD_INI;
-  }
+	const char *token = ini->getNextToken();
+	
+	EvaMessage message = nameToMessage( token );
+	if ( message == EVA_Invalid )
+	{
+		// debug message already displayed
+		throw ERROR_BAD_INI;
+	}
 
-  *((EvaMessage *)store) = message;
+	*((EvaMessage *)store) = message;
 }
 
 //-------------------------------------------------------------------------------------------------
 Eva *TheEva = NULL;
-

@@ -30,7 +30,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 
 #define DEFINE_W3DANIMMODE_NAMES
-// #define DEFINE_WEAPONSLOTTYPE_NAMES
+#define DEFINE_WEAPONSLOTTYPE_NAMES
 
 #define NO_DEBUG_CRC
 
@@ -232,7 +232,6 @@ enum ACBits
    MAINTAIN_FRAME_ACROSS_STATES4,
 };
 
-#if 0
 static const char *ACBitsNames[] =
 {
    "RANDOMSTART",
@@ -248,7 +247,6 @@ static const char *ACBitsNames[] =
    
    NULL
 };
-#endif // if 0
 
 static const Int ALL_MAINTAIN_FRAME_FLAGS =
    (1<<MAINTAIN_FRAME_ACROSS_STATES) |
@@ -746,10 +744,10 @@ void ModelConditionInfo::validateWeaponBarrelInfo() const
       m_weaponBarrelInfoVec[wslot].clear();
       m_hasRecoilBonesOrMuzzleFlashes[wslot] = false;
 
-      const AsciiString& fxBoneName = m_weaponFireFXBoneName[wslot];
-      const AsciiString& recoilBoneName = m_weaponRecoilBoneName[wslot];
-      const AsciiString& mfName = m_weaponMuzzleFlashName[wslot];
-      const AsciiString& plbName = m_weaponProjectileLaunchBoneName[wslot];
+      const AsciiString& fxBoneName = m_ini.m_weaponFireFXBoneName[wslot];
+      const AsciiString& recoilBoneName = m_ini.m_weaponRecoilBoneName[wslot];
+      const AsciiString& mfName = m_ini.m_weaponMuzzleFlashName[wslot];
+      const AsciiString& plbName = m_ini.m_weaponProjectileLaunchBoneName[wslot];
     
 // a useful tool for finding missing INI entries in the weapon-bone block
 // since this class has no idea which object it refers to, it must assume that the projectilelaunchbonename
@@ -881,7 +879,7 @@ void ModelConditionInfo::validateTurretInfo() const
 
    for (int tslot = 0; tslot < MAX_TURRETS; ++tslot)
    {
-      TurretInfo& tur = m_turrets[tslot];
+      TurretInfo& tur = m_ini.m_turrets[tslot];
       if (!isValidTimeToCalcLogicStuff() || m_ini.m_modelName.isEmpty())
       {
          tur.m_turretAngleBone = 0;
@@ -1005,23 +1003,23 @@ void ModelConditionInfo::clear()
    m_ini.m_modelName.clear();
    for (i = 0; i < MAX_TURRETS; ++i)
    {
-      m_turrets[i].clear();
+      m_ini.m_turrets[i].clear();
    }
-   m_hideShowVec.clear();
+   m_ini.m_hideShowVec.clear();
    for (i = 0; i < WEAPONSLOT_COUNT; ++i)
    {
-      m_weaponFireFXBoneName[i].clear();
-      m_weaponRecoilBoneName[i].clear();
-      m_weaponMuzzleFlashName[i].clear();
-      m_weaponProjectileLaunchBoneName[i].clear();
+      m_ini.m_weaponFireFXBoneName[i].clear();
+      m_ini.m_weaponRecoilBoneName[i].clear();
+      m_ini.m_weaponMuzzleFlashName[i].clear();
+      m_ini.m_weaponProjectileLaunchBoneName[i].clear();
       m_weaponBarrelInfoVec[i].clear();
       m_hasRecoilBonesOrMuzzleFlashes[i] = false;
    }
    m_particleSysBones.clear();
    m_ini.m_animations.clear();
-   m_flags = 0;
-   m_transitionKey = NAMEKEY_INVALID;
-   m_allowToFinishKey = NAMEKEY_INVALID;
+   m_ini.m_flags = 0;
+   m_ini.m_transitionKey = NAMEKEY_INVALID;
+   m_ini.m_allowToFinishKey = NAMEKEY_INVALID;
    m_iniReadFlags = 0;
    // FIXME: RenderObjClass
    // m_mode = RenderObjClass::ANIM_MODE_ONCE;
@@ -1213,27 +1211,26 @@ void LinuxModelDrawModuleData::buildFieldParse(void* what, MultiIniFieldParse& p
       // { "MaxRecoilDistance",	INI::parseReal, NULL, offsetof(LinuxModelDrawModuleData, m_maxRecoil) },
       // { "RecoilDamping",	INI::parseReal, NULL, offsetof(LinuxModelDrawModuleData, m_recoilDamping) },
       // { "RecoilSettleSpeed",	INI::parseVelocityReal, NULL, offsetof(LinuxModelDrawModuleData, m_recoilSettle) },
-      // { "OkToChangeModelColor",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData, m_okToChangeModelColor) },
+      { "OkToChangeModelColor",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_okToChangeModelColor) },
       // { "AnimationsRequirePower",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData, m_animationsRequirePower) },
-      // { "ParticlesAttachedToAnimatedBones",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData, m_particlesAttachedToAnimatedBones) },
+      { "ParticlesAttachedToAnimatedBones",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_particlesAttachedToAnimatedBones) },
       // { "MinLODRequired",		INI::parseStaticGameLODLevel,	NULL,	offsetof(LinuxModelDrawModuleData, m_minLODRequired) },
       // { "ProjectileBoneFeedbackEnabledSlots", INI::parseBitString32, TheWeaponSlotTypeNames, offsetof(LinuxModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots) },
       { "DefaultConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_DEFAULT, 0 },
-      // { "ConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_NORMAL, 0 },
-      // { "AliasConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_ALIAS, 0 },
-      // { "TransitionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_TRANSITION, 0 },
+      { "ConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_NORMAL, 0 },
+      { "AliasConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_ALIAS, 0 },
+      { "TransitionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_TRANSITION, 0 },
       // { "TrackMarks", parseAsciiStringLC, NULL, offsetof(LinuxModelDrawModuleData, m_trackFile) },
       // { "ExtraPublicBone", INI::parseAsciiStringVectorAppend, NULL, offsetof(LinuxModelDrawModuleData, m_extraPublicBones) },
       // { "AttachToBoneInAnotherModule", parseAsciiStringLC, NULL, offsetof(LinuxModelDrawModuleData, m_attachToDrawableBone) },
-      // { "IgnoreConditionStates", ModelConditionFlags::parseFromINI, NULL, offsetof(LinuxModelDrawModuleData, m_ignoreConditionStates) },
+      { "IgnoreConditionStates", ModelConditionFlags::parseFromINI, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_ignoreConditionStates) },
       // { "ReceivesDynamicLights", INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData, m_receivesDynamicLights) },
     { 0, 0, 0, 0 }
    };
 
-   // LinuxModelDrawModuleData* self {static_cast<LinuxModelDrawModuleData*>(what)};
-   // size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
-   p.add(dataFieldParse);
-
+   LinuxModelDrawModuleData* self {static_cast<LinuxModelDrawModuleData*>(what)};
+   size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+   p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1281,9 +1278,8 @@ static void parseAnimation(INI* ini, void *instance, void * /*store*/, const voi
    }
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
-static void parseShowHideSubObject(INI* ini, void *instance, void *store, const void* userData)
+static void parseShowHideSubObject(INI* ini, void* /* instance */, void *store, const void* userData)
 {
    std::vector<ModelConditionInfo::HideShowSubObjInfo>* vec = (std::vector<ModelConditionInfo::HideShowSubObjInfo>*)store;
    AsciiString subObjName = ini->getNextAsciiString();
@@ -1301,7 +1297,7 @@ static void parseShowHideSubObject(INI* ini, void *instance, void *store, const 
       Bool found = false;
       for (std::vector<ModelConditionInfo::HideShowSubObjInfo>::iterator it = vec->begin(); it != vec->end(); ++it)
       {
-         if (stricmp(it->subObjName.str(), subObjName.str()) == 0)
+         if (strcasecmp(it->subObjName.str(), subObjName.str()) == 0)
          {
             it->hide = (userData != NULL);
             found = true;
@@ -1310,7 +1306,7 @@ static void parseShowHideSubObject(INI* ini, void *instance, void *store, const 
       
       if (!found)
       {
-         ModelConditionInfo::HideShowSubObjInfo info;
+         ModelConditionInfo::HideShowSubObjInfo info {};
          info.subObjName = subObjName;
          info.hide = (userData != NULL);
          vec->push_back(info);
@@ -1320,6 +1316,7 @@ static void parseShowHideSubObject(INI* ini, void *instance, void *store, const 
    }
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::showSubObject( const AsciiString& name, Bool show )
 {
@@ -1344,6 +1341,7 @@ void LinuxModelDraw::showSubObject( const AsciiString& name, Bool show )
       }
    }
 }
+#endif // if 0
 
 
 
@@ -1362,7 +1360,6 @@ static void parseWeaponBoneName(INI* ini, void *instance, void * store, const vo
    if (self)
       self->addPublicBone(arr[wslot]);
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 static void parseParticleSysBone(INI* ini, void *instance, void * /* store */, const void * /*userData*/)
@@ -1371,16 +1368,16 @@ static void parseParticleSysBone(INI* ini, void *instance, void * /* store */, c
    info.boneName = ini->getNextAsciiString();
    info.boneName.toLower();
    ini->parseParticleSystemTemplate(ini, nullptr, &(info.particleSystemTemplate), nullptr);
-	ModelConditionInfo::IniData* data = (ModelConditionInfo::IniData*) instance;
-	ModelConditionInfo* self = data->m_obj;
+   ModelConditionInfo::IniData* data = (ModelConditionInfo::IniData*) instance;
+   ModelConditionInfo* self = data->m_obj;
    self->m_particleSysBones.push_back(info);
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
-static void parseRealRange( INI *ini, void *instance, void *store, const void* /*userData*/ )
+static void parseRealRange( INI *ini, void* instance, void* /* store */, const void* /*userData*/ )
 {
-   ModelConditionInfo *self = (ModelConditionInfo *)instance;
+   ModelConditionInfo::IniData* data = (ModelConditionInfo::IniData*) instance;
+   ModelConditionInfo* self = data->m_obj;
 
    const char *token = ini->getNextToken();
    self->m_animMinSpeedFactor = ini->scanReal( token );
@@ -1389,7 +1386,7 @@ static void parseRealRange( INI *ini, void *instance, void *store, const void* /
 }
 
 //-------------------------------------------------------------------------------------------------
-static void parseLowercaseNameKey(INI* ini, void *instance, void * store, const void * /*userData*/)
+static void parseLowercaseNameKey(INI* ini, void* /* instance */, void * store, const void * /*userData*/)
 {
    NameKeyType* key = (NameKeyType*)store;
 
@@ -1402,7 +1399,8 @@ static void parseLowercaseNameKey(INI* ini, void *instance, void * store, const 
 //-------------------------------------------------------------------------------------------------
 static void parseBoneNameKey(INI* ini, void *instance, void * store, const void * /*userData*/)
 {
-   ModelConditionInfo* self = (ModelConditionInfo*)instance;
+   ModelConditionInfo::IniData* data = (ModelConditionInfo::IniData*) instance;
+   ModelConditionInfo* self = data->m_obj;
    NameKeyType* key = (NameKeyType*)store;
 
    AsciiString tmp = ini->getNextToken();
@@ -1430,71 +1428,62 @@ static Bool doesStateExist(const ModelConditionVector& v, const ModelConditionFl
    }
    return false;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
-void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, void * /*store*/, const void* userData)
+void LinuxModelDrawModuleData::parseConditionState(INI* ini, void* instance, void* /*store*/, const void* userData)
 {
-   (void) instance;
-   (void) userData;
    static const FieldParse myFieldParse[] = 
    {
 // FIXME: LinuxModelDrawModuleData::buildFieldParse
       { "Model",	parseAsciiStringLC, NULL, offsetof(ModelConditionInfo::IniData, m_modelName) },
-      // { "Turret",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo, m_turrets[0].m_turretAngleNameKey) },
+      { "Turret",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo::IniData, m_turrets[0].m_turretAngleNameKey) },
       // { "TurretArtAngle", INI::parseAngleReal, NULL, offsetof(ModelConditionInfo, m_turrets[0].m_turretArtAngle) },
-      // { "TurretPitch",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo, m_turrets[0].m_turretPitchNameKey) },
+      { "TurretPitch",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo::IniData, m_turrets[0].m_turretPitchNameKey) },
       // { "TurretArtPitch", INI::parseAngleReal, NULL, offsetof(ModelConditionInfo, m_turrets[0].m_turretArtPitch) },
-      // { "AltTurret",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo, m_turrets[1].m_turretAngleNameKey) },
+      { "AltTurret",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo::IniData, m_turrets[1].m_turretAngleNameKey) },
       // { "AltTurretArtAngle", INI::parseAngleReal, NULL, offsetof(ModelConditionInfo, m_turrets[1].m_turretArtAngle) },
-      // { "AltTurretPitch",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo, m_turrets[1].m_turretPitchNameKey) },
+      { "AltTurretPitch",	parseBoneNameKey, NULL, offsetof(ModelConditionInfo::IniData, m_turrets[1].m_turretPitchNameKey) },
       // { "AltTurretArtPitch", INI::parseAngleReal, NULL, offsetof(ModelConditionInfo, m_turrets[1].m_turretArtPitch) },
-      // { "ShowSubObject", parseShowHideSubObject, (void*)0, offsetof(ModelConditionInfo, m_hideShowVec) },
-      // { "HideSubObject", parseShowHideSubObject, (void*)1, offsetof(ModelConditionInfo, m_hideShowVec) },
-      // { "WeaponFireFXBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo, m_weaponFireFXBoneName[0]) },
-      // { "WeaponRecoilBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo, m_weaponRecoilBoneName[0]) },
-      // { "WeaponMuzzleFlash", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo, m_weaponMuzzleFlashName[0]) },
-      // { "WeaponLaunchBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo, m_weaponProjectileLaunchBoneName[0]) },
-      // { "WeaponHideShowBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo, m_weaponProjectileHideShowName[0]) },
+      { "ShowSubObject", parseShowHideSubObject, (void*)0, offsetof(ModelConditionInfo::IniData, m_hideShowVec) },
+      { "HideSubObject", parseShowHideSubObject, (void*)1, offsetof(ModelConditionInfo::IniData, m_hideShowVec) },
+      { "WeaponFireFXBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo::IniData, m_weaponFireFXBoneName[0]) },
+      { "WeaponRecoilBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo::IniData, m_weaponRecoilBoneName[0]) },
+      { "WeaponMuzzleFlash", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo::IniData, m_weaponMuzzleFlashName[0]) },
+      { "WeaponLaunchBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo::IniData, m_weaponProjectileLaunchBoneName[0]) },
+      { "WeaponHideShowBone", parseWeaponBoneName, NULL, offsetof(ModelConditionInfo::IniData, m_weaponProjectileHideShowName[0]) },
       { "Animation", parseAnimation, (void*)ANIM_NORMAL, offsetof(ModelConditionInfo::IniData, m_animations) },
-      // { "IdleAnimation", parseAnimation, (void*)ANIM_IDLE, offsetof(ModelConditionInfo, m_animations) },
+      { "IdleAnimation", parseAnimation, (void*)ANIM_IDLE, offsetof(ModelConditionInfo::IniData, m_animations) },
       { "AnimationMode", INI::parseIndexList, TheAnimModeNames, offsetof(ModelConditionInfo::IniData, m_mode) },
-      // { "TransitionKey", parseLowercaseNameKey, NULL, offsetof(ModelConditionInfo, m_transitionKey) },
-      // { "WaitForStateToFinishIfPossible", parseLowercaseNameKey, NULL, offsetof(ModelConditionInfo, m_allowToFinishKey) },
-      // { "Flags", INI::parseBitString32, ACBitsNames, offsetof(ModelConditionInfo, m_flags) },
+      { "TransitionKey", parseLowercaseNameKey, NULL, offsetof(ModelConditionInfo::IniData, m_transitionKey) },
+      { "WaitForStateToFinishIfPossible", parseLowercaseNameKey, NULL, offsetof(ModelConditionInfo::IniData, m_allowToFinishKey) },
+      { "Flags", INI::parseBitString32, ACBitsNames, offsetof(ModelConditionInfo::IniData, m_flags) },
       { "ParticleSysBone", parseParticleSysBone, NULL, 0 },
-      // { "AnimationSpeedFactorRange", parseRealRange, NULL, 0 },
+      { "AnimationSpeedFactorRange", parseRealRange, NULL, 0 },
       { 0, 0, 0, 0 }
    };
 
    ModelConditionInfo info;
-#if 0
    LinuxModelDrawModuleData* self = (LinuxModelDrawModuleData*)instance;
-   ParseCondStateType cst = (ParseCondStateType)(UnsignedInt)userData;
+   ParseCondStateType cst = (ParseCondStateType)(intptr_t)userData;
+
    switch (cst)
    {
       case PARSE_DEFAULT:
       {
-         if (self->m_defaultState >= 0)
-         {
+         if (self->m_defaultState >= 0) {
             DEBUG_CRASH(("*** ASSET ERROR: you may have only one default state!\n"));
             throw INI_INVALID_DATA;
-         }
-         else if (ini->getNextTokenOrNull())
-         {
+         } else if (ini->getNextTokenOrNull()) {
             DEBUG_CRASH(("*** ASSET ERROR: unknown keyword\n"));
             throw INI_INVALID_DATA;
-         }
-         else
-         {
-            if (!self->m_conditionStates.empty())
-            {
+         } else {
+            if (!self->m_conditionStates.empty()) {
                DEBUG_CRASH(("*** ASSET ERROR: when using DefaultConditionState, it must be the first state listed (%s)\n",TheThingTemplateBeingParsedName.str()));
                throw INI_INVALID_DATA;
             }
 
             // note, this is size(), not size()-1, since we haven't actually modified the list yet
-            self->m_defaultState = self->m_conditionStates.size();
+            self->m_defaultState = (Int)self->m_conditionStates.size();
             //DEBUG_LOG(("set default state to %d\n",self->m_defaultState));
 
             // add an empty conditionstateflag set
@@ -1513,23 +1502,21 @@ void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, voi
 
       case PARSE_TRANSITION:
       {
-        AsciiString firstNm = ini->getNextToken(); firstNm.toLower();
-        AsciiString secondNm = ini->getNextToken(); secondNm.toLower();
+         AsciiString firstNm = ini->getNextToken(); firstNm.toLower();
+         AsciiString secondNm = ini->getNextToken(); secondNm.toLower();
          NameKeyType firstKey = NAMEKEY(firstNm);
          NameKeyType secondKey = NAMEKEY(secondNm);
 
-         if (firstKey == secondKey)
-         {
+         if (firstKey == secondKey) {
             DEBUG_CRASH(("*** ASSET ERROR: You may not declare a transition between two identical states\n"));
             throw INI_INVALID_DATA;
          }
 
-         if (self->m_defaultState >= 0)
-         {
-            info = self->m_conditionStates.at(self->m_defaultState);
+         if (self->m_defaultState >= 0) {
+            info = self->m_conditionStates.at((size_t)self->m_defaultState);
             info.m_iniReadFlags |= (1<<ANIMS_COPIED_FROM_DEFAULT_STATE);
-            info.m_transitionKey = NAMEKEY_INVALID;
-            info.m_allowToFinishKey = NAMEKEY_INVALID;
+            info.m_ini.m_transitionKey = NAMEKEY_INVALID;
+            info.m_ini.m_allowToFinishKey = NAMEKEY_INVALID;
          }
 
          info.m_transitionSig = buildTransitionSig(firstKey, secondKey);
@@ -1547,8 +1534,7 @@ void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, voi
 
       case PARSE_ALIAS:
       {
-         if (self->m_conditionStates.empty())
-         {
+         if (self->m_conditionStates.empty()) {
             DEBUG_CRASH(("*** ASSET ERROR: AliasConditionState must refer to the previous state!\n"));
             throw INI_INVALID_DATA;
          }
@@ -1567,21 +1553,18 @@ void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, voi
          conditionsYes.parse(ini, NULL);
    #endif
          
-         if (conditionsYes.anyIntersectionWith(self->m_ignoreConditionStates))
-         {
+         if (conditionsYes.anyIntersectionWith(self->m_ini.m_ignoreConditionStates)) {
             DEBUG_CRASH(("You should not specify bits in a state once they are used in IgnoreConditionStates (%s)\n", TheThingTemplateBeingParsedName.str()));
             throw INI_INVALID_DATA;
          }
 
-         if (doesStateExist(self->m_conditionStates, conditionsYes))
-         {
+         if (doesStateExist(self->m_conditionStates, conditionsYes)) {
             DEBUG_CRASH(("*** ASSET ERROR: duplicate condition states are not currently allowed"));
             throw INI_INVALID_DATA;
          }
 
 
-         if (!conditionsYes.any() && self->m_defaultState >= 0)
-         {
+         if (!conditionsYes.any() && self->m_defaultState >= 0) {
             DEBUG_CRASH(("*** ASSET ERROR: you may not specify both a Default state and a Conditions=None state"));
             throw INI_INVALID_DATA;
          }
@@ -1594,9 +1577,8 @@ void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, voi
 
       case PARSE_NORMAL:
       {
-         if (self->m_defaultState >= 0 && cst != PARSE_ALIAS)
-         {
-            info = self->m_conditionStates.at(self->m_defaultState);
+         if (self->m_defaultState >= 0 && cst != PARSE_ALIAS) {
+            info = self->m_conditionStates.at((size_t)self->m_defaultState);
             info.m_iniReadFlags |= (1<<ANIMS_COPIED_FROM_DEFAULT_STATE);
             info.m_conditionsYesVec.clear();
          }
@@ -1621,27 +1603,23 @@ void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, voi
          conditionsYes.parse(ini, NULL);
    #endif
 
-         if (conditionsYes.anyIntersectionWith(self->m_ignoreConditionStates))
-         {
+         if (conditionsYes.anyIntersectionWith(self->m_ini.m_ignoreConditionStates)) {
             DEBUG_CRASH(("You should not specify bits in a state once they are used in IgnoreConditionStates (%s)\n", TheThingTemplateBeingParsedName.str()));
             throw INI_INVALID_DATA;
          }
 
-         if (self->m_defaultState < 0 && self->m_conditionStates.empty() && conditionsYes.any())
-         {
+         if (self->m_defaultState < 0 && self->m_conditionStates.empty() && conditionsYes.any()) {
             // it doesn't actually NEED to be first, but it does need to be present, and this is the simplest way to enforce...
             DEBUG_CRASH(("*** ASSET ERROR: when not using DefaultConditionState, the first ConditionState must be for NONE (%s)\n",TheThingTemplateBeingParsedName.str()));
             throw INI_INVALID_DATA;
          }
 
-         if (!conditionsYes.any() && self->m_defaultState >= 0)
-         {
+         if (!conditionsYes.any() && self->m_defaultState >= 0) {
             DEBUG_CRASH(("*** ASSET ERROR: you may not specify both a Default state and a Conditions=None state"));
             throw INI_INVALID_DATA;
          }
 
-         if (doesStateExist(self->m_conditionStates, conditionsYes))
-         {
+         if (doesStateExist(self->m_conditionStates, conditionsYes)) {
             DEBUG_CRASH(("*** ASSET ERROR: duplicate condition states are not currently allowed (%s)",info.m_description.str()));
             throw INI_INVALID_DATA;
          }
@@ -1652,70 +1630,56 @@ void LinuxModelDrawModuleData::parseConditionState(INI* ini, void *instance, voi
       }
       break;
    }
-#endif // if 0
 
    ini->initFromINI(&info.m_ini, myFieldParse);
 
-#if 0
-   if (info.m_modelName.isEmpty())
-   {
+   if (info.m_ini.m_modelName.isEmpty()) {
       DEBUG_CRASH(("*** ASSET ERROR: you must specify a model name"));
       throw INI_INVALID_DATA;
-   }
-   else if (info.m_modelName.isNone())
-   {
-      info.m_modelName.clear();
+   } else if (info.m_ini.m_modelName.isNone()) {
+      info.m_ini.m_modelName.clear();
    }
 
-   if ((info.m_iniReadFlags & (1<<GOT_IDLE_ANIMS)) && (info.m_iniReadFlags & (1<<GOT_NONIDLE_ANIMS)))
-   {
+   if ((info.m_iniReadFlags & (1<<GOT_IDLE_ANIMS)) && (info.m_iniReadFlags & (1<<GOT_NONIDLE_ANIMS))) {
       DEBUG_CRASH(("*** ASSET ERROR: you should not specify both Animations and IdleAnimations for the same state"));
       throw INI_INVALID_DATA;
    }
 
-   if ((info.m_iniReadFlags & (1<<GOT_IDLE_ANIMS)) && (info.m_mode != RenderObjClass::ANIM_MODE_ONCE && info.m_mode != RenderObjClass::ANIM_MODE_ONCE_BACKWARDS))
-   {
+   if ((info.m_iniReadFlags & (1<<GOT_IDLE_ANIMS)) && (info.m_ini.m_mode != RenderObjClass::ANIM_MODE_ONCE && info.m_ini.m_mode != RenderObjClass::ANIM_MODE_ONCE_BACKWARDS)) {
       DEBUG_CRASH(("*** ASSET ERROR: Idle Anims should always use ONCE or ONCE_BACKWARDS (%s)\n",TheThingTemplateBeingParsedName.str()));
       throw INI_INVALID_DATA;
    }
 
    info.m_validStuff &= ~ModelConditionInfo::HAS_PROJECTILE_BONES;
-   for (int wslot = 0; wslot < WEAPONSLOT_COUNT; ++wslot)
-   {
-      if (info.m_weaponProjectileLaunchBoneName[wslot].isNotEmpty())
+   for (int wslot = 0; wslot < WEAPONSLOT_COUNT; ++wslot) {
+      if (info.m_ini.m_weaponProjectileLaunchBoneName[wslot].isNotEmpty())
       {
          info.m_validStuff |= ModelConditionInfo::HAS_PROJECTILE_BONES;
          break;
       }
    }
 
-   if (cst == PARSE_TRANSITION)
-   {
+   if (cst == PARSE_TRANSITION) {
       if (info.m_iniReadFlags & (1<<GOT_IDLE_ANIMS))
       {
          DEBUG_CRASH(("*** ASSET ERROR: Transition States should not specify Idle anims"));
          throw INI_INVALID_DATA;
       }
 
-      if (info.m_mode != RenderObjClass::ANIM_MODE_ONCE && info.m_mode != RenderObjClass::ANIM_MODE_ONCE_BACKWARDS)
-      {
+      if (info.m_ini.m_mode != RenderObjClass::ANIM_MODE_ONCE && info.m_ini.m_mode != RenderObjClass::ANIM_MODE_ONCE_BACKWARDS) {
          DEBUG_CRASH(("*** ASSET ERROR: Transition States should always use ONCE or ONCE_BACKWARDS"));
          throw INI_INVALID_DATA;
       }
 
-      if (info.m_transitionKey != NAMEKEY_INVALID || info.m_allowToFinishKey != NAMEKEY_INVALID)
-      {
+      if (info.m_ini.m_transitionKey != NAMEKEY_INVALID || info.m_ini.m_allowToFinishKey != NAMEKEY_INVALID) {
          DEBUG_CRASH(("*** ASSET ERROR: Transition States must not have transition keys or m_allowToFinishKey"));
          throw INI_INVALID_DATA;
       }
 
       self->m_transitionMap[info.m_transitionSig] = info;
-   }
-   else
-   {
+   } else {
       self->m_conditionStates.push_back(info);
    }
-#endif // if 0
 }
 
 #if 0
@@ -1854,10 +1818,14 @@ void LinuxModelDraw::doStartOrStopParticleSys()
       }
    }
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::setHidden(Bool hidden)
 {
+(void) hidden;
+DEBUG_CRASH(("LinuxModelDraw::setHidden not yet implemented!"));
+#if 0
    if (m_renderObject)
       m_renderObject->Set_Hidden(hidden);
 
@@ -1875,8 +1843,10 @@ void LinuxModelDraw::setHidden(Bool hidden)
    }
    
    doStartOrStopParticleSys();
+#endif // if 0
 }
 
+#if 0
 /**Free all data used by this model's shadow.  This is used to dynamically enable/disable shadows by the options screen*/
 void LinuxModelDraw::releaseShadows(void)	///< frees all shadow resources used by this module - used by Options screen.
 {
@@ -1911,6 +1881,7 @@ void LinuxModelDraw::allocateShadows(void)
       }
    }
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::setShadowsEnabled(Bool enable)
@@ -1920,6 +1891,7 @@ void LinuxModelDraw::setShadowsEnabled(Bool enable)
    m_shadowEnabled = enable;
 }
 
+#if 0
 /**collect some stats about the rendering cost of this draw module */
 #if defined(_DEBUG) || defined(_INTERNAL)	
 void LinuxModelDraw::getRenderCost(RenderCost & rc) const
@@ -2071,10 +2043,14 @@ void LinuxModelDraw::adjustTransformMtx(Matrix3D& mtx) const
       }
    }
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::doDrawModule(const Matrix3D* transformMtx)
 {
+(void) transformMtx;
+DEBUG_CRASH(("LinuxModelDraw::doDrawModule not yet implemented!"));
+#if 0
    // update whether or not we should be animating.
    setPauseAnimation( !getDrawable()->getShouldAnimate(getLinuxModelDrawModuleData()->m_animationsRequirePower) );
 
@@ -2145,8 +2121,10 @@ void LinuxModelDraw::doDrawModule(const Matrix3D* transformMtx)
 
    handleClientRecoil();
 
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 const ModelConditionInfo* LinuxModelDraw::findTransitionForSig(TransitionSig sig) const
 {
@@ -3682,13 +3660,18 @@ Int LinuxModelDraw::getCurrentBonePositions(
 
    return posCount;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::reactToTransformChange( const Matrix3D* oldMtx, 
                                                                 const Coord3D* oldPos, 
                                                                 Real oldAngle )
 {
-
+(void) oldMtx;
+(void) oldPos;
+(void) oldAngle;
+DEBUG_CRASH(("LinuxModelDraw::reactToTransformChange not yet implemented!"));
+#if 0
    // set the position of our render object
    if( m_renderObject )
    {
@@ -3715,8 +3698,10 @@ void LinuxModelDraw::reactToTransformChange( const Matrix3D* oldMtx,
          m_trackRenderObject->addEdgeToTrack(pos->x, pos->y);
       }
    }
-} 
+#endif // if 0
+}
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 const ModelConditionInfo* LinuxModelDraw::findBestInfo(const ModelConditionFlags& c) const
 {
@@ -4350,8 +4335,8 @@ void LinuxModelDrawModuleData::xfer(Xfer* x)
          }
          for (Int i=0; i<MAX_TURRETS; ++i)
          {
-            x->xferInt(&(info->m_turrets[i].m_turretAngleBone));
-            x->xferInt(&(info->m_turrets[i].m_turretPitchBone));
+            x->xferInt(&(info->m_ini.m_turrets[i].m_turretAngleBone));
+            x->xferInt(&(info->m_ini.m_turrets[i].m_turretPitchBone));
          }
          for (Int i=0; i<WEAPONSLOT_COUNT; ++i)
          {

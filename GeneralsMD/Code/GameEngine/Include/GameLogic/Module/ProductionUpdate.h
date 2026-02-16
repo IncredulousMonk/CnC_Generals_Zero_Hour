@@ -100,29 +100,29 @@ public:
 
 protected:
 	
-	ProductionType m_type;														///< production type
+	ProductionType m_type {};														///< production type
 	union
 	{
-		const ThingTemplate *m_objectToProduce;					///< what we're going to produce
+		const ThingTemplate *m_objectToProduce;				///< what we're going to produce
 		const UpgradeTemplate *m_upgradeToResearch;			///< what upgrade we're researching
 	};
-	ProductionID m_productionID;											///< our very own production ID!
-	Real m_percentComplete;														///< percent our construction is complete
-	Int m_framesUnderConstruction;										///< counter for how many frames we've been under construction (incremented once per update)
-	Int m_productionQuantityTotal;										///< it is now possible to construct multiple units simultaneously.
-	Int m_productionQuantityProduced;									///< And we need to allow pausing within an entry, so we keep track of number of sub-successes
-	ExitDoorType m_exitDoor;
+	ProductionID m_productionID {};							///< our very own production ID!
+	Real m_percentComplete {};								///< percent our construction is complete
+	Int m_framesUnderConstruction {};						///< counter for how many frames we've been under construction (incremented once per update)
+	Int m_productionQuantityTotal {};						///< it is now possible to construct multiple units simultaneously.
+	Int m_productionQuantityProduced {};					///< And we need to allow pausing within an entry, so we keep track of number of sub-successes
+	ExitDoorType m_exitDoor {};
 
-	ProductionEntry *m_next;													///< next in list
-	ProductionEntry *m_prev;													///< prev in list
+	ProductionEntry *m_next {};								///< next in list
+	ProductionEntry *m_prev {};								///< prev in list
 
 };
 
 //-------------------------------------------------------------------------------------------------
 struct QuantityModifier
 {
-	AsciiString m_templateName;
-	Int					m_quantity;
+	AsciiString m_templateName {};
+	Int			m_quantity {};
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -130,14 +130,20 @@ class ProductionUpdateModuleData : public UpdateModuleData
 {
 
 public:
-  Int														m_numDoorAnimations;						///< has a door animation(s) upon unit built and exit
-	UnsignedInt										m_doorOpeningTime;							///< in frames, time it takes the door to open
-	UnsignedInt										m_doorWaitOpenTime;							///< in frames, time we should leave the door open
-	UnsignedInt										m_doorClosingTime;							///< in frames, time it takes to close the door
-	UnsignedInt										m_constructionCompleteDuration; ///< in frames, how long we state in "construction complete" condition after making something
-	std::vector<QuantityModifier>	m_quantityModifiers;						///< Quantity modifiers modify the number of specified object to created whenever produced.
-  Int														m_maxQueueEntries;							///< max things that can be queued at once.
-	DisabledMaskType							m_disabledTypesToProcess;
+	// MG: Cannot apply offsetof to DieModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Int								m_numDoorAnimations;				///< has a door animation(s) upon unit built and exit
+		UnsignedInt						m_doorOpeningTime;					///< in frames, time it takes the door to open
+		UnsignedInt						m_doorWaitOpenTime;					///< in frames, time we should leave the door open
+		UnsignedInt						m_doorClosingTime;					///< in frames, time it takes to close the door
+		UnsignedInt						m_constructionCompleteDuration;		///< in frames, how long we state in "construction complete" condition after making something
+		std::vector<QuantityModifier>	m_quantityModifiers;				///< Quantity modifiers modify the number of specified object to created whenever produced.
+		Int								m_maxQueueEntries;					///< max things that can be queued at once.
+		DisabledMaskType				m_disabledTypesToProcess;
+	};
+
+	IniData m_ini {};
 
 	ProductionUpdateModuleData( void );
 	static void buildFieldParse(void* what, MultiIniFieldParse& p);
@@ -206,7 +212,7 @@ public:
 	static Int getInterfaceMask() { return UpdateModule::getInterfaceMask() | (MODULEINTERFACE_DIE); }
 
 	// Disabled conditions to process (AI will still process held status)
-	virtual DisabledMaskType getDisabledTypesToProcess() const { return getProductionUpdateModuleData()->m_disabledTypesToProcess; }
+	virtual DisabledMaskType getDisabledTypesToProcess() const { return getProductionUpdateModuleData()->m_ini.m_disabledTypesToProcess; }
 
 	virtual ProductionUpdateInterface* getProductionUpdateInterface( void ) { return this; }
 	virtual DieModuleInterface* getDie() { return this; }
@@ -262,19 +268,19 @@ protected:
 		UnsignedInt m_doorOpenedFrame;											///< for producer objects that have a door open/close animation when they make something
 		UnsignedInt m_doorWaitOpenFrame;										///< frame we entered into wait open state
 		UnsignedInt m_doorClosedFrame;											///< frame any door was closed on
-		Bool				m_holdOpen;															///< if T, don't allow door to close
+		Bool		m_holdOpen;													///< if T, don't allow door to close
 	};
 
-	const CommandButton *m_specialPowerConstructionCommandButton; ///< In a mode to construct a specific building via a special power. (NO NEED TO SAVE DATA ON THIS FIELD)
-	ProductionEntry*		m_productionQueue;							///< queue of things we want to build
-	ProductionEntry*		m_productionQueueTail;					///< tail pointer for m_productionQueue
-	ProductionID				m_uniqueID;											///< unique ID counter for producing units
-	UnsignedInt					m_productionCount;							///< # of things in the production queue
-	UnsignedInt					m_constructionCompleteFrame;		///< frame construction was complete on
-	DoorInfo						m_doors[DOOR_COUNT_MAX];
-	ModelConditionFlags m_clearFlags;										///< flags to clear from model
-	ModelConditionFlags m_setFlags;											///< flags to set in model
-	Bool								m_flagsDirty;										///< clearFlags/setFlags needs to be set into the model
+	const CommandButton *m_specialPowerConstructionCommandButton {}; ///< In a mode to construct a specific building via a special power. (NO NEED TO SAVE DATA ON THIS FIELD)
+	ProductionEntry*	m_productionQueue {};							///< queue of things we want to build
+	ProductionEntry*	m_productionQueueTail {};					///< tail pointer for m_productionQueue
+	ProductionID		m_uniqueID {};											///< unique ID counter for producing units
+	UnsignedInt			m_productionCount {};							///< # of things in the production queue
+	UnsignedInt			m_constructionCompleteFrame {};		///< frame construction was complete on
+	DoorInfo			m_doors[DOOR_COUNT_MAX];
+	ModelConditionFlags m_clearFlags {};										///< flags to clear from model
+	ModelConditionFlags m_setFlags {};											///< flags to set in model
+	Bool				m_flagsDirty {};										///< clearFlags/setFlags needs to be set into the model
 
 };
 

@@ -89,8 +89,7 @@
  * HISTORY:                                                                                    *
  *   3/21/98    GTH : Created.                                                                 *
  *=============================================================================================*/
-CameraClass::CameraClass(void) //:
-#if 0
+CameraClass::CameraClass(void):
 	Projection(PERSPECTIVE),
 	Viewport(Vector2(0,0),Vector2(1,1)),		// pixel viewport to render into
 	AspectRatio(4.0f/3.0f),
@@ -99,12 +98,9 @@ CameraClass::CameraClass(void) //:
 	ZBufferMin(0.0f),									// smallest value we'll write into the z-buffer
 	ZBufferMax(1.0f),									// largest value we'll write into the z-buffer
 	FrustumValid(false)
-#endif // if 0
 {
-#if 0
 	Set_Transform(Matrix3D(1));
 	Set_View_Plane(DEG_TO_RADF(50.0f));
-#endif // if 0
 }
 
 
@@ -121,33 +117,29 @@ CameraClass::CameraClass(void) //:
  *   3/21/98    GTH : Created.                                                                 *
  *   4/13/2001  hy : added in copy code for new member functions                               *
  *=============================================================================================*/
-CameraClass::CameraClass(const CameraClass & src) :
-	RenderObjClass(src)//,
-#if 0
+CameraClass::CameraClass(const CameraClass & src):
+	RenderObjClass(src),
 	Projection(src.Projection),
 	Viewport(src.Viewport),
 	ViewPlane(src.ViewPlane),
+	AspectRatio(src.AspectRatio),
 	ZNear(src.ZNear),
 	ZFar(src.ZFar),
+	ZBufferMin(src.ZBufferMin),
+	ZBufferMax(src.ZBufferMax),
 	FrustumValid(src.FrustumValid),
 	Frustum(src.Frustum),
 	NearClipBBox(src.NearClipBBox),
 	ProjectionTransform(src.ProjectionTransform),
-	CameraInvTransform(src.CameraInvTransform),
-	AspectRatio(src.AspectRatio),
-	ZBufferMin(src.ZBufferMin),
-	ZBufferMax(src.ZBufferMax)
-#endif // if 0
+	CameraInvTransform(src.CameraInvTransform)
 {
-#if 0
 	// just being paranoid in case any parent class doesn't completely copy the entire state...
 	FrustumValid = false;
-#endif // if 0
 }
 
 
 /***********************************************************************************************
- * CameraClass::operator == -- assignment operator                                             *
+ * CameraClass::operator = -- assignment operator                                              *
  *                                                                                             *
  * INPUT:                                                                                      *
  *                                                                                             *
@@ -163,7 +155,6 @@ CameraClass & CameraClass::operator = (const CameraClass & that)
 	if (this != &that) {
 		RenderObjClass::operator = (that);
 
-#if 0
 		Projection = that.Projection;
 		Viewport = that.Viewport;
 		ViewPlane = that.ViewPlane;
@@ -177,7 +168,6 @@ CameraClass & CameraClass::operator = (const CameraClass & that)
 		
 		// just being paranoid in case any parent class doesn't completely copy the entire state...
 		FrustumValid = false;
-#endif // if 0
 	}
 
 	return * this;
@@ -341,7 +331,7 @@ void CameraClass::Set_View_Plane(float hfov,float vfov)
 	float width_half = tan(hfov/2.0);
 	float height_half = 0.0f;
 	
-	if (vfov == -1) {									
+	if (vfov == -1) {
 		height_half = (1.0f / AspectRatio) * width_half;		// use the aspect ratio
 	} else {
 		height_half = tan(vfov/2.0);
@@ -644,7 +634,9 @@ void CameraClass::Update_Frustum(void) const
 	NearClipBBox.Basis.Set(cam_mat);
 
 	// Update the inverse camera matrix
-	Transform.Get_Inverse(CameraInvTransform);
+	DEBUG_ASSERTCRASH(Transform.Is_Orthogonal(), ("Camera transform is not orthogonal!\n"));
+	// Transform.Get_Inverse(CameraInvTransform);
+	Transform.Get_Orthogonal_Inverse(CameraInvTransform);
 
 	// Update the projection matrix
 	if (Projection == PERSPECTIVE) {
@@ -760,19 +752,18 @@ DEBUG_CRASH(("CameraClass::Apply not yet implemented!"));
 #endif // if 0
 
 void CameraClass::Set_Clip_Planes(float znear,float zfar)
-{ 
+{
 	FrustumValid = false;
 	ZNear = znear;
 	ZFar = zfar;
 }
 
-void CameraClass::Get_Clip_Planes(float & znear,float & zfar) const		
-{ 
+void CameraClass::Get_Clip_Planes(float & znear,float & zfar) const
+{
 	znear = ZNear;
 	zfar = ZFar;
 }
 
-#if 0
 float CameraClass::Get_Horizontal_FOV(void) const 
 { 
 	float width = ViewPlane.Max.X - ViewPlane.Min.X;
@@ -780,13 +771,13 @@ float CameraClass::Get_Horizontal_FOV(void) const
 }
 
 float CameraClass::Get_Vertical_FOV(void) const 
-{ 
+{
 	float height = ViewPlane.Max.Y - ViewPlane.Min.Y;
 	return 2*WWMath::Atan2(height,2.0);
 }
 
-float CameraClass::Get_Aspect_Ratio(void) const 
-{ 
+float CameraClass::Get_Aspect_Ratio(void) const
+{
 	return AspectRatio;
 }
 
@@ -838,6 +829,7 @@ const Matrix3D & CameraClass::Get_View_Matrix(void)
 	return CameraInvTransform;
 }
 
+#if 0
 void CameraClass::Convert_Old(Vector3 &pos)
 {
 	pos.X=(pos.X+1)/2;

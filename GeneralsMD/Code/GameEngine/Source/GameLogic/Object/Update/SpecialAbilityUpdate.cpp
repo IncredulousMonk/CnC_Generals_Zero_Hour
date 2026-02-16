@@ -73,32 +73,28 @@
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdateModuleData::parsePackSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
-	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	SpecialAbilityUpdateModuleData* self = (SpecialAbilityUpdateModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_packSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdateModuleData::parseUnpackSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
-	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	SpecialAbilityUpdateModuleData* self = (SpecialAbilityUpdateModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_unpackSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdateModuleData::parsePrepSoundLoop(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
-	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	SpecialAbilityUpdateModuleData* self = (SpecialAbilityUpdateModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_prepSoundLoop);
 }
 
 //-------------------------------------------------------------------------------------------------
 void SpecialAbilityUpdateModuleData::parseTriggerSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	SpecialAbilityUpdateModuleData::IniData* data = (SpecialAbilityUpdateModuleData::IniData*) instance;
-	SpecialAbilityUpdateModuleData* self = data->m_obj;
+	SpecialAbilityUpdateModuleData* self = (SpecialAbilityUpdateModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_triggerSound);
 }
 

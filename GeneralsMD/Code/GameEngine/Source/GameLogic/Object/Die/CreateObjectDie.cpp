@@ -50,24 +50,26 @@
 CreateObjectDieModuleData::CreateObjectDieModuleData()
 {
 
-	m_ocl = NULL;
-	m_transferPreviousHealth = FALSE;
+	m_ini.m_ocl = NULL;
+	m_ini.m_transferPreviousHealth = FALSE;
 
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void CreateObjectDieModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void CreateObjectDieModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	DieModuleData::buildFieldParse(p);
+	DieModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "CreationList",	INI::parseObjectCreationList,		NULL,											offsetof( CreateObjectDieModuleData, m_ocl ) },
-		{ "TransferPreviousHealth", INI::parseBool, NULL	,offsetof( CreateObjectDieModuleData, m_transferPreviousHealth ) },
+		{ "CreationList",			INI::parseObjectCreationList,	NULL, offsetof( CreateObjectDieModuleData::IniData, m_ocl ) },
+		{ "TransferPreviousHealth",	INI::parseBool,					NULL, offsetof( CreateObjectDieModuleData::IniData, m_transferPreviousHealth ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	CreateObjectDieModuleData* self {static_cast<CreateObjectDieModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }
 
@@ -99,12 +101,12 @@ void CreateObjectDie::onDie( const DamageInfo * damageInfo )
 
 	Object *damageDealer = TheGameLogic->findObjectByID( damageInfo->in.m_sourceID );
 
-	Object *newObject = ObjectCreationList::create( data->m_ocl, getObject(), damageDealer );
+	Object *newObject = ObjectCreationList::create( data->m_ini.m_ocl, getObject(), damageDealer );
 
 	//If we're transferring previous health, we're transfering the last known
 	//health before we died. In the case of the sneak attack tunnel network, it
 	//is killed after the lifetime update expires.
-	if( newObject && data->m_transferPreviousHealth )
+	if( newObject && data->m_ini.m_transferPreviousHealth )
 	{
 		//Convert old health to new health.
 		Object *oldObject = getObject();

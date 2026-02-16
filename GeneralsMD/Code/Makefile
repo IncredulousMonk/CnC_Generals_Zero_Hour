@@ -219,7 +219,7 @@ $(GEDO)/FFmpegVideoPlayer.o $(GEDO)/FFmpegVideo.o $(GEDO)/PacketQueue.o $(GEDO)/
 $(GEDO)/BaseHeightMap.o $(GEDO)/CameraShakeSystem.o $(GEDO)/HeightMap.o $(GEDO)/LinuxDisplay.o $(GEDO)/LinuxDisplayString.o $(GEDO)/LinuxDisplayStringManager.o $(GEDO)/LinuxFileSystem.o \
    $(GEDO)/LinuxGameClient.o $(GEDO)/LinuxInGameUI.o $(GEDO)/LinuxParticleSys.o $(GEDO)/LinuxTerrainVisual.o $(GEDO)/LinuxView.o $(GEDO)/SdlKeyboard.o $(GEDO)/SdlMouse.o \
    $(GEDO)/TerrainTex.o $(GEDO)/TileData.o $(GEDO)/WorldHeightMap.o \
-$(GEDO)/LinuxDefaultDraw.o $(GEDO)/LinuxModelDraw.o $(GEDO)/LinuxScienceModelDraw.o \
+$(GEDO)/LinuxDefaultDraw.o $(GEDO)/LinuxLaserDraw.o $(GEDO)/LinuxOverlordAircraftDraw.o $(GEDO)/LinuxModelDraw.o $(GEDO)/LinuxScienceModelDraw.o \
 $(GEDO)/LinuxGameFont.o $(GEDO)/LinuxGameWindow.o $(GEDO)/LinuxGameWindowManager.o \
 $(GEDO)/LinuxCheckBox.o $(GEDO)/LinuxHorizontalSlider.o $(GEDO)/LinuxListBox.o $(GEDO)/LinuxProgressBar.o $(GEDO)/LinuxPushButton.o $(GEDO)/LinuxRadioButton.o $(GEDO)/LinuxStaticText.o \
    $(GEDO)/LinuxTextEntry.o $(GEDO)/LinuxVerticalSlider.o \
@@ -341,6 +341,12 @@ $(GEDO)/WorldHeightMap.o: $(GEDSLD)/GameClient/WorldHeightMap.cpp GameEngineDevi
 $(GEDO)/LinuxDefaultDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxDefaultDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxDefaultDraw.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxDefaultDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxDefaultDraw.cpp
 
+$(GEDO)/LinuxLaserDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxLaserDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxLaserDraw.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxLaserDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxLaserDraw.cpp
+
+$(GEDO)/LinuxOverlordAircraftDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxOverlordAircraftDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxOverlordAircraftDraw.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxOverlordAircraftDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxOverlordAircraftDraw.cpp
+
 $(GEDO)/LinuxModelDraw.o: $(GEDSLD)/GameClient/Drawable/Draw/LinuxModelDraw.cpp GameEngineDevice/Include/LinuxDevice/GameClient/Module/LinuxModelDraw.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEDO)/LinuxModelDraw.o $(GEDSLD)/GameClient/Drawable/Draw/LinuxModelDraw.cpp
 
@@ -420,7 +426,7 @@ $(GEO)/ArchiveFile.o $(GEO)/ArchiveFileSystem.o $(GEO)/AsciiString.o $(GEO)/Buil
    $(GEO)/UnicodeString.o $(GEO)/Upgrade.o \
 $(GEO)/GameState.o \
 $(GEO)/DrawModule.o $(GEO)/Module.o $(GEO)/ModuleFactory.o $(GEO)/Thing.o $(GEO)/ThingFactory.o $(GEO)/ThingTemplate.o \
-$(GEO)/Color.o $(GEO)/Credits.o $(GEO)/Display.o $(GEO)/DisplayString.o $(GEO)/DisplayStringManager.o $(GEO)/Drawable.o $(GEO)/DrawGroupInfo.o $(GEO)/FXList.o $(GEO)/GameClient.o \
+$(GEO)/Color.o $(GEO)/Credits.o $(GEO)/Display.o $(GEO)/DisplayString.o $(GEO)/DisplayStringManager.o $(GEO)/Drawable.o $(GEO)/DrawGroupInfo.o $(GEO)/Eva.o $(GEO)/FXList.o $(GEO)/GameClient.o \
    $(GEO)/GameClientDispatch.o $(GEO)/GameText.o $(GEO)/GlobalLanguage.o $(GEO)/InGameUI.o $(GEO)/LanguageFilter.o $(GEO)/Line2D.o $(GEO)/MapUtil.o $(GEO)/ParabolicEase.o \
    $(GEO)/RadiusDecal.o $(GEO)/Snow.o $(GEO)/Statistics.o $(GEO)/VideoPlayer.o $(GEO)/View.o $(GEO)/Water.o \
 $(GEO)/AnimateWindowManager.o $(GEO)/GameFont.o $(GEO)/GameWindow.o $(GEO)/GameWindowGlobal.o $(GEO)/GameWindowManager.o $(GEO)/GameWindowManagerScript.o $(GEO)/GameWindowTransitions.o \
@@ -436,23 +442,29 @@ $(GEO)/Shell.o $(GEO)/ShellMenuScheme.o $(GEO)/Keyboard.o $(GEO)/Mouse.o \
 $(GEO)/WindowXlat.o \
 $(GEO)/Anim2D.o $(GEO)/CampaignManager.o $(GEO)/Image.o $(GEO)/ParticleSys.o \
 $(GEO)/TerrainRoads.o $(GEO)/TerrainVisual.o \
-$(GEO)/AI.o $(GEO)/AIDock.o $(GEO)/AIGroup.o $(GEO)/AIGuard.o $(GEO)/AIGuardRetaliate.o $(GEO)/AIPathfind.o $(GEO)/AIStates.o $(GEO)/AITNGuard.o $(GEO)/Squad.o $(GEO)/TurretAI.o \
+$(GEO)/AI.o $(GEO)/AIDock.o $(GEO)/AIGroup.o $(GEO)/AIGuard.o $(GEO)/AIGuardRetaliate.o $(GEO)/AIPathfind.o $(GEO)/AIPlayer.o $(GEO)/AISkirmishPlayer.o $(GEO)/AIStates.o $(GEO)/AITNGuard.o \
+   $(GEO)/Squad.o $(GEO)/TurretAI.o \
 $(GEO)/PolygonTrigger.o $(GEO)/SidesList.o $(GEO)/TerrainLogic.o \
 $(GEO)/Armor.o $(GEO)/ExperienceTracker.o $(GEO)/Locomotor.o $(GEO)/Object.o $(GEO)/ObjectCreationList.o $(GEO)/ObjectTypes.o $(GEO)/PartitionManager.o $(GEO)/SimpleObjectIterator.o \
    $(GEO)/Weapon.o $(GEO)/WeaponSet.o \
-$(GEO)/AutoHealBehavior.o $(GEO)/BehaviorModule.o $(GEO)/BridgeScaffoldBehavior.o $(GEO)/BridgeTowerBehavior.o $(GEO)/BridgeBehavior.o $(GEO)/GenerateMinefieldBehavior.o \
-$(GEO)/BodyModule.o $(GEO)/InactiveBody.o \
+$(GEO)/AutoHealBehavior.o $(GEO)/BehaviorModule.o $(GEO)/BridgeScaffoldBehavior.o $(GEO)/BridgeTowerBehavior.o $(GEO)/CountermeasuresBehavior.o $(GEO)/BridgeBehavior.o \
+   $(GEO)/GenerateMinefieldBehavior.o $(GEO)/JetSlowDeathBehavior.o $(GEO)/PoisonedBehavior.o $(GEO)/RebuildHoleBehavior.o $(GEO)/SlowDeathBehavior.o \
+$(GEO)/ActiveBody.o $(GEO)/BodyModule.o $(GEO)/InactiveBody.o $(GEO)/StructureBody.o \
 $(GEO)/CollideModule.o $(GEO)/SquishCollide.o \
 $(GEO)/CrateCollide.o $(GEO)/MoneyCrateCollide.o $(GEO)/SalvageCrateCollide.o $(GEO)/UnitCrateCollide.o $(GEO)/VeterancyCrateCollide.o \
-$(GEO)/CaveContain.o $(GEO)/OpenContain.o \
+$(GEO)/CaveContain.o $(GEO)/HelixContain.o $(GEO)/OpenContain.o $(GEO)/TransportContain.o \
+$(GEO)/CreateModule.o $(GEO)/LockWeaponCreate.o $(GEO)/VeterancyGainCreate.o \
 $(GEO)/DamageModule.o \
-$(GEO)/DestroyDie.o $(GEO)/DieModule.o $(GEO)/SpecialPowerCompletionDie.o \
-$(GEO)/ObjectHelper.o $(GEO)/ObjectDefectionHelper.o \
-$(GEO)/AIUpdate.o $(GEO)/CommandButtonHuntUpdate.o $(GEO)/DeletionUpdate.o $(GEO)/LaserUpdate.o $(GEO)/PhysicsUpdate.o $(GEO)/ProneUpdate.o $(GEO)/RadiusDecalUpdate.o \
-   $(GEO)/SmartBombTargetHomingUpdate.o $(GEO)/SpecialAbilityUpdate.o $(GEO)/SpecialPowerUpdateModule.o $(GEO)/StealthUpdate.o $(GEO)/StickyBombUpdate.o $(GEO)/UpdateModule.o \
-$(GEO)/DeliverPayloadAIUpdate.o $(GEO)/HackInternetAIUpdate.o $(GEO)/RailroadGuideAIUpdate.o $(GEO)/SupplyTruckAIUpdate.o \
+$(GEO)/CreateObjectDie.o $(GEO)/DestroyDie.o $(GEO)/DieModule.o $(GEO)/FXListDie.o $(GEO)/SpecialPowerCompletionDie.o \
+$(GEO)/ObjectHelper.o $(GEO)/ObjectDefectionHelper.o $(GEO)/StatusDamageHelper.o $(GEO)/SubdualDamageHelper.o $(GEO)/TempWeaponBonusHelper.o \
+$(GEO)/SpecialAbility.o $(GEO)/SpecialPowerModule.o \
+$(GEO)/AIUpdate.o $(GEO)/AutoFindHealingUpdate.o $(GEO)/CommandButtonHuntUpdate.o $(GEO)/DeletionUpdate.o $(GEO)/FireSpreadUpdate.o $(GEO)/FlammableUpdate.o $(GEO)/HeightDieUpdate.o \
+   $(GEO)/LaserUpdate.o $(GEO)/LifetimeUpdate.o $(GEO)/PhysicsUpdate.o $(GEO)/PilotFindVehicleUpdate.o $(GEO)/ProductionUpdate.o $(GEO)/ProneUpdate.o $(GEO)/RadiusDecalUpdate.o \
+   $(GEO)/SlavedUpdate.o $(GEO)/SmartBombTargetHomingUpdate.o $(GEO)/SpecialAbilityUpdate.o $(GEO)/SpecialPowerUpdateModule.o $(GEO)/SpectreGunshipUpdate.o $(GEO)/StealthDetectorUpdate.o \
+   $(GEO)/StealthUpdate.o $(GEO)/StickyBombUpdate.o $(GEO)/UpdateModule.o \
+$(GEO)/DeliverPayloadAIUpdate.o $(GEO)/HackInternetAIUpdate.o $(GEO)/MissileAIUpdate.o $(GEO)/RailroadGuideAIUpdate.o $(GEO)/SupplyTruckAIUpdate.o \
 $(GEO)/DockUpdate.o $(GEO)/SupplyWarehouseDockUpdate.o \
-$(GEO)/UpgradeModule.o \
+$(GEO)/ArmorUpgrade.o $(GEO)/ExperienceScalarUpgrade.o $(GEO)/LocomotorSetUpgrade.o $(GEO)/UnpauseSpecialPowerUpgrade.o $(GEO)/UpgradeModule.o $(GEO)/WeaponSetUpgrade.o \
 $(GEO)/ScriptActions.o $(GEO)/ScriptConditions.o $(GEO)/ScriptEngine.o $(GEO)/Scripts.o $(GEO)/VictoryConditions.o \
 $(GEO)/CaveSystem.o $(GEO)/CrateSystem.o $(GEO)/Damage.o $(GEO)/GameLogic.o $(GEO)/GameLogicDispatch.o $(GEO)/RankInfo.o \
 $(GEO)/GameInfo.o \
@@ -802,6 +814,9 @@ $(GEO)/Drawable.o: $(GES)/GameClient/Drawable.cpp GameEngine/Include/GameClient/
 $(GEO)/DrawGroupInfo.o: $(GES)/GameClient/DrawGroupInfo.cpp GameEngine/Include/GameClient/DrawGroupInfo.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DrawGroupInfo.o $(GES)/GameClient/DrawGroupInfo.cpp
 
+$(GEO)/Eva.o: $(GES)/GameClient/Eva.cpp GameEngine/Include/GameClient/Eva.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/Eva.o $(GES)/GameClient/Eva.cpp
+
 $(GEO)/FXList.o: $(GES)/GameClient/FXList.cpp GameEngine/Include/GameClient/FXList.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/FXList.o $(GES)/GameClient/FXList.cpp
 
@@ -1047,6 +1062,12 @@ $(GEO)/AIGuardRetaliate.o: $(GES)/GameLogic/AI/AIGuardRetaliate.cpp GameEngine/I
 $(GEO)/AIPathfind.o: $(GES)/GameLogic/AI/AIPathfind.cpp GameEngine/Include/GameLogic/AIPathfind.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AIPathfind.o $(GES)/GameLogic/AI/AIPathfind.cpp
 
+$(GEO)/AIPlayer.o: $(GES)/GameLogic/AI/AIPlayer.cpp GameEngine/Include/GameLogic/AIPlayer.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AIPlayer.o $(GES)/GameLogic/AI/AIPlayer.cpp
+
+$(GEO)/AISkirmishPlayer.o: $(GES)/GameLogic/AI/AISkirmishPlayer.cpp GameEngine/Include/GameLogic/AISkirmishPlayer.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AISkirmishPlayer.o $(GES)/GameLogic/AI/AISkirmishPlayer.cpp
+
 $(GEO)/AIStates.o: $(GES)/GameLogic/AI/AIStates.cpp
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AIStates.o $(GES)/GameLogic/AI/AIStates.cpp
 
@@ -1116,15 +1137,36 @@ $(GEO)/BridgeScaffoldBehavior.o: $(GES)/GameLogic/Object/Behavior/BridgeScaffold
 $(GEO)/BridgeTowerBehavior.o: $(GES)/GameLogic/Object/Behavior/BridgeTowerBehavior.cpp GameEngine/Include/GameLogic/Module/BridgeTowerBehavior.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/BridgeTowerBehavior.o $(GES)/GameLogic/Object/Behavior/BridgeTowerBehavior.cpp
 
+$(GEO)/CountermeasuresBehavior.o: $(GES)/GameLogic/Object/Behavior/CountermeasuresBehavior.cpp GameEngine/Include/GameLogic/Module/CountermeasuresBehavior.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CountermeasuresBehavior.o $(GES)/GameLogic/Object/Behavior/CountermeasuresBehavior.cpp
+
 $(GEO)/GenerateMinefieldBehavior.o: $(GES)/GameLogic/Object/Behavior/GenerateMinefieldBehavior.cpp GameEngine/Include/GameLogic/Module/GenerateMinefieldBehavior.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/GenerateMinefieldBehavior.o $(GES)/GameLogic/Object/Behavior/GenerateMinefieldBehavior.cpp
 
+$(GEO)/JetSlowDeathBehavior.o: $(GES)/GameLogic/Object/Behavior/JetSlowDeathBehavior.cpp GameEngine/Include/GameLogic/Module/JetSlowDeathBehavior.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/JetSlowDeathBehavior.o $(GES)/GameLogic/Object/Behavior/JetSlowDeathBehavior.cpp
+
+$(GEO)/PoisonedBehavior.o: $(GES)/GameLogic/Object/Behavior/PoisonedBehavior.cpp GameEngine/Include/GameLogic/Module/PoisonedBehavior.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PoisonedBehavior.o $(GES)/GameLogic/Object/Behavior/PoisonedBehavior.cpp
+
+$(GEO)/RebuildHoleBehavior.o: $(GES)/GameLogic/Object/Behavior/RebuildHoleBehavior.cpp GameEngine/Include/GameLogic/Module/RebuildHoleBehavior.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RebuildHoleBehavior.o $(GES)/GameLogic/Object/Behavior/RebuildHoleBehavior.cpp
+
+$(GEO)/SlowDeathBehavior.o: $(GES)/GameLogic/Object/Behavior/SlowDeathBehavior.cpp GameEngine/Include/GameLogic/Module/SlowDeathBehavior.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SlowDeathBehavior.o $(GES)/GameLogic/Object/Behavior/SlowDeathBehavior.cpp
+
 # --- GameEngine/Source/GameLogic/Object/Body ---
+$(GEO)/ActiveBody.o: $(GES)/GameLogic/Object/Body/ActiveBody.cpp GameEngine/Include/GameLogic/Module/ActiveBody.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ActiveBody.o $(GES)/GameLogic/Object/Body/ActiveBody.cpp
+
 $(GEO)/BodyModule.o: $(GES)/GameLogic/Object/Body/BodyModule.cpp GameEngine/Include/GameLogic/Module/BodyModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/BodyModule.o $(GES)/GameLogic/Object/Body/BodyModule.cpp
 
 $(GEO)/InactiveBody.o: $(GES)/GameLogic/Object/Body/InactiveBody.cpp GameEngine/Include/GameLogic/Module/InactiveBody.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/InactiveBody.o $(GES)/GameLogic/Object/Body/InactiveBody.cpp
+
+$(GEO)/StructureBody.o: $(GES)/GameLogic/Object/Body/StructureBody.cpp GameEngine/Include/GameLogic/Module/StructureBody.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StructureBody.o $(GES)/GameLogic/Object/Body/StructureBody.cpp
 
 # --- GameEngine/Source/GameLogic/Object/Collide ---
 $(GEO)/CollideModule.o: $(GES)/GameLogic/Object/Collide/CollideModule.cpp GameEngine/Include/GameLogic/Module/CollideModule.h
@@ -1153,19 +1195,41 @@ $(GEO)/VeterancyCrateCollide.o: $(GES)/GameLogic/Object/Collide/CrateCollide/Vet
 $(GEO)/CaveContain.o: $(GES)/GameLogic/Object/Contain/CaveContain.cpp GameEngine/Include/GameLogic/Module/CaveContain.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CaveContain.o $(GES)/GameLogic/Object/Contain/CaveContain.cpp
 
+$(GEO)/HelixContain.o: $(GES)/GameLogic/Object/Contain/HelixContain.cpp GameEngine/Include/GameLogic/Module/HelixContain.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/HelixContain.o $(GES)/GameLogic/Object/Contain/HelixContain.cpp
+
 $(GEO)/OpenContain.o: $(GES)/GameLogic/Object/Contain/OpenContain.cpp GameEngine/Include/GameLogic/Module/OpenContain.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/OpenContain.o $(GES)/GameLogic/Object/Contain/OpenContain.cpp
+
+$(GEO)/TransportContain.o: $(GES)/GameLogic/Object/Contain/TransportContain.cpp GameEngine/Include/GameLogic/Module/TransportContain.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TransportContain.o $(GES)/GameLogic/Object/Contain/TransportContain.cpp
+
+# --- GameEngine/Source/GameLogic/Object/Create ---
+$(GEO)/CreateModule.o: $(GES)/GameLogic/Object/Create/CreateModule.cpp GameEngine/Include/GameLogic/Module/CreateModule.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CreateModule.o $(GES)/GameLogic/Object/Create/CreateModule.cpp
+
+$(GEO)/LockWeaponCreate.o: $(GES)/GameLogic/Object/Create/LockWeaponCreate.cpp GameEngine/Include/GameLogic/Module/LockWeaponCreate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/LockWeaponCreate.o $(GES)/GameLogic/Object/Create/LockWeaponCreate.cpp
+
+$(GEO)/VeterancyGainCreate.o: $(GES)/GameLogic/Object/Create/VeterancyGainCreate.cpp GameEngine/Include/GameLogic/Module/VeterancyGainCreate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/VeterancyGainCreate.o $(GES)/GameLogic/Object/Create/VeterancyGainCreate.cpp
 
 # --- GameEngine/Source/GameLogic/Object/Damage ---
 $(GEO)/DamageModule.o: $(GES)/GameLogic/Object/Damage/DamageModule.cpp GameEngine/Include/GameLogic/Module/DamageModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DamageModule.o $(GES)/GameLogic/Object/Damage/DamageModule.cpp
 
 # --- GameEngine/Source/GameLogic/Object/Die ---
+$(GEO)/CreateObjectDie.o: $(GES)/GameLogic/Object/Die/CreateObjectDie.cpp GameEngine/Include/GameLogic/Module/CreateObjectDie.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CreateObjectDie.o $(GES)/GameLogic/Object/Die/CreateObjectDie.cpp
+
 $(GEO)/DestroyDie.o: $(GES)/GameLogic/Object/Die/DestroyDie.cpp GameEngine/Include/GameLogic/Module/DestroyDie.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DestroyDie.o $(GES)/GameLogic/Object/Die/DestroyDie.cpp
 
 $(GEO)/DieModule.o: $(GES)/GameLogic/Object/Die/DieModule.cpp GameEngine/Include/GameLogic/Module/DieModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DieModule.o $(GES)/GameLogic/Object/Die/DieModule.cpp
+
+$(GEO)/FXListDie.o: $(GES)/GameLogic/Object/Die/FXListDie.cpp GameEngine/Include/GameLogic/Module/FXListDie.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/FXListDie.o $(GES)/GameLogic/Object/Die/FXListDie.cpp
 
 $(GEO)/SpecialPowerCompletionDie.o: $(GES)/GameLogic/Object/Die/SpecialPowerCompletionDie.cpp GameEngine/Include/GameLogic/Module/SpecialPowerCompletionDie.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpecialPowerCompletionDie.o $(GES)/GameLogic/Object/Die/SpecialPowerCompletionDie.cpp
@@ -1177,9 +1241,28 @@ $(GEO)/ObjectHelper.o: $(GES)/GameLogic/Object/Helper/ObjectHelper.cpp GameEngin
 $(GEO)/ObjectDefectionHelper.o: $(GES)/GameLogic/Object/Helper/ObjectDefectionHelper.cpp GameEngine/Include/GameLogic/Module/ObjectDefectionHelper.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ObjectDefectionHelper.o $(GES)/GameLogic/Object/Helper/ObjectDefectionHelper.cpp
 
+$(GEO)/StatusDamageHelper.o: $(GES)/GameLogic/Object/Helper/StatusDamageHelper.cpp GameEngine/Include/GameLogic/Module/StatusDamageHelper.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StatusDamageHelper.o $(GES)/GameLogic/Object/Helper/StatusDamageHelper.cpp
+
+$(GEO)/SubdualDamageHelper.o: $(GES)/GameLogic/Object/Helper/SubdualDamageHelper.cpp GameEngine/Include/GameLogic/Module/SubdualDamageHelper.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SubdualDamageHelper.o $(GES)/GameLogic/Object/Helper/SubdualDamageHelper.cpp
+
+$(GEO)/TempWeaponBonusHelper.o: $(GES)/GameLogic/Object/Helper/TempWeaponBonusHelper.cpp GameEngine/Include/GameLogic/Module/TempWeaponBonusHelper.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/TempWeaponBonusHelper.o $(GES)/GameLogic/Object/Helper/TempWeaponBonusHelper.cpp
+
+# --- GameEngine/Source/GameLogic/Object/SpecialPower ---
+$(GEO)/SpecialAbility.o: $(GES)/GameLogic/Object/SpecialPower/SpecialAbility.cpp GameEngine/Include/GameLogic/Module/SpecialAbility.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpecialAbility.o $(GES)/GameLogic/Object/SpecialPower/SpecialAbility.cpp
+
+$(GEO)/SpecialPowerModule.o: $(GES)/GameLogic/Object/SpecialPower/SpecialPowerModule.cpp GameEngine/Include/GameLogic/Module/SpecialPowerModule.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpecialPowerModule.o $(GES)/GameLogic/Object/SpecialPower/SpecialPowerModule.cpp
+
 # --- GameEngine/Source/GameLogic/Object/Update ---
 $(GEO)/AIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate.cpp GameEngine/Include/GameLogic/Module/AIUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate.cpp
+
+$(GEO)/AutoFindHealingUpdate.o: $(GES)/GameLogic/Object/Update/AutoFindHealingUpdate.cpp GameEngine/Include/GameLogic/Module/AutoFindHealingUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/AutoFindHealingUpdate.o $(GES)/GameLogic/Object/Update/AutoFindHealingUpdate.cpp
 
 $(GEO)/CommandButtonHuntUpdate.o: $(GES)/GameLogic/Object/Update/CommandButtonHuntUpdate.cpp GameEngine/Include/GameLogic/Module/CommandButtonHuntUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/CommandButtonHuntUpdate.o $(GES)/GameLogic/Object/Update/CommandButtonHuntUpdate.cpp
@@ -1187,17 +1270,38 @@ $(GEO)/CommandButtonHuntUpdate.o: $(GES)/GameLogic/Object/Update/CommandButtonHu
 $(GEO)/DeletionUpdate.o: $(GES)/GameLogic/Object/Update/DeletionUpdate.cpp GameEngine/Include/GameLogic/Module/DeletionUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/DeletionUpdate.o $(GES)/GameLogic/Object/Update/DeletionUpdate.cpp
 
+$(GEO)/FireSpreadUpdate.o: $(GES)/GameLogic/Object/Update/FireSpreadUpdate.cpp GameEngine/Include/GameLogic/Module/FireSpreadUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/FireSpreadUpdate.o $(GES)/GameLogic/Object/Update/FireSpreadUpdate.cpp
+
+$(GEO)/FlammableUpdate.o: $(GES)/GameLogic/Object/Update/FlammableUpdate.cpp GameEngine/Include/GameLogic/Module/FlammableUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/FlammableUpdate.o $(GES)/GameLogic/Object/Update/FlammableUpdate.cpp
+
+$(GEO)/HeightDieUpdate.o: $(GES)/GameLogic/Object/Update/HeightDieUpdate.cpp GameEngine/Include/GameLogic/Module/HeightDieUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/HeightDieUpdate.o $(GES)/GameLogic/Object/Update/HeightDieUpdate.cpp
+
 $(GEO)/LaserUpdate.o: $(GES)/GameLogic/Object/Update/LaserUpdate.cpp GameEngine/Include/GameLogic/Module/LaserUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/LaserUpdate.o $(GES)/GameLogic/Object/Update/LaserUpdate.cpp
 
+$(GEO)/LifetimeUpdate.o: $(GES)/GameLogic/Object/Update/LifetimeUpdate.cpp GameEngine/Include/GameLogic/Module/LifetimeUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/LifetimeUpdate.o $(GES)/GameLogic/Object/Update/LifetimeUpdate.cpp
+
 $(GEO)/PhysicsUpdate.o: $(GES)/GameLogic/Object/Update/PhysicsUpdate.cpp GameEngine/Include/GameLogic/Module/PhysicsUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PhysicsUpdate.o $(GES)/GameLogic/Object/Update/PhysicsUpdate.cpp
+
+$(GEO)/PilotFindVehicleUpdate.o: $(GES)/GameLogic/Object/Update/PilotFindVehicleUpdate.cpp GameEngine/Include/GameLogic/Module/PilotFindVehicleUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/PilotFindVehicleUpdate.o $(GES)/GameLogic/Object/Update/PilotFindVehicleUpdate.cpp
+
+$(GEO)/ProductionUpdate.o: $(GES)/GameLogic/Object/Update/ProductionUpdate.cpp GameEngine/Include/GameLogic/Module/ProductionUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ProductionUpdate.o $(GES)/GameLogic/Object/Update/ProductionUpdate.cpp
 
 $(GEO)/ProneUpdate.o: $(GES)/GameLogic/Object/Update/ProneUpdate.cpp GameEngine/Include/GameLogic/Module/ProneUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ProneUpdate.o $(GES)/GameLogic/Object/Update/ProneUpdate.cpp
 
 $(GEO)/RadiusDecalUpdate.o: $(GES)/GameLogic/Object/Update/RadiusDecalUpdate.cpp GameEngine/Include/GameLogic/Module/RadiusDecalUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RadiusDecalUpdate.o $(GES)/GameLogic/Object/Update/RadiusDecalUpdate.cpp
+
+$(GEO)/SlavedUpdate.o: $(GES)/GameLogic/Object/Update/SlavedUpdate.cpp GameEngine/Include/GameLogic/Module/SlavedUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SlavedUpdate.o $(GES)/GameLogic/Object/Update/SlavedUpdate.cpp
 
 $(GEO)/SmartBombTargetHomingUpdate.o: $(GES)/GameLogic/Object/Update/SmartBombTargetHomingUpdate.cpp GameEngine/Include/GameLogic/Module/SmartBombTargetHomingUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SmartBombTargetHomingUpdate.o $(GES)/GameLogic/Object/Update/SmartBombTargetHomingUpdate.cpp
@@ -1207,6 +1311,12 @@ $(GEO)/SpecialAbilityUpdate.o: $(GES)/GameLogic/Object/Update/SpecialAbilityUpda
 
 $(GEO)/SpecialPowerUpdateModule.o: $(GES)/GameLogic/Object/Update/SpecialPowerUpdateModule.cpp GameEngine/Include/GameLogic/Module/SpecialPowerUpdateModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpecialPowerUpdateModule.o $(GES)/GameLogic/Object/Update/SpecialPowerUpdateModule.cpp
+
+$(GEO)/SpectreGunshipUpdate.o: $(GES)/GameLogic/Object/Update/SpectreGunshipUpdate.cpp GameEngine/Include/GameLogic/Module/SpectreGunshipUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SpectreGunshipUpdate.o $(GES)/GameLogic/Object/Update/SpectreGunshipUpdate.cpp
+
+$(GEO)/StealthDetectorUpdate.o: $(GES)/GameLogic/Object/Update/StealthDetectorUpdate.cpp GameEngine/Include/GameLogic/Module/StealthDetectorUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StealthDetectorUpdate.o $(GES)/GameLogic/Object/Update/StealthDetectorUpdate.cpp
 
 $(GEO)/StealthUpdate.o: $(GES)/GameLogic/Object/Update/StealthUpdate.cpp GameEngine/Include/GameLogic/Module/StealthUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/StealthUpdate.o $(GES)/GameLogic/Object/Update/StealthUpdate.cpp
@@ -1224,6 +1334,9 @@ $(GEO)/DeliverPayloadAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/Deliver
 $(GEO)/HackInternetAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/HackInternetAIUpdate.cpp GameEngine/Include/GameLogic/Module/HackInternetAIUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/HackInternetAIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate/HackInternetAIUpdate.cpp
 
+$(GEO)/MissileAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/MissileAIUpdate.cpp GameEngine/Include/GameLogic/Module/MissileAIUpdate.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/MissileAIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate/MissileAIUpdate.cpp
+
 $(GEO)/RailroadGuideAIUpdate.o: $(GES)/GameLogic/Object/Update/AIUpdate/RailroadGuideAIUpdate.cpp GameEngine/Include/GameLogic/Module/RailroadGuideAIUpdate.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/RailroadGuideAIUpdate.o $(GES)/GameLogic/Object/Update/AIUpdate/RailroadGuideAIUpdate.cpp
 
@@ -1238,8 +1351,23 @@ $(GEO)/SupplyWarehouseDockUpdate.o: $(GES)/GameLogic/Object/Update/DockUpdate/Su
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/SupplyWarehouseDockUpdate.o $(GES)/GameLogic/Object/Update/DockUpdate/SupplyWarehouseDockUpdate.cpp
 
 # --- GameEngine/Source/GameLogic/Object/Upgrade ---
+$(GEO)/ArmorUpgrade.o: $(GES)/GameLogic/Object/Upgrade/ArmorUpgrade.cpp GameEngine/Include/GameLogic/Module/ArmorUpgrade.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ArmorUpgrade.o $(GES)/GameLogic/Object/Upgrade/ArmorUpgrade.cpp
+
+$(GEO)/ExperienceScalarUpgrade.o: $(GES)/GameLogic/Object/Upgrade/ExperienceScalarUpgrade.cpp GameEngine/Include/GameLogic/Module/ExperienceScalarUpgrade.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/ExperienceScalarUpgrade.o $(GES)/GameLogic/Object/Upgrade/ExperienceScalarUpgrade.cpp
+
+$(GEO)/LocomotorSetUpgrade.o: $(GES)/GameLogic/Object/Upgrade/LocomotorSetUpgrade.cpp GameEngine/Include/GameLogic/Module/LocomotorSetUpgrade.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/LocomotorSetUpgrade.o $(GES)/GameLogic/Object/Upgrade/LocomotorSetUpgrade.cpp
+
+$(GEO)/UnpauseSpecialPowerUpgrade.o: $(GES)/GameLogic/Object/Upgrade/UnpauseSpecialPowerUpgrade.cpp GameEngine/Include/GameLogic/Module/UnpauseSpecialPowerUpgrade.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UnpauseSpecialPowerUpgrade.o $(GES)/GameLogic/Object/Upgrade/UnpauseSpecialPowerUpgrade.cpp
+
 $(GEO)/UpgradeModule.o: $(GES)/GameLogic/Object/Upgrade/UpgradeModule.cpp GameEngine/Include/GameLogic/Module/UpgradeModule.h
 	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/UpgradeModule.o $(GES)/GameLogic/Object/Upgrade/UpgradeModule.cpp
+
+$(GEO)/WeaponSetUpgrade.o: $(GES)/GameLogic/Object/Upgrade/WeaponSetUpgrade.cpp GameEngine/Include/GameLogic/Module/WeaponSetUpgrade.h
+	g++ $(CXXFLAGS) $(INCS) -c -o $(GEO)/WeaponSetUpgrade.o $(GES)/GameLogic/Object/Upgrade/WeaponSetUpgrade.cpp
 
 # --- GameEngine/Source/GameLogic/ScriptEngine ---
 $(GEO)/ScriptActions.o: $(GES)/GameLogic/ScriptEngine/ScriptActions.cpp GameEngine/Include/GameLogic/ScriptActions.h

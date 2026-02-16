@@ -51,16 +51,22 @@ class ParticleSystemTemplate;
 class ActiveBodyModuleData : public BodyModuleData 
 {
 public:
-	Real m_maxHealth;
-	Real m_initialHealth;
-	
-	Real m_subdualDamageCap;								///< Subdual damage will never accumulate past this
-	UnsignedInt m_subdualDamageHealRate;		///< Every this often, we drop subdual damage...
-	Real m_subdualDamageHealAmount;					///< by this much.
+	// MG: Cannot apply offsetof to ActiveBodyModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_maxHealth;
+		Real m_initialHealth;
+
+		Real m_subdualDamageCap;				///< Subdual damage will never accumulate past this
+		UnsignedInt m_subdualDamageHealRate;	///< Every this often, we drop subdual damage...
+		Real m_subdualDamageHealAmount;			///< by this much.
+	};
+
+	IniData m_ini {};
 
 	ActiveBodyModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -74,6 +80,10 @@ public:
 
 	ActiveBody( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	ActiveBody(const ActiveBody&) = delete;
+	ActiveBody& operator=(const ActiveBody&) = delete;
 
 	virtual void onDelete( void );
 
@@ -146,32 +156,32 @@ protected:
 
 private:
 
-	Real									m_currentHealth;				///< health of the object
-	Real									m_prevHealth;						///< previous health value before current health change op
-  Real									m_maxHealth;						///< max health this object can have
-  Real									m_initialHealth;				///< starting health for this object
-	Real									m_currentSubdualDamage;	///< Starts at zero and goes up.  Inherited modules will do something when "subdued".
+	Real				m_currentHealth {};				///< health of the object
+	Real				m_prevHealth {};						///< previous health value before current health change op
+	Real				m_maxHealth {};						///< max health this object can have
+	Real				m_initialHealth {};				///< starting health for this object
+	Real				m_currentSubdualDamage {};	///< Starts at zero and goes up.  Inherited modules will do something when "subdued".
 
-	BodyDamageType				m_curDamageState;				///< last known damage state
-	UnsignedInt						m_nextDamageFXTime;
-	DamageType						m_lastDamageFXDone;
-	DamageInfo						m_lastDamageInfo;				///< store the last DamageInfo object that we received
-	UnsignedInt						m_lastDamageTimestamp; 	///< frame of last damage dealt
-	UnsignedInt						m_lastHealingTimestamp; ///< frame of last healing dealt
-	Bool									m_frontCrushed;
-	Bool									m_backCrushed;
-	Bool									m_lastDamageCleared;
-	Bool									m_indestructible;				///< is this object indestructible?
+	BodyDamageType		m_curDamageState {};				///< last known damage state
+	UnsignedInt			m_nextDamageFXTime {};
+	DamageType			m_lastDamageFXDone {};
+	DamageInfo			m_lastDamageInfo {};				///< store the last DamageInfo object that we received
+	UnsignedInt			m_lastDamageTimestamp {}; 	///< frame of last damage dealt
+	UnsignedInt			m_lastHealingTimestamp {}; ///< frame of last healing dealt
+	Bool				m_frontCrushed {};
+	Bool				m_backCrushed {};
+	Bool				m_lastDamageCleared {};
+	Bool				m_indestructible {};				///< is this object indestructible?
 
-	BodyParticleSystem *m_particleSystems;				///< particle systems created and attached to this object
+	BodyParticleSystem* m_particleSystems {};				///< particle systems created and attached to this object
 
 	/*
 		Note, you MUST call validateArmorAndDamageFX() before accessing these fields.
 	*/
-	ArmorSetFlags											m_curArmorSetFlags;
-	mutable const ArmorTemplateSet*		m_curArmorSet;
-	mutable Armor											m_curArmor;
-	mutable const DamageFX*						m_curDamageFX;
+	ArmorSetFlags						m_curArmorSetFlags {};
+	mutable const ArmorTemplateSet*		m_curArmorSet {};
+	mutable Armor						m_curArmor {};
+	mutable const DamageFX*				m_curDamageFX {};
 
 };
 

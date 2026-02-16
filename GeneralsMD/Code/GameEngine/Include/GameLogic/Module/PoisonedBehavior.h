@@ -42,12 +42,18 @@
 class PoisonedBehaviorModuleData : public UpdateModuleData
 {
 public:
-	UnsignedInt m_poisonDamageIntervalData; // How often I retake poison damage dealt me
-	UnsignedInt m_poisonDurationData;				// And how long after the last poison dose I am poisoned
+	// MG: Cannot apply offsetof to PoisonedBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_poisonDamageIntervalData;	// How often I retake poison damage dealt me
+		UnsignedInt m_poisonDurationData;		// And how long after the last poison dose I am poisoned
+	};
+
+	IniData m_ini {};
 
 	PoisonedBehaviorModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 
@@ -75,7 +81,7 @@ public:
 	// DamageModuleInterface
 	virtual void onDamage( DamageInfo *damageInfo );
 	virtual void onHealing( DamageInfo *damageInfo );
-	virtual void onBodyDamageStateChange(const DamageInfo* damageInfo, BodyDamageType oldState, BodyDamageType newState) { }
+	virtual void onBodyDamageStateChange(const DamageInfo* /* damageInfo */, BodyDamageType /* oldState */, BodyDamageType /* newState */) { }
 
 	// UpdateInterface
 	virtual UpdateSleepTime update();
@@ -89,10 +95,10 @@ protected:
 	UpdateSleepTime calcSleepTime();
 
 private:
-	UnsignedInt		m_poisonDamageFrame;
-	UnsignedInt		m_poisonOverallStopFrame;
-	Real					m_poisonDamageAmount;
-	DeathType			m_deathType;
+	UnsignedInt		m_poisonDamageFrame {};
+	UnsignedInt		m_poisonOverallStopFrame {};
+	Real			m_poisonDamageAmount {};
+	DeathType		m_deathType {};
 
 };
 

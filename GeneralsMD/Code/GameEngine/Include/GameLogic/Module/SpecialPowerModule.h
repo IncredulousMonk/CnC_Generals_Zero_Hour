@@ -81,6 +81,16 @@ public:
 class SpecialPowerModuleData : public BehaviorModuleData
 {
 public:
+	// MG: Cannot apply offsetof to SpecialPowerModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const SpecialPowerTemplate*	m_specialPowerTemplate;		///< pointer to the special power template
+		Bool						m_updateModuleStartsAttack;	///< update module determines when the special power actually starts! If true, update module is required.
+		Bool						m_startsPaused;				///< Paused on creation, someone else will have to unpause (like upgrade module, or script)
+		Bool						m_scriptedSpecialPowerOnly;
+	};
+
+	IniData m_ini {};
 
 	SpecialPowerModuleData();
 
@@ -89,12 +99,9 @@ public:
 	SpecialPowerModuleData& operator=(const SpecialPowerModuleData&) = delete;
 
 	static void buildFieldParse(void* what, MultiIniFieldParse& p);
+	static void parseInitiateSound(INI* ini, void *instance, void* store, const void* userData);
 
-	const SpecialPowerTemplate	*m_specialPowerTemplate;		///< pointer to the special power template
-	AudioEventRTS				m_initiateSound;
-	Bool						m_updateModuleStartsAttack;	///< update module determines when the special power actually starts! If true, update module is required.
-	Bool						m_startsPaused; ///< Paused on creation, someone else will have to unpause (like upgrade module, or script)
-	Bool						m_scriptedSpecialPowerOnly;
+	AudioEventRTS m_initiateSound {};
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -178,10 +185,10 @@ protected:
 	void resolveSpecialPower( void );
 	void aboutToDoSpecialPower( const Coord3D *location );
 
-	UnsignedInt m_availableOnFrame;			///< on this frame, this special power is available
-	Int m_pausedCount;									///< Reference count of sources pausing me
-	UnsignedInt m_pausedOnFrame;
-	Real m_pausedPercent;
+	UnsignedInt m_availableOnFrame {};			///< on this frame, this special power is available
+	Int m_pausedCount {};									///< Reference count of sources pausing me
+	UnsignedInt m_pausedOnFrame {};
+	Real m_pausedPercent {};
 
 };
 

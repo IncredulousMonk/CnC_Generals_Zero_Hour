@@ -44,13 +44,17 @@ class ExperienceScalarUpgradeModuleData: public UpgradeModuleData
 {
 
 public:
+	// MG: Cannot apply offsetof to ExperienceScalarUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_addXPScalar;
+	};
+
+	IniData m_ini {};
 
 	ExperienceScalarUpgradeModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
-
-	Real m_addXPScalar;
-
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -75,4 +79,3 @@ protected:
 
 
 #endif // __DEFAULTDIE_H_
-

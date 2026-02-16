@@ -48,11 +48,11 @@
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/PolygonTrigger.h"
 #include "GameLogic/AI.h"
-// #include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/LocomotorSet.h"
 #include "GameLogic/PartitionManager.h"
 #include "GameLogic/ScriptActions.h"
-// #include "GameLogic/ScriptEngine.h"
+#include "GameLogic/ScriptEngine.h"
 #include "GameLogic/TerrainLogic.h"
 
 #ifdef _INTERNAL
@@ -340,10 +340,6 @@ Team *TeamFactory::findTeamByID( TeamID teamID )
 Call team->setActive() when all members are added. */
 Team *TeamFactory::createInactiveTeam(const AsciiString& name)
 {
-(void) name;
-DEBUG_CRASH(("TeamFactory::createInactiveTeam not yet implemented!"));
-return nullptr;
-#if 0
 	TeamPrototype *tp = findTeamPrototype(name);
 	if (!tp)
 		throw ERROR_BAD_ARG;
@@ -372,7 +368,6 @@ return nullptr;
 	}
 	
 	return t;
-#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -842,7 +837,6 @@ TeamPrototype::TeamPrototype( TeamFactory *tf,
 
 // ------------------------------------------------------------------------
 
-#if 0
 static void deleteTeamCallback(Team* o)
 {
 	if (o)
@@ -851,12 +845,9 @@ static void deleteTeamCallback(Team* o)
 		o->deleteInstance();
 	}
 }
-#endif // if 0
 
 TeamPrototype::~TeamPrototype()
 {
-DEBUG_LOG(("TeamPrototype::~TeamPrototype not yet implemented!"));
-#if 0
 	removeAll_TeamInstanceList(deleteTeamCallback);
 
 	if (m_owningPlayer)
@@ -879,7 +870,6 @@ DEBUG_LOG(("TeamPrototype::~TeamPrototype not yet implemented!"));
 			m_genericScriptsToRun[i] = NULL;
 		}
 	}
-#endif // if 0
 }
 
 // ------------------------------------------------------------------------
@@ -1392,12 +1382,13 @@ Team::~Team()
 	// FIXME: TheScriptEngine
 	// TheScriptEngine->notifyOfTeamDestruction(this);
 
-	// Tell the players a team is going away.
-	Int i;
-	for (i=0; i<ThePlayerList->getPlayerCount(); i++) {
-		Player *plyr = ThePlayerList->getNthPlayer(i);
-		if (plyr) {
-			plyr->preTeamDestroy(this);
+	if (ThePlayerList) {
+		// Tell the players a team is going away.
+		for (Int i=0; i<ThePlayerList->getPlayerCount(); i++) {
+			Player *plyr = ThePlayerList->getNthPlayer(i);
+			if (plyr) {
+				plyr->preTeamDestroy(this);
+			}
 		}
 	}
 
@@ -1847,8 +1838,6 @@ Bool Team::hasAnyObjects() const
 /** Clears m_enteredExited, checks & clears m_created. */
 void Team::updateState(void) 
 {
-DEBUG_CRASH(("Team::updateState not yet implemented!"));
-#if 0
 	m_enteredOrExited = false;
 	if (!m_active) {
 		return; 
@@ -1960,7 +1949,6 @@ DEBUG_CRASH(("Team::updateState not yet implemented!"));
 		}
 		m_wasIdle = isIdle;
 	}
-#endif // if 0
 }
 
 // ------------------------------------------------------------------------

@@ -59,24 +59,26 @@
 HelixContainModuleData::HelixContainModuleData()
 {
 //	m_initialPayload.count = 0;
-  m_drawPips = TRUE;
+	m_ini.m_drawPips = TRUE;
 
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void HelixContainModuleData::buildFieldParse(MultiIniFieldParse& p)
+void HelixContainModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-  TransportContainModuleData::buildFieldParse(p);
+	TransportContainModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
-	{		
-    { "PayloadTemplateName",  INI::parseAsciiStringVectorAppend, NULL, offsetof(HelixContainModuleData, m_payloadTemplateNameData) },
-    {"ShouldDrawPips",  INI::parseBool, NULL, offsetof(HelixContainModuleData, m_drawPips) },
+	{
+		{"PayloadTemplateName",	INI::parseAsciiStringVectorAppend,	NULL, offsetof(HelixContainModuleData::IniData, m_payloadTemplateNameData) },
+		{"ShouldDrawPips",		INI::parseBool,						NULL, offsetof(HelixContainModuleData::IniData, m_drawPips) },
 
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	HelixContainModuleData* self {static_cast<HelixContainModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -162,7 +164,7 @@ void HelixContain::createPayload()
   {
 		contain->enableLoadSounds( FALSE );
 
-	  TemplateNameList list = self->m_payloadTemplateNameData;
+	  TemplateNameList list = self->m_ini.m_payloadTemplateNameData;
 	  TemplateNameIterator iter = list.begin();
 	  while ( iter != list.end() )
 	  {
@@ -177,7 +179,7 @@ void HelixContain::createPayload()
 			  }
 			  else
 			  {
-				  DEBUG_CRASH( ( "HelixContain::createPayload: %s is full, or not valid for the payload %s!", object->getName().str(), self->m_initialPayload.name.str() ) );
+				  DEBUG_CRASH( ( "HelixContain::createPayload: %s is full, or not valid for the payload %s!", object->getName().str(), self->TransportContainModuleData::m_ini.m_initialPayload.name.str() ) );
 			  }
 
       }
@@ -195,8 +197,8 @@ void HelixContain::createPayload()
 
 // ------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void HelixContain::onBodyDamageStateChange( const DamageInfo* damageInfo, 
-																				BodyDamageType oldState, 
+void HelixContain::onBodyDamageStateChange( const DamageInfo* /* damageInfo */, 
+																				BodyDamageType /* oldState */, 
 																				BodyDamageType newState)  ///< state change callback
 {
   // Need to apply state change to the portable structure
@@ -238,7 +240,7 @@ void HelixContain::onDelete( void )
 }
 
 // ------------------------------------------------------------------------------------------------
-void HelixContain::onCapture( Player *oldOwner, Player *newOwner )
+void HelixContain::onCapture( Player* /* oldOwner */, Player* newOwner )
 {
 //  Need to setteam() the portable structure, that's all;
   Object *portable = getPortableStructure();

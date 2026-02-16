@@ -30,50 +30,52 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file in the GameEngine
 
-#define DEFINE_WEAPONSLOTTYPE_NAMES
+// #define DEFINE_WEAPONSLOTTYPE_NAMES
 
-#include "Common\RandomValue.h"
-#include "Common\ThingTemplate.h"
-#include "Common\Player.h"
-#include "Common\Xfer.h"
+#include "Common/RandomValue.h"
+#include "Common/ThingTemplate.h"
+#include "Common/Player.h"
+#include "Common/Xfer.h"
 
-#include "GameClient\Drawable.h"
+#include "GameClient/Drawable.h"
 
-#include "GameLogic\GameLogic.h"
-#include "GameLogic\PartitionManager.h"
-#include "GameLogic\Object.h"
-#include "GameLogic\ObjectIter.h"
-#include "GameLogic\Module\AutoFindHealingUpdate.h"
-#include "GameLogic\Module\PhysicsUpdate.h"
-#include "GameLogic\Weapon.h"
-#include "GameLogic\WeaponSet.h"
-#include "GameLogic\Module\AIUpdate.h"
+#include "GameLogic/GameLogic.h"
+#include "GameLogic/PartitionManager.h"
+#include "GameLogic/Object.h"
+#include "GameLogic/ObjectIter.h"
+#include "GameLogic/Module/AutoFindHealingUpdate.h"
+#include "GameLogic/Module/PhysicsUpdate.h"
+#include "GameLogic/Weapon.h"
+#include "GameLogic/WeaponSet.h"
+#include "GameLogic/Module/AIUpdate.h"
 
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 AutoFindHealingUpdateModuleData::AutoFindHealingUpdateModuleData()
 {
-	m_scanFrames				= 0;
-	m_scanRange					= 0.0f;
-	m_neverHeal					= 0.95f;
-	m_alwaysHeal				= 0.25f;
+	m_ini.m_scanFrames	= 0;
+	m_ini.m_scanRange	= 0.0f;
+	m_ini.m_neverHeal	= 0.95f;
+	m_ini.m_alwaysHeal	= 0.25f;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void AutoFindHealingUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void AutoFindHealingUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "ScanRate",							INI::parseDurationUnsignedInt,	NULL, offsetof( AutoFindHealingUpdateModuleData, m_scanFrames ) },
-		{ "ScanRange",						INI::parseReal,									NULL, offsetof( AutoFindHealingUpdateModuleData, m_scanRange ) },
-		{ "NeverHeal",						INI::parseReal,									NULL, offsetof( AutoFindHealingUpdateModuleData, m_neverHeal ) },
-		{ "AlwaysHeal",						INI::parseReal,									NULL, offsetof( AutoFindHealingUpdateModuleData, m_alwaysHeal ) },
+		{ "ScanRate",	INI::parseDurationUnsignedInt,	NULL, offsetof( AutoFindHealingUpdateModuleData::IniData, m_scanFrames ) },
+		{ "ScanRange",	INI::parseReal,					NULL, offsetof( AutoFindHealingUpdateModuleData::IniData, m_scanRange ) },
+		{ "NeverHeal",	INI::parseReal,					NULL, offsetof( AutoFindHealingUpdateModuleData::IniData, m_neverHeal ) },
+		{ "AlwaysHeal",	INI::parseReal,					NULL, offsetof( AutoFindHealingUpdateModuleData::IniData, m_alwaysHeal ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	AutoFindHealingUpdateModuleData* self {static_cast<AutoFindHealingUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -114,7 +116,7 @@ UpdateSleepTime AutoFindHealingUpdate::update()
 		m_nextScanFrames--;
 		return UPDATE_SLEEP_NONE;
 	}
-	m_nextScanFrames = data->m_scanFrames;
+	m_nextScanFrames = (Int)data->m_ini.m_scanFrames;
 
 	AIUpdateInterface *ai = obj->getAI();
 	if (ai==NULL) return UPDATE_SLEEP_NONE;
@@ -123,7 +125,7 @@ UpdateSleepTime AutoFindHealingUpdate::update()
 	BodyModuleInterface *body = obj->getBodyModule();
 	if (!body) return UPDATE_SLEEP_NONE;
 	//	If we're real healthy, don't bother looking for healing.
-	if (body->getHealth() > body->getMaxHealth()*data->m_neverHeal) {
+	if (body->getHealth() > body->getMaxHealth()*data->m_ini.m_neverHeal) {
 		return UPDATE_SLEEP_NONE;
 	}
 
@@ -132,7 +134,7 @@ UpdateSleepTime AutoFindHealingUpdate::update()
 		// For now, only heal if idle.  jba.
 		return UPDATE_SLEEP_NONE;
 		//	If we're > min health, and busy, keep at it.
-		if (body->getHealth() > body->getMaxHealth()*data->m_alwaysHeal) {
+		if (body->getHealth() > body->getMaxHealth()*data->m_ini.m_alwaysHeal) {
 			return UPDATE_SLEEP_NONE;
 		}
 	}
@@ -155,7 +157,7 @@ Object* AutoFindHealingUpdate::scanClosestTarget()
 	Object *bestTarget = NULL;
 	Real closestDistSqr=0;
 
-	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_scanRange, FROM_CENTER_2D );
+	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_ini.m_scanRange, FROM_CENTER_2D );
 	MemoryPoolObjectHolder hold(iter);
 
 	for( Object *other = iter->first(); other; other = iter->next() )

@@ -118,9 +118,8 @@ void StealthUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 		{ "DisguiseRevealTransitionTime",			INI::parseDurationUnsignedInt,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_disguiseRevealTransitionFrames ) },
 		{ "InnateStealth",							INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_innateStealth ) },
 		{ "UseRiderStealth",						INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_useRiderStealth ) },
-		// FIXME: TheEva
-		// { "EnemyDetectionEvaEvent",					Eva::parseEvaMessageFromIni,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_enemyDetectionEvaEvent ) },
-		// { "OwnDetectionEvaEvent",					Eva::parseEvaMessageFromIni,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_ownDetectionEvaEvent ) },
+		{ "EnemyDetectionEvaEvent",					Eva::parseEvaMessageFromIni,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_enemyDetectionEvaEvent ) },
+		{ "OwnDetectionEvaEvent",					Eva::parseEvaMessageFromIni,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_ownDetectionEvaEvent ) },
 		{ "BlackMarketCheckDelay",					INI::parseDurationUnsignedInt,		NULL,					offsetof( StealthUpdateModuleData::IniData, m_blackMarketCheckFrames ) },
 		{ "GrantedBySpecialPower",					INI::parseBool,						NULL,					offsetof( StealthUpdateModuleData::IniData, m_grantedBySpecialPower ) },
 

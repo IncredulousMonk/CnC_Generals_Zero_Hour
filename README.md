@@ -17,6 +17,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - The options menu mostly works (the IP address stuff doesn't, because I haven't implemented the network code yet. Also the resolution picker needs work... see below).
 - I have added the skeleton of an OpenGL renderer, which is a prerequisite to doing any 3D rendering.
 - I have made a start on rendering the "shell map" (the 3D scene that plays behind the main menu).  **New screenshot in the wiki.**
+- The scripted camera fly around of the shell map works, though the camera parameters are not quite right yet.
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -34,7 +35,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheGlobalLanguageData
   - TheAudio
   - TheFunctionLexicon
-  - TheModuleFactory (32 out of 218 modules implemented)
+  - TheModuleFactory (62 out of 218 modules implemented)
   - TheParticleSystemManager (minimal)
   - TheMessageStream
   - TheSidesList
@@ -66,6 +67,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheVideoPlayer
     - TheLanguageFilter
     - TheCampaignManager
+    - TheEva
     - TheIMEManager
     - TheShell
     - TheInGameUI
@@ -91,6 +93,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - Menu transparency is fixed. I had to set a blend mode for the alpha channel to work.
 - Most of the main-menu buttons don't work yet.
 - 2D sound works, music works, but I don't have an SDL library for 3D (positional) sound. I may have to look at OpenAL.
+- Lots more work to do to improve the shell map scene.
 - Everything else.
 
 

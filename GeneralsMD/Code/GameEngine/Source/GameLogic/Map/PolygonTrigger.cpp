@@ -132,6 +132,7 @@ PolygonTrigger *PolygonTrigger::getPolygonTriggerByID(Int triggerID)
 */
 Bool PolygonTrigger::ParsePolygonTriggersDataChunk(DataChunkInput &file, DataChunkInfo *info, void * /* userData */)
 {
+	DEBUG_LOG(("Parsing polygon triggers\n"));
 	Int count;
 	Int numPoints;
 	Int triggerID;

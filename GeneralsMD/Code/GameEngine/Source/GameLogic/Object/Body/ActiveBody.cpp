@@ -84,8 +84,8 @@ class BodyParticleSystem : public MemoryPoolObject
 
 public:
 
-	ParticleSystemID m_particleSystemID;		///< the particle system ID
-	BodyParticleSystem *m_next;							///< next particle system in this body module
+	ParticleSystemID m_particleSystemID {};		///< the particle system ID
+	BodyParticleSystem *m_next {};				///< next particle system in this body module
 
 };
 
@@ -109,11 +109,11 @@ static BodyDamageType calcDamageState(Real health, Real maxHealth)
 
 	Real ratio = health / maxHealth;
 
-	if (ratio > TheGlobalData->m_unitDamagedThresh)
+	if (ratio > TheGlobalData->m_data.m_unitDamagedThresh)
 	{
 		return BODY_PRISTINE;
 	}
-	else if (ratio > TheGlobalData->m_unitReallyDamagedThresh)
+	else if (ratio > TheGlobalData->m_data.m_unitReallyDamagedThresh)
 	{
 		return BODY_DAMAGED;
 	}
@@ -131,54 +131,57 @@ static BodyDamageType calcDamageState(Real health, Real maxHealth)
 //-------------------------------------------------------------------------------------------------
 ActiveBodyModuleData::ActiveBodyModuleData()
 {
-	m_maxHealth = 0;
-	m_initialHealth = 0;
-	m_subdualDamageCap = 0;
-	m_subdualDamageHealRate = 0;
-	m_subdualDamageHealAmount = 0;
+	m_ini.m_maxHealth = 0;
+	m_ini.m_initialHealth = 0;
+	m_ini.m_subdualDamageCap = 0;
+	m_ini.m_subdualDamageHealRate = 0;
+	m_ini.m_subdualDamageHealAmount = 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void ActiveBodyModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void ActiveBodyModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "MaxHealth",						INI::parseReal,						NULL,		offsetof( ActiveBodyModuleData, m_maxHealth ) },
-		{ "InitialHealth",				INI::parseReal,						NULL,		offsetof( ActiveBodyModuleData, m_initialHealth ) },
+		{ "MaxHealth",					INI::parseReal,					NULL,	offsetof( ActiveBodyModuleData::IniData, m_maxHealth ) },
+		{ "InitialHealth",				INI::parseReal,					NULL,	offsetof( ActiveBodyModuleData::IniData, m_initialHealth ) },
 
-		{ "SubdualDamageCap",					INI::parseReal,									NULL,		offsetof( ActiveBodyModuleData, m_subdualDamageCap ) },
-		{ "SubdualDamageHealRate",		INI::parseDurationUnsignedInt,	NULL,		offsetof( ActiveBodyModuleData, m_subdualDamageHealRate ) },
-		{ "SubdualDamageHealAmount",	INI::parseReal,									NULL,		offsetof( ActiveBodyModuleData, m_subdualDamageHealAmount ) },
+		{ "SubdualDamageCap",			INI::parseReal,					NULL,	offsetof( ActiveBodyModuleData::IniData, m_subdualDamageCap ) },
+		{ "SubdualDamageHealRate",		INI::parseDurationUnsignedInt,	NULL,	offsetof( ActiveBodyModuleData::IniData, m_subdualDamageHealRate ) },
+		{ "SubdualDamageHealAmount",	INI::parseReal,					NULL,	offsetof( ActiveBodyModuleData::IniData, m_subdualDamageHealAmount ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	UpdateModuleData::buildFieldParse(what, p);
+	ActiveBodyModuleData* self {static_cast<ActiveBodyModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 ActiveBody::ActiveBody( Thing *thing, const ModuleData* moduleData ) : 
 	BodyModule(thing, moduleData), 
-	m_curDamageFX(NULL),
-	m_curArmorSet(NULL),
-	m_frontCrushed(false),
-	m_backCrushed(false),
-	m_lastDamageTimestamp(0xffffffff),// So we don't think we just got damaged on the first frame
-	m_lastHealingTimestamp(0xffffffff),// So we don't think we just got healed on the first frame
+	m_currentSubdualDamage(0),
 	m_curDamageState(BODY_PRISTINE),
 	m_nextDamageFXTime(0),
 	m_lastDamageFXDone((DamageType)-1),
+	m_lastDamageTimestamp(0xffffffff),// So we don't think we just got damaged on the first frame
+	m_lastHealingTimestamp(0xffffffff),// So we don't think we just got healed on the first frame
+	m_frontCrushed(false),
+	m_backCrushed(false),
 	m_lastDamageCleared(false),
+	m_indestructible(false),
 	m_particleSystems(NULL),
-	m_currentSubdualDamage(0),
-	m_indestructible(false)
+	m_curArmorSet(NULL),
+	m_curDamageFX(NULL)
 {
-	m_currentHealth = getActiveBodyModuleData()->m_initialHealth;
-	m_prevHealth = getActiveBodyModuleData()->m_initialHealth;
-	m_maxHealth = getActiveBodyModuleData()->m_maxHealth;
-	m_initialHealth = getActiveBodyModuleData()->m_initialHealth;
+	m_currentHealth = getActiveBodyModuleData()->m_ini.m_initialHealth;
+	m_prevHealth = getActiveBodyModuleData()->m_ini.m_initialHealth;
+	m_maxHealth = getActiveBodyModuleData()->m_ini.m_maxHealth;
+	m_initialHealth = getActiveBodyModuleData()->m_ini.m_initialHealth;
 
 	// force an initially-valid armor setup
 	validateArmorAndDamageFX();
@@ -215,10 +218,10 @@ void ActiveBody::setCorrectDamageState()
 		Real rubbleHeight = getObject()->getTemplate()->getStructureRubbleHeight();
 
 		if (rubbleHeight <= 0.0f)
-			rubbleHeight = TheGlobalData->m_defaultStructureRubbleHeight;
+			rubbleHeight = TheGlobalData->m_data.m_defaultStructureRubbleHeight;
 
 		/** @todo I had to change this to a Z only version to keep it from disappearing from the
-			PartitionManager for a frame.  That didn't used to happen.		 
+			PartitionManager for a frame.  That didn't used to happen.
 		*/
 		getObject()->setGeometryInfoZ(rubbleHeight);
 
@@ -228,7 +231,7 @@ void ActiveBody::setCorrectDamageState()
 		
 
 		// here we make sure nobody collides with us, ever again...			//Lorenzen
-		//THis allows projectiles shot from infantry that are inside rubble to get out of said rubble safely
+		//This allows projectiles shot from infantry that are inside rubble to get out of said rubble safely
 		getObject()->setStatus( MAKE_OBJECT_STATUS_MASK( OBJECT_STATUS_NO_COLLISIONS ) );
 
 
@@ -246,11 +249,11 @@ void ActiveBody::setDamageState( BodyDamageType newState )
 	}
 	else if( newState == BODY_DAMAGED )
 	{
-		ratio = TheGlobalData->m_unitDamagedThresh;
+		ratio = TheGlobalData->m_data.m_unitDamagedThresh;
 	}
 	else if( newState == BODY_REALLYDAMAGED )
 	{
-		ratio = TheGlobalData->m_unitReallyDamagedThresh;
+		ratio = TheGlobalData->m_data.m_unitReallyDamagedThresh;
 	}
 	else if( newState == BODY_RUBBLE )
 	{
@@ -426,8 +429,8 @@ void ActiveBody::attemptDamage( DamageInfo *damageInfo )
 					obj->setDisabled( DISABLED_UNMANNED );
 					TheGameLogic->deselectObject(obj, PLAYERMASK_ALL, TRUE);
 
-          if ( obj->getAI() )
-            obj->getAI()->aiIdle( CMD_FROM_AI );
+					if ( obj->getAI() )
+						obj->getAI()->aiIdle( CMD_FROM_AI );
 
 					// Convert it to the neutral team so it renders gray giving visual representation that it is unmanned.
 					obj->setTeam( ThePlayerList->getNeutralPlayer()->getDefaultTeam() );
@@ -435,7 +438,7 @@ void ActiveBody::attemptDamage( DamageInfo *damageInfo )
 
 				//We don't care which team sniped the vehicle... we use this information to flag whether or not
 				//we captured a vehicle.
-	      ThePlayerList->getNeutralPlayer()->getAcademyStats()->recordVehicleSniped();
+				ThePlayerList->getNeutralPlayer()->getAcademyStats()->recordVehicleSniped();
 			}
 			alreadyHandled = TRUE;
 			allowModifier = FALSE;
@@ -490,6 +493,9 @@ void ActiveBody::attemptDamage( DamageInfo *damageInfo )
 			allowModifier = FALSE;
 			break;
 		}
+
+		default:
+			break;
 	}
 
 	if( IsSubdualDamage(damageInfo->in.m_damageType) )
@@ -677,7 +683,7 @@ void ActiveBody::attemptDamage( DamageInfo *damageInfo )
 	doDamageFX(damageInfo);
 
 	// Damaged repulsable civilians scare (repulse) other civs.	jba.
-	if( TheAI->getAiData()->m_enableRepulsors ) 
+	if( TheAI->getAiData()->m_ini.m_enableRepulsors ) 
 	{
 		if( obj->isKindOf( KINDOF_CAN_BE_REPULSED ) ) 
 		{
@@ -698,7 +704,7 @@ void ActiveBody::attemptDamage( DamageInfo *damageInfo )
 			PartitionFilter *filters[] = { &f1, &filterMapStatus, 0 };
 
 			
-			Real distance = TheAI->getAiData()->m_retaliateFriendsRadius + obj->getGeometryInfo().getBoundingCircleRadius();
+			Real distance = TheAI->getAiData()->m_ini.m_retaliateFriendsRadius + obj->getGeometryInfo().getBoundingCircleRadius();
 			SimpleObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( obj->getPosition(), distance, FROM_CENTER_2D, filters, ITER_FASTEST );
 			MemoryPoolObjectHolder hold( iter );
 			for( Object *them = iter->first(); them; them = iter->next() ) 
@@ -742,7 +748,7 @@ Bool ActiveBody::shouldRetaliateAgainstAggressor(Object *obj, Object *damager)
 		return false; // only retaliate against enemies.
 	}
 	Real distSqr = ThePartitionManager->getDistanceSquared(obj, damager, FROM_BOUNDINGSPHERE_2D);
-	if (distSqr > sqr(TheAI->getAiData()->m_maxRetaliateDistance)) {
+	if (distSqr > sqr(TheAI->getAiData()->m_ini.m_maxRetaliateDistance)) {
 		return false;
 	}
 	// Only human players retaliate. [8/25/2003]
@@ -1023,7 +1029,8 @@ void ActiveBody::createParticleSystems( const AsciiString &boneBaseName,
 
 		// find the actual bone location to use and mark that bone index as used
 		Int count = 0;
-		for( Int j = 0; j < numBones; j++ )
+		Int j;
+		for( j = 0; j < numBones; j++ )
 		{
 
 			// ignore bone positions that have already been used
@@ -1110,13 +1117,13 @@ void ActiveBody::deleteAllParticleSystems( void )
 // ------------------------------------------------------------------------------------------------
 void ActiveBody::updateBodyParticleSystems( void )
 {
-	static const ParticleSystemTemplate *fireSmallTemplate   = TheParticleSystemManager->findTemplate( TheGlobalData->m_autoFireParticleSmallSystem );
-	static const ParticleSystemTemplate *fireMediumTemplate  = TheParticleSystemManager->findTemplate( TheGlobalData->m_autoFireParticleMediumSystem );
-	static const ParticleSystemTemplate *fireLargeTemplate   = TheParticleSystemManager->findTemplate( TheGlobalData->m_autoFireParticleLargeSystem );
-	static const ParticleSystemTemplate *smokeSmallTemplate  = TheParticleSystemManager->findTemplate( TheGlobalData->m_autoSmokeParticleSmallSystem );
-	static const ParticleSystemTemplate *smokeMediumTemplate = TheParticleSystemManager->findTemplate( TheGlobalData->m_autoSmokeParticleMediumSystem );
-	static const ParticleSystemTemplate *smokeLargeTemplate  = TheParticleSystemManager->findTemplate( TheGlobalData->m_autoSmokeParticleLargeSystem );
-	static const ParticleSystemTemplate *aflameTemplate			 = TheParticleSystemManager->findTemplate( TheGlobalData->m_autoAflameParticleSystem );
+	static const ParticleSystemTemplate *fireSmallTemplate   = TheParticleSystemManager->findTemplate( TheGlobalData->m_data.m_autoFireParticleSmallSystem );
+	static const ParticleSystemTemplate *fireMediumTemplate  = TheParticleSystemManager->findTemplate( TheGlobalData->m_data.m_autoFireParticleMediumSystem );
+	static const ParticleSystemTemplate *fireLargeTemplate   = TheParticleSystemManager->findTemplate( TheGlobalData->m_data.m_autoFireParticleLargeSystem );
+	static const ParticleSystemTemplate *smokeSmallTemplate  = TheParticleSystemManager->findTemplate( TheGlobalData->m_data.m_autoSmokeParticleSmallSystem );
+	static const ParticleSystemTemplate *smokeMediumTemplate = TheParticleSystemManager->findTemplate( TheGlobalData->m_data.m_autoSmokeParticleMediumSystem );
+	static const ParticleSystemTemplate *smokeLargeTemplate  = TheParticleSystemManager->findTemplate( TheGlobalData->m_data.m_autoSmokeParticleLargeSystem );
+	static const ParticleSystemTemplate *aflameTemplate			 = TheParticleSystemManager->findTemplate( TheGlobalData->m_data.m_autoAflameParticleSystem );
 	Int countModifier;
 	const ParticleSystemTemplate *fireSmall;
 	const ParticleSystemTemplate *fireMedium;
@@ -1170,33 +1177,33 @@ void ActiveBody::updateBodyParticleSystems( void )
 	//
 
 	// small fire bones
-	createParticleSystems( TheGlobalData->m_autoFireParticleSmallPrefix, 
-												 fireSmall, TheGlobalData->m_autoFireParticleSmallMax * countModifier );
+	createParticleSystems( TheGlobalData->m_data.m_autoFireParticleSmallPrefix, 
+												 fireSmall, TheGlobalData->m_data.m_autoFireParticleSmallMax * countModifier );
 
 	// medium fire bones
-	createParticleSystems( TheGlobalData->m_autoFireParticleMediumPrefix, 
-												 fireMedium, TheGlobalData->m_autoFireParticleMediumMax * countModifier );
+	createParticleSystems( TheGlobalData->m_data.m_autoFireParticleMediumPrefix, 
+												 fireMedium, TheGlobalData->m_data.m_autoFireParticleMediumMax * countModifier );
 
 	// large fire bones
-	createParticleSystems( TheGlobalData->m_autoFireParticleLargePrefix, 
-												 fireLarge, TheGlobalData->m_autoFireParticleLargeMax * countModifier );
+	createParticleSystems( TheGlobalData->m_data.m_autoFireParticleLargePrefix, 
+												 fireLarge, TheGlobalData->m_data.m_autoFireParticleLargeMax * countModifier );
 
 	// small smoke bones
-	createParticleSystems( TheGlobalData->m_autoSmokeParticleSmallPrefix, 
-												 smokeSmall, TheGlobalData->m_autoSmokeParticleSmallMax * countModifier );
+	createParticleSystems( TheGlobalData->m_data.m_autoSmokeParticleSmallPrefix, 
+												 smokeSmall, TheGlobalData->m_data.m_autoSmokeParticleSmallMax * countModifier );
 
 	// medium smoke bones
-	createParticleSystems( TheGlobalData->m_autoSmokeParticleMediumPrefix, 
-												 smokeMedium, TheGlobalData->m_autoSmokeParticleMediumMax * countModifier );
+	createParticleSystems( TheGlobalData->m_data.m_autoSmokeParticleMediumPrefix, 
+												 smokeMedium, TheGlobalData->m_data.m_autoSmokeParticleMediumMax * countModifier );
 
 	// large smoke bones
-	createParticleSystems( TheGlobalData->m_autoSmokeParticleLargePrefix, 
-												 smokeLarge, TheGlobalData->m_autoSmokeParticleLargeMax * countModifier );
+	createParticleSystems( TheGlobalData->m_data.m_autoSmokeParticleLargePrefix, 
+												 smokeLarge, TheGlobalData->m_data.m_autoSmokeParticleLargeMax * countModifier );
 
 	// actively on fire
 	if( getObject()->testStatus( OBJECT_STATUS_AFLAME ) )
-		createParticleSystems( TheGlobalData->m_autoAflameParticlePrefix, 
-													 aflameTemplate, TheGlobalData->m_autoAflameParticleMax * countModifier );
+		createParticleSystems( TheGlobalData->m_data.m_autoAflameParticlePrefix, 
+													 aflameTemplate, TheGlobalData->m_data.m_autoAflameParticleMax * countModifier );
 
 }  // end updatebodyParticleSystems
 
@@ -1258,7 +1265,7 @@ void ActiveBody::internalAddSubdualDamage( Real delta )
 	const ActiveBodyModuleData *data = getActiveBodyModuleData();
 
 	m_currentSubdualDamage += delta;
-	m_currentSubdualDamage = min(m_currentSubdualDamage, data->m_subdualDamageCap);
+	m_currentSubdualDamage = min(m_currentSubdualDamage, data->m_ini.m_subdualDamageCap);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1266,7 +1273,7 @@ void ActiveBody::internalAddSubdualDamage( Real delta )
 Bool ActiveBody::canBeSubdued() const
 {
 	// Any body with subdue listings can be subdued.
-	return getActiveBodyModuleData()->m_subdualDamageCap > 0;
+	return getActiveBodyModuleData()->m_ini.m_subdualDamageCap > 0;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1343,14 +1350,14 @@ Real ActiveBody::getMaxHealth() const
 //-------------------------------------------------------------------------------------------------
 UnsignedInt ActiveBody::getSubdualDamageHealRate() const
 {
-	return getActiveBodyModuleData()->m_subdualDamageHealRate;
+	return getActiveBodyModuleData()->m_ini.m_subdualDamageHealRate;
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Real ActiveBody::getSubdualDamageHealAmount() const
 {
-	return getActiveBodyModuleData()->m_subdualDamageHealAmount;
+	return getActiveBodyModuleData()->m_ini.m_subdualDamageHealAmount;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1430,6 +1437,8 @@ void ActiveBody::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLeve
 				case LEVEL_HEROIC:
 					veterancyChanged = *getObject()->getTemplate()->getSoundPromotedHero();
 					break;
+				default:
+					break;
 			}
 	
 			veterancyChanged.setObjectID(getObject()->getID());
@@ -1463,8 +1472,8 @@ void ActiveBody::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLeve
 		}
 	}
 
-	Real oldBonus = TheGlobalData->m_healthBonus[oldLevel];
-	Real newBonus = TheGlobalData->m_healthBonus[newLevel];
+	Real oldBonus = TheGlobalData->m_data.m_healthBonus[oldLevel];
+	Real newBonus = TheGlobalData->m_data.m_healthBonus[newLevel];
 	Real mult = newBonus / oldBonus;
 
 	// get this before calling setMaxHealth, since it can clip curHealth
@@ -1497,6 +1506,8 @@ void ActiveBody::onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLeve
 			clearArmorSetFlag(ARMORSET_VETERAN);
 			clearArmorSetFlag(ARMORSET_ELITE);
 			setArmorSetFlag(ARMORSET_HERO);
+			break;
+		default:
 			break;
 	}
 }

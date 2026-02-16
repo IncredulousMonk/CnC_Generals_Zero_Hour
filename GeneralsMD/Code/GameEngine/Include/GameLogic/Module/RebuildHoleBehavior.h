@@ -43,14 +43,20 @@ class RebuildHoleBehaviorModuleData : public UpdateModuleData
 {
 
 public:
+	// MG: Cannot apply offsetof to RebuildHoleBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_workerRespawnDelay;					///< delay in frames from death of object till respawn of worker
+		Real m_holeHealthRegenPercentPerSecond;		///< the hole recovers this % of the max hit points per second 
+		AsciiString m_workerTemplateName;			///< name of worker object
+	};
+
+	IniData m_ini {};
+
 
 	RebuildHoleBehaviorModuleData( void );
 
 	static void buildFieldParse( void* what, MultiIniFieldParse &p );
-
-	Real m_workerRespawnDelay;							///< delay in frames from death of object till respawn of worker
-	Real m_holeHealthRegenPercentPerSecond; ///< the hole recovers this % of the max hit points per second 
-	AsciiString m_workerTemplateName;				///< name of worker object
 
 private:
 
@@ -117,12 +123,12 @@ protected:
 
 	void newWorkerRespawnProcess( Object *existingWorker );		///< start the worker respawn process (again if existingWorker is non NULL)
 
-	ObjectID m_workerID;										///< id of the worker that will rebuild us
-	ObjectID m_reconstructingID;						///< ID of the object we're reconstructing
-	ObjectID m_spawnerObjectID;							///< Object that was killed and therefore the object that created this hole
-	UnsignedInt m_workerWaitCounter;				///< when this reaches zero we spawn a worker after death
-	const ThingTemplate *m_workerTemplate;  ///< template of the worker to make
-	const ThingTemplate *m_rebuildTemplate;	///< what we are rebuilding
+	ObjectID m_workerID {};										///< id of the worker that will rebuild us
+	ObjectID m_reconstructingID {};						///< ID of the object we're reconstructing
+	ObjectID m_spawnerObjectID {};							///< Object that was killed and therefore the object that created this hole
+	UnsignedInt m_workerWaitCounter {};				///< when this reaches zero we spawn a worker after death
+	const ThingTemplate *m_workerTemplate {};  ///< template of the worker to make
+	const ThingTemplate *m_rebuildTemplate {};	///< what we are rebuilding
 
 };
 

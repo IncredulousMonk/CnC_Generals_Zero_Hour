@@ -30,10 +30,10 @@
 #include "LinuxDevice/GameClient/Module/LinuxDefaultDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxDependencyModelDraw.h"
 #include "LinuxDevice/GameClient/Module/LinuxModelDraw.h"
-// #include "LinuxDevice/GameClient/Module/LinuxLaserDraw.h"
+#include "LinuxDevice/GameClient/Module/LinuxLaserDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxOverlordTankDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxOverlordTruckDraw.h"
-// #include "LinuxDevice/GameClient/Module/LinuxOverlordAircraftDraw.h"
+#include "LinuxDevice/GameClient/Module/LinuxOverlordAircraftDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxPoliceCarDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxProjectileStreamDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxRopeDraw.h"
@@ -59,10 +59,10 @@ void LinuxModuleFactory::init()
    addModuleRename(LinuxDefaultDraw, W3DDefaultDraw);
    // addModule( LinuxDebrisDraw );
    addModuleRename(LinuxModelDraw, W3DModelDraw);
-   // addModule( LinuxLaserDraw );
+   addModuleRename(LinuxLaserDraw, W3DLaserDraw);
    // addModule( LinuxOverlordTankDraw );
    // addModule( LinuxOverlordTruckDraw );
-   // addModule( LinuxOverlordAircraftDraw );
+   addModuleRename(LinuxOverlordAircraftDraw, W3DOverlordAircraftDraw);
    // addModule( LinuxProjectileStreamDraw );
    // addModule( LinuxPoliceCarDraw );
    // addModule( LinuxRopeDraw );

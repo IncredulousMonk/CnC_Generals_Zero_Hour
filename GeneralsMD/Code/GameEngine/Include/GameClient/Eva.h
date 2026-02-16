@@ -105,8 +105,8 @@ extern const char *TheEvaMessageNames[];
 //------------------------------------------------------------------------------------ EvaCheckInfo
 struct EvaSideSounds
 {
-	AsciiString m_side;
-	std::vector<AsciiString> m_soundNames;
+	AsciiString m_side {};
+	std::vector<AsciiString> m_soundNames {};
 
 	static const FieldParse s_evaSideSounds[];		///< the parse table for INI definition
 	const FieldParse *getFieldParse( void ) const { return s_evaSideSounds; }
@@ -115,14 +115,20 @@ struct EvaSideSounds
 //------------------------------------------------------------------------------------ EvaCheckInfo
 class EvaCheckInfo : public MemoryPoolObject
 {
-	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(EvaCheckInfo, "EvaCheckInfo")		
+	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(EvaCheckInfo, "EvaCheckInfo")
 
 public:
-	EvaMessage									m_message;
-	UnsignedInt									m_framesBetweenChecks;
-	UnsignedInt									m_framesToExpire;
-	UnsignedInt									m_priority;	// higher priority is more important, and will be played in preference to lower preference
-	std::vector<EvaSideSounds>	m_evaSideSounds;
+	// MG: Cannot apply offsetof to EvaCheckInfo, so had to move data into an embedded struct.
+	struct IniData
+	{
+		EvaMessage					m_message;
+		UnsignedInt					m_framesBetweenChecks;
+		UnsignedInt					m_framesToExpire;
+		UnsignedInt					m_priority;	// higher priority is more important, and will be played in preference to lower preference
+		std::vector<EvaSideSounds>	m_evaSideSounds;
+	};
+
+	IniData m_ini {};
 	
 	EvaCheckInfo();
 
@@ -142,7 +148,7 @@ struct EvaCheck
 	UnsignedInt m_timeForNextCheck;
 	Bool m_alreadyPlayed;	
 
-		EvaCheck();
+	EvaCheck();
 };
 
 //-------------------------------------------------------------------------------- ShouldPlayStruct
@@ -156,27 +162,27 @@ class Eva : public SubsystemInterface
 
 		typedef std::vector<EvaCheckInfo *> EvaCheckInfoPtrVec;
 		typedef EvaCheckInfoPtrVec::iterator EvaCheckInfoPtrVecIt;
-		EvaCheckInfoPtrVec m_allCheckInfos;
+		EvaCheckInfoPtrVec m_allCheckInfos {};
 
 		typedef std::vector<EvaCheck> EvaCheckVec;
 		typedef EvaCheckVec::iterator EvaCheckVecIt;
 
 		// This list contains things that either want to play, 
 		// or have played and are waiting till they are allowed to check again to play.
-		EvaCheckVec m_checks;
+		EvaCheckVec m_checks {};
 
 		// This is the one speech we're allowed to be playing. If its playing, it always has priority
-		AudioEventRTS m_evaSpeech;
+		AudioEventRTS m_evaSpeech {};
 
-		Player *m_localPlayer;
+		Player *m_localPlayer {};
 
 		// Variables for condition checks go here. 
-		Int m_previousBuildingCount;
-		Int m_previousUnitCount;
-		mutable EvaMessage m_messageBeingTested;	// Used by the generic hooks so they can figure out which flag to test.
+		Int m_previousBuildingCount {};
+		Int m_previousUnitCount {};
+		mutable EvaMessage m_messageBeingTested {};	// Used by the generic hooks so they can figure out which flag to test.
 		Bool m_shouldPlay[EVA_COUNT];	// These aren't all used, but some of them are.
 		
-		Bool m_enabled;
+		Bool m_enabled {};
 
 	public:
 		Eva();

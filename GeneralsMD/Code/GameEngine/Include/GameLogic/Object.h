@@ -237,11 +237,9 @@ public:
 #endif // if 0
 	void kill( DamageType damageType = DAMAGE_UNRESISTABLE, DeathType deathType = DEATH_NORMAL );	///< kill the object with an optional type of damage and death.
 	void healCompletely();														///< Restore max health to this Object
-#if 0
 	void notifySubdualDamage( Real amount );///< At this level, we just pass this on to our helper and do a special tint
 	void doStatusDamage( ObjectStatusTypes status, Real duration );///< At this level, we just pass this on to our helper
 	void doTempWeaponBonus( WeaponBonusConditionType status, UnsignedInt duration );///< At this level, we just pass this on to our helper
-#endif // if 0
 
 	void scoreTheKill( const Object *victim );						///< I just killed this object.  
 	void onVeterancyLevelChanged( VeterancyLevel oldLevel, VeterancyLevel newLevel, Bool provideFeedback = TRUE );	///< I just achieved this level right this moment
@@ -281,10 +279,10 @@ public:
 	void setCaptured(Bool isCaptured);
 
 	inline const GeometryInfo& getGeometryInfo() const { return m_geometryInfo; }
-#if 0
 	void setGeometryInfo(const GeometryInfo& geom);
 	void setGeometryInfoZ( Real newZ );
 
+#if 0
 	void onCollide( Object *other, const Coord3D *loc, const Coord3D *normal );
 #endif // if 0
 	
@@ -419,8 +417,10 @@ public:
 
 	Bool hasCountermeasures() const;
 	void reportMissileForCountermeasures( Object *missile );
+#endif // if 0
 	ObjectID calculateCountermeasureToDivertTo( const Object& victim );
 
+#if 0
 	void calcNaturalRallyPoint(Coord2D *pt); ///< calc the "natural" starting rally point
 #endif // if 0
 	void setConstructionPercent( Real percent ) { m_constructionPercent = percent; }
@@ -450,13 +450,13 @@ public:
 	void handlePartitionCellMaintenance();					///< Undo and redo all shroud actions.  Call when something has changed, like position or ownership or Death
 
 	Real getVisionRange() const;				///< How far can you see?  This is dynamic so it is in Object.
-#if 0
 	void setVisionRange( Real newVisionRange );	///< Access to setting someone's Vision distance
+#if 0
 	Real getShroudRange() const;				///< How far can you shroud?  Even more dynamic since it'll start at zero for everyone.
 	void setShroudRange( Real newShroudRange );	///< Access to setting someone's shrouding distance
+#endif // if 0
 	Real getShroudClearingRange() const;				///< How far do you clear shroud?
 	void setShroudClearingRange( Real newShroudClearingRange );	///< Access to setting someone's clear shroud distance
-#endif // if 0
 	void setVisionSpied(Bool setting, Int byWhom);///< Change who is looking through our eyes
 
 	// Both of these calls are intended to only be used by TerrainLogic, specifically setActiveBoundary()

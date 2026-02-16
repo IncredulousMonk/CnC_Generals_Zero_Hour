@@ -53,35 +53,37 @@
 HeightDieUpdateModuleData::HeightDieUpdateModuleData( void )
 {
 
-	m_targetHeightAboveTerrain = 0.0f;
-	m_targetHeightIncludesStructures = FALSE;
-	m_onlyWhenMovingDown = FALSE;
-	m_destroyAttachedParticlesAtHeight = -1.0f;
-	m_snapToGroundOnDeath = FALSE;
-	m_initialDelay = 0;
+	m_ini.m_targetHeightAboveTerrain = 0.0f;
+	m_ini.m_targetHeightIncludesStructures = FALSE;
+	m_ini.m_onlyWhenMovingDown = FALSE;
+	m_ini.m_destroyAttachedParticlesAtHeight = -1.0f;
+	m_ini.m_snapToGroundOnDeath = FALSE;
+	m_ini.m_initialDelay = 0;
 
 }  // end HeightDieUpdateModuleData
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void HeightDieUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void HeightDieUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
 
-  UpdateModuleData::buildFieldParse( p );
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "TargetHeight", INI::parseReal, NULL, offsetof( HeightDieUpdateModuleData, m_targetHeightAboveTerrain ) },
-		{ "TargetHeightIncludesStructures", INI::parseBool, NULL, offsetof( HeightDieUpdateModuleData, m_targetHeightIncludesStructures ) },
-		{ "OnlyWhenMovingDown", INI::parseBool, NULL, offsetof( HeightDieUpdateModuleData, m_onlyWhenMovingDown ) },
-		{ "DestroyAttachedParticlesAtHeight", INI::parseReal, NULL, offsetof( HeightDieUpdateModuleData, m_destroyAttachedParticlesAtHeight ) },
-		{ "SnapToGroundOnDeath", INI::parseBool, NULL, offsetof( HeightDieUpdateModuleData, m_snapToGroundOnDeath ) },
-		{ "InitialDelay", INI::parseDurationUnsignedInt, NULL, offsetof( HeightDieUpdateModuleData, m_initialDelay ) },
+		{ "TargetHeight",						INI::parseReal,					NULL, offsetof( HeightDieUpdateModuleData::IniData, m_targetHeightAboveTerrain ) },
+		{ "TargetHeightIncludesStructures",		INI::parseBool,					NULL, offsetof( HeightDieUpdateModuleData::IniData, m_targetHeightIncludesStructures ) },
+		{ "OnlyWhenMovingDown",					INI::parseBool,					NULL, offsetof( HeightDieUpdateModuleData::IniData, m_onlyWhenMovingDown ) },
+		{ "DestroyAttachedParticlesAtHeight",	INI::parseReal,					NULL, offsetof( HeightDieUpdateModuleData::IniData, m_destroyAttachedParticlesAtHeight ) },
+		{ "SnapToGroundOnDeath",				INI::parseBool,					NULL, offsetof( HeightDieUpdateModuleData::IniData, m_snapToGroundOnDeath ) },
+		{ "InitialDelay",						INI::parseDurationUnsignedInt,	NULL, offsetof( HeightDieUpdateModuleData::IniData, m_initialDelay ) },
 		{ 0, 0, 0, 0 }
 
 	};
 
-  p.add(dataFieldParse);
+	HeightDieUpdateModuleData* self {static_cast<HeightDieUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -117,7 +119,7 @@ UpdateSleepTime HeightDieUpdate::update( void )
 {
 	UnsignedInt now = TheGameLogic->getFrame();
 	if( m_earliestDeathFrame == UINT_MAX )
-		m_earliestDeathFrame = now + getHeightDieUpdateModuleData()->m_initialDelay;
+		m_earliestDeathFrame = now + getHeightDieUpdateModuleData()->m_ini.m_initialDelay;
 
 	// If at least a one frame delay has been set, then stop for a while
 	if( m_earliestDeathFrame > now )
@@ -145,7 +147,7 @@ UpdateSleepTime HeightDieUpdate::update( void )
 	if( m_hasDied == FALSE )
 	{
 
-		if( modData->m_onlyWhenMovingDown )
+		if( modData->m_ini.m_onlyWhenMovingDown )
 		{
 
 			if( pos->z >= m_lastPosition.z )
@@ -157,7 +159,7 @@ UpdateSleepTime HeightDieUpdate::update( void )
 		Real terrainHeightAtPos = TheTerrainLogic->getGroundHeight( pos->x, pos->y );
 		
 		// if including structures, check for bridges
-		if (modData->m_targetHeightIncludesStructures)
+		if (modData->m_ini.m_targetHeightIncludesStructures)
 		{
 			PathfindLayerEnum layer = TheTerrainLogic->getHighestLayerForDestination(pos);
 			if (layer != LAYER_GROUND)
@@ -173,13 +175,13 @@ UpdateSleepTime HeightDieUpdate::update( void )
 		// the terrain ... we may change our target height if we care about dying above
 		// objects under us (see below)
 		//
-		Real targetHeight = terrainHeightAtPos + modData->m_targetHeightAboveTerrain;
+		Real targetHeight = terrainHeightAtPos + modData->m_ini.m_targetHeightAboveTerrain;
 
 		//
 		// if we consider objects under us ... we will die when we are the specified distance above
 		// those objects
 		//
-		if( modData->m_targetHeightIncludesStructures == TRUE )
+		if( modData->m_ini.m_targetHeightIncludesStructures == TRUE )
 		{
 
 			// scan all objects in the radius of our extent and find the tallest height among them
@@ -215,7 +217,7 @@ UpdateSleepTime HeightDieUpdate::update( void )
 			// entry for the object that has this update ... or it is the building height of the
 			// tallest thing under us
 			//
-			if( tallestHeight > modData->m_targetHeightAboveTerrain )
+			if( tallestHeight > modData->m_ini.m_targetHeightAboveTerrain )
 				targetHeight = tallestHeight + terrainHeightAtPos;
 
 		}  // end if
@@ -226,7 +228,7 @@ UpdateSleepTime HeightDieUpdate::update( void )
 
 			// if we're supposed to snap us to the ground on death do so
 			// AND: even if we're not snapping to ground, be sure we don't go BELOW ground 
-			if( modData->m_snapToGroundOnDeath || pos->z < terrainHeightAtPos )
+			if( modData->m_ini.m_snapToGroundOnDeath || pos->z < terrainHeightAtPos )
 			{
 				Coord3D ground;
 
@@ -251,7 +253,7 @@ UpdateSleepTime HeightDieUpdate::update( void )
 	// if our height is below the destroy attached particles height above the terrain, clean
 	// them up from the particle system
 	//
-	if( m_particlesDestroyed == FALSE && pos->z < modData->m_destroyAttachedParticlesAtHeight && (m_hasDied || directionOK) )
+	if( m_particlesDestroyed == FALSE && pos->z < modData->m_ini.m_destroyAttachedParticlesAtHeight && (m_hasDied || directionOK) )
 	{
 
 		// destroy them

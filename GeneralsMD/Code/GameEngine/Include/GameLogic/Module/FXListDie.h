@@ -47,31 +47,39 @@ class FXList;
 class FXListDieModuleData : public DieModuleData
 {
 public:
-	const FXList					*m_defaultDeathFX;								///< default fx to make 
-	UpgradeMuxData				m_upgradeMuxData;
-	Bool									m_orientToObject;
-	Bool									m_initiallyActive;
+	// MG: Cannot apply offsetof to FXListDieModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const FXList*	m_defaultDeathFX;	///< default fx to make 
+		UpgradeMuxData	m_upgradeMuxData;
+		Bool			m_orientToObject;
+		Bool			m_initiallyActive;
+	};
+
+	IniData m_ini {};
 
 	FXListDieModuleData()
 	{
-		m_defaultDeathFX = NULL;
-		m_orientToObject = TRUE;
-		m_initiallyActive = TRUE; //Patch 1.02 -- Craptacular HACK -- should default to FALSE but only ONE case sets it false out of 847!
+		m_ini.m_defaultDeathFX = NULL;
+		m_ini.m_orientToObject = TRUE;
+		m_ini.m_initiallyActive = TRUE; //Patch 1.02 -- Craptacular HACK -- should default to FALSE but only ONE case sets it false out of 847!
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    DieModuleData::buildFieldParse(p);
+		DieModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "StartsActive",					INI::parseBool, NULL, offsetof( FXListDieModuleData, m_initiallyActive ) },
-			{ "DeathFX",							INI::parseFXList,		NULL, offsetof( FXListDieModuleData, m_defaultDeathFX ) },
-			{ "OrientToObject",				INI::parseBool,		NULL, offsetof( FXListDieModuleData, m_orientToObject ) },
+			{ "StartsActive",	INI::parseBool,		NULL, offsetof( FXListDieModuleData::IniData, m_initiallyActive ) },
+			{ "DeathFX",		INI::parseFXList,	NULL, offsetof( FXListDieModuleData::IniData, m_defaultDeathFX ) },
+			{ "OrientToObject",	INI::parseBool,		NULL, offsetof( FXListDieModuleData::IniData, m_orientToObject ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( FXListDieModuleData, m_upgradeMuxData ));
+		FXListDieModuleData* self {static_cast<FXListDieModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
+		p.add(UpgradeMuxData::getFieldParse(), offset + offsetof( FXListDieModuleData::IniData, m_upgradeMuxData ));
 	}
 };
 
@@ -105,23 +113,23 @@ protected:
 
 	virtual void getUpgradeActivationMasks(UpgradeMaskType& activation, UpgradeMaskType& conflicting) const
 	{
-		getFXListDieModuleData()->m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
+		getFXListDieModuleData()->m_ini.m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
 	}
 
 	virtual void performUpgradeFX()
 	{
-		getFXListDieModuleData()->m_upgradeMuxData.performUpgradeFX(getObject());
+		getFXListDieModuleData()->m_ini.m_upgradeMuxData.performUpgradeFX(getObject());
 	}
 
 	virtual void processUpgradeRemoval()
 	{
 		// I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP.
-		getFXListDieModuleData()->m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
+		getFXListDieModuleData()->m_ini.m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
 	}
 
 	virtual Bool requiresAllActivationUpgrades() const
 	{
-		return getFXListDieModuleData()->m_upgradeMuxData.m_requiresAllTriggers;
+		return getFXListDieModuleData()->m_ini.m_upgradeMuxData.m_requiresAllTriggers;
 	}
 
 	inline Bool isUpgradeActive() const { return isAlreadyUpgraded(); }

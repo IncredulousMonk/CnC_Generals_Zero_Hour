@@ -6987,14 +6987,14 @@ void ScriptEngine::executeScript( Script *pScript )
 				if (pScript->isOneShot()) {
 					pScript->setActive(false);
 				}
-			}	else if (pScript->getFalseAction()) {
+			} else if (pScript->getFalseAction()) {
 
 				// Script Debug window
 				_appendMessage(pScript->getName(), false);
 
 				// Only do this is there are actually false actions.
 				executeActions(pScript->getFalseAction());
-      } 
+			}
 		}
 
 	} else {

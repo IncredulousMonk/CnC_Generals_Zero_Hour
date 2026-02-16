@@ -92,6 +92,7 @@ PlayerList::~PlayerList()
 	}
 	for( Int i = 0; i < MAX_PLAYER_COUNT; ++i )
 		delete m_players[ i ];
+	ThePlayerList = nullptr;
 }
 
 //-----------------------------------------------------------------------------

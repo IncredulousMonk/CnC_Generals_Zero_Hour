@@ -53,27 +53,28 @@
 RebuildHoleBehaviorModuleData::RebuildHoleBehaviorModuleData( void )
 {
 
-	m_workerRespawnDelay = 0.0f;
-	m_holeHealthRegenPercentPerSecond = 0.1f;
+	m_ini.m_workerRespawnDelay = 0.0f;
+	m_ini.m_holeHealthRegenPercentPerSecond = 0.1f;
 
 }  // end RebuildHoleBehaviorModuleData
 
 //-------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void RebuildHoleBehaviorModuleData::buildFieldParse( MultiIniFieldParse &p ) 
+/*static*/ void RebuildHoleBehaviorModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-
-  UpdateModuleData::buildFieldParse( p );
 
 	static const FieldParse dataFieldParse[] = 
 	{
-	  { "WorkerObjectName", INI::parseAsciiString, NULL, offsetof( RebuildHoleBehaviorModuleData, m_workerTemplateName ) },
-		{ "WorkerRespawnDelay", INI::parseDurationReal,	NULL, offsetof( RebuildHoleBehaviorModuleData, m_workerRespawnDelay ) },
-		{ "HoleHealthRegen%PerSecond", INI::parsePercentToReal, NULL, offsetof( RebuildHoleBehaviorModuleData, m_holeHealthRegenPercentPerSecond ) },
+		{ "WorkerObjectName",			INI::parseAsciiString,		NULL, offsetof( RebuildHoleBehaviorModuleData::IniData, m_workerTemplateName ) },
+		{ "WorkerRespawnDelay",			INI::parseDurationReal,		NULL, offsetof( RebuildHoleBehaviorModuleData::IniData, m_workerRespawnDelay ) },
+		{ "HoleHealthRegen%PerSecond",	INI::parsePercentToReal,	NULL, offsetof( RebuildHoleBehaviorModuleData::IniData, m_holeHealthRegenPercentPerSecond ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add( dataFieldParse );
+	UpdateModuleData::buildFieldParse(what, p);
+	RebuildHoleBehaviorModuleData* self {static_cast<RebuildHoleBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -130,7 +131,7 @@ void RebuildHoleBehavior::newWorkerRespawnProcess( Object *existingWorker )
 	m_workerID = INVALID_ID;
 	
 	// set the timer for the next worker respawn
-	m_workerWaitCounter = modData->m_workerRespawnDelay;
+	m_workerWaitCounter = modData->m_ini.m_workerRespawnDelay;
 
 	//
 	// this method is called when a worker needs to be respawned from the hole.  One of those
@@ -234,7 +235,7 @@ UpdateSleepTime RebuildHoleBehavior::update( void )
 
 			// resolve the worker template pointer if necessary
 			if( m_workerTemplate == NULL )
-				m_workerTemplate = TheThingFactory->findTemplate( modData->m_workerTemplateName );
+				m_workerTemplate = TheThingFactory->findTemplate( modData->m_ini.m_workerTemplateName );
 
 			// create a worker
 			worker = TheThingFactory->newObject( m_workerTemplate, hole->getTeam() );
@@ -310,7 +311,7 @@ UpdateSleepTime RebuildHoleBehavior::update( void )
 		DamageInfo healingInfo;
 
 		// do some healing
-		healingInfo.in.m_amount = (modData->m_holeHealthRegenPercentPerSecond / LOGICFRAMES_PER_SECOND) * 
+		healingInfo.in.m_amount = (modData->m_ini.m_holeHealthRegenPercentPerSecond / (Real)LOGICFRAMES_PER_SECOND) * 
 															body->getMaxHealth();
 		healingInfo.in.m_sourceID = hole->getID();
 		healingInfo.in.m_damageType = DAMAGE_HEALING;
@@ -340,7 +341,7 @@ UpdateSleepTime RebuildHoleBehavior::update( void )
 
 // ------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void RebuildHoleBehavior::onDie( const DamageInfo *damageInfo )
+void RebuildHoleBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 	if( m_workerID != INVALID_ID )
 	{

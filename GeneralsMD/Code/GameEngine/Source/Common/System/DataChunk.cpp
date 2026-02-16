@@ -653,8 +653,8 @@ Bool DataChunkInput::parse( void *userData )
 		}
 		// open the chunk
 		label = openDataChunk( &ver );
-DEBUG_LOG(("$$$$$ Found chunk called \"%s\", ID = %d, version = %d, start = 0x%x, size = %d (0x%x)\n",
-	label.str(), m_chunkStack->id, m_chunkStack->version, m_chunkStack->chunkStart, m_chunkStack->dataSize, m_chunkStack->dataSize));
+		// DEBUG_LOG(("Found chunk called \"%s\", ID = %d, version = %d, start = 0x%x, size = %d (0x%x)\n",
+		// 	label.str(), m_chunkStack->id, m_chunkStack->version, m_chunkStack->chunkStart, m_chunkStack->dataSize, m_chunkStack->dataSize));
 		if (atEndOfFile()) { // FILE * returns eof after you read past end of file, so check.
 			break;
 		}
@@ -908,13 +908,14 @@ NameKeyType DataChunkInput::readNameKey(void)
 
 Dict DataChunkInput::readDict() 
 { 
-	UnsignedShort len;	
+	UnsignedShort len;
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft >= (Int)sizeof(UnsignedShort), ("Read past end of chunk."));
 	m_file->read( &len, sizeof(UnsignedShort) );
 	decrementDataLeft( sizeof(UnsignedShort) );
 	DEBUG_ASSERTCRASH(m_chunkStack->dataLeft>=len, ("Read past end of chunk."));
 
 	Dict d(len);
+	DEBUG_LOG(("Reading dictionary with %d entries\n", len));
 
 	for (int i = 0; i < len; i++)
 	{
@@ -923,24 +924,30 @@ Dict DataChunkInput::readDict()
 		keyAndType >>= 8;
 
 		AsciiString kname = m_contents.getName((UnsignedInt)keyAndType);
+		// DEBUG_LOG(("Dictionary key = %s\n", kname.str()));
 		NameKeyType k = TheNameKeyGenerator->nameToKey(kname);
 
 		switch(t)
 		{
 			case Dict::DICT_BOOL:
 				d.setBool(k, readByte() ? true : false);
+				DEBUG_LOG(("> Dictionary entry: %s = %d\n", kname.str(), d.getBool(k)));
 				break;
 			case Dict::DICT_INT:
 				d.setInt(k, readInt());
+				DEBUG_LOG(("> Dictionary entry: %s = %d\n", kname.str(), d.getInt(k)));
 				break;
 			case Dict::DICT_REAL:
 				d.setReal(k, readReal());
+				DEBUG_LOG(("> Dictionary entry: %s = %f\n", kname.str(), d.getReal(k)));
 				break;
 			case Dict::DICT_ASCIISTRING:
 				d.setAsciiString(k, readAsciiString());
+				DEBUG_LOG(("> Dictionary entry: %s = \"%s\"\n", kname.str(), d.getAsciiString(k).str()));
 				break;
 			case Dict::DICT_UNICODESTRING:
 				d.setUnicodeString(k, readUnicodeString());
+				DEBUG_LOG(("> Dictionary entry: %s = \"%ls\"\n", kname.str(), d.getUnicodeString(k).str()));
 				break;
 			default:
 				throw ERROR_CORRUPT_FILE_FORMAT;

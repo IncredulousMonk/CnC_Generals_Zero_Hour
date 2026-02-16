@@ -46,7 +46,7 @@
 //-------------------------------------------------------------------------------------------------
 FXListDie::FXListDie( Thing *thing, const ModuleData* moduleData ) : DieModule( thing, moduleData )
 {
-	if( getFXListDieModuleData()->m_initiallyActive )
+	if( getFXListDieModuleData()->m_ini.m_initiallyActive )
 	{
 		giveSelfUpgrade();
 	}
@@ -82,16 +82,16 @@ void FXListDie::onDie( const DamageInfo *damageInfo )
 		return;
 	}
 
-	if (d->m_defaultDeathFX)
+	if (d->m_ini.m_defaultDeathFX)
 	{
-		if (d->m_orientToObject)
+		if (d->m_ini.m_orientToObject)
 		{
 			Object *damageDealer = TheGameLogic->findObjectByID( damageInfo->in.m_sourceID );
-			FXList::doFXObj(getFXListDieModuleData()->m_defaultDeathFX, getObject(), damageDealer);
+			FXList::doFXObj(getFXListDieModuleData()->m_ini.m_defaultDeathFX, getObject(), damageDealer);
 		}
 		else
 		{
-			FXList::doFXPos(getFXListDieModuleData()->m_defaultDeathFX, getObject()->getPosition());
+			FXList::doFXPos(getFXListDieModuleData()->m_ini.m_defaultDeathFX, getObject()->getPosition());
 		}
 	}
 }

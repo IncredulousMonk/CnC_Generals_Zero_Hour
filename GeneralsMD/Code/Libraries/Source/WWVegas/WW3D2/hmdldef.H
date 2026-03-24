@@ -84,6 +84,10 @@ public:
 	HModelDefClass(void);
 	~HModelDefClass(void);
 
+	// No copies allowed!
+	HModelDefClass(const HModelDefClass&) = delete;
+	HModelDefClass& operator=(const HModelDefClass&) = delete;
+
 	int				Load_W3D(ChunkLoadClass & cload);
 	const char *	Get_Name(void) const { return Name; }
 

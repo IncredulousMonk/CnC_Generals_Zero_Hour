@@ -102,7 +102,7 @@ public:
 	** When a decal-mesh is destroyed, it must inform the DecalSystem.  Otherwise, systems 
 	** which track decals can get dangling pointers.
 	*/
-	virtual void							Decal_Mesh_Destroyed(uint32 decal_id,DecalMeshClass * mesh)	{ }
+	virtual void							Decal_Mesh_Destroyed(uint32 /* decal_id */, DecalMeshClass * /* mesh */)	{ }
 
 protected:
 
@@ -180,6 +180,10 @@ protected:
 	DecalGeneratorClass(uint32 id,DecalSystemClass * system);
 	~DecalGeneratorClass(void);
 
+	// No copies allowed!
+	DecalGeneratorClass(const DecalGeneratorClass&) = delete;
+	DecalGeneratorClass& operator=(const DecalGeneratorClass&) = delete;
+
 	/*
 	** Logical Decal ID, DecalSystem that this generator is tied to
 	*/
@@ -220,6 +224,7 @@ public:
 
 	MultiFixedPoolDecalSystemClass(uint32 num_pools, const uint32 *pool_sizes);
 	MultiFixedPoolDecalSystemClass(const MultiFixedPoolDecalSystemClass & that);
+	MultiFixedPoolDecalSystemClass& operator=(const MultiFixedPoolDecalSystemClass&) = delete;
 	virtual ~MultiFixedPoolDecalSystemClass(void);
 
 	// This clears the slot in addition to locking the generator, thus preventing any decal id
@@ -290,6 +295,10 @@ protected:
 		LogicalDecalPoolClass(void);
 		~LogicalDecalPoolClass(void);
 
+		// No copies allowed!
+		LogicalDecalPoolClass(const LogicalDecalPoolClass&) = delete;
+		LogicalDecalPoolClass& operator=(const LogicalDecalPoolClass&) = delete;
+
 		void Initialize(uint32 size);
 
 		LogicalDecalClass *		Array;
@@ -305,4 +314,3 @@ protected:
 
 
 #endif //DECALSYS_H
-

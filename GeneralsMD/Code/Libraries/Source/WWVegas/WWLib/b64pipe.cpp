@@ -88,7 +88,7 @@ int Base64Pipe::Put(void const * source, int slen)
 
 	if (Counter > 0) {
 		int len = (slen < (fromsize-Counter)) ? slen : (fromsize-Counter);
-		memmove(&from[Counter], source, len);
+		memmove(&from[Counter], source, (size_t)len);
 		Counter += len;
 		slen -= len;
 		source = ((char *)source) + len;
@@ -118,7 +118,7 @@ int Base64Pipe::Put(void const * source, int slen)
 	}
 
 	if (slen > 0) {
-		memmove(from, source, slen);
+		memmove(from, source, (size_t)slen);
 		Counter = slen;
 	}
 
@@ -159,6 +159,3 @@ int Base64Pipe::Flush(void)
 	len += Pipe::Flush();
 	return(len);
 }
-
-
-

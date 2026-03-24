@@ -62,6 +62,10 @@ public:
 	ProjectorClass(void);
 	virtual ~ProjectorClass(void);
 
+	// No copies allowed!
+	ProjectorClass(const ProjectorClass&) = delete;
+	ProjectorClass& operator=(const ProjectorClass&) = delete;
+
 	virtual void					Set_Transform(const Matrix3D & tm);
 	virtual const Matrix3D &	Get_Transform(void) const;
 
@@ -88,5 +92,3 @@ protected:
 
 
 #endif
-
-

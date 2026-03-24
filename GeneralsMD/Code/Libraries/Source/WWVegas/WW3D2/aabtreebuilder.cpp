@@ -902,8 +902,8 @@ void AABTreeBuilderClass::Export(ChunkSaveClass & csave)
 	csave.Begin_Chunk(W3D_CHUNK_AABTREE_HEADER);
 	W3dMeshAABTreeHeader header;
 	memset(&header,0,sizeof(header));
-	header.NodeCount = Node_Count();
-	header.PolyCount = Poly_Count();
+	header.NodeCount = (uint32)Node_Count();
+	header.PolyCount = (uint32)Poly_Count();
 	csave.Write(&header,sizeof(header));
 	csave.End_Chunk();
 
@@ -911,7 +911,7 @@ void AABTreeBuilderClass::Export(ChunkSaveClass & csave)
 	** Write out the array of polygon indices
 	*/
 	csave.Begin_Chunk(W3D_CHUNK_AABTREE_POLYINDICES);
-	csave.Write(poly_indices,Poly_Count() * sizeof(uint32));
+	csave.Write(poly_indices, (uint32)Poly_Count() * sizeof(uint32));
 	csave.End_Chunk();
 
 	/*
@@ -965,13 +965,13 @@ void AABTreeBuilderClass::Build_W3D_AABTree_Recursive
 	if (node->Front != NULL) {
 
 		WWASSERT(node->Back != NULL);		// if we have one child, we better have both!
-		newnode->FrontOrPoly0 = node->Front->Index;
-		newnode->BackOrPolyCount = node->Back->Index;
+		newnode->FrontOrPoly0 = (uint32)node->Front->Index;
+		newnode->BackOrPolyCount = (uint32)node->Back->Index;
 	
 	} else {
 
-		newnode->FrontOrPoly0 = cur_poly | 0x80000000;
-		newnode->BackOrPolyCount = node->PolyCount;
+		newnode->FrontOrPoly0 = (uint32)cur_poly | 0x80000000;
+		newnode->BackOrPolyCount = (uint32)node->PolyCount;
 
 	}
 
@@ -979,7 +979,7 @@ void AABTreeBuilderClass::Build_W3D_AABTree_Recursive
 	** Copy the polygon indices for this node into our array
 	*/
 	for (int pcounter = 0; pcounter < node->PolyCount; pcounter++) {
-		poly_indices[cur_poly++] = node->PolyIndices[pcounter];
+		poly_indices[cur_poly++] = (uint32)node->PolyIndices[pcounter];
 	}
 
 	/*
@@ -992,7 +992,3 @@ void AABTreeBuilderClass::Build_W3D_AABTree_Recursive
 		Build_W3D_AABTree_Recursive(node->Back,w3d_nodes,poly_indices,cur_node,cur_poly);
 	}
 }
-
-
-
-

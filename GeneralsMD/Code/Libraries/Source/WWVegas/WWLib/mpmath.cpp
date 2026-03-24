@@ -83,7 +83,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"always.h"
-#include	"mpmath.h"
+#include	"MPMATH.H"
 #include	"win.h"
 #include	<assert.h>
 #include	<ctype.h>
@@ -237,7 +237,7 @@ int MPEXPORT XMP_DER_Encode(digit const * from, unsigned char * output, int prec
 	header_count += XMP_DER_Length_Encode(number_count, &output[header_count]);
 	memcpy(&output[header_count], buffer, number_count);
 
-	return(header_count+number_count);
+	return(header_count+(int)number_count);
 }
 
 
@@ -278,8 +278,8 @@ void MPEXPORT XMP_DER_Decode(digit * result, unsigned char const * input, int pr
 			byte_count = *input++;
 			if (length > 1) byte_count = (byte_count << 8) | *input++;
 		}
-		if (byte_count <= (precision * sizeof(digit))) {
-			XMP_Signed_Decode(result, input, byte_count, precision);
+		if (byte_count <= ((size_t)precision * sizeof(digit))) {
+			XMP_Signed_Decode(result, input, (int)byte_count, precision);
 		}
 	}
 }
@@ -313,7 +313,7 @@ unsigned MPEXPORT XMP_Encode_Bounded(unsigned char * to, unsigned tobytes, digit
 	assert(tobytes > 0);
 	assert(precision > 0);
 
-	unsigned frombytes = precision * sizeof(digit);
+	unsigned frombytes = (size_t)precision * sizeof(digit);
 	unsigned char filler = (unsigned char)(XMP_Is_Negative(from, precision) ? 0xff : 0);
 
 	unsigned index;
@@ -414,7 +414,7 @@ void MPEXPORT XMP_Signed_Decode(digit * result, const unsigned char * from, int 
 
 	unsigned char filler = (unsigned char)((*from & 0x80) ? 0xff : 0);
 
-	int fillcount = precision * sizeof(digit) - frombytes;
+	int fillcount = precision * (int)sizeof(digit) - frombytes;
 	unsigned char * dest = (unsigned char *)&result[precision];
 
 	/*
@@ -462,7 +462,7 @@ void MPEXPORT XMP_Unsigned_Decode(digit * result, const unsigned char * from, in
 	assert(frombytes > 0);
 	assert(precision > 0);
 
-	int fillcount = precision * sizeof(digit) - frombytes;
+	int fillcount = precision * (int)sizeof(digit) - frombytes;
 	unsigned char * dest = (unsigned char *)&result[precision];
 
 	/*
@@ -681,7 +681,7 @@ void MPEXPORT XMP_Shift_Right_Bits(digit * number, int bits, int precision)
 	if (bits < UNITSIZE) {
 		number += precision;
 		digit carry = 0;
-		digit bitmask = (1L << bits) - 1;
+		digit bitmask = (1UL << bits) - 1;
 		int unbits = UNITSIZE - bits;
 
 		while (precision--) {
@@ -890,7 +890,7 @@ void MPEXPORT XMP_Init(digit * number, digit value, int precision)
 	assert(number != NULL);
 	assert(precision > 0);
 
-	memset(number, '\0', precision * sizeof(digit));
+	memset(number, '\0', (size_t)precision * sizeof(digit));
 	*number = value;
 }
 
@@ -928,7 +928,7 @@ unsigned MPEXPORT XMP_Count_Bits(const digit * number, int precision)
 		total_bit_count--;
 	}
 
-	return(total_bit_count);
+	return((unsigned)total_bit_count);
 }
 
 
@@ -953,7 +953,7 @@ int MPEXPORT XMP_Count_Bytes(const digit * number, int precision)
 {
 	unsigned char * ptr = (unsigned char *)number;
 	int count = 0;
-	for (unsigned index = 0; index < precision*sizeof(digit); index++) {
+	for (unsigned index = 0; index < (size_t)precision*sizeof(digit); index++) {
 		if (!*ptr) break;
 		count++;
 		ptr++;
@@ -982,7 +982,7 @@ int MPEXPORT XMP_Count_Bytes(const digit * number, int precision)
  *=============================================================================================*/
 void MPEXPORT XMP_Move(digit * dest, digit const * source, int precision)
 {
-	memcpy(dest, source, precision * sizeof(digit));
+	memcpy(dest, source, (size_t)precision * sizeof(digit));
 }
 
 
@@ -1223,7 +1223,7 @@ int MPEXPORT XMP_Unsigned_Mult(digit * prod, const digit * multiplicand, const d
 		return 0;
 	}
 
-	int total_bit_count = XMP_Count_Bits(multiplier, precision);
+	int total_bit_count = (int)XMP_Count_Bits(multiplier, precision);
 	digit high_bit_mask = XMP_Bits_To_Mask(total_bit_count);
 	int sub_precision = XMP_Bits_To_Digits(total_bit_count);
 	if (!sub_precision) return(0);
@@ -1418,7 +1418,7 @@ unsigned short MPEXPORT XMP_Unsigned_Div_Int(digit * quotient, digit const * div
 
 	XMP_Init(quotient, 0, precision);
 
-	int total_bit_count = XMP_Count_Bits(dividend, precision);
+	int total_bit_count = (int)XMP_Count_Bits(dividend, precision);
 	int digit_precision = XMP_Bits_To_Digits(total_bit_count);
 	digit const * dividend_ptr = dividend + (digit_precision-1);
 
@@ -1481,7 +1481,7 @@ int MPEXPORT XMP_Unsigned_Div(digit * remainder, digit * quotient, digit const *
 	XMP_Init(remainder, 0, precision);
 	XMP_Init(quotient, 0, precision);
 
-	int total_bit_count = XMP_Count_Bits(dividend, precision);
+	int total_bit_count = (int)XMP_Count_Bits(dividend, precision);
 	int digit_precision = XMP_Bits_To_Digits(total_bit_count);
 	if (!digit_precision) return(0);
 
@@ -1650,8 +1650,8 @@ int MPEXPORT XMP_Reciprocal(digit * quotient, const digit * divisor, int precisi
 
 	/* normalize and compute number of bits in quotient first */
 	unsigned total_bit_count = XMP_Count_Bits(divisor, precision);
-	digit high_bit_mask = XMP_Bits_To_Mask(total_bit_count + 1);	/* bitmask within a single digit */
-	int sub_precision = XMP_Bits_To_Digits(total_bit_count + 1);
+	digit high_bit_mask = XMP_Bits_To_Mask((int)total_bit_count + 1);	/* bitmask within a single digit */
+	int sub_precision = XMP_Bits_To_Digits((int)total_bit_count + 1);
 
 	XMP_Set_Bit(remainder, total_bit_count - 1);
 
@@ -1766,7 +1766,7 @@ void MPEXPORT XMP_Decode_ASCII(char const * str, digit * mpn, int precision)
 		if (c >= radix) break;		/* scan terminated by any non-digit */
 
 
-		XMP_Unsigned_Mult_Int(mpn, mpn, radix, precision);
+		XMP_Unsigned_Mult_Int(mpn, mpn, (short)radix, precision);
 		XMP_Add_Int(mpn, mpn, c, 0, precision);
 	}
 	if (minus) {
@@ -1909,7 +1909,7 @@ int XMP_Prepare_Modulus(const digit * n_modulus, int precision)
 {
 	XMP_Move(_scratch_modulus, n_modulus, precision);
 
-	_modulus_bit_count = XMP_Count_Bits(_scratch_modulus, precision);
+	_modulus_bit_count = (int)XMP_Count_Bits(_scratch_modulus, precision);
 	_modulus_sub_precision = (_modulus_bit_count + 16 - 1) / 16;
 
 	/*
@@ -1918,7 +1918,7 @@ int XMP_Prepare_Modulus(const digit * n_modulus, int precision)
 	*/
 	int sub_precision = XMP_Significance(_scratch_modulus, precision);	// significant digits in modulus
 	XMP_Move(_mod_divisor, &_scratch_modulus[sub_precision-2], 2);
-	_modulus_shift = XMP_Count_Bits(_mod_divisor, 2) - 2 * 16;
+	_modulus_shift = (int)XMP_Count_Bits(_mod_divisor, 2) - 2 * 16;
 	XMP_Shift_Right_Bits(_mod_divisor, _modulus_shift, 2);
 
 	XMP_Reciprocal(_mod_quotient, _mod_divisor, 2);
@@ -2167,7 +2167,7 @@ int MPEXPORT XMP_Exponent_Mod(digit * expout, const digit * expin, const digit *
 //		bits--;
 //	}
 
-	int total_bit_count = XMP_Count_Bits(exponent_ptr, limited_precision);
+	int total_bit_count = (int)XMP_Count_Bits(exponent_ptr, limited_precision);
 	int sub_precision = XMP_Bits_To_Digits(total_bit_count);
 	if (!sub_precision) return(0);
 	digit high_bit_mask = XMP_Bits_To_Mask(total_bit_count);
@@ -2376,7 +2376,7 @@ bool MPEXPORT XMP_Rabin_Miller_Test(Straw & rng, digit const * w, int rounds, in
 	digit wminus1[MAX_UNIT_PRECISION];
 	XMP_Sub_Int(wminus1, w, 1, 0, precision);
 
-	unsigned maxbitprecision = precision * sizeof(digit) * 8;
+	unsigned maxbitprecision = (size_t)precision * sizeof(digit) * 8;
 	unsigned a;
 	for (a = 0; a < maxbitprecision; a++) {
 		if (XMP_Test_Bit(wminus1, a)) {
@@ -2386,7 +2386,7 @@ bool MPEXPORT XMP_Rabin_Miller_Test(Straw & rng, digit const * w, int rounds, in
 
 	digit m[MAX_UNIT_PRECISION];
 	XMP_Move(m, wminus1, precision);
-	XMP_Shift_Right_Bits(wminus1, a, precision);
+	XMP_Shift_Right_Bits(wminus1, (int)a, precision);
 
 	for (int i = 0; i < rounds; i++) {
 		digit b[MAX_UNIT_PRECISION];
@@ -2449,10 +2449,10 @@ void MPEXPORT XMP_Randomize(digit * result, Straw & rng, int total_bits, int pre
 
 	total_bits = min(total_bits, precision * 32);
 
-	unsigned nbytes = total_bits/8 + 1;
+	unsigned nbytes = (unsigned)total_bits/8 + 1;
 
 	XMP_Init(result, 0, precision);
-	rng.Get(result, nbytes);
+	rng.Get(result, (int)nbytes);
 
 	((unsigned char *)result)[nbytes-1] &= (unsigned char)(~((~0) << (total_bits % 8)));
 }
@@ -2487,7 +2487,7 @@ void MPEXPORT XMP_Randomize_Bounded(digit * result, Straw & rng, digit const * m
 	XMP_Sub(range, maxval, minval, 0, precision);
 	unsigned int bit_count = XMP_Count_Bits(range, precision);
 	do	{
-		XMP_Randomize(result, rng, bit_count, precision);
+		XMP_Randomize(result, rng, (int)bit_count, precision);
 	} while (XMP_Compare(result, range, precision) > 0);
 
 	XMP_Add(result, result, minval, 0, precision);

@@ -78,50 +78,72 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "assetmgr.h"
+#if 0
 #include <assert.h>
 
 #include "bittype.h"
+#endif // if 0
 #include "chunkio.h"
 #include "realcrc.h"
 
+#include "WWFILE.H"
+#if 0
 #include "wwdebug.h"
+#endif // if 0
 
+#if 0
 #include "htreemgr.h"
 #include "hanimmgr.h"
 #include "texture.h"
 #include "font3d.h"
 #include "render2dsentence.h"		// for FontCharsClass
+#endif // if 0
 #include "proto.h"
 #include "hanim.h"
 #include "hcanim.h"
 #include "htree.h"
+#if 0
 #include "collect.h"
 #include "ww3d.h"
+#endif // if 0
 #include "ffactory.h"
+#if 0
 #include "boxrobj.h"
+#endif // if 0
 #include "nullrobj.h"
+#if 0
 #include "distlod.h"
+#endif // if 0
 #include "hlod.h"
+#if 0
 #include "agg_def.h"
 #include "texfcach.h"
 #include "wwstring.h"
+#endif // if 0
 #include "wwmemlog.h"
+#if 0
 #include "dazzle.h"
 #include "dx8wrapper.h"
 #include "dx8renderer.h"
 #include "metalmap.h"
 #include "w3dexclusionlist.h"
-#include <ini.h>
-#include <windows.h>
+// #include <INI.h>
+// #include <windows.h>
+#endif // if 0
+#include "ddsfile.h"
 #include <stdio.h>
-#include <D3dx8core.h>
-#include "texture.h"
+#if 0
+// #include <D3dx8core.h>
+// #include "texture.h"
+#endif // if 0
 #include "wwprofile.h"
 #include "assetstatus.h"
+#if 0
 #include "ringobj.h"
 #include "sphereobj.h"
 
 #include "shdlib.h"
+#endif // if 0
 
 /*
 ** Static member variable which keeps track of the single instanced asset manager
@@ -134,6 +156,7 @@ WW3DAssetManager *		WW3DAssetManager::TheInstance = NULL;
 */
 static NullPrototypeClass _NullPrototype;
 
+#if 0
 /*
 ** Iterator for the Render Objects in the asset manager
 */
@@ -191,6 +214,7 @@ protected:
 	SLNode<Font3DDataClass> *		Node;
 	friend class WW3DAssetManager;
 };
+#endif // if 0
 
 /***********************************************************************************************
  * WW3DAssetManager::WW3DAssetManager -- Constructor                                           *
@@ -209,13 +233,17 @@ WW3DAssetManager::WW3DAssetManager(void) :
 	PrototypeLoaders		(PROTOLOADERS_VECTOR_SIZE),
 	Prototypes				(PROTOTYPES_VECTOR_SIZE),
 
+#if 0
 #ifdef WW3D_DX8
 	TextureCache				(NULL),
 #endif //WW3D_DX8
 
+#endif // if 0
 	WW3D_Load_On_Demand		(false),
-	Activate_Fog_On_Load		(false),
+	Activate_Fog_On_Load		(false)//,
+#if 0
 	MetalManager(0)
+#endif // if 0
 {
 	assert(TheInstance == NULL);
 	TheInstance = this;
@@ -229,10 +257,13 @@ WW3DAssetManager::WW3DAssetManager(void) :
 	Register_Prototype_Loader(&_MeshLoader);
 #endif
 
+#if 0
 	Register_Prototype_Loader(&_HModelLoader);
 	Register_Prototype_Loader(&_CollectionLoader);
 	Register_Prototype_Loader(&_BoxLoader);
+#endif // if 0
 	Register_Prototype_Loader(&_HLodLoader);
+#if 0
 	Register_Prototype_Loader(&_DistLODLoader);
 	Register_Prototype_Loader(&_AggregateLoader);
 	Register_Prototype_Loader(&_NullLoader);
@@ -241,10 +272,11 @@ WW3DAssetManager::WW3DAssetManager(void) :
 	Register_Prototype_Loader (&_SphereLoader);
 
 	SHD_REG_LOADER;
-	
+#endif // if 0
+
 	// allocate the hash table and clear it.
 	PrototypeHashTable = W3DNEWARRAY PrototypeClass * [PROTOTYPE_HASH_TABLE_SIZE];
-	memset(PrototypeHashTable,0,sizeof(PrototypeClass *) * PROTOTYPE_HASH_TABLE_SIZE);		
+	memset(PrototypeHashTable,0,sizeof(PrototypeClass *) * PROTOTYPE_HASH_TABLE_SIZE);
 }
 
 
@@ -262,7 +294,9 @@ WW3DAssetManager::WW3DAssetManager(void) :
  *=============================================================================================*/
 WW3DAssetManager::~WW3DAssetManager(void)
 {
+#if 0
 	if (MetalManager) delete MetalManager;
+#endif // if 0
 	Free();
 	TheInstance = NULL;
 
@@ -271,11 +305,14 @@ WW3DAssetManager::~WW3DAssetManager(void)
 		delete [] PrototypeHashTable;
 		PrototypeHashTable = NULL;
 	}
+#if 0
 #ifdef WW3D_DX8
 	Close_Texture_File_Cache();
 #endif //WW3D_DX8
+#endif // if 0
 }
 
+#if 0
 static void Create_Number_String(StringClass& number, unsigned value)
 {
 	unsigned miljoonat=value/(1024*1028);
@@ -292,7 +329,7 @@ static void Create_Number_String(StringClass& number, unsigned value)
 	}
 }
 
-void	WW3DAssetManager::Load_Procedural_Textures()
+void WW3DAssetManager::Load_Procedural_Textures()
 {
 	int i,count;
 	if (!MetalManager)
@@ -422,6 +459,7 @@ void WW3DAssetManager::Log_Texture_Statistics()
 	}
 */
 }
+#endif // if 0
 
 /***********************************************************************************************
  * WW3DAssetManager::Free -- free all memory (un-needed?)                                      *
@@ -471,7 +509,7 @@ void WW3DAssetManager::Free_Assets(void)
 	}
 	
 	// clear the prototype hash table
-	memset(PrototypeHashTable,0,sizeof(PrototypeClass *) * PROTOTYPE_HASH_TABLE_SIZE);	
+	memset(PrototypeHashTable,0,sizeof(PrototypeClass *) * PROTOTYPE_HASH_TABLE_SIZE);
 
 	// delete all of the anims and trees
 	HAnimManager.Free_All_Anims();
@@ -479,8 +517,10 @@ void WW3DAssetManager::Free_Assets(void)
 
 	// release all my references to the materials
 	Release_All_Textures();
+#if 0
 	Release_All_Font3DDatas();
 	Release_All_FontChars();
+#endif // if 0
 
 	// Close down cache if it is open.
 	// NONONONOO.... Don't close it as we might want to free the assets and still be able to load textures.
@@ -488,6 +528,7 @@ void WW3DAssetManager::Free_Assets(void)
 }
 
 
+#if 0
 /***********************************************************************************************
  * WW3DAssetManager::Free_Unused_Assets -- Release all assets that are referenced only by      *
  *                                         the asset manager.                                  *
@@ -564,7 +605,7 @@ void WW3DAssetManager::Free_Assets_With_Exclusion_List(const DynamicVectorClass<
 	memset(PrototypeHashTable,0,sizeof(PrototypeClass *) * PROTOTYPE_HASH_TABLE_SIZE);	
 
 	// re-add the prototypes that we saved
-	for (i=0; i<exclude_array.Count(); i++) {
+	for (int i=0; i<exclude_array.Count(); i++) {
 		Add_Prototype(exclude_array[i]);
 	}
 
@@ -614,6 +655,7 @@ void WW3DAssetManager::Create_Asset_List(DynamicVectorClass<StringClass> & model
 	// Add in the w3d files for all of the animations
 	HAnimManager.Create_Asset_List(model_list);
 }
+#endif // if 0
 
 
 /***********************************************************************************************
@@ -628,7 +670,7 @@ void WW3DAssetManager::Create_Asset_List(DynamicVectorClass<StringClass> & model
  * HISTORY:                                                                                    *
  *   10/22/98   BMG : Created.                                                                 *
  *=============================================================================================*/
-bool WW3DAssetManager::Load_3D_Assets( const char * filename )
+bool WW3DAssetManager::Load_3D_Assets( const char* filename )
 {
 	bool result = false;
 
@@ -658,7 +700,7 @@ bool WW3DAssetManager::Load_3D_Assets( const char * filename )
  * HISTORY:                                                                                    *
  *   12/21/97   GTH : Created.                                                                 *
  *=============================================================================================*/
-bool WW3DAssetManager::Load_3D_Assets(FileClass & w3dfile)
+bool WW3DAssetManager::Load_3D_Assets(FileClass& w3dfile)
 {
 	WWPROFILE( "WW3DAssetManager::Load_3D_Assets" );
 	if (!w3dfile.Open()) {
@@ -680,7 +722,7 @@ bool WW3DAssetManager::Load_3D_Assets(FileClass & w3dfile)
 			case W3D_CHUNK_MORPH_ANIMATION:
 				HAnimManager.Load_Anim(cload);
 				break;
-        
+
 			default:
 				Load_Prototype(cload);
 				break;
@@ -717,12 +759,12 @@ bool WW3DAssetManager::Load_Prototype(ChunkLoadClass & cload)
 	/*
 	** Get the chunk id
 	*/
-	int chunk_id = cload.Cur_Chunk_ID();
+	uint32 chunk_id = cload.Cur_Chunk_ID();
 
 	/*
 	** Find a loader that handles that type of chunk
 	*/
-	PrototypeLoaderClass * loader = Find_Prototype_Loader(chunk_id);
+	PrototypeLoaderClass * loader = Find_Prototype_Loader((int)chunk_id);
 	PrototypeClass * newproto = NULL;
 
 	if (loader != NULL) {
@@ -807,11 +849,11 @@ RenderObjClass * WW3DAssetManager::Create_Render_Obj(const char * name)
 	if (WW3D_Load_On_Demand && proto == NULL) {	// If we didn't find one, try to load on demand
 		AssetStatusClass::Peek_Instance()->Report_Load_On_Demand_RObj(name);
 
-		char filename [MAX_PATH];
-		char *mesh_name = ::strchr (name, '.');
+		char filename [PATH_MAX];
+		const char *mesh_name = ::strchr (name, '.');
 		if (mesh_name != NULL) {
-			::lstrcpyn (filename, name, ((int)mesh_name) - ((int)name) + 1);
-			::lstrcat (filename, ".w3d");
+			::strncpy (filename, name, ((uintptr_t)mesh_name) - ((uintptr_t)name) + 1);
+			::strcat (filename, ".w3d");
 		} else {
 			sprintf( filename, "%s.w3d", name);
 		}
@@ -856,11 +898,11 @@ RenderObjClass * WW3DAssetManager::Create_Render_Obj(const char * name)
  *=============================================================================================*/
 bool WW3DAssetManager::Render_Obj_Exists(const char * name)
 {
-	if (Find_Prototype(name) == NULL) return false;
-	else return true;
+	return Find_Prototype(name) != NULL;
 }
 
 
+#if 0
 /***********************************************************************************************
  * WW3DAssetManager::Create_Render_Obj_Iterator -- Create an iterator which can enumerate all  *
  *                                                                                             *
@@ -960,6 +1002,7 @@ AssetIterator * WW3DAssetManager::Create_Font3DData_Iterator(void)
 {
 	return W3DNEW Font3DDataIterator();
 }
+#endif // if 0
 
 /***********************************************************************************************
  * WW3DAssetManager::Get_HAnim -- Returns a pointer to a names HAnim                           *
@@ -988,8 +1031,8 @@ HAnimClass *	WW3DAssetManager::Get_HAnim(const char * name)
 
 			AssetStatusClass::Peek_Instance()->Report_Load_On_Demand_HAnim(name);
 
-			char filename[ MAX_PATH ];
-			char *animname = strchr( name, '.');
+			char filename[ PATH_MAX ];
+			const char *animname = strchr( name, '.');
 			if (animname != NULL) {
 				sprintf( filename, "%s.w3d", animname+1);
 			} else {
@@ -1013,7 +1056,7 @@ HAnimClass *	WW3DAssetManager::Get_HAnim(const char * name)
 	}
 
 	return anim;
-}										 
+}
 
 
 /***********************************************************************************************
@@ -1040,7 +1083,7 @@ HTreeClass *	WW3DAssetManager::Get_HTree(const char * name)
 		
 		AssetStatusClass::Peek_Instance()->Report_Load_On_Demand_HTree(name);
 
-		char filename[ MAX_PATH ];
+		char filename[ PATH_MAX ];
 		sprintf( filename, "%s.w3d", name);
 
 		// If we can't find it, try the parent directory
@@ -1074,7 +1117,7 @@ HTreeClass *	WW3DAssetManager::Get_HTree(const char * name)
  *=============================================================================================*/
 TextureClass * WW3DAssetManager::Get_Texture
 (
-	const char * filename, 
+	const char * filename,
 	MipCountType mip_level_count,
 	WW3DFormat texture_format,
 	bool allow_compression,
@@ -1109,24 +1152,30 @@ TextureClass * WW3DAssetManager::Get_Texture
 	TextureClass* tex = TextureHash.Get(lower_case_name);
 	if (tex && (tex->Is_Initialized() == true) && (texture_format!=WW3D_FORMAT_UNKNOWN)) 
 	{
-		WWASSERT_PRINT(tex->Get_Texture_Format()==texture_format,("Texture %s has already been loaded with different format",filename));
+		// WWASSERT_PRINT(tex->Get_Texture_Format()==texture_format,("Texture %s has already been loaded with different format",filename));
+		char message[256];
+		sprintf(message, "Texture %s has already been loaded with different format", filename);
+		WWASSERT_PRINT(tex->Get_Texture_Format()==texture_format, message);
 	}
 
 	/*
 	** Didn't have it so we have to create a new texture
 	*/
-	if (!tex) 
+	if (!tex)
 	{
 		if (type==TextureBaseClass::TEX_REGULAR)
 		{
-			tex = NEW_REF (TextureClass, (lower_case_name, NULL, mip_level_count, texture_format, allow_compression, allow_reduction));
+			tex = Load_Texture(lower_case_name);
+			// tex = NEW_REF (TextureClass, (lower_case_name, NULL, mip_level_count, texture_format, allow_compression, allow_reduction));
 		}
 		else if (type==TextureBaseClass::TEX_CUBEMAP)
 		{
+			DEBUG_CRASH(("WW3DAssetManager::Get_Texture: TEX_CUBEMAP not yet implemented!\n"));
 			tex = NEW_REF (CubeTextureClass, (lower_case_name, NULL, mip_level_count, texture_format, allow_compression, allow_reduction));
 		}
 		else if (type==TextureBaseClass::TEX_VOLUME)
 		{
+			DEBUG_CRASH(("WW3DAssetManager::Get_Texture: TEX_VOLUME not yet implemented!\n"));
 			tex = NEW_REF (VolumeTextureClass, (lower_case_name, NULL, mip_level_count, texture_format, allow_compression, allow_reduction));
 		}
 		TextureHash.Insert(tex->Get_Texture_Name(),tex);
@@ -1134,6 +1183,31 @@ TextureClass * WW3DAssetManager::Get_Texture
 
 	tex->Add_Ref();
 	return tex;
+}
+
+
+
+/***********************************************************************************************
+ * WW3DAssetManager::Load_Texture -- load a texture file                                       *
+ *=============================================================================================*/
+TextureClass* WW3DAssetManager::Load_Texture(const char* filename)
+{
+	DEBUG_LOG(("WW3DAssetManager::Load_Texture: trying to load texture: %s\n", filename));
+	DDSFileClass dds_file(filename, 0);
+	if (dds_file.Is_Available() && dds_file.Load()) {
+		DEBUG_LOG(("WW3DAssetManager::Load_Texture: image size: %u x %u\n", dds_file.Get_Full_Width(), dds_file.Get_Full_Height()));
+		TextureClass* result {NEW_REF(TextureClass, (dds_file.Get_Full_Width(), dds_file.Get_Full_Height(), WW3D_FORMAT_A8R8G8B8))};
+		OpenGLTexture* gltex {result->Peek_GL_Texture()};
+		dds_file.Copy_Level_To_Surface(0, WW3D_FORMAT_A8R8G8B8, dds_file.Get_Full_Width(), dds_file.Get_Full_Height(),
+			gltex->getDataPointer(), dds_file.Get_Full_Width() * 4);
+		gltex->createMipmappedTexture();
+		OpenGLSampler* sampler {result->Peek_GL_Sampler()};
+		sampler->createAnisotropicSampler();
+		return result;
+	} else {
+		DEBUG_CRASH(("WW3DAssetManager::Load_Texture: image file not found: %s\n", filename));
+	}
+	return nullptr;
 }
 
 
@@ -1166,6 +1240,7 @@ void WW3DAssetManager::Release_All_Textures(void)
 }
 
 
+#if 0
 /***********************************************************************************************
  * WW3DAssetManager::Release_Unused_Textures -- release all textures with refcount == 1        *
  *                                                                                             *
@@ -1352,7 +1427,7 @@ Font3DDataClass * WW3DAssetManager::Get_Font3DData( const char *name )
 	// loop through and see if the Font3D we are looking for has already been
 	// allocated and thus we can just return it.
 	for (	SLNode<Font3DDataClass> *node = Font3DDatas.Head(); node; node = node->Next()) {
-		if (!stricmp(name, node->Data()->Name)) {
+		if (!strcasecmp(name, node->Data()->Name)) {
 			node->Data()->Add_Ref();
 			return node->Data();
 		}
@@ -1495,6 +1570,7 @@ void	WW3DAssetManager::Release_All_FontChars( void )
 		FontCharsList.Delete( 0 );
 	}
 }
+#endif // if 0
 
 /***********************************************************************************************
  * WW3DAssetManager::Register_Prototype_Loader -- add a new loader to the system               *
@@ -1517,6 +1593,7 @@ void	WW3DAssetManager::Release_All_FontChars( void )
 void WW3DAssetManager::Register_Prototype_Loader(PrototypeLoaderClass * loader)
 {
 	WWASSERT(loader != NULL);
+	DEBUG_LOG(("WW3DAssetManager::Register_Prototype_Loader: registering loader for chunk ID 0x%x\n", loader->Chunk_Type()));
 	PrototypeLoaders.Add(loader);
 }
 
@@ -1600,7 +1677,7 @@ void WW3DAssetManager::Remove_Prototype(PrototypeClass *proto)
 			  test = test->friend_getNextHash()) {
 			
 			// Is this the prototype?
-			if (::stricmp (test->Get_Name(), pname) == 0) {
+			if (::strcasecmp (test->Get_Name(), pname) == 0) {
 				
 				// Remove this prototype from the linked list for this hash index.
 				if (prev == NULL) {
@@ -1672,7 +1749,7 @@ void WW3DAssetManager::Remove_Prototype(const char *name)
 PrototypeClass * WW3DAssetManager::Find_Prototype(const char * name)
 {
 	// Special case Null render object.  So we always have it...
-	if (stricmp(name,"NULL") == 0) {
+	if (strcasecmp(name,"NULL") == 0) {
 		return &(_NullPrototype);
 	}
 	
@@ -1681,7 +1758,7 @@ PrototypeClass * WW3DAssetManager::Find_Prototype(const char * name)
 	PrototypeClass * test = PrototypeHashTable[hash];
 
 	while (test != NULL) {
-		if (stricmp(test->Get_Name(),name) == 0) {
+		if (strcasecmp(test->Get_Name(),name) == 0) {
 			return test;
 		}
 		test = test->friend_getNextHash();
@@ -1689,6 +1766,7 @@ PrototypeClass * WW3DAssetManager::Find_Prototype(const char * name)
 	return NULL;
 }
 
+#if 0
 /*
 ** Iterator Implementations.
 ** =====================================================================
@@ -1728,5 +1806,4 @@ const char * HTreeIterator::Current_Item_Name(void)
 {
 	return WW3DAssetManager::Get_Instance()->HTreeManager.Get_Tree(Index)->Get_Name();
 }
-
-
+#endif // if 0

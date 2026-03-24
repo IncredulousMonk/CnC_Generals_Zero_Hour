@@ -89,7 +89,7 @@ static void parseFX( INI* ini, void *instance, void * /*store*/, const void* /*u
 	for (const char* token = ini->getNextToken(); token != NULL; token = ini->getNextTokenOrNull())
 	{
 		const FXList *fxl = TheFXListStore->findFXList((token));	// could be null! this is OK!
-		self->m_fxs[scphase].push_back(fxl);
+		self->m_ini.m_fxs[scphase].push_back(fxl);
 	}
 }
 
@@ -101,35 +101,37 @@ static void parseOCL( INI* ini, void *instance, void * /*store*/, const void* /*
 	for (const char* token = ini->getNextToken(); token != NULL; token = ini->getNextTokenOrNull())
 	{
 		const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null! this is OK!
-		self->m_ocls[stphase].push_back(ocl);
+		self->m_ini.m_ocls[stphase].push_back(ocl);
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void StructureCollapseUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void StructureCollapseUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "MinCollapseDelay",						INI::parseDurationUnsignedInt,		NULL, offsetof( StructureCollapseUpdateModuleData, m_minCollapseDelay ) },
-		{ "MaxCollapseDelay",						INI::parseDurationUnsignedInt,		NULL, offsetof( StructureCollapseUpdateModuleData, m_maxCollapseDelay ) },
-		{ "MinBurstDelay",							INI::parseDurationUnsignedInt,		NULL, offsetof( StructureCollapseUpdateModuleData, m_minBurstDelay ) },
-		{ "MaxBurstDelay",							INI::parseDurationUnsignedInt,		NULL, offsetof( StructureCollapseUpdateModuleData, m_maxBurstDelay ) },
-		{ "CollapseDamping",						INI::parseReal,										NULL, offsetof( StructureCollapseUpdateModuleData, m_collapseDamping ) },
-		{ "MaxShudder",									INI::parseReal,										NULL, offsetof( StructureCollapseUpdateModuleData, m_maxShudder ) },
-		{ "BigBurstFrequency",					INI::parseInt,										NULL, offsetof( StructureCollapseUpdateModuleData, m_bigBurstFrequency ) },
-		{ "OCL",												parseOCL,													NULL, 0 },
-		{ "FXList",											parseFX,													NULL, 0 },
+		{ "MinCollapseDelay",	INI::parseDurationUnsignedInt,	NULL, offsetof( StructureCollapseUpdateModuleData::IniData, m_minCollapseDelay ) },
+		{ "MaxCollapseDelay",	INI::parseDurationUnsignedInt,	NULL, offsetof( StructureCollapseUpdateModuleData::IniData, m_maxCollapseDelay ) },
+		{ "MinBurstDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( StructureCollapseUpdateModuleData::IniData, m_minBurstDelay ) },
+		{ "MaxBurstDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof( StructureCollapseUpdateModuleData::IniData, m_maxBurstDelay ) },
+		{ "CollapseDamping",	INI::parseReal,					NULL, offsetof( StructureCollapseUpdateModuleData::IniData, m_collapseDamping ) },
+		{ "MaxShudder",			INI::parseReal,					NULL, offsetof( StructureCollapseUpdateModuleData::IniData, m_maxShudder ) },
+		{ "BigBurstFrequency",	INI::parseInt,					NULL, offsetof( StructureCollapseUpdateModuleData::IniData, m_bigBurstFrequency ) },
+		{ "OCL",				parseOCL,						NULL, 0 },
+		{ "FXList",				parseFX,						NULL, 0 },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
-	p.add(DieMuxData::getFieldParse(), offsetof( StructureCollapseUpdateModuleData, m_dieMuxData ));
+	StructureCollapseUpdateModuleData* self {static_cast<StructureCollapseUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
+	p.add(DieMuxData::getFieldParse(), offset + offsetof( StructureCollapseUpdateModuleData::IniData, m_dieMuxData ));
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void StructureCollapseUpdate::beginStructureCollapse(const DamageInfo *damageInfo)
+void StructureCollapseUpdate::beginStructureCollapse(const DamageInfo* /* damageInfo */)
 {
 	const StructureCollapseUpdateModuleData *d = getStructureCollapseUpdateModuleData();
 
@@ -137,7 +139,7 @@ void StructureCollapseUpdate::beginStructureCollapse(const DamageInfo *damageInf
 	Object *building = getObject();
 	UnsignedInt now = TheGameLogic->getFrame();
 	// This has to use a game logic random value since the bursts can spawn debris, and debris is sync'd.
-	m_collapseFrame = now + GameLogicRandomValue(d->m_minCollapseDelay, d->m_maxCollapseDelay);
+	m_collapseFrame = now + (UnsignedInt)GameLogicRandomValue(d->m_ini.m_minCollapseDelay, d->m_ini.m_maxCollapseDelay);
 
 	doPhaseStuff(SCPHASE_INITIAL, building->getPosition());
 
@@ -152,7 +154,7 @@ void StructureCollapseUpdate::beginStructureCollapse(const DamageInfo *damageInf
 void StructureCollapseUpdate::onDie( const DamageInfo *damageInfo )
 {
 	const StructureCollapseUpdateModuleData* d = getStructureCollapseUpdateModuleData();
-	if (!d->m_dieMuxData.isDieApplicable(getObject(), damageInfo))
+	if (!d->m_ini.m_dieMuxData.isDieApplicable(getObject(), damageInfo))
 		return;
 
 	AIUpdateInterface *ai = getObject()->getAIUpdateInterface();
@@ -169,7 +171,7 @@ void StructureCollapseUpdate::onDie( const DamageInfo *damageInfo )
 //-------------------------------------------------------------------------------------------------
 UpdateSleepTime StructureCollapseUpdate::update( void )
 {
-	static const Real COLLAPSE_ACCELERATION_FACTOR = 0.02f;
+	// static const Real COLLAPSE_ACCELERATION_FACTOR = 0.02f;
 	const StructureCollapseUpdateModuleData *d = getStructureCollapseUpdateModuleData();
 
 	if (m_collapseState == COLLAPSESTATE_STANDING)
@@ -187,7 +189,7 @@ UpdateSleepTime StructureCollapseUpdate::update( void )
 
 		const Coord3D *currentPosition = building->getPosition();
 		Vector3 shudder;
-		shudder.Set(GameClientRandomValueReal(-(d->m_maxShudder), d->m_maxShudder), GameClientRandomValueReal(-(d->m_maxShudder), d->m_maxShudder), 0);
+		shudder.Set(GameClientRandomValueReal(-(d->m_ini.m_maxShudder), d->m_ini.m_maxShudder), GameClientRandomValueReal(-(d->m_ini.m_maxShudder), d->m_ini.m_maxShudder), 0);
 
 		const Matrix3D *instMatrix = building->getDrawable()->getInstanceMatrix();
 		Matrix3D newInstMatrix;
@@ -201,7 +203,7 @@ UpdateSleepTime StructureCollapseUpdate::update( void )
 			m_collapseState = COLLAPSESTATE_COLLAPSING;
 			doPhaseStuff(SCPHASE_BURST, currentPosition);
 			// This has to use a game logic random value since the bursts can spawn debris, and debris is sync'd.
-			m_burstFrame = now + GameLogicRandomValue(d->m_minBurstDelay, d->m_maxBurstDelay);
+			m_burstFrame = now + (UnsignedInt)GameLogicRandomValue(d->m_ini.m_minBurstDelay, d->m_ini.m_maxBurstDelay);
 		}
 	}
 
@@ -211,11 +213,11 @@ UpdateSleepTime StructureCollapseUpdate::update( void )
 		Object *building = getObject();
 		UnsignedInt now = TheGameLogic->getFrame();
 		m_currentHeight -= m_collapseVelocity;
-		m_collapseVelocity -= TheGlobalData->m_gravity * (1.0 - d->m_collapseDamping);
+		m_collapseVelocity -= TheGlobalData->m_data.m_gravity * (1.0 - d->m_ini.m_collapseDamping);
 
 		const Coord3D *currentPosition = building->getPosition();
 		Vector3 shudder;
-		shudder.Set(GameClientRandomValueReal(-(d->m_maxShudder), d->m_maxShudder), GameClientRandomValueReal(-(d->m_maxShudder), d->m_maxShudder), m_currentHeight);
+		shudder.Set(GameClientRandomValueReal(-(d->m_ini.m_maxShudder), d->m_ini.m_maxShudder), GameClientRandomValueReal(-(d->m_ini.m_maxShudder), d->m_ini.m_maxShudder), m_currentHeight);
 		const Matrix3D *instMatrix = building->getDrawable()->getInstanceMatrix();
 		Matrix3D newInstMatrix;
 		newInstMatrix = *instMatrix;
@@ -225,7 +227,7 @@ UpdateSleepTime StructureCollapseUpdate::update( void )
 
 		if (now >= m_burstFrame) 
 		{
-			if (GameLogicRandomValue(1, d->m_bigBurstFrequency) == 1) 
+			if (GameLogicRandomValue(1, d->m_ini.m_bigBurstFrequency) == 1) 
 			{
 				doPhaseStuff(SCPHASE_BURST, currentPosition);
 			} 
@@ -234,7 +236,7 @@ UpdateSleepTime StructureCollapseUpdate::update( void )
 				doPhaseStuff(SCPHASE_DELAY, currentPosition);
 			}
 			// This has to use a game logic random value since the bursts can spawn debris, and debris is sync'd.
-			m_burstFrame += GameLogicRandomValue(d->m_minBurstDelay, d->m_maxBurstDelay);
+			m_burstFrame += (UnsignedInt)GameLogicRandomValue(d->m_ini.m_minBurstDelay, d->m_ini.m_maxBurstDelay);
 		}
 
 //		if ((m_currentHeight + building->getGeometryInfo().getMaxHeightAbovePosition()) <= 0) 
@@ -273,9 +275,9 @@ UpdateSleepTime StructureCollapseUpdate::update( void )
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-inline Bool inList(Int value, Int count, const Int idxList[])
+inline Bool inList(UnsignedInt value, UnsignedInt count, const UnsignedInt idxList[])
 {
-	for (Int j = 0; j < count; ++j)
+	for (UnsignedInt j = 0; j < count; ++j)
 	{
 		if (idxList[j] == value)
 			return true;
@@ -285,14 +287,14 @@ inline Bool inList(Int value, Int count, const Int idxList[])
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-static void buildNonDupRandomIndexList(Int range, Int count, Int idxList[])
+static void buildNonDupRandomIndexList(UnsignedInt range, UnsignedInt count, UnsignedInt idxList[])
 {
-	for (Int i = 0; i < count; ++i)
+	for (UnsignedInt i = 0; i < count; ++i)
 	{
-		Int idx;
+		UnsignedInt idx;
 		do
 		{
-			idx = GameLogicRandomValue(0, range-1);
+			idx = GameLogicRandomValueUnsigned(0, range-1);
 		} 
 		while (inList(idx, i, idxList));
 		idxList[i] = idx;
@@ -306,34 +308,34 @@ void StructureCollapseUpdate::doPhaseStuff(StructureCollapsePhaseType scphase, c
 	DEBUG_LOG(("Firing phase %d on frame %d\n", scphase, TheGameLogic->getFrame()));
 
 	const StructureCollapseUpdateModuleData* d = getStructureCollapseUpdateModuleData();
-	Int i, idx, count, listSize;
-	Int idxList[MAX_IDX];
+	UnsignedInt i, idx, count, listSize;
+	UnsignedInt idxList[MAX_IDX];
 
-	listSize = d->m_fxs[scphase].size();
+	listSize = d->m_ini.m_fxs[scphase].size();
 	if (listSize > 0)
 	{
-		count = d->m_fxCount[scphase];
+		count = d->m_ini.m_fxCount[scphase];
 		buildNonDupRandomIndexList(listSize, count, idxList);
 		for (i = 0; i < count; ++i)
 		{
 			idx = idxList[i];
-			const FXVec& v = d->m_fxs[scphase];
-			DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+			const FXVec& v = d->m_ini.m_fxs[scphase];
+			DEBUG_ASSERTCRASH(idx<v.size(),("bad idx"));
 			const FXList* fxl = v[idx];
 			FXList::doFXPos(fxl, target);
 		}
 	}
 
-	listSize = d->m_ocls[scphase].size();
+	listSize = d->m_ini.m_ocls[scphase].size();
 	if (listSize > 0)
 	{
-		count = d->m_oclCount[scphase];
+		count = d->m_ini.m_oclCount[scphase];
 		buildNonDupRandomIndexList(listSize, count, idxList);
 		for (i = 0; i < count; ++i)
 		{
 			idx = idxList[i];
-			const OCLVec& v = d->m_ocls[scphase];
-			DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+			const OCLVec& v = d->m_ini.m_ocls[scphase];
+			DEBUG_ASSERTCRASH(idx<v.size(),("bad idx"));
 			const ObjectCreationList* ocl = v[idx];
 			ObjectCreationList::create(ocl, getObject(), target, NULL, getObject()->getOrientation() );
 		}

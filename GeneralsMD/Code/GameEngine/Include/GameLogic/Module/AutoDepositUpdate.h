@@ -82,7 +82,6 @@ public:
 		Int m_depositAmount;
 		Int m_initialCaptureBonus;
 		Bool m_isActualMoney;
-		AutoDepositUpdateModuleData* m_obj {}; ///< pointer to the parent object
 	};
 
 	IniData m_ini {};
@@ -95,7 +94,6 @@ public:
 		m_ini.m_depositAmount = 0;
 		m_ini.m_initialCaptureBonus = 0;
 		m_ini.m_isActualMoney = TRUE;
-		m_ini.m_obj = this;
 		m_upgradeBoost.clear();
 	}
 
@@ -137,9 +135,9 @@ protected:
 
 	Int getUpgradedSupplyBoost() const;
 
-	UnsignedInt m_depositOnFrame;
-	Bool m_awardInitialCaptureBonus;
-	Bool m_initialized;
+	UnsignedInt m_depositOnFrame {};
+	Bool m_awardInitialCaptureBonus {};
+	Bool m_initialized {};
 
 };
 

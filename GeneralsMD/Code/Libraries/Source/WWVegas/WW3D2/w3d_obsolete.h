@@ -172,20 +172,20 @@ struct W3dMaterial2Struct
 /////////////////////////////////////////////////////////////////////////////////////////////
 struct W3dMaterial3Struct
 {
-	uint32					Attributes;					// flags,hints,etc.
+	uint32					Attributes {};					// flags,hints,etc.
 	
-	W3dRGBStruct			DiffuseColor;				// diffuse color
-	W3dRGBStruct			SpecularColor;				// specular color
+	W3dRGBStruct			DiffuseColor {};				// diffuse color
+	W3dRGBStruct			SpecularColor {};				// specular color
 
-	W3dRGBStruct			EmissiveCoefficients;	// emmissive coefficients, default to 0,0,0
-	W3dRGBStruct			AmbientCoefficients;		// ambient coefficients, default to 1,1,1
-	W3dRGBStruct			DiffuseCoefficients;		// diffuse coeficients, default to 1,1,1
-	W3dRGBStruct			SpecularCoefficients;	// specular coefficients, default to 0,0,0
+	W3dRGBStruct			EmissiveCoefficients {};	// emmissive coefficients, default to 0,0,0
+	W3dRGBStruct			AmbientCoefficients {};		// ambient coefficients, default to 1,1,1
+	W3dRGBStruct			DiffuseCoefficients {};		// diffuse coeficients, default to 1,1,1
+	W3dRGBStruct			SpecularCoefficients {};	// specular coefficients, default to 0,0,0
 
-	float32					Shininess;					// how tight the specular highlight will be, 1 - 1000 (default = 1)
-	float32					Opacity;						// how opaque the material is, 0.0 = invisible, 1.0 = fully opaque (default = 1)
-	float32					Translucency;				// how much light passes through the material. (default = 0)
-	float32					FogCoeff;					// effect of fog (0.0=not fogged, 1.0=fogged) (default = 1)
+	float32					Shininess {};					// how tight the specular highlight will be, 1 - 1000 (default = 1)
+	float32					Opacity {};						// how opaque the material is, 0.0 = invisible, 1.0 = fully opaque (default = 1)
+	float32					Translucency {};				// how much light passes through the material. (default = 0)
+	float32					FogCoeff {};					// effect of fog (0.0=not fogged, 1.0=fogged) (default = 1)
 };
 
 

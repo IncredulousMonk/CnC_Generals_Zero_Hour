@@ -60,48 +60,53 @@ enum StructureCollapsePhaseType
 class StructureCollapseUpdateModuleData : public UpdateModuleData
 {
 public:
-	DieMuxData				m_dieMuxData;
-	Int								m_minCollapseDelay;
-	Int								m_maxCollapseDelay;
-	Int								m_minBurstDelay;
-	Int								m_maxBurstDelay;
-	Int								m_bigBurstFrequency;
-	Real							m_collapseDamping;
-	Real							m_maxShudder;
-	OCLVec						m_ocls[SC_PHASE_COUNT];
-	FXVec							m_fxs[SC_PHASE_COUNT];
-	UnsignedInt				m_oclCount[SC_PHASE_COUNT];
-	UnsignedInt				m_fxCount[SC_PHASE_COUNT];
+	// MG: Cannot apply offsetof to StructureCollapseUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		DieMuxData		m_dieMuxData;
+		Int				m_minCollapseDelay;
+		Int				m_maxCollapseDelay;
+		Int				m_minBurstDelay;
+		Int				m_maxBurstDelay;
+		Int				m_bigBurstFrequency;
+		Real			m_collapseDamping;
+		Real			m_maxShudder;
+		OCLVec			m_ocls[SC_PHASE_COUNT];
+		FXVec			m_fxs[SC_PHASE_COUNT];
+		UnsignedInt		m_oclCount[SC_PHASE_COUNT];
+		UnsignedInt		m_fxCount[SC_PHASE_COUNT];
+	};
+
+	IniData m_ini {};
 
 	StructureCollapseUpdateModuleData()
 	{
-		m_minCollapseDelay = 0;
-		m_maxCollapseDelay = 0;
-		m_minBurstDelay = 9999;
+		m_ini.m_minCollapseDelay = 0;
+		m_ini.m_maxCollapseDelay = 0;
+		m_ini.m_minBurstDelay = 9999;
 		//Removed by Sadullah Nader
 		//Redundancy from above
 		//m_minBurstDelay = 9999;
-		m_maxShudder = 0;
-		m_collapseDamping = 0.0;
-		m_bigBurstFrequency = 0;
+		m_ini.m_maxShudder = 0;
+		m_ini.m_collapseDamping = 0.0;
+		m_ini.m_bigBurstFrequency = 0;
 
 		for (int i = 0; i < SC_PHASE_COUNT; ++i)
 		{
 			// init to one, so that if these are omitted, we choose exactly one of each.
-			m_oclCount[i] = 1;
-			m_fxCount[i] = 1;
+			m_ini.m_oclCount[i] = 1;
+			m_ini.m_fxCount[i] = 1;
 		}
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 };
 
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-class StructureCollapseUpdate : public UpdateModule,
-																public DieModuleInterface
+class StructureCollapseUpdate : public UpdateModule, public DieModuleInterface
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( StructureCollapseUpdate, "StructureCollapseUpdate" )
@@ -142,11 +147,11 @@ protected:
 		COLLAPSESTATE_DONE
 	};
 	
-	UnsignedInt									m_collapseFrame;
-	UnsignedInt									m_burstFrame;
-	StructureCollapseStateType	m_collapseState;
-	Real												m_collapseVelocity;
-	Real												m_currentHeight;
+	UnsignedInt					m_collapseFrame {};
+	UnsignedInt					m_burstFrame {};
+	StructureCollapseStateType	m_collapseState {};
+	Real						m_collapseVelocity {};
+	Real						m_currentHeight {};
 
 };
 

@@ -551,7 +551,7 @@ class DynamicVectorClass : public VectorClass<T>
 		**	vector. The memory array often times is bigger than this
 		**	value.
 		*/
-		int ActiveCount;
+		int ActiveCount {};
 
 		/*
 		**	If there is insufficient room in the vector array for a new
@@ -559,7 +559,7 @@ class DynamicVectorClass : public VectorClass<T>
 		**	of objects specified by this value. This is controlled by
 		**	the Set_Growth_Step() function.
 		*/
-		int GrowthStep;
+		int GrowthStep {};
 };
 
 
@@ -585,7 +585,7 @@ class DynamicVectorClass : public VectorClass<T>
  *=============================================================================================*/
 template<class T>
 DynamicVectorClass<T>::DynamicVectorClass(unsigned size, T const * array)
-	: VectorClass<T>(size, array)
+	: VectorClass<T>((int)size, array)
 {
 	GrowthStep = 10;
 	ActiveCount = 0;

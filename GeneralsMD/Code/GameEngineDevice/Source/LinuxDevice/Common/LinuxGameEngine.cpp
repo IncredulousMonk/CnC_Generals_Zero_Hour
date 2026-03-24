@@ -45,6 +45,7 @@ LinuxGameEngine::LinuxGameEngine() {
 /** Destructor for LinuxGameEngine */
 //-------------------------------------------------------------------------------------------------
 LinuxGameEngine::~LinuxGameEngine() {
+   TheOpenGLRenderer->cleanup();
    delete TheOpenGLRenderer;
    TheOpenGLRenderer = nullptr;
 }

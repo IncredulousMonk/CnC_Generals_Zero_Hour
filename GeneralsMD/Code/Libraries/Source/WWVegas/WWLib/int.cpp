@@ -35,14 +35,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"always.h"
-#include	"int.h"
-#include	"mpmath.h"
+#include	"INT.H"
+#include	"MPMATH.H"
 #include	"rng.h"
 
-int bignum::Error = 0;
-bool bignum::Carry = false;
-bool bignum::Borrow = false;
-bignum bignum::Remainder;
+template<> int bignum::Error = 0;
+template<> bool bignum::Carry = false;
+template<> bool bignum::Borrow = false;
+template<> bignum bignum::Remainder = 0;
 
 
 
@@ -50,4 +50,3 @@ bignum bignum::Remainder;
 #ifdef _MSC_VER
 BigInt Generate_Prime(RandomNumberGenerator & rng, int pbits, BigInt const * dummy);
 #endif
-

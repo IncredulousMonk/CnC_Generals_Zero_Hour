@@ -46,6 +46,8 @@
 #include "rendobj.h"
 #include "camera.h"
 
+class LinuxAssetManager;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 enum {MAX_WAYPOINTS=25};
 
@@ -170,6 +172,8 @@ private:
    Real m_scrollAmountCutoff {};    ///< scroll speed at which we do not adjust height
 
    Real m_groundLevel {};     ///< height of ground.
+
+   LinuxAssetManager* m_assetManager {};
 
    Region2D m_cameraConstraint {};     ///< m_pos should be constrained to be within this area
    Bool m_cameraConstraintValid {};    ///< if f, recalc cam constraints
@@ -309,6 +313,8 @@ public:
 #endif // if 0
 
    virtual void add3dObject(RenderObjClass* obj);
+   virtual void remove3dObject(RenderObjClass* obj);
+   virtual RenderObjClass* create3dObject(const char* name, float scale, const Color color, const char* oldTexure = NULL, const char* newTexture = NULL);
 };  // end class LinuxView
 
 // EXTERNALS //////////////////////////////////////////////////////////////////////////////////////

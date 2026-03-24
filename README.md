@@ -16,8 +16,9 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - The credits menu works (including the music!)
 - The options menu mostly works (the IP address stuff doesn't, because I haven't implemented the network code yet. Also the resolution picker needs work... see below).
 - I have added the skeleton of an OpenGL renderer, which is a prerequisite to doing any 3D rendering.
-- I have made a start on rendering the "shell map" (the 3D scene that plays behind the main menu).  **New screenshot in the wiki.**
+- I have made a start on rendering the "shell map" (the 3D scene that plays behind the main menu).
 - The scripted camera fly around of the shell map works, though the camera parameters are not quite right yet.
+- I've added a simple textured mesh renderer, which I'm using to render the "quonset hut" map objects.
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -35,7 +36,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheGlobalLanguageData
   - TheAudio
   - TheFunctionLexicon
-  - TheModuleFactory (62 out of 218 modules implemented)
+  - TheModuleFactory (85 out of 218 modules implemented)
   - TheParticleSystemManager (minimal)
   - TheMessageStream
   - TheSidesList
@@ -73,8 +74,9 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
     - TheInGameUI
       - TheControlBar (partial)
   - TheAI
-  - TheGameLogic (partial)
+  - TheGameLogic
     - ThePartitionManager
+    - TheGhostObjectManager
     - TheTerrainLogic
     - TheScriptEngine
   - TheTeamFactory
@@ -93,6 +95,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - Menu transparency is fixed. I had to set a blend mode for the alpha channel to work.
 - Most of the main-menu buttons don't work yet.
 - 2D sound works, music works, but I don't have an SDL library for 3D (positional) sound. I may have to look at OpenAL.
+- The huts in the shell map are floating in the air. I think that there are some terrain meshes that need to be added.
 - Lots more work to do to improve the shell map scene.
 - Everything else.
 

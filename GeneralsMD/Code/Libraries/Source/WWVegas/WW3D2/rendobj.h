@@ -195,8 +195,8 @@ public:
 	//
 	enum
 	{
-		CLASSID_UNKNOWN	= -1, //0xFFFFFFFF,
-		CLASSID_MESH		= 0,
+		CLASSID_UNKNOWN = -1,	//0xFFFFFFFF,
+		CLASSID_MESH = 0,
 		CLASSID_HMODEL,
 		CLASSID_DISTLOD,
 		CLASSID_PREDLODGROUP,
@@ -209,7 +209,7 @@ public:
 		CLASSID_DYNASCREENMESH,
 		CLASSID_TEXTDRAW,
 		CLASSID_FOG,
-		CLASSID_LAYERFOG,		
+		CLASSID_LAYERFOG,
 		CLASSID_LIGHT,
 		CLASSID_PARTICLEEMITTER,
 		CLASSID_PARTICLEBUFFER,
@@ -232,8 +232,9 @@ public:
 		CLASSID_SOUND,
 		CLASSID_SEGLINETRAIL,
 		CLASSID_LAND,
-		CLASSID_SHDMESH,				// mesh class that uses the scaleable shader system
-		CLASSID_LAST		= 0x0000FFFF
+		CLASSID_SHDMESH,	// mesh class that uses the scaleable shader system
+		CLASSID_GLMESH,
+		CLASSID_LAST = 0x0000FFFF
 	};
 
 	RenderObjClass(void);
@@ -283,8 +284,8 @@ public:
 	virtual void					Remove(void);
 	virtual SceneClass *			Get_Scene(void);
 	virtual SceneClass *			Peek_Scene(void)																{ return Scene; }
-	virtual void					Set_Container(RenderObjClass * con);
 #endif // if 0
+	virtual void					Set_Container(RenderObjClass * con);
 	virtual void					Validate_Transform(void) const;
 
 #define GET_CONTAINER_INLINE
@@ -305,7 +306,6 @@ public:
 	bool						Is_Transform_Identity_No_Validity_Check() const;
 	Vector3						Get_Position(void) const;
 
-#if 0
 	virtual void				Notify_Added(SceneClass * scene);
 	virtual void				Notify_Removed(SceneClass * scene);
 
@@ -323,7 +323,6 @@ public:
 	virtual int					Add_Sub_Object_To_Bone(RenderObjClass * subobj,const char * bname);
 	virtual int					Remove_Sub_Objects_From_Bone(int boneindex);
 	virtual int					Remove_Sub_Objects_From_Bone(const char * bname);
-#endif // if 0
 
 	// This is public only so objects can recursively call this on their sub-objects
 	virtual void				Update_Sub_Object_Transforms(void);
@@ -365,6 +364,7 @@ public:
 	virtual void					Release_Bone(int /* bindex */)												{ }
 	virtual bool					Is_Bone_Captured(int /* bindex */) const									{ return false; }
 	virtual void					Control_Bone(int /* bindex */,const Matrix3D & /* objtm */,bool /* world_space_translation */ = false)	{ }
+#endif // if 0
 	virtual const HTreeClass *	Get_HTree(void) const															{ return NULL; }
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,16 +378,18 @@ public:
 	// Intersect_Sphere - tests a ray for intersection with the bounding spheres
 	// Intersect_Sphere_Quick - tests a ray for intersection with bounding spheres
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual bool					Cast_Ray(RayCollisionTestClass & /* raytest */)								{ return false; }
-	virtual bool					Cast_AABox(AABoxCollisionTestClass & /* boxtest */)						{ return false; }
-	virtual bool					Cast_OBBox(OBBoxCollisionTestClass & /* boxtest */)						{ return false; }
-	
-	virtual bool					Intersect_AABox(AABoxIntersectionTestClass & /* boxtest */)				{ return false; }
-	virtual bool					Intersect_OBBox(OBBoxIntersectionTestClass & /* boxtest */)				{ return false; }
+	virtual bool					Cast_Ray(RayCollisionTestClass & /* raytest */) { return false; }
+	virtual bool					Cast_AABox(AABoxCollisionTestClass & /* boxtest */) { return false; }
+	virtual bool					Cast_OBBox(OBBoxCollisionTestClass & /* boxtest */) { return false; }
 
+	virtual bool					Intersect_AABox(AABoxIntersectionTestClass & /* boxtest */) { return false; }
+	virtual bool					Intersect_OBBox(OBBoxIntersectionTestClass & /* boxtest */) { return false; }
+
+#if 0
 	virtual bool					Intersect(IntersectionClass *Intersection, IntersectionResultClass *Final_Result);
 	virtual bool					Intersect_Sphere(IntersectionClass *Intersection, IntersectionResultClass *Final_Result);
 	virtual bool					Intersect_Sphere_Quick(IntersectionClass *Intersection, IntersectionResultClass *Final_Result);
+#endif // if 0
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Bounding Volumes
@@ -396,7 +398,7 @@ public:
 	virtual const AABoxClass &	Get_Bounding_Box(void) const;
 	virtual void				Get_Obj_Space_Bounding_Sphere(SphereClass & sphere) const;
 	virtual void				Get_Obj_Space_Bounding_Box(AABoxClass & box) const;
-	virtual void				Update_Obj_Space_Bounding_Volumes(void)								{ };
+	virtual void				Update_Obj_Space_Bounding_Volumes(void) { };
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -410,18 +412,21 @@ public:
 	static const float	AT_MAX_LOD;
 
 	virtual void	Prepare_LOD(CameraClass &camera);
+#if 0
 	virtual void	Recalculate_Static_LOD_Factors(void)													{ }
 	virtual void	Increment_LOD(void)																			{ }
 	virtual void	Decrement_LOD(void)																			{ }
 	virtual float	Get_Cost(void) const;
 	virtual float	Get_Value(void) const																		{ return AT_MIN_LOD; }
 	virtual float	Get_Post_Increment_Value(void) const													{ return AT_MAX_LOD; }
-	virtual void	Set_LOD_Level(int /* lod */)																		{ }
-	virtual int		Get_LOD_Level(void) const																	{ return 0; }
-	virtual int		Get_LOD_Count(void) const																	{ return 1; }
-	virtual void	Set_LOD_Bias(float /* bias */)																	{ }
+#endif // if 0
+	virtual void	Set_LOD_Level(int /* lod */) { }
+	virtual int		Get_LOD_Level(void) const { return 0; }
+	virtual int		Get_LOD_Count(void) const { return 1; }
+	virtual void	Set_LOD_Bias(float /* bias */) { }
+#if 0
 	virtual int	Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const;
-	virtual RenderObjClass *	Get_Current_LOD(void)														{ Add_Ref(); return this; }
+	virtual RenderObjClass *	Get_Current_LOD(void) { Add_Ref(); return this; }
 
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -436,6 +441,7 @@ public:
 	//
 	virtual bool					Build_Dependency_List (DynamicVectorClass<StringClass> &file_list, bool recursive=true);
 	virtual bool					Build_Texture_List (DynamicVectorClass<StringClass> &texture_file_list, bool recursive=true);
+#endif // if 0
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Decals
@@ -443,19 +449,24 @@ public:
 	virtual void					Create_Decal(DecalGeneratorClass * /* generator */)						{ }
 	virtual void					Delete_Decal(uint32 /* decal_id */)										{ }
 	
+#if 0
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Attributes, Options, Properties, etc
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual MaterialInfoClass * Get_Material_Info(void) 													{ return NULL; }
-	virtual void				Set_User_Data(void *value, bool /* recursive */ = false)					{ User_Data = value; };
-	virtual void *				Get_User_Data()																{ return User_Data; };
+#endif // if 0
+	virtual void				Set_User_Data(void *value, bool /* recursive */ = false) { User_Data = value; };
+	virtual void *				Get_User_Data() { return User_Data; };
+#if 0
 	virtual int					Get_Num_Snap_Points(void)													{ return 0; }
 	virtual void				Get_Snap_Point(int /* index */,Vector3 * /* set */)								{ }
 //	virtual float				Calculate_Texture_Reduction_Factor(float norm_screensize);
 //	virtual void				Set_Texture_Reduction_Factor(float trf);
 	virtual float				Get_Screen_Size(CameraClass &camera);
-	virtual void				Scale(float /* scale */) 															{ };
-	virtual void				Scale(float /* scalex */, float /* scaley */, float /* scalez */)						{ };
+#endif // if 0
+	virtual void				Scale(float /* scale */) { };
+	virtual void				Scale(float /* scalex */, float /* scaley */, float /* scalez */) { };
+#if 0
 	virtual void				Set_ObjectScale(float scale) { ObjectScale=scale;}	//set's a scale factor that's factored into transform matrix.									{ScaleFactor=scale; };
 	float						Get_ObjectScale( void ) const { return ObjectScale; };
 	void						Set_ObjectColor(unsigned int color) { ObjectColor=color;}	//the color that was used to modify the asset for player team color (for Generals). -MW
@@ -522,14 +533,14 @@ public:
 protected:
 
 	virtual void					Add_Dependencies_To_List (DynamicVectorClass<StringClass> &file_list, bool textures_only = false);
+#endif // if 0
 
 	virtual void					Update_Cached_Bounding_Volumes(void) const;
 	virtual void					Update_Sub_Object_Bits(void);
-#endif // if 0
 
-	bool								Bounding_Volumes_Valid(void) const										{ return (Bits & BOUNDING_VOLUMES_VALID) != 0; }
-	void								Invalidate_Cached_Bounding_Volumes(void) const						{ Bits &= ~BOUNDING_VOLUMES_VALID; }
-	void								Validate_Cached_Bounding_Volumes(void)	const							{ Bits |= BOUNDING_VOLUMES_VALID; }
+	bool							Bounding_Volumes_Valid(void) const										{ return (Bits & BOUNDING_VOLUMES_VALID) != 0; }
+	void							Invalidate_Cached_Bounding_Volumes(void) const						{ Bits &= ~BOUNDING_VOLUMES_VALID; }
+	void							Validate_Cached_Bounding_Volumes(void)	const							{ Bits |= BOUNDING_VOLUMES_VALID; }
 
 	enum: unsigned
 	{
@@ -574,7 +585,6 @@ protected:
 #endif // if 0
 };
 
-#if 0
 WWINLINE const SphereClass & RenderObjClass::Get_Bounding_Sphere(void) const
 {
 	if (!(Bits & BOUNDING_VOLUMES_VALID)) {
@@ -591,6 +601,7 @@ WWINLINE const AABoxClass & RenderObjClass::Get_Bounding_Box(void) const
 	return CachedBoundingBox;
 }
 
+#if 0
 /************************************************************************** 
  * Bound_Degrees -- Bounds a degree value between 0 and 360.              * 
  *                                                                        * 

@@ -36,11 +36,11 @@
 #include "Common/CRCDebug.h"
 #include "Common/GameAudio.h"
 #include "Common/GameEngine.h"
-// #include "Common/GameLOD.h"
+#include "Common/GameLOD.h"
 #include "Common/GameState.h"
 // #include "Common/INI.h"
 // #include "Common/LatchRestore.h"
-// #include "Common/MapObject.h"
+#include "Common/MapObject.h"
 // #include "Common/MultiplayerSettings.h"
 #include "Common/PerfTimer.h"
 #include "Common/Player.h"
@@ -50,7 +50,7 @@
 // #include "Common/RandomValue.h"
 // #include "Common/Recorder.h"
 // #include "Common/StatsCollector.h"
-// #include "Common/ThingFactory.h"
+#include "Common/ThingFactory.h"
 // #include "Common/Team.h"
 #include "Common/ThingTemplate.h"
 // #include "GameClient/Water.h"
@@ -71,8 +71,8 @@
 #include "GameClient/MapUtil.h"
 // #include "GameClient/Mouse.h"
 #include "GameClient/ParticleSys.h"
-// #include "GameClient/TerrainVisual.h"
-// #include "GameClient/View.h"
+#include "GameClient/TerrainVisual.h"
+#include "GameClient/View.h"
 #include "GameClient/ControlBar.h"
 // #include "GameClient/CampaignManager.h"
 #include "GameClient/GameWindowTransitions.h"
@@ -87,9 +87,9 @@
 // #include "GameLogic/Locomotor.h"
 #include "GameLogic/Object.h"
 #include "GameLogic/TerrainLogic.h"
-// #include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/AIUpdate.h"
 // #include "GameLogic/Module/BodyModule.h"
-// #include "GameLogic/Module/CreateModule.h"
+#include "GameLogic/Module/CreateModule.h"
 #include "GameLogic/Module/DestroyModule.h"
 // #include "GameLogic/Module/OpenContain.h"
 #include "GameLogic/PartitionManager.h"
@@ -100,7 +100,7 @@
 // #include "GameLogic/SidesList.h"
 // #include "GameLogic/VictoryConditions.h"
 // #include "GameLogic/Weapon.h"
-// #include "GameLogic/GhostObject.h"
+#include "GameLogic/GhostObject.h"
 
 // #include "Common/DataChunk.h"
 // #include "GameLogic/Scripts.h"
@@ -227,7 +227,6 @@ void setFPMode( void )
 // ------------------------------------------------------------------------------------------------
 GameLogic::GameLogic( void )
 {
-#if 0
 	//Added By Sadullah Nader
 	//Initializations missing and necessary 
 	m_background = NULL;
@@ -239,7 +238,7 @@ GameLogic::GameLogic( void )
 	for(Int i = 0; i < MAX_SLOTS; i++)
 	{
 		m_progressComplete[i] = FALSE;
-		m_progressCompleteTimeout[i] = 0;
+		m_progressCompleteTimeout[i] = TimePoint::min();
 	}
 
 	m_shouldValidateCRCs = FALSE;
@@ -269,7 +268,6 @@ GameLogic::GameLogic( void )
 	m_loadingMap = FALSE;
 	m_loadingSave = FALSE;
 	m_clearingGameData = FALSE;
-#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -305,7 +303,7 @@ void GameLogic::setDefaults( Bool loadingSaveGame )
 //-------------------------------------------------------------------------------------------------
 Bool GameLogic::isInSinglePlayerGame( void )
 {
-DEBUG_CRASH(("GameLogic::isInSinglePlayerGame not yet implemented!"));
+DEBUG_LOG(("GameLogic::isInSinglePlayerGame not yet implemented!\n"));
 return false;
 #if 0
 	return (m_gameMode == GAME_SINGLE_PLAYER ||
@@ -313,7 +311,6 @@ return false;
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Destroy all objects immediately */
 //-------------------------------------------------------------------------------------------------
@@ -333,7 +330,6 @@ void GameLogic::destroyAllObjectsImmediate()
 	DEBUG_ASSERTCRASH( m_objList == NULL, ("destroyAllObjectsImmediate: Object list not cleared\n") );
 
 }  // end destroyAllObjectsImmediate
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /**GameLogic class destructor, the destruction order should mirror the
@@ -342,7 +338,6 @@ void GameLogic::destroyAllObjectsImmediate()
 GameLogic::~GameLogic()
 {
 
-#if 0
 	// clear any object TOC we might have
 	m_objectTOC.clear();
 
@@ -355,16 +350,13 @@ GameLogic::~GameLogic()
 
 	// destroy all remaining objects
 	destroyAllObjectsImmediate();
-#endif // if 0
 
 	// delete the logical terrain
 	delete TheTerrainLogic;
 	TheTerrainLogic = NULL;
 
-#if 0
 	delete TheGhostObjectManager;
 	TheGhostObjectManager=NULL;
-#endif // if 0
 
 	// delete the partition manager
 	delete ThePartitionManager;
@@ -401,12 +393,10 @@ void GameLogic::init( void )
 	ThePartitionManager->setName("ThePartitionManager");
 
 
-#if 0
 	// Create system for holding deleted objects that are
 	// still in the partition manager because player has a fogged
 	// view of them.
 	TheGhostObjectManager = createGhostObjectManager();
-#endif // if 0
 
 	// create the terrain logic
 	TheTerrainLogic = createTerrainLogic();
@@ -444,6 +434,9 @@ void GameLogic::init( void )
 	m_isInUpdate = FALSE;
 
 	m_rankPointsToAddAtGameStart = 0;
+
+	m_objVector.clear();
+	m_objVector.resize(OBJ_HASH_SIZE, NULL);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -682,7 +675,6 @@ LoadScreen *GameLogic::getLoadScreen( Bool loadingSaveGame )
 
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void handleNameChange( MapObject *mapObj )
@@ -701,6 +693,7 @@ void handleNameChange( MapObject *mapObj )
 	}
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 static void checkForDuplicateColors( GameInfo *game )
@@ -1696,10 +1689,12 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	sprintf(Buf,"After terrainlogic->newmap=%f\n",((double)(endTime64-startTime64)/(double)(freq64)*1000.0));
 	DEBUG_LOG(("%s", Buf));
 	#endif
+#endif // if 0
 
 		// Special case, load any bridge map objects.
- 	const ThingTemplate *thingTemplate;
+	const ThingTemplate *thingTemplate;
 	MapObject *pMapObj;
+#if 0
 	for (pMapObj = MapObject::getFirstMapObject(); pMapObj; pMapObj = pMapObj->getNext()) 
 	{
 
@@ -1797,11 +1792,13 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	DEBUG_LOG(("%s", Buf));
 	#endif
 
-	Bool useTrees = TheGlobalData->m_useTrees;
+#endif // if 0
+	Bool useTrees = TheGlobalData->m_data.m_useTrees;
 
 	// If forceFluffToProp == true, removable objects get created on client only. [7/14/2003]
 	// If static lod is HIGH, we don't do force fluff to client side only (create logic side props, more expensive. jba)
 	Bool forceFluffToProp = TheGameLODManager->getStaticLODLevel() != STATIC_GAME_LOD_HIGH;
+#if 0
 	if (TheGameLODManager->getStaticLODLevel() == STATIC_GAME_LOD_CUSTOM && 
 			TheGlobalData->m_useShadowVolumes) {
 		// Custom LOD, and volumetric shadows turned on - very high detail.  So use logic props too. jba. [7/14/2003]
@@ -1844,10 +1841,13 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	}
 	else
 	{
+#endif // if 0
 
 		for (pMapObj = MapObject::getFirstMapObject(); pMapObj; pMapObj = pMapObj->getNext()) 
 		{
-		
+			if (pMapObj->getName().compare("QuonsetHut01") != 0) {
+				continue; // FIXME: debugging!
+			}
 			if (pMapObj->getFlag(FLAG_BRIDGE_FLAGS) || pMapObj->getFlag(FLAG_ROAD_FLAGS)) {
 				continue;	// roads & bridges are special cased in the terrain side.
 			}
@@ -1908,7 +1908,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 				continue;
 			}
 #endif
-			
+
 			// Get the team information
 			DEBUG_ASSERTCRASH(pMapObj->getProperties()->getType(TheKey_originalOwner) == Dict::DICT_ASCIISTRING, ("unit %s has no original owner specified (obsolete map file)\n",pMapObj->getName().str()));
 			AsciiString originalOwner = pMapObj->getProperties()->getAsciiString(TheKey_originalOwner);
@@ -1932,7 +1932,7 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 				// update this object instance with properties from the map object
 				obj->updateObjValuesFromMapProperties( pMapObj->getProperties() );
 
-				PathfindLayerEnum	layer = TheTerrainLogic->getLayerForDestination(&pos);
+				PathfindLayerEnum layer = TheTerrainLogic->getLayerForDestination(&pos);
 				obj->setLayer(layer);
 				// Now onCreates were called at the constructor.  This magically created
 				// thing needs to be considered as Built for Game specific stuff.
@@ -1949,7 +1949,8 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 				TheAI->pathfinder()->addObjectToPathfindMap( obj );
 
 			}  // end if
-		
+
+#if 0
 			if(timeGetTime() > timer + 500)
 			{
 				if(progressCount < LOAD_PROGRESS_MAX_ALL_THE_FREAKN_OBJECTS)
@@ -1957,9 +1958,11 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 				updateLoadProgress(progressCount);
 				timer = timeGetTime();
 			}
+#endif // if 0
 
 		}	// for, loading map objects
 
+#if 0
 	}  // end if, not loading save game
 
 	#ifdef DUMP_PERF_STATS
@@ -2034,25 +2037,27 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 	}
 	// update the loadscreen 
 	updateLoadProgress(LOAD_PROGRESS_POST_INITIAL_NETWORK_BUILDINGS);
+#endif // if 0
 
 	//
 	// tell the client to pre-load some assets that we will use such as faction things we
 	// will build and various damage states for all the structures on the map so that we
 	// don't have big pauses when building those objects or switching to those states
 	//
-	if( TheGlobalData->m_preloadAssets )
+	if( TheGlobalData->m_data.m_preloadAssets )
 	{
-		if (TheGlobalData->m_preloadEverything)
+		if (TheGlobalData->m_data.m_preloadEverything)
 		{
 			for (Int td = TIME_OF_DAY_FIRST; td < TIME_OF_DAY_COUNT; ++td)
 				TheGameClient->preloadAssets((TimeOfDay)td);
 		}
 		else
 		{
-			TheGameClient->preloadAssets( TheGlobalData->m_timeOfDay );
+			TheGameClient->preloadAssets( TheGlobalData->m_data.m_timeOfDay );
 		}
 	}
 
+#if 0
 	//put this here somewhat randomly.
 	TheControlBar->hideCommunicator( FALSE );
 
@@ -2504,7 +2509,6 @@ void GameLogic::loadMapINI( AsciiString mapName )
 
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** Process the destroy list, destroying all pending objects.
  * The destroy list exists to ensure that all objects have a chance to
@@ -2562,7 +2566,7 @@ void GameLogic::processDestroyList( void )
 		{
 			// have to re-get idx each time since each call to erase might change others.
 			Int idx = sleepyUpdatesForThisObject[numSUO]->friend_getIndexInLogic();
-			DEBUG_ASSERTCRASH(m_sleepyUpdates[idx] == sleepyUpdatesForThisObject[numSUO], ("Hmm, expected update mismatch here"));
+			DEBUG_ASSERTCRASH(m_sleepyUpdates.data()[idx] == sleepyUpdatesForThisObject[numSUO], ("Hmm, expected update mismatch here"));
 			eraseSleepyUpdate(idx);
 			DEBUG_ASSERTCRASH(sleepyUpdatesForThisObject[numSUO]->friend_getIndexInLogic() == -1, ("Hmm, expected index to be -1 here"));
 		}
@@ -2579,7 +2583,6 @@ void GameLogic::processDestroyList( void )
 	m_objectsToDestroy.clear();//list full of bad pointers now, clear it.  If anyone's deletion resulted
 	//in the request for a new deletion (sub-object), the new object was added to the end of this list.
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Process the command list passed to the logic from the network */
@@ -2766,7 +2769,6 @@ void GameLogic::deselectObject(Object *obj, PlayerMaskType playerMask, Bool affe
 	}
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 inline void GameLogic::validateSleepyUpdate() const
 {
@@ -2775,28 +2777,27 @@ inline void GameLogic::validateSleepyUpdate() const
 	#define SLEEPY_DEBUG
 #endif
 #ifdef SLEEPY_DEBUG
-	int sz = m_sleepyUpdates.size();
+	UnsignedInt sz = m_sleepyUpdates.size();
 	if (sz == 0)
 		return;
 
-	int i;
 	//DEBUG_LOG(("\n\n"));
 	//for (i = 0; i < sz; ++i)
 	//{
 	//	DEBUG_LOG(("u %04d: %08lx %08lx\n",i,m_sleepyUpdates[i],m_sleepyUpdates[i]->friend_getNextCallFrame()));
 	//}
-	for (i = 0; i < sz; ++i)
+	for (UnsignedInt i = 0; i < sz; ++i)
 	{
-		DEBUG_ASSERTCRASH(m_sleepyUpdates[i]->friend_getIndexInLogic() == i, ("index mismatch: expected %d, got %d\n",i,m_sleepyUpdates[i]->friend_getIndexInLogic()));
+		DEBUG_ASSERTCRASH(m_sleepyUpdates[i]->friend_getIndexInLogic() == (Int)i, ("index mismatch: expected %d, got %d\n", i, m_sleepyUpdates[i]->friend_getIndexInLogic()));
 		UnsignedInt pri = m_sleepyUpdates[i]->friend_getPriority();
 		if (i > 0)
 		{
-			Int i0 = (i+1)/2-1;
+			UnsignedInt i0 = (i+1)/2-1u;
 			UnsignedInt pri0 = m_sleepyUpdates[i0]->friend_getPriority();
 			DEBUG_ASSERTCRASH(pri >= pri0, ("sleepyUpdates are munged (0)"));
 		}
-		Int i1 = 2*(i+1)-1;
-		Int i2 = 2*(i+1);
+		UnsignedInt i1 = 2*(i+1)-1u;
+		UnsignedInt i2 = 2*(i+1);
 		if (i1 < sz)
 		{
 			UnsignedInt pri1 = m_sleepyUpdates[i1]->friend_getPriority();
@@ -2816,16 +2817,16 @@ void GameLogic::eraseSleepyUpdate(Int i)
 {
 	USE_PERF_TIMER(SleepyMaintenance)
 
-	DEBUG_ASSERTCRASH(i >= 0 && i < m_sleepyUpdates.size(), ("bad sleepy idx"));
+	DEBUG_ASSERTCRASH(i >= 0 && i < (Int)m_sleepyUpdates.size(), ("bad sleepy idx"));
 
 	// swap with the final item, toss the final item, then rebalance
-	m_sleepyUpdates[i]->friend_setIndexInLogic(-1);
+	m_sleepyUpdates.data()[i]->friend_setIndexInLogic(-1);
 
 	Int final = m_sleepyUpdates.size() - 1;
 	if (i < final)
 	{
-		m_sleepyUpdates[i] = m_sleepyUpdates[final];
-		m_sleepyUpdates[i]->friend_setIndexInLogic(i);
+		m_sleepyUpdates.data()[i] = m_sleepyUpdates.data()[final];
+		m_sleepyUpdates.data()[i]->friend_setIndexInLogic(i);
 		m_sleepyUpdates.pop_back();
 		rebalanceSleepyUpdate(i);
 	}
@@ -2834,7 +2835,6 @@ void GameLogic::eraseSleepyUpdate(Int i)
 		m_sleepyUpdates.pop_back();
 	}
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 inline Bool isLowerPriority(const UpdateModulePtr a, const UpdateModulePtr b)
@@ -2874,32 +2874,31 @@ Int GameLogic::rebalanceParentSleepyUpdate(Int i)
 	return i;
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 Int GameLogic::rebalanceChildSleepyUpdate(Int i)
 {
 	USE_PERF_TIMER(SleepyMaintenance)
 
-	DEBUG_ASSERTCRASH(i >= 0 && i < m_sleepyUpdates.size(), ("bad sleepy idx"));
+	DEBUG_ASSERTCRASH(i >= 0 && i < (Int)m_sleepyUpdates.size(), ("bad sleepy idx"));
 
 // this function gets the brunt of the work (we frequently
 // balance down, not up), so this one is hand-unrolled for
 // max efficiency. I have left the pristine non-unrolled
 // version present for clarity. (Yes, this is worth doing.) (srj) 
 #if 1
-	UpdateModulePtr* pI = &m_sleepyUpdates[i];
+	UpdateModulePtr* pI = &m_sleepyUpdates.data()[i];
 
 	// our children are i*2 and i*2+1
-  Int child = ((i+1)<<1)-1;
-	UpdateModulePtr* pChild = &m_sleepyUpdates[child];
+	Int child = ((i+1)<<1)-1;
+	UpdateModulePtr* pChild = &m_sleepyUpdates.data()[child];
 	UpdateModulePtr* pSZ = &m_sleepyUpdates[m_sleepyUpdates.size()];	// yes, this is off the end.
 
-  while (pChild < pSZ) 
+	while (pChild < pSZ) 
 	{
 		// choose the higher-priority of the two children; we must be higher-pri than that.
 		if (pChild < pSZ-1 && isLowerPriority(*pChild, *(pChild+1)))
 		{
-      ++pChild;
+			++pChild;
 			++child;
 		}
 
@@ -2923,17 +2922,17 @@ Int GameLogic::rebalanceChildSleepyUpdate(Int i)
 		pI = pChild;
 
 		child = ((i+1)<<1)-1;
-		pChild = &m_sleepyUpdates[child];
-  }
+		pChild = &m_sleepyUpdates.data()[child];
+	}
 #else
 	// our children are i*2 and i*2+1
 	Int sz = m_sleepyUpdates.size();
-  Int child = ((i+1)<<1)-1;
-  while (child < sz) 
+	Int child = ((i+1)<<1)-1;
+	while (child < sz) 
 	{
 		// choose the higher-priority of the two children; we must be higher-pri than that.
 		if (child < sz-1 && isLowerPriority(m_sleepyUpdates[child], m_sleepyUpdates[child+1]))
-      ++child;
+			++child;
 		
 		// if we're higher-pri than our children, we're done.
 		if (!isLowerPriority(m_sleepyUpdates[i], m_sleepyUpdates[child]))
@@ -2952,7 +2951,7 @@ Int GameLogic::rebalanceChildSleepyUpdate(Int i)
 		b->friend_setIndexInLogic(child);
 		i = child;
 		child = ((i+1)<<1)-1;
-  }
+	}
 #endif
 	return i;
 }
@@ -2966,6 +2965,7 @@ void GameLogic::rebalanceSleepyUpdate(Int i)
 	i = rebalanceChildSleepyUpdate(i);
 }
 
+#if 0
 // ------------------------------------------------------------------------------------------------
 void GameLogic::remakeSleepyUpdate()
 {
@@ -3041,11 +3041,6 @@ void GameLogic::popSleepyUpdate()
 //DECLARE_PERF_TIMER(friend_awakenUpdateModule)
 void GameLogic::friend_awakenUpdateModule(Object* obj, UpdateModulePtr u, UnsignedInt whenToWakeUp)
 {
-(void) obj;
-(void) u;
-(void) whenToWakeUp;
-DEBUG_CRASH(("GameLogic::friend_awakenUpdateModule not yet implemented!"));
-#if 0
 	//USE_PERF_TIMER(friend_awakenUpdateModule)
 	UnsignedInt now = TheGameLogic->getFrame();
 	DEBUG_ASSERTCRASH(whenToWakeUp >= now, ("setWakeFrame frame is in the past... are you sure this is what you want?"));
@@ -3072,13 +3067,13 @@ DEBUG_CRASH(("GameLogic::friend_awakenUpdateModule not yet implemented!"));
 	Int idx = u->friend_getIndexInLogic();
 	if (obj->isInList(&m_objList))
 	{
-		if (idx < 0 || idx >= m_sleepyUpdates.size())
+		if (idx < 0 || idx >= (Int)m_sleepyUpdates.size())
 		{
 			RELEASE_CRASH("fatal error! sleepy update module illegal index.\n");
 			return;
 		}
 
-		if (m_sleepyUpdates[idx] != u)
+		if (m_sleepyUpdates.data()[idx] != u)
 		{
 			RELEASE_CRASH("fatal error! sleepy update module index mismatch.\n");
 			return;
@@ -3108,7 +3103,6 @@ DEBUG_CRASH(("GameLogic::friend_awakenUpdateModule not yet implemented!"));
 		u->friend_setNextCallFrame(whenToWakeUp);
 		return;
 	}
-#endif // if 0
 }
 #if 0
 
@@ -3969,8 +3963,7 @@ void GameLogic::registerObject( Object *obj )
 	UnsignedInt now = TheGameLogic->getFrame();
 	if (now == 0)
 		now = 1;
-#if 0
-		for (BehaviorModule** b = obj->getBehaviorModules(); *b; ++b)
+	for (BehaviorModule** b = obj->getBehaviorModules(); *b; ++b)
 	{
 #ifdef DIRECT_UPDATEMODULE_ACCESS
 		// evil, but necessary at this point. (srj)
@@ -4001,7 +3994,6 @@ void GameLogic::registerObject( Object *obj )
 			pushSleepyUpdate(u);
 		}
 	}
-#endif // if 0
 
 }
 
@@ -4039,8 +4031,7 @@ void GameLogic::destroyObject( Object *obj )
 	if (!obj || obj->isDestroyed())
 		return;
 
-#if 0
-		// run the object onDestroy event if provied
+		// run the object onDestroy event if provided
 	for (BehaviorModule** m = obj->getBehaviorModules(); *m; ++m)
 	{
 		DestroyModuleInterface* destroy = (*m)->getDestroy();
@@ -4059,7 +4050,6 @@ void GameLogic::destroyObject( Object *obj )
 		ai->setLocomotorGoalNone();
 		ai->destroyPath();
 	}
-#endif // if 0
 
 	// add to end of destruction list, in case something is being destroyed and trying to destroy subobjects
 	m_objectsToDestroy.push_back(obj);
@@ -4213,7 +4203,6 @@ return false;
 #endif // if 0
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** A new GameLogic object has been constructed, therefore create
  * a corresponding drawable and bind them together. */
@@ -4258,7 +4247,6 @@ void GameLogic::sendObjectDestroyed( Object *obj )
 	obj->friend_bindToDrawable( NULL );
 
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Return if the game is paused or not */
@@ -4458,6 +4446,7 @@ UnsignedInt GameLogic::getObjectCount( void )
 	}
 	return totalObjects;
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -4465,7 +4454,6 @@ GhostObjectManager *GameLogic::createGhostObjectManager(void)
 { 
 	return NEW GhostObjectManager;
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------

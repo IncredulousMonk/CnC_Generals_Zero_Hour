@@ -103,7 +103,7 @@
 	#define allocateBytes(ARGCOUNT,ARGLITERAL)			allocateBytesImplementation(ARGCOUNT, ARGLITERAL MP_LOC_SUFFIX)
 	#define allocateBytesDoNotZero(ARGCOUNT,ARGLITERAL)	allocateBytesDoNotZeroImplementation(ARGCOUNT, ARGLITERAL MP_LOC_SUFFIX)
 	#define newInstanceDesc(ARGCLASS,ARGLITERAL)		new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED, ARGLITERAL MP_LOC_SUFFIX) ARGCLASS
-	#define newInstance(ARGCLASS)						new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED, __FILE__) ARGCLASS
+	#define newInstance(ARGCLASS)						new(ARGCLASS::ARGCLASS##_GLUE_NOT_IMPLEMENTED, DEBUG_FILENLINE) ARGCLASS
 
 	#if !defined(MEMORYPOOL_STACKTRACE) && !defined(DISABLE_MEMORYPOOL_STACKTRACE)
 		#define MEMORYPOOL_STACKTRACE
@@ -907,7 +907,7 @@ extern void userMemoryAdjustPoolSize(const char *poolName, size_t& initialAlloca
 
 #ifdef MEMORYPOOL_DEBUG_CUSTOM_NEW
 	#define MSGNEW(MSG)		new(MSG, 0)
-	#define NEW				new(__FILE__, __LINE__)
+	#define NEW				new(DEBUG_FILENLINE, __LINE__)
 #else
 	#define MSGNEW(MSG)		new
 	#define NEW				new

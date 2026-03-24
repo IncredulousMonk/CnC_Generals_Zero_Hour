@@ -88,12 +88,10 @@ public:
 
 protected:
 
-	StringClass						Name;						// name of the render object
-	StringClass						BaseModelName;			// name of the original render obj (before aggregation)
-	SphereClass						ObjSphere;				// object-space bounding sphere
-	AABoxClass						ObjBox;					// object-space bounding box
+	StringClass						Name {};						// name of the render object
+	StringClass						BaseModelName {};			// name of the original render obj (before aggregation)
+	SphereClass						ObjSphere {};				// object-space bounding sphere
+	AABoxClass						ObjBox {};					// object-space bounding box
 };
-
-
 
 #endif

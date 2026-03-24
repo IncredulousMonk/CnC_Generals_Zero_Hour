@@ -224,12 +224,10 @@ public:
 	void clearGameData(Bool showScoreScreen = TRUE);														///< Clear the game data
 	void closeWindows( void );
 
-#if 0
 	void sendObjectCreated( Object *obj );
 	void sendObjectDestroyed( Object *obj );
 
 	void bindObjectAndDrawable(Object* obj, Drawable* draw);
-#endif // if 0
 
 	void setGamePaused( Bool paused, Bool pauseMusic = TRUE );
 	Bool isGamePaused( void );
@@ -292,15 +290,15 @@ private:
 #if 0
 	UpdateModulePtr peekSleepyUpdate() const;
 	void popSleepyUpdate();
+#endif // if 0
 	void eraseSleepyUpdate(Int i);
 	void rebalanceSleepyUpdate(Int i);
-#endif // if 0
 	Int rebalanceParentSleepyUpdate(Int i);
-#if 0
 	Int rebalanceChildSleepyUpdate(Int i);
+#if 0
 	void remakeSleepyUpdate();
-	void validateSleepyUpdate() const;
 #endif // if 0
+	void validateSleepyUpdate() const;
 
 private:
 
@@ -369,17 +367,13 @@ private:
 	ObjectID m_nextObjID {};																		///< For allocating object id's
 
 	void setDefaults( Bool loadSaveGame );									///< Set default values of class object
-#if 0
 	void processDestroyList( void );												///< Destroy all pending objects on the destroy list
 
 	void destroyAllObjectsImmediate();											///< destroy, and process destroy list immediately
-#endif // if 0
 
 	/// factory for TheTerrainLogic, called from init()
 	virtual TerrainLogic *createTerrainLogic( void );
-#if 0
 	virtual GhostObjectManager *createGhostObjectManager(void);
-#endif // if 0
 
 	Int m_gameMode {};
 	Int m_rankLevelLimit {};
@@ -406,7 +400,6 @@ private:
 
 	UnsignedInt m_frameObjectsChangedTriggerAreas {};					///< Last frame objects moved into/outof trigger areas, or were created/destroyed. jba.
 
-#if 0
 	// ----------------------------------------------------------------------------------------------
 	struct ObjectTOCEntry
 	{
@@ -415,7 +408,8 @@ private:
 	};
 	typedef std::list< ObjectTOCEntry > ObjectTOCList;
 	typedef ObjectTOCList::iterator ObjectTOCListIterator;
-	ObjectTOCList m_objectTOC;															///< the object TOC
+	ObjectTOCList m_objectTOC {};															///< the object TOC
+#if 0
 	void addTOCEntry( AsciiString name, UnsignedShort id ); ///< add a new name/id TOC pair
 	ObjectTOCEntry *findTOCEntryByName( AsciiString name );	///< find ObjectTOC by name
 	ObjectTOCEntry *findTOCEntryById( UnsignedShort id );		///< find ObjectTOC by id

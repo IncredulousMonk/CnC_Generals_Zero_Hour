@@ -107,16 +107,16 @@ void NamedPivotMapClass::Update_Pivot_Map(const HTreeClass *Tree)
 /*
 **
 */
-DEFINE_AUTO_POOL(HAnimComboDataClass,256);
+// DEFINE_AUTO_POOL(HAnimComboDataClass,256);
 
 HAnimComboDataClass::HAnimComboDataClass(bool shared) 
-: Shared(shared), HAnim(0), PivotMap(0), Frame(0), PrevFrame(0), Weight(1) 
+: HAnim(0), Frame(0), PrevFrame(0), Weight(1), PivotMap(0), Shared(shared)
 {}
 
 
 HAnimComboDataClass::HAnimComboDataClass(const HAnimComboDataClass &src)
-:	PivotMap(src.Get_Pivot_Map()),
-	HAnim(src.Get_HAnim())
+:	HAnim(src.Get_HAnim()),
+	PivotMap(src.Get_Pivot_Map())
 {
 	Shared = src.Is_Shared();
 	Frame = src.Get_Frame();

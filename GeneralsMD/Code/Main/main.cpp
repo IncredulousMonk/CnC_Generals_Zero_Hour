@@ -184,7 +184,7 @@ GameEngine* CreateGameEngine(void) {
 
 int MessageBox(const char* text, const char* caption, UnsignedInt) {
    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, caption, text, window);
-   return 1;
+   return 2;
 }
 
 void SetWindowText(const char* text) {

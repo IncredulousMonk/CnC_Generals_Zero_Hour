@@ -171,7 +171,7 @@ protected:
 	DrawablePtrVector m_drawableVector {};
 
 	DrawableID m_nextDrawableID {};																///< For allocating drawable id's
-	// DrawableID allocDrawableID( void );													///< Returns a new unique drawable id
+	DrawableID allocDrawableID( void );													///< Returns a new unique drawable id
 
 	enum { MAX_CLIENT_TRANSLATORS = 32 };
 	TranslatorID m_translators[ MAX_CLIENT_TRANSLATORS ];				///< translators we have used

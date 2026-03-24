@@ -43,8 +43,8 @@
 
 class Object;
 class PartitionData;
-enum GeometryType;
-enum ObjectID;
+enum GeometryType: int;
+enum ObjectID: UnsignedInt;
 
 class GhostObject : public Snapshot
 {
@@ -73,14 +73,14 @@ protected:
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
 
-	Object *m_parentObject;		///< object which we are ghosting
-	GeometryType m_parentGeometryType;
-	Bool m_parentGeometryIsSmall;
-	Real m_parentGeometryMajorRadius;
-	Real m_parentGeometryminorRadius;
-	Real m_parentAngle;
-	Coord3D m_parentPosition;
-	PartitionData	*m_partitionData;	///< our PartitionData
+	Object *m_parentObject {};		///< object which we are ghosting
+	GeometryType m_parentGeometryType {};
+	Bool m_parentGeometryIsSmall {};
+	Real m_parentGeometryMajorRadius {};
+	Real m_parentGeometryminorRadius {};
+	Real m_parentAngle {};
+	Coord3D m_parentPosition {};
+	PartitionData	*m_partitionData {};	///< our PartitionData
 };
 
 class GhostObjectManager : public Snapshot
@@ -102,9 +102,9 @@ protected:
 	virtual void crc( Xfer *xfer );
 	virtual void xfer( Xfer *xfer );
 	virtual void loadPostProcess( void );
-	Int m_localPlayer;
-	Bool m_lockGhostObjects;
-	Bool m_saveLockGhostObjects;	///< used to lock the ghost object system during a save/load
+	Int m_localPlayer {};
+	Bool m_lockGhostObjects {};
+	Bool m_saveLockGhostObjects {};	///< used to lock the ghost object system during a save/load
 };
 
 // the singleton

@@ -38,7 +38,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"always.h"
-#include	"xstraw.h"
+#include	"XSTRAW.H"
 #include	<stddef.h>
 #include	<string.h>
 
@@ -77,7 +77,7 @@ int BufferStraw::Get(void * source, int slen)
 		}
 
 		if (len > 0) {
-			memmove(source, ((char*)BufferPtr.Get_Buffer()) + Index, len);
+			memmove(source, ((char*)BufferPtr.Get_Buffer()) + Index, (size_t)len);
 		}
 
 		Index += len;

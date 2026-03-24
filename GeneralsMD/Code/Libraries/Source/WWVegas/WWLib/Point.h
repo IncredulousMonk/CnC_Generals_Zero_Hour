@@ -135,39 +135,39 @@ class TPoint3D : public TPoint2D<T> {
 		TPoint3D(BASECLASS const & rvalue) : TPoint2D<T>(rvalue), Z(0) {}
 		
 		// Equality comparison operators.
-		bool operator == (TPoint3D<T> const & rvalue) const {return(X==rvalue.X && Y==rvalue.Y && Z==rvalue.Z);}
-		bool operator != (TPoint3D<T> const & rvalue) const {return(X!=rvalue.X || Y!=rvalue.Y || Z!=rvalue.Z);}
+		bool operator == (TPoint3D<T> const & rvalue) const {return(TPoint2D<T>::X==rvalue.X && TPoint2D<T>::Y==rvalue.Y && Z==rvalue.Z);}
+		bool operator != (TPoint3D<T> const & rvalue) const {return(TPoint2D<T>::X!=rvalue.X || TPoint2D<T>::Y!=rvalue.Y || Z!=rvalue.Z);}
 
 		// Addition and subtraction operators.
-		TPoint3D<T> const & operator += (TPoint3D<T> const & rvalue) {X += rvalue.X;Y += rvalue.Y;Z += rvalue.Z;return(*this);}
+		TPoint3D<T> const & operator += (TPoint3D<T> const & rvalue) {TPoint2D<T>::X += rvalue.X;TPoint2D<T>::Y += rvalue.Y;Z += rvalue.Z;return(*this);}
 		TPoint2D<T> const & operator += (TPoint2D<T> const & rvalue) {BASECLASS::operator += (rvalue);return(*this);}
-		TPoint3D<T> const & operator -= (TPoint3D<T> const & rvalue) {X -= rvalue.X;Y -= rvalue.Y;Z -= rvalue.Z;return(*this);}
+		TPoint3D<T> const & operator -= (TPoint3D<T> const & rvalue) {TPoint2D<T>::X -= rvalue.X;TPoint2D<T>::Y -= rvalue.Y;Z -= rvalue.Z;return(*this);}
 		TPoint2D<T> const & operator -= (TPoint2D<T> const & rvalue) {BASECLASS::operator -= (rvalue);return(*this);}
-		TPoint3D<T> const operator - (TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(X - rvalue.X, Y - rvalue.Y, Z - rvalue.Z));}
-		TPoint3D<T> const operator - (TPoint2D<T> const & rvalue) const {return(TPoint3D<T>(X - rvalue.X, Y - rvalue.Y, Z));}
-		TPoint3D<T> const operator + (TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(X + rvalue.X, Y + rvalue.Y, Z + rvalue.Z));}
-		TPoint3D<T> const operator + (TPoint2D<T> const & rvalue) const {return(TPoint3D<T>(X + rvalue.X, Y + rvalue.Y, Z));}
+		TPoint3D<T> const operator - (TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(TPoint2D<T>::X - rvalue.X, TPoint2D<T>::Y - rvalue.Y, Z - rvalue.Z));}
+		TPoint3D<T> const operator - (TPoint2D<T> const & rvalue) const {return(TPoint3D<T>(TPoint2D<T>::X - rvalue.X, TPoint2D<T>::Y - rvalue.Y, Z));}
+		TPoint3D<T> const operator + (TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(TPoint2D<T>::X + rvalue.X, TPoint2D<T>::Y + rvalue.Y, Z + rvalue.Z));}
+		TPoint3D<T> const operator + (TPoint2D<T> const & rvalue) const {return(TPoint3D<T>(TPoint2D<T>::X + rvalue.X, TPoint2D<T>::Y + rvalue.Y, Z));}
 
 		// Scalar multiplication and division.
-		TPoint3D<T> const operator * (T rvalue) const {return(TPoint3D<T>(X * rvalue, Y * rvalue, Z * rvalue));}
-		TPoint3D<T> const & operator *= (T rvalue) {X *= rvalue;Y *= rvalue;Z *= rvalue;return(*this);}
-		TPoint3D<T> const operator / (T rvalue) const {if (rvalue == T(0)) return(TPoint3D<T>(0,0,0));return(TPoint3D<T>(X / rvalue, Y / rvalue, Z / rvalue));}
-		TPoint3D<T> const & operator /= (T rvalue) {if (rvalue != T(0)) {X /= rvalue;Y /= rvalue;Z /= rvalue;}return(*this);}
+		TPoint3D<T> const operator * (T rvalue) const {return(TPoint3D<T>(TPoint2D<T>::X * rvalue, TPoint2D<T>::Y * rvalue, Z * rvalue));}
+		TPoint3D<T> const & operator *= (T rvalue) {TPoint2D<T>::X *= rvalue;TPoint2D<T>::Y *= rvalue;Z *= rvalue;return(*this);}
+		TPoint3D<T> const operator / (T rvalue) const {if (rvalue == T(0)) return(TPoint3D<T>(0,0,0));return(TPoint3D<T>(TPoint2D<T>::X / rvalue, TPoint2D<T>::Y / rvalue, Z / rvalue));}
+		TPoint3D<T> const & operator /= (T rvalue) {if (rvalue != T(0)) {TPoint2D<T>::X /= rvalue;TPoint2D<T>::Y /= rvalue;Z /= rvalue;}return(*this);}
 
 		// Dot and cross product.
-		TPoint3D<T> const operator * (TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(X * rvalue.X, Y * rvalue.Y, Z * rvalue.Z));}
-		TPoint3D<T> const Dot_Product(TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(X * rvalue.X, Y * rvalue.Y, Z * rvalue.Z));}
-		TPoint3D<T> const Cross_Product(TPoint3D<T> const & rvalue) const {return TPoint3D<T>(Y * rvalue.Z - Z * rvalue.Y, Z * rvalue.X - X * rvalue.Z, X * rvalue.Y - Y * rvalue.X);}
+		TPoint3D<T> const operator * (TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(TPoint2D<T>::X * rvalue.X, TPoint2D<T>::Y * rvalue.Y, Z * rvalue.Z));}
+		TPoint3D<T> const Dot_Product(TPoint3D<T> const & rvalue) const {return(TPoint3D<T>(TPoint2D<T>::X * rvalue.X, TPoint2D<T>::Y * rvalue.Y, Z * rvalue.Z));}
+		TPoint3D<T> const Cross_Product(TPoint3D<T> const & rvalue) const {return TPoint3D<T>(TPoint2D<T>::Y * rvalue.Z - Z * rvalue.Y, Z * rvalue.X - TPoint2D<T>::X * rvalue.Z, TPoint2D<T>::X * rvalue.Y - TPoint2D<T>::Y * rvalue.X);}
 
 		// Negation operator -- simple and effective
-		TPoint3D<T> const operator - (void) const {return(TPoint3D<T>(-X, -Y, -Z));}
+		TPoint3D<T> const operator - (void) const {return(TPoint3D<T>(-TPoint2D<T>::X, -TPoint2D<T>::Y, -Z));}
 
 		// Vector support functions.
-		T Length(void) const {return(T(sqrt(X*X + Y*Y + Z*Z)));}
+		T Length(void) const {return(T(sqrt(TPoint2D<T>::X*TPoint2D<T>::X + TPoint2D<T>::Y*TPoint2D<T>::Y + Z*Z)));}
 		TPoint3D<T> const Normalize(void) const {
-			double len = sqrt(X*X + Y*Y + Z*Z);
+			double len = sqrt(TPoint2D<T>::X*TPoint2D<T>::X + TPoint2D<T>::Y*TPoint2D<T>::Y + Z*Z);
 			if (len != 0.0) {
-				return(TPoint3D<T>(X / len, Y / len, Z / len));
+				return(TPoint3D<T>(TPoint2D<T>::X / len, TPoint2D<T>::Y / len, Z / len));
 			} else {
 				return(*this);
 			}

@@ -43,30 +43,38 @@
 class FireWeaponWhenDeadBehaviorModuleData : public BehaviorModuleData
 {
 public:
-	UpgradeMuxData				m_upgradeMuxData;
-	Bool									m_initiallyActive;
-	DieMuxData						m_dieMuxData;
-	const WeaponTemplate* m_deathWeapon;						///< fire this weapon when we are damaged
+	// MG: Cannot apply offsetof to FireWeaponWhenDeadBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UpgradeMuxData			m_upgradeMuxData;
+		Bool					m_initiallyActive;
+		DieMuxData				m_dieMuxData;
+		const WeaponTemplate*	m_deathWeapon;						///< fire this weapon when we are damaged
+	};
+
+	IniData m_ini {};
 
 	FireWeaponWhenDeadBehaviorModuleData()
 	{
-		m_initiallyActive = false;
-		m_deathWeapon = NULL;
+		m_ini.m_initiallyActive = false;
+		m_ini.m_deathWeapon = NULL;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "StartsActive",	INI::parseBool, NULL, offsetof( FireWeaponWhenDeadBehaviorModuleData, m_initiallyActive ) },
-			{ "DeathWeapon", INI::parseWeaponTemplate,	NULL, offsetof( FireWeaponWhenDeadBehaviorModuleData, m_deathWeapon ) },
+			{ "StartsActive",	INI::parseBool,				NULL, offsetof( FireWeaponWhenDeadBehaviorModuleData::IniData, m_initiallyActive ) },
+			{ "DeathWeapon",	INI::parseWeaponTemplate,	NULL, offsetof( FireWeaponWhenDeadBehaviorModuleData::IniData, m_deathWeapon ) },
 			{ 0, 0, 0, 0 }
 		};
 
-		BehaviorModuleData::buildFieldParse(p);
-		p.add(dataFieldParse);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( FireWeaponWhenDeadBehaviorModuleData, m_upgradeMuxData ));
-		p.add(DieMuxData::getFieldParse(), offsetof( FireWeaponWhenDeadBehaviorModuleData, m_dieMuxData ));
+		BehaviorModuleData::buildFieldParse(what, p);
+		FireWeaponWhenDeadBehaviorModuleData* self {static_cast<FireWeaponWhenDeadBehaviorModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
+		p.add(UpgradeMuxData::getFieldParse(), offset + offsetof( FireWeaponWhenDeadBehaviorModuleData::IniData, m_upgradeMuxData ));
+		p.add(DieMuxData::getFieldParse(), offset + offsetof( FireWeaponWhenDeadBehaviorModuleData::IniData, m_dieMuxData ));
 	}
 };
 
@@ -104,23 +112,23 @@ protected:
 
 	virtual void getUpgradeActivationMasks(UpgradeMaskType& activation, UpgradeMaskType& conflicting) const
 	{
-		getFireWeaponWhenDeadBehaviorModuleData()->m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
+		getFireWeaponWhenDeadBehaviorModuleData()->m_ini.m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
 	}
 
 	virtual void performUpgradeFX()
 	{
-		getFireWeaponWhenDeadBehaviorModuleData()->m_upgradeMuxData.performUpgradeFX(getObject());
+		getFireWeaponWhenDeadBehaviorModuleData()->m_ini.m_upgradeMuxData.performUpgradeFX(getObject());
 	}
 
 	virtual void processUpgradeRemoval()
 	{
 		// I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP.
-		getFireWeaponWhenDeadBehaviorModuleData()->m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
+		getFireWeaponWhenDeadBehaviorModuleData()->m_ini.m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
 	}
 
 	virtual Bool requiresAllActivationUpgrades() const
 	{
-		return getFireWeaponWhenDeadBehaviorModuleData()->m_upgradeMuxData.m_requiresAllTriggers;
+		return getFireWeaponWhenDeadBehaviorModuleData()->m_ini.m_upgradeMuxData.m_requiresAllTriggers;
 	}
 
 	inline Bool isUpgradeActive() const { return isAlreadyUpgraded(); }

@@ -71,67 +71,67 @@ FireWeaponWhenDamagedBehavior::FireWeaponWhenDamagedBehavior( Thing *thing, cons
 	const FireWeaponWhenDamagedBehaviorModuleData *d = getFireWeaponWhenDamagedBehaviorModuleData();
 	const Object* obj = getObject();
 
-	if ( d->m_reactionWeaponPristine )
+	if ( d->m_ini.m_reactionWeaponPristine )
 	{
 		m_reactionWeaponPristine				= TheWeaponStore->allocateNewWeapon(
-			d->m_reactionWeaponPristine,					PRIMARY_WEAPON);
+			d->m_ini.m_reactionWeaponPristine,					PRIMARY_WEAPON);
 		m_reactionWeaponPristine->reloadAmmo( obj );
 	}
-	if ( d->m_reactionWeaponDamaged )
+	if ( d->m_ini.m_reactionWeaponDamaged )
 	{
 		m_reactionWeaponDamaged					= TheWeaponStore->allocateNewWeapon(
-			d->m_reactionWeaponDamaged,					PRIMARY_WEAPON);
+			d->m_ini.m_reactionWeaponDamaged,					PRIMARY_WEAPON);
 		m_reactionWeaponDamaged->reloadAmmo( obj );
 	}
-	if ( d->m_reactionWeaponReallyDamaged )
+	if ( d->m_ini.m_reactionWeaponReallyDamaged )
 	{
 		m_reactionWeaponReallyDamaged		= TheWeaponStore->allocateNewWeapon(
-			d->m_reactionWeaponReallyDamaged,		PRIMARY_WEAPON); 
+			d->m_ini.m_reactionWeaponReallyDamaged,		PRIMARY_WEAPON); 
 		m_reactionWeaponReallyDamaged->reloadAmmo( obj );
 	}
-	if ( d->m_reactionWeaponRubble )
+	if ( d->m_ini.m_reactionWeaponRubble )
 	{
 		m_reactionWeaponRubble					= TheWeaponStore->allocateNewWeapon(
-			d->m_reactionWeaponRubble,						PRIMARY_WEAPON);
+			d->m_ini.m_reactionWeaponRubble,						PRIMARY_WEAPON);
 		m_reactionWeaponRubble->reloadAmmo( obj );
 	}
 
 
-	if ( d->m_continuousWeaponPristine )
+	if ( d->m_ini.m_continuousWeaponPristine )
 	{
 		m_continuousWeaponPristine			= TheWeaponStore->allocateNewWeapon(
-			d->m_continuousWeaponPristine,				PRIMARY_WEAPON);
+			d->m_ini.m_continuousWeaponPristine,				PRIMARY_WEAPON);
 		m_continuousWeaponPristine->reloadAmmo( obj );
 	}
-	if ( d->m_continuousWeaponDamaged )
+	if ( d->m_ini.m_continuousWeaponDamaged )
 	{
 		m_continuousWeaponDamaged				= TheWeaponStore->allocateNewWeapon(
-			d->m_continuousWeaponDamaged,				PRIMARY_WEAPON);
+			d->m_ini.m_continuousWeaponDamaged,				PRIMARY_WEAPON);
 		m_continuousWeaponDamaged->reloadAmmo( obj );
 	}
-	if ( d->m_continuousWeaponReallyDamaged )
+	if ( d->m_ini.m_continuousWeaponReallyDamaged )
 	{
 		m_continuousWeaponReallyDamaged = TheWeaponStore->allocateNewWeapon(
-			d->m_continuousWeaponReallyDamaged,	PRIMARY_WEAPON);
+			d->m_ini.m_continuousWeaponReallyDamaged,	PRIMARY_WEAPON);
 		m_continuousWeaponReallyDamaged->reloadAmmo( obj );
 	}
-	if ( d->m_continuousWeaponRubble )
+	if ( d->m_ini.m_continuousWeaponRubble )
 	{
 		m_continuousWeaponRubble				= TheWeaponStore->allocateNewWeapon(
-			d->m_continuousWeaponRubble,					PRIMARY_WEAPON);
+			d->m_ini.m_continuousWeaponRubble,					PRIMARY_WEAPON);
 		m_continuousWeaponRubble->reloadAmmo( obj );
 	}
 
-	if (d->m_initiallyActive)
+	if (d->m_ini.m_initiallyActive)
 	{
 		giveSelfUpgrade();
 	}
 
 	if (isUpgradeActive() &&
-			(d->m_continuousWeaponPristine != NULL ||
-			d->m_continuousWeaponDamaged != NULL ||
-			d->m_continuousWeaponReallyDamaged != NULL ||
-			d->m_continuousWeaponRubble != NULL))
+			(d->m_ini.m_continuousWeaponPristine != NULL ||
+			d->m_ini.m_continuousWeaponDamaged != NULL ||
+			d->m_ini.m_continuousWeaponReallyDamaged != NULL ||
+			d->m_ini.m_continuousWeaponRubble != NULL))
 	{
 		setWakeFrame(getObject(), UPDATE_SLEEP_NONE);
 	}
@@ -176,11 +176,11 @@ void FireWeaponWhenDamagedBehavior::onDamage( DamageInfo *damageInfo )
 	const FireWeaponWhenDamagedBehaviorModuleData* d = getFireWeaponWhenDamagedBehaviorModuleData();
 
 	// right type?
-	if (!getDamageTypeFlag(d->m_damageTypes, damageInfo->in.m_damageType))
+	if (!getDamageTypeFlag(d->m_ini.m_damageTypes, damageInfo->in.m_damageType))
 		return;
 
 	// right amount? (use actual [post-armor] damage dealt)
-	if (damageInfo->out.m_actualDamageDealt < d->m_damageAmount)
+	if (damageInfo->out.m_actualDamageDealt < d->m_ini.m_damageAmount)
 		return;
 
 	const Object *obj = getObject();

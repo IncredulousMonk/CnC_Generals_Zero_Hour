@@ -43,8 +43,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"always.h"
-#include	"pk.h"
-#include	"rndstraw.h"
+#include	"PK.H"
+#include	"RNDSTRAW.H"
 #include	<string.h>
 
 
@@ -222,7 +222,7 @@ void PKey::Generate(Straw & random, int bits, PKey & fastkey, PKey & slowkey)
 		/*
 		**	The exponent factors are easy to calculate from the prime numbers.
 		*/
-		BigInt e = Fast_Exponent();
+		BigInt e = (unsigned long)Fast_Exponent();
 		BigInt n = p * q;
 		BigInt pqmin = (p-(unsigned short)1)*(q-(unsigned short)1);
 		BigInt d = e.Inverse(pqmin);
@@ -260,7 +260,7 @@ void PKey::Generate(Straw & random, int bits, PKey & fastkey, PKey & slowkey)
 		**	Compare the pre and post processing buffer. A match indicates
 		**	a valid key pair.
 		*/
-		if (memcmp(before, after, fastkey.Plain_Block_Size()) == 0) break;
+		if (memcmp(before, after, (size_t)fastkey.Plain_Block_Size()) == 0) break;
 	}
 }
 
@@ -299,13 +299,13 @@ int PKey::Encrypt(void const * source, int slen, void * dest) const
 		**	Perform the encryption of the block.
 		*/
 		BigInt temp = 0;
-		memmove(&temp, source, Plain_Block_Size());
+		memmove(&temp, source, (size_t)Plain_Block_Size());
 		temp = temp.exp_b_mod_c(Exponent, Modulus);
 
 		/*
 		**	Move the cypher block to the destination.
 		*/
-		memmove(dest, &temp, Crypt_Block_Size());
+		memmove(dest, &temp, (size_t)Crypt_Block_Size());
 		slen -= Plain_Block_Size();
 		source = (char *)source + Plain_Block_Size();
 		dest = (char *)dest + Crypt_Block_Size();
@@ -351,13 +351,13 @@ int PKey::Decrypt(void const * source, int slen, void * dest) const
 		**	Perform the encryption.
 		*/
 		temp = 0;
-		memmove(&temp, source, Crypt_Block_Size());
+		memmove(&temp, source, (size_t)Crypt_Block_Size());
 		temp = temp.exp_b_mod_c(Exponent, Modulus);
 
 		/*
 		**	Move the cypher block to the destination.
 		*/
-		memmove(dest, &temp, Plain_Block_Size());
+		memmove(dest, &temp, (size_t)Plain_Block_Size());
 		slen -= Crypt_Block_Size();
 		source = (char *)source + Crypt_Block_Size();
 		dest = (char *)dest + Plain_Block_Size();

@@ -59,7 +59,9 @@ DockUpdateModuleData::DockUpdateModuleData( void )
 
 	};
 
-  p.add(dataFieldParse);
+	DockUpdateModuleData* self {static_cast<DockUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 

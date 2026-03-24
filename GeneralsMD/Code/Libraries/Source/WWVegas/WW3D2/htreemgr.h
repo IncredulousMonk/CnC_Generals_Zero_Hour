@@ -94,7 +94,7 @@ private:
 
 	int							NumTrees;
 	HTreeClass *				TreePtr[MAX_TREES];		// TODO: no no! make this dynamic...
-	HashTemplateClass<StringClass,HTreeClass*> TreeHash;
+	HashTemplateClass<StringClass,HTreeClass*> TreeHash {};
 
 };
 

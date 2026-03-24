@@ -48,7 +48,7 @@
 #include "refcount.h"
 #include "simplevec.h"
 #include "vector3.h"
-#include "vector3i.h"
+#include "Vector3i.h"
 #include "aaplane.h"
 #include "bittype.h"
 #include "colmath.h"
@@ -137,11 +137,11 @@ private:
 	*/
 	struct CullNodeStruct
 	{
-		Vector3				Min;
-		Vector3				Max;
+		Vector3				Min {};
+		Vector3				Max {};
 		
-		uint32				FrontOrPoly0;
-		uint32				BackOrPolyCount;
+		uint32				FrontOrPoly0 {};
+		uint32				BackOrPolyCount {};
 
 		// accessors
 		inline bool			Is_Leaf(void);				
@@ -208,11 +208,11 @@ private:
 
 	void						Update_Bounding_Boxes_Recursive(CullNodeStruct * node);
 
-	int						NodeCount;			// number of nodes in the tree
-	CullNodeStruct *		Nodes;				// array of nodes
-	int						PolyCount;			// number of polygons in the parent mesh (and the number of indexes in our array)
-	uint32 *					PolyIndices;		// linear array of polygon indices, nodes index into this array
-	MeshGeometryClass *	Mesh;					// pointer to the parent mesh (non-ref-counted; we are a member of this mesh)
+	int						NodeCount {};			// number of nodes in the tree
+	CullNodeStruct *		Nodes {};				// array of nodes
+	int						PolyCount {};			// number of polygons in the parent mesh (and the number of indexes in our array)
+	uint32 *				PolyIndices {};		// linear array of polygon indices, nodes index into this array
+	MeshGeometryClass *		Mesh {};					// pointer to the parent mesh (non-ref-counted; we are a member of this mesh)
 
 	friend class MeshClass;
 	friend class MeshGeometryClass;
@@ -223,9 +223,9 @@ private:
 
 inline int AABTreeClass::Compute_Ram_Size(void) 
 { 
-	return	NodeCount * sizeof(CullNodeStruct) +
-				PolyCount * sizeof(int) +
-				sizeof(AABTreeClass);
+	return	NodeCount * (int)sizeof(CullNodeStruct) +
+				PolyCount * (int)sizeof(int) +
+				(int)sizeof(AABTreeClass);
 }
 
 inline bool AABTreeClass::Cast_Ray(RayCollisionTestClass & raytest)
@@ -306,13 +306,13 @@ inline bool AABTreeClass::CullNodeStruct::Is_Leaf(void)
 inline int AABTreeClass::CullNodeStruct::Get_Front_Child(void)
 {
 	WWASSERT(!Is_Leaf());
-	return FrontOrPoly0;		// we shouldn't be calling this on a leaf and the leaf bit should be zero...
+	return (int)FrontOrPoly0;		// we shouldn't be calling this on a leaf and the leaf bit should be zero...
 }
 
 inline int AABTreeClass::CullNodeStruct::Get_Back_Child(void)
 {
 	WWASSERT(!Is_Leaf());
-	return BackOrPolyCount;
+	return (int)BackOrPolyCount;
 }
 
 inline int AABTreeClass::CullNodeStruct::Get_Poly0(void)
@@ -324,7 +324,7 @@ inline int AABTreeClass::CullNodeStruct::Get_Poly0(void)
 inline int AABTreeClass::CullNodeStruct::Get_Poly_Count(void)
 {
 	WWASSERT(Is_Leaf());
-	return BackOrPolyCount;
+	return (int)BackOrPolyCount;
 }
 
 inline void AABTreeClass::CullNodeStruct::Set_Front_Child(uint32 index)

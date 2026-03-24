@@ -84,32 +84,32 @@
  *   INIClass::Enumerate_Entries -- Count how many entries begin with a certain prefix followed by a range *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include	"always.h"
-#include	"b64pipe.h"
-#include	"b64straw.h"
-#include	"cstraw.h"
-#include	"ini.h"
-#include	"readline.h"
-#include	"trim.h"
-#include	"win.h"
-#include	"xpipe.h"
-#include	"xstraw.h"
-#include	<stdio.h>
+#include "always.h"
+#include "b64pipe.h"
+#include "b64straw.h"
+#include "cstraw.h"
+#include "INI.H"
+#include "readline.h"
+#include "trim.h"
+// #include "win.h"
+#include "XPIPE.H"
+#include "XSTRAW.H"
+#include <stdio.h>
 #include <malloc.h>
 #ifdef _UNIX
 #include <ctype.h>
 #endif
-#include "rawfile.h"
+// #include "rawfile.h"
 #include "ffactory.h"
 
 // recently transferred from ini.h
 #include "inisup.h"
-#include	"trect.h"
-#include	"wwfile.h"
-#include	"pk.h"
-#include	"pipe.h"
-#include	"wwstring.h"
-#include "widestring.h"
+#include "trect.h"
+#include "WWFILE.H"
+#include "PK.H"
+#include "PIPE.H"
+#include "wwstring.h"
+// #include "widestring.h"
 #include "nstrdup.h"
 
 #if defined(__WATCOMC__)
@@ -473,7 +473,7 @@ int INIClass::Load(Straw & ffile)
 				strtrim(divider);
 				if (!strlen(divider)) {
 					if (KeepBlankEntries)
-						divider = " ";
+						strcpy(divider, " ");
 					else
 						continue;
 				}
@@ -539,7 +539,7 @@ int INIClass::Load(Straw & ffile)
 				strtrim(divider);
 				if (!strlen(divider)) {
 					if (KeepBlankEntries)
-						divider = " ";
+						strcpy(divider, " ");
 					else
 						continue;
 				}
@@ -995,6 +995,11 @@ int INIClass::Get_UUBlock(char const * section, void * block, int len) const
  *=============================================================================================*/
 const WideStringClass& INIClass::Get_Wide_String(WideStringClass& new_string, char const * section, char const * entry, wchar_t const * defvalue) const
 {
+(void) section;
+(void) entry;
+(void) defvalue;
+DEBUG_CRASH(("INIClass::Get_Wide_String not yet implemented!\n"));
+#if 0
 	wchar_t out[1024];
 	char buffer[1024];
 
@@ -1010,6 +1015,7 @@ const WideStringClass& INIClass::Get_Wide_String(WideStringClass& new_string, ch
 		outcount += b64pipe.End();
 		new_string = out;
 	}
+#endif // if 0
 	return(new_string);
 }
 
@@ -1034,6 +1040,11 @@ const WideStringClass& INIClass::Get_Wide_String(WideStringClass& new_string, ch
  *=============================================================================================*/
 bool INIClass::Put_Wide_String(char const * section, char const * entry, wchar_t const * string)
 {
+(void) section;
+(void) entry;
+(void) string;
+DEBUG_CRASH(("INIClass::Put_Wide_String not yet implemented!\n"));
+#if 0
 	if (section == NULL || entry == NULL || string == NULL) {
 		return(false);
 	}
@@ -1045,7 +1056,7 @@ bool INIClass::Put_Wide_String(char const * section, char const * entry, wchar_t
 		Put_String(section, entry, "");
 	} else {
 
-		char *buffer = (char*) _alloca((len * 8) + 32);
+		char *buffer = (char*) alloca((size_t)(len * 8) + 32);
 
 		BufferStraw straw(string, (len*2) + 2);		// Convert from shorts to bytes, plus 2 for terminator.
 		Base64Straw bstraw(Base64Straw::ENCODE);
@@ -1061,6 +1072,7 @@ bool INIClass::Put_Wide_String(char const * section, char const * entry, wchar_t
 		WWASSERT(new_length != 0);
 		Put_String(section, entry, buffer);
 	}
+#endif // if 0
 	return(true);
 }
 
@@ -1076,7 +1088,7 @@ bool INIClass::Put_UUBlock(char const * section, char const *entry, void const *
 	Base64Straw bstraw(Base64Straw::ENCODE);
 	bstraw.Get_From(straw);
 
-	char *buffer = (char*) _alloca(len * 3);
+	char *buffer = (char*) alloca((size_t)len * 3);
 	int length = bstraw.Get(buffer, (len * 3) - 1);
 
 	buffer[length] = '\0';
@@ -1101,7 +1113,7 @@ int INIClass::Get_UUBlock(char const * section, char const *entry, void * block,
 	b64pipe.Put_To(&bpipe);
 
 	int total = 0;
-	char *buffer = (char*) _alloca(len * 3);
+	char *buffer = (char*) alloca((size_t)len * 3);
 
 	int length = Get_String(section, entry, "=", buffer, len*3);
 	int outcount = b64pipe.Put(buffer, length);
@@ -1323,10 +1335,10 @@ int INIClass::Get_Int(char const * section, char const * entry, int defvalue) co
 	if (entryptr && entryptr->Value != NULL) {
 
 		if (*entryptr->Value == '$') {
-			sscanf(entryptr->Value, "$%x", &defvalue);
+			sscanf(entryptr->Value, "$%x", (unsigned int*)&defvalue);
 		} else {
 			if (tolower(entryptr->Value[strlen(entryptr->Value)-1]) == 'h') {
-				sscanf(entryptr->Value, "%xh", &defvalue);
+				sscanf(entryptr->Value, "%xh", (unsigned int*)&defvalue);
 			} else {
 				defvalue = atoi(entryptr->Value);
 			}
@@ -1458,7 +1470,7 @@ int INIClass::Get_Hex(char const * section, char const * entry, int defvalue) co
 
 	INIEntry * entryptr = Find_Entry(section, entry);
 	if (entryptr && entryptr->Value != NULL) {
-		sscanf(entryptr->Value, "%x", &defvalue);
+		sscanf(entryptr->Value, "%x", (unsigned int*)&defvalue);
 	}
 	return(defvalue);
 }
@@ -1559,7 +1571,7 @@ double INIClass::Get_Double(char const * section, char const * entry, double def
 
 	INIEntry * entryptr = Find_Entry(section, entry);
 	if (entryptr != NULL && entryptr->Value != NULL) {
-		float val = defvalue;
+		double val = defvalue;
 		sscanf(entryptr->Value, "%lf", &val);
 		defvalue = val;
 		if (strchr(entryptr->Value, '%') != NULL) {
@@ -1723,7 +1735,7 @@ int INIClass::Get_String(char const * section, char const * entry, char const * 
 		buffer[0] = '\0';
 		return(0);
 	} else {
-		strncpy(buffer, defvalue, size);
+		strncpy(buffer, defvalue, (size_t)size);
 		buffer[size-1] = '\0';
 		strtrim(buffer);
 		return(strlen(buffer));
@@ -1813,7 +1825,7 @@ int INIClass::Get_List_Index(char const * section, char const * entry, int const
 	}
 
 	for (int lp = 0; list[lp]; lp++) {
-		if (stricmp(entryptr->Value, list[lp]) == 0) {
+		if (strcasecmp(entryptr->Value, list[lp]) == 0) {
 			return lp;
 		}
 		assert(lp < 1000);
@@ -1839,7 +1851,7 @@ int INIClass::Get_Int_Bitfield(char const * section, char const * entry, int def
 		for (lp = 0; list[lp]; lp++) {
 			// if this list entry matches our string token then we need
 			// to set this bit.
-			if (stricmp(token, list[lp]) == 0) {
+			if (strcasecmp(token, list[lp]) == 0) {
 				retval |= (1 << lp);
 				break;
 			}
@@ -2271,7 +2283,7 @@ PKey INIClass::Get_PKey(bool fast) const
 	**	exponent from the database.
 	*/
 	if (fast) {
-		BigInt exp = PKey::Fast_Exponent();
+		BigInt exp = (unsigned long)PKey::Fast_Exponent();
 		exp.DEREncode((unsigned char *)buffer);
 		key.Decode_Exponent(buffer);
 	} else {
@@ -2353,11 +2365,13 @@ int INIClass::CRC(const char *string)
  *=============================================================================================*/
 void INIClass::DuplicateCRCError(const char *message, const char *section, const char *entry)
 {
-	char buffer[512];
-	_snprintf(buffer, sizeof(buffer), "%s - Duplicate Entry \"%s\" in section \"%s\" (%s)\n", message,
-		entry, section, Filename);
+	// char buffer[512];
+	// _snprintf(buffer, sizeof(buffer), "%s - Duplicate Entry \"%s\" in section \"%s\" (%s)\n", message,
+	// 	entry, section, Filename);
 
-	OutputDebugString(buffer);
+	// OutputDebugString(buffer);
+	printf("%s - Duplicate Entry \"%s\" in section \"%s\" (%s)\n", message, entry, section, Filename);
+
 	assert(0);
 
 #ifdef NDEBUG
@@ -2372,4 +2386,3 @@ void	INIClass::Keep_Blank_Entries (bool keep_blanks)
 {
 	KeepBlankEntries = keep_blanks;
 }
-

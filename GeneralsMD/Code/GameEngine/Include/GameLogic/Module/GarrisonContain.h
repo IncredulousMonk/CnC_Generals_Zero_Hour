@@ -51,36 +51,43 @@ public:
 		Int count;
 	};
 
+	// MG: Cannot apply offsetof to GarrisonContainModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Bool m_doIHealObjects;
+		Real m_framesForFullHeal;
+		Bool m_mobileGarrison;
+		Bool m_immuneToClearBuildingAttacks;
+		Bool m_isEnclosingContainer;
+	};
 
-	Bool m_doIHealObjects;
-	Real m_framesForFullHeal;
-	Bool m_mobileGarrison;
-	Bool m_immuneToClearBuildingAttacks;
-  Bool m_isEnclosingContainer;
+	IniData m_ini {};
 
-	InitialRoster		m_initialRoster;
+	InitialRoster m_initialRoster {};
 
 	GarrisonContainModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    OpenContainModuleData::buildFieldParse(p);
+		OpenContainModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "MobileGarrison", INI::parseBool, NULL, offsetof( GarrisonContainModuleData, m_mobileGarrison ) },
-			{ "HealObjects", INI::parseBool, NULL, offsetof( GarrisonContainModuleData, m_doIHealObjects ) },
-			{ "TimeForFullHeal", INI::parseDurationReal, NULL, offsetof( GarrisonContainModuleData, m_framesForFullHeal ) },
-			{ "InitialRoster", parseInitialRoster, NULL, 0 },
-			{ "ImmuneToClearBuildingAttacks", INI::parseBool, NULL, offsetof( GarrisonContainModuleData, m_immuneToClearBuildingAttacks ) },
-      { "IsEnclosingContainer", INI::parseBool, NULL, offsetof( GarrisonContainModuleData, m_isEnclosingContainer ) },      
+			{ "MobileGarrison",					INI::parseBool,			NULL, offsetof( GarrisonContainModuleData::IniData, m_mobileGarrison ) },
+			{ "HealObjects",					INI::parseBool,			NULL, offsetof( GarrisonContainModuleData::IniData, m_doIHealObjects ) },
+			{ "TimeForFullHeal",				INI::parseDurationReal,	NULL, offsetof( GarrisonContainModuleData::IniData, m_framesForFullHeal ) },
+			{ "InitialRoster",					parseInitialRoster,		NULL, 0 },
+			{ "ImmuneToClearBuildingAttacks",	INI::parseBool,			NULL, offsetof( GarrisonContainModuleData::IniData, m_immuneToClearBuildingAttacks ) },
+			{ "IsEnclosingContainer",			INI::parseBool,			NULL, offsetof( GarrisonContainModuleData::IniData, m_isEnclosingContainer ) },
 
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		GarrisonContainModuleData* self {static_cast<GarrisonContainModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	};
 
-	static void parseInitialRoster( INI* ini, void *instance, void *store, const void* )
+	static void parseInitialRoster( INI* ini, void *instance, void* /* store */, const void* )
 	{
 		GarrisonContainModuleData* self = (GarrisonContainModuleData*)instance;
 		const char* name = ini->getNextToken();
@@ -108,27 +115,31 @@ public:
 	GarrisonContain( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	GarrisonContain(const GarrisonContain&) = delete;
+	GarrisonContain& operator=(const GarrisonContain&) = delete;
+
 	virtual UpdateSleepTime update( void );						///< called once per frame
 
 	virtual Bool isValidContainerFor( const Object* obj, Bool checkCapacity) const; // Garrison has an extra check forbidding any containment if ReallyDamaged
 	virtual Bool isGarrisonable() const { return true; }	///< can this unit be Garrisoned? (ick)
 	virtual Bool isBustable() const { return TRUE; }	///< can this container get busted by a bunkerbuster
-	virtual Bool isImmuneToClearBuildingAttacks() const { return getGarrisonContainModuleData()->m_immuneToClearBuildingAttacks; }
+	virtual Bool isImmuneToClearBuildingAttacks() const { return getGarrisonContainModuleData()->m_ini.m_immuneToClearBuildingAttacks; }
 	virtual Bool isHealContain() const { return false; } ///< true when container only contains units while healing (not a transport!)
 	virtual Bool isTunnelContain() const { return FALSE; }
 	virtual Bool isPassengerAllowedToFire(  ObjectID id = INVALID_ID  ) const;	///< Hey, can I shoot out of this container?
-  virtual Bool isEnclosingContainerFor( const Object *obj ) const { return getGarrisonContainModuleData()->m_isEnclosingContainer; }
-  virtual Bool isSpecialOverlordStyleContainer() const {return FALSE;}
+	virtual Bool isEnclosingContainerFor( const Object* /* obj */ ) const { return getGarrisonContainModuleData()->m_ini.m_isEnclosingContainer; }
+	virtual Bool isSpecialOverlordStyleContainer() const {return FALSE;}
 
 	virtual void removeAllContained( Bool exposeStealthUnits );	///< remove all contents of this open container
 
 	virtual void exitObjectViaDoor( Object *exitObj, ExitDoorType exitDoor );	///< exit one of our content items from us
-	virtual void exitObjectByBudding( Object *newObj, Object *budHost ) { return; };
+	virtual void exitObjectByBudding( Object* /* newObj */, Object* /* budHost */ ) { return; };
 	virtual void onContaining( Object *obj, Bool wasSelected );				///< object now contains 'obj'
 	virtual void onRemoving( Object *obj );					///< object no longer contains 'obj'
-  virtual void onSelling( void );
+	virtual void onSelling( void );
 
-  
+
 	// A Garrison Contain must eject all passengers when it crosses the ReallyDamaged threshold.
 	virtual void onBodyDamageStateChange( const DamageInfo* damageInfo, 
 																				BodyDamageType oldState, 
@@ -228,20 +239,20 @@ private:
 		MAX_GARRISON_POINT_CONDITIONS				///< leave this last
 	};
 
-	Team *							m_originalTeam;																///< our original team before we were garrisoned
+	Team *					m_originalTeam {};																///< our original team before we were garrisoned
 	GarrisonPointData		m_garrisonPointData[ MAX_GARRISON_POINTS ];		///< the garrison point placement data
-	Int									m_garrisonPointsInUse;
-	Coord3D							m_garrisonPoint[ MAX_GARRISON_POINT_CONDITIONS ][ MAX_GARRISON_POINTS ];		///< the garrison point positions (in world coords) for pristine, damaged, and really damaged
-	Coord3D							m_exitRallyPoint;												///< Point to rally at when exiting structure (if possible)
+	Int						m_garrisonPointsInUse {};
+	Coord3D					m_garrisonPoint[ MAX_GARRISON_POINT_CONDITIONS ][ MAX_GARRISON_POINTS ];		///< the garrison point positions (in world coords) for pristine, damaged, and really damaged
+	Coord3D					m_exitRallyPoint {};												///< Point to rally at when exiting structure (if possible)
 
-  std::vector<StationPointData> m_stationPointList; 
+	std::vector<StationPointData> m_stationPointList {};
 
-	Bool		m_stationGarrisonPointsInitialized;	///< DO NOT XFER THIS!!!   TRUE once we have loaded the pre-assigned garrison point positions from the art
-	Bool		m_garrisonPointsInitialized;							///< TRUE once we have loaded the garrison point positions from the art
-	Bool		m_hideGarrisonedStateFromNonallies;								///< if T, don't appear to be garrisoned (all stealthy)										
-	Bool		m_rallyValid;															///< TRUE when m_exitRallyPoint is valid
+	Bool		m_stationGarrisonPointsInitialized {};		///< DO NOT XFER THIS!!!   TRUE once we have loaded the pre-assigned garrison point positions from the art
+	Bool		m_garrisonPointsInitialized {};				///< TRUE once we have loaded the garrison point positions from the art
+	Bool		m_hideGarrisonedStateFromNonallies {};		///< if T, don't appear to be garrisoned (all stealthy)										
+	Bool		m_rallyValid {};							///< TRUE when m_exitRallyPoint is valid
 
-  EvacDisposition m_evacDisposition;
+	EvacDisposition m_evacDisposition {};
 
 };
 

@@ -100,10 +100,14 @@
 #endif
 
 #if (defined(_DEBUG) || defined(_INTERNAL)) 
+	#define W3D_STRING_IT(b)			#b
+	#define W3D_TOKEN_IT(a)				W3D_STRING_IT(a)
+	#define W3D_FILE_LINE				__FILE__ ":" W3D_TOKEN_IT(__LINE__)
+
 	#define MSGW3DNEW(MSG)				new( MSG, 0 )
 	#define MSGW3DNEWARRAY(MSG)			new( MSG, 0 )
-	#define W3DNEW						new("W3D_" __FILE__, 0)
-	#define W3DNEWARRAY					new("W3A_" __FILE__, 0)
+	#define W3DNEW						new("W3D_" W3D_FILE_LINE, 0)
+	#define W3DNEWARRAY					new("W3A_" W3D_FILE_LINE, 0)
 #else
 	#define MSGW3DNEW(MSG)				new
 	#define MSGW3DNEWARRAY(MSG)			new
@@ -257,5 +261,8 @@ template <class T> T max(T a,T b)
 #ifndef size_of
 #define size_of(typ,id) sizeof(((typ*)0)->id)
 #endif
+
+// _strlwr is not standard C.
+void _strlwr(char* p); // Implementation is in assetstatus.cpp.
 
 #endif

@@ -97,54 +97,47 @@ RailroadBehaviorModuleData::RailroadBehaviorModuleData( void )
 	m_ini.m_braking = 0.99f;
 	m_ini.m_friction = 0.97f;
 	m_ini.m_waitAtStationTime = 150;
-	m_ini.m_obj = this;
 }  // end RailroadBehaviorModuleData
 
 //-------------------------------------------------------------------------------------------------
 void RailroadBehaviorModuleData::parseBigMetalImpactDefaultSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
-	RailroadBehaviorModuleData* self = data->m_obj;
+	RailroadBehaviorModuleData* self = (RailroadBehaviorModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_bigMetalImpactDefaultSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void RailroadBehaviorModuleData::parseSmallMetalImpactDefaultSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
-	RailroadBehaviorModuleData* self = data->m_obj;
+	RailroadBehaviorModuleData* self = (RailroadBehaviorModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_smallMetalImpactDefaultSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void RailroadBehaviorModuleData::parseMeatyImpactDefaultSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
-	RailroadBehaviorModuleData* self = data->m_obj;
+	RailroadBehaviorModuleData* self = (RailroadBehaviorModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_meatyImpactDefaultSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void RailroadBehaviorModuleData::parseRunningSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
-	RailroadBehaviorModuleData* self = data->m_obj;
+	RailroadBehaviorModuleData* self = (RailroadBehaviorModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_runningSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void RailroadBehaviorModuleData::parseClicketyClackSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
-	RailroadBehaviorModuleData* self = data->m_obj;
+	RailroadBehaviorModuleData* self = (RailroadBehaviorModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_clicketyClackSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void RailroadBehaviorModuleData::parseWhistleSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	RailroadBehaviorModuleData::IniData* data = (RailroadBehaviorModuleData::IniData*) instance;
-	RailroadBehaviorModuleData* self = data->m_obj;
+	RailroadBehaviorModuleData* self = (RailroadBehaviorModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_whistleSound);
 }
 

@@ -84,8 +84,9 @@ public:
 
 	HTreeClass(void);
 	HTreeClass(const HTreeClass & src);
+	HTreeClass& operator=(const HTreeClass&) = delete;
 	~HTreeClass(void);
-	
+
 	int					Load_W3D(ChunkLoadClass & cload);
 	void					Init_Default(void);
 

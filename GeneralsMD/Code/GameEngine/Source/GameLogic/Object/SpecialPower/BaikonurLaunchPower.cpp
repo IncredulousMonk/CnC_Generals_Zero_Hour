@@ -58,16 +58,18 @@ BaikonurLaunchPowerModuleData::BaikonurLaunchPowerModuleData( void )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void BaikonurLaunchPowerModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void BaikonurLaunchPowerModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	SpecialPowerModuleData::buildFieldParse( p );
+	SpecialPowerModuleData::buildFieldParse(what, p);
 	
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "DetonationObject", INI::parseAsciiString, NULL, offsetof( BaikonurLaunchPowerModuleData, m_detonationObject ) },
+		{ "DetonationObject", INI::parseAsciiString, NULL, offsetof( BaikonurLaunchPowerModuleData::IniData, m_detonationObject ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	BaikonurLaunchPowerModuleData* self {static_cast<BaikonurLaunchPowerModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 	
 }  // end buildFieldParse
 
@@ -109,7 +111,7 @@ void BaikonurLaunchPower::doSpecialPowerAtLocation( const Coord3D *loc, Real ang
 	SpecialPowerModule::doSpecialPowerAtLocation( loc, angle, commandOptions );
 
 	//Create the detonation
-	const ThingTemplate *thing = TheThingFactory->findTemplate( data->m_detonationObject );
+	const ThingTemplate *thing = TheThingFactory->findTemplate( data->m_ini.m_detonationObject );
 	if( thing )
 	{
 		Object *detonation = TheThingFactory->newObject( thing, getObject()->getTeam() );

@@ -1014,20 +1014,20 @@ Int MemoryPoolSingleBlock::debugSingleBlockReportLeak(const char* owner)
 	if (m_debugLiteralTagString == FREE_SINGLEBLOCK_TAG_STRING)
 		return 0;
 
-	if (strcmp(m_debugLiteralTagString, "STR_AsciiString::ensureUniqueBufferOfSize") == 0)
-	{
-		/** @todo srj -- we leak a bunch of these for some reason (probably due to leaking Win32LocalFile)
-			so just ignore 'em for now... figure out later. */
-	}
-	else if (strstr(m_debugLiteralTagString, "Win32LocalFileSystem.cpp") != NULL)
-	{
-		/** @todo srj -- we leak a bunch of these for some reason 
-			so just ignore 'em for now... figure out later. */
-	}
-	else
-	{
+	// if (strcmp(m_debugLiteralTagString, "STR_AsciiString::ensureUniqueBufferOfSize") == 0)
+	// {
+	// 	/** @todo srj -- we leak a bunch of these for some reason (probably due to leaking Win32LocalFile)
+	// 		so just ignore 'em for now... figure out later. */
+	// }
+	// else if (strstr(m_debugLiteralTagString, "Win32LocalFileSystem.cpp") != NULL)
+	// {
+	// 	/** @todo srj -- we leak a bunch of these for some reason 
+	// 		so just ignore 'em for now... figure out later. */
+	// }
+	// else
+	// {
 		DEBUG_LOG(("Leaked a block of size %d, tagstring \"%s\", from pool/dma %s\n",m_logicalSize,m_debugLiteralTagString,owner));
-	}
+	// }
 
 	#ifdef MEMORYPOOL_SINGLEBLOCK_GETS_STACKTRACE
 	if (!TheGlobalData || TheGlobalData->m_checkForLeaks)
@@ -3669,7 +3669,7 @@ void shutdownMemoryManager()
 //-----------------------------------------------------------------------------
 void* createW3DMemPool(const char *poolName, size_t allocationSize)
 {
-	DEBUG_LOG(("Creating the W3D memory pool: %s\n", poolName));
+	DEBUG_LOG(("Creating the W3D memory pool: %s/%ld\n", poolName, allocationSize));
 	++theLinkTester;
 	preMainInitMemoryManager();
 	MemoryPool* pool = TheMemoryPoolFactory->createMemoryPool(poolName, allocationSize, 0, 0);

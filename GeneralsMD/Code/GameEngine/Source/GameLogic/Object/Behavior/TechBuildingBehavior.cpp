@@ -28,7 +28,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
-#include "PreRTS.H"
+#include "PreRTS.h"
 #include "Common/Player.h"
 #include "Common/PlayerList.h"
 #include "Common/ThingTemplate.h"
@@ -42,24 +42,26 @@
 // ------------------------------------------------------------------------------------------------
 TechBuildingBehaviorModuleData::TechBuildingBehaviorModuleData( void )
 {
-	m_pulseFX = NULL;
-	m_pulseFXRate = 0;
+	m_ini.m_pulseFX = NULL;
+	m_ini.m_pulseFXRate = 0;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void TechBuildingBehaviorModuleData::buildFieldParse( MultiIniFieldParse &p )
+/*static*/ void TechBuildingBehaviorModuleData::buildFieldParse(void* what,  MultiIniFieldParse &p)
 {
-  UpdateModuleData::buildFieldParse( p );
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "PulseFX",								INI::parseFXList,								NULL,	offsetof( TechBuildingBehaviorModuleData, m_pulseFX ) },
-		{ "PulseFXRate",						INI::parseDurationUnsignedInt,	NULL,	offsetof( TechBuildingBehaviorModuleData, m_pulseFXRate ) },
+		{ "PulseFX",		INI::parseFXList,				NULL,	offsetof( TechBuildingBehaviorModuleData::IniData, m_pulseFX ) },
+		{ "PulseFXRate",	INI::parseDurationUnsignedInt,	NULL,	offsetof( TechBuildingBehaviorModuleData::IniData, m_pulseFXRate ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add( dataFieldParse );
+	TechBuildingBehaviorModuleData* self {static_cast<TechBuildingBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -105,10 +107,10 @@ UpdateSleepTime TechBuildingBehavior::update( void )
 	}
 
 	// if we have a pulse fx, and are owned, sleep only a little while, otherwise sleep forever
-	if (d->m_pulseFX != NULL && d->m_pulseFXRate > 0 && captured)
+	if (d->m_ini.m_pulseFX != NULL && d->m_ini.m_pulseFXRate > 0 && captured)
 	{
-		FXList::doFXObj( d->m_pulseFX, us );
-		return UPDATE_SLEEP(d->m_pulseFXRate);
+		FXList::doFXObj( d->m_ini.m_pulseFX, us );
+		return UPDATE_SLEEP(d->m_ini.m_pulseFXRate);
 	}
 	else
 	{
@@ -119,7 +121,7 @@ UpdateSleepTime TechBuildingBehavior::update( void )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void TechBuildingBehavior::onDie( const DamageInfo *damageInfo )
+void TechBuildingBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 
 	//
@@ -136,7 +138,7 @@ void TechBuildingBehavior::onDie( const DamageInfo *damageInfo )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void TechBuildingBehavior::onCapture( Player *oldOwner, Player *newOwner )
+void TechBuildingBehavior::onCapture(Player* /* oldOwner */, Player* /* newOwner */)
 {
 
 	// wake up next frame so we can re-evaluate our captured status

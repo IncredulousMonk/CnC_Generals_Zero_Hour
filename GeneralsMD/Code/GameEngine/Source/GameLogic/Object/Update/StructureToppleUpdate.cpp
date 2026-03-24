@@ -30,6 +30,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
+#define DEFINE_STRUCTURE_TOPPLE_PHASE_NAMES
 #include "Common/Thing.h"
 #include "Common/ThingTemplate.h"
 #include "Common/INI.h"
@@ -95,7 +96,7 @@ static void parseOCL( INI* ini, void *instance, void * /*store*/, const void* /*
 	for (const char* token = ini->getNextToken(); token != NULL; token = ini->getNextTokenOrNull())
 	{
 		const ObjectCreationList *ocl = TheObjectCreationListStore->findObjectCreationList(token);	// could be null! this is OK!
-		self->m_ocls[stphase].push_back(ocl);
+		self->m_ini.m_ocls[stphase].push_back(ocl);
 	}
 }
 
@@ -107,35 +108,37 @@ static void parseAngleFX(INI* ini, void *instance, void * /* store */, const voi
 	INI::parseReal(ini, instance, &(info.angle), NULL);
 	info.angle = info.angle * PI / 180.0f; // convert from degrees to radians.
 	INI::parseFXList(ini, instance, &(info.fxList), NULL);
-	self->angleFX.push_back(info);
+	self->m_ini.angleFX.push_back(info);
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void StructureToppleUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void StructureToppleUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "MinToppleDelay",						INI::parseDurationUnsignedInt,		NULL, offsetof( StructureToppleUpdateModuleData, m_minToppleDelay ) },
-		{ "MaxToppleDelay",						INI::parseDurationUnsignedInt,		NULL, offsetof( StructureToppleUpdateModuleData, m_maxToppleDelay ) },
-		{ "MinToppleBurstDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( StructureToppleUpdateModuleData, m_minToppleBurstDelay ) },
-		{ "MaxToppleBurstDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( StructureToppleUpdateModuleData, m_maxToppleBurstDelay ) },
-		{ "StructuralIntegrity",			INI::parseReal,										NULL, offsetof( StructureToppleUpdateModuleData, m_structuralIntegrity ) },
-		{ "StructuralDecay",					INI::parseReal,										NULL, offsetof( StructureToppleUpdateModuleData, m_structuralDecay ) },
-		{ "DamageFXTypes",						INI::parseDamageTypeFlags,				NULL, offsetof( StructureToppleUpdateModuleData, m_damageFXTypes ) },
-		{ "TopplingFX",								INI::parseFXList,									NULL, offsetof( StructureToppleUpdateModuleData, m_toppleFXList ) },
-		{ "ToppleDelayFX",						INI::parseFXList,									NULL, offsetof( StructureToppleUpdateModuleData, m_toppleDelayFXList ) },
-		{ "ToppleStartFX",						INI::parseFXList,									NULL, offsetof( StructureToppleUpdateModuleData, m_toppleStartFXList ) },
-		{ "ToppleDoneFX",							INI::parseFXList,									NULL, offsetof( StructureToppleUpdateModuleData, m_toppleDoneFXList ) },
-		{ "CrushingFX",								INI::parseFXList,									NULL, offsetof( StructureToppleUpdateModuleData, m_crushingFXList ) },
-		{ "CrushingWeaponName",				INI::parseAsciiString,						NULL, offsetof( StructureToppleUpdateModuleData, m_crushingWeaponName ) },
-		{ "OCL",											parseOCL,													NULL, 0 },
-		{ "AngleFX",									parseAngleFX,											NULL, 0 },
+		{ "MinToppleDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_minToppleDelay ) },
+		{ "MaxToppleDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_maxToppleDelay ) },
+		{ "MinToppleBurstDelay",	INI::parseDurationUnsignedInt,	NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_minToppleBurstDelay ) },
+		{ "MaxToppleBurstDelay",	INI::parseDurationUnsignedInt,	NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_maxToppleBurstDelay ) },
+		{ "StructuralIntegrity",	INI::parseReal,					NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_structuralIntegrity ) },
+		{ "StructuralDecay",		INI::parseReal,					NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_structuralDecay ) },
+		{ "DamageFXTypes",			INI::parseDamageTypeFlags,		NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_damageFXTypes ) },
+		{ "TopplingFX",				INI::parseFXList,				NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_toppleFXList ) },
+		{ "ToppleDelayFX",			INI::parseFXList,				NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_toppleDelayFXList ) },
+		{ "ToppleStartFX",			INI::parseFXList,				NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_toppleStartFXList ) },
+		{ "ToppleDoneFX",			INI::parseFXList,				NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_toppleDoneFXList ) },
+		{ "CrushingFX",				INI::parseFXList,				NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_crushingFXList ) },
+		{ "CrushingWeaponName",		INI::parseAsciiString,			NULL, offsetof( StructureToppleUpdateModuleData::IniData, m_crushingWeaponName ) },
+		{ "OCL",					parseOCL,						NULL, 0 },
+		{ "AngleFX",				parseAngleFX,					NULL, 0 },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
-	p.add(DieMuxData::getFieldParse(), offsetof( StructureToppleUpdateModuleData, m_dieMuxData ));
+	StructureToppleUpdateModuleData* self {static_cast<StructureToppleUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
+	p.add(DieMuxData::getFieldParse(), offset + offsetof( StructureToppleUpdateModuleData::IniData, m_dieMuxData ));
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -147,7 +150,7 @@ void StructureToppleUpdate::beginStructureTopple(const DamageInfo *damageInfo)
 	if (d)
 	{
 		UnsignedInt now = TheGameLogic->getFrame();
-		m_toppleFrame = now + GameLogicRandomValue(d->m_minToppleDelay, d->m_maxToppleDelay);
+		m_toppleFrame = now + (UnsignedInt)GameLogicRandomValue(d->m_ini.m_minToppleDelay, d->m_ini.m_maxToppleDelay);
 
 		Object *attacker = TheGameLogic->findObjectByID(damageInfo->in.m_sourceID);
 		Object *building = getObject();
@@ -179,7 +182,7 @@ void StructureToppleUpdate::beginStructureTopple(const DamageInfo *damageInfo)
 		m_delayBurstLocation.z = TheTerrainLogic->getGroundHeight(m_delayBurstLocation.x, m_delayBurstLocation.y);
 
 		doToppleStartFX(building, damageInfo);
-		m_nextBurstFrame = now + GameClientRandomValue(d->m_minToppleBurstDelay, d->m_maxToppleBurstDelay);
+		m_nextBurstFrame = (Int)now + GameClientRandomValue(d->m_ini.m_minToppleBurstDelay, d->m_ini.m_maxToppleBurstDelay);
 
 		m_toppleState = TOPPLESTATE_WAITINGFORTOPPLESTART;
 
@@ -192,7 +195,7 @@ void StructureToppleUpdate::beginStructureTopple(const DamageInfo *damageInfo)
 void StructureToppleUpdate::onDie( const DamageInfo *damageInfo )
 {
 	const StructureToppleUpdateModuleData* d = getStructureToppleUpdateModuleData();
-	if (!d->m_dieMuxData.isDieApplicable(getObject(), damageInfo))
+	if (!d->m_ini.m_dieMuxData.isDieApplicable(getObject(), damageInfo))
 		return;
 
 	AIUpdateInterface *ai = getObject()->getAIUpdateInterface();
@@ -226,14 +229,14 @@ UpdateSleepTime StructureToppleUpdate::update( void )
 	// when it starts toppling over.
 	if (m_toppleState == TOPPLESTATE_WAITINGFORTOPPLESTART) {
 		UnsignedInt now = TheGameLogic->getFrame();
-		if (now >= m_nextBurstFrame) {
+		if ((Int)now >= m_nextBurstFrame) {
 			doToppleDelayBurstFX();
 			// This uses a game client random value because the delay bursts are purely visual and aural effects.
-			m_nextBurstFrame = now + GameClientRandomValue(d->m_minToppleBurstDelay, d->m_maxToppleBurstDelay);
+			m_nextBurstFrame = (Int)now + GameClientRandomValue(d->m_ini.m_minToppleBurstDelay, d->m_ini.m_maxToppleBurstDelay);
 		}
 		if (now >= m_toppleFrame) {
 			m_toppleState = TOPPLESTATE_TOPPLING;
-			m_structuralIntegrity = d->m_structuralIntegrity;
+			m_structuralIntegrity = d->m_ini.m_structuralIntegrity;
 		}
 	}
 
@@ -247,7 +250,7 @@ UpdateSleepTime StructureToppleUpdate::update( void )
 
 		// doesn't make sense to have a structural integrity less than zero.
 		if (m_structuralIntegrity > 0.0f) {
-			m_structuralIntegrity *= d->m_structuralDecay;
+			m_structuralIntegrity *= d->m_ini.m_structuralDecay;
 			if (m_structuralIntegrity < 0.0f) {
 				m_structuralIntegrity = 0.0f;
 			}
@@ -268,16 +271,16 @@ UpdateSleepTime StructureToppleUpdate::update( void )
 			applyCrushingDamage(0.0f);
 			doPhaseStuff(STPHASE_FINAL, getObject()->getPosition());
 
-			if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
-				FXList::doFXObj(d->m_toppleDoneFXList, getObject());
+			if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
+				FXList::doFXObj(d->m_ini.m_toppleDoneFXList, getObject());
 
 			m_toppleFrame = TheGameLogic->getFrame();
 		}
 
-		if (now >= m_nextBurstFrame) {
+		if ((Int)now >= m_nextBurstFrame) {
 			doToppleDelayBurstFX();
 			// This uses a game client random value because the delay bursts are purely visual and aural effects.
-			m_nextBurstFrame = now + GameClientRandomValue(d->m_minToppleBurstDelay, d->m_maxToppleBurstDelay);
+			m_nextBurstFrame = (Int)now + GameClientRandomValue(d->m_ini.m_minToppleBurstDelay, d->m_ini.m_maxToppleBurstDelay);
 		}
 
 		Object *building = getObject();
@@ -342,11 +345,11 @@ void StructureToppleUpdate::doAngleFX(Real curAngle, Real newAngle)
 	const StructureToppleUpdateModuleData *d = getStructureToppleUpdateModuleData();
 	const DamageInfo *lastDamageInfo = getObject()->getBodyModule()->getLastDamageInfo();
 
-	for (std::vector<AngleFXInfo>::const_iterator it = d->angleFX.begin(); it != d->angleFX.end(); ++it)
+	for (std::vector<AngleFXInfo>::const_iterator it = d->m_ini.angleFX.begin(); it != d->m_ini.angleFX.end(); ++it)
 	{
 		if ((it->angle > curAngle) && (it->angle <= newAngle)) 
 		{
-			if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
+			if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
 				FXList::doFXObj(it->fxList, getObject());
 		}
 	}
@@ -388,7 +391,7 @@ void StructureToppleUpdate::applyCrushingDamage(Real theta)
 	Real facingWidth = temp3D.length() / 2;
 
 	// Get the crushing weapon.
-	const WeaponTemplate* wt = TheWeaponStore->findWeaponTemplate(d->m_crushingWeaponName);
+	const WeaponTemplate* wt = TheWeaponStore->findWeaponTemplate(d->m_ini.m_crushingWeaponName);
 	if (wt == NULL) {
 		return;
 	}
@@ -402,8 +405,9 @@ void StructureToppleUpdate::applyCrushingDamage(Real theta)
 	 */
 	Real jcos;
 	Real jsin;
+	Real j;
 //	Coord3D target;
-	for (Real j = m_lastCrushedLocation; j < maxDistance; j += WEAPON_SPACING_PERPENDICULAR) {
+	for (j = m_lastCrushedLocation; j < maxDistance; j += WEAPON_SPACING_PERPENDICULAR) {
 		jcos = j * Cos(toppleAngle);
 		jsin = j * Sin(toppleAngle);
 		doDamageLine(building, wt, jcos, jsin, facingWidth, toppleAngle);
@@ -439,8 +443,8 @@ void StructureToppleUpdate::doDamageLine(Object *building, const WeaponTemplate*
 	  TheWeaponStore->createAndFireTempWeapon(wt, building, &target);
 
 		// do the crushing particle effects
-		if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
-			FXList::doFXPos(d->m_crushingFXList, &target);
+		if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
+			FXList::doFXPos(d->m_ini.m_crushingFXList, &target);
 	}
 
 	// Make sure there are weapons fired and FX done on the edge of the building.
@@ -451,8 +455,8 @@ void StructureToppleUpdate::doDamageLine(Object *building, const WeaponTemplate*
   TheWeaponStore->createAndFireTempWeapon(wt, building, &target);
 
 	// do the crushing particle effects
-	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
-		FXList::doFXPos(d->m_crushingFXList, &target);
+	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
+		FXList::doFXPos(d->m_ini.m_crushingFXList, &target);
 
 	// Do the flying debris for this line.
 	target.x = building->getPosition()->x + jcos;
@@ -464,13 +468,13 @@ void StructureToppleUpdate::doDamageLine(Object *building, const WeaponTemplate*
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void StructureToppleUpdate::doToppleStartFX(Object *building, const DamageInfo *damageInfo) 
+void StructureToppleUpdate::doToppleStartFX(Object* building, const DamageInfo* /* damageInfo */) 
 {
 	const StructureToppleUpdateModuleData *d = getStructureToppleUpdateModuleData();
 	const DamageInfo *lastDamageInfo = getObject()->getBodyModule()->getLastDamageInfo();
 
-	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )	
-		FXList::doFXPos(d->m_toppleStartFXList, building->getPosition());
+	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )	
+		FXList::doFXPos(d->m_ini.m_toppleStartFXList, building->getPosition());
 
 	doPhaseStuff(STPHASE_INITIAL, building->getPosition());
 }
@@ -483,16 +487,16 @@ void StructureToppleUpdate::doToppleDelayBurstFX()
 	const DamageInfo *lastDamageInfo = getObject()->getBodyModule()->getLastDamageInfo();
 
 	DEBUG_LOG(("Doing topple delay burst on frame %d\n", TheGameLogic->getFrame()));
-	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
-		FXList::doFXPos(d->m_toppleDelayFXList, &m_delayBurstLocation);
+	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
+		FXList::doFXPos(d->m_ini.m_toppleDelayFXList, &m_delayBurstLocation);
 
 	Object *building = getObject();
 	Drawable *drawable = building->getDrawable();
 
-	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
+	if( lastDamageInfo == NULL || getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
 	{
 
-		for (std::vector<FXBoneInfo>::const_iterator it = d->fxbones.begin(); it != d->fxbones.end(); ++it)
+		for (std::vector<FXBoneInfo>::const_iterator it = d->m_ini.fxbones.begin(); it != d->m_ini.fxbones.end(); ++it)
 		{
 			ParticleSystem *sys = TheParticleSystemManager->createParticleSystem(it->particleSystemTemplate);
 			if (sys != NULL) 
@@ -516,9 +520,9 @@ void StructureToppleUpdate::doToppleDelayBurstFX()
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-inline Bool inList(Int value, Int count, const Int idxList[])
+inline Bool inList(UnsignedInt value, UnsignedInt count, const UnsignedInt idxList[])
 {
-	for (Int j = 0; j < count; ++j)
+	for (UnsignedInt j = 0; j < count; ++j)
 	{
 		if (idxList[j] == value)
 			return true;
@@ -528,15 +532,15 @@ inline Bool inList(Int value, Int count, const Int idxList[])
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-static void buildNonDupRandomIndexList(Int range, Int count, Int idxList[])
+static void buildNonDupRandomIndexList(UnsignedInt range, UnsignedInt count, UnsignedInt idxList[])
 {
-	for (Int i = 0; i < count; ++i)
+	for (UnsignedInt i = 0; i < count; ++i)
 	{
-		Int idx;
+		UnsignedInt idx;
 		do
 		{
-			idx = GameLogicRandomValue(0, range-1);
-		} 
+			idx = GameLogicRandomValueUnsigned(0, range-1);
+		}
 		while (inList(idx, i, idxList));
 		idxList[i] = idx;
 	}
@@ -547,19 +551,19 @@ static void buildNonDupRandomIndexList(Int range, Int count, Int idxList[])
 void StructureToppleUpdate::doPhaseStuff(StructureTopplePhaseType stphase, const Coord3D *target)
 {
 	const StructureToppleUpdateModuleData* d = getStructureToppleUpdateModuleData();
-	Int i, idx, count, listSize;
-	Int idxList[MAX_IDX];
+	UnsignedInt i, idx, count, listSize;
+	UnsignedInt idxList[MAX_IDX];
 
-	listSize = d->m_ocls[stphase].size();
+	listSize = d->m_ini.m_ocls[stphase].size();
 	if (listSize > 0)
 	{
-		count = d->m_oclCount[stphase];
+		count = d->m_ini.m_oclCount[stphase];
 		buildNonDupRandomIndexList(listSize, count, idxList);
 		for (i = 0; i < count; ++i)
 		{
 			idx = idxList[i];
-			const OCLVec& v = d->m_ocls[stphase];
-			DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+			const OCLVec& v = d->m_ini.m_ocls[stphase];
+			DEBUG_ASSERTCRASH(idx<v.size(),("bad idx"));
 			const ObjectCreationList* ocl = v[idx];
 			ObjectCreationList::create(ocl, getObject(), target, NULL, INVALID_ANGLE );
 		}

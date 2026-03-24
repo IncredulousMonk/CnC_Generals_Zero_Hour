@@ -128,7 +128,7 @@
 
 #include "hlod.h"
 #include "assetmgr.h"
-#include "hmdldef.h"
+#include "hmdldef.H"
 #include "w3derr.h"
 #include "chunkio.h"
 #include "predlod.h"
@@ -159,12 +159,12 @@ public:
 		memset(Name,0,sizeof(Name));
 	}
 
-	bool					operator == (const ProxyRecordClass & that) { return false; }
+	bool					operator == (const ProxyRecordClass & /* that */) { return false; }
 	bool					operator != (const ProxyRecordClass & that) { return !(*this == that); }
 
 	void					Init(const W3dHLodSubObjectStruct & w3d_data)
 	{
-		BoneIndex = w3d_data.BoneIndex;
+		BoneIndex = (int)w3d_data.BoneIndex;
 		strncpy(Name,w3d_data.Name,sizeof(Name));
 	}
 
@@ -482,16 +482,16 @@ WW3DErrorType HLodDefClass::Save_Header(ChunkSaveClass &csave)
 	if (csave.Begin_Chunk (W3D_CHUNK_HLOD_HEADER) == TRUE) {
 		
 		// Fill the header structure
-		W3dHLodHeaderStruct header = { 0 };
+		W3dHLodHeaderStruct header {};
 		header.Version = W3D_CURRENT_HLOD_VERSION;
-		header.LodCount = LodCount;
+		header.LodCount = (uint32)LodCount;
 		
 		// Copy the name to the header
-		::lstrcpyn (header.Name, Name, sizeof (header.Name));
+		::strncpy (header.Name, Name, sizeof (header.Name));
 		header.Name[sizeof (header.Name) - 1] = 0;
 
 		// Copy the hierarchy tree name to the header
-		::lstrcpyn (header.HierarchyName, HierarchyTreeName, sizeof (header.HierarchyName));
+		::strncpy (header.HierarchyName, HierarchyTreeName, sizeof (header.HierarchyName));
 		header.HierarchyName[sizeof (header.HierarchyName) - 1] = 0;		
 
 		// Write the header out to the chunk
@@ -658,9 +658,9 @@ bool HLodDefClass::read_header(ChunkLoadClass & cload)
 	cload.Close_Chunk();
 
 	// Copy the name into our internal variable
-	Name = ::_strdup(header.Name);
+	Name = ::strdup(header.Name);
 	HierarchyTreeName = ::strdup(header.HierarchyName);
-	LodCount = header.LodCount;
+	LodCount = (int)header.LodCount;
 	Lod = W3DNEWARRAY SubObjectArrayClass[LodCount];
 	return true;
 }
@@ -697,7 +697,7 @@ bool HLodDefClass::read_proxy_array(ChunkLoadClass & cload)
 	
 	if (!cload.Close_Chunk()) return false;
 
-	ProxyArray = NEW_REF(ProxyArrayClass,(header.ModelCount));
+	ProxyArray = NEW_REF(ProxyArrayClass,((int)header.ModelCount));
 
 	/*
 	** Read each sub object definition
@@ -811,7 +811,7 @@ bool HLodDefClass::SubObjectArrayClass::Load_W3D(ChunkLoadClass & cload)
 	
 	if (!cload.Close_Chunk()) return false;
 
-	ModelCount = header.ModelCount;
+	ModelCount = (int)header.ModelCount;
 	MaxScreenSize = header.MaxScreenSize;
 	ModelName = W3DNEWARRAY char * [ModelCount];
 	BoneIndex = W3DNEWARRAY int [ModelCount];
@@ -829,7 +829,7 @@ bool HLodDefClass::SubObjectArrayClass::Load_W3D(ChunkLoadClass & cload)
 		if (!cload.Close_Chunk()) return false;
 
 		ModelName[imodel] = strdup(subobjdef.Name);
-		BoneIndex[imodel] = subobjdef.BoneIndex;
+		BoneIndex[imodel] = (int)subobjdef.BoneIndex;
 	}
 	return true;
 }
@@ -857,8 +857,8 @@ bool HLodDefClass::SubObjectArrayClass::Save_W3D(ChunkSaveClass &csave)
 		// Begin a chunk that identifies the LOD header
 		if (csave.Begin_Chunk (W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER) == TRUE) {
 
-			W3dHLodArrayHeaderStruct header = { 0 };
-			header.ModelCount = ModelCount;
+			W3dHLodArrayHeaderStruct header {};
+			header.ModelCount = (uint32)ModelCount;
 			header.MaxScreenSize = MaxScreenSize;
 			
 			// Write the LOD header structure out to the chunk
@@ -879,11 +879,11 @@ bool HLodDefClass::SubObjectArrayClass::Save_W3D(ChunkSaveClass &csave)
 				ret_val &= (csave.Begin_Chunk (W3D_CHUNK_HLOD_SUB_OBJECT) == TRUE);
 				if (ret_val) {
 					
-					W3dHLodSubObjectStruct info = { 0 };
-					info.BoneIndex = BoneIndex[index];
+					W3dHLodSubObjectStruct info {};
+					info.BoneIndex = (uint32)BoneIndex[index];
 					
 					// Copy this model name into the structure
-					::lstrcpyn (info.Name, ModelName[index], sizeof (info.Name));
+					::strncpy (info.Name, ModelName[index], sizeof (info.Name));
 					info.Name[sizeof (info.Name) - 1] = 0;
 
 					// Write the LOD sub-obj structure out to the chunk
@@ -1516,7 +1516,7 @@ const SphereClass &HLodClass::Get_Bounding_Sphere(void) const
 #else
 		Get_Transform().mulVector3(sphere.Center, CachedBoundingSphere.Center);
 #endif
-		CachedBoundingSphere.Radius = sphere.Radius;	
+		CachedBoundingSphere.Radius = sphere.Radius;
 	} else {
 		Animatable3DObjClass::Get_Bounding_Sphere ();
 	}
@@ -1980,8 +1980,8 @@ void HLodClass::Include_NULL_Lod(bool include)
 		// Now resize the value and cost arrays
 		float *temp_cost = W3DNEWARRAY float[LodCount];
 		float *temp_value = W3DNEWARRAY float[LodCount + 1];
-		::memcpy (temp_cost, &Cost[1], sizeof (float) * LodCount);
-		::memcpy (temp_value, &Value[1], sizeof (float) * (LodCount + 1));
+		::memcpy (temp_cost, &Cost[1], sizeof (float) * (size_t)LodCount);
+		::memcpy (temp_value, &Value[1], sizeof (float) * (size_t)(LodCount + 1));
 
 		delete [] Lod;
 		delete [] Value;
@@ -2007,8 +2007,8 @@ void HLodClass::Include_NULL_Lod(bool include)
 			// Now resize the value and cost arrays
 			float *temp_cost = W3DNEWARRAY float[LodCount + 1];
 			float *temp_value = W3DNEWARRAY float[LodCount + 2];
-			::memcpy (&temp_cost[1], Cost, sizeof (float) * LodCount);
-			::memcpy (&temp_value[1], Value, sizeof (float) * (LodCount + 1));
+			::memcpy (&temp_cost[1], Cost, sizeof (float) * (size_t)LodCount);
+			::memcpy (&temp_value[1], Value, sizeof (float) * (size_t)(LodCount + 1));
 
 			delete [] Lod;
 			delete [] Value;
@@ -2185,6 +2185,9 @@ void HLodClass::Render(RenderInfoClass & rinfo)
  *=============================================================================================*/
 void HLodClass::Special_Render(SpecialRenderInfoClass & rinfo)
 {
+(void) rinfo;
+DEBUG_LOG(("HLodClass::Special_Render not yet implemented!\n"));
+#if 0
 	int i;
 	if (Is_Not_Hidden_At_All() == false) {
 		return;
@@ -2204,6 +2207,7 @@ void HLodClass::Special_Render(SpecialRenderInfoClass & rinfo)
 	for (i = 0; i < AdditionalModels.Count(); i++) {
 		AdditionalModels[i].Model->Special_Render(rinfo);
 	}
+#endif // if 0
 }
 
 
@@ -2860,6 +2864,9 @@ bool HLodClass::Intersect_OBBox(OBBoxIntersectionTestClass & boxtest)
  *=============================================================================================*/
 void HLodClass::Prepare_LOD(CameraClass &camera)
 {
+(void) camera;
+DEBUG_LOG(("HLodClass::Prepare_LOD not yet implemented!\n"));
+#if 0
 	if (Is_Not_Hidden_At_All() == false) {
 		return;
 	}
@@ -2904,6 +2911,7 @@ void HLodClass::Prepare_LOD(CameraClass &camera)
 		}
 	}
 
+#endif // if 0
 }
 
 
@@ -3434,7 +3442,7 @@ void HLodClass::Update_Obj_Space_Bounding_Volumes(void)
 			//
 			//	Does the name match the designator we are looking for?
 			//
-			if (::stricmp (name, "BOUNDINGBOX") == 0) {				
+			if (::strcasecmp (name, "BOUNDINGBOX") == 0) {				
 				BoundingBoxIndex = index;
 			}
 		}
@@ -3651,4 +3659,3 @@ void HLodClass::Set_Hidden(int onoff)
 	Animatable3DObjClass::Set_Hidden(onoff);
 	return ;
 }
-

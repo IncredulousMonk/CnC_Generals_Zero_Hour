@@ -49,7 +49,7 @@
 #include "vector.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "vector3i.h"
+#include "Vector3i.h"
 #include "vector4.h"
 #include "shader.h"
 #include "vertmaterial.h"
@@ -82,6 +82,10 @@ public:
 	
 	DecalMeshClass(MeshClass * parent,DecalSystemClass * system);
 	virtual ~DecalMeshClass(void);
+
+	// No copies allowed!
+	DecalMeshClass(const DecalMeshClass&) = delete;
+	DecalMeshClass& operator=(const DecalMeshClass&) = delete;
 
 	// world_vertex_locs and world_vertex_norms are dynamically updated worldspace vertex data
 	// which are used by some decal types which cannot use static object geometry (such as decals

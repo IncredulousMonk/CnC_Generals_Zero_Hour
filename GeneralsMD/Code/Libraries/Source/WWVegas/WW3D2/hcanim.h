@@ -47,7 +47,7 @@
 #include "quat.h"
 #include "refcount.h"
 #include "w3d_file.h"
-#include "slist.h"
+// #include "slist.h"
 #include "vector.h"
 #include "hanim.h"
 
@@ -83,6 +83,10 @@ public:
 	
 	HCompressedAnimClass(void);
 	~HCompressedAnimClass(void);
+
+	// No copies allowed!
+	HCompressedAnimClass(const HCompressedAnimClass&) = delete;
+	HCompressedAnimClass& operator=(const HCompressedAnimClass&) = delete;
 
 	int							Load_W3D(ChunkLoadClass & cload);
 

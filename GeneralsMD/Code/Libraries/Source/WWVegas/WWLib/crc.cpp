@@ -37,7 +37,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"always.h"
-#include	"crc.h"
+#include	"CRC.H"
 
 
 /***********************************************************************************************
@@ -111,10 +111,10 @@ long CRCEngine::operator() (void const * buffer, int length)
 		**	data blocks.
 		*/
 		long const * longptr = (long const *)dataptr;
-		int longcount = bytes_left / sizeof(long);		// Whole 'long' elements remaining.
+		int longcount = bytes_left / (int)sizeof(long);		// Whole 'long' elements remaining.
 		while (longcount--) {
-			CRC = _lrotl(CRC, 1) + *longptr++;
-			bytes_left -= sizeof(long);
+			CRC = (long)_lrotl((unsigned long)CRC, 1) + *longptr++;
+			bytes_left -= (int)sizeof(long);
 		}
 
 		/*
@@ -216,7 +216,7 @@ unsigned long	CRC::String( const char *string, unsigned long crc)
 {
  	crc ^= 0xFFFFFFFF;									// invert previous CRC
 	while ( *string )	{
-		crc = CRC32( *string++, crc );				// calc crc for each byte
+		crc = CRC32( (unsigned char)*string++, crc );				// calc crc for each byte
 	}
 	return (crc ^ 0xFFFFFFFF); 						// invert new CRC and return it
 }

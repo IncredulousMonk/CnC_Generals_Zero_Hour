@@ -96,8 +96,8 @@ public:
 
 public:
 	CastResultStruct *			Result;
-	int								CollisionType; 
-	RenderObjClass *				CollidedRenderObj;		
+	int							CollisionType;
+	RenderObjClass *			CollidedRenderObj;
 };
 
 
@@ -214,11 +214,11 @@ public:
 
 public:
 
-	AABoxClass					Box;
-	Vector3						Move;
+	AABoxClass					Box {};
+	Vector3						Move {};
 
-	Vector3						SweepMin;
-	Vector3						SweepMax;
+	Vector3						SweepMin {};
+	Vector3						SweepMax {};
 
 private:
 	
@@ -281,10 +281,10 @@ public:
 
 public:
 
-	OBBoxClass	 				Box;
-	Vector3						Move;
-	Vector3						SweepMin;
-	Vector3						SweepMax;
+	OBBoxClass	 				Box {};
+	Vector3						Move {};
+	Vector3						SweepMin {};
+	Vector3						SweepMax {};
 
 private:
 	// not implemented

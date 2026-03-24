@@ -225,9 +225,9 @@ class INIClass {
 		/*
 		**	This is the list of all sections within this INI file.
 		*/
-		List<INISection *> * SectionList;
+		List<INISection *> * SectionList {};
 
-		IndexClass<int, INISection *> * SectionIndex;
+		IndexClass<int, INISection *> * SectionIndex {};
 
 		/*
 		**	Ensure that the copy constructor and assignment operator never exist.
@@ -238,7 +238,7 @@ class INIClass {
 		/*
 		** The name of the file we were loaded from (if applicable).
 		*/
-		mutable char * Filename;
+		mutable char * Filename {};
 
 		/*
 		** The flag used to control the blank entry loading behavior.

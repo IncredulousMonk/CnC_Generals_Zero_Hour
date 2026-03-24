@@ -49,11 +49,17 @@ class Thing;
 class GrantUpgradeCreateModuleData : public CreateModuleData
 {
 public:
-	AsciiString		m_upgradeName;			///< name of the upgrade to be granted.
-	ObjectStatusMaskType m_exemptStatus; ///< do not execute if this status is set in the object
+	// MG: Cannot apply offsetof to GrantUpgradeCreateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_upgradeName;				///< name of the upgrade to be granted.
+		ObjectStatusMaskType m_exemptStatus;	///< do not execute if this status is set in the object
+	};
+
+	IniData m_ini {};
 
 	GrantUpgradeCreateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 // ------------------------------------------------------------------------------------------------

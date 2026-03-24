@@ -57,6 +57,7 @@ DisplayStringManager::~DisplayStringManager( void )
 	// we only keep track of the strings, we do NOT de-allocate them, our
 	// list better be cleaned out before we destroy ourselves
 	//
+	DEBUG_ASSERTLOG(m_stringList == NULL, ("DisplayStringManager: m_stringList should be empty!\n"));
 	assert( m_stringList == NULL );
 
 }  // end ~DisplayStringManager

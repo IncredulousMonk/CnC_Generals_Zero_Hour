@@ -178,7 +178,10 @@ inline bool SimpleVecClass<T>::Resize(int newsize)
 			**	Mem copy as much of the old vector into the new vector as possible.
 			*/
 			int copycount = (newsize < VectorMax) ? newsize : VectorMax;
-			memcpy(newptr,Vector,(unsigned)copycount * sizeof(T));
+			// memcpy(newptr,Vector,(unsigned)copycount * sizeof(T));
+			for (int i {0}; i < copycount; ++i) {
+				newptr[i] = Vector[i];
+			}
 
 			/*
 			**	Delete the old vector.

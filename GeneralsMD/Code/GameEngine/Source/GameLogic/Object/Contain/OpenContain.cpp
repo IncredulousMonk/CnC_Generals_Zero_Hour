@@ -85,7 +85,6 @@ OpenContainModuleData::OpenContainModuleData( void )
 	m_ini.m_allowAlliesInside = TRUE;
 	m_ini.m_allowEnemiesInside = TRUE;
 	m_ini.m_allowNeutralInside = TRUE;
-	m_ini.m_obj = this;
 }  // end OpenContainModuleData
 
 // ------------------------------------------------------------------------------------------------
@@ -123,16 +122,14 @@ OpenContainModuleData::OpenContainModuleData( void )
 //-------------------------------------------------------------------------------------------------
 void OpenContainModuleData::parseEnterSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	OpenContainModuleData::IniData* data = (OpenContainModuleData::IniData*) instance;
-	OpenContainModuleData* self = data->m_obj;
+	OpenContainModuleData* self = (OpenContainModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_enterSound);
 }
 
 //-------------------------------------------------------------------------------------------------
 void OpenContainModuleData::parseExitSound(INI* ini, void* instance, void* /*store*/, const void* /*userData*/)
 {
-	OpenContainModuleData::IniData* data = (OpenContainModuleData::IniData*) instance;
-	OpenContainModuleData* self = data->m_obj;
+	OpenContainModuleData* self = (OpenContainModuleData*) instance;
 	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_exitSound);
 }
 

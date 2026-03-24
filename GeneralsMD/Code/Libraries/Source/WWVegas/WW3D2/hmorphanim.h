@@ -82,6 +82,10 @@ public:
 	HMorphAnimClass(void);
 	~HMorphAnimClass(void);
 
+	// No copies allowed!
+	HMorphAnimClass(const HMorphAnimClass&) = delete;
+	HMorphAnimClass& operator=(const HMorphAnimClass&) = delete;
+
 	void							Free_Morph(void);
 	int							Create_New_Morph(const int channels, HAnimClass *anim[]);
 	int							Load_W3D(ChunkLoadClass & cload);
@@ -99,12 +103,12 @@ public:
 	void							Get_Translation(Vector3& translation, int pividx,float frame) const;
 	void							Get_Orientation(Quaternion& orientation, int pividx,float frame) const;
 	void							Get_Transform(Matrix3D& transform, int pividx,float frame) const;
-	bool							Get_Visibility(int pividx,float frame)		{ return true; }
+	bool							Get_Visibility(int /* pividx */, float /* frame */)		{ return true; }
 
 	void							Insert_Morph_Key (const int channel, uint32 morph_frame, uint32 pose_frame);
 	void							Release_Keys (void);
 
-	bool							Is_Node_Motion_Present(int pividx)			{ return true; }
+	bool							Is_Node_Motion_Present(int /* pividx */)			{ return true; }
 	int							Get_Num_Pivots(void)	const						{ return NumNodes; }
 
 	void							Set_Name(const char * name);
@@ -174,7 +178,7 @@ private:
 		uint32	PoseFrame;				// which pose frame to use at this time
 	};
 	
-	SimpleDynVecClass<MorphKeyStruct>	Keys;	// morph key data
+	SimpleDynVecClass<MorphKeyStruct>	Keys {};	// morph key data
 	uint32				CachedIdx;					// last accessed index
 
 	void 					Free(void);

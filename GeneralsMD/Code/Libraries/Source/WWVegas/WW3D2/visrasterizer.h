@@ -46,7 +46,7 @@
 #include "always.h"
 #include "matrix3d.h"
 #include "matrix4.h"
-#include "vector3i.h"
+#include "Vector3i.h"
 #include "vector3.h"
 #include "simplevec.h"
 #include "bittype.h"
@@ -69,6 +69,10 @@ class IDBufferClass
 public:
 	IDBufferClass(void);
 	~IDBufferClass(void);
+
+	// No copies allowed!
+	IDBufferClass(const IDBufferClass&) = delete;
+	IDBufferClass& operator=(const IDBufferClass&) = delete;
 
 	/*
 	** State interface
@@ -158,6 +162,10 @@ public:
 	VisRasterizerClass(void);
 	~VisRasterizerClass(void);
 
+	// No copies allowed!
+	VisRasterizerClass(const VisRasterizerClass&) = delete;
+	VisRasterizerClass& operator=(const VisRasterizerClass&) = delete;
+
 	/*
 	** ID Buffer Interface
 	*/
@@ -210,4 +218,3 @@ protected:
 };
 
 #endif //VISRASTERIZER_H
-

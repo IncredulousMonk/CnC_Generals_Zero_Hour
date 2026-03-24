@@ -1480,7 +1480,6 @@ Bool TerrainLogic::isCliffCell( Real /* x */, Real /* y */) const
 
 }  // end isCliffCell
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void makeAlignToNormalMatrix( Real angle, const Coord3D& pos, const Coord3D& normal, Matrix3D& mtx)
 {
@@ -1547,6 +1546,7 @@ PathfindLayerEnum TerrainLogic::alignOnTerrain( Real angle, const Coord3D& pos, 
 	return layer;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Adds a bridge's info get height function for logical terrain */
 //-------------------------------------------------------------------------------------------------

@@ -108,4 +108,37 @@ typedef DWORD D3DCOLOR;
 #define D3DCOLOR_COLORVALUE(r,g,b,a) \
     D3DCOLOR_RGBA((DWORD)((r)*255.f),(DWORD)((g)*255.f),(DWORD)((b)*255.f),(DWORD)((a)*255.f))
 
+
+
+// ------------------------------------------------------------------------------------------------
+/** Bonus declarations from d3d8types.h for WWVegas/WW3D2. */
+// ------------------------------------------------------------------------------------------------
+
+#ifndef D3DCOLORVALUE_DEFINED
+typedef struct _D3DCOLORVALUE {
+    float r;
+    float g;
+    float b;
+    float a;
+} D3DCOLORVALUE;
+#define D3DCOLORVALUE_DEFINED
+#endif
+
+typedef struct _D3DMATERIAL8 {
+    D3DCOLORVALUE   Diffuse;        /* Diffuse color RGBA */
+    D3DCOLORVALUE   Ambient;        /* Ambient color RGB */
+    D3DCOLORVALUE   Specular;       /* Specular 'shininess' */
+    D3DCOLORVALUE   Emissive;       /* Emissive color RGB */
+    float           Power;          /* Sharpness if specular highlight */
+} D3DMATERIAL8;
+
+// Values for material source
+typedef enum _D3DMATERIALCOLORSOURCE
+{
+    D3DMCS_MATERIAL         = 0,            // Color from material is used
+    D3DMCS_COLOR1           = 1,            // Diffuse vertex color is used
+    D3DMCS_COLOR2           = 2,            // Specular vertex color is used
+    D3DMCS_FORCE_DWORD      = 0x7fffffff,   // force 32-bit size enum
+} D3DMATERIALCOLORSOURCE;
+
 #endif /* _D3D_H_ */

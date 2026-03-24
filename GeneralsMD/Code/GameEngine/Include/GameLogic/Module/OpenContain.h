@@ -73,8 +73,6 @@ public:
 		Bool m_allowAlliesInside {};				///< allow allies inside us
 		Bool m_allowEnemiesInside {};				///< allow enemies inside us
 		Bool m_allowNeutralInside {};				///< allow neutral inside us
-
-		OpenContainModuleData* m_obj {};			///< pointer to the parent object
 	};
 
 	IniData m_ini {};

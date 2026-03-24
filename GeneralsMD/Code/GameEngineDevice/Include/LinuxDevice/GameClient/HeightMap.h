@@ -112,7 +112,6 @@ public:
 	virtual int updateBlock(Int x0, Int y0, Int x1, Int y1, WorldHeightMap *pMap, RefRenderObjListIterator *pLightsIterator);
 
 protected:
-	GLuint m_progTerrain {};
 	// Coord3D m_cameraPos {-700.0f, -1000.0f, 100.0f};
 	Coord3D m_cameraPos {1000.0f, -100.0f, 500.0f};
 	Int *m_extraBlendTilePositions {};		///<array holding x,y tile positions of all extra blend tiles. (used for 3 textures per tile).

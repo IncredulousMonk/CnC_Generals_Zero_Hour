@@ -45,10 +45,16 @@ public:
 
 	TechBuildingBehaviorModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse(void* what,  MultiIniFieldParse &p);
 
-	const FXList*		m_pulseFX;										///< FXList to play when bldg is owned is updated
-	UnsignedInt			m_pulseFXRate;								///< how frequently to play it
+	// MG: Cannot apply offsetof to TechBuildingBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const FXList*		m_pulseFX;		///< FXList to play when bldg is owned is updated
+		UnsignedInt			m_pulseFXRate;	///< how frequently to play it
+	};
+
+	IniData m_ini {};
 
 };
 

@@ -250,17 +250,17 @@ private:
 #else
 	_D3DMATERIAL8 *				MaterialOld;
 #endif
-	unsigned int					Flags;
-	unsigned int					AmbientColorSource;
-	unsigned int					EmissiveColorSource;
-	unsigned int					DiffuseColorSource;
-	StringClass						Name;
+	unsigned int			Flags;
+	unsigned int			AmbientColorSource;
+	unsigned int			EmissiveColorSource;
+	unsigned int			DiffuseColorSource;
+	StringClass				Name {};
 	TextureMapperClass *	Mapper[MeshBuilderClass::MAX_STAGES];
-	unsigned int					UVSource[MeshBuilderClass::MAX_STAGES];
-	unsigned int					UniqueID;
-	mutable unsigned long CRC;
-	mutable bool					CRCDirty;
-	bool									UseLighting;
+	unsigned int			UVSource[MeshBuilderClass::MAX_STAGES];
+	unsigned int			UniqueID;
+	mutable unsigned long	CRC {};
+	mutable bool			CRCDirty;
+	bool					UseLighting;
 
 private:
 	/*

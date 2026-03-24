@@ -45,7 +45,7 @@ class SwayClientUpdate : public ClientUpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( SwayClientUpdate, "SwayClientUpdate" )
-	MAKE_STANDARD_MODULE_MACRO( SwayClientUpdate );
+	MAKE_STANDARD_MODULE_MACRO( SwayClientUpdate )
 
 public:
 
@@ -59,14 +59,14 @@ public:
 
 protected:
 
-	Real			m_curValue;
-	Real			m_curAngle;
-	Real			m_curDelta;	 
-	Real			m_curAngleLimit;
-	Real			m_leanAngle;							///<Angle that the tree leans away from the wind.
-	Short			m_curVersion;
-	Bool			m_swaying;
-	Bool			m_unused;
+	Real			m_curValue {};
+	Real			m_curAngle {};
+	Real			m_curDelta {};
+	Real			m_curAngleLimit {};
+	Real			m_leanAngle {};			///<Angle that the tree leans away from the wind.
+	Short			m_curVersion {};
+	Bool			m_swaying {};
+	Bool			m_unused {};
 
 	void updateSway(void);
 };

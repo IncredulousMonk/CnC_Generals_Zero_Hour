@@ -46,7 +46,7 @@ enum BodyDamageType; //Ahhhh much better!
 class BoneFXDamage : public DamageModule
 {
 
-	MAKE_STANDARD_MODULE_MACRO( BoneFXDamage );
+	MAKE_STANDARD_MODULE_MACRO( BoneFXDamage )
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( BoneFXDamage, "BoneFXDamage" )
 
 public:
@@ -55,8 +55,8 @@ public:
 	// virtual destructor prototype provided by memory pool declaration
 
 	// damage module methods
-	virtual void onDamage( DamageInfo *damageInfo ) { }
-	virtual void onHealing( DamageInfo *damageInfo ) { }
+	virtual void onDamage( DamageInfo* /* damageInfo */ ) { }
+	virtual void onHealing( DamageInfo* /* damageInfo */ ) { }
 	virtual void onBodyDamageStateChange( const DamageInfo* damageInfo, 
 																				BodyDamageType oldState, 
 																				BodyDamageType newState );

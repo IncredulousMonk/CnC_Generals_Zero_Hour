@@ -54,6 +54,10 @@ struct NodeMotionStruct
 	NodeMotionStruct();
 	~NodeMotionStruct();
 
+	// No copies allowed!
+	NodeMotionStruct(const NodeMotionStruct&) = delete;
+	NodeMotionStruct& operator=(const NodeMotionStruct&) = delete;
+
 	MotionChannelClass *		X;
 	MotionChannelClass *		Y;
 	MotionChannelClass *		Z;
@@ -89,6 +93,10 @@ public:
 	HRawAnimClass(void);
 	~HRawAnimClass(void);
 
+	// No copies allowed!
+	HRawAnimClass(const HRawAnimClass&) = delete;
+	HRawAnimClass& operator=(const HRawAnimClass&) = delete;
+
 	int							Load_W3D(ChunkLoadClass & cload);
 
 	const char *				Get_Name(void) const { return Name; }
@@ -114,7 +122,7 @@ public:
 	bool							Has_Rotation (int pividx);
 	bool							Has_Visibility (int pividx);
 	NodeMotionStruct				*Get_Node_Motion_Array(void) {return NodeMotion;}
-	virtual int					Class_ID(void)	const															{ return CLASSID_HRAWANIM; }
+	virtual unsigned				Class_ID(void)	const															{ return CLASSID_HRAWANIM; }
 
 private:
 

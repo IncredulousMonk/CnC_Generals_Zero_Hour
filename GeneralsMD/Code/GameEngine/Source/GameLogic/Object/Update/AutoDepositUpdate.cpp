@@ -68,9 +68,8 @@
 #include "GameClient/GameText.h"
 
 //-------------------------------------------------------------------------------------------------
-void parseUpgradeBoost( INI *ini, void *instance, void *store, const void *userData )
+void parseUpgradeBoost(INI* ini, void* instance, void* /* store */, const void* /* userData */)
 {
-	DEBUG_CRASH(("May need to fix parseUpgradeBoost in AutoDepositUpdate\n"));
 	upgradePair info;
 	info.type = "";
 	info.amount = 0;
@@ -95,9 +94,7 @@ void parseUpgradeBoost( INI *ini, void *instance, void *store, const void *userD
 		throw INI_INVALID_DATA;
 
 	// Insert the info into the upgrade list
-	// FIXME: I don't think this is correct now!
-	AutoDepositUpdateModuleData::IniData* data = (AutoDepositUpdateModuleData::IniData*) instance;
-	AutoDepositUpdateModuleData* self = data->m_obj;
+	AutoDepositUpdateModuleData* self = (AutoDepositUpdateModuleData*) instance;
 	self->m_upgradeBoost.push_back(info);
 	
 }
@@ -126,7 +123,7 @@ void AutoDepositUpdate::awardInitialCaptureBonus( Player *player )
 	if(!player || !m_awardInitialCaptureBonus || getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus <= 0)
 		return;
 
-	player->getMoney()->deposit( getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus );
+	player->getMoney()->deposit( (UnsignedInt)getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus );
 	player->getScoreKeeper()->addMoneyEarned( getAutoDepositUpdateModuleData()->m_ini.m_initialCaptureBonus );
 
 	//Display cash income floating over the blacklotus
@@ -164,14 +161,14 @@ UpdateSleepTime AutoDepositUpdate::update( void )
 			return UPDATE_SLEEP_NONE;
 
 		// makes sure that buildings under construction do not get a bonus CCB
-		if( getObject()->getConstructionPercent() != CONSTRUCTION_COMPLETE )
+		if( getObject()->getConstructionPercent() != (Real)CONSTRUCTION_COMPLETE )
 			return UPDATE_SLEEP_NONE;
 		
 		int moneyAmount = modData->m_ini.m_depositAmount + getUpgradedSupplyBoost();
 
 		if( modData->m_ini.m_isActualMoney )
 		{
-			getObject()->getControllingPlayer()->getMoney()->deposit( moneyAmount );
+			getObject()->getControllingPlayer()->getMoney()->deposit( (UnsignedInt)moneyAmount );
 			getObject()->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( modData->m_ini.m_depositAmount);
 		}
 		

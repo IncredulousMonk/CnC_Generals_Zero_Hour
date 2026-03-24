@@ -102,8 +102,8 @@ private:
 	int					Load_Raw_Anim(ChunkLoadClass & cload);
 	int					Load_Morph_Anim(ChunkLoadClass & cload);
 
-	HashTableClass	*	AnimPtrTable;
-	HashTableClass	*	MissingAnimTable;
+	HashTableClass	*	AnimPtrTable {};
+	HashTableClass	*	MissingAnimTable {};
 
 	friend	class		HAnimManagerIterator;
 };

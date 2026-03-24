@@ -218,6 +218,8 @@ public:
 	virtual void drawView(void) = 0;					///< Render the world visible in this view.
 	virtual void updateView(void) = 0;					///<called once per frame to determine the final camera and object transforms
 	virtual void add3dObject(RenderObjClass* obj) = 0;
+	virtual void remove3dObject(RenderObjClass* obj) = 0;
+	virtual RenderObjClass* create3dObject(const char* name, float scale, const Color color, const char* oldTexure = NULL, const char* newTexture = NULL) = 0;
 
 
 

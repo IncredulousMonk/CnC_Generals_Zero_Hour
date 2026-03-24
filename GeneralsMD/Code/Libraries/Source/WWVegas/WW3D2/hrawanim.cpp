@@ -245,7 +245,7 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass & cload)
 	}
 	NumNodes = base_pose->Num_Pivots();
 
-	NumFrames = aheader.NumFrames;
+	NumFrames = (int)aheader.NumFrames;
 	FrameRate = aheader.FrameRate;
 
 	NodeMotion = W3DNEWARRAY NodeMotionStruct[ NumNodes ];
@@ -329,7 +329,7 @@ bool HRawAnimClass::read_channel(ChunkLoadClass & cload,MotionChannelClass * * n
 	
 	if (result && pre30) {
 //		(*newchan)->PivotIdx += 1;
-		(*newchan)->Set_Pivot((*newchan)->Get_Pivot()+1);
+		(*newchan)->Set_Pivot((unsigned int)(*newchan)->Get_Pivot()+1);
 	}
 	
 	return result;

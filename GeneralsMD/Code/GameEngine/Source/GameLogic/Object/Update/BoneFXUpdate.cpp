@@ -54,21 +54,21 @@ BoneFXUpdateModuleData::BoneFXUpdateModuleData(void)
 	Int i, j;
 	for (i = 0; i < BODYDAMAGETYPE_COUNT; ++i) {
 		for (j = 0; j < BONE_FX_MAX_BONES; ++j) {
-			m_fxList[i][j].fx = NULL;
-			m_fxList[i][j].onlyOnce = TRUE;
-			m_OCL[i][j].ocl = NULL;
-			m_OCL[i][j].onlyOnce = TRUE;
-			m_particleSystem[i][j].particleSysTemplate = NULL;
-			m_particleSystem[i][j].onlyOnce = TRUE;
+			m_ini.m_fxList[i][j].fx = NULL;
+			m_ini.m_fxList[i][j].base.onlyOnce = TRUE;
+			m_ini.m_OCL[i][j].ocl = NULL;
+			m_ini.m_OCL[i][j].base.onlyOnce = TRUE;
+			m_ini.m_particleSystem[i][j].particleSysTemplate = NULL;
+			m_ini.m_particleSystem[i][j].base.onlyOnce = TRUE;
 		}
 	}
 
-	m_damageFXTypes = DAMAGE_TYPE_FLAGS_NONE;
-	m_damageFXTypes.flip();
-	m_damageOCLTypes = DAMAGE_TYPE_FLAGS_NONE;
-	m_damageOCLTypes.flip();
-	m_damageParticleTypes = DAMAGE_TYPE_FLAGS_NONE;
-	m_damageParticleTypes.flip();
+	m_ini.m_damageFXTypes = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageFXTypes.flip();
+	m_ini.m_damageOCLTypes = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageOCLTypes.flip();
+	m_ini.m_damageParticleTypes = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageParticleTypes.flip();
 
 }
 
@@ -117,11 +117,11 @@ BoneFXUpdate::~BoneFXUpdate( void )
 //-------------------------------------------------------------------------------------------------
 /** Parse fx location info ... that is a named bone */
 //-------------------------------------------------------------------------------------------------
-static void parseFXLocInfo( INI *ini, void *instance, BoneLocInfo *locInfo )
+static void parseFXLocInfo( INI* ini, BoneLocInfo *locInfo )
 {
 	const char *token = ini->getNextToken( ini->getSepsColon() );
 
-	if( stricmp( token, "bone" ) == 0 )
+	if( strcasecmp( token, "bone" ) == 0 )
 	{
 
 		// save bone name and location type
@@ -141,20 +141,20 @@ static void parseFXLocInfo( INI *ini, void *instance, BoneLocInfo *locInfo )
 //-------------------------------------------------------------------------------------------------
 /** Parse a random delay.  This is a number pair, where the numbers are a min and max time in miliseconds. */
 //-------------------------------------------------------------------------------------------------
-static void parseGameClientRandomDelay( INI *ini, void *instance, GameClientRandomVariable *delay)
+static void parseGameClientRandomDelay( INI *ini, GameClientRandomVariable *delay)
 {
 	Real min, max;
-	INI::parseDurationReal(ini, instance, &min, NULL);
-	INI::parseDurationReal(ini, instance, &max, NULL);
+	INI::parseDurationReal(ini, nullptr, &min, NULL);
+	INI::parseDurationReal(ini, nullptr, &max, NULL);
 
 	delay->setRange(min, max, GameClientRandomVariable::DistributionType::UNIFORM);
 }
 
-static void parseGameLogicRandomDelay( INI *ini, void *instance, GameLogicRandomVariable *delay)
+static void parseGameLogicRandomDelay( INI *ini, GameLogicRandomVariable *delay)
 {
 	Real min, max;
-	INI::parseDurationReal(ini, instance, &min, NULL);
-	INI::parseDurationReal(ini, instance, &max, NULL);
+	INI::parseDurationReal(ini, nullptr, &min, NULL);
+	INI::parseDurationReal(ini, nullptr, &max, NULL);
 
 	delay->setRange(min, max, GameLogicRandomVariable::DistributionType::UNIFORM);
 }
@@ -163,18 +163,17 @@ static void parseGameLogicRandomDelay( INI *ini, void *instance, GameLogicRandom
 /** In the form of:
 	* <BodyDamageState>FXList<index> = Bone:<BoneName> OnlyOnce:<Yes|No> <Min delay> <Max delay> FXList:<FXListName> */
 //-------------------------------------------------------------------------------------------------
-void BoneFXUpdateModuleData::parseFXList( INI *ini, void *instance, 
-																								void *store, const void *userData )
+void BoneFXUpdateModuleData::parseFXList( INI* ini, void* /* instance */, void* store, const void* /* userData */ )
 {
 	const char *token;
 	BoneFXListInfo *info = (BoneFXListInfo *)store;
 
 	// parse the location bone or location
-	parseFXLocInfo( ini, instance, &info->locInfo );
+	parseFXLocInfo( ini, &info->base.locInfo );
 
 	// make sure we have an "OnlyOnce:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if (stricmp( token, "onlyonce" ) != 0)
+	if (strcasecmp( token, "onlyonce" ) != 0)
 	{
 
 		// error
@@ -182,13 +181,13 @@ void BoneFXUpdateModuleData::parseFXList( INI *ini, void *instance,
 
 	} // end if
 
-	ini->parseBool( ini, instance, &info->onlyOnce, NULL);
+	ini->parseBool( ini, nullptr, &info->base.onlyOnce, NULL);
 
-	parseGameLogicRandomDelay( ini, instance, &info->gameLogicDelay);
+	parseGameLogicRandomDelay( ini, &info->base.gameLogicDelay);
 
 	// make sure we have an "FXList:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "fxlist" ) != 0 )
+	if( strcasecmp( token, "fxlist" ) != 0 )
 	{
 
 		// error
@@ -197,7 +196,7 @@ void BoneFXUpdateModuleData::parseFXList( INI *ini, void *instance,
 	}  // end if
 
 	// parse the fx list name
-	ini->parseFXList( ini, instance, &info->fx, NULL );
+	ini->parseFXList( ini, nullptr, &info->fx, NULL );
 
 }  // end parseFXList
 
@@ -205,18 +204,17 @@ void BoneFXUpdateModuleData::parseFXList( INI *ini, void *instance,
 /** In the form of:
 	* <BodyDamageState>OCL<index> = Bone:<BoneName> OnlyOnce:<Yes|No> <Min delay> <Max delay> OCL:<OCLName> */
 //-------------------------------------------------------------------------------------------------
-void BoneFXUpdateModuleData::parseObjectCreationList( INI *ini, void *instance, 
-																														void *store, const void *userData )
+void BoneFXUpdateModuleData::parseObjectCreationList(INI* ini, void* /* instance */, void* store, const void* /* userData */ )
 {
 	const char *token;
 	BoneOCLInfo *info = (BoneOCLInfo *)store;
 
 	// parse the location bone or location
-	parseFXLocInfo( ini, instance, &info->locInfo );
+	parseFXLocInfo( ini, &info->base.locInfo );
 
 	// make sure we have an "OnlyOnce:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if (stricmp( token, "onlyonce" ) != 0)
+	if (strcasecmp( token, "onlyonce" ) != 0)
 	{
 
 		// error
@@ -224,13 +222,13 @@ void BoneFXUpdateModuleData::parseObjectCreationList( INI *ini, void *instance,
 
 	} // end if
 
-	ini->parseBool( ini, instance, &info->onlyOnce, NULL );
+	ini->parseBool( ini, nullptr, &info->base.onlyOnce, NULL );
 
-	parseGameLogicRandomDelay(ini, instance, &info->gameLogicDelay);
+	parseGameLogicRandomDelay(ini, &info->base.gameLogicDelay);
 
 	// make sure we have an "OCL:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "ocl" ) != 0 )
+	if( strcasecmp( token, "ocl" ) != 0 )
 	{
 
 		// error
@@ -239,7 +237,7 @@ void BoneFXUpdateModuleData::parseObjectCreationList( INI *ini, void *instance,
 	}  // end if
 
 	// parse the ocl name
-	ini->parseObjectCreationList( ini, instance, &info->ocl, NULL );
+	ini->parseObjectCreationList( ini, nullptr, &info->ocl, NULL );
 
 }  // end parseObjectCreationList
 
@@ -247,18 +245,17 @@ void BoneFXUpdateModuleData::parseObjectCreationList( INI *ini, void *instance,
 /** In the form of:
 	* <BodyDamageState>ParticleSystem<index> = <Bone:BoneName> OnlyOnce:<Yes|No> <Min delay> <Max delay> PSys:<PSysName> */
 //-------------------------------------------------------------------------------------------------
-void BoneFXUpdateModuleData::parseParticleSystem( INI *ini, void *instance, 
-																												void *store, const void *userData )
+void BoneFXUpdateModuleData::parseParticleSystem(INI* ini, void* /* instance */, void* store, const void* /* userData */ )
 {
 	const char *token;
 	BoneParticleSystemInfo *info = (BoneParticleSystemInfo *)store;
 
 	// parse the location bone or location
-	parseFXLocInfo( ini, instance, &info->locInfo );
+	parseFXLocInfo( ini, &info->base.locInfo );
 
 	// make sure we have an "OnlyOnce:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if (stricmp( token, "onlyonce" ) != 0)
+	if (strcasecmp( token, "onlyonce" ) != 0)
 	{
 
 		// error
@@ -266,13 +263,13 @@ void BoneFXUpdateModuleData::parseParticleSystem( INI *ini, void *instance,
 
 	} // end if
 
-	ini->parseBool( ini, instance, &info->onlyOnce, NULL );
+	ini->parseBool( ini, nullptr, &info->base.onlyOnce, NULL );
 
-	parseGameClientRandomDelay(ini, instance, &info->gameClientDelay);
+	parseGameClientRandomDelay(ini, &info->base.gameClientDelay);
 
 	// make sure we have an "PSys:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "psys" ) != 0 )
+	if( strcasecmp( token, "psys" ) != 0 )
 	{
 
 		// error
@@ -281,7 +278,7 @@ void BoneFXUpdateModuleData::parseParticleSystem( INI *ini, void *instance,
 	}  // end if
 
 	// parse the particle system name
-	ini->parseParticleSystemTemplate( ini, instance, &info->particleSysTemplate, NULL );
+	ini->parseParticleSystemTemplate( ini, nullptr, &info->particleSysTemplate, NULL );
 
 }  // end parseParticleSystem
 
@@ -291,7 +288,7 @@ UpdateSleepTime BoneFXUpdate::update( void )
 {
 /// @todo srj use SLEEPY_UPDATE here
 	const BoneFXUpdateModuleData *d = getBoneFXUpdateModuleData();
-	Int now = TheGameLogic->getFrame();
+	Int now = (Int)TheGameLogic->getFrame();
 
 	if (m_active == FALSE) {
 		initTimes();
@@ -301,16 +298,16 @@ UpdateSleepTime BoneFXUpdate::update( void )
 	for (Int i = 0; i < BONE_FX_MAX_BONES; ++i) {
 		//Check to see if its time to fire off any cool stuff.
 		if ((m_nextFXFrame[m_curBodyState][i] != -1) && (m_nextFXFrame[m_curBodyState][i] <= now)) {
-			doFXListAtBone(d->m_fxList[m_curBodyState][i].fx, &(m_FXBonePositions[m_curBodyState][i]));
-			computeNextLogicFXTime(&(d->m_fxList[m_curBodyState][i]), m_nextFXFrame[m_curBodyState][i]);
+			doFXListAtBone(d->m_ini.m_fxList[m_curBodyState][i].fx, &(m_FXBonePositions[m_curBodyState][i]));
+			computeNextLogicFXTime(&(d->m_ini.m_fxList[m_curBodyState][i].base), m_nextFXFrame[m_curBodyState][i]);
 		}
 		if ((m_nextOCLFrame[m_curBodyState][i] != -1) && (m_nextOCLFrame[m_curBodyState][i] <= now)) {
-			doOCLAtBone(d->m_OCL[m_curBodyState][i].ocl, &(m_OCLBonePositions[m_curBodyState][i]));
-			computeNextLogicFXTime(&(d->m_OCL[m_curBodyState][i]), m_nextOCLFrame[m_curBodyState][i]);
+			doOCLAtBone(d->m_ini.m_OCL[m_curBodyState][i].ocl, &(m_OCLBonePositions[m_curBodyState][i]));
+			computeNextLogicFXTime(&(d->m_ini.m_OCL[m_curBodyState][i].base), m_nextOCLFrame[m_curBodyState][i]);
 		}
 		if ((m_nextParticleSystemFrame[m_curBodyState][i] != -1) && (m_nextParticleSystemFrame[m_curBodyState][i] <= now)) {
-			doParticleSystemAtBone(d->m_particleSystem[m_curBodyState][i].particleSysTemplate, &(m_PSBonePositions[m_curBodyState][i]));
-			computeNextClientFXTime(&(d->m_particleSystem[m_curBodyState][i]), m_nextParticleSystemFrame[m_curBodyState][i]);
+			doParticleSystemAtBone(d->m_ini.m_particleSystem[m_curBodyState][i].particleSysTemplate, &(m_PSBonePositions[m_curBodyState][i]));
+			computeNextClientFXTime(&(d->m_ini.m_particleSystem[m_curBodyState][i].base), m_nextParticleSystemFrame[m_curBodyState][i]);
 		}
 	}
 	return UPDATE_SLEEP_NONE;
@@ -321,21 +318,21 @@ UpdateSleepTime BoneFXUpdate::update( void )
 void BoneFXUpdate::initTimes() {
 	Int i;
 	const BoneFXUpdateModuleData *d = getBoneFXUpdateModuleData();
-	Int now = TheGameLogic->getFrame();
+	Int now = (Int)TheGameLogic->getFrame();
 
 	for (i = 0; i < BONE_FX_MAX_BONES; ++i) {
-		if (d->m_fxList[m_curBodyState][i].locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) {
-			m_nextFXFrame[m_curBodyState][i] = now + REAL_TO_INT(d->m_fxList[m_curBodyState][i].gameLogicDelay.getValue());
+		if (d->m_ini.m_fxList[m_curBodyState][i].base.locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) {
+			m_nextFXFrame[m_curBodyState][i] = now + REAL_TO_INT(d->m_ini.m_fxList[m_curBodyState][i].base.gameLogicDelay.getValue());
 		} else {
 			m_nextFXFrame[m_curBodyState][i] = -1;
 		}
-		if (d->m_OCL[m_curBodyState][i].locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) {
-			m_nextOCLFrame[m_curBodyState][i] = now + REAL_TO_INT(d->m_OCL[m_curBodyState][i].gameLogicDelay.getValue());
+		if (d->m_ini.m_OCL[m_curBodyState][i].base.locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) {
+			m_nextOCLFrame[m_curBodyState][i] = now + REAL_TO_INT(d->m_ini.m_OCL[m_curBodyState][i].base.gameLogicDelay.getValue());
 		} else {
 			m_nextOCLFrame[m_curBodyState][i] = -1;
 		}
-		if (d->m_particleSystem[m_curBodyState][i].locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) {
-			m_nextParticleSystemFrame[m_curBodyState][i] = now + REAL_TO_INT(d->m_particleSystem[m_curBodyState][i].gameClientDelay.getValue());
+		if (d->m_ini.m_particleSystem[m_curBodyState][i].base.locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) {
+			m_nextParticleSystemFrame[m_curBodyState][i] = now + REAL_TO_INT(d->m_ini.m_particleSystem[m_curBodyState][i].base.gameClientDelay.getValue());
 		} else {
 			m_nextParticleSystemFrame[m_curBodyState][i] = -1;
 		}
@@ -356,23 +353,23 @@ inline Bool inList(Int value, Int count, const Int idxList[])
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-static void buildNonDupRandomIndexList(Int range, Int count, Int idxList[])
-{
-	for (Int i = 0; i < count; ++i)
-	{
-		Int idx;
-		do
-		{
-			idx = GameLogicRandomValue(0, range-1);
-		} 
-		while (inList(idx, i, idxList));
-		idxList[i] = idx;
-	}
-}
+// static void buildNonDupRandomIndexList(Int range, Int count, Int idxList[])
+// {
+// 	for (Int i = 0; i < count; ++i)
+// 	{
+// 		Int idx;
+// 		do
+// 		{
+// 			idx = GameLogicRandomValue(0, range-1);
+// 		} 
+// 		while (inList(idx, i, idxList));
+// 		idxList[i] = idx;
+// 	}
+// }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void BoneFXUpdate::changeBodyDamageState(BodyDamageType oldState, BodyDamageType newState)
+void BoneFXUpdate::changeBodyDamageState(BodyDamageType /* oldState */, BodyDamageType newState)
 {
 	m_curBodyState = newState;
 	killRunningParticleSystems();
@@ -390,7 +387,7 @@ void BoneFXUpdate::doFXListAtBone(const FXList *fxList, const Coord3D *bonePosit
 	// if we are restricted by the damage type executing effect, bail out of here
 	const BoneFXUpdateModuleData *d = getBoneFXUpdateModuleData();
 	const DamageInfo *lastDamageInfo = getObject()->getBodyModule()->getLastDamageInfo();
-	if( lastDamageInfo && getDamageTypeFlag( d->m_damageFXTypes, lastDamageInfo->in.m_damageType ) == FALSE )
+	if( lastDamageInfo && getDamageTypeFlag( d->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) == FALSE )
 		return;
 
 	// the bonePosition variable will have been made right by the call to
@@ -417,7 +414,7 @@ void BoneFXUpdate::doOCLAtBone(const ObjectCreationList *ocl, const Coord3D *bon
 	// if we are restricted by the damage type executing effect, bail out of here
 	const BoneFXUpdateModuleData *d = getBoneFXUpdateModuleData();
 	const DamageInfo *lastDamageInfo = getObject()->getBodyModule()->getLastDamageInfo();
-	if( lastDamageInfo && getDamageTypeFlag( d->m_damageOCLTypes, lastDamageInfo->in.m_damageType ) == FALSE )
+	if( lastDamageInfo && getDamageTypeFlag( d->m_ini.m_damageOCLTypes, lastDamageInfo->in.m_damageType ) == FALSE )
 		return;
 
 	// the bonePosition variable will have been made right by the call to
@@ -442,7 +439,7 @@ void BoneFXUpdate::doParticleSystemAtBone(const ParticleSystemTemplate *particle
 	// if we are restricted by the damage type executing effect, bail out of here
 	const BoneFXUpdateModuleData *d = getBoneFXUpdateModuleData();
 	const DamageInfo *lastDamageInfo = getObject()->getBodyModule()->getLastDamageInfo();
-	if( lastDamageInfo && getDamageTypeFlag( d->m_damageParticleTypes, lastDamageInfo->in.m_damageType ) == FALSE )
+	if( lastDamageInfo && getDamageTypeFlag( d->m_ini.m_damageParticleTypes, lastDamageInfo->in.m_damageType ) == FALSE )
 		return;
 
 	Object *building = getObject();
@@ -469,7 +466,7 @@ void BoneFXUpdate::computeNextClientFXTime(const BaseBoneListInfo *info, Int &ne
 		nextFrame = -1;
 		return;
 	}
-	nextFrame = TheGameLogic->getFrame() + REAL_TO_INT(info->gameClientDelay.getValue());
+	nextFrame = (Int)TheGameLogic->getFrame() + REAL_TO_INT(info->gameClientDelay.getValue());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -480,7 +477,7 @@ void BoneFXUpdate::computeNextLogicFXTime(const BaseBoneListInfo *info, Int &nex
 		nextFrame = -1;
 		return;
 	}
-	nextFrame = TheGameLogic->getFrame() + REAL_TO_INT(info->gameLogicDelay.getValue());
+	nextFrame = (Int)TheGameLogic->getFrame() + REAL_TO_INT(info->gameLogicDelay.getValue());
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -518,22 +515,22 @@ void BoneFXUpdate::resolveBoneLocations() {
 	}
 
 	for (i = 0; i < BONE_FX_MAX_BONES; ++i) {
-		if (d->m_fxList[m_curBodyState][i].locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) 
+		if (d->m_ini.m_fxList[m_curBodyState][i].base.locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) 
 		{
-			const BoneFXListInfo *info = &(d->m_fxList[m_curBodyState][i]);
-			drawable->getPristineBonePositions(info->locInfo.boneName.str(), 0, &m_FXBonePositions[m_curBodyState][i], NULL, 1);
+			const BoneFXListInfo *info = &(d->m_ini.m_fxList[m_curBodyState][i]);
+			drawable->getPristineBonePositions(info->base.locInfo.boneName.str(), 0, &m_FXBonePositions[m_curBodyState][i], NULL, 1);
 		}
 
-		if (d->m_OCL[m_curBodyState][i].locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) 
+		if (d->m_ini.m_OCL[m_curBodyState][i].base.locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) 
 		{
-			const BoneOCLInfo *info = &(d->m_OCL[m_curBodyState][i]);
-			drawable->getPristineBonePositions(info->locInfo.boneName.str(), 0, &m_OCLBonePositions[m_curBodyState][i], NULL, 1);
+			const BoneOCLInfo *info = &(d->m_ini.m_OCL[m_curBodyState][i]);
+			drawable->getPristineBonePositions(info->base.locInfo.boneName.str(), 0, &m_OCLBonePositions[m_curBodyState][i], NULL, 1);
 		}
 
-		if (d->m_particleSystem[m_curBodyState][i].locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) 
+		if (d->m_ini.m_particleSystem[m_curBodyState][i].base.locInfo.boneName.compare(AsciiString::TheEmptyString) != 0) 
 		{
-			const BoneParticleSystemInfo *info = &(d->m_particleSystem[m_curBodyState][i]);
-			drawable->getPristineBonePositions(info->locInfo.boneName.str(), 0, &m_PSBonePositions[m_curBodyState][i], NULL, 1);
+			const BoneParticleSystemInfo *info = &(d->m_ini.m_particleSystem[m_curBodyState][i]);
+			drawable->getPristineBonePositions(info->base.locInfo.boneName.str(), 0, &m_PSBonePositions[m_curBodyState][i], NULL, 1);
 		}
 	}
 	m_bonesResolved[m_curBodyState] = TRUE;

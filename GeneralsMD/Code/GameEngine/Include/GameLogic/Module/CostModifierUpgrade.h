@@ -86,10 +86,16 @@ public:
 
 	CostModifierUpgradeModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	Real m_percentage;
-	KindOfMaskType m_kindOf;
+	// MG: Cannot apply offsetof to CostModifierUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_percentage;
+		KindOfMaskType m_kindOf;
+	};
+
+	IniData m_ini {};
 };
 
 //-------------------------------------------------------------------------------------------------

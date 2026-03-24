@@ -82,6 +82,10 @@ public:
 	MaterialPassClass(void);
 	~MaterialPassClass(void);
 
+	// No copies allowed!
+	MaterialPassClass(const MaterialPassClass&) = delete;
+	MaterialPassClass& operator=(const MaterialPassClass&) = delete;
+
 	/// MW: Had to make this virtual so app can perform direct/custom D3D setup.
 	virtual void	Install_Materials(void) const;
 	virtual void	UnInstall_Materials(void) const { };	///< reset/cleanup D3D states

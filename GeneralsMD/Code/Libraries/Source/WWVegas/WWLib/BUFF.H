@@ -77,18 +77,18 @@ class Buffer {
 		/*
 		**	Pointer to the buffer memory.
 		*/
-		void * BufferPtr;
+		char* BufferPtr {};
 
 		/*
 		**	The size of the buffer memory.
 		*/
-		long Size;
+		long Size {};
 
 		/*
 		**	Was the buffer allocated by this class? If so, then this class
 		**	will be responsible for freeing the buffer.
 		*/
-		bool IsAllocated;
+		bool IsAllocated {};
 };
 
 

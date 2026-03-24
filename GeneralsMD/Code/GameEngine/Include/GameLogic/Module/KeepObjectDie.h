@@ -45,7 +45,7 @@ class Thing;
 class KeepObjectDie : public DieModule
 {
 
-	MAKE_STANDARD_MODULE_MACRO( KeepObjectDie );
+	MAKE_STANDARD_MODULE_MACRO( KeepObjectDie )
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( KeepObjectDie, "KeepObjectDie" )
 
 public:

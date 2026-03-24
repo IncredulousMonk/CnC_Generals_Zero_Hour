@@ -46,8 +46,8 @@
 //lint -d_LINT=1
 
 
-#include	"straw.h"
-#include	<stdlib.h>
+#include "STRAW.H"
+#include <stdlib.h>
 
 #define	UNITSIZE					32
 #define	MAX_BIT_PRECISION		2048

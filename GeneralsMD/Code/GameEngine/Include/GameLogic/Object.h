@@ -218,10 +218,8 @@ public:
 	Bool isAirborneTarget() const { return m_status.test( OBJECT_STATUS_AIRBORNE_TARGET ); }	///< Our locomotor will control marking us as a valid target for anti air weapons or not
 	Bool isUsingAirborneLocomotor( void ) const;										///< returns true if the current locomotor is an airborne one
 	
-#if 0
 	/// central place for us to put any additional capture logic
 	void onCapture( Player *oldOwner, Player *newOwner );
-#endif // if 0
 
 	/// And game death logic.  Destroy is deletion of object as code
 	void onDie( DamageInfo *damageInfo );
@@ -287,7 +285,7 @@ public:
 #endif // if 0
 	
 	Real getCarrierDeckHeight() const;
-#if 0
+
 	// access to modules
 	//-----------------------------------------------------------------------------
 	
@@ -295,7 +293,6 @@ public:
 	//Objects getting constructed causing crashes either because the modules aren't created
 	//yet, and there's stuff being done inside of setTeam() that cares.
 	Bool areModulesReady() const { return m_modulesReady; }
-#endif // if 0
 
 	BehaviorModule** getBehaviorModules() const { return m_behaviors; }
 
@@ -315,9 +312,7 @@ public:
 
 	inline PhysicsBehavior* getPhysics() { return m_physics; }
 	inline const PhysicsBehavior* getPhysics() const { return m_physics; }
-#if 0
 	void topple( const Coord3D *toppleDirection, Real toppleSpeed, UnsignedInt options );
-#endif // if 0
 
 	UpdateModule* findUpdateModule(NameKeyType key) const { return (UpdateModule*)findModule(key); }
 	DamageModule* findDamageModule(NameKeyType key) const { return (DamageModule*)findModule(key); }
@@ -436,10 +431,8 @@ public:
 	void removeFromList(Object **pListHead);
 	Bool isInList(Object **pListHead) const;
 
-#if 0
 	// this is intended for use ONLY by GameLogic.
 	void friend_deleteInstance() { deleteInstance(); }
-#endif // if 0
 
 	/// cache the partition module (should be called only by PartitionData)
 	void friend_setPartitionData(PartitionData *pd) { m_partitionData = pd; }
@@ -524,10 +517,8 @@ public:
 	void fireCurrentWeapon(Object *target);
 	void fireCurrentWeapon(const Coord3D* pos);
 	void preFireCurrentWeapon( const Object *victim );
-#if 0
 	UnsignedInt getLastShotFiredFrame() const;					///< Get the frame a shot was last fired on
 	ObjectID getLastVictimID() const;						///< Get the last victim we shot at
-#endif // if 0
 	Weapon* findWaypointFollowingCapableWeapon();
 #if 0
 	Bool getAmmoPipShowingInfo(Int& numTotal, Int& numFull) const;
@@ -665,7 +656,6 @@ public:
 	Bool getReceivingDifficultyBonus() const { return m_isReceivingDifficultyBonus; }
 	void setReceivingDifficultyBonus(Bool receive);
 
-#if 0
 	inline UnsignedInt getSafeOcclusionFrame(void) { return m_safeOcclusionFrame; }	//< this is an object specific frame at which it's safe to enable building occlusion.
 	inline void	setSafeOcclusionFrame(UnsignedInt frame) { m_safeOcclusionFrame = frame;} 
 
@@ -679,6 +669,7 @@ protected:
 
 	void setOrRestoreTeam( Team* team, Bool restoring );
 
+#if 0
 	void onDisabledEdge(Bool becomingDisabled);
 	// All of our cheating for radars and power go here.
 #endif // if 0
@@ -703,7 +694,6 @@ protected:
 	Bool didEnterOrExit() const;
 
 	void setID( ObjectID id );
-#if 0
 	virtual Object *asObjectMeth() { return this; }
 	virtual const Object *asObjectMeth() const { return this; }
 
@@ -712,6 +702,7 @@ protected:
 	void updateTriggerAreaFlags(void);
 	void setTriggerAreaFlagsForChangeInPosition(void);
 	
+#if 0
 	/// Look and unlook are protected.  They should be called from Object::reasonToLook.  Like Capture, or death.
 	void look();
 	void unlook();

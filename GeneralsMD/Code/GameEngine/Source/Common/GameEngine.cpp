@@ -492,7 +492,10 @@ void GameEngine::init( int argc, char *argv[] )
 
 
 		// FIXME: Enable the full object parsing once TheModuleFactory has been sorted out.
-		initSubsystem(TheThingFactory,"TheThingFactory", createThingFactory(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Object.ini", "Data\\INI\\Object\\AmericaInfantry.ini" /* NULL */, nullptr /*"Data\\INI\\Object"*/);
+		initSubsystem(TheThingFactory,"TheThingFactory", createThingFactory(), nullptr /*&xferCRC*/, "Data\\INI\\Default\\Object.ini", NULL, nullptr /*"Data\\INI\\Object"*/);
+		// FIXME: Load specific object ini files.
+		ini.load("Data\\INI\\Object\\AmericaInfantry.ini", INI_LOAD_OVERWRITE, nullptr);
+		ini.load("Data\\INI\\Object\\CivilianBuilding.ini", INI_LOAD_OVERWRITE, nullptr);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////

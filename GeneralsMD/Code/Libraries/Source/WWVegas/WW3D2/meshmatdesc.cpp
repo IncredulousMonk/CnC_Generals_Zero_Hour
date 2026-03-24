@@ -40,8 +40,8 @@
 #include "texture.h"
 #include "vertmaterial.h"
 #include "realcrc.h"
-#include	"dx8wrapper.h"
-#include "dx8caps.h"
+#include "dx8wrapper.h"
+// #include "dx8caps.h"
 #include "meshmdl.h"
 
 
@@ -161,7 +161,7 @@ bool UVBufferClass::Is_Equal_To(const UVBufferClass & that)
 
 void UVBufferClass::Update_CRC(void)
 {
-	CRC = CRC_Memory((unsigned char *)Get_Array(),Get_Count() * sizeof(Vector2));
+	CRC = CRC_Memory((unsigned char *)Get_Array(), (size_t)Get_Count() * sizeof(Vector2));
 }
 
 
@@ -600,7 +600,7 @@ void MeshMatDescClass::Install_UV_Array(int pass,int stage,Vector2 * uvs,int cou
 	/*
 	** Compute the crc of this uv array
 	*/
-	unsigned int crc = CRC_Memory((unsigned char *)uvs,count * sizeof(Vector2));
+	unsigned int crc = CRC_Memory((unsigned char *)uvs, (size_t)count * sizeof(Vector2));
 
 	/*
 	** See if there is an existing uv-array that matches the one just loaded
@@ -632,7 +632,10 @@ void MeshMatDescClass::Install_UV_Array(int pass,int stage,Vector2 * uvs,int cou
 
 			WWASSERT(UV[new_index] == NULL);
 			UV[new_index] = NEW_REF(UVBufferClass,(count, "MeshMatDescClass::UV"));
-			memcpy(UV[new_index]->Get_Array(),uvs,count * sizeof(Vector2));
+			for (int i {0}; i < count; ++i) {
+				UV[new_index]->Get_Array()[i] = uvs[i];
+			}
+			// memcpy(UV[new_index]->Get_Array(),uvs, (size_t)count * sizeof(Vector2));
 			UV[new_index]->Update_CRC();  // update the crc for future comparision
 			Set_UV_Source(pass,stage,new_index);
 		}
@@ -640,7 +643,7 @@ void MeshMatDescClass::Install_UV_Array(int pass,int stage,Vector2 * uvs,int cou
 }
 
 
-void MeshMatDescClass::Post_Load_Process(bool lighting_enabled,MeshModelClass * parent)
+void MeshMatDescClass::Post_Load_Process(bool lighting_enabled,MeshModelClass * /* parent */)
 {
 	/*
 	** Configure all vertex materials to source the uv coordinates and colors from the correct arrays
@@ -684,33 +687,33 @@ void MeshMatDescClass::Post_Load_Process(bool lighting_enabled,MeshModelClass * 
 		Vector3 single_diffuse(0.0f,0.0f,0.0f);
 		Vector3 single_ambient(0.0f,0.0f,0.0f);
 		Vector3 single_emissive(0.0f,0.0f,0.0f);
-		float single_opacity=1.0f;
-		bool single_diffuse_used=true;
-		bool single_ambient_used=true;
-		bool single_emissive_used=true;
-		bool single_opacity_used=true;
+		// float single_opacity=1.0f;
+		// bool single_diffuse_used=true;
+		// bool single_ambient_used=true;
+		// bool single_emissive_used=true;
+		// bool single_opacity_used=true;
 		bool diffuse_used=false;
 		bool ambient_used=false;
 		bool emissive_used=false;
-		bool opacity_used=false;
+		// bool opacity_used=false;
 
 		Vector3 mtl_diffuse;
 		Vector3 mtl_ambient;
 		Vector3 mtl_emissive;
-		float mtl_opacity = 1.0f;
+		// float mtl_opacity = 1.0f;
 
 		VertexMaterialClass * prev_mtl = NULL;
 		VertexMaterialClass * mtl = Peek_Material(0, pass);
 		if (mtl) {
 			mtl->Get_Diffuse(&single_diffuse);
-			single_opacity = mtl->Get_Opacity();
+			// single_opacity = mtl->Get_Opacity();
 			mtl->Get_Ambient(&single_ambient);
 			mtl->Get_Emissive(&single_emissive);
 
 			if (single_diffuse.X || single_diffuse.Y || single_diffuse.Z) diffuse_used=true;
 			if (single_ambient.X || single_ambient.Y || single_ambient.Z) ambient_used=true;
 			if (single_emissive.X || single_emissive.Y || single_emissive.Z) emissive_used=true;
-			if (single_opacity!=1.0f) opacity_used=true;
+			// if (single_opacity!=1.0f) opacity_used=true;
 		}
 
 		for (int vidx=0; vidx<VertexCount; vidx++) {
@@ -718,28 +721,28 @@ void MeshMatDescClass::Post_Load_Process(bool lighting_enabled,MeshModelClass * 
 			if (mtl != prev_mtl) {
 				prev_mtl = mtl;
 				mtl->Get_Diffuse(&mtl_diffuse);
-				mtl_opacity = mtl->Get_Opacity();
+				// mtl_opacity = mtl->Get_Opacity();
 				mtl->Get_Ambient(&mtl_ambient);
 				mtl->Get_Emissive(&mtl_emissive);
 			}
 
-			if (mtl_diffuse.X!=single_diffuse.X || mtl_diffuse.Y!=single_diffuse.Y || mtl_diffuse.Z!=single_diffuse.Z) {
-				single_diffuse_used=false;
-			}
-			if (mtl_ambient.X!=single_ambient.X || mtl_ambient.Y!=single_ambient.Y || mtl_ambient.Z!=single_ambient.Z) {
-				single_ambient_used=false;
-			}
-			if (mtl_emissive.X!=single_emissive.X || mtl_emissive.Y!=single_emissive.Y || mtl_emissive.Z!=single_emissive.Z) {
-				single_emissive_used=false;
-			}
-			if (mtl_opacity!=single_opacity) {
-				single_opacity_used=false;
-			}
+			// if (mtl_diffuse.X!=single_diffuse.X || mtl_diffuse.Y!=single_diffuse.Y || mtl_diffuse.Z!=single_diffuse.Z) {
+			// 	single_diffuse_used=false;
+			// }
+			// if (mtl_ambient.X!=single_ambient.X || mtl_ambient.Y!=single_ambient.Y || mtl_ambient.Z!=single_ambient.Z) {
+			// 	single_ambient_used=false;
+			// }
+			// if (mtl_emissive.X!=single_emissive.X || mtl_emissive.Y!=single_emissive.Y || mtl_emissive.Z!=single_emissive.Z) {
+			// 	single_emissive_used=false;
+			// }
+			// if (mtl_opacity!=single_opacity) {
+			// 	single_opacity_used=false;
+			// }
 
 			if (mtl_diffuse.X || mtl_diffuse.Y || mtl_diffuse.Z) diffuse_used=true;
 			if (mtl_ambient.X || mtl_ambient.Y || mtl_ambient.Z) ambient_used=true;
 			if (mtl_emissive.X || mtl_emissive.Y || mtl_emissive.Z) emissive_used=true;
-			if (mtl_opacity!=1.0f) opacity_used=true;
+			// if (mtl_opacity!=1.0f) opacity_used=true;
 
 		}
 
@@ -850,7 +853,7 @@ void MeshMatDescClass::Post_Load_Process(bool lighting_enabled,MeshModelClass * 
 	** HACK: Kill BUMPENV passes on hardware that doesn't support BUMPENV
 	** HACK: Set lighting to false on all passes if all passes are of type NO DIFFUSE, NO AMBIENT, YES EMISSIVE
 	*/
-	for (pass=0; pass<PassCount; pass++) {
+	for (int pass=0; pass<PassCount; pass++) {
 		bool kill_pass = false;
 
 		/*
@@ -956,6 +959,8 @@ void MeshMatDescClass::Configure_Material(VertexMaterialClass * mtl,int pass,boo
 
 bool MeshMatDescClass::Do_Mappers_Need_Normals(void)
 {
+DEBUG_LOG(("MeshMatDescClass::Do_Mappers_Need_Normals not yet implemented!\n"));
+#if 0
 	if (DX8Wrapper::Is_Initted() && DX8Wrapper::Get_Current_Caps()->Support_NPatches() && WW3D::Get_NPatches_Level()>1) return true;
 
 	for (int pass=0; pass<PassCount; pass++) {
@@ -981,6 +986,7 @@ bool MeshMatDescClass::Do_Mappers_Need_Normals(void)
 			}
 		}
 	}
+#endif // if 0
 
 	return false;
 }

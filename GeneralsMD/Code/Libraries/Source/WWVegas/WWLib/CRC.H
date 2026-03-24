@@ -43,6 +43,7 @@
 #include	<stdlib.h>
 #ifdef _UNIX
 	#include "osdep.h"
+	#include <x86intrin.h>
 #endif
 
 /*
@@ -80,7 +81,7 @@ class CRCEngine {
 
 		long Value(void) const {
 			if (Buffer_Needs_Data()) {
-				return(_lrotl(CRC, 1) + StagingBuffer.Composite);
+				return((long)_lrotl((unsigned long)CRC, 1) + StagingBuffer.Composite);
 			}
 			return(CRC);
 		};
@@ -105,7 +106,7 @@ class CRCEngine {
 		union {
 			long Composite;
 			char Buffer[sizeof(long)];
-		} StagingBuffer;
+		} StagingBuffer {};
 };
 
 // the CRC class defines a few static functions for dealing with CRCs a little differently than

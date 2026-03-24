@@ -172,7 +172,7 @@ void HTreeManagerClass::Free_All_Trees_With_Exclusion_List(const W3DExclusionLis
 	TreeHash.Remove_All();
 
 	// Add back any trees that were not deleted
-	for (treeidx=0; treeidx < new_tail; treeidx++)
+	for (int treeidx=0; treeidx < new_tail; treeidx++)
 	{
 		// Insert to hash table for fast name based search
 		StringClass lower_case_name(TreePtr[treeidx]->Get_Name(),true);
@@ -249,7 +249,7 @@ Error:
 int HTreeManagerClass::Get_Tree_ID(const char * name)
 {
 	for (int i=0; i<NumTrees; i++) {
-		if (TreePtr[i] && (stricmp(name,TreePtr[i]->Get_Name()) == 0)) {
+		if (TreePtr[i] && (strcasecmp(name,TreePtr[i]->Get_Name()) == 0)) {
 			return i;
 		}
 	}

@@ -298,14 +298,6 @@ Real LinuxTerrainLogic::getGroundHeight(Real x, Real y, Coord3D* normal) const
 //-------------------------------------------------------------------------------------------------
 Real LinuxTerrainLogic::getLayerHeight( Real x, Real y, PathfindLayerEnum layer, Coord3D* normal, Bool clip ) const
 {
-(void) x;
-(void) y;
-(void) layer;
-(void) normal;
-(void) clip;
-DEBUG_CRASH(("LinuxTerrainLogic::getLayerHeight not yet implemented!"));
-return 0.0;
-#if 0
 #ifdef USE_THE_TERRAIN_OBJECT
 
    if (!TheTerrainRenderObject)
@@ -353,7 +345,6 @@ return 0.0;
    return height;
 
 #endif
-#endif // if 0
 }  // end getLayerHeight
 
 //-------------------------------------------------------------------------------------------------

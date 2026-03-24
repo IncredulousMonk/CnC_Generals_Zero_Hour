@@ -72,10 +72,14 @@ public:
 	MotionChannelClass(void);
 	~MotionChannelClass(void);
 
-	bool	Load_W3D(ChunkLoadClass & cload);		
-	WWINLINE int Get_Type(void) const { return Type; }
-	WWINLINE int Get_Pivot(void) const { return PivotIdx; }
-	WWINLINE void Set_Pivot(int idx) { PivotIdx=idx; }
+	// No copies allowed!
+	MotionChannelClass(const MotionChannelClass&) = delete;
+	MotionChannelClass& operator=(const MotionChannelClass&) = delete;
+
+	bool	Load_W3D(ChunkLoadClass & cload);
+	WWINLINE int Get_Type(void) const { return (int)Type; }
+	WWINLINE int Get_Pivot(void) const { return (int)PivotIdx; }
+	WWINLINE void Set_Pivot(unsigned idx) { PivotIdx=idx; }
 
 #define SPECIAL_GETVEC_AS_QUAT
 #ifdef SPECIAL_GETVEC_AS_QUAT
@@ -85,14 +89,14 @@ public:
 private:
 
 	uint32	PivotIdx;			// what pivot is this channel applied to
-	uint32	Type;					// what type of channel is this
+	uint32	Type;				// what type of channel is this
 	int		VectorLen;			// size of each individual vector
 
 	float		ValueOffset;
 	float		ValueScale;
 	unsigned short* CompressedData;
 
-	float	*	Data;					// pointer to the raw floating point data
+	float*	Data;				// pointer to the raw floating point data
 	int		FirstFrame;			// first frame which was non-identity
 	int		LastFrame;			// last frame which was non-identity
 	void Free(void);
@@ -167,9 +171,13 @@ public:
 	BitChannelClass(void);
 	~BitChannelClass(void);
 
+	// No copies allowed!
+	BitChannelClass(const BitChannelClass&) = delete;
+	BitChannelClass& operator=(const BitChannelClass&) = delete;
+
 	bool	Load_W3D(ChunkLoadClass & cload);
-	WWINLINE int	Get_Type(void) const { return Type; }
-	WWINLINE int	Get_Pivot(void) const { return PivotIdx; }
+	WWINLINE int	Get_Type(void) const { return (int)Type; }
+	WWINLINE int	Get_Pivot(void) const { return (int)PivotIdx; }
 	WWINLINE int	Get_Bit(int frame) const;
 
 private:
@@ -223,9 +231,13 @@ public:
 	TimeCodedMotionChannelClass(void);
 	~TimeCodedMotionChannelClass(void);
 
+	// No copies allowed!
+	TimeCodedMotionChannelClass(const TimeCodedMotionChannelClass&) = delete;
+	TimeCodedMotionChannelClass& operator=(const TimeCodedMotionChannelClass&) = delete;
+
 	bool	Load_W3D(ChunkLoadClass & cload);		
-	int	Get_Type(void) { return Type; }
-	int	Get_Pivot(void) { return PivotIdx; }
+	int	Get_Type(void) { return (int)Type; }
+	int	Get_Pivot(void) { return (int)PivotIdx; }
 	void	Get_Vector(float32 frame, float * setvec);
 
 	Quaternion Get_QuatVector(float32 frame);
@@ -261,9 +273,13 @@ public:
 	AdaptiveDeltaMotionChannelClass(void);
 	~AdaptiveDeltaMotionChannelClass(void);
 
+	// No copies allowed!
+	AdaptiveDeltaMotionChannelClass(const AdaptiveDeltaMotionChannelClass&) = delete;
+	AdaptiveDeltaMotionChannelClass& operator=(const AdaptiveDeltaMotionChannelClass&) = delete;
+
 	bool	Load_W3D(ChunkLoadClass & cload);		
-	int	Get_Type(void) { return Type; }
-	int	Get_Pivot(void) { return PivotIdx; }
+	int	Get_Type(void) { return (int)Type; }
+	int	Get_Pivot(void) { return (int)PivotIdx; }
 	void	Get_Vector(float32 frame, float * setvec);
 
 	Quaternion Get_QuatVector(float32 frame);
@@ -310,9 +326,13 @@ public:
 	TimeCodedBitChannelClass(void);
 	~TimeCodedBitChannelClass(void);
 
+	// No copies allowed!
+	TimeCodedBitChannelClass(const TimeCodedBitChannelClass&) = delete;
+	TimeCodedBitChannelClass& operator=(const TimeCodedBitChannelClass&) = delete;
+
 	bool	Load_W3D(ChunkLoadClass & cload);
-	int	Get_Type(void) { return Type; }
-	int	Get_Pivot(void) { return PivotIdx; }
+	int	Get_Type(void) { return (int)Type; }
+	int	Get_Pivot(void) { return (int)PivotIdx; }
 	int	Get_Bit(int frame);
 
 private:

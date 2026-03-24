@@ -87,8 +87,8 @@ ChunkSaveClass::ChunkSaveClass(FileClass * file) :
 	MicroChunkPosition(0)
 {
 	memset(PositionStack,0,sizeof(PositionStack));
-	memset(HeaderStack,0,sizeof(HeaderStack));
-	memset(&MCHeader,0,sizeof(MCHeader));
+	// memset(HeaderStack,0,sizeof(HeaderStack));
+	// memset(&MCHeader,0,sizeof(MCHeader));
 }
 
 
@@ -270,7 +270,7 @@ uint32 ChunkSaveClass::Write(const void * buf, uint32 nbytes)
 	assert(StackIndex > 0);
 
 	// write the bytes into the file
-	if (File->Write(buf,nbytes) != (int)nbytes) return 0;
+	if (File->Write(buf,(int)nbytes) != (int)nbytes) return 0;
 
 	// track them in the wrapping chunk
 	HeaderStack[StackIndex-1].Add_Size(nbytes);
@@ -392,8 +392,8 @@ ChunkLoadClass::ChunkLoadClass(FileClass * file) :
 	MicroChunkPosition(0)
 {
 	memset(PositionStack,0,sizeof(PositionStack));
-	memset(HeaderStack,0,sizeof(HeaderStack));
-	memset(&MCHeader,0,sizeof(MCHeader));
+	// memset(HeaderStack,0,sizeof(HeaderStack));
+	// memset(&MCHeader,0,sizeof(MCHeader));
 }
 
 
@@ -453,16 +453,16 @@ bool ChunkLoadClass::Close_Chunk()
 	// check for stack overflow
 	assert(StackIndex > 0);
 	
-	int csize = HeaderStack[StackIndex-1].Get_Size();
-	int pos = PositionStack[StackIndex-1];
+	uint32 csize = HeaderStack[StackIndex-1].Get_Size();
+	uint32 pos = PositionStack[StackIndex-1];
 	
 	if (pos < csize) {
-		File->Seek(csize - pos,SEEK_CUR);
+		File->Seek(int(csize - pos),SEEK_CUR);
 	}
 
 	StackIndex--;
 	if (StackIndex > 0) {
-		PositionStack[StackIndex - 1] += csize + sizeof(ChunkHeader);
+		PositionStack[StackIndex - 1] += (uint32)csize + sizeof(ChunkHeader);
 	}
 
 	return true;
@@ -597,7 +597,7 @@ bool ChunkLoadClass::Close_Micro_Chunk()
 		
 		// update the tracking variables for where we are in the normal chunk.
 		if (StackIndex > 0) {
-			PositionStack[StackIndex-1] += csize - pos;
+			PositionStack[StackIndex-1] += (uint32)(csize - pos);
 		}
 	}
 
@@ -652,17 +652,17 @@ uint32 ChunkLoadClass::Seek(uint32 nbytes)
 	assert(StackIndex >= 1);
 
 	// Don't seek if we would go past the end of the current chunk
-	if (PositionStack[StackIndex-1] + nbytes > (int)HeaderStack[StackIndex-1].Get_Size()) {
+	if (PositionStack[StackIndex-1] + nbytes > HeaderStack[StackIndex-1].Get_Size()) {
 		return 0;
 	}
 
 	// Don't read if we are in a micro chunk and would go past the end of it
-	if (InMicroChunk && MicroChunkPosition + nbytes > MCHeader.Get_Size()) {
+	if (InMicroChunk && (uint32)MicroChunkPosition + nbytes > MCHeader.Get_Size()) {
 		return 0;
 	}
 	
-	uint32 curpos=File->Tell();
-	if (File->Seek(nbytes,SEEK_CUR)-curpos != (int)nbytes) {
+	int curpos=File->Tell();
+	if (File->Seek((int)nbytes,SEEK_CUR)-curpos != (int)nbytes) {
 		return 0;
 	}
 
@@ -671,7 +671,7 @@ uint32 ChunkLoadClass::Seek(uint32 nbytes)
 
 	// Update our position in the micro chunk if we are in one
 	if (InMicroChunk) {
-		MicroChunkPosition += nbytes;
+		MicroChunkPosition += (int)nbytes;
 	}
 
 	return nbytes;
@@ -694,16 +694,16 @@ uint32 ChunkLoadClass::Read(void * buf,uint32 nbytes)
 	assert(StackIndex >= 1);
 
 	// Don't read if we would go past the end of the current chunk
-	if (PositionStack[StackIndex-1] + nbytes > (int)HeaderStack[StackIndex-1].Get_Size()) {
+	if (PositionStack[StackIndex-1] + nbytes > HeaderStack[StackIndex-1].Get_Size()) {
 		return 0;
 	}
 
 	// Don't read if we are in a micro chunk and would go past the end of it
-	if (InMicroChunk && MicroChunkPosition + nbytes > MCHeader.Get_Size()) {
+	if (InMicroChunk && (uint32)MicroChunkPosition + nbytes > MCHeader.Get_Size()) {
 		return 0;
 	}
 	
-	if (File->Read(buf,nbytes) != (int)nbytes) {
+	if (File->Read(buf, (int)nbytes) != (int)nbytes) {
 		return 0;
 	}
 
@@ -712,7 +712,7 @@ uint32 ChunkLoadClass::Read(void * buf,uint32 nbytes)
 
 	// Update our position in the micro chunk if we are in one
 	if (InMicroChunk) {
-		MicroChunkPosition += nbytes;
+		MicroChunkPosition += (int)nbytes;
 	}
 
 	return nbytes;

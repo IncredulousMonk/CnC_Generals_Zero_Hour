@@ -55,14 +55,14 @@
 */
 struct BoxTestStruct
 {
-	Vector3		Min;
-	Vector3		Max;
-	Vector3		P0;
-	Vector3		DP;
-	float			Fraction;
-	bool			Inside;
-	int			Axis;
-	int			Side;
+	Vector3		Min {};
+	Vector3		Max {};
+	Vector3		P0 {};
+	Vector3		DP {};
+	float		Fraction {};
+	bool		Inside {};
+	int			Axis {};
+	int			Side {};
 };
 
 /*

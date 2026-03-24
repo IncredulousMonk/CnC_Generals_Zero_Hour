@@ -128,7 +128,6 @@ public:
 
 };
 
-#if 0
 //-----------------------------------------------------------------------------
 struct TWheelInfo 
 {
@@ -164,7 +163,6 @@ public:
 
 	DrawableLocoInfo();
 };
-#endif // if 0
 
 //-----------------------------------------------------------------------------
 //* TintEnvelope handles the fading of the tint color up, down stable etc...
@@ -306,18 +304,14 @@ public:
 	Drawable(const Drawable&) = delete;
 	Drawable& operator=(const Drawable&) = delete;
 
-#if 0
-	void onDestroy( void );																							///< run from GameClient::destroyDrawable
-	void onLevelStart();                                                ///< run from GameLogic::startNewGame
-#endif // if 0
+	void onDestroy( void );												///< run from GameClient::destroyDrawable
+	void onLevelStart();												///< run from GameLogic::startNewGame
 
 	Drawable *getNextDrawable( void ) const { return m_nextDrawable; }	///< return the next drawable in the global list
-	Drawable *getPrevDrawable( void ) const { return m_prevDrawable; }  ///< return the prev drawable in the global list
-	DrawableID getID( void ) const;																			///< return this drawable's unique ID
+	Drawable *getPrevDrawable( void ) const { return m_prevDrawable; }	///< return the prev drawable in the global list
+	DrawableID getID( void ) const;										///< return this drawable's unique ID
 
-#if 0
 	void friend_bindToObject( Object *obj ); ///< bind this drawable to an object ID. for use ONLY by GameLogic!
-#endif // if 0
 	void setIndicatorColor(Color color);
 	
 	void setTintStatus( TintStatus statusBits ) { BitSet( m_tintStatus, statusBits ); };
@@ -405,9 +399,9 @@ public:
 #if 0
 	void releaseShadows(void);	///< frees all shadow resources used by this module - used by Options screen.
 	void allocateShadows(void); ///< create shadow resources if not already present. Used by Options screen.
+#endif // if 0
 
 	void setFullyObscuredByShroud(Bool fullyObscured);
-#endif // if 0
 	inline Bool getFullyObscuredByShroud(void) {return m_drawableFullyObscuredByShroud;}
 
 #if 0
@@ -429,7 +423,6 @@ public:
 	void onSelected();														///< Work unrelated to selection that must happen at time of selection
 	void onUnselected();													///< Work unrelated to selection that must happen at time of unselection
 
-#if 0
 	//---------------------------------------------------------------------------
 
 	// an "instance" matrix defines the local transform of the Drawable, and is concatenated with the global transform
@@ -440,6 +433,7 @@ public:
 	inline Real getInstanceScale( void ) const { return m_instanceScale; }		///< get scale that will be applied to instance matrix
 	void setInstanceScale(Real value) { m_instanceScale = value;}	///< set scale that will be applied to instance matrix before rendering.
 
+#if 0
 	const Matrix3D *getTransformMatrix( void ) const;	///< return the world transform
 #endif // if 0
 
@@ -455,12 +449,12 @@ public:
 #if 0
 	void enableAmbientSound( Bool enable );
 	void setTimeOfDay( TimeOfDay tod );
+#endif // if 0
 	Bool getAmbientSoundEnabledFromScript( void ) const { return m_ambientSoundEnabledFromScript; }
 
 	void prependToList(Drawable **pListHead);
 	void removeFromList(Drawable **pListHead);
 	void setID( DrawableID id );											///< set this drawable's unique ID
-#endif // if 0
 
 	inline const ModelConditionFlags& getModelConditionFlags( void ) const { return m_conditionState; }
 
@@ -618,6 +612,7 @@ public:
 	DrawableIconInfo* getIconInfo();															///< lazily allocates, if necessary
 	void killIcon(DrawableIconType t) { if (m_iconInfo) m_iconInfo->killIcon(t); }
 	Bool hasIconInfo() const { return m_iconInfo != NULL; }
+#endif // if 0
 
 
 	Bool getReceivesDynamicLights( void ) { return m_receivesDynamicLights; };
@@ -626,9 +621,7 @@ public:
 	//---------------------------------------------------------------------------------
 	// Stuff for overriding ambient sound
 	const AudioEventInfo * getBaseSoundAmbientInfo() const; //< Possible starting point if only some parameters are customized
-#endif // if 0
 	void enableAmbientSoundFromScript( Bool enable );
-#if 0
 	const AudioEventRTS * getAmbientSound() const { return m_ambientSound == NULL ? NULL : &m_ambientSound->m_event; }
 	void setCustomSoundAmbientOff(); //< Kill the ambient sound
 	void setCustomSoundAmbientInfo( DynamicAudioEventInfo * customAmbientInfo ); //< Set ambient sound.
@@ -637,6 +630,7 @@ public:
 	void mangleCustomAudioName( DynamicAudioEventInfo * audioToMangle ) const;
 
 
+#if 0
 	Real friend_getStealthOpacity( void ) { return m_stealthOpacity; }
 	Real friend_getExplicitOpacity( void ) { return m_explicitOpacity; }
 	Real friend_getEffectiveStealthOpacity( void ) { return m_effectiveStealthOpacity; }
@@ -654,10 +648,8 @@ protected:
 
 	void startAmbientSound( BodyDamageType dt, TimeOfDay tod, Bool onlyIfPermanent = false );
 
-#if 0
 	Drawable *asDrawableMeth() { return this; }
 	const Drawable *asDrawableMeth() const { return this; }
-#endif // if 0
 
 	inline Module** getModuleList(ModuleType i)
 	{
@@ -694,9 +686,9 @@ protected:
 
 	const AudioEventRTS& getAmbientSoundByDamage(BodyDamageType dt);
 
-#if 0
 	void clearCustomSoundAmbient( bool restartSound ); //< Return to using defaults
 
+#if 0
 #ifdef _DEBUG
 	void validatePos() const;
 #endif
@@ -748,11 +740,9 @@ private:
 	UnsignedInt		m_timeElapsedFade {};			///< for how many frames have i been fading
 	UnsignedInt		m_timeToFade {};						///< how slowly am I fading
 
-#if 0
 	UnsignedInt		m_shroudClearFrame {};						///< Last frame the local player saw this drawable "OBJECTSHROUD_CLEAR"
 
 	DrawableLocoInfo*	m_locoInfo {};	// lazily allocated
-#endif // if 0
 
 	DynamicAudioEventRTS*	m_ambientSound {};		///< sound module for ambient sound (lazily allocated)
 
@@ -841,7 +831,6 @@ private:
 	static const Image*		s_emptyContainer;
 	static Anim2DTemplate**	s_animationTemplates;
 
-#if 0
 #ifdef DIRTY_CONDITION_FLAGS
 	static Int							s_modelLockCount;
 #endif
@@ -850,7 +839,6 @@ private:
 	static void initStaticImages();
 	//*******************************************
 
-#endif // if 0
 };
 
 

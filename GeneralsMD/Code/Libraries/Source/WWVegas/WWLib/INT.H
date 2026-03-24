@@ -40,11 +40,11 @@
 #ifndef INT_H
 #define INT_H
 
-#include	"mpmath.h"
-#include	"straw.h"
-#include	<assert.h>
-#include	<limits.h>
-#include	<memory.h>
+#include "MPMATH.H"
+#include "STRAW.H"
+#include <assert.h>
+#include <limits.h>
+#include <memory.h>
 
 #ifdef __BORLANDC__
 #pragma warn -inl
@@ -98,7 +98,7 @@ class Int {
 		**	Attribute query functions.
 		*/
 		int ByteCount(void) const {return(XMP_Count_Bytes(&reg[0], PRECISION));}
-		int BitCount(void) const {return(XMP_Count_Bits(&reg[0], PRECISION));}
+		int BitCount(void) const {return((int)XMP_Count_Bits(&reg[0], PRECISION));}
 		bool Is_Negative(void) const {return(XMP_Is_Negative(&reg[0], PRECISION));}
 		unsigned MaxBitPrecision() const {return PRECISION*(sizeof(unsigned long)*CHAR_BIT);}
 		bool IsSmallPrime(void) const {return(XMP_Is_Small_Prime(&reg[0], PRECISION));}
@@ -126,7 +126,7 @@ class Int {
 		Int operator - (const Int & number) const {Int term;Borrow = XMP_Sub(term, &reg[0], number, 0, PRECISION);return(term);}
 		Int operator - (unsigned short b) const {Int result;Borrow = XMP_Sub_Int(result, &reg[0], b, 0, PRECISION);return(result);}
 		Int operator * (const Int & multiplier) const {Int result;Error=XMP_Signed_Mult(result, &reg[0], multiplier, PRECISION);return result;}
-		Int operator * (unsigned short b) const {Int result;Error=XMP_Unsigned_Mult_Int(result, &reg[0], b, PRECISION);return(result);}
+		Int operator * (unsigned short b) const {Int result;Error=XMP_Unsigned_Mult_Int(result, &reg[0], (short)b, PRECISION);return(result);}
 		Int operator / (const Int & divisor) const {Int quotient = *this;XMP_Signed_Div(Remainder, quotient, &reg[0], divisor, PRECISION);return (quotient);}
 		Int operator / (unsigned long b) const {return(*this / Int<PRECISION>(b));}
 		Int operator / (unsigned short divisor) const {Int quotient;Error=XMP_Unsigned_Div_Int(quotient, &reg[0], divisor, PRECISION);return(quotient);}
@@ -195,7 +195,7 @@ class Int {
 		// Remainder value from the various division routines.
 		static Int Remainder;
 
-		digit reg[PRECISION];
+		digit reg[(size_t)PRECISION];
 
 		friend struct RemainderTable< Int<PRECISION> >;
 };

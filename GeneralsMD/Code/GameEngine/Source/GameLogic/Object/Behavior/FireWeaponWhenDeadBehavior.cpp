@@ -66,7 +66,7 @@ const Real END_MIDPOINT_RATIO = 0.65f;
 FireWeaponWhenDeadBehavior::FireWeaponWhenDeadBehavior( Thing *thing, const ModuleData* moduleData ) : 
 	BehaviorModule( thing, moduleData )
 {
-	if (getFireWeaponWhenDeadBehaviorModuleData()->m_initiallyActive)
+	if (getFireWeaponWhenDeadBehaviorModuleData()->m_ini.m_initiallyActive)
 	{
 		giveSelfUpgrade();
 	}
@@ -90,7 +90,7 @@ void FireWeaponWhenDeadBehavior::onDie( const DamageInfo *damageInfo )
 		return;
 
 	// right type?
-	if (!d->m_dieMuxData.isDieApplicable(getObject(), damageInfo))
+	if (!d->m_ini.m_dieMuxData.isDieApplicable(getObject(), damageInfo))
 		return;
 	
 	// This will never apply until built.  Otherwise canceling construction sets it off, and killing
@@ -111,10 +111,10 @@ void FireWeaponWhenDeadBehavior::onDie( const DamageInfo *damageInfo )
 		return;
 	}
 	
-	if (d->m_deathWeapon)
+	if (d->m_ini.m_deathWeapon)
 	{
 		// fire the default weapon
-	  TheWeaponStore->createAndFireTempWeapon(d->m_deathWeapon, obj, obj->getPosition());
+	  TheWeaponStore->createAndFireTempWeapon(d->m_ini.m_deathWeapon, obj, obj->getPosition());
 	}
 }
 

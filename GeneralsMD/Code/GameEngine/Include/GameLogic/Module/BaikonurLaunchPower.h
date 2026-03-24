@@ -62,9 +62,15 @@ public:
 
 	BaikonurLaunchPowerModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse& p );
+	static void buildFieldParse(void* what,  MultiIniFieldParse& p);
 
-	AsciiString m_detonationObject;		
+	// MG: Cannot apply offsetof to BaikonurLaunchPowerModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_detonationObject;
+	};
+
+	IniData m_ini {};
 };
 
 

@@ -162,7 +162,7 @@ private:
 ** the class.
 */
 #define DEFINE_AUTO_POOL(T,BLOCKSIZE) \
-ObjectPoolClass<T,BLOCKSIZE> AutoPoolClass<T,BLOCKSIZE>::Allocator;
+template<> ObjectPoolClass<T,BLOCKSIZE> AutoPoolClass<T,BLOCKSIZE>::Allocator;
 
 
 /***********************************************************************************************
@@ -371,7 +371,5 @@ void AutoPoolClass<T,BLOCK_SIZE>::operator delete( void * memory )
 	if ( memory == 0 ) return;
 	Allocator.Free_Object_Memory((T*)memory);
 }
- 
-
 
 #endif // MEMPOOL_H

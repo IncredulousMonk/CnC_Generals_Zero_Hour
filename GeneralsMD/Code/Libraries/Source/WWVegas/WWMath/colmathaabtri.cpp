@@ -146,32 +146,32 @@ struct BTCollisionStruct
 		Vector3::Cross_Product(E[0],E[1],&N);	
 	}
 
-	bool						StartBad;			// Inital configuration is intersecting?
-	float						MaxFrac;				// Longest move allowed so far
+	bool					StartBad {};		// Inital configuration is intersecting?
+	float					MaxFrac {};			// Longest move allowed so far
 
-	int						AxisId;				// Last separating axis
-	int						Side;					// which side of the interval
-	int						Point;				// Index of the "closest" triangle point (or one of them)
+	int						AxisId {};			// Last separating axis
+	int						Side {};			// which side of the interval
+	int						Point {};			// Index of the "closest" triangle point (or one of them)
 	
-	int						TestAxisId;			// Axis 'id' we're working on
-	int						TestSide;			// Was the axis we're working on flipped
-	int						TestPoint;			// Index of the closest vertex
-	Vector3					TestAxis;			// Axis we're working on
+	int						TestAxisId {};		// Axis 'id' we're working on
+	int						TestSide {};		// Was the axis we're working on flipped
+	int						TestPoint {};		// Index of the closest vertex
+	Vector3					TestAxis {};		// Axis we're working on
 
-	Vector3					D;						// Vector from the center of the box to v0
-	Vector3					Move;					// Move vector relative to stationary triangle
-	float						AE[3][3];			// Dot products of the Basis vectors and edges
-	float						AN[3];				// Dot products of the Basis vectors and the normal
+	Vector3					D {};				// Vector from the center of the box to v0
+	Vector3					Move {};			// Move vector relative to stationary triangle
+	float					AE[3][3];			// Dot products of the Basis vectors and edges
+	float					AN[3];				// Dot products of the Basis vectors and the normal
 	Vector3					AxE[3][3];			// Cross products of the Basis vectors and edges
 
-	Vector3					E[3];					// edge vectors for the triangle 
-	Vector3					N;						// normal (NOT normalized!!!)
-	Vector3					FinalD;				// Vector from center of box to v0 at end of move
+	Vector3					E[3];				// edge vectors for the triangle 
+	Vector3					N {};				// normal (NOT normalized!!!)
+	Vector3					FinalD {};			// Vector from center of box to v0 at end of move
 
-	const AABoxClass *	Box;
-	const TriClass *		Tri;
-	const Vector3 *		BoxMove;
-	const Vector3 *		TriMove;
+	const AABoxClass *	Box {};
+	const TriClass *	Tri {};
+	const Vector3 *		BoxMove {};
+	const Vector3 *		TriMove {};
 
 private:
 	
@@ -568,7 +568,7 @@ static inline void aabtri_compute_contact_normal
 #endif
 }
 
-inline void VERIFY_CROSS(const Vector3 & a, const Vector3 & b,const Vector3 & cross)
+inline void VERIFY_CROSS([[maybe_unused]]const Vector3 & a, [[maybe_unused]]const Vector3 & b, [[maybe_unused]]const Vector3 & cross)
 {
 #ifdef WWDEBUG
 	Vector3 tmp_cross;
@@ -878,16 +878,16 @@ struct AABTIntersectStruct
 	}
 
 
-	Vector3					D;						// Vector from the center of the box to v0
-	float						AE[3][3];			// Dot products of the Basis vectors and edges
-	float						AN[3];				// Dot products of the Basis vectors and the normal
+	Vector3					D {};				// Vector from the center of the box to v0
+	float					AE[3][3];			// Dot products of the Basis vectors and edges
+	float					AN[3];				// Dot products of the Basis vectors and the normal
 	Vector3					AxE[3][3];			// Cross produts of the Basis vectors and edges
 
-	Vector3					E[3];					// edge vectors for the triangle 
-	Vector3					N;						// normal (NOT normalized!!!)
+	Vector3					E[3];				// edge vectors for the triangle 
+	Vector3					N {};				// normal (NOT normalized!!!)
 
 	const AABoxClass *	Box;
-	const TriClass *		Tri;
+	const TriClass *	Tri;
 
 private:
 	

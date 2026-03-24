@@ -364,7 +364,7 @@ static PoolSizeRec sizes[] =
 	{ "W3DDebrisDraw", 128, 128 },
 	{ "W3DDependencyModelDraw", 64, 64 },
 	{ "W3DLaserDraw", 32, 32 },
-	{ "W3DModelDraw", 2048, 512 },
+	{ "LinuxModelDraw", 2048, 512 },
 	{ "W3DOverlordTankDraw", 64, 64 },
 	{ "W3DOverlordTruckDraw", 64, 64 },
 	{ "W3DOverlordAircraftDraw", 64, 64 },
@@ -636,6 +636,7 @@ static PoolSizeRec sizes[] =
 	// OpenGL pools!
 	{ "OpenGLTexture", 4, 1 },
 	{ "OpenGLSampler", 4, 1 },
+	{ "OpenGLMeshRenderer", 4, 1 },
 	
 	// W3D pools!
 	{ "BoxPrototypeClass", 128, 128 },
@@ -665,6 +666,7 @@ static PoolSizeRec sizes[] =
 	{ "TerrainTextureClass", 4, 4 },
 	{ "MeshClass", 14000, 2000 },
 	{ "HTreeClass", 2048, 512 },
+	// { "HAnimComboDataClass", 256, 64 },
 	{ "HLodClass", 2048, 512 },
 	{ "MeshModelClass", 8192, 32 },
 	{ "ShareBufferClass", 32768, 1024 }, 

@@ -46,7 +46,7 @@
 
 #include "always.h"
 #include "vector3.h"
-#include "vector3i.h"
+#include "Vector3i.h"
 #include "aaplane.h"
 #include "bittype.h"
 #include "meshgeometry.h"
@@ -68,6 +68,10 @@ public:
 	
 	AABTreeBuilderClass(void);
 	~AABTreeBuilderClass(void);
+
+	// No copies allowed!
+	AABTreeBuilderClass(const AABTreeBuilderClass&) = delete;
+	AABTreeBuilderClass& operator=(const AABTreeBuilderClass&) = delete;
 
 	void					Build_AABTree(int polycount,TriIndex * polys,int vertcount,Vector3 * verts);
 	void					Build_AABTree(int polycount,Vector3i* polys,int vertcount,Vector3 * verts);
@@ -99,6 +103,10 @@ private:
 			if (Back) { delete Back; }
 			if (PolyIndices) { delete[] PolyIndices; }
 		}
+
+		// No copies allowed!
+		CullNodeStruct(const CullNodeStruct&) = delete;
+		CullNodeStruct& operator=(const CullNodeStruct&) = delete;
 
 		int						Index;
 		Vector3					Min;
@@ -208,4 +216,3 @@ private:
 
 
 #endif //AABTREEBUILDER_H
-

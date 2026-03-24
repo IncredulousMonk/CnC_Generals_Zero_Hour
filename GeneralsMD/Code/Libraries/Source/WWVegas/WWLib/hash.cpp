@@ -119,7 +119,7 @@ HashableClass * HashTableClass::Find( const char * key )
 	// Find in the hash table.
 	int index = Hash( key );
 	for ( HashableClass * node = HashTable[ index ]; node != NULL; node = node->NextHash ) {
-		if ( ::stricmp( node->Get_Key(), key ) == 0 ) {
+		if ( ::strcasecmp( node->Get_Key(), key ) == 0 ) {
 			return node;
 		}
 	}
@@ -128,7 +128,7 @@ HashableClass * HashTableClass::Find( const char * key )
 
 int	HashTableClass::Hash( const char * key )
 {
-	return CRC_Stringi( key ) & (HashTableSize-1);
+	return CRC_Stringi( key ) & (unsigned long)(HashTableSize-1);
 }
 
 

@@ -1930,7 +1930,7 @@ void InGameUI::unregisterWindowLayout( WindowLayout *layout )
 //-------------------------------------------------------------------------------------------------
 void InGameUI::reset( void )
 {
-DEBUG_CRASH(("InGameUI::reset not yet implemented!"));
+DEBUG_LOG(("InGameUI::reset not yet implemented!\n"));
 #if 0
 	m_isQuitMenuVisible = FALSE;
 	m_inputEnabled = true;
@@ -3281,7 +3281,7 @@ void InGameUI::deselectDrawable( Drawable *draw )
 {
 
 (void) draw;
-DEBUG_CRASH(("InGameUI::deselectDrawable not yet implemented!"));
+DEBUG_LOG(("InGameUI::deselectDrawable not yet implemented!\n"));
 #if 0
 	if( draw->isSelected() )
 	{
@@ -3503,7 +3503,7 @@ void InGameUI::disregardDrawable( Drawable *draw )
 {
 
 	// make sure drawable is no longer selected
-	deselectDrawable( draw );		
+	deselectDrawable( draw );
 
 }
 

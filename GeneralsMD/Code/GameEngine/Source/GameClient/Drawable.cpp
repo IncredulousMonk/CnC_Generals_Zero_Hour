@@ -38,8 +38,8 @@
 #include "Common/DrawModule.h"
 // #include "Common/GameAudio.h"
 // #include "Common/GameEngine.h"
-// #include "Common/GameLOD.h"
-// #include "Common/GameState.h"
+#include "Common/GameLOD.h"
+#include "Common/GameState.h"
 // #include "Common/GlobalData.h"
 // #include "Common/ModuleFactory.h"
 // #include "Common/PerfTimer.h"
@@ -68,8 +68,8 @@
 #include "GameClient/DisplayStringManager.h"
 #include "GameClient/Drawable.h"
 // #include "GameClient/DrawGroupInfo.h"
-// #include "GameClient/GameClient.h"
-// #include "GameClient/GlobalLanguage.h"
+#include "GameClient/GameClient.h"
+#include "GameClient/GlobalLanguage.h"
 // #include "GameClient/InGameUI.h"
 // #include "GameClient/Image.h"
 #include "GameClient/ParticleSys.h"
@@ -270,10 +270,13 @@ const Int MAX_ENABLED_MODULES								= 16;
 #ifdef DIRTY_CONDITION_FLAGS
 /*static*/ Int							Drawable::s_modelLockCount = 0;
 #endif
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /*static*/ void Drawable::initStaticImages()
 {
+DEBUG_LOG(("Drawable::initStaticImages not yet implemented!\n"));
+#if 0
 	if (s_staticImagesInited)
 		return;
 
@@ -307,9 +310,11 @@ const Int MAX_ENABLED_MODULES								= 16;
 	s_animationTemplates[ICON_CARBOMB]			= TheAnim2DCollection->findTemplate(TheDrawableIconNames[ICON_CARBOMB]);
 
 	s_staticImagesInited = true;
+#endif // if 0
 
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /*static*/ void Drawable::killStaticImages()
 {
@@ -353,8 +358,6 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 				: Thing( thingTemplate )
 {
 
-(void) statusBits;
-#if 0
 	// assign status bits before anything else can be done
 	m_status = statusBits;
 	
@@ -364,7 +367,7 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 	m_prevDrawable = NULL;
 	//
 
-  m_customSoundAmbientInfo = NULL;
+	m_customSoundAmbientInfo = NULL;
 
 	// register drawable with the GameClient ... do this first before we start doing anything
 	// complex that uses any of the drawable data so that we have and ID!!  It's ok to initialize
@@ -392,9 +395,9 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 																TheInGameUI->isDrawableCaptionBold() ));
 
 	m_ambientSound = NULL;
-  m_ambientSoundEnabled = true;
-  m_ambientSoundEnabledFromScript = true;
- 
+	m_ambientSoundEnabled = true;
+	m_ambientSoundEnabledFromScript = true;
+
 	m_decalOpacityFadeTarget = 0;
 	m_decalOpacityFadeRate = 0;
 	m_decalOpacity = 0;
@@ -404,7 +407,7 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 	m_effectiveStealthOpacity = 1.0f;
 	m_terrainDecalType = TERRAIN_DECAL_NONE;
 
-  m_fadeMode = FADING_NONE;
+	m_fadeMode = FADING_NONE;
 	m_timeElapsedFade = 0;
 	m_timeToFade = 0;
 
@@ -514,23 +517,22 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 
 	initStaticImages(); 
 
-  // If we are inside GameLogic::startNewGame(), then starting the ambient sound 
-  // will be taken care of by Drawable::onLevelStart(). It's important that we 
-  // wait until Drawable::onLevelStart(), because we may have a customized ambient
-  // sound which we'll only learn about after the constructor is finished. The
-  // map maker may also have disabled the ambient sound; again, we only learn that
-  // after the constructor is done.
-  // By the same token, when loading from save, we may learn that the ambient sound 
-  // is enabled or disabled in xfer(), and we may learn we have a customized sound there,
-  // so don't start the ambient sound yet. 
-  // This is all really traceable to the fact that stopAmbientSound() won't stop a sound which 
-  // is in the middle of playing; it will only stop it when the current wavefile is finished.
-  // So we have to be very careful of called startAmbientSound() because we can't "take it back" later.
-  if ( TheGameLogic != NULL && !TheGameLogic->isLoadingMap() && TheGameState != NULL && !TheGameState->isInLoadGame() )
-  {
-  	startAmbientSound();
-  }
-#endif // if 0
+	// If we are inside GameLogic::startNewGame(), then starting the ambient sound 
+	// will be taken care of by Drawable::onLevelStart(). It's important that we 
+	// wait until Drawable::onLevelStart(), because we may have a customized ambient
+	// sound which we'll only learn about after the constructor is finished. The
+	// map maker may also have disabled the ambient sound; again, we only learn that
+	// after the constructor is done.
+	// By the same token, when loading from save, we may learn that the ambient sound 
+	// is enabled or disabled in xfer(), and we may learn we have a customized sound there,
+	// so don't start the ambient sound yet. 
+	// This is all really traceable to the fact that stopAmbientSound() won't stop a sound which 
+	// is in the middle of playing; it will only stop it when the current wavefile is finished.
+	// So we have to be very careful of called startAmbientSound() because we can't "take it back" later.
+	if ( TheGameLogic != NULL && !TheGameLogic->isLoadingMap() && TheGameState != NULL && !TheGameState->isInLoadGame() )
+	{
+		startAmbientSound();
+	}
 
 }  // end Drawable
 
@@ -538,7 +540,6 @@ Drawable::Drawable( const ThingTemplate *thingTemplate, DrawableStatus statusBit
 //-------------------------------------------------------------------------------------------------
 Drawable::~Drawable()
 {
-#if 0
 	Int i;
 
 	if( m_constructDisplayString )
@@ -570,7 +571,7 @@ Drawable::~Drawable()
 		m_ambientSound = NULL;
 	}
 
-  clearCustomSoundAmbient( false );
+	clearCustomSoundAmbient( false );
 
 	/// @todo this is nasty, we need a real general effects system
 	// remove any entries that might be present from the ray effect system
@@ -594,10 +595,8 @@ Drawable::~Drawable()
 		m_locoInfo->deleteInstance();
 		m_locoInfo = NULL;
 	}
-#endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Run from GameClient::destroyDrawable */
 //-------------------------------------------------------------------------------------------------
@@ -618,6 +617,7 @@ void Drawable::onDestroy( void )
 
 }  // end onDestroy
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Bool Drawable::isVisible()
 {
@@ -812,14 +812,6 @@ Real Drawable::getAnimationScrubScalar( void ) const // lorenzen
 //-------------------------------------------------------------------------------------------------
 Int Drawable::getPristineBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const
 {
-(void) boneNamePrefix;
-(void) startIndex;
-(void) positions;
-(void) transforms;
-(void) maxBones;
-DEBUG_CRASH(("Drawable::getPristineBonePositions not yet implemented!"));
-return 0;
-#if 0
 	Int count = 0;
 	for (const DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
@@ -829,8 +821,7 @@ return 0;
 		const ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
 		if (di)
 		{
-			Int subcount = 
-				di->getPristineBonePositionsForConditionState(m_conditionState, boneNamePrefix, startIndex, positions, transforms, maxBones);
+			Int subcount = di->getPristineBonePositionsForConditionState(m_conditionState, boneNamePrefix, startIndex, positions, transforms, maxBones);
 
 			if (subcount > 0)
 			{
@@ -844,7 +835,6 @@ return 0;
 		}
 	}
 	return count;
-#endif // if 0
 }
 
 #if 0
@@ -971,6 +961,7 @@ void Drawable::allocateShadows(void)
 		(*dm)->allocateShadows();
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Drawable::setFullyObscuredByShroud(Bool fullyObscured)
@@ -984,7 +975,6 @@ void Drawable::setFullyObscuredByShroud(Bool fullyObscured)
 		m_drawableFullyObscuredByShroud = fullyObscured;
 	}
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Set drawable's "selected" status, if not already set.  Also update running
@@ -4134,10 +4124,6 @@ DrawModule const** Drawable::getDrawModules() const
 //-------------------------------------------------------------------------------------------------
 void Drawable::clearAndSetModelConditionFlags(const ModelConditionFlags& clr, const ModelConditionFlags& setf)
 {
-(void) clr;
-(void) setf;
-DEBUG_CRASH(("Drawable::clearAndSetModelConditionFlags not yet implemented!"));
-#if 0
 	ModelConditionFlags oldFlags = m_conditionState;
 
 	m_conditionState.clearAndSet(clr, setf);
@@ -4155,7 +4141,6 @@ DEBUG_CRASH(("Drawable::clearAndSetModelConditionFlags not yet implemented!"));
 			di->replaceModelConditionState( m_conditionState );
 	}
 #endif
-#endif // if 0
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -4204,16 +4189,12 @@ DEBUG_CRASH(("Drawable::replaceModelConditionFlags not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 void Drawable::setIndicatorColor(Color color)
 {
-(void) color;
-DEBUG_CRASH(("Drawable::setIndicatorColor not yet implemented!"));
-#if 0
 	for (DrawModule** dm = getDrawModules(); *dm; ++dm)
 	{
 		ObjectDrawInterface* di = (*dm)->getObjectDrawInterface();
 		if (di)
 			di->replaceIndicatorColor(color);
 	}
-#endif // if 0
 }
 
 #if 0
@@ -4222,6 +4203,7 @@ const GeometryInfo& Drawable::getDrawableGeometryInfo() const
 { 
 	return getObject() ? getObject()->getGeometryInfo() : getTemplate()->getTemplateGeometryInfo(); 
 }
+#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Set the id for this drawable */
@@ -4249,7 +4231,6 @@ void Drawable::setID( DrawableID id )
 	}
 
 }  // end setID
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** Return drawable ID, this ID is only good on the client */
@@ -4264,7 +4245,6 @@ DrawableID Drawable::getID( void ) const
 
 }  // end get ID
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Drawable::friend_bindToObject( Object *obj ) ///< bind this drawable to an object ID
 { 
@@ -4291,7 +4271,6 @@ void Drawable::friend_bindToObject( Object *obj ) ///< bind this drawable to an 
 		(*dm)->onDrawableBoundToObject();
 	}
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 	// when our Object changes teams, it calls us to let us know, so
@@ -4383,7 +4362,8 @@ Int Drawable::getBarrelCount(WeaponSlotType wslot) const
 			return count;
 	}
 	return 0;
-} 
+}
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Set the Drawable's instance transform */
@@ -4403,6 +4383,7 @@ void Drawable::setInstanceMatrix( const Matrix3D *instance )
 }
 
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** 
  * Return the Drawable's world transform.
@@ -4489,6 +4470,7 @@ void	Drawable::setTimeOfDay(TimeOfDay tod)
 	c.set(MODELCONDITION_NIGHT, (tod == TIME_OF_DAY_NIGHT) ? 1 : 0);
 	replaceModelConditionFlags(c);
 }
+#endif // if 0
 
 
 /** 
@@ -4511,7 +4493,7 @@ void Drawable::mangleCustomAudioName( DynamicAudioEventInfo * audioToMangle ) co
 {
   AsciiString customizedName;
   customizedName.format( " CUSTOM %d ", (Int)getID() ); // Note space at beginning prevents collision with any names from INI file
-  customizedName.concat( audioToMangle->m_audioName );
+  customizedName.concat( audioToMangle->m_data.m_audioName );
   audioToMangle->overrideAudioName( customizedName );
 }
 
@@ -4549,23 +4531,22 @@ void Drawable::setCustomSoundAmbientInfo( DynamicAudioEventInfo * customAmbientI
  */
 void Drawable::clearCustomSoundAmbient( bool restartSound )
 {
-  if ( m_ambientSound )
-  {
-    // Make sure sound doesn't keep a reference to the deleted pointer
-    m_ambientSound->m_event.setAudioEventInfo( NULL );
-  }
+	if ( m_ambientSound )
+	{
+		// Make sure sound doesn't keep a reference to the deleted pointer
+		m_ambientSound->m_event.setAudioEventInfo( NULL );
+	}
 
-  // Stop using old info
-  stopAmbientSound();
+	// Stop using old info
+	stopAmbientSound();
 
-  m_customSoundAmbientInfo = NULL;
-  
-  if ( restartSound )
-  {
-    startAmbientSound(); // Note: checks for enabled flag
-  }
+	m_customSoundAmbientInfo = NULL;
+	
+	if ( restartSound )
+	{
+		startAmbientSound(); // Note: checks for enabled flag
+	}
 }
-#endif // if 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -4736,7 +4717,6 @@ void Drawable::enableAmbientSoundFromScript( Bool enable )
 }
 
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** add self to the linked list */
 //-------------------------------------------------------------------------------------------------
@@ -4763,7 +4743,6 @@ void Drawable::removeFromList(Drawable **pListHead)
 	else
 		*pListHead = m_nextDrawable;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------

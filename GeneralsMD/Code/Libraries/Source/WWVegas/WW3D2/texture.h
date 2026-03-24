@@ -168,7 +168,7 @@ public:
 	// This utility function processes the texture reduction (used during rendering)
 	void Invalidate();
 
-	// texture accessors (dx8)
+	// texture accessors (OpenGL)
 	OpenGLTexture* Peek_GL_Base_Texture() const;
 	void Set_GL_Base_Texture(OpenGLTexture* tex);
 

@@ -65,9 +65,13 @@ struct NodeCompressedMotionStruct
 	NodeCompressedMotionStruct();
 	~NodeCompressedMotionStruct();
 
+	// No copies allowed!
+	NodeCompressedMotionStruct(const NodeCompressedMotionStruct&) = delete;
+	NodeCompressedMotionStruct& operator=(const NodeCompressedMotionStruct&) = delete;
+
 	void SetFlavor(int flavor)  {Flavor = flavor;}
 
-	int Flavor;
+	int Flavor {};
 
 	union {
 		struct {
@@ -273,10 +277,10 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass & cload)
 	}
 	NumNodes = base_pose->Num_Pivots();
 
-	NumFrames = aheader.NumFrames;
+	NumFrames = (int)aheader.NumFrames;
 	FrameRate = aheader.FrameRate;
 	Flavor    = aheader.Flavor;
-  																					
+
 	// Just for now                                          
 	WWASSERT((Flavor == ANIM_FLAVOR_TIMECODED)||(Flavor == ANIM_FLAVOR_ADAPTIVE_DELTA));
 

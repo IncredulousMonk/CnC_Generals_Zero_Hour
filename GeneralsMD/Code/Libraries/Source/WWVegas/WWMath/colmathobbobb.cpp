@@ -123,7 +123,7 @@ enum
 struct ObbIntersectionStruct
 {
 	ObbIntersectionStruct(const OBBoxClass &box0,const OBBoxClass & box1) :
-		Box0(box0),															
+		Box0(box0),
 		Box1(box1)
 	{
 		Vector3::Subtract(box1.Center,box0.Center,&C);	// vector from center of box0 to center of box1
@@ -137,7 +137,7 @@ struct ObbIntersectionStruct
 		B[2].Set(box1.Basis[0][2],box1.Basis[1][2],box1.Basis[2][2]);
 	}
 
-	Vector3					C;						// Vector from the center0 to center1
+	Vector3					C {};						// Vector from the center0 to center1
 	Vector3					A[3];					// basis vectors for box0
 	Vector3					B[3];					// basis vectors for box1
 	float						AB[3][3];			// dot products of the basis vectors
@@ -517,8 +517,8 @@ struct ObbCollisionStruct
 {
 	ObbCollisionStruct(const OBBoxClass &box0,const Vector3 &move0,const OBBoxClass & box1,const Vector3 &move1) :
 		StartBad(true),													// Startbad is true until one of the axes clears it
-		AxisId(INTERSECTION),											// AxisId will be the axis that allowed the longest move
 		MaxFrac(0.0f),														// MaxFrac is the longest allowed move so far
+		AxisId(INTERSECTION),											// AxisId will be the axis that allowed the longest move
 		Box0(box0),															
 		Move0(move0),
 		Box1(box1),
@@ -536,20 +536,20 @@ struct ObbCollisionStruct
 		B[2].Set(box1.Basis[0][2],box1.Basis[1][2],box1.Basis[2][2]);
 	}
 
-	bool						StartBad;			// Inital configuration is intersecting?
-	float						MaxFrac;				// Longest move allowed so far
+	bool					StartBad;			// Inital configuration is intersecting?
+	float					MaxFrac;			// Longest move allowed so far
 	int						AxisId;				// Last separating axis
-	int						Side;					// which side of the interval
+	int						Side {};			// which side of the interval
 
-	int						TestAxisId;			// Axis 'id' we're working on
-	Vector3					TestAxis;			// Axis that we're working on
+	int						TestAxisId {};		// Axis 'id' we're working on
+	Vector3					TestAxis {};		// Axis that we're working on
 
-	Vector3					C;						// Vector from the center0 to center1
-	Vector3					M;						// Move vector relative to stationary box0
+	Vector3					C {};				// Vector from the center0 to center1
+	Vector3					M {};				// Move vector relative to stationary box0
 	
-	Vector3					A[3];					// basis vectors for box0
-	Vector3					B[3];					// basis vectors for box1
-	float						AB[3][3];			// dot products of the basis vectors
+	Vector3					A[3];				// basis vectors for box0
+	Vector3					B[3];				// basis vectors for box1
+	float					AB[3][3];			// dot products of the basis vectors
 
 	const OBBoxClass &	Box0;
 	const Vector3 &		Move0;

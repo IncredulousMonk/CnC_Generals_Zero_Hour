@@ -87,20 +87,13 @@ AcademyStats::AcademyStats()
 //------------------------------------------------------------------------------------------------
 void findDozerCommandSet( Object *object, void *userData )
 {
-(void) object;
-(void) userData;
-DEBUG_CRASH(("findDozerCommandSet not yet implemented!"));
-#if 0
 	const CommandSet *dozerCommandSet = (const CommandSet*)userData;
-	if( dozerCommandSet )
-	{
+	if( dozerCommandSet ) {
 		return;
 	}
-	if( object && object->isKindOf( KINDOF_DOZER ) )
-	{
+	if( object && object->isKindOf( KINDOF_DOZER ) ) {
 		dozerCommandSet = TheControlBar->findCommandSet( object->getCommandSetString() );
 	}
-#endif // if 0
 }
 
 //------------------------------------------------------------------------------------------------

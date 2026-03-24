@@ -84,8 +84,6 @@ public:
 		Bool							m_persistenceRequiresRecharge;
 
 		const ParticleSystemTemplate*	m_disableFXParticleSystem;
-
-		SpecialAbilityUpdateModuleData*	m_obj {};						///< pointer to the parent object
 	};
 
 	IniData m_ini {};
@@ -125,7 +123,6 @@ public:
 		m_ini.m_preTriggerUnstealthFrames = 0;
 		m_ini.m_needToFaceTarget = TRUE;
 		m_ini.m_persistenceRequiresRecharge = FALSE;
-		m_ini.m_obj = this;
 	}
 
 	// No copies allowed!

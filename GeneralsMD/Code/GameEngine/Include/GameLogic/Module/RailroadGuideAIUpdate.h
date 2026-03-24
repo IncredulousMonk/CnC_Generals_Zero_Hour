@@ -94,8 +94,6 @@ public:
 		Real m_braking;
 		Real m_friction;
 		UnsignedInt m_waitAtStationTime;
-
-		RailroadBehaviorModuleData* m_obj {};	///< pointer to the parent object
 	};
 
 	IniData m_ini {};

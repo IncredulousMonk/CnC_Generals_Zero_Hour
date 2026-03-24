@@ -92,7 +92,7 @@ int Base64Straw::Get(void * source, int slen)
 		*/
 		if (Counter > 0) {
 			int len = (slen < Counter) ? slen : Counter;
-			memmove(source, &to[tosize-Counter], len);
+			memmove(source, &to[tosize-Counter], (size_t)len);
 			Counter -= len;
 			slen -= len;
 			source = ((char *)source) + len;

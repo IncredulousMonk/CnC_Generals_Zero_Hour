@@ -148,7 +148,7 @@ unsigned long	CRC_String( const char *string, unsigned long crc )
 {
  	crc ^= 0xFFFFFFFF;									// invert previous CRC
 	while ( *string )	{
-		crc = CRC32( *string++, crc );				// calc crc for each byte
+		crc = CRC32( (unsigned long)*string++, crc );				// calc crc for each byte
 	}
 	return (crc ^ 0xFFFFFFFF); 						// invert new CRC and return it
 }
@@ -169,7 +169,7 @@ unsigned long	CRC_Stringi( const char *string, unsigned long crc )
 {
  	crc ^= 0xFFFFFFFF;									// invert previous CRC
 	while ( *string )	{
-		char c = (char)toupper(*string++);
+		unsigned long c = (unsigned long)toupper(*string++);
 		crc = CRC32( c, crc );				// calc crc for each byte
 	}
 	return (crc ^ 0xFFFFFFFF); 						// invert new CRC and return it

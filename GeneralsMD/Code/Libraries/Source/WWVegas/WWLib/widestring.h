@@ -51,6 +51,7 @@
 #include <wchar.h>
 #ifdef _UNIX
 #include "osdep.h"
+#define WCHAR wchar_t
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -113,8 +114,8 @@ public:
 	bool			Is_Empty (void) const;
 
 	void			Erase (int start_index, int char_count);
-	int _cdecl  Format (const WCHAR *format, ...);
-	int _cdecl  Format_Args (const WCHAR *format, const va_list & arg_list );
+	int				Format (const WCHAR *format, ...);
+	int				Format_Args (const WCHAR *format, const va_list & arg_list );
 	bool			Convert_From (const char *text);
 	bool			Convert_To (StringClass &string);
 	bool			Convert_To (StringClass &string) const;

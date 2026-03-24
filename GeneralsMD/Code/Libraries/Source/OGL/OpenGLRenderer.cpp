@@ -66,6 +66,88 @@ void main(void)
 }
 )"};
 
+static const char* terrainVertSource {R"(
+#version 460 core
+
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
+
+layout(location = 0) in vec3 Position;
+layout(location = 1) in vec4 Colour;
+layout(location = 2) in vec2 uv1;
+layout(location = 3) in vec2 uv2;
+
+//out vec4 VertexColour;
+out float VertexZ;
+out vec2 uv;
+
+void main(void)
+{
+   //VertexColour = Colour;
+   VertexZ = Position.z;
+   uv = uv1;
+   gl_Position = ProjectionMatrix * ViewMatrix * vec4(Position, 1);
+}
+)"};
+
+static const char* terrainFragSource {R"(
+#version 460 core
+
+//layout(binding = 0) uniform sampler1D Texture;
+layout(binding = 0) uniform sampler2D Texture;
+
+//in vec4 VertexColour;
+in float VertexZ; // Range is approx 0 to 32
+in vec2 uv;
+
+out vec4 FragmentColour;
+
+void main(void)
+{
+   //float u = VertexZ * 4.0 / 128.0;
+   //float u = VertexZ / 160.0;
+   //FragmentColour = texture(Texture, u);
+   FragmentColour = texture(Texture, uv);
+   //FragmentColour = VertexColour;
+   //FragmentColour = vec4(0.5, 0.5, 1.0, 1.0);
+}
+)"};
+
+static const char* meshVertSource {R"(
+#version 460 core
+
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ModelMatrix;
+
+layout(location = 0) in vec3 Position;
+layout(location = 1) in vec3 Normal;
+layout(location = 2) in vec2 UV;
+
+out vec2 uv;
+
+void main(void)
+{
+   uv = UV;
+   gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(Position, 1);
+}
+)"};
+
+static const char* meshFragSource {R"(
+#version 460 core
+
+layout(binding = 0) uniform sampler2D Texture;
+
+in vec2 uv;
+
+out vec4 FragmentColour;
+
+void main(void)
+{
+   FragmentColour = texture(Texture, uv);
+}
+)"};
+
 // PRIVATE FUNCTIONS //////////////////////////////////////////////////////////////////////////////
 static std::string debugSourceString(GLenum source) {
    switch (source) {
@@ -117,6 +199,20 @@ void OpenGLRenderer::init() {
    glEnable(GL_DEBUG_OUTPUT);
    glDebugMessageCallback(messageCallback, nullptr);
 
+   m_shaders[SHADER_NONE] = 0;
+   m_shaders[SHADER_GUI] = glCreateProgram();
+   addShader(m_shaders[SHADER_GUI], guiVertSource, GL_VERTEX_SHADER);
+   addShader(m_shaders[SHADER_GUI], guiFragSource, GL_FRAGMENT_SHADER);
+   buildShader(m_shaders[SHADER_GUI]);
+   m_shaders[SHADER_TERRAIN] = glCreateProgram();
+   OpenGLRenderer::addShader(m_shaders[SHADER_TERRAIN], terrainVertSource, GL_VERTEX_SHADER);
+   OpenGLRenderer::addShader(m_shaders[SHADER_TERRAIN], terrainFragSource, GL_FRAGMENT_SHADER);
+   OpenGLRenderer::buildShader(m_shaders[SHADER_TERRAIN]);
+   m_shaders[SHADER_TEXTURED_OPAQUE] = glCreateProgram();
+   OpenGLRenderer::addShader(m_shaders[SHADER_TEXTURED_OPAQUE], meshVertSource, GL_VERTEX_SHADER);
+   OpenGLRenderer::addShader(m_shaders[SHADER_TEXTURED_OPAQUE], meshFragSource, GL_FRAGMENT_SHADER);
+   OpenGLRenderer::buildShader(m_shaders[SHADER_TEXTURED_OPAQUE]);
+
    constexpr GLfloat triStripData[] {
       -1.0,  1.0, 0.0,   0.0, 0.0,
        1.0,  1.0, 0.0,   800.0 / 1024.0, 0.0,
@@ -143,18 +239,21 @@ void OpenGLRenderer::init() {
    glSamplerParameteri(m_samGui, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    glSamplerParameteri(m_samGui, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-   glBindVertexArray(m_vaoGui);
-   m_progGui = glCreateProgram();
-   addShader(m_progGui, guiVertSource, GL_VERTEX_SHADER);
-   addShader(m_progGui, guiFragSource, GL_FRAGMENT_SHADER);
-   buildShader(m_progGui);
-   glUseProgram(m_progGui);
-
    glClearColor(0.0, 0.0, 0.25, 1.0);
    glEnable(GL_DEPTH_TEST);
    // glViewport(0, 0, 800, 600); // Need to call glViewport if window is resized.
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+//============================================================================
+// OpenGLRenderer::cleanup
+//============================================================================
+void OpenGLRenderer::cleanup() {
+   glUseProgram(0);
+   glDeleteProgram(m_shaders[SHADER_GUI]);
+   glDeleteProgram(m_shaders[SHADER_TERRAIN]);
+   glDeleteProgram(m_shaders[SHADER_TEXTURED_OPAQUE]);
 }
 
 //============================================================================
@@ -168,7 +267,7 @@ void OpenGLRenderer::drawSplashImage() {
 
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glTextureSubImage2D(m_texGui, 0, 0, 0, 1024, 1024, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
-   glUseProgram(m_progGui);
+   useShader(SHADER_GUI);
    glBindVertexArray(m_vaoGui);
    glBindTextureUnit(0, m_texGui);
    glBindSampler(0, m_samGui);
@@ -188,7 +287,7 @@ void OpenGLRenderer::beginRender() {
 //============================================================================
 void OpenGLRenderer::endRender() {
    glTextureSubImage2D(m_texGui, 0, 0, 0, 1024, 1024, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
-   glUseProgram(m_progGui);
+   useShader(SHADER_GUI);
    glBindVertexArray(m_vaoGui);
    glBindTextureUnit(0, m_texGui);
    glBindSampler(0, m_samGui);
@@ -196,6 +295,52 @@ void OpenGLRenderer::endRender() {
    SDL_GL_SwapWindow(window);
 }
 
+//============================================================================
+// OpenGLRenderer::useShader
+//============================================================================
+void OpenGLRenderer::useShader(ShaderType shader) {
+   if (shader == m_currentShader) {
+      return;
+   }
+
+   m_currentShader = shader;
+   glUseProgram(m_shaders[shader]);
+}
+
+//============================================================================
+// OpenGLRenderer::getShader
+//============================================================================
+GLuint OpenGLRenderer::getShader(ShaderType shader) {
+   return m_shaders[shader];
+}
+
+//============================================================================
+// OpenGLRenderer::createMeshRenderer
+//============================================================================
+OpenGLMeshRenderer* OpenGLRenderer::createMeshRenderer(const void* indexBufferData, size_t indexBufferSize,
+   const void* vertexBufferData, size_t vertexBufferSize, VertexFormat format, int triangleCount,
+   TextureClass* texture)
+{
+   OpenGLMeshRenderer* result {newInstance(OpenGLMeshRenderer)};
+   result->createIndexBuffer(indexBufferData, indexBufferSize);
+   result->createVertexBuffer(vertexBufferData, vertexBufferSize);
+   result->createVertexArray(format);
+   result->setTriangleCount(triangleCount);
+   result->setTexture(texture);
+   return result;
+}
+
+//============================================================================
+// OpenGLRenderer::getUniformLocation
+//============================================================================
+GLint OpenGLRenderer::getUniformLocation(ShaderType shader, const char* name)
+{
+   GLint location {glGetUniformLocation(m_shaders[shader], name)};
+   if (location == -1) {
+      DEBUG_CRASH(("No uniform found with name \"%s\"\n", name));
+   }
+   return location;
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -264,21 +409,21 @@ Mat4 OpenGLRenderer::perspective(double fieldOfViewY, double aspect, double near
 }
 
 
-using Vector3 = std::array<double, 3>;
+using GLVector3 = std::array<double, 3>;
 
-Vector3 cross(const Vector3& v1, const Vector3& v2) {
+GLVector3 cross(const GLVector3& v1, const GLVector3& v2) {
    double x {v1[1] * v2[2] - v1[2] * v2[1]};
    double y {v1[2] * v2[0] - v1[0] * v2[2]};
    double z {v1[0] * v2[1] - v1[1] * v2[0]};
    return {x, y, z};
 }
 
-double length(Vector3 v) {
+double length(GLVector3 v) {
    return std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
-Vector3 normalise(Vector3 v) {
-   Vector3 result {};
+GLVector3 normalise(GLVector3 v) {
+   GLVector3 result {};
    double len {length(v)};
    if (len < 1e-6) {
       result[0] = 0.0;
@@ -295,13 +440,13 @@ Vector3 normalise(Vector3 v) {
 
 //-------------------------------------------------------------------------------------------------
 Mat4 OpenGLRenderer::lookat(double eyeX, double eyeY, double eyeZ, double centreX, double centreY, double centreZ, double upX, double upY, double upZ) {
-   Vector3 eye {eyeX, eyeY, eyeZ};
-   Vector3 centre {centreX, centreY, centreZ};
-   Vector3 worldUp {upX, upY, upZ};
-   Vector3 front {centre[0] - eye[0], centre[1] - eye[1], centre[2] - eye[2]};
+   GLVector3 eye {eyeX, eyeY, eyeZ};
+   GLVector3 centre {centreX, centreY, centreZ};
+   GLVector3 worldUp {upX, upY, upZ};
+   GLVector3 front {centre[0] - eye[0], centre[1] - eye[1], centre[2] - eye[2]};
    front = normalise(front);
-   Vector3 right {cross(front, worldUp)};
-   Vector3 up {cross(right, front)};
+   GLVector3 right {cross(front, worldUp)};
+   GLVector3 up {cross(right, front)};
    Mat4 result {};
    result[0] = right[0];
    result[1] = up[0];

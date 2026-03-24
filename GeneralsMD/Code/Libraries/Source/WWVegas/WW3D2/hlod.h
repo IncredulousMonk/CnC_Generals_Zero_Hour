@@ -212,7 +212,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 //   virtual void					Set_Texture_Reduction_Factor(float trf);
 	virtual void					Scale(float scale);
-	virtual void					Scale(float scalex, float scaley, float scalez)	{ }
+	virtual void					Scale(float /* scalex */, float /* scaley */, float /* scalez */)	{ }
 	virtual int						Get_Num_Snap_Points(void);
 	virtual void					Get_Snap_Point(int index,Vector3 * set);
 	virtual void					Set_Hidden(int onoff);
@@ -309,6 +309,10 @@ public:
 	HLodDefClass(HLodClass &src_lod);
 	~HLodDefClass(void);
 
+	// No copies allowed!
+	HLodDefClass(const HLodDefClass&) = delete;
+	HLodDefClass& operator=(const HLodDefClass&) = delete;
+
 	WW3DErrorType				Load_W3D(ChunkLoadClass & cload);
 	WW3DErrorType				Save(ChunkSaveClass & csave);
 	const char *				Get_Name(void) const { return Name; }
@@ -335,7 +339,12 @@ private:
 	{
 	public:
 		SubObjectArrayClass(void);
-		~SubObjectArrayClass(void);		
+		~SubObjectArrayClass(void);
+
+		// No copies allowed!
+		SubObjectArrayClass(const SubObjectArrayClass&) = delete;
+		// SubObjectArrayClass& operator=(const SubObjectArrayClass&) = delete;
+
 		void		Reset(void);
 		void		operator = (const SubObjectArrayClass & that);
 
@@ -352,7 +361,7 @@ private:
 	char *						HierarchyTreeName;
 	int							LodCount;
 	SubObjectArrayClass *	Lod;
-	SubObjectArrayClass		Aggregates;
+	SubObjectArrayClass		Aggregates {};
 	ProxyArrayClass *			ProxyArray;
 
 	void							Free(void);
@@ -371,6 +380,10 @@ class HLodPrototypeClass : public W3DMPO, public PrototypeClass
 	W3DMPO_GLUE(HLodPrototypeClass)
 public:
 	HLodPrototypeClass( HLodDefClass *def )					{ Definition = def; }
+
+	// No copies allowed!
+	HLodPrototypeClass(const HLodPrototypeClass&) = delete;
+	HLodPrototypeClass& operator=(const HLodPrototypeClass&) = delete;
 	
 	virtual const char *			Get_Name(void) const			{ return Definition->Get_Name(); }
 	virtual int								Get_Class_ID(void) const	{ return RenderObjClass::CLASSID_HLOD; }
@@ -383,7 +396,7 @@ protected:
 	virtual ~HLodPrototypeClass(void)							{ delete Definition; }
 
 private:
-	HLodDefClass *					Definition;
+	HLodDefClass *					Definition {};
 };
 
 /*

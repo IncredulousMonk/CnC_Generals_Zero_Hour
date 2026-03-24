@@ -169,7 +169,7 @@ protected:
 	mutable bool  					IsTreeValid;
 
 	// Hierarchy Tree
-	HTreeClass *					HTree;
+	HTreeClass *					HTree {};
 	
 	// Animation state for the next frame.  When we add more flexible motion
 	// compositing, add a new state and its associated data to the union below

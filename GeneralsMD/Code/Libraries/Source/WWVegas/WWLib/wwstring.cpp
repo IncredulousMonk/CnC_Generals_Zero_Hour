@@ -47,8 +47,8 @@
 
 FastCriticalSectionClass StringClass::m_Mutex;
 
-TCHAR		StringClass::m_NullChar					= 0;
-TCHAR *	StringClass::m_EmptyString				= &m_NullChar;
+char StringClass::m_NullChar = 0;
+char* StringClass::m_EmptyString = &m_NullChar;
 
 //
 // A trick to optimize strings that are allocated from the stack and used only temporarily
@@ -73,7 +73,7 @@ StringClass::Get_String (int length, bool is_temp)
 		return;
 	}
 
-	TCHAR *string = NULL;
+	char *string = NULL;
 
 	//
 	//	Should we attempt to use a temp buffer for this string?
@@ -146,8 +146,8 @@ StringClass::Resize (int new_len)
 		//	Allocate the new buffer and copy the contents of our current
 		// string.
 		//
-		TCHAR *new_buffer = Allocate_Buffer (new_len);
-		_tcscpy (new_buffer, m_Buffer);
+		char *new_buffer = Allocate_Buffer (new_len);
+		strcpy (new_buffer, m_Buffer);
 
 		//
 		//	Switch to the new buffer
@@ -175,7 +175,7 @@ StringClass::Uninitialised_Grow (int new_len)
 		//
 		//	Switch to a newly allocated buffer
 		//
-		TCHAR *new_buffer = Allocate_Buffer (new_len);
+		char* new_buffer = Allocate_Buffer (new_len);
 		Set_Buffer_And_Allocated_Length (new_buffer, new_len);	
 	}
 		
@@ -189,7 +189,7 @@ StringClass::Uninitialised_Grow (int new_len)
 
 ///////////////////////////////////////////////////////////////////
 //
-//	Uninitialised_Grow
+//	Free_String
 //
 ///////////////////////////////////////////////////////////////////
 void
@@ -238,12 +238,12 @@ StringClass::Free_String (void)
 //
 ///////////////////////////////////////////////////////////////////
 int
-StringClass::Format_Args (const TCHAR *format, va_list & arg_list )
+StringClass::Format_Args (const char *format, va_list & arg_list )
 {
 	//
 	// Make a guess at the maximum length of the resulting string
 	//
-	TCHAR temp_buffer[512] = { 0 };
+	char temp_buffer[512] = { 0 };
 	int retval = 0;
 
 	//
@@ -270,7 +270,7 @@ StringClass::Format_Args (const TCHAR *format, va_list & arg_list )
 //
 ///////////////////////////////////////////////////////////////////
 int
-StringClass::Format (const TCHAR *format, ...)
+StringClass::Format (const char *format, ...)
 {
 	va_list arg_list;
 	va_start (arg_list, format);
@@ -278,7 +278,7 @@ StringClass::Format (const TCHAR *format, ...)
 	//
 	// Make a guess at the maximum length of the resulting string
 	//
-	TCHAR temp_buffer[512] = { 0 };
+	char temp_buffer[512] = { 0 };
 	int retval = 0;
 
 	//
@@ -310,35 +310,3 @@ StringClass::Release_Resources (void)
 {
 	Free_String();
 }
-
-
-///////////////////////////////////////////////////////////////////
-// Copy_Wide
-//
-///////////////////////////////////////////////////////////////////
-#if 0
-bool StringClass::Copy_Wide (const WCHAR *source)
-{
-	if (source != NULL) {
-
-		int  length;
-		BOOL unmapped;
-			
-		length = WideCharToMultiByte (CP_ACP, 0 , source, -1, NULL, 0, NULL, &unmapped);
-		if (length > 0) {
-
-			// Convert.
-			WideCharToMultiByte (CP_ACP, 0, source, -1, Get_Buffer (length), length, NULL, NULL);
-
-			// Update length.
-			Store_Length (length - 1);
-		}
-
-		// Were all characters successfully mapped?
-		return (!unmapped);
-	}
-
-	// Failure.
-	return (false);
-}
-#endif // if 0

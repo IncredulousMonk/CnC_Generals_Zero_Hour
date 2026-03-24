@@ -76,7 +76,7 @@ protected:
 
 
 	const DynamicVectorClass<StringClass> &	Names;
-	HashTemplateClass<StringClass,int>			NameHash;
+	HashTemplateClass<StringClass,int> NameHash {};
 };
 
 

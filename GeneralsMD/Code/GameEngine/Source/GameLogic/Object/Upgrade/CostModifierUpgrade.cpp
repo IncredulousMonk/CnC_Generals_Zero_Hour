@@ -52,7 +52,7 @@
 //-----------------------------------------------------------------------------
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "Common/player.h"
+#include "Common/Player.h"
 #include "Common/Xfer.h"
 #include "GameLogic/Module/CostModifierUpgrade.h"
 #include "GameLogic/Object.h"
@@ -75,24 +75,26 @@
 CostModifierUpgradeModuleData::CostModifierUpgradeModuleData( void )
 {
 
-	m_kindOf = KINDOFMASK_NONE;
-	m_percentage = 0;
+	m_ini.m_kindOf = KINDOFMASK_NONE;
+	m_ini.m_percentage = 0;
 
 }  // end CostModifierUpgradeModuleData
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-/* static */ void CostModifierUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p)
+/* static */ void CostModifierUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	UpgradeModuleData::buildFieldParse( p );
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "EffectKindOf",		KindOfMaskType::parseFromINI, NULL, offsetof( CostModifierUpgradeModuleData, m_kindOf ) },
-		{ "Percentage",			INI::parsePercentToReal, NULL, offsetof( CostModifierUpgradeModuleData, m_percentage ) },
+		{ "EffectKindOf",	KindOfMaskType::parseFromINI,	NULL, offsetof( CostModifierUpgradeModuleData::IniData, m_kindOf ) },
+		{ "Percentage",		INI::parsePercentToReal,		NULL, offsetof( CostModifierUpgradeModuleData::IniData, m_percentage ) },
 		{ 0, 0, 0, 0 } 
 	};
-	p.add(dataFieldParse);
+	CostModifierUpgradeModuleData* self {static_cast<CostModifierUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -127,7 +129,7 @@ void CostModifierUpgrade::onDelete( void )
 	// remove the radar from the player
 	Player *player = getObject()->getControllingPlayer();
 	if( player )
-		player->removeKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_kindOf,getCostModifierUpgradeModuleData()->m_percentage );
+		player->removeKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_ini.m_kindOf,getCostModifierUpgradeModuleData()->m_ini.m_percentage );
 
 	// this upgrade module is now "not upgraded"
 	setUpgradeExecuted(FALSE);
@@ -147,14 +149,14 @@ void CostModifierUpgrade::onCapture( Player *oldOwner, Player *newOwner )
 	if( oldOwner )
 	{
 
-		oldOwner->removeKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_kindOf,getCostModifierUpgradeModuleData()->m_percentage );
+		oldOwner->removeKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_ini.m_kindOf,getCostModifierUpgradeModuleData()->m_ini.m_percentage );
 		setUpgradeExecuted(FALSE);
 
 	}  // end if
 	if( newOwner )
 	{
 
-		newOwner->addKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_kindOf,getCostModifierUpgradeModuleData()->m_percentage );
+		newOwner->addKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_ini.m_kindOf,getCostModifierUpgradeModuleData()->m_ini.m_percentage );
 		setUpgradeExecuted(TRUE);
 
 	}  // end if
@@ -168,7 +170,7 @@ void CostModifierUpgrade::upgradeImplementation( void )
 	Player *player = getObject()->getControllingPlayer();
 
 	// update the player with another TypeOfProductionCostChange
-	player->addKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_kindOf,getCostModifierUpgradeModuleData()->m_percentage );
+	player->addKindOfProductionCostChange(getCostModifierUpgradeModuleData()->m_ini.m_kindOf,getCostModifierUpgradeModuleData()->m_ini.m_percentage );
 
 }  // end upgradeImplementation
 

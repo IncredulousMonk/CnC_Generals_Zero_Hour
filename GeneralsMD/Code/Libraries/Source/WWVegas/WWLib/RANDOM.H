@@ -42,7 +42,7 @@
 #define RANDOM_H
 
 // "unreferenced inline function has been removed" Yea, so what?
-#pragma warning(disable : 4514)
+// #pragma warning(disable : 4514)
 
 /*
 **	This class functions like a 'magic' int value that returns a random number

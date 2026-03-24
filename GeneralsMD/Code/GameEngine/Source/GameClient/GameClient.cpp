@@ -81,7 +81,7 @@
 // #include "GameLogic/FPUControl.h"
 #include "GameLogic/GameLogic.h"
 // #include "GameLogic/GhostObject.h"
-// #include "GameLogic/Object.h"
+#include "GameLogic/Object.h"
 // #include "GameLogic/ScriptEngine.h"		// For TheScriptEngine - jkmcd
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -104,17 +104,17 @@ GameClient::GameClient()
 	m_numTranslators = 0;
 	m_commandTranslator = NULL;
 	
-	// // Added By Sadullah Nader
-	// // Initializations missing and needed
-	// m_drawableTOC.clear();
-	// //
-	// m_textBearingDrawableList.clear();
+	// Added By Sadullah Nader
+	// Initializations missing and needed
+	m_drawableTOC.clear();
+	//
+	m_textBearingDrawableList.clear();
 
 	m_frame = 0;
 
-	// m_drawableList = NULL;
+	m_drawableList = NULL;
 	
-	// m_nextDrawableID = (DrawableID)1;
+	m_nextDrawableID = (DrawableID)1;
 	TheDrawGroupInfo = new DrawGroupInfo;
 }
 
@@ -135,32 +135,32 @@ GameClient::~GameClient()
 		TheDrawGroupInfo = NULL;
 	}
 
-	// // clear any drawable TOC we might have
-	// m_drawableTOC.clear();
+	// clear any drawable TOC we might have
+	m_drawableTOC.clear();
 
-	// //DEBUG_LOG(("Preloaded texture files ------------------------------------------\n"));
-	// //for (Int oog=0; oog<preloadTextureNamesGlobalHack2.size(); ++oog)
-	// //{
-	// //	DEBUG_LOG(("%s\n", preloadTextureNamesGlobalHack2[oog]));
-	// //}
-	// //DEBUG_LOG(("------------------------------------------------------------------\n"));
-	// //for (oog=0; oog<preloadTextureNamesGlobalHack.size(); ++oog)
-	// //{
-	// //	DEBUG_LOG(("%s\n", preloadTextureNamesGlobalHack[oog]));
-	// //}
-	// //DEBUG_LOG(("End Texture files ------------------------------------------------\n"));
+	//DEBUG_LOG(("Preloaded texture files ------------------------------------------\n"));
+	//for (Int oog=0; oog<preloadTextureNamesGlobalHack2.size(); ++oog)
+	//{
+	//	DEBUG_LOG(("%s\n", preloadTextureNamesGlobalHack2[oog]));
+	//}
+	//DEBUG_LOG(("------------------------------------------------------------------\n"));
+	//for (oog=0; oog<preloadTextureNamesGlobalHack.size(); ++oog)
+	//{
+	//	DEBUG_LOG(("%s\n", preloadTextureNamesGlobalHack[oog]));
+	//}
+	//DEBUG_LOG(("End Texture files ------------------------------------------------\n"));
 	if(TheCampaignManager)
 		delete TheCampaignManager;
 	TheCampaignManager = NULL;
 
-	// // destroy all Drawables
-	// Drawable *draw, *nextDraw;
-	// for( draw = m_drawableList; draw; draw = nextDraw )
-	// {
-	// 	nextDraw = draw->getNextDrawable();
-	// 	destroyDrawable( draw );
-	// }
-	// m_drawableList = NULL;
+	// destroy all Drawables
+	Drawable *draw, *nextDraw;
+	for( draw = m_drawableList; draw; draw = nextDraw )
+	{
+		nextDraw = draw->getNextDrawable();
+		destroyDrawable( draw );
+	}
+	m_drawableList = NULL;
 
 	// // delete the ray effects
 	// delete TheRayEffects;
@@ -449,23 +449,23 @@ void GameClient::init( void )
 /** Reset the game client for a new game */
 void GameClient::reset( void )
 {
-// 	Drawable *draw, *nextDraw;
-// //	m_drawableHash.clear();
-// //	m_drawableHash.resize(DRAWABLE_HASH_SIZE);
+	Drawable *draw, *nextDraw;
+//	m_drawableHash.clear();
+//	m_drawableHash.resize(DRAWABLE_HASH_SIZE);
 
-// 	m_drawableVector.clear();
-// 	m_drawableVector.resize(DRAWABLE_HASH_SIZE, NULL);
+	m_drawableVector.clear();
+	m_drawableVector.resize(DRAWABLE_HASH_SIZE, NULL);
 
-// 	// need to reset the in game UI to clear drawables before they are destroyed
-// 	TheInGameUI->reset();
+	// need to reset the in game UI to clear drawables before they are destroyed
+	TheInGameUI->reset();
 
-// 	// destroy all Drawables
-// 	for( draw = m_drawableList; draw; draw = nextDraw )
-// 	{
-// 		nextDraw = draw->getNextDrawable();
-// 		destroyDrawable( draw );
-// 	}
-// 	m_drawableList = NULL;
+	// destroy all Drawables
+	for( draw = m_drawableList; draw; draw = nextDraw )
+	{
+		nextDraw = draw->getNextDrawable();
+		destroyDrawable( draw );
+	}
+	m_drawableList = NULL;
 
 	TheDisplay->reset();
 // 	TheTerrainVisual->reset();
@@ -475,33 +475,33 @@ void GameClient::reset( void )
 // 	if (TheSnowManager)
 // 		TheSnowManager->reset();
 
-// 	// clear any drawable TOC we might have
-// 	m_drawableTOC.clear();
+	// clear any drawable TOC we might have
+	m_drawableTOC.clear();
 
 }  // end reset
 
 /** -----------------------------------------------------------------------------------------------
  * Return a new unique object id.
  */
-// DrawableID GameClient::allocDrawableID( void )
-// {
-	// /// @todo Find unused value in current set
-	// DrawableID ret = m_nextDrawableID;
-	// m_nextDrawableID = (DrawableID)((UnsignedInt)m_nextDrawableID + 1);
-	// return ret;
-// }
+DrawableID GameClient::allocDrawableID( void )
+{
+	/// @todo Find unused value in current set
+	DrawableID ret = m_nextDrawableID;
+	m_nextDrawableID = (DrawableID)((UnsignedInt)m_nextDrawableID + 1);
+	return ret;
+}
 
 /** -----------------------------------------------------------------------------------------------
  * Given a drawable, register it with the GameClient and give it a unique ID.
  */
-void GameClient::registerDrawable( [[maybe_unused]] Drawable *draw ) 
+void GameClient::registerDrawable(Drawable* draw)
 {
 
-	// // assign this drawable a unique ID, this will add it to the fast lookup table too
-	// draw->setID( allocDrawableID() );
+	// assign this drawable a unique ID, this will add it to the fast lookup table too
+	draw->setID( allocDrawableID() );
 
-	// // add the drawable to the master list
-	// draw->prependToList( &m_drawableList );
+	// add the drawable to the master list
+	draw->prependToList( &m_drawableList );
 
 }  // end registerDrawable
 
@@ -826,70 +826,70 @@ void GameClient::updateFakeDrawables(void)
 /** -----------------------------------------------------------------------------------------------
  * Destroy the drawable immediately.
  */
-void GameClient::destroyDrawable( [[maybe_unused]] Drawable *draw )
+void GameClient::destroyDrawable(Drawable *draw)
 {
 
-	// // remove any notion of the Drawable in the in-game user interface
-	// TheInGameUI->disregardDrawable( draw );
+	// remove any notion of the Drawable in the in-game user interface
+	TheInGameUI->disregardDrawable( draw );
 
-	// // remove from the master list
-	// draw->removeFromList(&m_drawableList);
+	// remove from the master list
+	draw->removeFromList(&m_drawableList);
 
-	// //
-	// // because drawables and objects are tightly coupled, not only MUST we maintain
-	// // our links in all instances, but it is NECESSARY for the client to actually
-	// // modify data in the logic, that is the pointer in an object to *this* drawable
-	// //
-	// Object *obj = draw->getObject();
-	// if( obj )
-	// {
+	//
+	// because drawables and objects are tightly coupled, not only MUST we maintain
+	// our links in all instances, but it is NECESSARY for the client to actually
+	// modify data in the logic, that is the pointer in an object to *this* drawable
+	//
+	Object *obj = draw->getObject();
+	if( obj )
+	{
 
-	// 	DEBUG_ASSERTCRASH( obj->getDrawable() == draw, ("Object/Drawable pointer mismatch!\n") );
-	// 	obj->friend_bindToDrawable( NULL );
+		DEBUG_ASSERTCRASH( obj->getDrawable() == draw, ("Object/Drawable pointer mismatch!\n") );
+		obj->friend_bindToDrawable( NULL );
 
-	// }  // end if
+	}  // end if
 
-	// // remove the drawable from our hash of drawables
-	// removeDrawableFromLookupTable( draw );
+	// remove the drawable from our hash of drawables
+	removeDrawableFromLookupTable( draw );
 
-	// // free storage
-	// draw->deleteInstance();
+	// free storage
+	draw->deleteInstance();
 
 }
 
 // ------------------------------------------------------------------------------------------------
 /** Add drawable to lookup table for fast id searching */
 // ------------------------------------------------------------------------------------------------
-void GameClient::addDrawableToLookupTable([[maybe_unused]] Drawable *draw )
+void GameClient::addDrawableToLookupTable(Drawable *draw)
 {
 
-// 	// sanity
-// 	if( draw == NULL )
-// 		return;
+	// sanity
+	if( draw == NULL )
+		return;
 
-// 	// add to lookup
-// //	m_drawableHash[ draw->getID() ] = draw;
-// 	DrawableID newID = draw->getID();
-// 	while( newID >= m_drawableVector.size() ) // Fail case is hella rare, so faster to double up on size() call
-// 		m_drawableVector.resize(m_drawableVector.size() * 2, NULL);
+	// add to lookup
+//	m_drawableHash[ draw->getID() ] = draw;
+	DrawableID newID = draw->getID();
+	while( newID >= (Int)m_drawableVector.size() ) // Fail case is hella rare, so faster to double up on size() call
+		m_drawableVector.resize(m_drawableVector.size() * 2, NULL);
 
-// 	m_drawableVector[ newID ] = draw;
+	m_drawableVector[ newID ] = draw;
 
 }  // end addDrawableToLookupTable
 
 // ------------------------------------------------------------------------------------------------
 /** Remove drawable from lookup table of fast id searching */
 // ------------------------------------------------------------------------------------------------
-void GameClient::removeDrawableFromLookupTable( [[maybe_unused]] Drawable *draw )
+void GameClient::removeDrawableFromLookupTable(Drawable* draw)
 {
 
-// 	// sanity
-// 	if( draw == NULL )
-// 		return;
+	// sanity
+	if( draw == NULL )
+		return;
 
-// 	// remove from table
-// //	m_drawableHash.erase( draw->getID() );
-// 	m_drawableVector[ draw->getID() ] = NULL;
+	// remove from table
+//	m_drawableHash.erase( draw->getID() );
+	m_drawableVector[ draw->getID() ] = NULL;
 
 }  // end removeDrawableFromLookupTable
 
@@ -1071,6 +1071,7 @@ void GameClient::allocateShadows(void)
 void GameClient::preloadAssets( [[maybe_unused]] TimeOfDay timeOfDay )
 {
 
+DEBUG_LOG(("GameClient::preloadAssets not yet implemented!\n"));
 // 	MEMORYSTATUS before, after;
 // 	GlobalMemoryStatus(&before);
 
@@ -1603,15 +1604,15 @@ void GameClient::xfer( [[maybe_unused]] Xfer *xfer )
 void GameClient::loadPostProcess( void )
 {
 
-	// //
-	// // due to the fact that during the load process we have called newDrawable for drawables
-	// // without objects, and then overwrote their ids with data from the save file, our allocater
-	// // id may be far higher than it needs to be.  We'll pull it back down as low as we can
-	// //
-	// Drawable *draw;
-	// for( draw = getDrawableList(); draw; draw = draw->getNextDrawable() )
-	// 	if( draw->getID() >= m_nextDrawableID )
-	// 		m_nextDrawableID = (DrawableID)((UnsignedInt)draw->getID() + 1);
+	//
+	// due to the fact that during the load process we have called newDrawable for drawables
+	// without objects, and then overwrote their ids with data from the save file, our allocater
+	// id may be far higher than it needs to be.  We'll pull it back down as low as we can
+	//
+	Drawable *draw;
+	for( draw = getDrawableList(); draw; draw = draw->getNextDrawable() )
+		if( draw->getID() >= m_nextDrawableID )
+			m_nextDrawableID = (DrawableID)((UnsignedInt)draw->getID() + 1);
 
 }  // end loadPostProcess
 

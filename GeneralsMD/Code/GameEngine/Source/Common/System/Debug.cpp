@@ -276,6 +276,7 @@ static int doCrashBox(const char *buffer, Bool logResult)
 			if (logResult)
 				DebugLog("[Retry]\n");
 #endif
+			trap_instruction();
 			raise(SIGTRAP);
 			break;
 		case IDIGNORE:

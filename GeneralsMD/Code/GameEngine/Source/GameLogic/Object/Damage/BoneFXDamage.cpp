@@ -66,7 +66,7 @@ void BoneFXDamage::onObjectCreated()
 //-------------------------------------------------------------------------------------------------
 /** Switching damage states */
 //-------------------------------------------------------------------------------------------------
-void BoneFXDamage::onBodyDamageStateChange( const DamageInfo *damageInfo, 
+void BoneFXDamage::onBodyDamageStateChange( const DamageInfo* /* damageInfo */, 
 																						BodyDamageType oldState, 
 																						BodyDamageType newState )
 {

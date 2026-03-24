@@ -767,6 +767,8 @@ DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
 	case WW3D_FORMAT_U8V8:		// Bumpmap
 	case WW3D_FORMAT_L6V5U5:	// Bumpmap
 	case WW3D_FORMAT_X8L8V8U8:	// Bumpmap
+DEBUG_CRASH(("TextureClass::TextureClass implement bumpmaps!"));
+#if 0
 		// If requesting bumpmap format that isn't available we'll just return the surface in whatever color
 		// format the texture file is in. (This is illegal case, the format support should always be queried
 		// before creating a bump texture!)
@@ -783,6 +785,7 @@ DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
 			Filter.Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_NONE);
 		}
 		break;
+#endif // if 0
 	default:	break;
 	}
 
@@ -805,6 +808,10 @@ DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
 	Set_Texture_Name(name);
 	Set_Full_Path(full_path);
 	WWASSERT(name[0]!='\0');
+
+	Poke_Sampler(newInstance(OpenGLSampler));
+
+// #if 0
 	if (!WW3D::Is_Texturing_Enabled()) 
 	{
 		Initialized=true;
@@ -815,8 +822,8 @@ DEBUG_CRASH(("TextureClass::TextureClass not yet implemented!"));
 	ThumbnailClass* thumb=ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager(Get_Full_Path());
 	if (thumb) 
 	{
-		Width=thumb->Get_Original_Texture_Width();
-		Height=thumb->Get_Original_Texture_Height();
+		Width=(int)thumb->Get_Original_Texture_Width();
+		Height=(int)thumb->Get_Original_Texture_Height();
  		if (MipLevelCount!=MIP_LEVELS_1) {
  			MipLevelCount=(MipCountType)thumb->Get_Original_Texture_Mip_Level_Count();
  		}
@@ -842,7 +849,7 @@ TextureClass::TextureClass
 	SurfaceClass *surface, 
 	MipCountType mip_level_count
 )
-:  TextureBaseClass(0,0,mip_level_count),
+:	TextureBaseClass(0,0,mip_level_count),
 	TextureFormat(surface->Get_Surface_Format()),
 	Filter(mip_level_count)
 {
@@ -1161,10 +1168,6 @@ return 0;
 // Utility functions
 TextureClass* Load_Texture(ChunkLoadClass & cload)
 {
-(void) cload;
-DEBUG_CRASH(("TextureClass::Load_Texture not yet implemented!"));
-return nullptr;
-#if 0
 	// Assume failure
 	TextureClass *newtex = NULL;
 
@@ -1245,6 +1248,9 @@ return nullptr;
 
 				case W3DTEXTURE_TYPE_BUMPMAP:
 				{
+DEBUG_CRASH(("TextureClass::Load_Texture (W3DTEXTURE_TYPE_BUMPMAP) not yet implemented!"));
+return nullptr;
+#if 0
 					if (DX8Wrapper::Is_Initted() && DX8Wrapper::Get_Current_Caps()->Support_Bump_Envmap()) 
 					{
 						// No mipmaps to bumpmap for now
@@ -1255,6 +1261,7 @@ return nullptr;
 						else if (DX8Wrapper::Get_Current_Caps()->Support_Texture_Format(WW3D_FORMAT_L6V5U5)) format=WW3D_FORMAT_L6V5U5;
 					}
 					break;
+#endif // if 0
 				}
 
 				default:
@@ -1283,7 +1290,6 @@ return nullptr;
 
 	// Return a pointer to the new texture
 	return newtex;
-#endif // if 0
 }
 
 // Utility function used by Save_Texture

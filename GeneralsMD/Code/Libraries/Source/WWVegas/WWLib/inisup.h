@@ -44,9 +44,9 @@
 **	to help reduce header dependancies. -ehc
 */
 
-#include	"listnode.h"
-#include	"index.h"
-#include "crc.h"
+#include "LISTNODE.H"
+#include "INDEX.H"
+#include "CRC.H"
 
 
 /*
@@ -57,6 +57,11 @@ struct INIEntry : public Node<INIEntry *> {
 	INIEntry(char * entry = NULL, char * value = NULL) : Entry(entry), Value(value) {}
 	~INIEntry(void);
 //	~INIEntry(void) {free(Entry);Entry = NULL;free(Value);Value = NULL;}
+
+	// No copies allowed!
+	INIEntry(const INIEntry&) = delete;
+	INIEntry& operator=(const INIEntry&) = delete;
+
 //	int Index_ID(void) const {return(CRCEngine()(Entry, strlen(Entry)));};
 	int Index_ID(void) const { return CRC::String(Entry);};
 
@@ -77,12 +82,10 @@ struct INISection : public Node<INISection *> {
 		int Index_ID(void) const { return CRC::String(Section); }; 
 
 		char * Section;
-		List<INIEntry *> EntryList;
-		IndexClass<int, INIEntry *> EntryIndex;
+		List<INIEntry *> EntryList {};
+		IndexClass<int, INIEntry *> EntryIndex {};
 
 	private:
 		INISection(INISection const & rvalue);
 		INISection operator = (INISection const & rvalue);
 };
-
-

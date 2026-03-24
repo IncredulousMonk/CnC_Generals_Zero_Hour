@@ -43,11 +43,13 @@
 #include "htree.h"
 #include "vp.h"
 #include "visrasterizer.h"
-#include "dx8polygonrenderer.h"
+// #include "dx8polygonrenderer.h"
 #include "bwrender.h"
 #include "camera.h"
-#include "dx8renderer.h"
+// #include "dx8renderer.h"
 #include "hashtemplate.h"
+#include "dx8fvf.h"
+#include "OpenGLRenderer.h"
 
 
 /*
@@ -107,10 +109,14 @@ MeshModelClass::MeshModelClass(const MeshModelClass & that) :
 MeshModelClass::~MeshModelClass(void)
 {
 //	WWDEBUG_SAY(("Note: Mesh %s was never used\n",Get_Name()));
+// FIXME: Figure out the DX8 mesh rendering.
+#if 0
 	TheDX8MeshRenderer.Unregister_Mesh_Type(this);
+#endif // if 0
 
 	Reset(0,0,0);
 	REF_PTR_RELEASE(MatInfo);
+	REF_PTR_RELEASE(MeshRenderer);
 
 	if (DefMatDesc != NULL) {
 		delete DefMatDesc;
@@ -118,7 +124,6 @@ MeshModelClass::~MeshModelClass(void)
 	if (AlternateMatDesc != NULL) {
 		delete AlternateMatDesc;
 	}
-	return ;
 }
 
 MeshModelClass & MeshModelClass::operator = (const MeshModelClass & that)
@@ -126,7 +131,9 @@ MeshModelClass & MeshModelClass::operator = (const MeshModelClass & that)
 	if (this != &that) {
 		// Remove all polygon renderers, this will remove the mesh from the rendering system.
 		// The mesh will be initialized to rendering system the next time it is rendered.
+#if 0
 		TheDX8MeshRenderer.Unregister_Mesh_Type(this);
+#endif // if 0
 
 		MeshGeometryClass::operator = (that);
 
@@ -165,7 +172,9 @@ void MeshModelClass::Reset(int polycount,int vertcount,int passcount)
 
 	// Release everything we have and reset to initial state
 
+#if 0
 	TheDX8MeshRenderer.Unregister_Mesh_Type(this);
+#endif // if 0
 
 	MatInfo->Reset();
 	DefMatDesc->Reset(polycount,vertcount,passcount);
@@ -180,6 +189,8 @@ void MeshModelClass::Reset(int polycount,int vertcount,int passcount)
 
 void MeshModelClass::Register_For_Rendering()
 {
+DEBUG_LOG(("MeshModelClass::Register_For_Rendering not yet implemented!\n"));
+#if 0
 	HasBeenInUse=true;
 //WW3D::Set_NPatches_Level(1);
 	if (WW3D::Get_NPatches_Level()>1) {
@@ -202,10 +213,15 @@ void MeshModelClass::Register_For_Rendering()
 	}
 
 	TheDX8MeshRenderer.Register_Mesh_Type(this);
+#endif // if 0
 }
 
 void MeshModelClass::Replace_Texture(TextureClass* texture,TextureClass* new_texture)
 {
+(void) texture;
+(void) new_texture;
+DEBUG_LOG(("MeshModelClass::Replace_Texture not yet implemented!\n"));
+#if 0
 	WWASSERT(texture);
 	WWASSERT(new_texture);
 	for (int stage=0;stage<MeshMatDescClass::MAX_TEX_STAGES;++stage) {
@@ -230,10 +246,15 @@ void MeshModelClass::Replace_Texture(TextureClass* texture,TextureClass* new_tex
 			}
 		}
 	}
+#endif // if 0
 }
 
 void MeshModelClass::Replace_VertexMaterial(VertexMaterialClass* vmat,VertexMaterialClass* new_vmat)
 {
+(void) vmat;
+(void) new_vmat;
+DEBUG_LOG(("MeshModelClass::Replace_VertexMaterial not yet implemented!\n"));
+#if 0
 	WWASSERT(vmat);
 	WWASSERT(new_vmat);
 	
@@ -257,10 +278,13 @@ void MeshModelClass::Replace_VertexMaterial(VertexMaterialClass* vmat,VertexMate
 			fvf_category->Change_Polygon_Renderer_Material(PolygonRendererList,vmat,new_vmat,pass);
 		}
 	}	
+#endif // if 0
 }
 
 DX8FVFCategoryContainer* MeshModelClass::Peek_FVF_Category_Container()
 {
+DEBUG_LOG(("MeshModelClass::Peek_FVF_Category_Container not yet implemented!\n"));
+#if 0
 	if (PolygonRendererList.Is_Empty()) return NULL;
 	DX8PolygonRendererClass* polygon_renderer=PolygonRendererList.Get_Head();
 	WWASSERT(polygon_renderer);
@@ -269,10 +293,22 @@ DX8FVFCategoryContainer* MeshModelClass::Peek_FVF_Category_Container()
 	DX8FVFCategoryContainer* fvf_category=texture_category->Get_Container();
 	WWASSERT(fvf_category);
 	return fvf_category;
+#endif // if 0
+return nullptr;
+}
+void MeshModelClass::Render_Mesh(RenderInfoClass& rinfo, Matrix3D& transform)
+{
+	MeshRenderer->Set_Transform(transform);
+	MeshRenderer->Render(rinfo);
 }
 
 void MeshModelClass::Shadow_Render(SpecialRenderInfoClass & rinfo,const Matrix3D & tm,const HTreeClass * htree)
 {
+(void) rinfo;
+(void) tm;
+(void) htree;
+DEBUG_LOG(("MeshModelClass::Shadow_Render not yet implemented!\n"));
+#if 0
 	if (rinfo.BWRenderer != NULL) {
 		if (_TempTransformedVertexBuffer.Length() < VertexCount) _TempTransformedVertexBuffer.Resize(VertexCount);
 		Vector4* transf_ptr=&(_TempTransformedVertexBuffer[0]);
@@ -286,6 +322,7 @@ void MeshModelClass::Shadow_Render(SpecialRenderInfoClass & rinfo,const Matrix3D
 		rinfo.BWRenderer->Render_Triangles(reinterpret_cast<const unsigned long*>(Poly->Get_Array()),PolyCount*3);
 		return;
 	}
+#endif // if 0
 }
 
 void MeshModelClass::Make_Geometry_Unique()
@@ -301,7 +338,7 @@ void MeshModelClass::Make_Geometry_Unique()
 	REF_PTR_RELEASE(norms);
 
 #if (!OPTIMIZE_PLANEEQ_RAM)
-	ShareBufferClass<Vector4> * peq = NEW_REF(ShareBufferClass<Vector4>,(*PlaneEq, "MeshModelClass::PlaneEq"));	
+	ShareBufferClass<Vector4> * peq = NEW_REF(ShareBufferClass<Vector4>,(*PlaneEq));
 	REF_PTR_SET(PlaneEq,peq);
 	REF_PTR_RELEASE(peq);
 #endif
@@ -319,6 +356,9 @@ void MeshModelClass::Make_Color_Array_Unique(int array_index)
 
 void MeshModelClass::Enable_Alternate_Material_Description(bool onoff)
 {
+(void) onoff;
+DEBUG_LOG(("MeshModelClass::Enable_Alternate_Material_Description not yet implemented!\n"));
+#if 0
 	if ((onoff == true) && (AlternateMatDesc != NULL)) {
 		if (CurMatDesc != AlternateMatDesc) {
 			CurMatDesc = AlternateMatDesc;
@@ -346,6 +386,7 @@ void MeshModelClass::Enable_Alternate_Material_Description(bool onoff)
 			TheDX8MeshRenderer.Invalidate();
 		}
 	}
+#endif // if 0
 }
 
 bool MeshModelClass::Is_Alternate_Material_Description_Enabled(void)
@@ -368,8 +409,8 @@ bool MeshModelClass::Needs_Vertex_Normals(void)
 
 struct TriangleSide
 {
-	Vector3 loc1;
-	Vector3 loc2;
+	Vector3 loc1 {};
+	Vector3 loc2 {};
 	TriangleSide(const Vector3& l1,const Vector3& l2)
 	{
 		int i1=*(int*)&l1[0];
@@ -427,11 +468,11 @@ template <> inline unsigned int HashTemplateKeyClass<TriangleSide>::Get_Hash_Val
 
 struct SideIndexInfo
 {
-	unsigned short vidx1;
-	unsigned short vidx2;
-	unsigned polygon_index;
+	unsigned short vidx1 {};
+	unsigned short vidx2 {};
+	unsigned polygon_index {};
 	SideIndexInfo() {}
-	SideIndexInfo(int i) { WWASSERT(0); }
+	SideIndexInfo(int /* i */) { WWASSERT(0); }
 };
 
 
@@ -448,7 +489,7 @@ HashTemplateClass<TriangleSide,SideIndexInfo> SideHash;
 //
 // ----------------------------------------------------------------------------
 
-GapFillerClass::GapFillerClass(MeshModelClass* mmc_) : mmc(NULL), PolygonCount(0)
+GapFillerClass::GapFillerClass(MeshModelClass* mmc_) : PolygonCount(0), mmc(NULL)
 {
 	//DMS - We cannot take a reference to the mesh model here!  This is because the mesh model
 	// class OWNS the GapFiller class (allocated via NEW).  If we take a reference here, there
@@ -458,7 +499,7 @@ GapFillerClass::GapFillerClass(MeshModelClass* mmc_) : mmc(NULL), PolygonCount(0
 //	REF_PTR_SET(mmc,mmc_);
 	mmc = mmc_;
 
-	ArraySize=mmc->Get_Polygon_Count()*6;	// Each side of each triangle can have 2 polygons added, in the worst case
+	ArraySize=(unsigned int)mmc->Get_Polygon_Count()*6;	// Each side of each triangle can have 2 polygons added, in the worst case
 	PolygonArray=W3DNEWARRAY TriIndex[ArraySize];
 	for (int pass=0;pass<mmc->Get_Pass_Count();++pass) {
 		for (int stage=0;stage<MeshMatDescClass::MAX_TEX_STAGES;++stage) {
@@ -480,7 +521,7 @@ GapFillerClass::GapFillerClass(MeshModelClass* mmc_) : mmc(NULL), PolygonCount(0
 	}
 }
 
-GapFillerClass::GapFillerClass(const GapFillerClass& that) : mmc(NULL), PolygonCount(that.PolygonCount)
+GapFillerClass::GapFillerClass(const GapFillerClass& that) : PolygonCount(that.PolygonCount), mmc(NULL)
 {
 	//DMS - We cannot take a reference to the mesh model here!  This is because the mesh model
 	// class OWNS the GapFiller class (allocated via NEW).  If we take a reference here, there
@@ -581,7 +622,7 @@ WWASSERT(loc1==loc2 || loc1==loc3 || loc2==loc3);
 	PolygonArray[PolygonCount]=TriIndex(vidx1,vidx2,vidx3);
 	for (int pass=0;pass<mmc->Get_Pass_Count();++pass) {
 		if (mmc->Has_Shader_Array(pass)) {
-			ShaderArray[pass][PolygonCount]=mmc->Get_Shader(polygon_index,pass);
+			ShaderArray[pass][PolygonCount]=mmc->Get_Shader((int)polygon_index,pass);
 		}
 		if (mmc->Has_Material_Array(pass)) {
 //			MaterialArray[pass][PolygonCount]=mmc->Get_Material(polygon_index,pass);
@@ -589,7 +630,7 @@ WWASSERT(loc1==loc2 || loc1==loc3 || loc2==loc3);
 		}
 		for (int stage=0;stage<MeshMatDescClass::MAX_TEX_STAGES;++stage) {
 			if (mmc->Has_Texture_Array(pass,stage)) {
-				TextureArray[pass][stage][PolygonCount]=mmc->Get_Texture(polygon_index,pass,stage);
+				TextureArray[pass][stage][PolygonCount]=mmc->Get_Texture((int)polygon_index,pass,stage);
 			}
 		}
 	}
@@ -598,7 +639,7 @@ WWASSERT(loc1==loc2 || loc1==loc3 || loc2==loc3);
 
 // ----------------------------------------------------------------------------
 //
-// Resize buffers to match the polygon count exatly. After this call no more
+// Resize buffers to match the polygon count exactly. After this call no more
 // polygons can be added to the buffers.
 //
 // ----------------------------------------------------------------------------
@@ -635,7 +676,10 @@ void GapFillerClass::Shrink_Buffers()
 		if (ShaderArray[pass]) {
 			// Shrink the shader array
 			ShaderClass* new_shader_array=W3DNEWARRAY ShaderClass[PolygonCount];
-			memcpy(new_shader_array,ShaderArray[pass],PolygonCount*sizeof(ShaderClass));
+			for (unsigned int i {0}; i < PolygonCount; ++i) {
+				new_shader_array[i] = ShaderArray[pass][i];
+			}
+			// memcpy(new_shader_array,ShaderArray[pass],PolygonCount*sizeof(ShaderClass));
 			delete[] ShaderArray[pass];
 			ShaderArray[pass]=new_shader_array;
 		}
@@ -652,6 +696,8 @@ void GapFillerClass::Shrink_Buffers()
 
 void MeshModelClass::Init_For_NPatch_Rendering()
 {
+DEBUG_LOG(("MeshModelClass::Init_For_NPatch_Rendering not yet implemented!\n"));
+#if 0
 	if (!DX8Wrapper::Get_Current_Caps()->Support_NPatches()) return;
 	if (!Get_Flag(MeshGeometryClass::ALLOW_NPATCHES)) return;
 	if (GapFiller) return;
@@ -757,4 +803,33 @@ void MeshModelClass::Init_For_NPatch_Rendering()
 	SideHash.Remove_All();
 
 	if (GapFiller) GapFiller->Shrink_Buffers();
+#endif // if 0
+}
+
+void MeshModelClass::generate_render_data()
+{
+	unsigned short* indexBufferData {W3DNEWARRAY unsigned short[PolyCount * 3]};
+	for (int i {0}; i < PolyCount; ++i) {
+		indexBufferData[i * 3 + 0] = Poly->Get_Array()[i].I;
+		indexBufferData[i * 3 + 1] = Poly->Get_Array()[i].J;
+		indexBufferData[i * 3 + 2] = Poly->Get_Array()[i].K;
+	}
+
+	VertexFormatXYZNUV1* vertexBufferData {W3DNEWARRAY VertexFormatXYZNUV1[VertexCount]};
+	for (int i {0}; i < VertexCount; ++i) {
+		vertexBufferData[i].x = Vertex->Get_Array()[i].X;
+		vertexBufferData[i].y = Vertex->Get_Array()[i].Y;
+		vertexBufferData[i].z = Vertex->Get_Array()[i].Z;
+		vertexBufferData[i].nx = VertexNorm->Get_Array()[i].X;
+		vertexBufferData[i].ny = VertexNorm->Get_Array()[i].Y;
+		vertexBufferData[i].nz = VertexNorm->Get_Array()[i].Z;
+		vertexBufferData[i].u1 = CurMatDesc->UV[0]->Get_Array()[i].X;
+		vertexBufferData[i].v1 = CurMatDesc->UV[0]->Get_Array()[i].Y;
+	}
+
+	MeshRenderer = TheOpenGLRenderer->createMeshRenderer(indexBufferData, (size_t)PolyCount * 3 * sizeof(unsigned short),
+		vertexBufferData, (size_t)VertexCount * sizeof(VertexFormatXYZNUV1), DX8_FVF_XYZNUV1, PolyCount, MatInfo->Get_Texture(0));
+
+	delete[] indexBufferData;
+	delete[] vertexBufferData;
 }

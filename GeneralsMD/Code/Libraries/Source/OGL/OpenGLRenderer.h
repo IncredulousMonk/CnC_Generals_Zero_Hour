@@ -25,6 +25,8 @@
 #ifndef OPEN_GL_RENDERER_H
 #define OPEN_GL_RENDERER_H
 
+#include "OpenGLMeshRenderer.h"
+#include "dx8fvf.h"
 #define GL_GLEXT_PROTOTYPES
 #include <GL/glcorearb.h>
 #include <string>
@@ -32,18 +34,33 @@
 
 using Mat4 = std::array<GLfloat, 16>;
 
+enum ShaderType {
+   SHADER_NONE,
+   SHADER_GUI,
+   SHADER_TERRAIN,
+   SHADER_TEXTURED_OPAQUE,
+   NUM_SHADER_TYPES,
+};
+
 class OpenGLRenderer {
 private:
    GLuint m_vaoGui {};
    GLuint m_vboGui {};
-   GLuint m_progGui {};
    GLuint m_texGui {};
    GLuint m_samGui {};
+   ShaderType m_currentShader {SHADER_NONE};
+   GLuint m_shaders[NUM_SHADER_TYPES];
 public:
    void init();
+   void cleanup();
    void drawSplashImage();
    void beginRender();
    void endRender();
+   void useShader(ShaderType shader);
+   GLuint getShader(ShaderType shader);
+   OpenGLMeshRenderer* createMeshRenderer(const void* indexBufferData, size_t indexBufferSize, const void* vertexBufferData, size_t vertexBufferSize,
+      VertexFormat format, int triangleCount, TextureClass* texture);
+   GLint getUniformLocation(ShaderType shader, const char* name);
 
    static void addShader(GLuint program, const char* source, GLenum shaderType);
    static void buildShader(GLuint program);

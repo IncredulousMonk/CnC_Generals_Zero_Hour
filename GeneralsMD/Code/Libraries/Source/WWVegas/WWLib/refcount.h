@@ -87,6 +87,8 @@ struct ActiveRefStruct
 **
 **		If you call a function that returns a pointer to a RefCountClass,
 **			you MUST Release_Ref() it
+**				either at the end of the function for temporary use
+**				or in your destructor if you stored the pointer
 **
 **		If a functions calls you, and you return a pointer to a RefCountClass,
 **			you MUST Add_Ref() it

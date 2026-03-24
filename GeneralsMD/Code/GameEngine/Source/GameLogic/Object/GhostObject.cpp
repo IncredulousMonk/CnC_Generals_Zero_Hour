@@ -41,11 +41,11 @@ GhostObjectManager *TheGhostObjectManager=NULL;
 GhostObject::GhostObject(void):
 //Added By Sadullah Nader
 //Initializations missing and needed
-m_parentAngle(0.0f),
+m_parentObject(NULL),
 m_parentGeometryIsSmall(0.0f),
 m_parentGeometryMajorRadius(0.0f),
 m_parentGeometryminorRadius(0.0f),
-m_parentObject(NULL),
+m_parentAngle(0.0f),
 m_partitionData(NULL)
 { 
 	m_parentPosition.zero();
@@ -62,7 +62,7 @@ GhostObject::~GhostObject()
 // ------------------------------------------------------------------------------------------------
 /** CRC */
 // ------------------------------------------------------------------------------------------------
-void GhostObject::crc( Xfer *xfer )
+void GhostObject::crc(Xfer* /* xfer */)
 {
 
 }  // end crc
@@ -159,21 +159,21 @@ void GhostObjectManager::reset(void)
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-GhostObject *GhostObjectManager::addGhostObject(Object *object, PartitionData *pd)
+GhostObject *GhostObjectManager::addGhostObject(Object* /* object */, PartitionData* /* pd */)
 {
 	return 0;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void GhostObjectManager::removeGhostObject(GhostObject *mod)
+void GhostObjectManager::removeGhostObject(GhostObject* /* mod */)
 {
 
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void GhostObjectManager::updateOrphanedObjects(int *playerIndexList, int numNonLocalPlayers)
+void GhostObjectManager::updateOrphanedObjects(int* /* playerIndexList */, int /* numNonLocalPlayers */)
 {
 
 }
@@ -192,7 +192,7 @@ void GhostObjectManager::restorePartitionData(void)
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void GhostObjectManager::crc( Xfer *xfer )
+void GhostObjectManager::crc(Xfer* /* xfer */)
 {
 
 }  // end crc

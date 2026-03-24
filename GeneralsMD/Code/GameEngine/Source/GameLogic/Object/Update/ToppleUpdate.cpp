@@ -59,41 +59,43 @@ ToppleUpdateModuleData::ToppleUpdateModuleData()
 	const Real START_VELOCITY_PERCENT = 0.2f;
 	const Real START_ACCEL_PERCENT = 0.01f;
 	const Real VELOCITY_BOUNCE_PERCENT = 0.3f;			// multiply the velocity by this when you bounce
-	m_toppleFX = NULL;
-	m_bounceFX = NULL;
-	m_stumpName.clear();
-	m_killWhenToppled = true;
-	m_killWhenStartToppled = false;
-	m_killStumpWhenToppled = false;
-	m_toppleLeftOrRightOnly = false;
-	m_reorientToppledRubble = false;
-	m_initialVelocityPercent = START_VELOCITY_PERCENT;
-	m_initialAccelPercent = START_ACCEL_PERCENT;
-	m_bounceVelocityPercent = VELOCITY_BOUNCE_PERCENT;
+	m_ini.m_toppleFX = NULL;
+	m_ini.m_bounceFX = NULL;
+	m_ini.m_stumpName.clear();
+	m_ini.m_killWhenToppled = true;
+	m_ini.m_killWhenStartToppled = false;
+	m_ini.m_killStumpWhenToppled = false;
+	m_ini.m_toppleLeftOrRightOnly = false;
+	m_ini.m_reorientToppledRubble = false;
+	m_ini.m_initialVelocityPercent = START_VELOCITY_PERCENT;
+	m_ini.m_initialAccelPercent = START_ACCEL_PERCENT;
+	m_ini.m_bounceVelocityPercent = VELOCITY_BOUNCE_PERCENT;
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void ToppleUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void ToppleUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+  UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "ToppleFX",	INI::parseFXList, NULL, offsetof( ToppleUpdateModuleData, m_toppleFX ) },
-		{ "BounceFX",	INI::parseFXList, NULL, offsetof( ToppleUpdateModuleData, m_bounceFX ) },
-		{ "StumpName",	INI::parseAsciiString, NULL, offsetof( ToppleUpdateModuleData, m_stumpName ) },
-		{ "KillWhenStartToppling",	INI::parseBool, NULL, offsetof( ToppleUpdateModuleData, m_killWhenStartToppled ) },
-		{ "KillWhenFinishedToppling",	INI::parseBool, NULL, offsetof( ToppleUpdateModuleData, m_killWhenToppled ) },
-		{ "KillStumpWhenToppled",	INI::parseBool, NULL, offsetof( ToppleUpdateModuleData, m_killStumpWhenToppled ) },
-		{ "ToppleLeftOrRightOnly",	INI::parseBool, NULL, offsetof( ToppleUpdateModuleData, m_toppleLeftOrRightOnly ) },
-		{ "ReorientToppledRubble",	INI::parseBool, NULL, offsetof( ToppleUpdateModuleData, m_reorientToppledRubble ) },
-		{ "InitialVelocityPercent",	INI::parsePercentToReal, NULL, offsetof( ToppleUpdateModuleData, m_initialVelocityPercent ) },
-		{ "InitialAccelPercent",	INI::parsePercentToReal, NULL, offsetof( ToppleUpdateModuleData, m_initialAccelPercent ) },
-		{ "BounceVelocityPercent",	INI::parsePercentToReal, NULL, offsetof( ToppleUpdateModuleData, m_bounceVelocityPercent ) },
+		{ "ToppleFX",					INI::parseFXList,			NULL, offsetof( ToppleUpdateModuleData::IniData, m_toppleFX ) },
+		{ "BounceFX",					INI::parseFXList,			NULL, offsetof( ToppleUpdateModuleData::IniData, m_bounceFX ) },
+		{ "StumpName",					INI::parseAsciiString,		NULL, offsetof( ToppleUpdateModuleData::IniData, m_stumpName ) },
+		{ "KillWhenStartToppling",		INI::parseBool,				NULL, offsetof( ToppleUpdateModuleData::IniData, m_killWhenStartToppled ) },
+		{ "KillWhenFinishedToppling",	INI::parseBool,				NULL, offsetof( ToppleUpdateModuleData::IniData, m_killWhenToppled ) },
+		{ "KillStumpWhenToppled",		INI::parseBool,				NULL, offsetof( ToppleUpdateModuleData::IniData, m_killStumpWhenToppled ) },
+		{ "ToppleLeftOrRightOnly",		INI::parseBool,				NULL, offsetof( ToppleUpdateModuleData::IniData, m_toppleLeftOrRightOnly ) },
+		{ "ReorientToppledRubble",		INI::parseBool,				NULL, offsetof( ToppleUpdateModuleData::IniData, m_reorientToppledRubble ) },
+		{ "InitialVelocityPercent",		INI::parsePercentToReal,	NULL, offsetof( ToppleUpdateModuleData::IniData, m_initialVelocityPercent ) },
+		{ "InitialAccelPercent",		INI::parsePercentToReal,	NULL, offsetof( ToppleUpdateModuleData::IniData, m_initialAccelPercent ) },
+		{ "BounceVelocityPercent",		INI::parsePercentToReal,	NULL, offsetof( ToppleUpdateModuleData::IniData, m_bounceVelocityPercent ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	ToppleUpdateModuleData* self {static_cast<ToppleUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 
@@ -150,7 +152,7 @@ void ToppleUpdate::applyTopplingForce( const Coord3D* toppleDirection, Real topp
 
 	const ToppleUpdateModuleData* d = getToppleUpdateModuleData();
 
-	if (d->m_killWhenStartToppled)
+	if (d->m_ini.m_killWhenStartToppled)
 	{
 		setWakeFrame(getObject(), UPDATE_SLEEP_FOREVER);
 		getObject()->kill();
@@ -161,8 +163,8 @@ void ToppleUpdate::applyTopplingForce( const Coord3D* toppleDirection, Real topp
 	m_toppleDirection.normalize();
 	TheScriptEngine->adjustToppleDirection(getObject(), &m_toppleDirection);
 
-	m_angularVelocity = toppleSpeed * d->m_initialVelocityPercent;
-	m_angularAcceleration = toppleSpeed * d->m_initialAccelPercent;
+	m_angularVelocity = toppleSpeed * d->m_ini.m_initialVelocityPercent;
+	m_angularAcceleration = toppleSpeed * d->m_ini.m_initialAccelPercent;
 	m_toppleState = TOPPLE_FALLING;
 	m_options = options;
 
@@ -189,7 +191,7 @@ void ToppleUpdate::applyTopplingForce( const Coord3D* toppleDirection, Real topp
 	// of minimizing the problem. (srj)
 	Real curAngleX = normalizeAngle(getObject()->getOrientation());
 	Real toppleAngle = normalizeAngle(atan2(m_toppleDirection.y, m_toppleDirection.x));
-	if (d->m_toppleLeftOrRightOnly)
+	if (d->m_ini.m_toppleLeftOrRightOnly)
 	{
 		// it's a fence or such, and can only topple left or right, so pick the closest
 		toppleAngle = angleClosestTo(curAngleX + PI/2, curAngleX - PI/2, toppleAngle);
@@ -210,12 +212,12 @@ void ToppleUpdate::applyTopplingForce( const Coord3D* toppleDirection, Real topp
 	m_angleDeltaX = (desiredAngleX - curAngleX) / m_numAngleDeltaX;
 
 	getObject()->getDrawable()->setModelConditionState(MODELCONDITION_TOPPLED);
-	FXList::doFXObj(d->m_toppleFX, getObject());
+	FXList::doFXObj(d->m_ini.m_toppleFX, getObject());
 
 	// if this is a tree, create a stump
-	if (!d->m_stumpName.isEmpty())
+	if (!d->m_ini.m_stumpName.isEmpty())
 	{
-		const ThingTemplate* ttn = TheThingFactory->findTemplate(d->m_stumpName);
+		const ThingTemplate* ttn = TheThingFactory->findTemplate(d->m_ini.m_stumpName);
 		Object *stump = TheThingFactory->newObject( ttn, NULL );
 		if (stump)
 		{
@@ -298,7 +300,7 @@ UpdateSleepTime ToppleUpdate::update()
 	if ((m_angularAccumulation >= ANGULAR_LIMIT) && (m_angularVelocity > 0))
 	{
 		// Hit so either bounce or stop if too little remaining velocity.
-		m_angularVelocity *= -d->m_bounceVelocityPercent;
+		m_angularVelocity *= -d->m_ini.m_bounceVelocityPercent;
 
 		if( BitTest( m_options, TOPPLE_OPTIONS_NO_BOUNCE ) == TRUE || 
 				fabs(m_angularVelocity) < VELOCITY_BOUNCE_LIMIT )
@@ -307,10 +309,10 @@ UpdateSleepTime ToppleUpdate::update()
 			m_angularVelocity = 0;
 			m_toppleState = TOPPLE_DOWN;
 
-			if (d->m_killWhenToppled)
+			if (d->m_ini.m_killWhenToppled)
 			{
 				deathByToppling(obj);
-				if (d->m_reorientToppledRubble)
+				if (d->m_ini.m_reorientToppledRubble)
 				{
 					// we have a separate rubble state that needs to be upright, and centered
 					// on the new "center" pos...
@@ -332,7 +334,7 @@ UpdateSleepTime ToppleUpdate::update()
 				}
 			} // if kill when toppled
 
-			if (d->m_killStumpWhenToppled)
+			if (d->m_ini.m_killStumpWhenToppled)
 			{
 				Object* stump = TheGameLogic->findObjectByID(m_stumpID);
 				if (stump)
@@ -345,7 +347,7 @@ UpdateSleepTime ToppleUpdate::update()
 		{
 			// fast enough bounce to warrant the bounce fx
 			if( BitTest( m_options, TOPPLE_OPTIONS_NO_FX ) == FALSE )
-				FXList::doFXObj(d->m_bounceFX, obj);
+				FXList::doFXObj(d->m_ini.m_bounceFX, obj);
 		}
 	}
 	else
@@ -363,7 +365,7 @@ UpdateSleepTime ToppleUpdate::update()
 //-------------------------------------------------------------------------------------------------
 /** Do the collision */
 //-------------------------------------------------------------------------------------------------
-void ToppleUpdate::onCollide( Object *other, const Coord3D *loc, const Coord3D *normal )
+void ToppleUpdate::onCollide(Object* other, const Coord3D* /* loc */, const Coord3D* /* normal */)
 {
 	// Note that other == null means "collide with ground"
 	//

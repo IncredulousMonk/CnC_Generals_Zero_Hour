@@ -71,13 +71,13 @@ GarrisonContainModuleData::GarrisonContainModuleData( void )
 	// by default we say that transports can have infantry inside them, this will be totally
 	// overwritten by any data provided from the INI entry tho
 	//
-	m_allowInsideKindOf = MAKE_KINDOF_MASK( KINDOF_INFANTRY );
+	OpenContainModuleData::m_ini.m_allowInsideKindOf = MAKE_KINDOF_MASK( KINDOF_INFANTRY );
 
-	m_mobileGarrison = FALSE;
-	m_doIHealObjects = false;			///< if T, then I heal objects that are inside of me
-	m_framesForFullHeal = 1.0f;		///< the number of frames something inside of me takes to heal
-	m_immuneToClearBuildingAttacks = false;
-  m_isEnclosingContainer = TRUE; ///< a sensible default for a garrison container... few exceptions, firebase is one
+	m_ini.m_mobileGarrison = FALSE;
+	m_ini.m_doIHealObjects = false;			///< if T, then I heal objects that are inside of me
+	m_ini.m_framesForFullHeal = 1.0f;		///< the number of frames something inside of me takes to heal
+	m_ini.m_immuneToClearBuildingAttacks = false;
+	m_ini.m_isEnclosingContainer = TRUE; ///< a sensible default for a garrison container... few exceptions, firebase is one
 
 	m_initialRoster.count = 0;
 }  // end if
@@ -570,7 +570,7 @@ Bool GarrisonContain::isValidContainerFor(const Object* obj, Bool checkCapacity)
 		if (checkCapacity)
 		{
 			Int garrisonMax = getContainMax();
-			Int containCount = getContainCount();
+			Int containCount = (Int)getContainCount();
 			return ( containCount < garrisonMax );
 		}
 		else
@@ -911,8 +911,8 @@ UpdateSleepTime GarrisonContain::update( void )
 	const GarrisonContainModuleData *modData = getGarrisonContainModuleData();
 
 	// extend functionality
-	UpdateSleepTime result;
-	result = OpenContain::update();
+	// UpdateSleepTime result;
+	/* result = */ OpenContain::update();
 
 	// remove effectively dead objects from this garrison container
 	const ContainedItemsList& containList = getContainList();
@@ -950,11 +950,11 @@ UpdateSleepTime GarrisonContain::update( void )
 //	// a garrison point
 //	//
 //	addValidObjectsToGarrisonPoints();
-  matchObjectsToGarrisonPoints();
+	matchObjectsToGarrisonPoints();
 
 	healObjects();
 
-	if (modData->m_mobileGarrison && (getObject()->isMobile() == TRUE) ) 
+	if (modData->m_ini.m_mobileGarrison && (getObject()->isMobile() == TRUE) ) 
 	{
 		moveObjectsWithMe();
 	}
@@ -1126,7 +1126,7 @@ void GarrisonContain::healObjects( void )
 {
 	const GarrisonContainModuleData *modData = getGarrisonContainModuleData();
 
-	if (!modData->m_doIHealObjects)
+	if (!modData->m_ini.m_doIHealObjects)
 		return;
 
 	const ContainedItemsList& containList = getContainList();
@@ -1137,7 +1137,7 @@ void GarrisonContain::healObjects( void )
 		// get the object
 		obj = *it;
 
-		healSingleObject(obj, modData->m_framesForFullHeal);
+		healSingleObject(obj, modData->m_ini.m_framesForFullHeal);
 	}
 }
 
@@ -1272,7 +1272,7 @@ void GarrisonContain::recalcApparentControllingPlayer( void )
 		const Player* controller = getApparentControllingPlayer(ThePlayerList->getLocalPlayer());
 		if (controller)
 		{
-			if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
+			if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT)
 				draw->setIndicatorColor( controller->getPlayerNightColor() );
 			else
 				draw->setIndicatorColor( controller->getPlayerColor() );
@@ -1310,7 +1310,7 @@ void GarrisonContain::loadGarrisonPoints( void )
 
 	const GarrisonContainModuleData *modData = getGarrisonContainModuleData();
 
-  DEBUG_ASSERTCRASH(modData->m_isEnclosingContainer, ("loadGarrisonPoints... SHOULD NOT GET HERE, since this container is non-enclosing") );
+  DEBUG_ASSERTCRASH(modData->m_ini.m_isEnclosingContainer, ("loadGarrisonPoints... SHOULD NOT GET HERE, since this container is non-enclosing") );
 
   Object *structure = getObject();
 	Int i, j;
@@ -1395,7 +1395,7 @@ void GarrisonContain::loadGarrisonPoints( void )
 
 
 
-	if (gBonesFound && modData->m_mobileGarrison && (getObject()->isMobile() == TRUE) ) 
+	if (gBonesFound && modData->m_ini.m_mobileGarrison && (getObject()->isMobile() == TRUE) ) 
 	{
 		DEBUG_ASSERTCRASH( getObject()->isMobile() == FALSE,
 		 ("GarrisonContain::update - You have specified this garrisonContain as mobile,\n yet you want garrison point placement bones... \n what are you thinking?") );
@@ -1712,7 +1712,7 @@ void GarrisonContain::onRemoving( Object *obj )
 // ------------------------------------------------------------------------------------------------
 /** A GarrisonContain always lets people shoot out */
 // ------------------------------------------------------------------------------------------------
-Bool GarrisonContain::isPassengerAllowedToFire( ObjectID id ) const
+Bool GarrisonContain::isPassengerAllowedToFire( ObjectID /* id */ ) const
 {
 
   const Object *self = getObject();
@@ -1730,7 +1730,7 @@ void GarrisonContain::moveObjectsWithMe( void )
 {
 	const GarrisonContainModuleData *modData = getGarrisonContainModuleData();
 
-	if (!modData->m_mobileGarrison)
+	if (!modData->m_ini.m_mobileGarrison)
 		return;
 
 	const ContainedItemsList& containList = getContainList();
@@ -1952,7 +1952,7 @@ void GarrisonContain::loadPostProcess( void )
 			m_garrisonPointData[ i ].object = NULL;
 
 		// drawable effect pointer
-		if( m_garrisonPointData[ i ].effectID != INVALID_ID )
+		if( m_garrisonPointData[ i ].effectID != INVALID_DRAWABLE_ID )
 		{
 
 			m_garrisonPointData[ i ].effect = TheGameClient->findDrawableByID( m_garrisonPointData[ i ].effectID );
@@ -1991,7 +1991,7 @@ void GarrisonContain::loadStationGarrisonPoints( void )
 	// in order to get all the station point positions we will actually switch the model
 	// condition to garrisoned pristine, and use these for any modelcondition 
 	{
-		Int conditionIndex;
+		// Int conditionIndex;
 		Int count = 0;
 
 		// save the original paramters for the model condition
@@ -2009,20 +2009,20 @@ void GarrisonContain::loadStationGarrisonPoints( void )
 		clearFlags.set( MODELCONDITION_DAMAGED );
 		setFlags.set( MODELCONDITION_GARRISONED );
 		structure->clearAndSetModelConditionFlags( clearFlags, setFlags );
-		conditionIndex = GARRISON_POINT_PRISTINE;
+		// conditionIndex = GARRISON_POINT_PRISTINE;
 
 
     Coord3D tempBuffer[MAX_GARRISON_POINTS];
   	for( int t = 0; t < MAX_GARRISON_POINTS; ++t )
 		  tempBuffer[ t ] = *(structure->getPosition());
 
-		count = structure->getMultiLogicalBonePosition("STATION", modData->m_containMax, tempBuffer, NULL);
+		count = structure->getMultiLogicalBonePosition("STATION", modData->OpenContainModuleData::m_ini.m_containMax, tempBuffer, NULL);
 		if ( count > 0) stationBonesFound = TRUE;
 
 
     m_stationPointList.clear();// we are starting over... forget everything
 
-    for( t = 0; t < count; ++t )
+    for( int t = 0; t < count; ++t )
     {
       StationPointData tempStationPointData;
       tempStationPointData.position = tempBuffer[ t ];
@@ -2041,7 +2041,7 @@ void GarrisonContain::loadStationGarrisonPoints( void )
 
 
 
-	if (stationBonesFound && modData->m_mobileGarrison && (getObject()->isMobile() == TRUE) ) 
+	if (stationBonesFound && modData->m_ini.m_mobileGarrison && (getObject()->isMobile() == TRUE) ) 
 	{
 		DEBUG_ASSERTCRASH( getObject()->isMobile() == FALSE,
 		 ("GarrisonContain::update - You have specified this garrisonContain as mobile,\n yet you want station garrison point placement bones... \n what are you thinking?") );

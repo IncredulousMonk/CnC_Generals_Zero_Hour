@@ -47,7 +47,7 @@
 #include "rendobj.h"
 #include "bittype.h"
 #include "w3derr.h"
-#include "LightEnvironment.h"	//added for 'Generals'
+// #include "lightenvironment.h"	//added for 'Generals'
 
 class MeshBuilderClass;
 class HModelClass;
@@ -85,65 +85,67 @@ public:
 	// Render Object Interface 
 	/////////////////////////////////////////////////////////////////////////////
 	virtual RenderObjClass *	Clone(void) const;
-	virtual int						Class_ID(void) const { return CLASSID_MESH; }
-	virtual const char *			Get_Name(void) const;
-	virtual void					Set_Name(const char * name);
-	virtual int						Get_Num_Polys(void) const;
-	virtual void					Render(RenderInfoClass & rinfo);
-	void								Render_Material_Pass(MaterialPassClass * pass,IndexBufferClass * ib);
-	virtual void					Special_Render(SpecialRenderInfoClass & rinfo);
+	virtual int					Class_ID(void) const { return CLASSID_MESH; }
+	virtual const char *		Get_Name(void) const;
+	virtual void				Set_Name(const char * name);
+	virtual int					Get_Num_Polys(void) const;
+	virtual void				Render(RenderInfoClass & rinfo);
+	void						Render_Material_Pass(MaterialPassClass * pass,IndexBufferClass * ib);
+	virtual void				Special_Render(SpecialRenderInfoClass & rinfo);
 
 	/////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Collision Detection
 	/////////////////////////////////////////////////////////////////////////////	
-	virtual bool					Cast_Ray(RayCollisionTestClass & raytest);
-	virtual bool					Cast_AABox(AABoxCollisionTestClass & boxtest);
-	virtual bool					Cast_OBBox(OBBoxCollisionTestClass & boxtest);
-	virtual bool					Intersect_AABox(AABoxIntersectionTestClass & boxtest);
-	virtual bool					Intersect_OBBox(OBBoxIntersectionTestClass & boxtest);
-   
+	virtual bool				Cast_Ray(RayCollisionTestClass & raytest);
+	virtual bool				Cast_AABox(AABoxCollisionTestClass & boxtest);
+	virtual bool				Cast_OBBox(OBBoxCollisionTestClass & boxtest);
+	virtual bool				Intersect_AABox(AABoxIntersectionTestClass & boxtest);
+	virtual bool				Intersect_OBBox(OBBoxIntersectionTestClass & boxtest);
+
 	/////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Bounding Volumes
 	/////////////////////////////////////////////////////////////////////////////
-	virtual void					Get_Obj_Space_Bounding_Sphere(SphereClass & sphere) const;
-   virtual void					Get_Obj_Space_Bounding_Box(AABoxClass & box) const;
+	virtual void				Get_Obj_Space_Bounding_Sphere(SphereClass & sphere) const;
+	virtual void				Get_Obj_Space_Bounding_Box(AABoxClass & box) const;
 
 	/////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Attributes, Options, Properties, etc
 	/////////////////////////////////////////////////////////////////////////////
-	virtual void					Scale(float scale);
-	virtual void					Scale(float scalex, float scaley, float scalez);
+	virtual void				Scale(float scale);
+	virtual void				Scale(float scalex, float scaley, float scalez);
 	virtual MaterialInfoClass * Get_Material_Info(void);
 	
-   virtual int						Get_Sort_Level(void) const;
-   virtual void					Set_Sort_Level(int level);	
+	virtual int					Get_Sort_Level(void) const;
+	virtual void				Set_Sort_Level(int level);	
 
 
 	/////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Decals
 	/////////////////////////////////////////////////////////////////////////////
-	virtual void					Create_Decal(DecalGeneratorClass * generator);
-	virtual void					Delete_Decal(uint32 decal_id);
+	virtual void				Create_Decal(DecalGeneratorClass * generator);
+	virtual void				Delete_Decal(uint32 decal_id);
 	
 	/////////////////////////////////////////////////////////////////////////////
 	// MeshClass Interface
 	/////////////////////////////////////////////////////////////////////////////
-	WW3DErrorType					Init(const MeshBuilderClass & builder,MaterialInfoClass * matinfo,const char * name,const char * hmodelname);
-	WW3DErrorType					Load_W3D(ChunkLoadClass & cload);
-	void								Generate_Culling_Tree(void);
-	MeshModelClass *				Get_Model(void);
-	MeshModelClass *				Peek_Model(void);
-	uint32							Get_W3D_Flags(void);
-	const char *					Get_User_Text(void) const;
-	int								Get_Draw_Call_Count(void) const;
+	WW3DErrorType				Init(const MeshBuilderClass & builder,MaterialInfoClass * matinfo,const char * name,const char * hmodelname);
+	WW3DErrorType				Load_W3D(ChunkLoadClass & cload);
+	void						Generate_Culling_Tree(void);
+	MeshModelClass *			Get_Model(void);
+	MeshModelClass *			Peek_Model(void);
+	uint32						Get_W3D_Flags(void);
+	const char *				Get_User_Text(void) const;
+	int							Get_Draw_Call_Count(void) const;
 
-	bool								Contains(const Vector3 &point);
+	bool						Contains(const Vector3 &point);
 
-	void								Get_Deformed_Vertices(Vector3 *dst_vert, Vector3 *dst_norm);
-	void								Get_Deformed_Vertices(Vector3 *dst_vert);
+	void						Get_Deformed_Vertices(Vector3 *dst_vert, Vector3 *dst_norm);
+	void						Get_Deformed_Vertices(Vector3 *dst_vert);
 
-	void								Set_Lighting_Environment(LightEnvironmentClass * light_env) { if (light_env) {m_localLightEnv=*light_env;LightEnvironment = &m_localLightEnv;} else {LightEnvironment = NULL;} }
+#if 0
+	void						Set_Lighting_Environment(LightEnvironmentClass * light_env) { if (light_env) {m_localLightEnv=*light_env;LightEnvironment = &m_localLightEnv;} else {LightEnvironment = NULL;} }
 	LightEnvironmentClass *		Get_Lighting_Environment(void) { return LightEnvironment; }
+#endif // if 0
 	inline float	Get_Alpha_Override(void) { return m_alphaOverride;}
 
 	void								Set_Next_Visible_Skin(MeshClass * next_visible) { NextVisibleSkin = next_visible; }
@@ -175,19 +177,21 @@ protected:
 	void								install_materials(MeshLoadInfoClass * loadinfo);
 	void								clone_materials(const MeshClass & srcmesh);
 
-	MeshModelClass *				Model;
-	DecalMeshClass *				DecalMesh;
+	MeshModelClass *		Model;
+	DecalMeshClass *		DecalMesh;
 
-	LightEnvironmentClass *		LightEnvironment;		// cached pointer to the light environment for this mesh
-	LightEnvironmentClass     m_localLightEnv;	//added for 'Generals'
+#if 0
+	LightEnvironmentClass *	LightEnvironment;		// cached pointer to the light environment for this mesh
+	LightEnvironmentClass	m_localLightEnv {};	//added for 'Generals'
+#endif // if 0
 	float					m_alphaOverride;	//added for 'Generals' to allow variable alpha on meshes.
 	float					m_materialPassEmissiveOverride;	//added for 'Generals' to allow variable emissive on additional passes.
 	float					m_materialPassAlphaOverride;	//added for 'Generals' to allow variable alpha on additional render passes.
-	int								BaseVertexOffset;		// offset to our first vertex in whatever vb this mesh is in.
-	MeshClass *						NextVisibleSkin;		// linked list of visible skins
+	int						BaseVertexOffset;		// offset to our first vertex in whatever vb this mesh is in.
+	MeshClass *				NextVisibleSkin;		// linked list of visible skins
 
-	unsigned							MeshDebugId;
-	bool								IsDisabledByDebugger;
+	unsigned				MeshDebugId;
+	bool					IsDisabledByDebugger;
 
 	friend class MeshBuilderClass;
 };
@@ -205,4 +209,3 @@ inline MeshModelClass * MeshClass::Peek_Model(void)
 void Set_MeshModel_Flag(RenderObjClass *robj, int flag, int onoff);
 
 #endif /*MESH_H*/
-

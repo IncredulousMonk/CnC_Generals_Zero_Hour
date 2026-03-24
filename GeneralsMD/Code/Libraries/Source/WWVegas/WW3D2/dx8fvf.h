@@ -55,7 +55,7 @@
 
 class StringClass;
 
-enum {
+enum VertexFormat {
 	DX8_FVF_XYZ				, //= D3DFVF_XYZ,
 	DX8_FVF_XYZN			, //= D3DFVF_XYZ|D3DFVF_NORMAL,
 	DX8_FVF_XYZNUV1			, //= D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1,

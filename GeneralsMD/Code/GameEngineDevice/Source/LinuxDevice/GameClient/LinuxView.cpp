@@ -47,6 +47,7 @@
 #include "LinuxDevice/GameClient/LinuxDisplay.h"
 #include "LinuxDevice/GameClient/LinuxView.h"
 #include "LinuxDevice/GameClient/Module/LinuxModelDraw.h"
+#include "LinuxDevice/GameClient/LinuxAssetManager.h"
 
 #include "GameLogic/AI.h"           ///< For AI debug (yes, I'm cheating for now)
 #include "GameLogic/AIPathfind.h"   ///< For AI debug (yes, I'm cheating for now)
@@ -145,6 +146,11 @@ LinuxView::~LinuxView()
    for (auto objp: m_3dObjects) {
       objp->Release_Ref();
    }
+
+   if (m_assetManager) {
+      // m_assetManager->Free_Assets();
+      delete m_assetManager;
+   }
 }  // end ~LinuxView
 
 //-------------------------------------------------------------------------------------------------
@@ -172,6 +178,12 @@ void LinuxView::init()
 
    m_cameraConstraintValid = false;
    m_scrollAmountCutoff = TheGlobalData->m_data.m_scrollAmountCutoff;
+
+	// create a new asset manager
+	m_assetManager = MSGNEW("LinuxView::init: LinuxAssetManager") LinuxAssetManager;
+	// m_assetManager->Register_Prototype_Loader(&_ParticleEmitterLoader );
+	// m_assetManager->Register_Prototype_Loader(&_AggregateLoader);
+	m_assetManager->Set_WW3D_Load_On_Demand(true);
 }  // end init
 
 //-------------------------------------------------------------------------------------------------
@@ -179,6 +191,8 @@ void LinuxView::init()
 void LinuxView::reset()
 {
    View::reset();
+
+   // m_assetManager->Release_Unused_Assets();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -454,6 +468,21 @@ void LinuxView::add3dObject(RenderObjClass* obj)
 {
    m_3dObjects.push_front(obj);
    obj->Add_Ref();
+}
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+void LinuxView::remove3dObject(RenderObjClass* obj)
+{
+   m_3dObjects.remove(obj);
+   obj->Release_Ref();
+}
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+RenderObjClass* LinuxView::create3dObject(const char* name, float scale, const Color color, const char* oldTexure, const char* newTexture)
+{
+   return m_assetManager->Create_Render_Obj(name, scale, color, oldTexure, newTexture);
 }
 
 

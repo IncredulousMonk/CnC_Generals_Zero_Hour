@@ -82,7 +82,7 @@ public:
 	virtual void							DeleteSelf()						{ delete this; }
 
 protected:
-	W3dNullObjectStruct			Definition;
+	W3dNullObjectStruct			Definition {};
 };
 
 
@@ -102,4 +102,3 @@ extern NullLoaderClass _NullLoader;
 
 
 #endif
-

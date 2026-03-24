@@ -54,8 +54,8 @@
 #include "GameLogic/Module/CountermeasuresBehavior.h"
 #if 0
 #include "GameLogic/Module/DumbProjectileBehavior.h"
-#include "GameLogic/Module/InstantDeathBehavior.h"
 #endif // if 0
+#include "GameLogic/Module/InstantDeathBehavior.h"
 #include "GameLogic/Module/SlowDeathBehavior.h"
 #if 0
 #include "GameLogic/Module/HelicopterSlowDeathUpdate.h"
@@ -66,7 +66,9 @@
 #if 0
 #include "GameLogic/Module/OverchargeBehavior.h"
 #include "GameLogic/Module/HealContain.h"
+#endif // if 0
 #include "GameLogic/Module/GarrisonContain.h"
+#if 0
 #include "GameLogic/Module/InternetHackContain.h"
 #include "GameLogic/Module/RailedTransportContain.h"
 #include "GameLogic/Module/RiderChangeContain.h"
@@ -87,9 +89,9 @@
 #endif 
 #include "GameLogic/Module/PropagandaTowerBehavior.h"
 #include "GameLogic/Module/BunkerBusterBehavior.h"
+#endif // if 0
 #include "GameLogic/Module/FireWeaponWhenDamagedBehavior.h"
 #include "GameLogic/Module/FireWeaponWhenDeadBehavior.h"
-#endif // if 0
 #include "GameLogic/Module/GenerateMinefieldBehavior.h"
 #if 0
 #include "GameLogic/Module/ParkingPlaceBehavior.h"
@@ -98,8 +100,10 @@
 #include "GameLogic/Module/PoisonedBehavior.h"
 #if 0
 #include "GameLogic/Module/RebuildHoleBehavior.h"
+#endif // if 0
 #include "GameLogic/Module/SupplyWarehouseCripplingBehavior.h"
 #include "GameLogic/Module/TechBuildingBehavior.h"
+#if 0
 #include "GameLogic/Module/MinefieldBehavior.h"
 #include "GameLogic/Module/BattleBusSlowDeathBehavior.h"
 #endif // if 0
@@ -112,8 +116,8 @@
 #include "GameLogic/Module/CreateObjectDie.h"
 #if 0
 #include "GameLogic/Module/CrushDie.h"
-#include "GameLogic/Module/DamDie.h"
 #endif // if 0
+#include "GameLogic/Module/DamDie.h"
 #include "GameLogic/Module/DestroyDie.h"
 #if 0
 #include "GameLogic/Module/EjectPilotDie.h"
@@ -125,14 +129,18 @@
 #include "GameLogic/Module/SpecialPowerCompletionDie.h"
 #if 0
 #include "GameLogic/Module/UpgradeDie.h"
+#endif // if 0
 #include "GameLogic/Module/KeepObjectDie.h"
 
 // logic update includes
+#if 0
 #include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/AnimationSteeringUpdate.h"
 #include "GameLogic/Module/AssistedTargetingUpdate.h"
 #include "GameLogic/Module/BaseRegenerateUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/BoneFXUpdate.h"
+#if 0
 #include "GameLogic/Module/ChinookAIUpdate.h"
 #include "GameLogic/Module/DefaultProductionExitUpdate.h"
 #endif // if 0
@@ -180,14 +188,14 @@
 #include "GameLogic/Module/SpectreGunshipUpdate.h"
 #if 0
 #include "GameLogic/Module/SpectreGunshipDeploymentUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/BaikonurLaunchPower.h"
+#if 0
 #include "GameLogic/Module/BattlePlanUpdate.h"
 #endif // if 0
 #include "GameLogic/Module/LifetimeUpdate.h"
 #include "GameLogic/Module/RadiusDecalUpdate.h"
-#if 0
 #include "GameLogic/Module/AutoDepositUpdate.h"
-#endif // if 0
 #include "GameLogic/Module/MissileAIUpdate.h"
 #if 0
 #include "GameLogic/Module/NeutronMissileUpdate.h"
@@ -234,15 +242,17 @@
 #if 0
 #include "GameLogic/Module/FireOCLAfterWeaponCooldownUpdate.h"
 #include "GameLogic/Module/HijackerUpdate.h"
+#endif // if 0
 #include "GameLogic/Module/StructureCollapseUpdate.h"
 #include "GameLogic/Module/StructureToppleUpdate.h"
+#if 0
 #include "GameLogic/Module/SupplyCenterDockUpdate.h"
 #include "GameLogic/Module/SupplyCenterProductionExitUpdate.h"
 #endif // if 0
 #include "GameLogic/Module/SupplyTruckAIUpdate.h"
 #include "GameLogic/Module/SupplyWarehouseDockUpdate.h"
-#if 0
 #include "GameLogic/Module/ToppleUpdate.h"
+#if 0
 #include "GameLogic/Module/TransportAIUpdate.h"
 #include "GameLogic/Module/WanderAIUpdate.h"
 #include "GameLogic/Module/WaveGuideUpdate.h"
@@ -279,8 +289,8 @@
 #include "GameLogic/Module/WeaponSetUpgrade.h"
 #if 0
 #include "GameLogic/Module/WeaponBonusUpgrade.h"
-#include "GameLogic/Module/CostModifierUpgrade.h"
 #endif // if 0
+#include "GameLogic/Module/CostModifierUpgrade.h"
 #include "GameLogic/Module/ExperienceScalarUpgrade.h"
 #if 0
 #include "GameLogic/Module/MaxHealthUpgrade.h"
@@ -290,19 +300,21 @@
 #include "GameLogic/Module/LockWeaponCreate.h"
 #if 0
 #include "GameLogic/Module/SupplyCenterCreate.h"
+#endif // if 0
 #include "GameLogic/Module/SupplyWarehouseCreate.h"
 #include "GameLogic/Module/GrantUpgradeCreate.h"
+#if 0
 #include "GameLogic/Module/PreorderCreate.h"
 #include "GameLogic/Module/SpecialPowerCreate.h"
 #endif // if 0
 #include "GameLogic/Module/VeterancyGainCreate.h"
 
-#if 0
 // damage includes
 #include "GameLogic/Module/BoneFXDamage.h"
 #include "GameLogic/Module/TransitionDamageFX.h"
 
 // collide includes
+#if 0
 #include "GameLogic/Module/FireWeaponCollide.h"
 #endif // if 0
 #include "GameLogic/Module/SquishCollide.h"
@@ -335,8 +347,8 @@
 #include "GameLogic/Module/ActiveBody.h"
 #if 0
 #include "GameLogic/Module/HighlanderBody.h"
-#include "GameLogic/Module/ImmortalBody.h"
 #endif // if 0
+#include "GameLogic/Module/ImmortalBody.h"
 #include "GameLogic/Module/StructureBody.h"
 #if 0
 #include "GameLogic/Module/HiveStructureBody.h"
@@ -359,12 +371,14 @@
 #include "GameLogic/Module/CashBountyPower.h"
 #include "GameLogic/Module/CleanupAreaPower.h"
 #include "GameLogic/Module/FireWeaponPower.h"
+#endif // if 0
 
 // destroy includes
 // (none)
 
 // client update includes
 #include "GameClient/Module/AnimatedParticleSysBoneClientUpdate.h"
+#if 0
 #include "GameClient/Module/SwayClientUpdate.h"
 #include "GameClient/Module/BeaconClientUpdate.h"
 #endif // if 0
@@ -426,9 +440,7 @@ void ModuleFactory::init( void )
 	addModule( DumbProjectileBehavior );
 #endif // if 0
 	addModule( PhysicsBehavior );
-#if 0
 	addModule( InstantDeathBehavior );
-#endif // if 0
 	addModule( SlowDeathBehavior );
 #if 0
 	addModule( HelicopterSlowDeathBehavior );
@@ -439,7 +451,9 @@ void ModuleFactory::init( void )
 #if 0
 	addModule( OverchargeBehavior );
 	addModule( HealContain );
+#endif // if 0
 	addModule( GarrisonContain );
+#if 0
 	addModule( InternetHackContain );
 #endif // if 0
 	addModule( TransportContain );
@@ -460,9 +474,9 @@ void ModuleFactory::init( void )
 #endif
 	addModule( PropagandaTowerBehavior );
 	addModule( BunkerBusterBehavior );
+#endif // if 0
 	addModule( FireWeaponWhenDamagedBehavior );
 	addModule( FireWeaponWhenDeadBehavior );
-#endif // if 0
 	addModule( GenerateMinefieldBehavior );
 #if 0
 	addModule( ParkingPlaceBehavior );
@@ -471,8 +485,10 @@ void ModuleFactory::init( void )
 	addModule( PoisonedBehavior );
 #if 0
 	addModule( RebuildHoleBehavior );
+#endif // if 0
 	addModule( SupplyWarehouseCripplingBehavior );
 	addModule( TechBuildingBehavior );
+#if 0
 	addModule( MinefieldBehavior );
 	addModule( BattleBusSlowDeathBehavior );
 #endif // if 0
@@ -487,7 +503,9 @@ void ModuleFactory::init( void )
 	addModule( FXListDie );
 #if 0
 	addModule( CrushDie );
+#endif // if 0
 	addModule( DamDie );
+#if 0
 	addModule( CreateCrateDie );
 #endif // if 0
 	addModule( CreateObjectDie );
@@ -498,9 +516,11 @@ void ModuleFactory::init( void )
 #if 0
 	addModule( RebuildHoleExposeDie );
 	addModule( UpgradeDie );
+#endif // if 0
 	addModule( KeepObjectDie );
 
 	// update modules
+#if 0
 	addModule( AssistedTargetingUpdate );
 #endif // if 0
 	addModule( AutoFindHealingUpdate );
@@ -516,7 +536,9 @@ void ModuleFactory::init( void )
 	addModule( DeployStyleAIUpdate );
 	addModule( AssaultTransportAIUpdate );
 	addModule( HordeUpdate );
+#endif // if 0
 	addModule( ToppleUpdate );
+#if 0
 	addModule( EnemyNearUpdate );
 #endif // if 0
 	addModule( LifetimeUpdate );
@@ -524,7 +546,9 @@ void ModuleFactory::init( void )
 #if 0
 	addModule( EMPUpdate );
 	addModule( LeafletDropBehavior );
+#endif // if 0
 	addModule( AutoDepositUpdate );
+#if 0
 	addModule( WeaponBonusUpdate );
 #endif // if 0
 	addModule( MissileAIUpdate );
@@ -567,7 +591,9 @@ void ModuleFactory::init( void )
 	addModule( SpectreGunshipUpdate );
 #if 0
 	addModule( SpectreGunshipDeploymentUpdate );
+#endif // if 0
 	addModule( BaikonurLaunchPower );
+#if 0
 	addModule( BattlePlanUpdate );
 	addModule( ProjectileStreamUpdate );
 	addModule( QueueProductionExitUpdate );
@@ -605,9 +631,11 @@ void ModuleFactory::init( void )
 #if 0
 	addModule( FireOCLAfterWeaponCooldownUpdate );
 	addModule( HijackerUpdate );
+#endif // if 0
 	addModule( StructureToppleUpdate );
 	addModule( StructureCollapseUpdate );
 	addModule( BoneFXUpdate );
+#if 0
 	addModule( RadarUpdate );
 	addModule( AnimationSteeringUpdate );
 	addModule( TransportAIUpdate );
@@ -616,9 +644,11 @@ void ModuleFactory::init( void )
 	addModule( WorkerAIUpdate );
 	addModule( PowerPlantUpdate );
 	addModule( CheckpointUpdate );
+#endif // if 0
 
 	// upgrade modules
 	addModule( CostModifierUpgrade );
+#if 0
 	addModule( ActiveShroudUpgrade );
 #endif // if 0
 	addModule( ArmorUpgrade );
@@ -656,18 +686,20 @@ void ModuleFactory::init( void )
 #if 0
 	addModule( PreorderCreate );
 	addModule( SupplyCenterCreate );
-	addModule( SupplyWarehouseCreate );
-	addModule( SpecialPowerCreate );
-	addModule( GrantUpgradeCreate );
 #endif // if 0
+	addModule( SupplyWarehouseCreate );
+#if 0
+	addModule( SpecialPowerCreate );
+#endif // if 0
+	addModule( GrantUpgradeCreate );
 	addModule( VeterancyGainCreate );
 
 	// damage modules
-#if 0
 	addModule( BoneFXDamage );
 	addModule( TransitionDamageFX );
 
 	// collide modules
+#if 0
 	addModule( FireWeaponCollide );
 #endif // if 0
 	addModule( SquishCollide );
@@ -700,8 +732,8 @@ void ModuleFactory::init( void )
 	addModule( ActiveBody );
 #if 0
 	addModule( HighlanderBody );
-	addModule( ImmortalBody );
 #endif // if 0
+	addModule( ImmortalBody );
 	addModule( StructureBody );
 #if 0
 	addModule( HiveStructureBody );
@@ -724,12 +756,14 @@ void ModuleFactory::init( void )
 	addModule( SpyVisionSpecialPower );
 	addModule( CashBountyPower );
 	addModule( CleanupAreaPower );
+#endif // if 0
 
 	// destroy modules
 	// (none)
 
 	// client update modules
 	addModule( AnimatedParticleSysBoneClientUpdate );
+#if 0
 	addModule( SwayClientUpdate );
 	addModule( BeaconClientUpdate );
 #endif // if 0

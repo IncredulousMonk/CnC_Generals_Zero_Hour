@@ -41,10 +41,10 @@
 #define PK_H
 
 #ifndef STRAW_H
-#include "straw.h"
+#include "STRAW.H"
 #endif
 
-#include	"int.h"
+#include "INT.H"
 
 /*
 **	This class holds a public or private key used in Public Key Cryptography. It also serves
@@ -85,14 +85,14 @@ class PKey
 //	private:
 
 		// p*q
-		BigInt Modulus;
+		BigInt Modulus {};
 
 		// 65537 or
 		// inverse of (p-1)(q-1).
-		BigInt Exponent;
+		BigInt Exponent {};
 
 		// Maximum bits allowed for block.
-		int BitPrecision;
+		int BitPrecision {};
 };
 
 

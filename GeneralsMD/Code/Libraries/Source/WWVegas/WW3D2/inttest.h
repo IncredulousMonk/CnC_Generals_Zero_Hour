@@ -168,8 +168,8 @@ protected:
 	void								update_bounding_box(void);
 
 public:
-	OBBoxClass						Box;					// world space obbox that we want to test with
-	AABoxClass						BoundingBox;		// axis aligned w-s bounding box
+	OBBoxClass						Box {};					// world space obbox that we want to test with
+	AABoxClass						BoundingBox {};		// axis aligned w-s bounding box
 };
 
 

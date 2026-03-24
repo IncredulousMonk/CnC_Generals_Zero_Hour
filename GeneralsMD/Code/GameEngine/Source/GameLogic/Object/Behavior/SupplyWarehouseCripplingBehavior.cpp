@@ -39,25 +39,27 @@
 //-------------------------------------------------------------------------------------------------
 SupplyWarehouseCripplingBehaviorModuleData::SupplyWarehouseCripplingBehaviorModuleData()
 {
-	m_selfHealSupression = 0; ///< Time since last damage until I can start to heal
-	m_selfHealDelay = 0;			///< Once I am okay to heal, how often to do so
-	m_selfHealAmount = 0;							///< And how much
+	m_ini.m_selfHealSupression = 0; ///< Time since last damage until I can start to heal
+	m_ini.m_selfHealDelay = 0;			///< Once I am okay to heal, how often to do so
+	m_ini.m_selfHealAmount = 0;							///< And how much
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void SupplyWarehouseCripplingBehaviorModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void SupplyWarehouseCripplingBehaviorModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "SelfHealSupression",	INI::parseDurationUnsignedInt,	NULL, offsetof(SupplyWarehouseCripplingBehaviorModuleData, m_selfHealSupression) },
-		{ "SelfHealDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof(SupplyWarehouseCripplingBehaviorModuleData, m_selfHealDelay) },
-		{ "SelfHealAmount",			INI::parseReal,									NULL, offsetof(SupplyWarehouseCripplingBehaviorModuleData, m_selfHealAmount) },
+		{ "SelfHealSupression",	INI::parseDurationUnsignedInt,	NULL, offsetof(SupplyWarehouseCripplingBehaviorModuleData::IniData, m_selfHealSupression) },
+		{ "SelfHealDelay",		INI::parseDurationUnsignedInt,	NULL, offsetof(SupplyWarehouseCripplingBehaviorModuleData::IniData, m_selfHealDelay) },
+		{ "SelfHealAmount",		INI::parseReal,					NULL, offsetof(SupplyWarehouseCripplingBehaviorModuleData::IniData, m_selfHealAmount) },
 		{ 0, 0, 0, 0 }
 	};
 
-  UpdateModuleData::buildFieldParse(p);
-  p.add(dataFieldParse);
+	UpdateModuleData::buildFieldParse(what, p);
+	SupplyWarehouseCripplingBehaviorModuleData* self {static_cast<SupplyWarehouseCripplingBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -78,7 +80,7 @@ SupplyWarehouseCripplingBehavior::~SupplyWarehouseCripplingBehavior( void )
 //-------------------------------------------------------------------------------------------------
 /** Damage has been dealt, this is an opportunity to react to that damage */
 //-------------------------------------------------------------------------------------------------
-void SupplyWarehouseCripplingBehavior::onDamage( DamageInfo *damageInfo )
+void SupplyWarehouseCripplingBehavior::onDamage( DamageInfo* /* damageInfo */ )
 {
 	UnsignedInt now = TheGameLogic->getFrame();
 	resetSelfHealSupression();
@@ -86,7 +88,7 @@ void SupplyWarehouseCripplingBehavior::onDamage( DamageInfo *damageInfo )
 }
 
 //-------------------------------------------------------------------------------------------------
-void SupplyWarehouseCripplingBehavior::onBodyDamageStateChange(const DamageInfo* damageInfo, BodyDamageType oldState, BodyDamageType newState)
+void SupplyWarehouseCripplingBehavior::onBodyDamageStateChange(const DamageInfo* /* damageInfo */, BodyDamageType oldState, BodyDamageType newState)
 {
 	if( newState == BODY_REALLYDAMAGED )
 		startCrippledEffects();
@@ -101,9 +103,9 @@ UpdateSleepTime SupplyWarehouseCripplingBehavior::update()
 	// Supression is handled by sleeping the module, so if I am here, I know it is time to heal.
 	const SupplyWarehouseCripplingBehaviorModuleData* md = getSupplyWarehouseCripplingBehaviorModuleData();
 	UnsignedInt now = TheGameLogic->getFrame();
-	m_nextHealingFrame = now + md->m_selfHealDelay;
+	m_nextHealingFrame = now + md->m_ini.m_selfHealDelay;
 
-	getObject()->attemptHealing(md->m_selfHealAmount, NULL);
+	getObject()->attemptHealing(md->m_ini.m_selfHealAmount, NULL);
 
 	if( getObject()->getBodyModule()->getHealth() == getObject()->getBodyModule()->getMaxHealth() )
 		return UPDATE_SLEEP_FOREVER;// this can't be in onHealing, as the healing comes from here
@@ -119,7 +121,7 @@ void SupplyWarehouseCripplingBehavior::resetSelfHealSupression()
 	const SupplyWarehouseCripplingBehaviorModuleData* md = getSupplyWarehouseCripplingBehaviorModuleData();
 	UnsignedInt now = TheGameLogic->getFrame();
 
-	m_healingSupressedUntilFrame = now + md->m_selfHealSupression;
+	m_healingSupressedUntilFrame = now + md->m_ini.m_selfHealSupression;
 	m_nextHealingFrame = m_healingSupressedUntilFrame;
 }
 

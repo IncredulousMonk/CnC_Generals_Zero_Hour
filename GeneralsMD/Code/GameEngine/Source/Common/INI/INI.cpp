@@ -1763,40 +1763,37 @@ void INI::parseAccelerationReal( INI *ini, void * /*instance*/, void *store, con
 //-------------------------------------------------------------------------------------------------
 void INI::parseVeterancyLevelFlags(INI* ini, void* /*instance*/, void* store, const void* /*userData*/)
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseVeterancyLevelFlags not yet implemented"));
-	// VeterancyLevelFlags flags = VETERANCY_LEVEL_FLAGS_ALL;
-	// for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
-	// {
-	// 	if (strcasecmp(token, "ALL") == 0)
-	// 	{
-	// 		flags = VETERANCY_LEVEL_FLAGS_ALL;
-	// 		continue;
-	// 	}
-	// 	else if (strcasecmp(token, "NONE") == 0)
-	// 	{
-	// 		flags = VETERANCY_LEVEL_FLAGS_NONE;
-	// 		continue;
-	// 	}
-	// 	else if (token[0] == '+')
-	// 	{
-	// 		VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
-	// 		flags = setVeterancyLevelFlag(flags, dt);
-	// 		continue;
-	// 	}
-	// 	else if (token[0] == '-')
-	// 	{
-	// 		VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
-	// 		flags = clearVeterancyLevelFlag(flags, dt);
-	// 		continue;
-	// 	}
-	// 	else
-	// 	{
-	// 		throw INI_UNKNOWN_TOKEN;
-	// 	}
-	// }
-	// *(VeterancyLevelFlags*)store = flags;
+	VeterancyLevelFlags flags = VETERANCY_LEVEL_FLAGS_ALL;
+	for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
+	{
+		if (strcasecmp(token, "ALL") == 0)
+		{
+			flags = VETERANCY_LEVEL_FLAGS_ALL;
+			continue;
+		}
+		else if (strcasecmp(token, "NONE") == 0)
+		{
+			flags = VETERANCY_LEVEL_FLAGS_NONE;
+			continue;
+		}
+		else if (token[0] == '+')
+		{
+			VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
+			flags = setVeterancyLevelFlag(flags, dt);
+			continue;
+		}
+		else if (token[0] == '-')
+		{
+			VeterancyLevel dt = (VeterancyLevel)INI::scanIndexList(token+1, TheVeterancyNames);
+			flags = clearVeterancyLevelFlag(flags, dt);
+			continue;
+		}
+		else
+		{
+			throw INI_UNKNOWN_TOKEN;
+		}
+	}
+	*(VeterancyLevelFlags*)store = flags;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1819,40 +1816,37 @@ void INI::parseSoundsList( INI* ini, void *, void *store, const void* /*userData
 //-------------------------------------------------------------------------------------------------
 void INI::parseDamageTypeFlags(INI* ini, void* /*instance*/, void* store, const void* /*userData*/)
 {
-	(void) ini;
-	(void) store;
-	DEBUG_CRASH(("parseDamageTypeFlags not yet implemented"));
-	// DamageTypeFlags flags = DAMAGE_TYPE_FLAGS_NONE;
-	// flags.flip();
+	DamageTypeFlags flags = DAMAGE_TYPE_FLAGS_NONE;
+	flags.flip();
 
-	// for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
-	// {
-	// 	if (strcasecmp(token, "ALL") == 0)
-	// 	{
-	// 		flags = DAMAGE_TYPE_FLAGS_NONE;
-	// 		flags.flip();
-	// 		continue;
-	// 	}
-	// 	if (strcasecmp(token, "NONE") == 0)
-	// 	{
-	// 		flags = DAMAGE_TYPE_FLAGS_NONE;
-	// 		continue;
-	// 	}
-	// 	if (token[0] == '+')
-	// 	{
-	// 		DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
-	// 		flags = setDamageTypeFlag(flags, dt);
-	// 		continue;
-	// 	}
-	// 	if (token[0] == '-')
-	// 	{
-	// 		DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
-	// 		flags = clearDamageTypeFlag(flags, dt);
-	// 		continue;
-	// 	}
-	// 	throw INI_UNKNOWN_TOKEN;
-	// }
-	// *(DamageTypeFlags*)store = flags;
+	for (const char* token = ini->getNextToken(); token; token = ini->getNextTokenOrNull())
+	{
+		if (strcasecmp(token, "ALL") == 0)
+		{
+			flags = DAMAGE_TYPE_FLAGS_NONE;
+			flags.flip();
+			continue;
+		}
+		if (strcasecmp(token, "NONE") == 0)
+		{
+			flags = DAMAGE_TYPE_FLAGS_NONE;
+			continue;
+		}
+		if (token[0] == '+')
+		{
+			DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
+			flags = setDamageTypeFlag(flags, dt);
+			continue;
+		}
+		if (token[0] == '-')
+		{
+			DamageType dt = (DamageType)DamageTypeFlags::getSingleBitFromName(token+1);
+			flags = clearDamageTypeFlag(flags, dt);
+			continue;
+		}
+		throw INI_UNKNOWN_TOKEN;
+	}
+	*(DamageTypeFlags*)store = flags;
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -44,8 +44,7 @@ public:
 
 	DamDieModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
-		
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 // ------------------------------------------------------------------------------------------------

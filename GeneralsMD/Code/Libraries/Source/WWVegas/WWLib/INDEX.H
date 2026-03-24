@@ -55,7 +55,7 @@
 #ifndef INDEX_H
 #define INDEX_H
 
-#include	"bsearch.h"
+#include "BSEARCH.H"
 
 #if !defined(__BORLANDC__) || !defined(_USERENTRY)
 #define	_USERENTRY
@@ -86,6 +86,10 @@ class IndexClass
 	public:
 		IndexClass(void);
 		~IndexClass(void);
+
+		// No copies allowed!
+		IndexClass(const IndexClass&) = delete;
+		IndexClass& operator=(const IndexClass&) = delete;
 
 		/*
 		**	Add element to index table.
@@ -132,8 +136,8 @@ class IndexClass
 			NodeElement(void) {}		// Default constructor does nothing (by design).
 			NodeElement(INDEX const & id, T & data) : ID(id), Data(data) {}
 
-			INDEX ID;		// ID number (must be first element in this structure).
-			T Data;			// Data element assigned to this ID number.
+			INDEX ID {};		// ID number (must be first element in this structure).
+			T Data {};			// Data element assigned to this ID number.
 
 			bool operator == (NodeElement const & rvalue) const {return(ID == rvalue.ID);}
 			bool operator < (NodeElement const & rvalue) const {return(ID < rvalue.ID);}
@@ -710,7 +714,7 @@ IndexClass<INDEX, T>::NodeElement const * IndexClass<INDEX, T>::Search_For_Node(
 	**	the list to be sorted.
 	*/
 	if (!IsSorted) {
-		qsort(&IndexTable[0], IndexCount, sizeof(IndexTable[0]), search_compfunc);
+		qsort(&IndexTable[0], (size_t)IndexCount, sizeof(IndexTable[0]), search_compfunc);
 		Invalidate_Archive();
 		IsSorted = true;
 	}
@@ -726,5 +730,3 @@ IndexClass<INDEX, T>::NodeElement const * IndexClass<INDEX, T>::Search_For_Node(
 
 
 #endif
-
-

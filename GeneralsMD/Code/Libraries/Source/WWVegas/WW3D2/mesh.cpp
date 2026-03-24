@@ -35,7 +35,7 @@
  * Functions:                                                                                  * 
  *   MeshClass::MeshClass -- Constructor for MeshClass                                         *
  *   MeshClass::MeshClass -- Copy Constructor for MeshClass                                    *
- *	  MeshClass::operator == -- assignment operator for MeshClass                               *
+ *   MeshClass::operator == -- assignment operator for MeshClass                               *
  *   MeshClass::~MeshClass -- destructor                                                       *
  *   MeshClass::Contains -- Determines whether mesh contains a (worldspace) point.             *
  *   MeshClass::Free -- Releases all memory/assets in use by this mesh                         *
@@ -56,7 +56,7 @@
  *   MeshClass::Generate_Culling_Tree -- Generates a hierarchical culling tree for the mesh    *
  *   MeshClass::Direct_Load -- read the w3d file directly into this mesh object                *
  *   MeshClass::read_chunks -- read all of the chunks from the .wtm file                       * 
- *	  MeshClass::read_vertices -- reads the vertex chunk                                        * 
+ *   MeshClass::read_vertices -- reads the vertex chunk                                        * 
  *   MeshClass::read_texcoords -- read in the texture coordinates chunk                        *
  *   MeshClass::install_texture_coordinates -- installs the given u-v's in each channel that is*
  *   MeshClass::read_vertex_normals -- reads a surrender normal chunk from the wtm file        * 
@@ -105,7 +105,7 @@
 #include "w3d_util.h"
 #include "meshmdl.h"
 #include "meshgeometry.h"
-#include "ww3d.h"
+// #include "ww3d.h"
 #include "camera.h"
 #include "texture.h"
 #include "rinfo.h"
@@ -113,12 +113,12 @@
 #include "inttest.h"
 #include "decalmsh.h"
 #include "decalsys.h"
-#include "dx8polygonrenderer.h"
-#include "dx8indexbuffer.h"
-#include "dx8renderer.h"
+// #include "dx8polygonrenderer.h"
+// #include "dx8indexbuffer.h"
+// #include "dx8renderer.h"
 #include "visrasterizer.h"
 #include "wwmemlog.h"
-#include "dx8rendererdebugger.h"
+// #include "dx8rendererdebugger.h"
 #include <stdio.h>
 #include <wwprofile.h>
 
@@ -161,14 +161,16 @@ static DynamicVectorClass<Vector3>	_TempVertexBuffer;
 MeshClass::MeshClass(void) :
 	Model(NULL),
 	DecalMesh(NULL),
+#if 0
 	LightEnvironment(NULL),
+#endif // if 0
+	m_alphaOverride(1.0f),
+	m_materialPassEmissiveOverride(1.0f),
+	m_materialPassAlphaOverride(1.0f),
 	BaseVertexOffset(0),
 	NextVisibleSkin(NULL),
-	IsDisabledByDebugger(false),
 	MeshDebugId(MeshDebugIdCount++),
-	m_alphaOverride(1.0f),
-	m_materialPassAlphaOverride(1.0f),
-	m_materialPassEmissiveOverride(1.0f)
+	IsDisabledByDebugger(false)
 {
 }
 
@@ -190,14 +192,16 @@ MeshClass::MeshClass(const MeshClass & that) :
 	RenderObjClass(that),
 	Model(NULL),
 	DecalMesh(NULL),
+#if 0
 	LightEnvironment(NULL),
+#endif // if 0
+	m_alphaOverride(1.0f),
+	m_materialPassEmissiveOverride(1.0f),
+	m_materialPassAlphaOverride(1.0f),
 	BaseVertexOffset(that.BaseVertexOffset),
 	NextVisibleSkin(NULL),
-	IsDisabledByDebugger(false),
 	MeshDebugId(MeshDebugIdCount++),
-	m_alphaOverride(1.0f),
-	m_materialPassAlphaOverride(1.0f),
-	m_materialPassEmissiveOverride(1.0f)
+	IsDisabledByDebugger(false)
 {
 	REF_PTR_SET(Model,that.Model);					// mesh instances share models by default
 }
@@ -226,7 +230,9 @@ MeshClass & MeshClass::operator = (const MeshClass & that)
 
 		// just dont copy the decals or light environment
 		REF_PTR_RELEASE(DecalMesh);
+#if 0
 		LightEnvironment = NULL;
+#endif // if 0
 	}
 	return * this;
 }
@@ -437,6 +443,9 @@ MeshModelClass * MeshClass::Get_Model(void)
  *=============================================================================================*/
 void MeshClass::Scale(float scale)
 {
+(void) scale;
+DEBUG_LOG(("MeshClass::Scale not yet implemented!\n"));
+#if 0
 	if (scale==1.0f) return;
 
 	Vector3 sc;
@@ -450,6 +459,7 @@ void MeshClass::Scale(float scale)
    // Now update the object space bounding volumes of this object's container:
    RenderObjClass *container = Get_Container();
    if (container) container->Update_Obj_Space_Bounding_Volumes();
+#endif // if 0
 }
 
 
@@ -468,6 +478,11 @@ void MeshClass::Scale(float scale)
  *=============================================================================================*/
 void MeshClass::Scale(float scalex, float scaley, float scalez)
 {
+(void) scalex;
+(void) scaley;
+(void) scalez;
+DEBUG_LOG(("MeshClass::Scale not yet implemented!\n"));
+#if 0
 	// scale the surrender mesh model
 	Vector3 sc;
 	sc.X = scalex;
@@ -482,6 +497,7 @@ void MeshClass::Scale(float scalex, float scaley, float scalez)
    // Now update the object space bounding volumes of this object's container:
    RenderObjClass *container = Get_Container();
    if (container) container->Update_Obj_Space_Bounding_Volumes();
+#endif // if 0
 }
 
 
@@ -539,6 +555,9 @@ void MeshClass::Get_Deformed_Vertices(Vector3 *dst_vert)
  *=============================================================================================*/
 void MeshClass::Create_Decal(DecalGeneratorClass * generator)
 {
+(void) generator;
+DEBUG_LOG(("MeshClass::Create_Decal not yet implemented!\n"));
+#if 0
 	WWMEMLOG(MEM_GEOMETRY);
 
 	if (WW3D::Are_Decals_Enabled() == false) {
@@ -597,6 +616,7 @@ void MeshClass::Create_Decal(DecalGeneratorClass * generator)
 			DecalMesh->Create_Decal(generator, worldbox, temp_apt, &_TempVertexBuffer);
 		}
 	}
+#endif // if 0
 }
 
 
@@ -659,6 +679,8 @@ int MeshClass::Get_Num_Polys(void) const
  *=============================================================================================*/
 void MeshClass::Render(RenderInfoClass & rinfo)
 {
+	Model->Render_Mesh(rinfo, Transform);
+#if 0
 	WWPROFILE("Mesh::Render");
 	if (Is_Not_Hidden_At_All() == false) {
 		return;
@@ -805,6 +827,7 @@ void MeshClass::Render(RenderInfoClass & rinfo)
 			DX8RendererDebugger::Add_Mesh(this);
 		}
 	}
+#endif // if 0
 }
 
 
@@ -822,6 +845,10 @@ void MeshClass::Render(RenderInfoClass & rinfo)
  *=============================================================================================*/
 void MeshClass::Render_Material_Pass(MaterialPassClass * pass,IndexBufferClass * ib)
 {
+(void) pass;
+(void) ib;
+DEBUG_LOG(("MeshClass::Render_Material_Pass not yet implemented!\n"));
+#if 0
 	//Added to allow dynamic opacity on additional render passed
 	//without having to create a new material pass per object instance. -MW
 	float oldOpacity=-1.0f;
@@ -1009,6 +1036,7 @@ void MeshClass::Render_Material_Pass(MaterialPassClass * pass,IndexBufferClass *
 		//MW: Need uninstall custom materials in case they leave D3D in unknown state
 		pass->UnInstall_Materials();
 	}
+#endif // if 0
 }
 
 
@@ -1026,6 +1054,9 @@ void MeshClass::Render_Material_Pass(MaterialPassClass * pass,IndexBufferClass *
  *=============================================================================================*/
 void MeshClass::Special_Render(SpecialRenderInfoClass & rinfo)
 {
+(void) rinfo;
+DEBUG_LOG(("MeshClass::Special_Render not yet implemented!\n"));
+#if 0
 	if ((Is_Not_Hidden_At_All() == false) && (rinfo.RenderType != SpecialRenderInfoClass::RENDER_SHADOW)) {
 		return;
 	}
@@ -1067,6 +1098,7 @@ void MeshClass::Special_Render(SpecialRenderInfoClass & rinfo)
 		}
 		Model->Shadow_Render(rinfo,Transform,htree);
 	}
+#endif // if 0
 }
 
 void MeshClass::Replace_Texture(TextureClass* texture,TextureClass* new_texture)
@@ -1469,6 +1501,10 @@ void MeshClass::Add_Dependencies_To_List
 	bool										textures_only
 )
 {
+(void) file_list;
+(void) textures_only;
+DEBUG_LOG(("MeshClass::Add_Dependencies_To_List not yet implemented!\n"));
+#if 0
 	//
 	// Get a pointer to this mesh's material information object
 	//
@@ -1497,6 +1533,7 @@ void MeshClass::Add_Dependencies_To_List
 
 	RenderObjClass::Add_Dependencies_To_List (file_list, textures_only);
 	return ;
+#endif // if 0
 }
 
 
@@ -1597,8 +1634,3 @@ int MeshClass::Get_Draw_Call_Count(void) const
 		return 0;
 	}
 }
-
-
-
-
-

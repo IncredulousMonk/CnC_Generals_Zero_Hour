@@ -89,10 +89,10 @@ public:
 
 	PrototypeClass(void) : NextHash(NULL) {}
 	
-	virtual const char *			Get_Name(void)	const = 0;
-	virtual int								Get_Class_ID(void) const = 0;
+	virtual const char *		Get_Name(void)	const = 0;
+	virtual int					Get_Class_ID(void) const = 0;
 	virtual RenderObjClass *	Create(void) = 0;
-	virtual void							DeleteSelf() = 0;
+	virtual void				DeleteSelf() = 0;
 
 	inline void friend_setNextHash(PrototypeClass* n) { NextHash = n; }
 	inline PrototypeClass* friend_getNextHash() { return NextHash; }
@@ -101,7 +101,7 @@ protected:
 	virtual ~PrototypeClass(void) {};
 
 private:
-	PrototypeClass *				NextHash;
+	PrototypeClass *			NextHash;
 
 	// Not Implemented
 	PrototypeClass(const PrototypeClass & that);
@@ -114,12 +114,16 @@ class PrimitivePrototypeClass : public W3DMPO, public PrototypeClass
 public:
 	PrimitivePrototypeClass(RenderObjClass * proto);
 
-	virtual const char *			Get_Name(void) const;
-	virtual int						Get_Class_ID(void) const;
-	virtual RenderObjClass *	Create(void);
-	virtual void							DeleteSelf()										{ delete this; }
+	// No copies allowed!
+	PrimitivePrototypeClass(const PrimitivePrototypeClass&) = delete;
+	PrimitivePrototypeClass& operator=(const PrimitivePrototypeClass&) = delete;
 
-	RenderObjClass *				Proto;
+	virtual const char *		Get_Name(void) const;
+	virtual int					Get_Class_ID(void) const;
+	virtual RenderObjClass *	Create(void);
+	virtual void				DeleteSelf() { delete this; }
+
+	RenderObjClass *			Proto {};
 
 protected:
 	virtual ~PrimitivePrototypeClass(void);
@@ -129,7 +133,7 @@ protected:
 ** PrototypeLoaderClass
 ** This is the interface for an object which recognizes a certain
 ** chunk type in a W3D file and can load it and create a PrototypeClass
-** for it.  
+** for it.
 */
 class PrototypeLoaderClass 
 {
@@ -137,7 +141,7 @@ class PrototypeLoaderClass
 public:
 
 	PrototypeLoaderClass(void) {}
-	~PrototypeLoaderClass(void) {}
+	virtual ~PrototypeLoaderClass(void) {}
 
 	virtual int						Chunk_Type(void) = 0;
 	virtual PrototypeClass *	Load_W3D(ChunkLoadClass & cload) = 0;

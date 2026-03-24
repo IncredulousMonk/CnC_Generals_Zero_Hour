@@ -39,7 +39,7 @@
 
 
 #include	"always.h"
-#include	"xpipe.h"
+#include	"XPIPE.H"
 #include	<stddef.h>
 #include	<string.h>
 
@@ -79,7 +79,7 @@ int BufferPipe::Put(void const * source, int slen)
 		}
 
 		if (len > 0) {
-			memmove(((char *)BufferPtr.Get_Buffer()) + Index, source, len);
+			memmove(((char *)BufferPtr.Get_Buffer()) + Index, source, (size_t)len);
 		}
 
 		Index += len;

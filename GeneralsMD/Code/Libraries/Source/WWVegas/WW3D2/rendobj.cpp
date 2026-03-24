@@ -71,7 +71,7 @@
  *   RenderObjClass::Add_Dependencies_To_List -- Add dependent files to the list.              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
+#include <string.h>
 #include "rendobj.h"
 // #include "assetmgr.h"
 // #include "_mono.h"
@@ -100,11 +100,11 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
-#if 0
 // Definitions of static members:
 const float	RenderObjClass::AT_MIN_LOD = FLT_MAX;
 const float	RenderObjClass::AT_MAX_LOD = -1.0f;
 
+#if 0
 // Local inline functions
 StringClass
 Filename_From_Asset_Name (const char *asset_name)
@@ -170,22 +170,20 @@ static inline bool Check_Is_Transform_Identity(const Matrix3D& m)
  *   11/04/1997 GH  : Created.                                                                 * 
  *=============================================================================================*/
 RenderObjClass::RenderObjClass(void) :
-#if 0
 	Bits(DEFAULT_BITS),
 	Transform(1),
-	NativeScreenSize(WW3D::Get_Default_Native_Screen_Size()),
-	Scene(NULL),
-	Container(NULL),
-	User_Data(NULL),
-#endif // if 0
-	RenderHook(NULL) //,
-#if 0
 	ObjectScale(1.0),
 	ObjectColor(0),
 	CachedBoundingSphere(Vector3(0,0,0),1.0f),
 	CachedBoundingBox(Vector3(0,0,0),Vector3(1,1,1)),
-	IsTransformIdentity(false)
+#if 0
+	NativeScreenSize(WW3D::Get_Default_Native_Screen_Size()),
 #endif // if 0
+	IsTransformIdentity(false),
+	Scene(NULL),
+	Container(NULL),
+	User_Data(NULL),
+	RenderHook(NULL)
 {
 }
 
@@ -204,22 +202,18 @@ RenderObjClass::RenderObjClass(void) :
  *=============================================================================================*/
 RenderObjClass::RenderObjClass(const RenderObjClass & src) :
 	RefCountClass(src),
-#if 0
 	Bits(src.Bits),
 	Transform(src.Transform),
-	NativeScreenSize(src.NativeScreenSize),
-	Scene(NULL),
-	Container(NULL),
-	User_Data(NULL),
-#endif // if 0
-	RenderHook(NULL) //,
-#if 0
 	ObjectScale(1.0),
 	ObjectColor(0),
 	CachedBoundingSphere(src.CachedBoundingSphere),
 	CachedBoundingBox(src.CachedBoundingBox),
-	IsTransformIdentity(src.IsTransformIdentity)
-#endif // if 0
+	NativeScreenSize(src.NativeScreenSize),
+	IsTransformIdentity(src.IsTransformIdentity),
+	Scene(NULL),
+	Container(NULL),
+	User_Data(NULL),
+	RenderHook(NULL)
 {
 	// Even though we're copying an object which might be in a scene
 	// this copy won't be so I'm clearing the scene pointer, same logic
@@ -244,14 +238,12 @@ RenderObjClass & RenderObjClass::operator = (const RenderObjClass & that)
 {
 	// don't do anything if we're assigning this to this
 	if (this != &that) {
-#if 0
 		Set_Hidden(that.Is_Hidden());
 		Set_Animation_Hidden(that.Is_Animation_Hidden());
 		Set_Force_Visible(that.Is_Force_Visible());
 		Set_Collision_Type(that.Get_Collision_Type());
 		Set_Native_Screen_Size(that.Get_Native_Screen_Size());
 		IsTransformIdentity=false;
-#endif // if 0
 	}
 	return *this;
 }
@@ -379,7 +371,7 @@ SceneClass * RenderObjClass::Get_Scene(void)
 	}
 	return Scene;
 }
-
+#endif // if 0
 
 /***********************************************************************************************
  * RenderObjClass::Set_Container -- sets the container pointer                                 *
@@ -401,6 +393,7 @@ void RenderObjClass::Set_Container(RenderObjClass * con)
 	Container = con; 
 }
 
+#if 0
 #ifdef GET_CONTAINER_INLINE
 // nothing
 #else
@@ -416,7 +409,7 @@ void RenderObjClass::Set_Container(RenderObjClass * con)
  * HISTORY:                                                                                    *
  *   3/4/99     GTH : Created.                                                                 *
  *=============================================================================================*/
-RenderObjClass * RenderObjClass::Get_Container(void) const													
+RenderObjClass * RenderObjClass::Get_Container(void) const
 { 
 	return Container; 
 }
@@ -527,7 +520,6 @@ Vector3 RenderObjClass::Get_Position(void) const
 }
 
 
-#if 0
 /***********************************************************************************************
  * RenderObjClass::Get_Sub_Object -- returns pointer to first sub-obj with given name          *
  *                                                                                             *
@@ -548,7 +540,7 @@ RenderObjClass * RenderObjClass::Get_Sub_Object_By_Name(const char * name, int *
 	for (i=0; i<Get_Num_Sub_Objects(); i++) {
 		RenderObjClass * robj = Get_Sub_Object(i);
 		if (robj) {
-			if (stricmp(robj->Get_Name(),name) == 0) {
+			if (strcasecmp(robj->Get_Name(),name) == 0) {
 				if (index) *index=i;
 				return robj;
 			} else {
@@ -569,7 +561,7 @@ RenderObjClass * RenderObjClass::Get_Sub_Object_By_Name(const char * name, int *
 				subobjname = subobjname+1;
 			}
 
-			if (stricmp(subobjname,name) == 0) {
+			if (strcasecmp(subobjname,name) == 0) {
 				if (index) *index=i;
 				return robj;
 			} else {
@@ -658,7 +650,7 @@ int RenderObjClass::Remove_Sub_Objects_From_Bone(const char * bname)
  * HISTORY:                                                                                    *
  *   3/11/99    NH : Created.                                                                  *
  *=============================================================================================*/
-void RenderObjClass::Prepare_LOD(CameraClass &camera)
+void RenderObjClass::Prepare_LOD(CameraClass& /* camera */)
 {
 	// Since most RenderObjClass derivatives are not LOD-capable, the default
 	// implementation just sets the texture reduction factor and doesn't do any
@@ -674,10 +666,14 @@ void RenderObjClass::Prepare_LOD(CameraClass &camera)
 
 	// Since we are not adding this object to the predictive LOD optimizer,
 	// at least add its cost in.
+// FIXME: PredictiveLODOptimizerClass?
+#if 0
 	PredictiveLODOptimizerClass::Add_Cost(Get_Cost());
+#endif // if 0
 }
 
 
+#if 0
 /***********************************************************************************************
  * RenderObjClass::Get_Cost -- get object rendering cost for predictive LOD processing.        *
  *                                                                                             *
@@ -724,6 +720,7 @@ int RenderObjClass::Calculate_Cost_Value_Arrays(float screen_area, float *values
 
 	return 0;
 }
+#endif // if 0
 
 
 /***********************************************************************************************
@@ -773,7 +770,6 @@ void RenderObjClass::Update_Sub_Object_Bits(void)
 		Container->Update_Sub_Object_Bits();
 	}
 }
-#endif // if 0
 
 
 /***********************************************************************************************
@@ -851,7 +847,7 @@ void RenderObjClass::Remove(void)
 	Scene = NULL;
 #endif
 }
-
+#endif // if 0
 
 /***********************************************************************************************
  * RenderObjClass::Notify_Added -- notifies the object that it is in a scene                   *
@@ -899,7 +895,7 @@ void RenderObjClass::Notify_Added(SceneClass * scene)
  * HISTORY:                                                                                    *
  *   2/25/99    GTH : Created.                                                                 *
  *=============================================================================================*/
-void RenderObjClass::Notify_Removed(SceneClass * scene)
+void RenderObjClass::Notify_Removed(SceneClass* /* scene */)
 {
 	Scene = NULL;
 }
@@ -973,6 +969,7 @@ void RenderObjClass::Get_Obj_Space_Bounding_Box(AABoxClass & box) const
 	box.Extent.Set(0,0,0);
 }
 
+#if 0
 /***********************************************************************************************
  *  RenderObjClass::Intersect - Returns true if specified intersection object                  *
  *                                intersects this renderobject                                 *

@@ -53,54 +53,54 @@
 #include "GameClient/ControlBar.h"
 // #include "GameClient/Drawable.h"
 // #include "GameClient/Eva.h"
-// #include "GameClient/GameClient.h"
+#include "GameClient/GameClient.h"
 #include "GameClient/InGameUI.h"
 
 #include "GameLogic/AI.h"
 #include "GameLogic/AIPathfind.h"
-// #include "GameLogic/ExperienceTracker.h"
+#include "GameLogic/ExperienceTracker.h"
 #include "GameLogic/FiringTracker.h"
 #include "GameLogic/GameLogic.h"
-// #include "GameLogic/Locomotor.h"
+#include "GameLogic/Locomotor.h"
 
 #include "GameLogic/Module/AIUpdate.h"
-// #include "GameLogic/Module/AutoHealBehavior.h"
-// #include "GameLogic/Module/BehaviorModule.h"
+#include "GameLogic/Module/AutoHealBehavior.h"
+#include "GameLogic/Module/BehaviorModule.h"
 #include "GameLogic/Module/BodyModule.h"
-// #include "GameLogic/Module/CollideModule.h"
+#include "GameLogic/Module/CollideModule.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/Module/CountermeasuresBehavior.h"
-// #include "GameLogic/Module/CreateModule.h"
-// #include "GameLogic/Module/DamageModule.h"
-// #include "GameLogic/Module/DeletionUpdate.h"
-// #include "GameLogic/Module/DestroyModule.h"
-// #include "GameLogic/Module/DieModule.h"
-// #include "GameLogic/Module/DozerAIUpdate.h"
+#include "GameLogic/Module/CreateModule.h"
+#include "GameLogic/Module/DamageModule.h"
+#include "GameLogic/Module/DeletionUpdate.h"
+#include "GameLogic/Module/DestroyModule.h"
+#include "GameLogic/Module/DieModule.h"
+#include "GameLogic/Module/DozerAIUpdate.h"
 #include "GameLogic/Module/ObjectDefectionHelper.h"
-// #include "GameLogic/Module/ObjectRepulsorHelper.h"
+#include "GameLogic/Module/ObjectRepulsorHelper.h"
 #include "GameLogic/Module/ObjectSMCHelper.h"
-// #include "GameLogic/Module/ObjectWeaponStatusHelper.h"
-// #include "GameLogic/Module/OverchargeBehavior.h"
-// #include "GameLogic/Module/PhysicsUpdate.h"
-// #include "GameLogic/Module/PowerPlantUpgrade.h"
+#include "GameLogic/Module/ObjectWeaponStatusHelper.h"
+#include "GameLogic/Module/OverchargeBehavior.h"
+#include "GameLogic/Module/PhysicsUpdate.h"
+#include "GameLogic/Module/PowerPlantUpgrade.h"
 #include "GameLogic/Module/ProductionUpdate.h"
 // #include "GameLogic/Module/RadarUpgrade.h"
-// #include "GameLogic/Module/RebuildHoleBehavior.h"
-// #include "GameLogic/Module/SpawnBehavior.h"
+#include "GameLogic/Module/RebuildHoleBehavior.h"
+#include "GameLogic/Module/SpawnBehavior.h"
 #include "GameLogic/Module/SpecialPowerModule.h"
 #include "GameLogic/Module/SpecialAbilityUpdate.h"
 #include "GameLogic/Module/StatusDamageHelper.h"
 #include "GameLogic/Module/StickyBombUpdate.h"
 #include "GameLogic/Module/SubdualDamageHelper.h"
 #include "GameLogic/Module/TempWeaponBonusHelper.h"
-// #include "GameLogic/Module/ToppleUpdate.h"
+#include "GameLogic/Module/ToppleUpdate.h"
 #include "GameLogic/Module/UpdateModule.h"
 #include "GameLogic/Module/UpgradeModule.h"
 
 #include "GameLogic/Object.h"
 #include "GameLogic/PartitionManager.h"
-// #include "GameLogic/PolygonTrigger.h"
-// #include "GameLogic/ScriptEngine.h"
+#include "GameLogic/PolygonTrigger.h"
+#include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
 // #include "GameLogic/WeaponSet.h"
 // #include "GameLogic/Module/RadarUpdate.h"
@@ -186,7 +186,7 @@ return AsciiString();
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectStatusMask */, Team* /* team */ ) : 
+Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& objectStatusMask, Team* team ) : 
 	Thing(tt),
 	m_geometryInfo(tt->getTemplateGeometryInfo())
 {
@@ -201,7 +201,6 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 	// most overridden version of tt, so this is okay.
 	tt = (const ThingTemplate *) tt->getFinalOverride();
 
-	Int i; //, modIdx;
 	AsciiString modName;
 	
 	//Added By Sadullah Nader
@@ -209,20 +208,18 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 	m_formationOffset.x = m_formationOffset.y = 0.0f;
 	m_iPos.zero();
 	//
-	for (i = 0; i < MAX_PLAYER_COUNT; ++i) 
+	for (Int i = 0; i < MAX_PLAYER_COUNT; ++i) 
 	{
 		m_visionSpiedBy[i] = 0;
 	}
 
-	for( i = 0; i < DISABLED_COUNT; i++ )
+	for(Int i = 0; i < DISABLED_COUNT; i++ )
 	{
 		m_disabledTillFrame[ i ] = NEVER;
 	}
 
-#if 0
 	m_weaponBonusCondition = 0;
 	m_curWeaponSetFlags.clear();
-#endif // if 0
 
 	// sanity
 	if( TheGameLogic == NULL || tt == NULL )
@@ -231,7 +228,6 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 		return;
 	}  // end if
 
-#if 0
 	// Object's set of these persist for the life of the object.
 	m_partitionLastLook = newInstance(SightingInfo);
 	m_partitionLastLook->reset();
@@ -265,12 +261,10 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 	m_shroudRange = 0.0f;
 	
 	m_singleUseCommandUsed = false;
-#endif // if 0
 
 	// assign unique object id
 	setID( TheGameLogic->allocateObjectID() );
 
-#if 0
 	//
 	// allocate any modules we need to, we should keep
 	// this at or near the end of the drawable construction so that we have
@@ -317,25 +311,25 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 		static const NameKeyType statusHelperModuleDataTagNameKey = NAMEKEY( "ModuleTag_StatusDamageHelper" );
 		static StatusDamageHelperModuleData statusModuleData;
 		statusModuleData.setModuleTagNameKey( statusHelperModuleDataTagNameKey );
-		m_statusDamageHelper = newInstance(StatusDamageHelper)(this, &statusModuleData);		
+		m_statusDamageHelper = newInstance(StatusDamageHelper)(this, &statusModuleData);
 		*curB++ = m_statusDamageHelper;
 
 		static const NameKeyType subdualHelperModuleDataTagNameKey = NAMEKEY( "ModuleTag_SubdualDamageHelper" );
 		static SubdualDamageHelperModuleData subdualModuleData;
 		subdualModuleData.setModuleTagNameKey( subdualHelperModuleDataTagNameKey );
-		m_subdualDamageHelper = newInstance(SubdualDamageHelper)(this, &subdualModuleData);		
+		m_subdualDamageHelper = newInstance(SubdualDamageHelper)(this, &subdualModuleData);
 		*curB++ = m_subdualDamageHelper;
 	}
 
 	if (TheAI != NULL
-			&& TheAI->getAiData()->m_enableRepulsors
+			&& TheAI->getAiData()->m_ini.m_enableRepulsors
 			&& isKindOf(KINDOF_CAN_BE_REPULSED))
 	{
 		// if we can ever be a temporary-repulsor, make a repulsor helper. (srj)
 		static const NameKeyType repulsorHelperModuleDataTagNameKey = NAMEKEY( "ModuleTag_RepulsorHelper" );
 		static ObjectRepulsorHelperModuleData repulsorModuleData;
 		repulsorModuleData.setModuleTagNameKey( repulsorHelperModuleDataTagNameKey );
-		m_repulsorHelper = newInstance(ObjectRepulsorHelper)(this, &repulsorModuleData);		
+		m_repulsorHelper = newInstance(ObjectRepulsorHelper)(this, &repulsorModuleData);
 		*curB++ = m_repulsorHelper;
 	}
 
@@ -350,7 +344,7 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 		static const NameKeyType defectionModuleDataTagNameKey = NAMEKEY( "ModuleTag_DefectionHelper" );
 		static ObjectDefectionHelperModuleData defectionModuleData;
 		defectionModuleData.setModuleTagNameKey( defectionModuleDataTagNameKey );
-		m_defectionHelper = newInstance(ObjectDefectionHelper)(this, &defectionModuleData);		
+		m_defectionHelper = newInstance(ObjectDefectionHelper)(this, &defectionModuleData);
 		*curB++ = m_defectionHelper;
 	}
 
@@ -360,7 +354,7 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 		static const NameKeyType weaponStatusModuleDataTagNameKey = NAMEKEY( "ModuleTag_WeaponStatusHelper" );
 		static ObjectWeaponStatusHelperModuleData weaponStatusModuleData;
 		weaponStatusModuleData.setModuleTagNameKey( weaponStatusModuleDataTagNameKey );
-		m_wsHelper = newInstance(ObjectWeaponStatusHelper)(this, &weaponStatusModuleData);		
+		m_wsHelper = newInstance(ObjectWeaponStatusHelper)(this, &weaponStatusModuleData);
 		*curB++ = m_wsHelper;
 
 		static const NameKeyType firingTrackerModuleDataTagNameKey = NAMEKEY( "ModuleTag_FiringTrackerHelper" );
@@ -378,7 +372,7 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 
 	// behaviors are always done first, so they get into the publicModule arrays
 	// before anything else.
-	for (modIdx = 0; modIdx < mi.getCount(); ++modIdx)
+	for (Int modIdx = 0; modIdx < mi.getCount(); ++modIdx)
 	{
 		modName = mi.getNthName(modIdx);
 		if (modName.isEmpty())
@@ -401,12 +395,12 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 			m_contain = contain;
 		}
 
-    StealthUpdate* stealth = (StealthUpdate*)newMod->getStealth();
-    if ( stealth )
-    {
-      DEBUG_ASSERTCRASH( m_stealth == NULL, ("DuplicateStealthUpdates!") );
-      m_stealth = stealth;
-    }
+		StealthUpdate* stealth = (StealthUpdate*)newMod->getStealth();
+		if ( stealth )
+		{
+		DEBUG_ASSERTCRASH( m_stealth == NULL, ("DuplicateStealthUpdates!") );
+		m_stealth = stealth;
+		}
 
 
 		AIUpdateInterface* ai = newMod->getAIUpdateInterface();
@@ -475,9 +469,6 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 	m_soleHealingBenefactorID = INVALID_ID; ///< who is the only other object that can give me this non-stacking heal benefit?
 	m_soleHealingBenefactorExpirationFrame = 0; ///< on what frame can I accept healing (thus to switch) from a new benefactor
 
-#endif // if 0
-
-
 }  // end Object
 
 //-------------------------------------------------------------------------------------------------
@@ -488,7 +479,6 @@ Object::Object( const ThingTemplate *tt, const ObjectStatusMaskType& /* objectSt
 //-------------------------------------------------------------------------------------------------
 void Object::initObject()
 {
-#if 0
 	// Weapons & Damage -------------------------------------------------------------------------------------------------
 	// Force the initial weapon set to be instantiated & reloaded.
 
@@ -567,7 +557,6 @@ void Object::initObject()
 	{
 		ThePlayerList->getNeutralPlayer()->getAcademyStats()->recordMine();	
 	}
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -575,7 +564,6 @@ void Object::initObject()
 Object::~Object()
 {
 
-#if 0
 	// tell the AI the building is gone
 	/// @todo Generalize the notion of objects entering and leaving the world, so we don't have to special case this
 	TheAI->pathfinder()->removeObjectFromPathfindMap( this );
@@ -634,7 +622,7 @@ Object::~Object()
 		*b = NULL;	// in case other modules call findModule from their dtor!
 	}
 
-	delete [] m_behaviors;		
+	delete [] m_behaviors;
 	m_behaviors = NULL;
 
 	if( m_experienceTracker )
@@ -660,7 +648,6 @@ Object::~Object()
 	// The script engine will remove it from the cache if necessary. The script engine needs to take
 	// a crack at this in case it is the current "This Object" pointer.
 	TheScriptEngine->notifyOfObjectDestruction(this);
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -822,15 +809,10 @@ void Object::setTeam( Team *team )
 //=============================================================================
 void Object::setTemporaryTeam( Team *team )
 {
-DEBUG_CRASH(("Object::setTemporaryTeam not yet implemented!"));
-(void) team;
-#if 0
 	const Bool restoring = false;
 	setOrRestoreTeam(team, restoring);
-#endif // if 0
 }
 
-#if 0
 //=============================================================================
 //=============================================================================
 void Object::setOrRestoreTeam( Team* team, Bool restoring )
@@ -847,7 +829,10 @@ void Object::setOrRestoreTeam( Team* team, Bool restoring )
 		if (m_team->isInList_TeamMemberList(this))
 		{
 			m_team->removeFrom_TeamMemberList(this);
-			m_team->getControllingPlayer()->becomingTeamMember(this, false);
+			Player* player {m_team->getControllingPlayer()};
+			if (player) {
+				player->becomingTeamMember(this, false);
+			}
 		}
 	}
 		
@@ -905,12 +890,11 @@ void Object::setOrRestoreTeam( Team* team, Bool restoring )
 	}
 
 	// Tell TheInGameUI that the object has changed hands
-	Int oldPlayerIndex = (oldTeam)?(oldTeam->getControllingPlayer()->getPlayerIndex()):-1;
+	Int oldPlayerIndex = (oldTeam && oldTeam->getControllingPlayer())?(oldTeam->getControllingPlayer()->getPlayerIndex()):-1;
 	Int newPlayerIndex = (m_team)?(m_team->getControllingPlayer()->getPlayerIndex()):-1;
 	if (oldPlayerIndex != newPlayerIndex)
 		TheInGameUI->objectChangedTeam(this, oldPlayerIndex, newPlayerIndex);
 }
-#endif // if 0
 
 //=============================================================================
 enum 
@@ -963,10 +947,6 @@ Bool Object::checkAndDetonateBoobyTrap(const Object *victim)
 //=============================================================================
 void Object::setStatus( ObjectStatusMaskType objectStatus, Bool set )
 {
-DEBUG_CRASH(("Object::setStatus not yet implemented!"));
-(void) objectStatus;
-(void) set;
-#if 0
 	ObjectStatusMaskType oldStatus = m_status;
 
 	if (set)
@@ -1027,7 +1007,6 @@ DEBUG_CRASH(("Object::setStatus not yet implemented!"));
 
 	}
 
-#endif // if 0
 }
 
 //=============================================================================
@@ -1177,7 +1156,6 @@ UnsignedByte Object::getCrushableLevel() const
 	return getTemplate()->getCrushableLevel();
 }
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 /** Topple an object, if possible */
 // ------------------------------------------------------------------------------------------------
@@ -1195,7 +1173,6 @@ void Object::topple( const Coord3D *toppleDirection, Real toppleSpeed, UnsignedI
 	}  // end if
 
 }  // end topple
-#endif // if 0
 
 //=============================================================================
 void Object::setArmorSetFlag(ArmorSetType ast)
@@ -1546,7 +1523,6 @@ void Object::preFireCurrentWeapon( const Object *victim )
 	}
 }
 
-#if 0
 // ============================================================================
 /** Using the firing tracker, return the frame a shot was last fired on */
 // ============================================================================
@@ -1573,17 +1549,12 @@ ObjectID Object::getLastVictimID() const
 {
 	return m_firingTracker ? m_firingTracker->getLastShotVictim() : INVALID_ID;
 } 
-#endif // if 0
 
 //=============================================================================
 // Object::getRelationship
 //=============================================================================
 Relationship Object::getRelationship(const Object *that) const
 { 
-DEBUG_CRASH(("Object::getRelationship not yet implemented!"));
-(void) that;
-return NEUTRAL;
-#if 0
 	const Team *myTeam = getTeam();
 
 	if (myTeam && that)
@@ -1603,21 +1574,16 @@ return NEUTRAL;
 	}
 
 	return NEUTRAL;
-
-#endif // if 0
 }
 
 //=============================================================================
 // Object::getControllingPlayer
 //=============================================================================
 Player * Object::getControllingPlayer() const
-{ 
-DEBUG_CRASH(("Object::getControllingPlayer not yet implemented!"));
-#if 0
-	const Team* myTeam = this->getTeam();	
+{
+	const Team* myTeam = this->getTeam();
 	if (myTeam)
-		return myTeam->getControllingPlayer(); 
-#endif // if 0
+		return myTeam->getControllingPlayer();
 
 	return NULL;
 }
@@ -1720,7 +1686,6 @@ Bool Object::isNeutralControlled() const
 	return getControllingPlayer() == ThePlayerList->getNeutralPlayer();
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 inline Bool isPosDifferent(const Coord3D* a, const Coord3D* b)
 {
@@ -1757,7 +1722,6 @@ inline Bool isAngleDifferent(Real a, Real b)
 
 	return false;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real /* oldPitch */ )
@@ -1780,13 +1744,8 @@ void Object::reactToTurretChange( WhichTurretType turret, Real oldRotation, Real
 
 //-------------------------------------------------------------------------------------------------
 //DECLARE_PERF_TIMER(Object_reactToTransformChange)
-void Object::reactToTransformChange(const Matrix3D* oldMtx, const Coord3D* oldPos, Real oldAngle)
+void Object::reactToTransformChange(const Matrix3D* /* oldMtx */, const Coord3D* oldPos, Real oldAngle)
 {
-(void) oldMtx;
-(void) oldPos;
-(void) oldAngle;
-DEBUG_CRASH(("Object::reactToTransformChange not yet implemented!"));
-#if 0
 	//USE_PERF_TIMER(Object_reactToTransformChange)
 	if(isnan(getPosition()->x) || isnan(getPosition()->y) || isnan(getPosition()->z)) {
 		DEBUG_CRASH(("Object pos is nan."));
@@ -1794,7 +1753,7 @@ DEBUG_CRASH(("Object::reactToTransformChange not yet implemented!"));
 	}
 	if (m_drawable)
 	{
-  	m_drawable->setTransformMatrix( this->getTransformMatrix() );
+		m_drawable->setTransformMatrix( this->getTransformMatrix() );
 	}
 
 	Bool posDiff = isPosDifferent(oldPos, getPosition());
@@ -1820,7 +1779,6 @@ DEBUG_CRASH(("Object::reactToTransformChange not yet implemented!"));
 		else
 			m_privateStatus |= OFF_MAP;
 	}
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -2417,6 +2375,7 @@ void Object::pauseAllSpecialPowers( const Bool disabling ) const
 		sp->pauseCountdown( disabling );// So it will pause if we are disabling.
 	}
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -2439,6 +2398,7 @@ void Object::updateTriggerAreaFlags()
 	m_numTriggerAreasActive = j;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::onCollide( Object *other, const Coord3D *loc, const Coord3D *normal )
 {
@@ -2634,7 +2594,6 @@ ExitInterface *Object::getObjectExitInterface() const
 
 }  // end getObjectExitInterface
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Checks the object against trigger areas when the position changes. */
 //-------------------------------------------------------------------------------------------------
@@ -2736,7 +2695,6 @@ void Object::setTriggerAreaFlagsForChangeInPosition()
 	}
 
 }
-#endif // if 0
 
 
 
@@ -2843,7 +2801,6 @@ void Object::setID( ObjectID id )
 
 }  // end setID
 
-#if 0
 // ------------------------------------------------------------------------------------------------
 Real Object::calculateHeightAboveTerrain(void) const 
 {
@@ -2852,7 +2809,6 @@ Real Object::calculateHeightAboveTerrain(void) const
 	Real myZ = pos->z;
 	return myZ - terrainZ;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -3032,13 +2988,9 @@ DEBUG_CRASH(("Object::scoreTheKill not yet implemented!"));
 //-------------------------------------------------------------------------------------------------
 VeterancyLevel Object::getVeterancyLevel() const 
 { 
-#if 0
 	return m_experienceTracker ? m_experienceTracker->getVeterancyLevel() : LEVEL_REGULAR; 
-#endif // if 0
-return LEVEL_REGULAR; // Fudge
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::friend_bindToDrawable( Drawable *draw ) 
 { 
@@ -3047,7 +2999,7 @@ void Object::friend_bindToDrawable( Drawable *draw )
 	{
 		ModelConditionFlags set;
 		ModelConditionFlags clr;
-		for (int i = 0; i < WEAPONSET_COUNT; ++i)
+		for (UnsignedInt i = 0; i < WEAPONSET_COUNT; ++i)
 		{
 			ModelConditionFlagType mcs = TheWeaponSetTypeToModelConditionTypeMap[i];
 			if( mcs != MODELCONDITION_INVALID )
@@ -3078,7 +3030,6 @@ void Object::friend_bindToDrawable( Drawable *draw )
 		(*b)->onDrawableBoundToObject();
 	}
 }	
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void Object::setSelectable(Bool selectable) 
@@ -3532,9 +3483,6 @@ Bool Object::getHealthBoxDimensions(Real &healthBoxHeight, Real &healthBoxWidth)
  */
 void Object::updateObjValuesFromMapProperties(Dict* properties)
 {
-(void) properties;
-DEBUG_CRASH(("Object::updateObjValuesFromMapProperties not yet implemented!"));
-#if 0
 	Bool exists;
 
 	AsciiString valStr;
@@ -3685,200 +3633,198 @@ DEBUG_CRASH(("Object::updateObjValuesFromMapProperties not yet implemented!"));
 	} while (!valStr.isEmpty());
 	
 	Drawable	*drawable = getDrawable();
-  if ( drawable )
-  {
-    valInt = properties->getInt(TheKey_objectTime, &exists);
-    if (exists)
-    {
-      switch (valInt)
-      {
-      case 1:
-        drawable->clearModelConditionState(MODELCONDITION_NIGHT);
-        break;
-      case 2:
-        drawable->setModelConditionState(MODELCONDITION_NIGHT);
-        break;
-      default:
-        break;
-      }
-    }
-    
-    valInt = properties->getInt(TheKey_objectWeather, &exists);
-    if (exists)
-    {
-      switch (valInt)
-      {
-      case 1:
-        drawable->clearModelConditionState(MODELCONDITION_SNOW);
-        break;
-      case 2:
-        drawable->setModelConditionState(MODELCONDITION_SNOW);
-        break;
-      default:
-        break;
-      }
-    }
-    
-    // See if we are supposed to playing the ambient sound
-    Bool soundEnabledExists;
-    Bool soundEnabled = properties->getBool( TheKey_objectSoundAmbientEnabled, &soundEnabledExists );
-     
-    DynamicAudioEventInfo * audioToModify = NULL;
-    Bool infoModified = false;
-    valStr = properties->getAsciiString( TheKey_objectSoundAmbient, &exists );
-    if ( exists )
-    {
-      if ( valStr.isEmpty() )
-      {
-        drawable->setCustomSoundAmbientOff();
-        soundEnabledExists = true;
-        soundEnabled = false; // Don't bother trying to enable later
-      }
-      else
-      {
-        const AudioEventInfo * baseInfo = TheAudio->findAudioEventInfo( valStr );
-        DEBUG_ASSERTCRASH( baseInfo != NULL, ("Cannot find customized ambient sound '%s'", valStr.str() ) );
-        if ( baseInfo != NULL )
-        {
-          audioToModify = newInstance( DynamicAudioEventInfo )( *baseInfo );
-          infoModified = true;
-        }
-      }
-    }
+	if ( drawable )
+	{
+		valInt = properties->getInt(TheKey_objectTime, &exists);
+		if (exists)
+		{
+			switch (valInt)
+			{
+			case 1:
+				drawable->clearModelConditionState(MODELCONDITION_NIGHT);
+				break;
+			case 2:
+				drawable->setModelConditionState(MODELCONDITION_NIGHT);
+				break;
+			default:
+				break;
+			}
+		}
 
-    // Don't do anything more to audio if we forced the ambient sound off
-    if ( !( exists && valStr.isEmpty() ) )
-    {
-      valBool = properties->getBool( TheKey_objectSoundAmbientCustomized, &exists );
-      if ( exists && valBool )
-      {
-        if ( audioToModify == NULL )
-        {
-          const AudioEventInfo * baseInfo = drawable->getBaseSoundAmbientInfo( );
-          DEBUG_ASSERTCRASH( baseInfo != NULL, ("getBaseSoundAmbientInfo() return NULL" ) );
-          if ( baseInfo != NULL )
-          {
-            audioToModify = newInstance( DynamicAudioEventInfo )( *baseInfo );
-          }
-        }
+		valInt = properties->getInt(TheKey_objectWeather, &exists);
+		if (exists)
+		{
+			switch (valInt)
+			{
+			case 1:
+				drawable->clearModelConditionState(MODELCONDITION_SNOW);
+				break;
+			case 2:
+				drawable->setModelConditionState(MODELCONDITION_SNOW);
+				break;
+			default:
+				break;
+			}
+		}
 
-        if ( audioToModify != NULL )
-        {
-          valBool = properties->getBool( TheKey_objectSoundAmbientLooping, &exists );
-          if ( exists )
-          {
-             audioToModify->overrideLoopFlag( valBool );
-             infoModified = true;
-          }
+		// See if we are supposed to playing the ambient sound
+		Bool soundEnabledExists;
+		Bool soundEnabled = properties->getBool( TheKey_objectSoundAmbientEnabled, &soundEnabledExists );
+		
+		DynamicAudioEventInfo * audioToModify = NULL;
+		Bool infoModified = false;
+		valStr = properties->getAsciiString( TheKey_objectSoundAmbient, &exists );
+		if ( exists )
+		{
+			if ( valStr.isEmpty() )
+			{
+				drawable->setCustomSoundAmbientOff();
+				soundEnabledExists = true;
+				soundEnabled = false; // Don't bother trying to enable later
+			}
+			else
+			{
+				const AudioEventInfo * baseInfo = TheAudio->findAudioEventInfo( valStr );
+				DEBUG_ASSERTCRASH( baseInfo != NULL, ("Cannot find customized ambient sound '%s'", valStr.str() ) );
+				if ( baseInfo != NULL )
+				{
+				audioToModify = newInstance( DynamicAudioEventInfo )( *baseInfo );
+				infoModified = true;
+				}
+			}
+		}
 
-          valInt = properties->getInt( TheKey_objectSoundAmbientLoopCount, &exists );
-          if ( exists && BitTest( audioToModify->m_control, AC_LOOP ) )
-          {
-            audioToModify->overrideLoopCount( valInt );
-            infoModified = true;
-          }
+		// Don't do anything more to audio if we forced the ambient sound off
+		if ( !( exists && valStr.isEmpty() ) )
+		{
+			valBool = properties->getBool( TheKey_objectSoundAmbientCustomized, &exists );
+			if ( exists && valBool )
+			{
+				if ( audioToModify == NULL )
+				{
+					const AudioEventInfo * baseInfo = drawable->getBaseSoundAmbientInfo( );
+					DEBUG_ASSERTCRASH( baseInfo != NULL, ("getBaseSoundAmbientInfo() return NULL" ) );
+					if ( baseInfo != NULL )
+					{
+						audioToModify = newInstance( DynamicAudioEventInfo )( *baseInfo );
+					}
+				}
 
-          valReal = properties->getReal( TheKey_objectSoundAmbientMinVolume, &exists );
-          if ( exists )
-          {
-            audioToModify->overrideMinVolume( valReal );
-            infoModified = true;
-          }
+				if ( audioToModify != NULL )
+				{
+					valBool = properties->getBool( TheKey_objectSoundAmbientLooping, &exists );
+					if ( exists )
+					{
+						audioToModify->overrideLoopFlag( valBool );
+						infoModified = true;
+					}
 
-          valReal = properties->getReal( TheKey_objectSoundAmbientVolume, &exists );
-          if ( exists )
-          {
-            audioToModify->overrideVolume( valReal );
-            infoModified = true;
-          }
+					valInt = properties->getInt( TheKey_objectSoundAmbientLoopCount, &exists );
+					if ( exists && BitTest( audioToModify->m_data.m_control, AC_LOOP ) )
+					{
+						audioToModify->overrideLoopCount( valInt );
+						infoModified = true;
+					}
 
-          valReal = properties->getReal( TheKey_objectSoundAmbientMinRange, &exists );
-          if ( exists )
-          {
-            audioToModify->overrideMinRange( valReal );
-            infoModified = true;
-          }
-          
-          valReal = properties->getReal( TheKey_objectSoundAmbientMaxRange, &exists );
-          if ( exists )
-          {
-            audioToModify->overrideMaxRange( valReal );
-            infoModified = true;
-          }
+					valReal = properties->getReal( TheKey_objectSoundAmbientMinVolume, &exists );
+					if ( exists )
+					{
+						audioToModify->overrideMinVolume( valReal );
+						infoModified = true;
+					}
 
-          valInt = properties->getInt( TheKey_objectSoundAmbientPriority, &exists );
-          if ( exists )
-          {
-            audioToModify->overridePriority ( (AudioPriority)valInt );
-            infoModified = true;
-          }
-        }
-      }
-    }
+					valReal = properties->getReal( TheKey_objectSoundAmbientVolume, &exists );
+					if ( exists )
+					{
+						audioToModify->overrideVolume( valReal );
+						infoModified = true;
+					}
 
-    if ( !soundEnabledExists )
-    {
-      // Decide if the sound should start enabled or not, since the map maker didn't record
-      // a preference. Enable permanently looping sounds, disable one-shot sounds by default
-      // NOTE: This test should match the tests done in MapObjectProps::mapObjectPageSound::dictToEnabled()
-      // when it decided whether or not to show a customized sound as enabled
-      if ( audioToModify != NULL )
-      {
-        soundEnabled = audioToModify->isPermanentSound();
-        soundEnabledExists = true; // To get into enableAmbientSoundFromScript() call.
-      }
-      else
-      {
-        // Use default audio
-        const AudioEventInfo * baseInfo = drawable->getBaseSoundAmbientInfo( );
-        if ( baseInfo != NULL )
-        {
-          soundEnabled = baseInfo->isPermanentSound();
-          soundEnabledExists = true; // To get into enableAmbientSoundFromScript() call.
-        }
-      }
-    }
+					valReal = properties->getReal( TheKey_objectSoundAmbientMinRange, &exists );
+					if ( exists )
+					{
+						audioToModify->overrideMinRange( valReal );
+						infoModified = true;
+					}
+					
+					valReal = properties->getReal( TheKey_objectSoundAmbientMaxRange, &exists );
+					if ( exists )
+					{
+						audioToModify->overrideMaxRange( valReal );
+						infoModified = true;
+					}
 
-    if ( soundEnabledExists && !soundEnabled )
-    {
-      // Make sure sound doesn't start playing when we set it
-      // ...FromScript because this is also controlled by the map designer not the game logic
-      drawable->enableAmbientSoundFromScript( false );
-    }
-    
-    if ( infoModified && audioToModify != NULL )
-    {
-      // Give a custom, level-specific name
-      drawable->mangleCustomAudioName( audioToModify );
+					valInt = properties->getInt( TheKey_objectSoundAmbientPriority, &exists );
+					if ( exists )
+					{
+						audioToModify->overridePriority ( (AudioPriority)valInt );
+						infoModified = true;
+					}
+				}
+			}
+		}
 
-      // Pass to TheAudio
-      TheAudio->addAudioEventInfo( audioToModify );
+		if ( !soundEnabledExists )
+		{
+		// Decide if the sound should start enabled or not, since the map maker didn't record
+		// a preference. Enable permanently looping sounds, disable one-shot sounds by default
+		// NOTE: This test should match the tests done in MapObjectProps::mapObjectPageSound::dictToEnabled()
+		// when it decided whether or not to show a customized sound as enabled
+			if ( audioToModify != NULL )
+			{
+				soundEnabled = audioToModify->isPermanentSound();
+				soundEnabledExists = true; // To get into enableAmbientSoundFromScript() call.
+			}
+			else
+			{
+				// Use default audio
+				const AudioEventInfo * baseInfo = drawable->getBaseSoundAmbientInfo( );
+				if ( baseInfo != NULL )
+				{
+				soundEnabled = baseInfo->isPermanentSound();
+				soundEnabledExists = true; // To get into enableAmbientSoundFromScript() call.
+				}
+			}
+		}
 
-      drawable->setCustomSoundAmbientInfo( audioToModify );
-      audioToModify = NULL; // Belongs to TheAudio now
-    }
+		if ( soundEnabledExists && !soundEnabled )
+		{
+			// Make sure sound doesn't start playing when we set it
+			// ...FromScript because this is also controlled by the map designer not the game logic
+			drawable->enableAmbientSoundFromScript( false );
+		}
 
-    if ( audioToModify != NULL )
-    {
-      audioToModify->deleteInstance();
-      audioToModify = NULL;
-    }
+		if ( infoModified && audioToModify != NULL )
+		{
+			// Give a custom, level-specific name
+			drawable->mangleCustomAudioName( audioToModify );
 
-    if ( soundEnabledExists && soundEnabled )
-    {
-      // Play sound now that it is set up, if needed. Don't call if already enabled because that
-      // can cause sound to play twice
-      // ...FromScript because this is also controlled by the map designer not the game logic
-      if ( !drawable->getAmbientSoundEnabledFromScript() )
-      {
-        drawable->enableAmbientSoundFromScript( true );
-      }      
-    } 
-  }
-#endif // if 0
+			// Pass to TheAudio
+			TheAudio->addAudioEventInfo( audioToModify );
+
+			drawable->setCustomSoundAmbientInfo( audioToModify );
+			audioToModify = NULL; // Belongs to TheAudio now
+		}
+
+		if ( audioToModify != NULL )
+		{
+			audioToModify->deleteInstance();
+			audioToModify = NULL;
+		}
+
+		if ( soundEnabledExists && soundEnabled )
+		{
+			// Play sound now that it is set up, if needed. Don't call if already enabled because that
+			// can cause sound to play twice
+			// ...FromScript because this is also controlled by the map designer not the game logic
+			if ( !drawable->getAmbientSoundEnabledFromScript() )
+			{
+				drawable->enableAmbientSoundFromScript( true );
+			}
+		}
+	}
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::friend_adjustPowerForPlayer( Bool incoming )
 {
@@ -3899,6 +3845,7 @@ void Object::friend_adjustPowerForPlayer( Bool incoming )
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void Object::onDisabledEdge(Bool becomingDisabled)
 {
@@ -4615,7 +4562,6 @@ void Object::removeUpgrade( const UpgradeTemplate *upgradeT )
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Central point for onCapture logic */
 //-------------------------------------------------------------------------------------------------
@@ -4655,7 +4601,6 @@ void Object::onCapture( Player *oldOwner, Player *newOwner )
 	}
 
 }  // end onCapture
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /// Object level events that need to happen upon game death

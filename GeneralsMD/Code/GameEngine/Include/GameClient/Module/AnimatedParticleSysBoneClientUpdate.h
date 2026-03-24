@@ -42,7 +42,7 @@ class AnimatedParticleSysBoneClientUpdate : public ClientUpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( AnimatedParticleSysBoneClientUpdate, "AnimatedParticleSysBoneClientUpdate" )
-	MAKE_STANDARD_MODULE_MACRO( AnimatedParticleSysBoneClientUpdate );
+	MAKE_STANDARD_MODULE_MACRO( AnimatedParticleSysBoneClientUpdate )
 
 public:
 
@@ -56,7 +56,7 @@ public:
 protected:
 
 
-	UnsignedInt m_life;
+	UnsignedInt m_life {};
 
 };
 

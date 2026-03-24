@@ -45,6 +45,7 @@
 #include "cpudetect.h"
 #include <memory.h>
 
+#if defined (__ICL)    // Detect Intel compiler
 #define SHUFFLE(x, y, z, w)	(((x)&3)<< 6|((y)&3)<<4|((z)&3)<< 2|((w)&3))
 #define	BROADCAST(XMM, INDEX)	__asm	shufps	XMM,XMM,(((INDEX)&3)<< 6|((INDEX)&3)<<4|((INDEX)&3)<< 2|((INDEX)&3))
 
@@ -61,9 +62,9 @@
 		__asm	movaps		BZ,BW						\
 		__asm	shufps		BZ,TV,SHUFFLE(1, 0, 1, 0)	\
 		__asm	shufps		BW,TV,SHUFFLE(3, 2, 3, 2)
+#endif
 
-
-void VectorProcessorClass::Prefetch(void* address)
+void VectorProcessorClass::Prefetch([[maybe_unused]]void* address)
 {
 #if defined (__ICL)    // Detect Intel compiler
 	if (CPUDetectClass::_Has_SSE_Instruction_Set()) {
@@ -327,25 +328,34 @@ void VectorProcessorClass::Transform(Vector4* dst,const Vector3 *src, const Matr
 void VectorProcessorClass::Copy(Vector2 *dst, const Vector2 *src, int count)
 {
 	if (count<=0) return;
-	memcpy(dst,src,sizeof(Vector2)*count);
+	for (int i {0}; i < count; ++i) {
+		dst[i] = src[i];
+	}
+	// memcpy(dst,src,sizeof(Vector2)*count);
 }
 
 void VectorProcessorClass::Copy(unsigned *dst, const unsigned *src, int count)
 {
 	if (count<=0) return;
-	memcpy(dst,src,sizeof(unsigned)*count);
+	memcpy(dst,src,sizeof(unsigned)*(size_t)count);
 }
 
 void VectorProcessorClass::Copy(Vector3 *dst, const Vector3 *src, int count)
 {
 	if (count<=0) return;
-	memcpy(dst,src,sizeof(Vector3)*count);
+	for (int i {0}; i < count; ++i) {
+		dst[i] = src[i];
+	}
+	// memcpy(dst,src,sizeof(Vector3)*count);
 }
 
 void VectorProcessorClass::Copy(Vector4 *dst, const Vector4 *src, int count)
 {
 	if (count<=0) return;
-	memcpy(dst,src,sizeof(Vector4)*count);
+	for (int i {0}; i < count; ++i) {
+		dst[i] = src[i];
+	}
+	// memcpy(dst,src,sizeof(Vector4)*count);
 }
 
 void VectorProcessorClass::Copy(Vector4 *dst,const Vector3 *src, const float * srca, const int count)
@@ -480,7 +490,10 @@ void VectorProcessorClass::Clamp(Vector4 *dst,const Vector4 *src, const float mi
 void VectorProcessorClass::Clear(Vector3*dst, const int count)
 {
 	if (count<=0) return;
-	memset(dst,0,sizeof(Vector3)*count);
+	for (int i {0}; i < count; ++i) {
+		dst[i].Set(0.0f, 0.0f, 0.0f);
+	}
+	// memset(dst,0,sizeof(Vector3)*count);
 }
 
 

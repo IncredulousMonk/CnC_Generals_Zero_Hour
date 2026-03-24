@@ -91,9 +91,7 @@ public:
 	virtual void setTerrainDecalSize(Real /*x*/, Real /*y*/) {};
 	virtual void setTerrainDecalOpacity(Real /*o*/) {};
 
-#if 0
 	virtual void setFullyObscuredByShroud(Bool fullyObscured) = 0;
-#endif // if 0
 	
 	virtual Bool isVisible() const { return true; }	///< for limiting tree sway, etc to visible objects
 
@@ -177,7 +175,6 @@ public:
 	virtual Bool clientOnly_getRenderObjBoundBox(OBBoxClass * boundbox) const = 0;
 #endif // if 0
 	virtual Bool clientOnly_getRenderObjBoneTransform(const AsciiString & boneName,Matrix3D * set_tm) const = 0;
-#if 0
 	/**
 		Find the bone(s) with the given name and return their positions and/or transforms in the given arrays.
 		We look for a bone named "boneNamePrefixQQ", where QQ is 01, 02, 03, etc, starting at the
@@ -192,6 +189,7 @@ public:
 		NOTE: this isn't very fast. Please call it sparingly and cache the result.
 	*/
 	virtual Int getPristineBonePositionsForConditionState(const ModelConditionFlags& condition, const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const = 0;
+#if 0
 	virtual Int getCurrentBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const = 0;
 	virtual Bool getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const = 0;
 	virtual Bool getProjectileLaunchOffset(const ModelConditionFlags& condition, WeaponSlotType wslot, Int specificBarrelToUse, Matrix3D* launchPos, WhichTurretType tur, Coord3D* turretRotPos, Coord3D* turretPitchPos) const = 0;
@@ -202,8 +200,10 @@ public:
 
 #if 0
 	virtual void setHidden(Bool h) = 0;
+#endif // if 0
 	virtual void replaceModelConditionState(const ModelConditionFlags& a) = 0;
 	virtual void replaceIndicatorColor(Color color) = 0;
+#if 0
 	virtual Bool handleWeaponFireFX(WeaponSlotType wslot, Int specificBarrelToUse, const FXList* fxl, Real weaponSpeed, const Coord3D* victimPos, Real damageRadius) = 0;
 	virtual Int getBarrelCount(WeaponSlotType wslot) const = 0;
 
@@ -223,8 +223,10 @@ public:
 		"inbetween", it is included in the completion time.
 	*/
 	virtual void setAnimationCompletionTime(UnsignedInt numFrames) = 0;
+#endif // if 0
 	virtual Bool updateBonesForClientParticleSystems( void ) = 0;///< this will reposition particle systems on the fly ML
 
+#if 0
 	//Kris: Manually set a drawable's current animation to specific frame.
 	virtual void setAnimationFrame( int frame ) = 0;
 	

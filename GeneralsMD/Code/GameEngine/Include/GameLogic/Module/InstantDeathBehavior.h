@@ -48,12 +48,12 @@ typedef std::vector<const WeaponTemplate*> WeaponTemplateVec;
 class InstantDeathBehaviorModuleData : public DieModuleData
 {
 public:
-	FXListVec					m_fx;
-	OCLVec						m_ocls;
-	WeaponTemplateVec	m_weapons;
+	FXListVec			m_fx {};
+	OCLVec				m_ocls {};
+	WeaponTemplateVec	m_weapons {};
 
 	InstantDeathBehaviorModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 
@@ -78,4 +78,3 @@ public:
 };
 
 #endif // __InstantDeathBehavior_H_
-

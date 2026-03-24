@@ -52,10 +52,10 @@ DamDieModuleData::DamDieModuleData( void )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void DamDieModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void DamDieModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
 
-  DieModuleData::buildFieldParse( p );
+  DieModuleData::buildFieldParse(what, p);
 
 //	static const FieldParse dataFieldParse[] = 
 //	{

@@ -184,15 +184,15 @@ int Base64_Encode(void const * source, int slen, void * dest, int dlen)
 		**	Translate and write 4 characters of Base64 data. Pad with pad
 		**	characters if there is insufficient source data for a full packet.
 		*/
-		*dptr++ = _encoder[packet.SubCode.O1];
-		*dptr++ = _encoder[packet.SubCode.O2];
+		*dptr++ = (unsigned char)_encoder[packet.SubCode.O1];
+		*dptr++ = (unsigned char)_encoder[packet.SubCode.O2];
 		if (pad < 2) {
-			*dptr++ = _encoder[packet.SubCode.O3];
+			*dptr++ = (unsigned char)_encoder[packet.SubCode.O3];
 		} else {
 			*dptr++ = _pad[0];
 		}
 		if (pad < 1) {
-			*dptr++ = _encoder[packet.SubCode.O4];
+			*dptr++ = (unsigned char)_encoder[packet.SubCode.O4];
 		} else {
 			*dptr++ = _pad[0];
 		}

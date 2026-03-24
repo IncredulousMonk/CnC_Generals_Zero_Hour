@@ -45,7 +45,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "vector4.h"
-#include "vector3i.h"
+#include "Vector3i.h"
 #include "sharebuf.h"
 #include "shader.h"
 #include "wwdebug.h"
@@ -58,6 +58,7 @@
 #include "meshgeometry.h"
 #include "meshmatdesc.h"
 #include "dx8list.h"
+#include "OpenGLMeshRenderer.h"
 
 class TextureClass;
 class RenderInfoClass;
@@ -127,15 +128,15 @@ class GapFillerClass : public W3DMPO
 {
 	W3DMPO_GLUE(GapFillerClass)
 
-	TriIndex* PolygonArray;
-	unsigned PolygonCount;
-	unsigned ArraySize;
+	TriIndex* PolygonArray {};
+	unsigned PolygonCount {};
+	unsigned ArraySize {};
 	TextureClass** TextureArray[MeshMatDescClass::MAX_PASSES][MeshMatDescClass::MAX_TEX_STAGES];
 	VertexMaterialClass** MaterialArray[MeshMatDescClass::MAX_PASSES];
 	ShaderClass* ShaderArray[MeshMatDescClass::MAX_PASSES];
-	MeshModelClass* mmc;
+	MeshModelClass* mmc {};
 
-	GapFillerClass& operator = (const GapFillerClass & that) {}
+	GapFillerClass& operator = (const GapFillerClass & that) = delete; // {}
 public:
 	GapFillerClass(MeshModelClass* mmc);
 	GapFillerClass(const GapFillerClass& that);
@@ -164,6 +165,7 @@ public:
 	MeshModelClass & operator = (const MeshModelClass & that);
 	void							Reset(int polycount,int vertcount,int passcount);
 	void							Register_For_Rendering();
+	void							Render_Mesh(RenderInfoClass& rinfo, Matrix3D& transform);
 	void							Shadow_Render(SpecialRenderInfoClass & rinfo,const Matrix3D & tm,const HTreeClass * htree);	
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -319,24 +321,30 @@ protected:
 	void install_materials(MeshLoadContextClass * loadinfo);
 	void clone_materials(const MeshModelClass & srcmesh);
 	void install_alternate_material_desc(MeshLoadContextClass * context);
+
+	// rendering
+	void generate_render_data();
 	
 	// Material Descriptions
 	// DefMatDesc - the default material description, allocated in constructor, always present.
 	// AlternateMatDes - an optional alternate material description, allocated at load time if needed
 	// CurMatDesc - pointer to the currently active material description.
-	MeshMatDescClass *									DefMatDesc;
-	MeshMatDescClass *									AlternateMatDesc;
-	MeshMatDescClass *									CurMatDesc;
+	MeshMatDescClass *									DefMatDesc {};
+	MeshMatDescClass *									AlternateMatDesc {};
+	MeshMatDescClass *									CurMatDesc {};
 
 	// Collection of the unique materials in the mesh
-	MaterialInfoClass	*									MatInfo;
+	MaterialInfoClass	*								MatInfo {};
 	
 	// DX8 Mesh rendering system data
-	DX8PolygonRendererList								PolygonRendererList;
+	DX8PolygonRendererList								PolygonRendererList {};
+
+	// OpenGL mesh rendering
+	OpenGLMeshRenderer*									MeshRenderer {};
 
 	// Jani: Adding this here temporarily... must fine better place
-	GapFillerClass *										GapFiller;
-	bool														HasBeenInUse;	// For debugging purposes!
+	GapFillerClass *									GapFiller {};
+	bool												HasBeenInUse {};	// For debugging purposes!
 
 	friend class MeshClass;
 	friend class MeshDeformSetClass;
@@ -347,11 +355,4 @@ protected:
 	friend class DX8PolygonRendererClass;
 };
 
-
-
-
-
-
-
 #endif
-

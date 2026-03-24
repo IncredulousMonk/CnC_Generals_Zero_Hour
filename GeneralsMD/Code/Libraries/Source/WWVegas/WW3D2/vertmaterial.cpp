@@ -43,9 +43,10 @@
 #include "w3d_util.h"
 #include "chunkio.h"
 #include "w3derr.h"
-#include "ini.h"
-#include "xstraw.h"
-#include "dx8wrapper.h"
+#include "INI.H"
+#include "XSTRAW.H"
+// #include "dx8wrapper.h"
+#include "d3d8.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -59,7 +60,7 @@ class DynD3DMATERIAL8 : public W3DMPO
 {
 	W3DMPO_GLUE(DynD3DMATERIAL8)
 public:
-	D3DMATERIAL8 Mat;
+	D3DMATERIAL8 Mat {};
 };
 #define Material				(&MaterialDyn->Mat)
 #define SRCMATPTR(src)	(&(src)->MaterialDyn->Mat)
@@ -81,15 +82,13 @@ VertexMaterialClass::VertexMaterialClass(void):
 	AmbientColorSource(D3DMCS_MATERIAL),
 	EmissiveColorSource(D3DMCS_MATERIAL),
 	DiffuseColorSource(D3DMCS_MATERIAL),
-	UseLighting(false),
 	UniqueID(0),
-	CRCDirty(true)
+	CRCDirty(true),
+	UseLighting(false)
 {
-	int i;
-
-	for (i=0; i<MeshBuilderClass::MAX_STAGES; i++)
+	for (unsigned int i=0; i<MeshBuilderClass::MAX_STAGES; i++)
 	{
-		Mapper[i]=NULL;		
+		Mapper[i]=NULL;
 		UVSource[i] = i;
 	}	
 
@@ -106,6 +105,7 @@ VertexMaterialClass::VertexMaterialClass(void):
 }
 
 VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass & src) :
+	RefCountClass(src),
 #ifdef DYN_MAT8
 	MaterialDyn(NULL),
 #else
@@ -115,10 +115,10 @@ VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass & src) :
 	AmbientColorSource(src.AmbientColorSource),
 	EmissiveColorSource(src.EmissiveColorSource),
 	DiffuseColorSource(src.DiffuseColorSource),
-	UseLighting(src.UseLighting),
 	Name(src.Name),
 	UniqueID(src.UniqueID),
-	CRCDirty(true)
+	CRCDirty(true),
+	UseLighting(src.UseLighting)
 {
 	int i;
 	for (i=0; i<MeshBuilderClass::MAX_STAGES; i++)
@@ -419,19 +419,22 @@ void VertexMaterialClass::Set_UV_Source(int stage,int array_index)
 	WWASSERT(array_index >= 0);
 	WWASSERT(array_index < 8);
 	CRCDirty=true;
-	UVSource[stage] = array_index;
+	UVSource[stage] = (unsigned int)array_index;
 }
 
 int VertexMaterialClass::Get_UV_Source(int stage)
 {
 	WWASSERT(stage >= 0);
 	WWASSERT(stage < MeshBuilderClass::MAX_STAGES);
-	return UVSource[stage];
+	return (int)UVSource[stage];
 }
 
 
 void VertexMaterialClass::Init_From_Material3(const W3dMaterial3Struct & mat3)
 {
+(void) mat3;
+DEBUG_CRASH(("VertexMaterialClass::Init_From_Material3 not yet implemented!\n"));
+#if 0
 	Vector3 tmp0,tmp1,tmp2;
 	
 	W3dUtilityClass::Convert_Color(mat3.DiffuseColor,&tmp0);
@@ -456,6 +459,7 @@ void VertexMaterialClass::Init_From_Material3(const W3dMaterial3Struct & mat3)
 
 	Set_Shininess(mat3.Shininess);
 	Set_Opacity(mat3.Opacity);
+#endif // if 0
 }
 
 WW3DErrorType VertexMaterialClass::Load_W3D(ChunkLoadClass & cload)
@@ -520,7 +524,7 @@ WW3DErrorType VertexMaterialClass::Load_W3D(ChunkLoadClass & cload)
 
 void VertexMaterialClass::Parse_W3dVertexMaterialStruct(const W3dVertexMaterialStruct & vmat)
 {
-	Vector3 tmp;
+	Vector3 tmp {};
 	W3dUtilityClass::Convert_Color(vmat.Ambient,&tmp);
 	Set_Ambient(tmp);
 	
@@ -547,7 +551,6 @@ void VertexMaterialClass::Parse_W3dVertexMaterialStruct(const W3dVertexMaterialS
 
 void VertexMaterialClass::Parse_Mapping_Args(const W3dVertexMaterialStruct & vmat,char * mapping0_arg_buffer,char * mapping1_arg_buffer)
 {
-	
 	// Read an INIClass from the mapping argument buffer - this will be used
 	// to initialize any special mappers used.
 	INIClass mapping0_arg_ini;
@@ -587,6 +590,9 @@ void VertexMaterialClass::Parse_Mapping_Args(const W3dVertexMaterialStruct & vma
 	// ones, set the pointer to one of the global instances. 
 	int mapping = vmat.Attributes & W3DVERTMAT_STAGE0_MAPPING_MASK;
 
+// FIXME: Fancy vertex mapping
+DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("Vertex mapping must be 0!\n"));
+#if 0
 	switch(mapping) {
 		
 		case W3DVERTMAT_STAGE0_MAPPING_UV:
@@ -937,10 +943,11 @@ void VertexMaterialClass::Parse_Mapping_Args(const W3dVertexMaterialStruct & vma
 		default:
 			break;
 	}
+#endif // if 0
 }
 
 
-WW3DErrorType VertexMaterialClass::Save_W3D(ChunkSaveClass & csave)
+WW3DErrorType VertexMaterialClass::Save_W3D(ChunkSaveClass & /* csave */)
 {
 	WWASSERT(0);
 	return WW3D_ERROR_OK;
@@ -948,6 +955,8 @@ WW3DErrorType VertexMaterialClass::Save_W3D(ChunkSaveClass & csave)
 
 void VertexMaterialClass::Apply(void) const
 {
+DEBUG_CRASH(("VertexMaterialClass::Apply not yet implemented!\n"));
+#if 0
 	int i;
 
 	DX8Wrapper::Set_DX8_Material(Material);
@@ -969,10 +978,13 @@ void VertexMaterialClass::Apply(void) const
 			DX8Wrapper::Set_DX8_Texture_Stage_State(i,D3DTSS_TEXTURETRANSFORMFLAGS,D3DTTFF_DISABLE);		
 		}
 	}
+#endif // if 0
 }
 
 void VertexMaterialClass::Apply_Null(void)
 {
+DEBUG_CRASH(("VertexMaterialClass::Apply_Null not yet implemented!\n"));
+#if 0
 	int i;
 	static D3DMATERIAL8 default_settings = 
 	{
@@ -995,6 +1007,7 @@ void VertexMaterialClass::Apply_Null(void)
 		DX8Wrapper::Set_DX8_Texture_Stage_State(i,D3DTSS_TEXCOORDINDEX,D3DTSS_TCI_PASSTHRU | i);	
 		DX8Wrapper::Set_DX8_Texture_Stage_State(i,D3DTSS_TEXTURETRANSFORMFLAGS,D3DTTFF_DISABLE);		
 	}
+#endif // if 0
 }
 
 

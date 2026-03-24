@@ -253,9 +253,7 @@ public:
 
 	virtual AsciiString getSourceFilename( void ) { return m_filenameString; }
 
-#if 0
 	virtual PathfindLayerEnum alignOnTerrain( Real angle, const Coord3D& pos, Bool stickToGround, Matrix3D& mtx);
-#endif // if 0
 
 	virtual Bool isUnderwater( Real x, Real y, Real *waterZ = NULL, Real *terrainZ = NULL );			///< is point under water
 	virtual Bool isCliffCell( Real x, Real y) const;			///< is point cliff cell

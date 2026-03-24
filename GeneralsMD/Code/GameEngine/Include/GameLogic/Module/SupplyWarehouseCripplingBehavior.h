@@ -42,13 +42,19 @@
 class SupplyWarehouseCripplingBehaviorModuleData : public UpdateModuleData
 {
 public:
-	UnsignedInt m_selfHealSupression; ///< Time since last damage until I can start to heal
-	UnsignedInt m_selfHealDelay;			///< Once I am okay to heal, how often to do so
-	Real m_selfHealAmount;							///< And how much
+	// MG: Cannot apply offsetof to SupplyWarehouseCripplingBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_selfHealSupression;	///< Time since last damage until I can start to heal
+		UnsignedInt m_selfHealDelay;		///< Once I am okay to heal, how often to do so
+		Real m_selfHealAmount;				///< And how much
+	};
+
+	IniData m_ini {};
 
 	SupplyWarehouseCripplingBehaviorModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 
@@ -74,8 +80,8 @@ public:
 	virtual DamageModuleInterface* getDamage() { return this; }
 
 	// DamageModuleInterface
-	virtual void onDamage( DamageInfo *damageInfo );
-	virtual void onHealing( DamageInfo *damageInfo ){}
+	virtual void onDamage( DamageInfo* damageInfo );
+	virtual void onHealing( DamageInfo* /* damageInfo */ ){}
 	virtual void onBodyDamageStateChange(const DamageInfo* damageInfo, BodyDamageType oldState, BodyDamageType newState);
 
 	// UpdateInterface
@@ -87,8 +93,8 @@ protected:
 	virtual void stopCrippledEffects();//Enable our object
 
 private:
-	UnsignedInt		m_healingSupressedUntilFrame;
-	UnsignedInt		m_nextHealingFrame;
+	UnsignedInt	m_healingSupressedUntilFrame {};
+	UnsignedInt	m_nextHealingFrame {};
 };
 
 #endif

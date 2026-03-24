@@ -41,23 +41,25 @@
 // ------------------------------------------------------------------------------------------------
 GrantUpgradeCreateModuleData::GrantUpgradeCreateModuleData()
 {
-	m_upgradeName = "";
+	m_ini.m_upgradeName = "";
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void GrantUpgradeCreateModuleData::buildFieldParse(MultiIniFieldParse& p)
+void GrantUpgradeCreateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-  CreateModuleData::buildFieldParse(p);
+	CreateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "UpgradeToGrant",	INI::parseAsciiString,							NULL, offsetof( GrantUpgradeCreateModuleData, m_upgradeName ) },
-		{ "ExemptStatus",		ObjectStatusMaskType::parseFromINI, NULL, offsetof( GrantUpgradeCreateModuleData, m_exemptStatus ) },
+		{ "UpgradeToGrant",	INI::parseAsciiString,				NULL, offsetof( GrantUpgradeCreateModuleData::IniData, m_upgradeName ) },
+		{ "ExemptStatus",	ObjectStatusMaskType::parseFromINI,	NULL, offsetof( GrantUpgradeCreateModuleData::IniData, m_exemptStatus ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	GrantUpgradeCreateModuleData* self {static_cast<GrantUpgradeCreateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,16 +85,16 @@ GrantUpgradeCreate::~GrantUpgradeCreate( void )
 void GrantUpgradeCreate::onCreate( void )
 {
 
-	ObjectStatusMaskType exemptStatus = getGrantUpgradeCreateModuleData()->m_exemptStatus;
+	ObjectStatusMaskType exemptStatus = getGrantUpgradeCreateModuleData()->m_ini.m_exemptStatus;
 	ObjectStatusMaskType currentStatus = getObject()->getStatusBits();
 	if( exemptStatus.test( OBJECT_STATUS_UNDER_CONSTRUCTION ) )
 	{
 		if(	!currentStatus.test( OBJECT_STATUS_UNDER_CONSTRUCTION ) ) 
 		{
-			const UpgradeTemplate *upgradeTemplate = TheUpgradeCenter->findUpgrade( getGrantUpgradeCreateModuleData()->m_upgradeName );
+			const UpgradeTemplate *upgradeTemplate = TheUpgradeCenter->findUpgrade( getGrantUpgradeCreateModuleData()->m_ini.m_upgradeName );
 			if( !upgradeTemplate )
 			{
-				DEBUG_ASSERTCRASH( 0, ("GrantUpdateCreate for %s can't find upgrade template %s.", getObject()->getName(), getGrantUpgradeCreateModuleData()->m_upgradeName ) );
+				DEBUG_ASSERTCRASH( 0, ("GrantUpdateCreate for %s can't find upgrade template %s.", getObject()->getName(), getGrantUpgradeCreateModuleData()->m_ini.m_upgradeName ) );
 				return;
 			}
 
@@ -122,10 +124,10 @@ void GrantUpgradeCreate::onBuildComplete( void )
 
 	CreateModule::onBuildComplete(); // extend
 
-	const UpgradeTemplate *upgradeTemplate = TheUpgradeCenter->findUpgrade( getGrantUpgradeCreateModuleData()->m_upgradeName );
+	const UpgradeTemplate *upgradeTemplate = TheUpgradeCenter->findUpgrade( getGrantUpgradeCreateModuleData()->m_ini.m_upgradeName );
 	if( !upgradeTemplate )
 	{
-		DEBUG_ASSERTCRASH( 0, ("GrantUpdateCreate for %s can't find upgrade template %s.", getObject()->getName(), getGrantUpgradeCreateModuleData()->m_upgradeName ) );
+		DEBUG_ASSERTCRASH( 0, ("GrantUpdateCreate for %s can't find upgrade template %s.", getObject()->getName(), getGrantUpgradeCreateModuleData()->m_ini.m_upgradeName ) );
 		return;
 	}
 

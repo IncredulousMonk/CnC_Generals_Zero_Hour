@@ -47,7 +47,7 @@
 #include "always.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "vector3i.h"
+#include "Vector3i.h"
 
 /**
 ** BWRenderClass
@@ -72,6 +72,10 @@ class BWRenderClass
 		Buffer(unsigned char* buffer, int scale);
 		~Buffer();
 
+		// No copies allowed!
+		Buffer(const Buffer&) = delete;
+		Buffer& operator=(const Buffer&) = delete;
+
 		void Set_H_Line(int start_x, int end_x, int y);
 		void Fill(unsigned char c);
 		inline int Scale() const { return scale; }
@@ -84,6 +88,10 @@ class BWRenderClass
 public:
 	BWRenderClass(unsigned char* buffer, int scale);
 	~BWRenderClass();
+
+	// No copies allowed!
+	BWRenderClass(const BWRenderClass&) = delete;
+	BWRenderClass& operator=(const BWRenderClass&) = delete;
 
 	void Fill(unsigned char c);
 	void Set_Vertex_Locations(Vector2* vertices,int count); // Warning! Contents are modified!

@@ -92,7 +92,7 @@ public:
 private:
 	// HashTableSize MUST be a power of two
 	int					HashTableSize;
-	HashableClass * *	HashTable;
+	HashableClass * *	HashTable {};
 
 	// Convert key to a table index
 	int					Hash( const char * key );

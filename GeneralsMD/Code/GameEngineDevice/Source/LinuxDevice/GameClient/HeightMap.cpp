@@ -115,53 +115,6 @@ HeightMapRenderObjClass *TheHeightMap = NULL;
 //         Private Data                                                     
 //-----------------------------------------------------------------------------
 
-static const char* terrainVertSource {R"(
-#version 460 core
-
-uniform mat4 ProjectionMatrix;
-uniform mat4 ViewMatrix;
-
-layout(location = 0) in vec3 Position;
-layout(location = 1) in vec4 Colour;
-layout(location = 2) in vec2 uv1;
-layout(location = 3) in vec2 uv2;
-
-//out vec4 VertexColour;
-out float VertexZ;
-out vec2 uv;
-
-void main(void)
-{
-   //VertexColour = Colour;
-   VertexZ = Position.z;
-   uv = uv1;
-   gl_Position = ProjectionMatrix * ViewMatrix * vec4(Position, 1);
-}
-)"};
-
-static const char* terrainFragSource {R"(
-#version 460 core
-
-//layout(binding = 0) uniform sampler1D Texture;
-layout(binding = 0) uniform sampler2D Texture;
-
-//in vec4 VertexColour;
-in float VertexZ; // Range is approx 0 to 32
-in vec2 uv;
-
-out vec4 FragmentColour;
-
-void main(void)
-{
-   //float u = VertexZ * 4.0 / 128.0;
-   //float u = VertexZ / 160.0;
-   //FragmentColour = texture(Texture, u);
-   FragmentColour = texture(Texture, uv);
-   //FragmentColour = VertexColour;
-   //FragmentColour = vec4(0.5, 0.5, 1.0, 1.0);
-}
-)"};
-
 #if 0
 #define SC_DETAIL_BLEND ( SHADE_CNST(ShaderClass::PASS_LEQUAL, ShaderClass::DEPTH_WRITE_ENABLE, ShaderClass::COLOR_WRITE_ENABLE, ShaderClass::SRCBLEND_ONE, \
 	ShaderClass::DSTBLEND_ZERO, ShaderClass::FOG_DISABLE, ShaderClass::GRADIENT_MODULATE, ShaderClass::SECONDARY_GRADIENT_DISABLE, ShaderClass::TEXTURING_ENABLE, \
@@ -191,6 +144,8 @@ void HeightMapRenderObjClass::freeIndexVertexBuffers(void)
 {
 	glDeleteBuffers(1, &m_indexBuffer);
 	m_indexBuffer = 0;
+	glDeleteBuffers(1, &m_vertexBuffer);
+	m_vertexBuffer = 0;
 	if (m_vertexBufferTiles) {
 		glDeleteBuffers(m_numVertexBufferTiles, m_vertexBufferTiles);
 		delete m_vertexBufferTiles;
@@ -1588,13 +1543,6 @@ shaders, and materials.*/
 //=============================================================================
 Int HeightMapRenderObjClass::initHeightData(Int x, Int y, WorldHeightMap *pMap, RefRenderObjListIterator *pLightsIterator, Bool updateExtraPassTiles)
 {
-	m_progTerrain = glCreateProgram();
-	OpenGLRenderer::addShader(m_progTerrain, terrainVertSource, GL_VERTEX_SHADER);
-	OpenGLRenderer::addShader(m_progTerrain, terrainFragSource, GL_FRAGMENT_SHADER);
-	OpenGLRenderer::buildShader(m_progTerrain);
-
-	// FIXME: Add call to glDeleteProgram(m_progTerrain);
-
 (void) pLightsIterator;
 (void) updateExtraPassTiles;
 #if 0
@@ -2557,33 +2505,23 @@ void HeightMapRenderObjClass::Render(RenderInfoClass & rinfo)
 #endif // if 0
 }
 
-
-GLint getUniformLocation(GLuint shaderProgram, const char* name)
-{
-	GLint location {glGetUniformLocation(shaderProgram, name)};
-	if (location == -1) {
-		DEBUG_CRASH(("No uniform found with name \"%s\"\n", name));
-	}
-	return location;
-}
-
 ///Performs additional terrain rendering pass, blending in the black shroud texture.
 void HeightMapRenderObjClass::renderTerrainPass(CameraClass* pCamera)
 {
 	// DX8Wrapper::Set_Transform(D3DTS_WORLD,Matrix3D(1));
-	glUseProgram(m_progTerrain);
+	TheOpenGLRenderer->useShader(SHADER_TERRAIN);
 	// Mat4 projectionMatrix {OpenGLRenderer::perspective(30.0, 800.0 / 600.0, 10.0, 10000.0)};
 	// glUniformMatrix4fv(getUniformLocation(m_progTerrain, "ProjectionMatrix"), 1, GL_FALSE, projectionMatrix.data());
 	Matrix4x4 projectionMatrix {pCamera->Get_Projection_Matrix()};
 	projectionMatrix = projectionMatrix.Transpose();
-	glUniformMatrix4fv(getUniformLocation(m_progTerrain, "ProjectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
+	glUniformMatrix4fv(TheOpenGLRenderer->getUniformLocation(SHADER_TERRAIN, "ProjectionMatrix"), 1, GL_FALSE, &projectionMatrix[0][0]);
 	// Real x {m_cameraPos.x};
 	// Real y {m_cameraPos.y};
 	// Real z {m_cameraPos.z};
 	// Mat4 viewMatrix {OpenGLRenderer::lookat(x, y, z, x, y + 200.0, z - 100.0, 0.0, 0.0, 1.0)};
 	Matrix3D view {pCamera->Get_View_Matrix()};
 	Mat4 viewMatrix {view[0][0], view[1][0], view[2][0], 0.0f, view[0][1], view[1][1], view[2][1], 0.0f, view[0][2], view[1][2], view[2][2], 0.0f, view[0][3], view[1][3], view[2][3], 1.0f};
-	glUniformMatrix4fv(getUniformLocation(m_progTerrain, "ViewMatrix"), 1, GL_FALSE, viewMatrix.data());
+	glUniformMatrix4fv(TheOpenGLRenderer->getUniformLocation(SHADER_TERRAIN, "ViewMatrix"), 1, GL_FALSE, viewMatrix.data());
 
 	//Apply the shader and material
 	

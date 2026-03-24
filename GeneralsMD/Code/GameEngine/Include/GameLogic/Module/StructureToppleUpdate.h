@@ -73,6 +73,7 @@ enum StructureTopplePhaseType
 	ST_PHASE_COUNT	// keep last
 };
 
+#ifdef DEFINE_STRUCTURE_TOPPLE_PHASE_NAMES
 static const char *TheStructureTopplePhaseNames[] = 
 {
 	"INITIAL",
@@ -81,58 +82,65 @@ static const char *TheStructureTopplePhaseNames[] =
 
 	NULL
 };
+#endif // DEFINE_STRUCTURE_TOPPLE_PHASE_NAMES
 
 //-------------------------------------------------------------------------------------------------
 class StructureToppleUpdateModuleData : public UpdateModuleData
 {
 public:
-	DieMuxData m_dieMuxData;
-	Int m_minToppleDelay;
-	Int m_maxToppleDelay;
-	Real m_structuralIntegrity;
-	Real m_structuralDecay;
-	DamageTypeFlags m_damageFXTypes;		///< flags used to play or not play the effects
-	FXList *m_toppleStartFXList;
-	FXList *m_toppleDelayFXList;
-	FXList *m_toppleFXList;
-	FXList *m_toppleDoneFXList;
-	FXList *m_crushingFXList;
-	AsciiString	m_crushingWeaponName;
-	Int m_minToppleBurstDelay;
-	Int m_maxToppleBurstDelay;
-	OCLVec m_ocls[ST_PHASE_COUNT];
-	UnsignedInt m_oclCount[ST_PHASE_COUNT];
-	FXBoneInfoVector fxbones;			///< Bone names and attached particle systems.
-	AngleFXInfoVector angleFX;
+	// MG: Cannot apply offsetof to StructureToppleUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		DieMuxData m_dieMuxData;
+		Int m_minToppleDelay;
+		Int m_maxToppleDelay;
+		Real m_structuralIntegrity;
+		Real m_structuralDecay;
+		DamageTypeFlags m_damageFXTypes;		///< flags used to play or not play the effects
+		FXList *m_toppleStartFXList;
+		FXList *m_toppleDelayFXList;
+		FXList *m_toppleFXList;
+		FXList *m_toppleDoneFXList;
+		FXList *m_crushingFXList;
+		AsciiString	m_crushingWeaponName;
+		Int m_minToppleBurstDelay;
+		Int m_maxToppleBurstDelay;
+		OCLVec m_ocls[ST_PHASE_COUNT];
+		UnsignedInt m_oclCount[ST_PHASE_COUNT];
+		FXBoneInfoVector fxbones;			///< Bone names and attached particle systems.
+		AngleFXInfoVector angleFX;
+	};
+
+	IniData m_ini {};
 
 
 	StructureToppleUpdateModuleData()
 	{
-		m_minToppleDelay = 0;
-		m_maxToppleDelay = 0;
-		m_minToppleBurstDelay = 0;
-		m_maxToppleBurstDelay = 0;
-		m_structuralIntegrity = 0.1f;
-		m_structuralDecay = 0.0f;
-		m_damageFXTypes = DAMAGE_TYPE_FLAGS_NONE;
-		m_damageFXTypes.flip();
-		m_toppleStartFXList = NULL;
-		m_toppleDelayFXList = NULL;
-		m_toppleDoneFXList = NULL;
-		m_toppleFXList = NULL;
-		m_crushingFXList = NULL;
-		m_crushingWeaponName.set("");
+		m_ini.m_minToppleDelay = 0;
+		m_ini.m_maxToppleDelay = 0;
+		m_ini.m_minToppleBurstDelay = 0;
+		m_ini.m_maxToppleBurstDelay = 0;
+		m_ini.m_structuralIntegrity = 0.1f;
+		m_ini.m_structuralDecay = 0.0f;
+		m_ini.m_damageFXTypes = DAMAGE_TYPE_FLAGS_NONE;
+		m_ini.m_damageFXTypes.flip();
+		m_ini.m_toppleStartFXList = NULL;
+		m_ini.m_toppleDelayFXList = NULL;
+		m_ini.m_toppleDoneFXList = NULL;
+		m_ini.m_toppleFXList = NULL;
+		m_ini.m_crushingFXList = NULL;
+		m_ini.m_crushingWeaponName.set("");
 
 		for (int i = 0; i < ST_PHASE_COUNT; ++i)
 		{
 			// init to one, so that if these are omitted, we choose exactly one of each.
-			m_oclCount[i] = 1;
+			m_ini.m_oclCount[i] = 1;
 		}
-		fxbones.clear();
-		angleFX.clear();
+		m_ini.fxbones.clear();
+		m_ini.angleFX.clear();
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 };
 
@@ -184,18 +192,17 @@ protected:
 		TOPPLESTATE_DONE
 	};
 	
-	UnsignedInt m_toppleFrame;
-	Coord2D m_toppleDirection;
-	StructureToppleStateType m_toppleState;
-	Real m_toppleVelocity;
-	Real m_accumulatedAngle;
-	Real m_structuralIntegrity;
-	Real m_lastCrushedLocation;
-	Int m_nextBurstFrame;
-	Coord3D m_delayBurstLocation;
-	Real m_buildingHeight;
+	UnsignedInt m_toppleFrame {};
+	Coord2D m_toppleDirection {};
+	StructureToppleStateType m_toppleState {};
+	Real m_toppleVelocity {};
+	Real m_accumulatedAngle {};
+	Real m_structuralIntegrity {};
+	Real m_lastCrushedLocation {};
+	Int m_nextBurstFrame {};
+	Coord3D m_delayBurstLocation {};
+	Real m_buildingHeight {};
 
 };
 
 #endif // __StructureToppleUpdate_H_
-

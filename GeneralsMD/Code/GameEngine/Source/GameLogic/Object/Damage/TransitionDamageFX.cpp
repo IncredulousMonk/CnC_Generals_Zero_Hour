@@ -50,46 +50,46 @@ TransitionDamageFXModuleData::TransitionDamageFXModuleData( void )
 		for( j = 0; j < DAMAGE_MODULE_MAX_FX; j++ )
 		{
 
-			m_fxList[ i ][ j ].fx = NULL;
-			m_fxList[ i ][ j ].locInfo.loc.x = 0.0f;
-			m_fxList[ i ][ j ].locInfo.loc.y = 0.0f;
-			m_fxList[ i ][ j ].locInfo.loc.z = 0.0f;
-			m_fxList[ i ][ j ].locInfo.locType = FX_DAMAGE_LOC_TYPE_COORD;
-			m_fxList[ i ][ j ].locInfo.randomBone = FALSE;
-			m_OCL[ i ][ j ].ocl = NULL;
-			m_OCL[ i ][ j ].locInfo.loc.x = 0.0f;
-			m_OCL[ i ][ j ].locInfo.loc.y = 0.0f;
-			m_OCL[ i ][ j ].locInfo.loc.z = 0.0f;
-			m_OCL[ i ][ j ].locInfo.locType = FX_DAMAGE_LOC_TYPE_COORD;
-			m_OCL[ i ][ j ].locInfo.randomBone = FALSE;
-			m_particleSystem[ i ][ j ].particleSysTemplate = NULL;
-			m_particleSystem[ i ][ j ].locInfo.loc.x = 0.0f;
-			m_particleSystem[ i ][ j ].locInfo.loc.y = 0.0f;
-			m_particleSystem[ i ][ j ].locInfo.loc.z = 0.0f;
-			m_particleSystem[ i ][ j ].locInfo.locType = FX_DAMAGE_LOC_TYPE_COORD;
-			m_particleSystem[ i ][ j ].locInfo.randomBone = FALSE;
+			m_ini.m_fxList[ i ][ j ].fx = NULL;
+			m_ini.m_fxList[ i ][ j ].locInfo.loc.x = 0.0f;
+			m_ini.m_fxList[ i ][ j ].locInfo.loc.y = 0.0f;
+			m_ini.m_fxList[ i ][ j ].locInfo.loc.z = 0.0f;
+			m_ini.m_fxList[ i ][ j ].locInfo.locType = FX_DAMAGE_LOC_TYPE_COORD;
+			m_ini.m_fxList[ i ][ j ].locInfo.randomBone = FALSE;
+			m_ini.m_OCL[ i ][ j ].ocl = NULL;
+			m_ini.m_OCL[ i ][ j ].locInfo.loc.x = 0.0f;
+			m_ini.m_OCL[ i ][ j ].locInfo.loc.y = 0.0f;
+			m_ini.m_OCL[ i ][ j ].locInfo.loc.z = 0.0f;
+			m_ini.m_OCL[ i ][ j ].locInfo.locType = FX_DAMAGE_LOC_TYPE_COORD;
+			m_ini.m_OCL[ i ][ j ].locInfo.randomBone = FALSE;
+			m_ini.m_particleSystem[ i ][ j ].particleSysTemplate = NULL;
+			m_ini.m_particleSystem[ i ][ j ].locInfo.loc.x = 0.0f;
+			m_ini.m_particleSystem[ i ][ j ].locInfo.loc.y = 0.0f;
+			m_ini.m_particleSystem[ i ][ j ].locInfo.loc.z = 0.0f;
+			m_ini.m_particleSystem[ i ][ j ].locInfo.locType = FX_DAMAGE_LOC_TYPE_COORD;
+			m_ini.m_particleSystem[ i ][ j ].locInfo.randomBone = FALSE;
 
 		}  // end for j
 
 	}  // end for i
 
-	m_damageFXTypes = DAMAGE_TYPE_FLAGS_NONE;
-	m_damageFXTypes.flip();
-	m_damageOCLTypes = DAMAGE_TYPE_FLAGS_NONE;
-	m_damageOCLTypes.flip();
-	m_damageParticleTypes = DAMAGE_TYPE_FLAGS_NONE;
-	m_damageParticleTypes.flip();
+	m_ini.m_damageFXTypes = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageFXTypes.flip();
+	m_ini.m_damageOCLTypes = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageOCLTypes.flip();
+	m_ini.m_damageParticleTypes = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageParticleTypes.flip();
 
 }  // end TransitionDamageFXModuleData
 
 //-------------------------------------------------------------------------------------------------
 /** Parse fx location info ... that is a named bone or a coord3d position */
 //-------------------------------------------------------------------------------------------------
-static void parseFXLocInfo( INI *ini, void *instance, FXLocInfo *locInfo )
+static void parseFXLocInfo( INI *ini, FXLocInfo *locInfo )
 {
 	const char *token = ini->getNextToken( ini->getSepsColon() );
 
-	if( stricmp( token, "bone" ) == 0 )
+	if( strcasecmp( token, "bone" ) == 0 )
 	{
 
 		// save bone name and location type
@@ -102,7 +102,7 @@ static void parseFXLocInfo( INI *ini, void *instance, FXLocInfo *locInfo )
 		// when picking an effect position.  If it's no, the bone name is assumed to be explicit
 		//
 		token = ini->getNextToken( ini->getSepsColon() );
-		if( stricmp( token, "randombone" ) != 0 )
+		if( strcasecmp( token, "randombone" ) != 0 )
 		{
 
 			DEBUG_CRASH(( "parseFXLocInfo: Bone name not followed by RandomBone specifier\nPress IGNORE to see which INI file and line # is incorrect." ));
@@ -111,10 +111,10 @@ static void parseFXLocInfo( INI *ini, void *instance, FXLocInfo *locInfo )
 		}  // end if
 
 		// parse the Bool definition
-		ini->parseBool( ini, instance, &locInfo->randomBone, NULL );
+		ini->parseBool( ini, nullptr, &locInfo->randomBone, NULL );
 
 	}  // end if
-	else if( stricmp( token, "loc" ) == 0 )
+	else if( strcasecmp( token, "loc" ) == 0 )
 	{
 
 		// save location and location type
@@ -138,18 +138,17 @@ static void parseFXLocInfo( INI *ini, void *instance, FXLocInfo *locInfo )
 /** In the form of:
 	* FXListSlot = <<Bone:BoneName BoneRandom:<Yes|No>> | <Loc: X:x Y:y Z:z>> FXList:FXListName */
 //-------------------------------------------------------------------------------------------------
-void TransitionDamageFXModuleData::parseFXList( INI *ini, void *instance, 
-																								void *store, const void *userData )
+void TransitionDamageFXModuleData::parseFXList( INI *ini, void* /* instance */, void *store, const void* /* userData */ )
 {
 	const char *token;
 	FXDamageFXListInfo *info = (FXDamageFXListInfo *)store;
 
 	// parse the location bone or location
-	parseFXLocInfo( ini, instance, &info->locInfo );
+	parseFXLocInfo( ini, &info->locInfo );
 
 	// make sure we have an "FXList:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "fxlist" ) != 0 )
+	if( strcasecmp( token, "fxlist" ) != 0 )
 	{
 
 		// error
@@ -158,7 +157,7 @@ void TransitionDamageFXModuleData::parseFXList( INI *ini, void *instance,
 	}  // end if
 
 	// parse the fx list name
-	ini->parseFXList( ini, instance, &info->fx, NULL );
+	ini->parseFXList( ini, nullptr, &info->fx, NULL );
 
 }  // end parseFXList
 
@@ -166,18 +165,17 @@ void TransitionDamageFXModuleData::parseFXList( INI *ini, void *instance,
 /** In the form of:
 	* OCLSlot = <<Bone:BoneName BoneRandom:<Yes|No>> | <Loc: X:x Y:y Z:z>> OCL:OCLName */
 //-------------------------------------------------------------------------------------------------
-void TransitionDamageFXModuleData::parseObjectCreationList( INI *ini, void *instance, 
-																														void *store, const void *userData )
+void TransitionDamageFXModuleData::parseObjectCreationList( INI *ini, void* /* instance */, void *store, const void* /* userData */ )
 {
 	const char *token;
 	FXDamageOCLInfo *info = (FXDamageOCLInfo *)store;
 
 	// parse the location bone or location
-	parseFXLocInfo( ini, instance, &info->locInfo );
+	parseFXLocInfo( ini, &info->locInfo );
 
 	// make sure we have an "OCL:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "ocl" ) != 0 )
+	if( strcasecmp( token, "ocl" ) != 0 )
 	{
 
 		// error
@@ -186,7 +184,7 @@ void TransitionDamageFXModuleData::parseObjectCreationList( INI *ini, void *inst
 	}  // end if
 
 	// parse the ocl name
-	ini->parseObjectCreationList( ini, instance, store, &info->ocl );
+	ini->parseObjectCreationList( ini, nullptr, store, &info->ocl );
 
 }  // end parseObjectCreationList
 
@@ -194,18 +192,17 @@ void TransitionDamageFXModuleData::parseObjectCreationList( INI *ini, void *inst
 /** In the form of:
 	* ParticleSlot = <<Bone:BoneName BoneRandom:<Yes|No>> | <Loc: X:x Y:y Z:z>> PSys:PSysName */
 //-------------------------------------------------------------------------------------------------
-void TransitionDamageFXModuleData::parseParticleSystem( INI *ini, void *instance, 
-																												void *store, const void *userData )
+void TransitionDamageFXModuleData::parseParticleSystem( INI *ini, void* /* instance */, void *store, const void* /* userData */ )
 {
 	const char *token;
 	FXDamageParticleSystemInfo *info = (FXDamageParticleSystemInfo *)store;
 
 	// parse the location bone or location
-	parseFXLocInfo( ini, instance, &info->locInfo );
+	parseFXLocInfo( ini, &info->locInfo );
 
 	// make sure we have an "PSys:" token
 	token = ini->getNextToken( ini->getSepsColon() );
-	if( stricmp( token, "psys" ) != 0 )
+	if( strcasecmp( token, "psys" ) != 0 )
 	{
 
 		// error
@@ -214,7 +211,7 @@ void TransitionDamageFXModuleData::parseParticleSystem( INI *ini, void *instance
 	}  // end if
 
 	// parse the particle system name
-	ini->parseParticleSystemTemplate( ini, instance, store, &info->particleSysTemplate );
+	ini->parseParticleSystemTemplate( ini, nullptr, store, &info->particleSysTemplate );
 
 }  // end parseParticleSystem
 
@@ -350,32 +347,32 @@ void TransitionDamageFX::onBodyDamageStateChange( const DamageInfo* damageInfo,
 		{
 
 			// play fx list for our new state
-			if( modData->m_fxList[ newState ][ i ].fx )
+			if( modData->m_ini.m_fxList[ newState ][ i ].fx )
 			{
 
 				if( lastDamageInfo == NULL || 
-						getDamageTypeFlag( modData->m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
+						getDamageTypeFlag( modData->m_ini.m_damageFXTypes, lastDamageInfo->in.m_damageType ) )
 				{
 
-					pos = getLocalEffectPos( &modData->m_fxList[ newState ][ i ].locInfo, draw );
+					pos = getLocalEffectPos( &modData->m_ini.m_fxList[ newState ][ i ].locInfo, draw );
 					getObject()->convertBonePosToWorldPos( &pos, NULL, &pos, NULL );
-					FXList::doFXPos( modData->m_fxList[ newState ][ i ].fx, &pos );
+					FXList::doFXPos( modData->m_ini.m_fxList[ newState ][ i ].fx, &pos );
 
 				}  // end if
 
 			}  // end if
 					
 			// do any object creation list for our new state
-			if( modData->m_OCL[ newState ][ i ].ocl )
+			if( modData->m_ini.m_OCL[ newState ][ i ].ocl )
 			{
 
 				if( lastDamageInfo == NULL || 
-						getDamageTypeFlag( modData->m_damageOCLTypes, lastDamageInfo->in.m_damageType ) )
+						getDamageTypeFlag( modData->m_ini.m_damageOCLTypes, lastDamageInfo->in.m_damageType ) )
 				{
 
-					pos = getLocalEffectPos( &modData->m_OCL[ newState ][ i ].locInfo, draw );
+					pos = getLocalEffectPos( &modData->m_ini.m_OCL[ newState ][ i ].locInfo, draw );
 					getObject()->convertBonePosToWorldPos( &pos, NULL, &pos, NULL );
-					ObjectCreationList::create( modData->m_OCL[ newState ][ i ].ocl, 
+					ObjectCreationList::create( modData->m_ini.m_OCL[ newState ][ i ].ocl, 
 																			getObject(), &pos, damageSource->getPosition(), INVALID_ANGLE );
 
 				}  // end if
@@ -383,12 +380,12 @@ void TransitionDamageFX::onBodyDamageStateChange( const DamageInfo* damageInfo,
 			}  // end if
 
 			// get the template of the system to create
-			pSystemT = modData->m_particleSystem[ newState ][ i ].particleSysTemplate;
+			pSystemT = modData->m_ini.m_particleSystem[ newState ][ i ].particleSysTemplate;
 			if( pSystemT )
 			{
 
 				if( lastDamageInfo == NULL || 
-						getDamageTypeFlag( modData->m_damageParticleTypes, lastDamageInfo->in.m_damageType ) )
+						getDamageTypeFlag( modData->m_ini.m_damageParticleTypes, lastDamageInfo->in.m_damageType ) )
 				{
 
 					// create a new particle system based on the template provided
@@ -397,7 +394,7 @@ void TransitionDamageFX::onBodyDamageStateChange( const DamageInfo* damageInfo,
 					{
 			
 						// get the what is the position we're going to playe the effect at
-						pos = getLocalEffectPos( &modData->m_particleSystem[ newState ][ i ].locInfo, draw );
+						pos = getLocalEffectPos( &modData->m_ini.m_particleSystem[ newState ][ i ].locInfo, draw );
 
 						//
 						// set position on system given any bone position provided, the bone position is

@@ -2151,7 +2151,7 @@ void PartitionData::invalidateShroudedStatusForAllPlayers()
 }
 
 #if defined(_DEBUG) || defined(_INTERNAL)
-static AsciiString theObjName;
+// static AsciiString theObjName;
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2210,7 +2210,7 @@ Int PartitionData::calcMaxCoiForObject()
 	Real minorRadius = obj->getGeometryInfo().getMinorRadius();
 	Bool isSmall = obj->getGeometryInfo().getIsSmall();
 #if defined(_DEBUG) || defined(_INTERNAL)
-theObjName = obj->getTemplate()->getName();
+// theObjName = obj->getTemplate()->getName();
 #endif
 	return calcMaxCoiForShape(geom, majorRadius, minorRadius, isSmall);
 }
@@ -2260,9 +2260,6 @@ void PartitionData::freeCoiArray()
 void PartitionData::attachToObject(Object* object)
 {
 
-DEBUG_CRASH(("PartitionData::attachToObject not yet implemented!"));
-(void) object;
-#if 0
 	// remember who contains us
 	m_object = object;
 
@@ -2294,14 +2291,11 @@ DEBUG_CRASH(("PartitionData::attachToObject not yet implemented!"));
 	if (object)
 		object->friend_setPartitionData(this);
 	makeDirty(true);
-#endif // if 0
 }
 
 //-----------------------------------------------------------------------------
 void PartitionData::detachFromObject()
 {
-DEBUG_CRASH(("PartitionData::detachFromObject not yet implemented!"));
-#if 0
 	// this is a little hokey... if we are in the midst of processing the contact
 	// list, we have to ensure that any potential collisions get removed from that
 	// list, since we are about to go bye-bye. ugly, but effective. (srj)
@@ -2323,7 +2317,6 @@ DEBUG_CRASH(("PartitionData::detachFromObject not yet implemented!"));
 	m_object = NULL;
 	TheGhostObjectManager->removeGhostObject(m_ghostObject);
 	m_ghostObject = NULL;
-#endif // if 0
 }
 
 //-----------------------------------------------------------------------------

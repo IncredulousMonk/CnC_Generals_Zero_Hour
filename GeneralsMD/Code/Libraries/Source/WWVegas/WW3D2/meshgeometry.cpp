@@ -133,12 +133,12 @@ MeshGeometryClass::MeshGeometryClass(void) :
 	PolyCount(0),
 	VertexCount(0),
 	Poly(NULL),
-	PolySurfaceType(NULL),
 	Vertex(NULL),
 	VertexNorm(NULL),
 	PlaneEq(NULL),
 	VertexShadeIdx(NULL),
 	VertexBoneLink(NULL),
+	PolySurfaceType(NULL),
 	BoundBoxMin(0,0,0),
 	BoundBoxMax(1,1,1),
 	BoundSphereCenter(0,0,0),
@@ -161,6 +161,7 @@ MeshGeometryClass::MeshGeometryClass(void) :
  *   11/9/2000  gth : Created.                                                                 *
  *=============================================================================================*/
 MeshGeometryClass::MeshGeometryClass(const MeshGeometryClass & that) :
+	RefCountClass(that),
 	MeshName(NULL),
 	UserText(NULL),
 	Flags(0),
@@ -169,12 +170,12 @@ MeshGeometryClass::MeshGeometryClass(const MeshGeometryClass & that) :
 	PolyCount(0),
 	VertexCount(0),
 	Poly(NULL),
-	PolySurfaceType(NULL),
 	Vertex(NULL),
 	VertexNorm(NULL),
 	PlaneEq(NULL),
 	VertexShadeIdx(NULL),
 	VertexBoneLink(NULL),
+	PolySurfaceType(NULL),
 	BoundBoxMin(0,0,0),
 	BoundBoxMax(1,1,1),
 	BoundSphereCenter(0,0,0),
@@ -463,7 +464,7 @@ void MeshGeometryClass::Generate_Rigid_APT(const Vector3 & view_dir, SimpleDynVe
 		tri.N = (Vector3*)&(norms[poly_counter]);
 		
 		if (Vector3::Dot_Product(*tri.N,view_dir) < 0.0f) {
-			apt.Add(poly_counter);
+			apt.Add((uint32)poly_counter);
 		}
 	}
 }
@@ -503,7 +504,7 @@ void MeshGeometryClass::Generate_Rigid_APT(const OBBoxClass & local_box, SimpleD
 			tri.N = (Vector3*)&(norms[poly_counter]);
 				
 			if (CollisionMath::Intersection_Test(local_box, tri)) {;
-				apt.Add(poly_counter);
+				apt.Add((uint32)poly_counter);
 			}
 		}
 	}
@@ -543,7 +544,7 @@ void MeshGeometryClass::Generate_Rigid_APT(const OBBoxClass & local_box,const Ve
 				
 			if (Vector3::Dot_Product(*tri.N,viewdir) < 0.0f) {
 				if (CollisionMath::Intersection_Test(local_box,tri)) {
-					apt.Add(poly_counter);
+					apt.Add((uint32)poly_counter);
 				} 
 			}
 		}
@@ -585,7 +586,7 @@ void MeshGeometryClass::Generate_Skin_APT(const OBBoxClass & world_box, SimpleDy
 		tri.N = &dummy_vec;
 			
 		if (CollisionMath::Intersection_Test(world_box,tri)) {;
-			apt.Add(poly_counter);
+			apt.Add((uint32)poly_counter);
 		}
 	}
 }
@@ -871,7 +872,7 @@ int MeshGeometryClass::cast_semi_infinite_axis_aligned_ray(const Vector3 & start
 			const Vector4 &tri_plane = plane[poly_counter];
 
 			// Since (int)true is defined as 1, and (int)false as 0:
-			count += (unsigned int)Cast_Semi_Infinite_Axis_Aligned_Ray_To_Triangle(v0,	v1, v2,
+			count += (int)Cast_Semi_Infinite_Axis_Aligned_Ray_To_Triangle(v0,	v1, v2,
 				tri_plane, start_point, axis_r[axis_dir], axis_1[axis_dir], axis_2[axis_dir],
 				direction[axis_dir], flags);
 		}
@@ -1465,7 +1466,7 @@ const Vector3 * MeshGeometryClass::Get_Vertex_Normal_Array(void)
  * HISTORY:                                                                                    *
  *   6/14/2001  gth : Created.                                                                 *
  *=============================================================================================*/
-Vector4 * MeshGeometryClass::get_planes(bool create)
+Vector4 * MeshGeometryClass::get_planes([[maybe_unused]]bool create)
 {
 #if (OPTIMIZE_PLANEEQ_RAM)
 	_PlaneEQArray.Uninitialised_Grow(PolyCount);
@@ -1601,9 +1602,9 @@ WW3DErrorType MeshGeometryClass::Load_W3D(ChunkLoadClass & cload)
 	** Process the header
 	*/
 	char *	tmpname;
-	int		namelen;
+	size_t	namelen;
 	
-	Reset_Geometry(header.NumTris,header.NumVertices);
+	Reset_Geometry((int)header.NumTris, (int)header.NumVertices);
 	
 	namelen = strlen(header.ContainerName);
 	namelen += strlen(header.MeshName);
@@ -1785,7 +1786,7 @@ WW3DErrorType MeshGeometryClass::read_chunks(ChunkLoadClass & cload)
  *=============================================================================================*/
 WW3DErrorType MeshGeometryClass::read_vertices(ChunkLoadClass & cload)
 {
-	W3dVectorStruct vert;
+	W3dVectorStruct vert {};
 	Vector3 * loc = Vertex->Get_Array();
 	assert(loc);
 
@@ -1848,7 +1849,7 @@ WW3DErrorType MeshGeometryClass::read_vertex_normals(ChunkLoadClass & cload)
  *=============================================================================================*/
 WW3DErrorType MeshGeometryClass::read_triangles(ChunkLoadClass & cload)
 {
-	W3dTriStruct tri;
+	W3dTriStruct tri {};
 
 	// cache pointers to various arrays in the surrender mesh
 	TriIndex * vi = get_polys();
@@ -1912,7 +1913,7 @@ WW3DErrorType MeshGeometryClass::read_user_text(ChunkLoadClass & cload)
 	/*
 	** Allocate the buffer and read in the text
 	*/
-	UserText = NEW_REF(ShareBufferClass<char>,(textlen, "MeshGeometryClass::UserText"));
+	UserText = NEW_REF(ShareBufferClass<char>,((int)textlen, "MeshGeometryClass::UserText"));
 
 	if (cload.Read(UserText->Get_Array(),textlen) != textlen) {
 		return WW3D_ERROR_LOAD_FAILED;
@@ -2109,8 +2110,9 @@ void MeshGeometryClass::get_deformed_screenspace_vertices(Vector4 *dst_vert,cons
 
 			Matrix4x4 tm = prj * htree->Get_Transform(idx);
 
+			int cnt;
 			// Count equal matrices (the vertices should be pre-sorted by matrices they use)
-			for (int cnt = vi; cnt < vertex_count; cnt++) if (idx!=bonelink[cnt]) break;
+			for (cnt = vi; cnt < vertex_count; cnt++) if (idx!=bonelink[cnt]) break;
 
 			// Transform to screenspace (x,y,z,w)
 			VectorProcessorClass::Transform(

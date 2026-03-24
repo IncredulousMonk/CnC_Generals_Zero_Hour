@@ -89,7 +89,7 @@
 #include "GameLogic/RankInfo.h"
 #include "GameLogic/ScriptEngine.h"
 #include "GameLogic/Weapon.h"
-// #include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/AIUpdate.h"
 #include "GameLogic/Module/ContainModule.h"
 #include "GameLogic/Module/AutoDepositUpdate.h"
 #include "GameLogic/Module/StealthUpdate.h"
@@ -1070,19 +1070,15 @@ void Player::initFromDict(const Dict* d)
 //=============================================================================
 void Player::becomingTeamMember(Object *obj, Bool yes) 
 { 
-(void) obj;
-(void) yes;
-DEBUG_CRASH(("Player::becomingTeamMember not yet implemented!"));
-#if 0
 	if (!obj)
-		return;	
+		return;
 
 	// energy production/consumption hooks, note we ignore things that are UNDER_CONSTRUCTION
 	if( !obj->getStatusBits().test( OBJECT_STATUS_UNDER_CONSTRUCTION ) )
 	{
 		obj->friend_adjustPowerForPlayer(yes);
 	}  // end if
-		
+
 	// when we capture a building, we need to see if there's an AutoDepositUpdate hooked to it,
 	// if so, award the cash bonus
 	if(this != ThePlayerList->getNeutralPlayer() && yes)
@@ -1119,7 +1115,6 @@ DEBUG_CRASH(("Player::becomingTeamMember not yet implemented!"));
 		else
 			TheInGameUI->removeIdleWorker(obj, getPlayerIndex());
 	}
-#endif // if 0
 }
 
 //=============================================================================
@@ -3486,10 +3481,6 @@ UnsignedInt Player::getOrStartSpecialPowerReadyFrame( const SpecialPowerTemplate
 //-------------------------------------------------------------------------------------------------
 void Player::friend_applyDifficultyBonusesForObject(Object* obj, Bool apply) const
 {
-(void) obj;
-(void) apply;
-DEBUG_CRASH(("Player::friend_applyDifficultyBonusesForObject not yet implemented!"));
-#if 0
 	if (TheGameLogic->isInSinglePlayerGame())
 	{
 		Real healthFactor = TheGlobalData->m_data.m_soloPlayerHealthBonusForDifficulty[getPlayerType()][getPlayerDifficulty()];
@@ -3519,7 +3510,6 @@ DEBUG_CRASH(("Player::friend_applyDifficultyBonusesForObject not yet implemented
 		else
 			obj->clearWeaponBonusCondition(wbonus[getPlayerType()][getPlayerDifficulty()]);
 	}
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------

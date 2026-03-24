@@ -209,7 +209,7 @@ int HTreeClass::Load_W3D(ChunkLoadClass & cload)
 	** Allocate the array of pivots
 	*/
 	memcpy(Name,header.Name,W3D_NAME_LEN);
-	NumPivots = header.NumPivots;
+	NumPivots = (int)header.NumPivots;
 	if (NumPivots > 0) {
 		Pivot = MSGW3DNEWARRAY("HTreeClass::Pivot") PivotClass[NumPivots];
 	}
@@ -327,7 +327,7 @@ bool HTreeClass::read_pivots(ChunkLoadClass & cload,bool pre30)
 		** Set the parent pointer.  The first pivot will have a parent index
 		** of -1 (in post-3.0 files) so set its parent to NULL.
 		*/
-		if (piv.ParentIdx == -1) {
+		if (piv.ParentIdx == (uint32)-1) {
 			Pivot[pidx].Parent = NULL;
 			assert(pidx == 0);
 		} else {
@@ -634,7 +634,7 @@ void HTreeClass::Anim_Update(const Matrix3D & root,HRawAnimClass * motion,float 
 	endpivot=pivot+(NumPivots-1);
 	lastAnimPivot = &Pivot[num_anim_pivots];
 
-	for (int piv_idx=1; pivot < endpivot; pivot++,nodeMotion++) {
+	for ( ; pivot < endpivot; pivot++,nodeMotion++) {
 
 		// base pose
 		assert(pivot->Parent != NULL);
@@ -682,7 +682,7 @@ void HTreeClass::Anim_Update(const Matrix3D & root,HRawAnimClass * motion,float 
 			pivot->IsVisible = true;
 		} 
 	}
-}								
+}
 
 
 /***********************************************************************************************
@@ -886,7 +886,7 @@ void HTreeClass::Combo_Update
 
 			pivot->IsVisible = false;
 
-			for ( anim_num = 0; (anim_num < anim->Get_Num_Anims()) && (!pivot->IsVisible); anim_num++ ) {
+			for ( int anim_num = 0; (anim_num < anim->Get_Num_Anims()) && (!pivot->IsVisible); anim_num++ ) {
 				HAnimClass *motion = anim->Get_Motion( anim_num );
 				if ( motion != NULL ) {
 					float frame_num = anim->Get_Frame( anim_num );
@@ -922,7 +922,7 @@ void HTreeClass::Combo_Update
 int HTreeClass::Get_Bone_Index(const char * name) const
 {
 	for (int i=0; i < NumPivots; i++) {
-		if (stricmp(Pivot[i].Name,name) == 0) {
+		if (strcasecmp(Pivot[i].Name,name) == 0) {
 			return i;
 		}
 	}
@@ -1077,7 +1077,7 @@ HTreeClass * HTreeClass::Alter_Avatar_HTree( const HTreeClass *tree, Vector3 &sc
 	// being stretched out on the Y-axis instead of the Z-axis like the rest of the bodies. Hence, the list of pivots
 	// below are ones that I will special case and scale them based on the Z-axis scaling factor instead of the Y-axis
 	// scaling factor.
-	char * flip_list[] = { " RIGHTFOREARM", " RIGHTHAND", " LEFTFOREARM", " LEFTHAND", "RIGHTINDEX", "RIGHTFINGERS", "RIGHTTHUMB", "LEFTINDEX", "LEFTFINGERS", "LEFTTHUMB", 0 };
+	const char * flip_list[] = { " RIGHTFOREARM", " RIGHTHAND", " LEFTFOREARM", " LEFTHAND", "RIGHTINDEX", "RIGHTFINGERS", "RIGHTTHUMB", "LEFTINDEX", "LEFTFINGERS", "LEFTTHUMB", 0 };
 		
 	// Clone the new tree with the tree that is passed in
 	HTreeClass * new_tree = new HTreeClass( *tree );

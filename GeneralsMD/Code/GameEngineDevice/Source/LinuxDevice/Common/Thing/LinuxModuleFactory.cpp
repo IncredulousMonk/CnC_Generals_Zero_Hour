@@ -37,7 +37,7 @@
 // #include "LinuxDevice/GameClient/Module/LinuxPoliceCarDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxProjectileStreamDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxRopeDraw.h"
-// #include "LinuxDevice/GameClient/Module/LinuxSupplyDraw.h"
+#include "LinuxDevice/GameClient/Module/LinuxSupplyDraw.h"
 #include "LinuxDevice/GameClient/Module/LinuxScienceModelDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxTankDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxTruckDraw.h"
@@ -67,7 +67,7 @@ void LinuxModuleFactory::init()
    // addModule( LinuxPoliceCarDraw );
    // addModule( LinuxRopeDraw );
    addModuleRename(LinuxScienceModelDraw, W3DScienceModelDraw);
-   // addModule( LinuxSupplyDraw );
+   addModuleRename(LinuxSupplyDraw, W3DSupplyDraw);
    // addModule( LinuxDependencyModelDraw );
    // addModule( LinuxTankDraw );
    // addModule( LinuxTruckDraw );

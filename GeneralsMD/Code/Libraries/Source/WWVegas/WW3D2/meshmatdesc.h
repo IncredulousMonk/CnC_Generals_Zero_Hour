@@ -287,7 +287,7 @@ public:
 	unsigned int	Get_CRC(void) { return CRC; }
 
 private:
-	unsigned int	CRC;
+	unsigned int	CRC {};
 
 	// not implemented
 	UVBufferClass & operator = (const UVBufferClass & that);

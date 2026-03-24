@@ -440,8 +440,8 @@ struct AABCollisionStruct
 {
 	AABCollisionStruct(const AABoxClass &box0,const Vector3 &move0,const AABoxClass & box1,const Vector3 &move1) :
 		StartBad(true),													// Startbad is true until one of the axes clears it
-		AxisId(-1),															// AxisId will be the axis that allowed the longest move
 		MaxFrac(0.0f),														// MaxFrac is the longest allowed move so far
+		AxisId(-1),															// AxisId will be the axis that allowed the longest move
 		Box0(box0),															
 		Box1(box1)
 	{
@@ -449,13 +449,13 @@ struct AABCollisionStruct
 		Vector3::Subtract(move1,move0,&M);							// move vector relative to stationary box0
 	}
 
-	bool						StartBad;			// Inital configuration is intersecting?
-	float						MaxFrac;				// Longest move allowed so far
+	bool					StartBad;			// Inital configuration is intersecting?
+	float					MaxFrac;			// Longest move allowed so far
 	int						AxisId;				// Last separating axis
-	int						Side;					// which side of the interval
+	int						Side {};			// which side of the interval
 
-	Vector3					C;						// Vector from the center0 to center1
-	Vector3					M;						// Move vector relative to stationary box0
+	Vector3					C {};				// Vector from the center0 to center1
+	Vector3					M {};				// Move vector relative to stationary box0
 	
 	const AABoxClass &	Box0;
 	const AABoxClass &	Box1;

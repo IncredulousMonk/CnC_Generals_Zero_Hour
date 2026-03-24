@@ -63,6 +63,7 @@
 // #include "LinuxDevice/GameClient/WorldHeightMap.h"
 // #include "WW3D2/HAnim.h"
 // #include "WW3D2/HLod.h"
+#include "WW3D2/htree.h"
 // #include "WW3D2/RendObj.h"
 // #include "WW3D2/Mesh.h"
 // #include "WW3D2/MeshMdl.h"
@@ -392,6 +393,7 @@ LinuxAnimationInfo::~LinuxAnimationInfo()
 //-------------------------------------------------------------------------------------------------
 void ModelConditionInfo::preloadAssets( TimeOfDay /* timeOfDay */, Real /* scale */ )
 {
+DEBUG_LOG(("!!!!! ModelConditionInfo::preloadAssets\n"));
    // load this asset
    if( m_ini.m_modelName.isEmpty() == FALSE )
    {
@@ -1046,7 +1048,7 @@ LinuxModelDrawModuleData::LinuxModelDrawModuleData() :
    m_recoilSettle = SETTLE_RATE;
 
 
-  m_receivesDynamicLights = TRUE;
+   m_ini.m_receivesDynamicLights = TRUE;
 
    // m_ignoreConditionStates defaults to all zero, which is what we want
 }
@@ -1057,46 +1059,42 @@ LinuxModelDrawModuleData::~LinuxModelDrawModuleData()
    m_conditionStateMap.clear();
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDrawModuleData::validateStuffForTimeAndWeather(const Drawable* draw, Bool night, Bool snowy) const
 {
    if (!isValidTimeToCalcLogicStuff())
       return;
 
-   enum
-   {
-      NORMAL			= 0x0001,
-      NIGHT				= 0x0002,
-      SNOWY				= 0x0004,
-      NIGHT_SNOWY	= 0x0008
+   enum {
+      NORMAL      = 0x0001,
+      NIGHT       = 0x0002,
+      SNOWY       = 0x0004,
+      NIGHT_SNOWY = 0x0008
    };
 
    Int mode;
-   if (night)
-   {
+   if (night) {
       mode = (snowy) ? NIGHT_SNOWY : NIGHT;
-   }
-   else
-   {
+   } else {
       mode = (snowy) ? SNOWY : NORMAL;
    }
 
-   if (m_validated & mode)
+   if (m_validated & mode) {
       return;
+   }
 
    m_validated |= mode;
 
    for (ModelConditionVector::iterator c_it = m_conditionStates.begin(); c_it != m_conditionStates.end(); ++c_it)
    {
-      if (!c_it->matchesMode(false, false) && !c_it->matchesMode(night, snowy))
+      if (!c_it->matchesMode(false, false) && !c_it->matchesMode(night, snowy)) {
          continue;
+      }
 
-      c_it->validateStuff(NULL, draw->getScale(), m_extraPublicBones);
+      c_it->validateStuff(NULL, draw->getScale(), m_ini.m_extraPublicBones);
    }
 
-   for (TransitionMap::iterator t_it = m_transitionMap.begin(); t_it != m_transitionMap.end(); ++t_it)
-   {
+   for (TransitionMap::iterator t_it = m_transitionMap.begin(); t_it != m_transitionMap.end(); ++t_it) {
       // here's the tricky part: only want to load the anims for this one if there is at least one
       // source AND at least one dest state that matches the current mode
       NameKeyType src = recoverSrcState(t_it->first);
@@ -1104,24 +1102,24 @@ void LinuxModelDrawModuleData::validateStuffForTimeAndWeather(const Drawable* dr
 
       Bool a = false;
       Bool b = false;
-      for (c_it = m_conditionStates.begin(); c_it != m_conditionStates.end(); ++c_it)
-      {
+      for (ModelConditionVector::iterator c_it = m_conditionStates.begin(); c_it != m_conditionStates.end(); ++c_it) {
 
-         if (!a && c_it->m_transitionKey == src && c_it->matchesMode(night, snowy))
+         if (!a && c_it->m_ini.m_transitionKey == src && c_it->matchesMode(night, snowy)) {
             a = true;
+         }
 
-         if (!b && c_it->m_transitionKey == dst && c_it->matchesMode(night, snowy))
+         if (!b && c_it->m_ini.m_transitionKey == dst && c_it->matchesMode(night, snowy)) {
             b = true;
+         }
 
       }
-      if (a && b)
-      {
+      if (a && b) {
          t_it->second.loadAnimations();
          // nope -- transition states don't get public bones.
          //it->addPublicBone(m_extraPublicBones);
 
-      // srj sez: hm, this doesn't make sense; I think we really do need to validate transition states.
-         t_it->second.validateStuff(NULL, draw->getScale(), m_extraPublicBones);
+         // srj sez: hm, this doesn't make sense; I think we really do need to validate transition states.
+         t_it->second.validateStuff(NULL, draw->getScale(), m_ini.m_extraPublicBones);
       }
    }
 }
@@ -1130,6 +1128,7 @@ void LinuxModelDrawModuleData::validateStuffForTimeAndWeather(const Drawable* dr
 void LinuxModelDrawModuleData::preloadAssets( TimeOfDay timeOfDay, Real scale ) const
 {
 
+DEBUG_LOG(("!!!!! LinuxModelDrawModuleData::preloadAssets\n"));
    for( ModelConditionVector::iterator it = m_conditionStates.begin(); 
           it != m_conditionStates.end(); 
           ++it )
@@ -1141,6 +1140,7 @@ void LinuxModelDrawModuleData::preloadAssets( TimeOfDay timeOfDay, Real scale ) 
 
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 AsciiString LinuxModelDrawModuleData::getBestModelNameForWB(const ModelConditionFlags& c) const
 {
@@ -1149,6 +1149,7 @@ AsciiString LinuxModelDrawModuleData::getBestModelNameForWB(const ModelCondition
       return info->m_modelName;
    return AsciiString::TheEmptyString;
 }
+#endif // if 0
 
 #ifdef CACHE_ATTACH_BONE
 //-------------------------------------------------------------------------------------------------
@@ -1180,7 +1181,6 @@ const Vector3* LinuxModelDrawModuleData::getAttachToDrawableBoneOffset(const Dra
    }
 }
 #endif
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 enum ParseCondStateType
@@ -1212,7 +1212,7 @@ void LinuxModelDrawModuleData::buildFieldParse(void* what, MultiIniFieldParse& p
       // { "RecoilDamping",	INI::parseReal, NULL, offsetof(LinuxModelDrawModuleData, m_recoilDamping) },
       // { "RecoilSettleSpeed",	INI::parseVelocityReal, NULL, offsetof(LinuxModelDrawModuleData, m_recoilSettle) },
       { "OkToChangeModelColor",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_okToChangeModelColor) },
-      // { "AnimationsRequirePower",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData, m_animationsRequirePower) },
+      { "AnimationsRequirePower",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_animationsRequirePower) },
       { "ParticlesAttachedToAnimatedBones",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_particlesAttachedToAnimatedBones) },
       // { "MinLODRequired",		INI::parseStaticGameLODLevel,	NULL,	offsetof(LinuxModelDrawModuleData, m_minLODRequired) },
       // { "ProjectileBoneFeedbackEnabledSlots", INI::parseBitString32, TheWeaponSlotTypeNames, offsetof(LinuxModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots) },
@@ -1221,10 +1221,10 @@ void LinuxModelDrawModuleData::buildFieldParse(void* what, MultiIniFieldParse& p
       { "AliasConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_ALIAS, 0 },
       { "TransitionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_TRANSITION, 0 },
       // { "TrackMarks", parseAsciiStringLC, NULL, offsetof(LinuxModelDrawModuleData, m_trackFile) },
-      // { "ExtraPublicBone", INI::parseAsciiStringVectorAppend, NULL, offsetof(LinuxModelDrawModuleData, m_extraPublicBones) },
+      { "ExtraPublicBone", INI::parseAsciiStringVectorAppend, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_extraPublicBones) },
       // { "AttachToBoneInAnotherModule", parseAsciiStringLC, NULL, offsetof(LinuxModelDrawModuleData, m_attachToDrawableBone) },
       { "IgnoreConditionStates", ModelConditionFlags::parseFromINI, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_ignoreConditionStates) },
-      // { "ReceivesDynamicLights", INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData, m_receivesDynamicLights) },
+      { "ReceivesDynamicLights", INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_receivesDynamicLights) },
     { 0, 0, 0, 0 }
    };
 
@@ -1695,15 +1695,15 @@ static Int countOnBits(UnsignedInt val)
    }
    return count;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 const ModelConditionInfo* LinuxModelDrawModuleData::findBestInfo(const ModelConditionFlags& c) const
 {
    ModelConditionFlags bits = c;
-   bits.clear(m_ignoreConditionStates);
+   bits.clear(m_ini.m_ignoreConditionStates);
    return m_conditionStateMap.findBestInfo(m_conditionStates, bits);
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -1712,8 +1712,6 @@ const ModelConditionInfo* LinuxModelDrawModuleData::findBestInfo(const ModelCond
 //-------------------------------------------------------------------------------------------------
 LinuxModelDraw::LinuxModelDraw(Thing* thing, const ModuleData* moduleData): DrawModule(thing, moduleData)
 {
-#if 0
-   int i;
    m_animationMode = RenderObjClass::ANIM_MODE_LOOP;
    m_hideHeadlights = true;
    m_pauseAnimation = false;
@@ -1723,21 +1721,23 @@ LinuxModelDraw::LinuxModelDraw(Thing* thing, const ModuleData* moduleData): Draw
    m_shadow = NULL;
    m_shadowEnabled = TRUE;
    m_terrainDecal = NULL;
+#if 0
    m_trackRenderObject = NULL;
+#endif // if 0
    m_whichAnimInCurState = -1;
    m_nextState = NULL;
    m_nextStateAnimLoopDuration = NO_NEXT_DURATION;
-   for (i = 0; i < WEAPONSLOT_COUNT; ++i)
-   {
+#if 0
+   for (int i = 0; i < WEAPONSLOT_COUNT; ++i) {
       m_weaponRecoilInfoVec[i].clear();
    }
+#endif // if 0
    m_needRecalcBoneParticleSystems = false;
    m_fullyObscuredByShroud = false;
 
    // only validate the current time-of-day and weather conditions by default.
    getLinuxModelDrawModuleData()->validateStuffForTimeAndWeather(getDrawable(), 
-                                 TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT, 
-                                 TheGlobalData->m_weather == WEATHER_SNOWY);
+      TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT, TheGlobalData->m_data.m_weather == WEATHER_SNOWY);
 
    ModelConditionFlags emptyFlags;
    const ModelConditionInfo* info = findBestInfo(emptyFlags);
@@ -1749,43 +1749,40 @@ LinuxModelDraw::LinuxModelDraw(Thing* thing, const ModuleData* moduleData): Draw
 
    Drawable* draw = getDrawable();
 
-  if ( draw )
-  {
-     Object* obj = draw->getObject();
-     if (obj)
-     {	
-        if (TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT)
-           m_hexColor = obj->getNightIndicatorColor();
-        else
-           m_hexColor = obj->getIndicatorColor();
-     }
+   if ( draw )
+   {
+      Object* obj = draw->getObject();
+      if (obj) {
+         if (TheGlobalData->m_data.m_timeOfDay == TIME_OF_DAY_NIGHT) {
+            m_hexColor = obj->getNightIndicatorColor();
+         } else {
+            m_hexColor = obj->getIndicatorColor();
+         }
+      }
 
-    // THE VAST MAJORITY OF THESE SHOULD BE TRUE
-    if ( ! getLinuxModelDrawModuleData()->m_receivesDynamicLights)
-    {
-      draw->setReceivesDynamicLights( FALSE );
-        DEBUG_LOG(("setReceivesDynamicLights = FALSE: %s\n", draw->getTemplate()->getName().str()));
-    }
-  }
+      // THE VAST MAJORITY OF THESE SHOULD BE TRUE
+      if (!getLinuxModelDrawModuleData()->m_ini.m_receivesDynamicLights) {
+         draw->setReceivesDynamicLights(FALSE);
+         DEBUG_LOG(("setReceivesDynamicLights = FALSE: %s\n", draw->getTemplate()->getName().str()));
+      }
+   }
 
    setModelState(info);
-#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 LinuxModelDraw::~LinuxModelDraw(void)
 {
-DEBUG_LOG(("LinuxModelDraw::~LinuxModelDraw not yet implemented!"));
 #if 0
    if (m_trackRenderObject && TheTerrainTracksRenderObjClassSystem)
    {	
       TheTerrainTracksRenderObjClassSystem->unbindTrack(m_trackRenderObject);
       m_trackRenderObject = NULL;
    }
+#endif // if 0
 
    nukeCurrentRender(NULL);
-#endif // if 0
 }
 
 #if 0
@@ -1798,6 +1795,7 @@ DEBUG_CRASH(("LinuxModelDraw::onDrawableBoundToObject not yet implemented!"));
                                  TheGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT, 
                                  TheGlobalData->m_weather == WEATHER_SNOWY);
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::doStartOrStopParticleSys()
@@ -1818,7 +1816,6 @@ void LinuxModelDraw::doStartOrStopParticleSys()
       }
    }
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::setHidden(Bool hidden)
@@ -1942,6 +1939,7 @@ void LinuxModelDraw::getRenderCostRecursive(RenderCost & rc,RenderObjClass * rob
    }
 }
 #endif //_DEBUG || _INTERNAL
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::setFullyObscuredByShroud(Bool fullyObscured)
@@ -1959,6 +1957,7 @@ void LinuxModelDraw::setFullyObscuredByShroud(Bool fullyObscured)
    }
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 static Bool isAnimationComplete(RenderObjClass* r)
 {
@@ -1997,6 +1996,7 @@ void LinuxModelDraw::adjustAnimSpeedToMovementSpeed()
       }
    }
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::adjustTransformMtx(Matrix3D& mtx) const
@@ -2029,21 +2029,17 @@ void LinuxModelDraw::adjustTransformMtx(Matrix3D& mtx) const
    }
 #endif
 
-   if (m_curState->m_flags & (1<<ADJUST_HEIGHT_BY_CONSTRUCTION_PERCENT))
-   {
+   if (m_curState && m_curState->m_ini.m_flags & (1<<ADJUST_HEIGHT_BY_CONSTRUCTION_PERCENT)) {
       const Object *obj = getDrawable()->getObject();
-      if (obj)
-      {
+      if (obj) {
          Real pct = obj->getConstructionPercent();
-         if (pct >= 0.0f)
-         {
+         if (pct >= 0.0f) {
             Real height = obj->getGeometryInfo().getMaxHeightAbovePosition();
             mtx.Translate_Z(-height + (height * pct / 100.0f));
          }
       }
    }
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::doDrawModule(const Matrix3D* transformMtx)
@@ -2280,6 +2276,7 @@ Real LinuxModelDraw::getCurAnimDistanceCovered() const
    }
    return 0.0f;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /**
@@ -2334,6 +2331,7 @@ static void doHideShowBoneSubObjs(Bool state, Int numSubObjects, Int boneIdx, Re
 #endif
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void ModelConditionInfo::WeaponBarrelInfo::setMuzzleFlashHidden(RenderObjClass *fullObject, Bool hide) const
 {
@@ -2351,6 +2349,7 @@ void ModelConditionInfo::WeaponBarrelInfo::setMuzzleFlashHidden(RenderObjClass *
       }
    }
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::doHideShowSubObjs(const std::vector<ModelConditionInfo::HideShowSubObjInfo>* vec)
@@ -2395,6 +2394,7 @@ void LinuxModelDraw::doHideShowSubObjs(const std::vector<ModelConditionInfo::Hid
    }
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::stopClientParticleSystems() 
 {
@@ -2670,6 +2670,7 @@ void LinuxModelDraw::recalcBonesForClientParticleSystems()
       m_needRecalcBoneParticleSystems = false;
    }
 }
+#endif // if 0
 
 
 
@@ -2694,14 +2695,13 @@ Bool LinuxModelDraw::updateBonesForClientParticleSystems()
    if (drawable != NULL && m_curState != NULL && m_renderObject != NULL ) 
    {
 
-//		Matrix3D originalTransform = m_renderObject->Get_Transform();
-//		Matrix3D tmp = originalTransform;
- //   Vector3 zeroTranslation(0,0,0);
-  //  tmp.Set_Translation( zeroTranslation );
-   //	tmp.Scale(drawable->getScale());
-//		m_renderObject->Set_Transform(tmp);					
-            
-    
+      // Matrix3D originalTransform = m_renderObject->Get_Transform();
+      // Matrix3D tmp = originalTransform;
+      // Vector3 zeroTranslation(0,0,0);
+      // tmp.Set_Translation( zeroTranslation );
+      // tmp.Scale(drawable->getScale());
+      // m_renderObject->Set_Transform(tmp);
+
 
       for (std::vector<ParticleSysTrackerType>::const_iterator it = m_particleSystemIDs.begin(); it != m_particleSystemIDs.end(); ++it)
       {
@@ -2740,7 +2740,7 @@ Bool LinuxModelDraw::updateBonesForClientParticleSystems()
 
 
 
-
+#if 0
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::setTerrainDecal(TerrainDecalType type)
 {
@@ -2795,7 +2795,7 @@ void LinuxModelDraw::setTerrainDecalOpacity(Real o)
       m_terrainDecal->setOpacity((Int)(255.0f * o));
    }
 }
-
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::nukeCurrentRender(Matrix3D* xform)
@@ -2804,33 +2804,33 @@ void LinuxModelDraw::nukeCurrentRender(Matrix3D* xform)
    m_pauseAnimation = false;
 
    // changing geometry, so we need to remove shadow if present
-   if (m_shadow)
+   if (m_shadow) {
       m_shadow->release();
+   }
    m_shadow = NULL;
 
-   if(m_terrainDecal)
+   if (m_terrainDecal) {
       m_terrainDecal->release();
+   }
    m_terrainDecal = NULL;
 
    // remove existing render object from the scene
-   if (m_renderObject)
-   {
+   if (m_renderObject) {
       // save the transform for the new model
-      if (xform)
+      if (xform) {
          *xform = m_renderObject->Get_Transform();
-      LinuxDisplay::m_3DScene->Remove_Render_Object(m_renderObject);
+      }
+      TheTacticalView->remove3dObject(m_renderObject);
       REF_PTR_RELEASE(m_renderObject);
       m_renderObject = NULL;
-   }
-   else
-   {
-      if (xform)
-      {	
+   } else {
+      if (xform) {
          *xform = *getDrawable()->getTransformMatrix();
       }
    }
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 #if defined(_DEBUG) || defined(_INTERNAL)	//art wants to see buildings without flags as a test.
 void LinuxModelDraw::hideGarrisonFlags(Bool hide)
@@ -2917,6 +2917,7 @@ static Bool turretNamesDiffer(const ModelConditionInfo* a, const ModelConditionI
 
    return false;
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Change the model for this drawable. If color is non-zero, it will also apply team color to the
@@ -2926,15 +2927,14 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
 {
    DEBUG_ASSERTCRASH(newState, ("invalid state in LinuxModelDraw::setModelState\n")); 
 
+#if 0
 #ifdef DEBUG_OBJECT_ID_EXISTS
-   if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug)
-   {
+   if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug) {
       DEBUG_LOG(("REQUEST switching to state %s for obj %s %d\n",newState->m_description.str(),getDrawable()->getObject()->getTemplate()->getName().str(),getDrawable()->getObject()->getID()));
    }
 #endif
    const ModelConditionInfo* nextState = NULL;
-   if (m_curState != NULL && newState != NULL)
-   { 
+   if (m_curState != NULL && newState != NULL) {
       // if the requested state is the current state (and nothing is pending),
       // or if the requested state is pending, just punt.
       //
@@ -2944,22 +2944,19 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
       // leaving us these possibilities:
       //
       // -- curState is a transition state
-      //		--in this case, new state should take precedence (unless there's a wait-to-finish marking, 
-      //		which would be handled by the else clause)
+      //    --in this case, new state should take precedence (unless there's a wait-to-finish marking, 
+      //    which would be handled by the else clause)
       //
       // -- curState is a real state, nextState is a real state with a wait-to-finish clause
-      //		-- if curState == newState, presume that we should restart curState, thus punting thepending nextState
-      //		-- if curState != newState, presume we should switch to it, thus punting curState and nextState
-      // 
+      //    -- if curState == newState, presume that we should restart curState, thus punting thepending nextState
+      //    -- if curState != newState, presume we should switch to it, thus punting curState and nextState
+      //
       // -- curState is a real state, nextState is a real state without a wait-to-finish clause
-      //		-- should be impossible!
+      //    -- should be impossible!
 
-      if ((m_curState == newState && m_nextState == NULL) ||
-            (m_curState != NULL && m_nextState == newState))
-      {
+      if ((m_curState == newState && m_nextState == NULL) || (m_curState != NULL && m_nextState == newState)) {
 #ifdef DEBUG_OBJECT_ID_EXISTS
-         if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug)
-         {
+         if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug) {
             DEBUG_LOG(("IGNORE duplicate state %s for obj %s %d\n",newState->m_description.str(),getDrawable()->getObject()->getTemplate()->getName().str(),getDrawable()->getObject()->getID()));
          }
 #endif
@@ -2969,14 +2966,13 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
       } 
       // check for allow-to-finish implicit transitions
       else if (newState != m_curState &&
-                     newState->m_allowToFinishKey != NAMEKEY_INVALID &&
-                     newState->m_allowToFinishKey == m_curState->m_transitionKey &&
+                     newState->m_ini.m_allowToFinishKey != NAMEKEY_INVALID &&
+                     newState->m_ini.m_allowToFinishKey == m_curState->m_ini.m_transitionKey &&
                      m_renderObject &&
                      !isAnimationComplete(m_renderObject))
       {
 #ifdef DEBUG_OBJECT_ID_EXISTS
-         if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug)
-         {
+         if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug) {
             DEBUG_LOG(("ALLOW_TO_FINISH state %s for obj %s %d\n",newState->m_description.str(),getDrawable()->getObject()->getTemplate()->getName().str(),getDrawable()->getObject()->getID()));
          }
 #endif
@@ -2986,16 +2982,14 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
       }
       // check for a normal->normal state transition
       else if (newState != m_curState && 
-               m_curState->m_transitionKey != NAMEKEY_INVALID &&
-               newState->m_transitionKey != NAMEKEY_INVALID)
+               m_curState->m_ini.m_transitionKey != NAMEKEY_INVALID &&
+               newState->m_ini.m_transitionKey != NAMEKEY_INVALID)
       {
-         TransitionSig sig = buildTransitionSig(m_curState->m_transitionKey, newState->m_transitionKey);
+         TransitionSig sig = buildTransitionSig(m_curState->m_ini.m_transitionKey, newState->m_ini.m_transitionKey);
          const ModelConditionInfo* transState = findTransitionForSig(sig);
-         if (transState != NULL)
-         {
+         if (transState != NULL) {
 #ifdef DEBUG_OBJECT_ID_EXISTS
-            if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug)
-            {
+            if (getDrawable() && getDrawable()->getObject() && getDrawable()->getObject()->getID() == TheObjectIDToDebug) {
                DEBUG_LOG(("using TRANSITION state %s before requested state %s for obj %s %d\n",transState->m_description.str(),newState->m_description.str(),getDrawable()->getObject()->getTemplate()->getName().str(),getDrawable()->getObject()->getID()));
             }
 #endif
@@ -3013,8 +3007,9 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
    // will never allow the placement of new ones if the status bit is set that tells us
    // we should not automatically create particle systems for the model condition states
    //
-   if( getDrawable()->testDrawableStatus( DRAWABLE_STATUS_NO_STATE_PARTICLES ) == FALSE )
+   if (getDrawable()->testDrawableStatus( DRAWABLE_STATUS_NO_STATE_PARTICLES ) == FALSE) {
       m_needRecalcBoneParticleSystems = true;
+   }
 
    // always stop particle systems now
    stopClientParticleSystems();
@@ -3026,7 +3021,7 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
    // expense of creating a new render-object. (exception: if color is changing, or subobjs are changing,
    // or a few other things...)
    if (m_curState == NULL || 
-         newState->m_modelName != m_curState->m_modelName || 
+         newState->m_ini.m_modelName != m_curState->m_ini.m_modelName || 
          turretNamesDiffer(newState, m_curState)
          // srj sez: I'm not sure why we want to do the "hard stuff" if we have projectile bones; I think
          // it is a holdover from days gone by when bones were handled quite differently, rather than being cached.
@@ -3036,35 +3031,41 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
    {
       Matrix3D transform;
       nukeCurrentRender(&transform);
+#endif // if 0
       Drawable* draw = getDrawable();
 
+#if 0
       // create a new render object and set into drawable
-      if (newState->m_modelName.isEmpty())
+      if (newState->m_ini.m_modelName.isEmpty())
       {
          m_renderObject = NULL;
       }
       else
       {
-         m_renderObject = LinuxDisplay::m_assetManager->Create_Render_Obj(newState->m_modelName.str(), draw->getScale(), m_hexColor);
-         DEBUG_ASSERTCRASH(m_renderObject, ("*** ASSET ERROR: Model %s not found!\n",newState->m_modelName.str()));
+#endif // if 0
+         m_renderObject = TheTacticalView->create3dObject(newState->m_ini.m_modelName.str(), draw->getScale(), m_hexColor);
+         DEBUG_ASSERTCRASH(m_renderObject, ("*** ASSET ERROR: Model %s not found!\n",newState->m_ini.m_modelName.str()));
+#if 0
       }
 
       //BONEPOS_LOG(("validateStuff() from within LinuxModelDraw::setModelState()\n"));
       //BONEPOS_DUMPREAL(draw->getScale());
 
-      newState->validateStuff(m_renderObject, draw->getScale(), getLinuxModelDrawModuleData()->m_extraPublicBones);
+      newState->validateStuff(m_renderObject, draw->getScale(), getLinuxModelDrawModuleData()->m_ini.m_extraPublicBones);
       // ensure that any muzzle flashes from the *new* state, start out hidden...
-//		hideAllMuzzleFlashes(newState, m_renderObject);//moved to above
+      // hideAllMuzzleFlashes(newState, m_renderObject);//moved to above
       rebuildWeaponRecoilInfo(newState);
-      doHideShowSubObjs(&newState->m_hideShowVec);
+      doHideShowSubObjs(&newState->m_ini.m_hideShowVec);
 
 #if defined(_DEBUG) || defined(_INTERNAL)	//art wants to see buildings without flags as a test.
-      if (TheGlobalData->m_hideGarrisonFlags && draw->isKindOf(KINDOF_STRUCTURE))
+      if (TheGlobalData->m_data.m_hideGarrisonFlags && draw->isKindOf(KINDOF_STRUCTURE)) {
          hideGarrisonFlags(TRUE);
+      }
 #endif
 
       const ThingTemplate *tmplate = draw->getTemplate();
 
+#if 0
       // set up tracks, if not already set.
       if (m_renderObject &&
             TheGlobalData->m_makeTrackMarks &&  
@@ -3078,75 +3079,63 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
       }
 
       // set up shadows
-      if (m_renderObject && TheLinuxShadowManager && tmplate->getShadowType() != SHADOW_NONE)
-      {	
+      if (m_renderObject && TheLinuxShadowManager && tmplate->getShadowType() != SHADOW_NONE) {
          Shadow::ShadowTypeInfo shadowInfo;
          strcpy(shadowInfo.m_ShadowName, tmplate->getShadowTextureName().str());
          DEBUG_ASSERTCRASH(shadowInfo.m_ShadowName[0] != '\0', ("this should be validated in ThingTemplate now"));
-         shadowInfo.allowUpdates			= FALSE;		//shadow image will never update
-         shadowInfo.allowWorldAlign	= TRUE;	//shadow image will wrap around world objects
-         shadowInfo.m_type						= (ShadowType)tmplate->getShadowType();
-         shadowInfo.m_sizeX					= tmplate->getShadowSizeX();
-         shadowInfo.m_sizeY					= tmplate->getShadowSizeY();
-         shadowInfo.m_offsetX				= tmplate->getShadowOffsetX();
-         shadowInfo.m_offsetY				= tmplate->getShadowOffsetY();
-           m_shadow = TheLinuxShadowManager->addShadow(m_renderObject, &shadowInfo, draw);
-         if (m_shadow)
-         {	m_shadow->enableShadowInvisible(m_fullyObscuredByShroud);
+         shadowInfo.allowUpdates = FALSE;    //shadow image will never update
+         shadowInfo.allowWorldAlign = TRUE;  //shadow image will wrap around world objects
+         shadowInfo.m_type = (ShadowType)tmplate->getShadowType();
+         shadowInfo.m_sizeX = tmplate->getShadowSizeX();
+         shadowInfo.m_sizeY = tmplate->getShadowSizeY();
+         shadowInfo.m_offsetX = tmplate->getShadowOffsetX();
+         shadowInfo.m_offsetY = tmplate->getShadowOffsetY();
+         m_shadow = TheLinuxShadowManager->addShadow(m_renderObject, &shadowInfo, draw);
+         if (m_shadow) {
+            m_shadow->enableShadowInvisible(m_fullyObscuredByShroud);
             m_shadow->enableShadowRender(m_shadowEnabled);
          }
       }
+#endif // if 0
 
-      if( m_renderObject )
-      {
+      if (m_renderObject) {
          // set collision type for render object.  Used by WLinux2 collision code.
-         if (tmplate->isKindOf(KINDOF_SELECTABLE))  
-         {
-            m_renderObject->Set_Collision_Type( PICK_TYPE_SELECTABLE );
+         if (tmplate->isKindOf(KINDOF_SELECTABLE)) {
+            m_renderObject->Set_Collision_Type(PICK_TYPE_SELECTABLE);
          }
 
-         if( tmplate->isKindOf( KINDOF_SHRUBBERY ))
-         {
-            m_renderObject->Set_Collision_Type( PICK_TYPE_SHRUBBERY );
+         if (tmplate->isKindOf(KINDOF_SHRUBBERY)) {
+            m_renderObject->Set_Collision_Type(PICK_TYPE_SHRUBBERY);
          }
-         if( tmplate->isKindOf( KINDOF_MINE ))
-         {
-            m_renderObject->Set_Collision_Type( PICK_TYPE_MINES );
+         if (tmplate->isKindOf(KINDOF_MINE)) {
+            m_renderObject->Set_Collision_Type(PICK_TYPE_MINES);
          }
-         if( tmplate->isKindOf( KINDOF_FORCEATTACKABLE ))
-         {
-            m_renderObject->Set_Collision_Type( PICK_TYPE_FORCEATTACKABLE );
+         if (tmplate->isKindOf(KINDOF_FORCEATTACKABLE)) {
+            m_renderObject->Set_Collision_Type(PICK_TYPE_FORCEATTACKABLE);
          }
-         if( tmplate->isKindOf( KINDOF_CLICK_THROUGH ))
-         {
-            m_renderObject->Set_Collision_Type( 0 );
+         if (tmplate->isKindOf(KINDOF_CLICK_THROUGH)) {
+            m_renderObject->Set_Collision_Type(0);
          }
          
          Object *obj = draw->getObject();
-          if( obj )
-         {
-
+         if (obj) {
             // for non bridge objects we adjust some collision types
-            if( obj->isKindOf( KINDOF_BRIDGE ) == FALSE &&
-                  obj->isKindOf( KINDOF_BRIDGE_TOWER ) == FALSE )
-            {
-
-               if( obj->isKindOf( KINDOF_STRUCTURE ) && draw->getModelConditionFlags().test( MODELCONDITION_RUBBLE ) )
-               {
-                   //A dead building, -- don't allow the user to click on rubble! Treat it as a location instead.
-                  m_renderObject->Set_Collision_Type( 0 );
-               }
-               else if( obj->isEffectivelyDead() )
-               {
-                   //A dead object, -- don't allow the user to click on rubble/hulks! Treat it as a location instead.
-                  m_renderObject->Set_Collision_Type( 0 );
+            if (obj->isKindOf(KINDOF_BRIDGE) == FALSE && obj->isKindOf(KINDOF_BRIDGE_TOWER) == FALSE) {
+               if (obj->isKindOf(KINDOF_STRUCTURE) && draw->getModelConditionFlags().test(MODELCONDITION_RUBBLE)) {
+                  //A dead building, -- don't allow the user to click on rubble! Treat it as a location instead.
+                  m_renderObject->Set_Collision_Type(0);
+               } else if(obj->isEffectivelyDead()) {
+                  //A dead object, -- don't allow the user to click on rubble/hulks! Treat it as a location instead.
+                  m_renderObject->Set_Collision_Type(0);
                }
             }
          }
+#endif // if 0
 
          // add render object to our scene
-         LinuxDisplay::m_3DScene->Add_Render_Object(m_renderObject);
+         TheTacticalView->add3dObject(m_renderObject);
 
+#if 0
          // tie in our drawable as the user data pointer in the render object
          m_renderObject->Set_User_Data(draw->getDrawableInfo());
    
@@ -3154,14 +3143,14 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
 
          //We created a new render object so we need to preserve the visibility state
          //of the previous render object.
-         if (draw->isDrawableEffectivelyHidden())
-         {
+         if (draw->isDrawableEffectivelyHidden()) {
             m_renderObject->Set_Hidden(TRUE);
-            if (m_shadow)
+            if (m_shadow) {
                m_shadow->enableShadowRender(FALSE);
+            }
             m_shadowEnabled = FALSE;
          }
-         
+
          //
          // set the transform for the new model to that we saved before, we do this so that the
          // model transition is smooth and will immediately appear at the same orientation and location
@@ -3170,19 +3159,16 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
          m_renderObject->Set_Transform(transform);
          onRenderObjRecreated(); 
       }
-   } 
-   else 
-   {
-
+   } else {
       //BONEPOS_LOG(("validateStuff() from within LinuxModelDraw::setModelState()\n"));
       //BONEPOS_DUMPREAL(getDrawable()->getScale());
 
-      newState->validateStuff(m_renderObject, getDrawable()->getScale(), getLinuxModelDrawModuleData()->m_extraPublicBones);
+      newState->validateStuff(m_renderObject, getDrawable()->getScale(), getLinuxModelDrawModuleData()->m_ini.m_extraPublicBones);
       rebuildWeaponRecoilInfo(newState);
 
       // ensure that any muzzle flashes from the *previous* state, are hidden...
-//		hideAllMuzzleFlashes(m_curState, m_renderObject);// moved to above
-      
+      // hideAllMuzzleFlashes(m_curState, m_renderObject);// moved to above
+
       doHideShowSubObjs(&newState->m_hideShowVec);
    }
    hideAllHeadlights(m_hideHeadlights);
@@ -3192,11 +3178,15 @@ void LinuxModelDraw::setModelState(const ModelConditionInfo* newState)
    m_nextState = nextState;
    m_nextStateAnimLoopDuration = NO_NEXT_DURATION;
    adjustAnimation(prevState, prevAnimFraction);
+#endif // if 0
 }
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::replaceModelConditionState(const ModelConditionFlags& c)
 {
+(void) c;
+DEBUG_LOG(("LinuxModelDraw::replaceModelConditionState not yet implemented!\n"));
+#if 0
    m_hideHeadlights = c.test(MODELCONDITION_NIGHT) ? false : true;
 
    const ModelConditionInfo* info = findBestInfo(c);
@@ -3204,8 +3194,10 @@ void LinuxModelDraw::replaceModelConditionState(const ModelConditionFlags& c)
       setModelState(info);
 
    hideAllHeadlights(m_hideHeadlights);
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::setSelectable(Bool selectable)
 {
@@ -3221,15 +3213,18 @@ void LinuxModelDraw::setSelectable(Bool selectable)
       m_renderObject->Set_Collision_Type(current);
    }  // end if
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::replaceIndicatorColor(Color color)
 {
-   if (!getLinuxModelDrawModuleData()->m_okToChangeModelColor)
+(void) color;
+DEBUG_LOG(("LinuxModelDraw::replaceIndicatorColor not yet implemented!\n"));
+#if 0
+   if (!getLinuxModelDrawModuleData()->m_ini.m_okToChangeModelColor)
       return;
 
-   if (getRenderObject())
-   {	
+   if (getRenderObject()) {
       Int newColor = (color == 0) ? 0 : (color | 0xFF000000);
       if (newColor != m_hexColor)
       {
@@ -3243,8 +3238,10 @@ void LinuxModelDraw::replaceIndicatorColor(Color color)
          setModelState(tmp);
       }
    }
+#endif // if 0
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 // this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
 Bool LinuxModelDraw::clientOnly_getRenderObjInfo(Coord3D* pos, Real* boundingSphereRadius, Matrix3D* transform) const
@@ -3412,6 +3409,7 @@ Bool LinuxModelDraw::getProjectileLaunchOffset(
    }
    return launchPos != NULL;// return if LaunchPos is valid or not
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Int LinuxModelDraw::getPristineBonePositionsForConditionState(
@@ -3430,8 +3428,9 @@ Int LinuxModelDraw::getPristineBonePositionsForConditionState(
       not the one the client might currently be using...
    */
    const ModelConditionInfo* stateToUse = findBestInfo(condition);
-   if (!stateToUse)
+   if (!stateToUse) {
       return 0;
+   }
 
 //	if (isValidTimeToCalcLogicStuff())
 //	{
@@ -3448,7 +3447,7 @@ Int LinuxModelDraw::getPristineBonePositionsForConditionState(
       // so that we don't have to re-create it!
       stateToUse == m_curState ? m_renderObject : NULL, 
       getDrawable()->getScale(),
-      getLinuxModelDrawModuleData()->m_extraPublicBones);
+      getLinuxModelDrawModuleData()->m_ini.m_extraPublicBones);
 
    const int MAX_BONE_GET = 64;
    Matrix3D tmpMtx[MAX_BONE_GET];
@@ -3502,7 +3501,7 @@ Int LinuxModelDraw::getPristineBonePositionsForConditionState(
    
    if (positions && transforms)
    {
-      for (i = 0; i < posCount; ++i)
+      for (Int i = 0; i < posCount; ++i)
       {
          Vector3 pos = transforms[i].Get_Translation();
          positions[i].x = pos.X;
@@ -3523,7 +3522,7 @@ Int LinuxModelDraw::getPristineBonePositionsForConditionState(
    return posCount;
 }
 
-
+#if 0
 //-------------------------------------------------------------------------------------------------
 // (gth) C&C3 Added this accessor for the bounding box of a render object in a LinuxModelDraw module
 // this method must ONLY be called from the client, NEVER From the logic, not even indirectly.
@@ -3663,25 +3662,18 @@ Int LinuxModelDraw::getCurrentBonePositions(
 #endif // if 0
 
 //-------------------------------------------------------------------------------------------------
-void LinuxModelDraw::reactToTransformChange( const Matrix3D* oldMtx, 
-                                                                const Coord3D* oldPos, 
-                                                                Real oldAngle )
+void LinuxModelDraw::reactToTransformChange(const Matrix3D* /* oldMtx */, const Coord3D* /* oldPos */, Real /* oldAngle */)
 {
-(void) oldMtx;
-(void) oldPos;
-(void) oldAngle;
-DEBUG_CRASH(("LinuxModelDraw::reactToTransformChange not yet implemented!"));
-#if 0
    // set the position of our render object
-   if( m_renderObject )
-   {
+   if (m_renderObject) {
       Matrix3D mtx = *getDrawable()->getTransformMatrix();
       adjustTransformMtx(mtx);
       m_renderObject->Set_Transform(mtx);
    }
 
-   if (m_trackRenderObject) 
-   {
+// FIXME: Terrain tracks.
+#if 0
+   if (m_trackRenderObject) {
       Object *obj = getDrawable()->getObject();
       const Coord3D* pos = getDrawable()->getPosition();
 
@@ -3701,13 +3693,13 @@ DEBUG_CRASH(("LinuxModelDraw::reactToTransformChange not yet implemented!"));
 #endif // if 0
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 const ModelConditionInfo* LinuxModelDraw::findBestInfo(const ModelConditionFlags& c) const
 {
    return getLinuxModelDrawModuleData()->findBestInfo(c);
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Int LinuxModelDraw::getBarrelCount(WeaponSlotType wslot) const
 {
@@ -3923,18 +3915,22 @@ void LinuxModelDraw::rebuildWeaponRecoilInfo(const ModelConditionInfo* state)
       }
    }
 } 
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 /** Preload any assets for the time of day requested */
 //-------------------------------------------------------------------------------------------------
-void LinuxModelDraw::preloadAssets( TimeOfDay timeOfDay )
+void LinuxModelDraw::preloadAssets(TimeOfDay timeOfDay)
 {
-   const LinuxModelDrawModuleData *modData = getLinuxModelDrawModuleData();
+(void) timeOfDay;
+DEBUG_CRASH(("LinuxModelDraw::preloadAssets not yet implemented!"));
+   // const LinuxModelDrawModuleData *modData = getLinuxModelDrawModuleData();
 
-   if( modData )
-      modData->preloadAssets( timeOfDay, getDrawable()->getScale() );
+   // if( modData )
+   //    modData->preloadAssets( timeOfDay, getDrawable()->getScale() );
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Bool LinuxModelDraw::isVisible() const
 {
@@ -3998,6 +3994,7 @@ void LinuxModelDraw::doHideShowProjectileObjects( UnsignedInt showCount, Unsigne
    // Rather than duplicate recursive utility stuff, I will build a vector like those used by the main ShowHide setting
    doHideShowSubObjs(&showHideVector);
 }
+#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::updateSubObjects()
@@ -4033,7 +4030,6 @@ void LinuxModelDraw::updateSubObjects()
       }
    }
 }
-#endif // if 0
 
 // ------------------------------------------------------------------------------------------------
 /** CRC */

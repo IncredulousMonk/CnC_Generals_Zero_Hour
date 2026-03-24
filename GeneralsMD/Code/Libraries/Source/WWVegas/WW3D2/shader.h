@@ -257,6 +257,8 @@ public:
 	ShaderClass(const unsigned int d)
 	{	ShaderBits=d;	}
 
+	ShaderClass& operator= (const ShaderClass& s) = default;
+
 	bool operator == (const ShaderClass & s) { return ShaderBits == s.ShaderBits; }
 	bool operator != (const ShaderClass & s) { return ShaderBits != s.ShaderBits; }
 

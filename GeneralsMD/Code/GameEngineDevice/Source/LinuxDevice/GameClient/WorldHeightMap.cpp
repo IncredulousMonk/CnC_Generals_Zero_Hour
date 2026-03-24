@@ -109,8 +109,8 @@ MapObject::MapObject(Coord3D loc, AsciiString name, Real angle, Int flags, const
 	if (props)
 	{
 		m_properties = *props;
-	} 
-	else 
+	}
+	else
 	{
 		m_properties.setInt(TheKey_objectInitialHealth, 100);
 		m_properties.setBool(TheKey_objectEnabled, true);
@@ -124,7 +124,7 @@ MapObject::MapObject(Coord3D loc, AsciiString name, Real angle, Int flags, const
 	for( Int i = 0; i < BRIDGE_MAX_TOWERS; ++i )
 		setBridgeRenderObject( (BridgeTowerType)i, NULL );
 
-}	
+}
 
 
 MapObject::~MapObject(void)

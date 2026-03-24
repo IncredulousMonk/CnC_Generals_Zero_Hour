@@ -19,7 +19,15 @@
 #include "assetstatus.h"
 #include "hashtemplate.h"
 #include "wwstring.h"
-#include "rawfile.h"
+#include "RAWFILE.H"
+#include <ctype.h>
+
+// _strlwr is not standard C.
+void _strlwr(char* p) {
+	for (; *p; ++p) {
+		*p = tolower(*p);
+	}
+}
 
 AssetStatusClass AssetStatusClass::Instance;
 
@@ -112,4 +120,3 @@ void AssetStatusClass::Report_Missing_HTree(const char* name)
 {
 	Add_To_Report(REPORT_MISSING_HTREE,name);
 }
-

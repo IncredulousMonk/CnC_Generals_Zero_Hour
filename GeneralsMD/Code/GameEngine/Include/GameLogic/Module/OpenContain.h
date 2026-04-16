@@ -46,6 +46,7 @@
 #include "Common/KindOf.h"
 #include "Common/GameMemory.h"
 #include "Common/ModelState.h"
+#include "WWMath/matrix3d.h"
 
 // ------------------------------------------------------------------------------------------------
 enum { CONTAIN_MAX_UNKNOWN = -1 };  // means we don't care, infinite, unassigned, whatever

@@ -49,6 +49,13 @@
 #endif
 
 //-------------------------------------------------------------------------------------------------
+void MissileLauncherBuildingUpdateModuleData::parseAudioEventRTS(INI* ini, void *instance, void* /* store */, const void* /* userData */)
+{
+	MissileLauncherBuildingUpdateModuleData* self = (MissileLauncherBuildingUpdateModuleData*) instance;
+	INI::parseAudioEventRTS(ini, nullptr, nullptr, &self->m_openIdleAudio);
+}
+
+//-------------------------------------------------------------------------------------------------
 MissileLauncherBuildingUpdate::MissileLauncherBuildingUpdate( Thing *thing, const ModuleData* moduleData ) : SpecialPowerUpdateModule( thing, moduleData )
 {
 	m_doorState = DOOR_CLOSED;
@@ -87,10 +94,10 @@ void MissileLauncherBuildingUpdate::switchToState(DoorStateType dst)
 			clr.set(MODELCONDITION_DOOR_1_WAITING_OPEN);
 			m_timeoutFrame = 0;
 			m_timeoutState = DOOR_CLOSED;
-			if (d->m_closedFX)
+			if (d->m_ini.m_closedFX)
 			{
 				const Coord3D *pos = getObject()->getPosition();
-				FXList::doFXPos(d->m_closedFX, pos);
+				FXList::doFXPos(d->m_ini.m_closedFX, pos);
 			}
 			if (m_openIdleAudio.isCurrentlyPlaying()) 
 			{
@@ -109,10 +116,10 @@ void MissileLauncherBuildingUpdate::switchToState(DoorStateType dst)
 			// end it one frame ahead.
 			m_timeoutFrame = m_specialPowerModule->getReadyFrame() - 1;
 			m_timeoutState = DOOR_OPEN;
-			if (d->m_openingFX)
+			if (d->m_ini.m_openingFX)
 			{
 				const Coord3D *pos = getObject()->getPosition();
-				FXList::doFXPos(d->m_openingFX, pos);
+				FXList::doFXPos(d->m_ini.m_openingFX, pos);
 			}
 			if (m_openIdleAudio.isCurrentlyPlaying()) 
 			{
@@ -129,10 +136,10 @@ void MissileLauncherBuildingUpdate::switchToState(DoorStateType dst)
 			set.set(MODELCONDITION_DOOR_1_WAITING_OPEN);
 			m_timeoutFrame = 0;
 			m_timeoutState = DOOR_OPEN;
-			if (d->m_openFX)
+			if (d->m_ini.m_openFX)
 			{
 				const Coord3D *pos = getObject()->getPosition();
-				FXList::doFXPos(d->m_openFX, pos);
+				FXList::doFXPos(d->m_ini.m_openFX, pos);
 			}
 			if (!m_openIdleAudio.isCurrentlyPlaying())
 			{
@@ -147,12 +154,12 @@ void MissileLauncherBuildingUpdate::switchToState(DoorStateType dst)
 			clr.set(MODELCONDITION_DOOR_1_OPENING);
 			clr.set(MODELCONDITION_DOOR_1_WAITING_OPEN);
 			set.set(MODELCONDITION_DOOR_1_WAITING_TO_CLOSE);
-			m_timeoutFrame = now + d->m_doorWaitOpenTime;
+			m_timeoutFrame = now + d->m_ini.m_doorWaitOpenTime;
 			m_timeoutState = DOOR_CLOSING;
-			if (d->m_waitingToCloseFX)
+			if (d->m_ini.m_waitingToCloseFX)
 			{
 				const Coord3D *pos = getObject()->getPosition();
-				FXList::doFXPos(d->m_waitingToCloseFX, pos);
+				FXList::doFXPos(d->m_ini.m_waitingToCloseFX, pos);
 			}
 			if (m_openIdleAudio.isCurrentlyPlaying()) 
 			{
@@ -167,19 +174,19 @@ void MissileLauncherBuildingUpdate::switchToState(DoorStateType dst)
 			clr.set(MODELCONDITION_DOOR_1_WAITING_OPEN);
 			clr.set(MODELCONDITION_DOOR_1_OPENING);
 			set.set(MODELCONDITION_DOOR_1_CLOSING);
-			m_timeoutFrame = now + d->m_doorClosingTime;
+			m_timeoutFrame = now + d->m_ini.m_doorClosingTime;
 
 			{
-				Int delta = m_specialPowerModule->getReadyFrame() - now;
+				UnsignedInt delta = m_specialPowerModule->getReadyFrame() - now;
 				if (m_timeoutFrame > now + delta/2)
 					m_timeoutFrame = now + delta/2;
 			}
 
 			m_timeoutState = DOOR_CLOSED;
-			if (d->m_closingFX)
+			if (d->m_ini.m_closingFX)
 			{
 				const Coord3D *pos = getObject()->getPosition();
-				FXList::doFXPos(d->m_closingFX, pos);
+				FXList::doFXPos(d->m_ini.m_closingFX, pos);
 			}
 			if (m_openIdleAudio.isCurrentlyPlaying()) 
 			{
@@ -204,20 +211,21 @@ void MissileLauncherBuildingUpdate::switchToState(DoorStateType dst)
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool MissileLauncherBuildingUpdate::initiateIntentToDoSpecialPower( const SpecialPowerTemplate *specialPowerTemplate, const Object *targetObj, const Coord3D *targetPos, const Waypoint *way, UnsignedInt commandOptions )
+Bool MissileLauncherBuildingUpdate::initiateIntentToDoSpecialPower( const SpecialPowerTemplate* specialPowerTemplate, const Object* /* targetObj */,
+	const Coord3D* /* targetPos */, const Waypoint* /* way */, UnsignedInt /* commandOptions */ )
 {
 	if( m_specialPowerModule->getSpecialPowerTemplate() != specialPowerTemplate )
 	{
 		return FALSE;
 	}
-	DEBUG_ASSERTCRASH(!TheGlobalData->m_specialPowerUsesDelay || m_doorState == DOOR_OPEN, ("door is not fully open when specialpower is fired!"));
+	DEBUG_ASSERTCRASH(!TheGlobalData->m_data.m_specialPowerUsesDelay || m_doorState == DOOR_OPEN, ("door is not fully open when specialpower is fired!"));
 	switchToState(DOOR_WAITING_TO_CLOSE);
 //	getObject()->getControllingPlayer()->getAcademyStats()->recordSpecialPowerUsed( specialPowerTemplate );
 	return TRUE;
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool MissileLauncherBuildingUpdate::isPowerCurrentlyInUse( const CommandButton *command ) const
+Bool MissileLauncherBuildingUpdate::isPowerCurrentlyInUse( const CommandButton* /* command */ ) const
 {
 	//@todo -- Implement me in such a way that it still works with Ctrl+s cheat key...
 	//In fact, this code doesn't really care because in legit mode, the game will 
@@ -240,21 +248,21 @@ UpdateSleepTime MissileLauncherBuildingUpdate::update( void )
 
 	if (!m_specialPowerModule)
 	{
-		m_specialPowerModule = getObject()->getSpecialPowerModule(d->m_specialPowerTemplate);
+		m_specialPowerModule = getObject()->getSpecialPowerModule(d->m_ini.m_specialPowerTemplate);
 		DEBUG_ASSERTCRASH(m_specialPowerModule, ("Missing special power"));
 	}
 	
 	if (m_specialPowerModule)
 	{
 		UnsignedInt readyFrame = m_specialPowerModule->getReadyFrame();
-		UnsignedInt whenToStartOpening = (readyFrame >= d->m_doorOpenTime) ? (readyFrame - d->m_doorOpenTime) : 0;
+		UnsignedInt whenToStartOpening = (readyFrame >= d->m_ini.m_doorOpenTime) ? (readyFrame - d->m_ini.m_doorOpenTime) : 0;
 
 		if (m_timeoutFrame != 0 && now > m_timeoutFrame)
 		{
 			switchToState(m_timeoutState);
 		}
 
-		DEBUG_ASSERTCRASH(!TheGlobalData->m_specialPowerUsesDelay || !(m_specialPowerModule->isReady() && m_doorState != DOOR_OPEN), ("door is not fully open when specialpower is ready!"));
+		DEBUG_ASSERTCRASH(!TheGlobalData->m_data.m_specialPowerUsesDelay || !(m_specialPowerModule->isReady() && m_doorState != DOOR_OPEN), ("door is not fully open when specialpower is ready!"));
 
 		if (m_doorState != DOOR_OPEN && m_specialPowerModule->isReady())
 		{
@@ -273,7 +281,7 @@ UpdateSleepTime MissileLauncherBuildingUpdate::update( void )
 SpecialPowerTemplate* MissileLauncherBuildingUpdate::getTemplate() const
 {
 	const MissileLauncherBuildingUpdateModuleData* data = getMissileLauncherBuildingUpdateModuleData();
-	return data->m_specialPowerTemplate;
+	return data->m_ini.m_specialPowerTemplate;
 }
 
 // ------------------------------------------------------------------------------------------------

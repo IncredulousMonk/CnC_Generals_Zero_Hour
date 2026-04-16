@@ -36,18 +36,20 @@
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void CommandSetUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void CommandSetUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpgradeModuleData::buildFieldParse(p);
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "CommandSet",			INI::parseAsciiString,	NULL, offsetof( CommandSetUpgradeModuleData, m_newCommandSet ) },
-		{ "CommandSetAlt",	INI::parseAsciiString,	NULL, offsetof( CommandSetUpgradeModuleData, m_newCommandSetAlt ) },
-		{ "TriggerAlt",			INI::parseAsciiString,	NULL, offsetof( CommandSetUpgradeModuleData, m_triggerAlt ) },
+		{ "CommandSet",		INI::parseAsciiString,	NULL, offsetof( CommandSetUpgradeModuleData::IniData, m_newCommandSet ) },
+		{ "CommandSetAlt",	INI::parseAsciiString,	NULL, offsetof( CommandSetUpgradeModuleData::IniData, m_newCommandSetAlt ) },
+		{ "TriggerAlt",		INI::parseAsciiString,	NULL, offsetof( CommandSetUpgradeModuleData::IniData, m_triggerAlt ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	CommandSetUpgradeModuleData* self {static_cast<CommandSetUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -68,7 +70,7 @@ void CommandSetUpgrade::upgradeImplementation( )
 {
 	Object *obj = getObject();	
 
-	const char * upgradeAlt = getCommandSetUpgradeModuleData()->m_triggerAlt.str();
+	const char * upgradeAlt = getCommandSetUpgradeModuleData()->m_ini.m_triggerAlt.str();
 	const UpgradeTemplate *upgradeTemplate = TheUpgradeCenter->findUpgrade( upgradeAlt );
 	
 	if (upgradeTemplate)
@@ -82,7 +84,7 @@ void CommandSetUpgrade::upgradeImplementation( )
 			UpgradeMaskType playerMask = player->getCompletedUpgradeMask();
 			if (playerMask.testForAny(upgradeMask))
 			{
-				obj->setCommandSetStringOverride( getCommandSetUpgradeModuleData()->m_newCommandSetAlt );
+				obj->setCommandSetStringOverride( getCommandSetUpgradeModuleData()->m_ini.m_newCommandSetAlt );
 				TheControlBar->markUIDirty();// Refresh the UI in case we are selected
 				return;
 			}
@@ -92,13 +94,13 @@ void CommandSetUpgrade::upgradeImplementation( )
 		UpgradeMaskType objMask = obj->getObjectCompletedUpgradeMask();
 		if (objMask.testForAny(upgradeMask))
 		{
-			obj->setCommandSetStringOverride( getCommandSetUpgradeModuleData()->m_newCommandSetAlt );
+			obj->setCommandSetStringOverride( getCommandSetUpgradeModuleData()->m_ini.m_newCommandSetAlt );
 			TheControlBar->markUIDirty();// Refresh the UI in case we are selected
 			return;
 		}
 	}
 
-	obj->setCommandSetStringOverride( getCommandSetUpgradeModuleData()->m_newCommandSet );
+	obj->setCommandSetStringOverride( getCommandSetUpgradeModuleData()->m_ini.m_newCommandSet );
 	TheControlBar->markUIDirty();// Refresh the UI in case we are selected
 }
 

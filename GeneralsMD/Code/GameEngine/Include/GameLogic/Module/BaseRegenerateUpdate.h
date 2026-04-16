@@ -35,6 +35,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "GameLogic/Module/UpdateModule.h"
 #include "GameLogic/Module/DamageModule.h"
+#include "GameLogic/Module/BodyModule.h"
 
 // FORWARD REFERENCES /////////////////////////////////////////////////////////////////////////////
 class Thing;
@@ -46,7 +47,7 @@ class BaseRegenerateUpdateModuleData : public UpdateModuleData
 
 public:
 	BaseRegenerateUpdateModuleData( void );
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse(void* what, MultiIniFieldParse &p);
 
 };
 
@@ -57,7 +58,7 @@ class BaseRegenerateUpdate : public UpdateModule,
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( BaseRegenerateUpdate, "BaseRegenerateUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( BaseRegenerateUpdate, BaseRegenerateUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( BaseRegenerateUpdate, BaseRegenerateUpdateModuleData )
 
 public:
 
@@ -73,9 +74,9 @@ public:
 	virtual UpdateSleepTime update( void );
 
 	// DamageModuleInterface
-	virtual void onDamage( DamageInfo *damageInfo );
-	virtual void onHealing( DamageInfo *damageInfo ) { }
-	virtual void onBodyDamageStateChange(const DamageInfo* damageInfo, BodyDamageType oldState, BodyDamageType newState) { }
+	virtual void onDamage( DamageInfo* damageInfo );
+	virtual void onHealing( DamageInfo* /* damageInfo */ ) { }
+	virtual void onBodyDamageStateChange(const DamageInfo* /* damageInfo */, BodyDamageType /* oldState */, BodyDamageType /* newState */) { }
 	virtual DisabledMaskType getDisabledTypesToProcess() const { return MAKE_DISABLED_MASK( DISABLED_UNDERPOWERED ); }
 
 private:

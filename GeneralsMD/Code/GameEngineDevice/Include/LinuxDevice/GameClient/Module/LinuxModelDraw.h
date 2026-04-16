@@ -30,6 +30,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "Common/ModelState.h"
 #include "Common/DrawModule.h"
+#include "Common/GameLOD.h"
 
 #ifdef BRUTAL_TIMING_HACK // hack for collecting model timing info.  jba.
 class RenderObjClass {
@@ -306,6 +307,8 @@ public:
    struct IniData
    {
       std::vector<AsciiString>      m_extraPublicBones {};
+      Int                           m_projectileBoneFeedbackEnabledSlots {};     ///< Hide and show the launch bone geometries according to clip status adjustments.
+      StaticGameLODLevel            m_minLODRequired {STATIC_GAME_LOD_LOW};      ///< minumum game LOD level necessary to use this module.
       ModelConditionFlags           m_ignoreConditionStates {};
       Bool                          m_okToChangeModelColor {false};
       Bool                          m_animationsRequirePower {true};             ///< Should UnderPowered disable type pause animations in this draw module?
@@ -325,12 +328,12 @@ public:
    mutable Vector3               m_attachToDrawableBoneOffset {};
 #endif
    Int                           m_defaultState {-1};
-   Int                           m_projectileBoneFeedbackEnabledSlots {};  ///< Hide and show the launch bone geometries according to clip status adjustments.
+   // Int                           m_projectileBoneFeedbackEnabledSlots {};  ///< Hide and show the launch bone geometries according to clip status adjustments.
    Real                          m_initialRecoil {};
    Real                          m_maxRecoil {};
    Real                          m_recoilDamping {};
    Real                          m_recoilSettle {};
-   StaticGameLODLevel            m_minLODRequired {};                      ///< minumum game LOD level necessary to use this module.
+   // StaticGameLODLevel            m_minLODRequired {};                      ///< minumum game LOD level necessary to use this module.
    // ModelConditionFlags           m_ignoreConditionStates {};
    // Bool                          m_okToChangeModelColor {false};
    // Bool                          m_animationsRequirePower {true};          ///< Should UnderPowered disable type pause animations in this draw module?
@@ -420,9 +423,9 @@ public:
 #endif // if 0
    virtual Bool clientOnly_getRenderObjBoneTransform(const AsciiString & boneName,Matrix3D * set_tm) const;
    virtual Int getPristineBonePositionsForConditionState(const ModelConditionFlags& condition, const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
-#if 0
    virtual Int getCurrentBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
    virtual Bool getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const;
+#if 0
    virtual Bool getProjectileLaunchOffset(const ModelConditionFlags& condition, WeaponSlotType wslot, Int specificBarrelToUse, Matrix3D* launchPos, WhichTurretType tur, Coord3D* turretRotPos, Coord3D* turretPitchPos = NULL) const;
    virtual void updateProjectileClipStatus( UnsignedInt shotsRemaining, UnsignedInt maxShots, WeaponSlotType slot ); ///< This will do the show/hide work if ProjectileBoneFeedbackEnabled is set.
 #endif // if 0

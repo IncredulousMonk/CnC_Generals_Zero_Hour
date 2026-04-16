@@ -53,39 +53,45 @@ public:
 	BattlePlanUpdateModuleData(const BattlePlanUpdateModuleData&) = delete;
 	BattlePlanUpdateModuleData& operator=(const BattlePlanUpdateModuleData&) = delete;
 
-	SpecialPowerTemplate *m_specialPowerTemplate;
+	// MG: Cannot apply offsetof to BattlePlanUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		SpecialPowerTemplate *m_specialPowerTemplate;
 
-	UnsignedInt m_bombardmentPlanAnimationFrames;
-	UnsignedInt m_holdTheLinePlanAnimationFrames;
-	UnsignedInt m_searchAndDestroyPlanAnimationFrames;
-	UnsignedInt m_transitionIdleFrames;
+		UnsignedInt m_bombardmentPlanAnimationFrames;
+		UnsignedInt m_holdTheLinePlanAnimationFrames;
+		UnsignedInt m_searchAndDestroyPlanAnimationFrames;
+		UnsignedInt m_transitionIdleFrames;
 
-	AsciiString	m_bombardmentUnpackName;
-	AsciiString	m_bombardmentPackName;
-	AsciiString m_bombardmentMessageLabel;
-	AsciiString m_bombardmentAnnouncementName;
-	AsciiString	m_searchAndDestroyUnpackName;
-	AsciiString m_searchAndDestroyIdleName;
-	AsciiString	m_searchAndDestroyPackName;
-	AsciiString m_searchAndDestroyMessageLabel;
-	AsciiString m_searchAndDestroyAnnouncementName;
-	AsciiString m_holdTheLineUnpackName;
-	AsciiString m_holdTheLinePackName;
-	AsciiString m_holdTheLineMessageLabel;
-	AsciiString m_holdTheLineAnnouncementName;
+		AsciiString	m_bombardmentUnpackName;
+		AsciiString	m_bombardmentPackName;
+		AsciiString m_bombardmentMessageLabel;
+		AsciiString m_bombardmentAnnouncementName;
+		AsciiString	m_searchAndDestroyUnpackName;
+		AsciiString m_searchAndDestroyIdleName;
+		AsciiString	m_searchAndDestroyPackName;
+		AsciiString m_searchAndDestroyMessageLabel;
+		AsciiString m_searchAndDestroyAnnouncementName;
+		AsciiString m_holdTheLineUnpackName;
+		AsciiString m_holdTheLinePackName;
+		AsciiString m_holdTheLineMessageLabel;
+		AsciiString m_holdTheLineAnnouncementName;
 
-	UnsignedInt m_battlePlanParalyzeFrames;
-	KindOfMaskType m_validMemberKindOf;
-	KindOfMaskType m_invalidMemberKindOf;
+		UnsignedInt m_battlePlanParalyzeFrames;
+		KindOfMaskType m_validMemberKindOf;
+		KindOfMaskType m_invalidMemberKindOf;
 
-	Real m_holdTheLineArmorDamageScalar;
-	Real m_searchAndDestroySightRangeScalar;
-	Real m_strategyCenterSearchAndDestroySightRangeScalar;
-	Bool m_strategyCenterSearchAndDestroyDetectsStealth;
-	Real m_strategyCenterHoldTheLineMaxHealthScalar;
-	MaxHealthChangeType m_strategyCenterHoldTheLineMaxHealthChangeType;
+		Real m_holdTheLineArmorDamageScalar;
+		Real m_searchAndDestroySightRangeScalar;
+		Real m_strategyCenterSearchAndDestroySightRangeScalar;
+		Bool m_strategyCenterSearchAndDestroyDetectsStealth;
+		Real m_strategyCenterHoldTheLineMaxHealthScalar;
+		MaxHealthChangeType m_strategyCenterHoldTheLineMaxHealthChangeType;
 
-	AsciiString m_visionObjectName;		///< name of object to create to reveal shroud to all players
+		AsciiString m_visionObjectName;		///< name of object to create to reveal shroud to all players
+	};
+
+	IniData m_ini {};
 
 	BattlePlanUpdateModuleData();
 	static void buildFieldParse(void* what, MultiIniFieldParse& p);
@@ -172,30 +178,30 @@ protected:
 	void setBattlePlan( BattlePlanStatus plan );
 	void createVisionObject();	
 
-	BattlePlanStatus m_currentPlan;	//The current battle plan displayed by the building (includes packing & unpacking)
-	BattlePlanStatus m_desiredPlan; //The user desired battle plan
-	BattlePlanStatus m_planAffectingArmy; //The current battle plan that is affecting troops!
-	TransitionStatus m_status;
+	BattlePlanStatus m_currentPlan {};	//The current battle plan displayed by the building (includes packing & unpacking)
+	BattlePlanStatus m_desiredPlan {}; //The user desired battle plan
+	BattlePlanStatus m_planAffectingArmy {}; //The current battle plan that is affecting troops!
+	TransitionStatus m_status {};
 	
-	UnsignedInt m_nextReadyFrame;
-	SpecialPowerModuleInterface *m_specialPowerModule;
-	Bool				m_invalidSettings;
-	Bool				m_centeringTurret;
-	BattlePlanBonuses* m_bonuses;
+	UnsignedInt m_nextReadyFrame {};
+	SpecialPowerModuleInterface *m_specialPowerModule {};
+	Bool				m_invalidSettings {};
+	Bool				m_centeringTurret {};
+	BattlePlanBonuses* m_bonuses {};
 
-	AudioEventRTS		m_bombardmentUnpack;
-	AudioEventRTS		m_bombardmentPack;
-	AudioEventRTS   m_bombardmentAnnouncement;
-	AudioEventRTS		m_searchAndDestroyUnpack;
-	AudioEventRTS   m_searchAndDestroyIdle;
-	AudioEventRTS		m_searchAndDestroyPack;
-	AudioEventRTS   m_searchAndDestroyAnnouncement;
-	AudioEventRTS   m_holdTheLineUnpack;
-	AudioEventRTS   m_holdTheLinePack;
-	AudioEventRTS   m_holdTheLineAnnouncement;
+	AudioEventRTS m_bombardmentUnpack {};
+	AudioEventRTS m_bombardmentPack {};
+	AudioEventRTS m_bombardmentAnnouncement {};
+	AudioEventRTS m_searchAndDestroyUnpack {};
+	AudioEventRTS m_searchAndDestroyIdle {};
+	AudioEventRTS m_searchAndDestroyPack {};
+	AudioEventRTS m_searchAndDestroyAnnouncement {};
+	AudioEventRTS m_holdTheLineUnpack {};
+	AudioEventRTS m_holdTheLinePack {};
+	AudioEventRTS m_holdTheLineAnnouncement {};
 
 	// vision object - hang on to this so we can delete it on destruction
-	ObjectID m_visionObjectID;
+	ObjectID m_visionObjectID {};
 
 };
 

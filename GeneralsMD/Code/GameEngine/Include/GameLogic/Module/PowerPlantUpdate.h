@@ -44,9 +44,9 @@ public:
 
 	PowerPlantUpdateModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse( p );
+		UpdateModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
@@ -54,7 +54,9 @@ public:
 			{ "RodsExtendTime", INI::parseDurationUnsignedInt, NULL, offsetof( PowerPlantUpdateModuleData::IniData, m_rodsExtendTime ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		PowerPlantUpdateModuleData* self {static_cast<PowerPlantUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 
@@ -103,7 +105,7 @@ public:
 
 protected:
 
-	Bool m_extended;										 ///< TRUE when extend is all done
+	Bool m_extended {};										 ///< TRUE when extend is all done
 
 };
 

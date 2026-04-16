@@ -54,11 +54,17 @@
 class GrantScienceUpgradeModuleData : public UpgradeModuleData
 {
 public:
-	AsciiString m_grantScienceName;
+	// MG: Cannot apply offsetof to GrantScienceUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_grantScienceName;
+	};
+
+	IniData m_ini {};
 
 	GrantScienceUpgradeModuleData(){}
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-----------------------------------------------------------------------------
@@ -66,7 +72,7 @@ class GrantScienceUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( GrantScienceUpgrade, "GrantScienceUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( GrantScienceUpgrade, GrantScienceUpgradeModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( GrantScienceUpgrade, GrantScienceUpgradeModuleData )
 
 public:
 
@@ -79,7 +85,7 @@ protected:
 
 private:
 	
-	ScienceType m_scienceType;
+	ScienceType m_scienceType {};
 
 };
 #endif // _COMMAND_SET_UPGRADE_H

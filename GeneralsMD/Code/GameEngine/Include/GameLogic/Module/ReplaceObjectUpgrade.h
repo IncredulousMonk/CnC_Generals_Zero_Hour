@@ -38,13 +38,19 @@
 class ReplaceObjectUpgradeModuleData : public UpgradeModuleData
 {
 public:
-	AsciiString m_replaceObjectName;
+	// MG: Cannot apply offsetof to ReplaceObjectUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_replaceObjectName;
+	};
+
+	IniData m_ini {};
 
 	ReplaceObjectUpgradeModuleData()
 	{
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-----------------------------------------------------------------------------
@@ -52,7 +58,7 @@ class ReplaceObjectUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ReplaceObjectUpgrade, "ReplaceObjectUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ReplaceObjectUpgrade, ReplaceObjectUpgradeModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ReplaceObjectUpgrade, ReplaceObjectUpgradeModuleData )
 
 public:
 

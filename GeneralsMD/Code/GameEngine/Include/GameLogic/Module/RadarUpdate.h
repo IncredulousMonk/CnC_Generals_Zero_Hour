@@ -44,9 +44,9 @@ public:
 
 	RadarUpdateModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse( p );
+		UpdateModuleData::buildFieldParse(what, p);
 
 		static const FieldParse dataFieldParse[] = 
 		{
@@ -54,7 +54,9 @@ public:
 			{ "RadarExtendTime", INI::parseDurationReal, NULL, offsetof( RadarUpdateModuleData::IniData, m_radarExtendTime ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		RadarUpdateModuleData* self {static_cast<RadarUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 
 	}
 
@@ -75,7 +77,7 @@ class RadarUpdate : public UpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( RadarUpdate, "RadarUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( RadarUpdate, RadarUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( RadarUpdate, RadarUpdateModuleData )
 
 public:
 
@@ -89,9 +91,9 @@ public:
 
 protected:
 
-	UnsignedInt m_extendDoneFrame;						 ///< radar will be done extending on this frame
-	Bool m_extendComplete;										 ///< TRUE when extend is all done
-	Bool m_radarActive;												 ///< TRUE when radar is actually online and generating radar information.
+	UnsignedInt m_extendDoneFrame {};						 ///< radar will be done extending on this frame
+	Bool m_extendComplete {};										 ///< TRUE when extend is all done
+	Bool m_radarActive {};												 ///< TRUE when radar is actually online and generating radar information.
 
 };
 

@@ -43,7 +43,7 @@ public:
 
 	InternetHackContainModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	static void parseRiderInfo( INI* ini, void *instance, void *store, const void* /*userData*/ );
 
 };
@@ -70,4 +70,3 @@ private:
 };
 
 #endif // __RIDER_CHANGE_CONTAIN_H
-

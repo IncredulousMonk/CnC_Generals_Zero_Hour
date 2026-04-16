@@ -44,11 +44,11 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 EnemyNearUpdate::EnemyNearUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateModule( thing, moduleData ),
-	m_enemyNear(false),
-	m_enemyScanDelay(0)
+	m_enemyScanDelay(0),
+	m_enemyNear(false)
 {
 	// bias a random amount so everyone doesn't spike at once
-	m_enemyScanDelay += GameLogicRandomValue(0, getEnemyNearUpdateModuleData()->m_enemyScanDelayTime);
+	m_enemyScanDelay += GameLogicRandomValueUnsigned(0, getEnemyNearUpdateModuleData()->m_ini.m_enemyScanDelayTime);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ void EnemyNearUpdate::checkForEnemies( void )
 	// periodic enemy checks
 	if (m_enemyScanDelay == 0)
 	{
-		m_enemyScanDelay = getEnemyNearUpdateModuleData()->m_enemyScanDelayTime;
+		m_enemyScanDelay = getEnemyNearUpdateModuleData()->m_ini.m_enemyScanDelayTime;
 
 		Real visionRange = getObject()->getVisionRange();
 		Object* enemy = TheAI->findClosestEnemy( getObject(), visionRange, AI::CAN_SEE );

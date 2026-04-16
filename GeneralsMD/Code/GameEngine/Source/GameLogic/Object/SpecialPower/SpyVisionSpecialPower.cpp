@@ -41,27 +41,29 @@
 SpyVisionSpecialPowerModuleData::SpyVisionSpecialPowerModuleData( void )
 {
 
-	m_baseDurationInFrames = 0;
-	m_bonusDurationPerCapturedInFrames = 0;
-	m_maxDurationInFrames = 0;
+	m_ini.m_baseDurationInFrames = 0;
+	m_ini.m_bonusDurationPerCapturedInFrames = 0;
+	m_ini.m_maxDurationInFrames = 0;
 
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void SpyVisionSpecialPowerModuleData::buildFieldParse( MultiIniFieldParse &p )
+void SpyVisionSpecialPowerModuleData::buildFieldParse(void* what, MultiIniFieldParse &p)
 {
-	SpecialPowerModuleData::buildFieldParse( p );
+	SpecialPowerModuleData::buildFieldParse(what, p);
 	
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "BaseDuration",								INI::parseDurationUnsignedInt,	NULL,   offsetof( SpyVisionSpecialPowerModuleData, m_baseDurationInFrames ) },
-		{ "BonusDurationPerCaptured",		INI::parseDurationUnsignedInt,	NULL,   offsetof( SpyVisionSpecialPowerModuleData, m_bonusDurationPerCapturedInFrames ) },
-		{ "MaxDuration",								INI::parseDurationUnsignedInt,	NULL,   offsetof( SpyVisionSpecialPowerModuleData, m_maxDurationInFrames ) },
+		{ "BaseDuration",					INI::parseDurationUnsignedInt,	NULL,   offsetof( SpyVisionSpecialPowerModuleData::IniData, m_baseDurationInFrames ) },
+		{ "BonusDurationPerCaptured",		INI::parseDurationUnsignedInt,	NULL,   offsetof( SpyVisionSpecialPowerModuleData::IniData, m_bonusDurationPerCapturedInFrames ) },
+		{ "MaxDuration",					INI::parseDurationUnsignedInt,	NULL,   offsetof( SpyVisionSpecialPowerModuleData::IniData, m_maxDurationInFrames ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add( dataFieldParse );
-	
+	SpyVisionSpecialPowerModuleData* self {static_cast<SpyVisionSpecialPowerModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
+
 }  // end buildFieldParse
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,16 +106,16 @@ void SpyVisionSpecialPower::doSpecialPower( UnsignedInt commandOptions )
 	// the SpyVision special power increases in range and duration of effect the more
 	// units we have captured within us
 	//
-	UnsignedInt duration = modData->m_baseDurationInFrames;
+	UnsignedInt duration = modData->m_ini.m_baseDurationInFrames;
 	ContainModuleInterface *contain = source->getContain();
 	if( contain )
 	{
 		// for every captured unit we get a bonus
-		duration += contain->getContainCount() * modData->m_bonusDurationPerCapturedInFrames;
+		duration += contain->getContainCount() * modData->m_ini.m_bonusDurationPerCapturedInFrames;
 
 		// cap at the max
-		if( duration > modData->m_maxDurationInFrames )
-			duration = modData->m_maxDurationInFrames;
+		if( duration > modData->m_ini.m_maxDurationInFrames )
+			duration = modData->m_ini.m_maxDurationInFrames;
 	}
 
 	static const NameKeyType key_SpyVisionUpdate = NAMEKEY( "SpyVisionUpdate" );

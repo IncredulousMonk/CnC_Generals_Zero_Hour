@@ -205,14 +205,14 @@ class JetAwaitingRunwayState : public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(JetAwaitingRunwayState, "JetAwaitingRunwayState")		
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 private:
 	const Bool m_landing;
 
 public:
-	JetAwaitingRunwayState( StateMachine *machine, Bool landing ) : m_landing(landing), State( machine, "JetAwaitingRunwayState") { }
+	JetAwaitingRunwayState( StateMachine *machine, Bool landing ) : State( machine, "JetAwaitingRunwayState"), m_landing(landing) { }
 
 	virtual StateReturnType onEnter()
 	{
@@ -292,7 +292,7 @@ public:
 		return STATE_CONTINUE;
 	}
 
-	virtual void onExit(StateExitType status)
+	virtual void onExit(StateExitType /* status */)
 	{
 		Object* jet = getMachineOwner();
 		JetAIUpdate* jetAI = (JetAIUpdate*)jet->getAIUpdateInterface();
@@ -318,7 +318,7 @@ class JetOrHeliCirclingDeadAirfieldState : public State
 protected:
 	// snapshot interface	 STUBBED.
 	// The state will check immediately after a load game, but I think that's ok.  jba.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 
@@ -482,7 +482,7 @@ class JetOrHeliTaxiState : public AIMoveOutOfTheWayState
 private:
 	TaxiType m_taxiMode;
 public:
-	JetOrHeliTaxiState( StateMachine *machine, TaxiType m ) : m_taxiMode(m), AIMoveOutOfTheWayState( machine ) { }
+	JetOrHeliTaxiState( StateMachine *machine, TaxiType m ) : AIMoveOutOfTheWayState( machine ), m_taxiMode(m) { }
 
 	virtual StateReturnType onEnter()
 	{
@@ -549,7 +549,7 @@ public:
 					std::vector<Coord3D>::const_iterator it;
 					for( it = pTaxiLocations->begin(); it != pTaxiLocations->end(); it++ )
 					{
-						movePath->appendNode( it, LAYER_GROUND );
+						movePath->appendNode( &(*it), LAYER_GROUND );
 					}
 				}
 
@@ -617,7 +617,7 @@ public:
 							firstNode = FALSE;
 							continue;
 						}
-						movePath->appendNode( it, LAYER_GROUND );
+						movePath->appendNode( &(*it), LAYER_GROUND );
 					}
 					movePath->appendNode( &ppinfo.runwayPrep, LAYER_GROUND );
 				}
@@ -706,16 +706,16 @@ class JetTakeoffOrLandingState : public AIFollowPathState
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(JetTakeoffOrLandingState, "JetTakeoffOrLandingState")		
 private:
-	Real			m_maxLift;
-	Real			m_maxSpeed;
+	Real			m_maxLift {};
+	Real			m_maxSpeed {};
 #ifdef CIRCLE_FOR_LANDING
 	Coord3D		m_circleForLandingPos;
 #endif
-	Bool			m_landing;
-	Bool			m_landingSoundPlayed;
+	Bool			m_landing {};
+	Bool			m_landingSoundPlayed {};
 
 public:
-	JetTakeoffOrLandingState( StateMachine *machine, Bool landing ) : m_landing(landing), AIFollowPathState( machine, "JetTakeoffOrLandingState" ) { }
+	JetTakeoffOrLandingState( StateMachine *machine, Bool landing ) : AIFollowPathState( machine, "JetTakeoffOrLandingState" ), m_landing(landing) { }
 
 	virtual StateReturnType onEnter()
 	{
@@ -945,7 +945,7 @@ class HeliTakeoffOrLandingState : public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(HeliTakeoffOrLandingState, "HeliTakeoffOrLandingState")		
 protected:
 	// snapshot interface
-	virtual void crc( Xfer *xfer )
+	virtual void crc( Xfer* /* xfer */ )
 	{
 		// empty. jba.
 	}
@@ -972,12 +972,12 @@ protected:
 private:
 	Coord3D		m_path[2];
 	Int				m_index;
-	Coord3D		m_parkingLoc;
-	Real			m_parkingOrientation;
+	Coord3D		m_parkingLoc {};
+	Real			m_parkingOrientation {};
 	Bool			m_landing;
 public:
-	HeliTakeoffOrLandingState( StateMachine *machine, Bool landing ) : m_landing(landing), 
-		State( machine, "HeliTakeoffOrLandingState" ), m_index(0)
+	HeliTakeoffOrLandingState( StateMachine *machine, Bool landing ) :
+		State( machine, "HeliTakeoffOrLandingState" ), m_index(0), m_landing(landing)
 		{ 
 			m_parkingLoc.zero();
 		}
@@ -1110,7 +1110,7 @@ public:
 		return STATE_CONTINUE;
 	}
 
-	virtual void onExit( StateExitType status )
+	virtual void onExit( StateExitType /* status */ )
 	{
 		// just in case.
 		Object* jet = getMachineOwner();
@@ -1157,7 +1157,7 @@ class JetOrHeliParkOrientState : public State
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(JetOrHeliParkOrientState, "JetOrHeliParkOrientState")		
 protected:
 	// snapshot interface STUBBED.
-	virtual void crc( Xfer *xfer ){};
+	virtual void crc( Xfer* /* xfer */ ){};
 	virtual void xfer( Xfer *xfer ){XferVersion cv = 1;	XferVersion v = cv; xfer->xferVersion( &v, cv );}
 	virtual void loadPostProcess(){};
 
@@ -1223,7 +1223,7 @@ public:
 		return STATE_CONTINUE;
 	}
 
-	virtual void onExit( StateExitType status )
+	virtual void onExit( StateExitType /* status */ )
 	{
 		Object* jet = getMachineOwner();
 		JetAIUpdate* jetAI = (JetAIUpdate*)jet->getAIUpdateInterface();
@@ -1243,7 +1243,7 @@ class JetPauseBeforeTakeoffState : public AIFaceState
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(JetPauseBeforeTakeoffState, "JetPauseBeforeTakeoffState")		
 protected:
 	// snapshot interface
-	virtual void crc( Xfer *xfer )
+	virtual void crc( Xfer* /* xfer */ )
 	{
 		// empty. jba.
 	}
@@ -1291,7 +1291,7 @@ private:
 				if (ai == NULL)
 					continue;
 
-				if (ai->getCurrentStateID() == TAXI_TO_TAKEOFF)
+				if (ai->getCurrentStateID() == (StateID)TAXI_TO_TAKEOFF)
 				{
 					if (m_waitedForTaxiID == INVALID_ID)
 					{
@@ -1414,13 +1414,13 @@ class JetOrHeliReloadAmmoState : public State
 {
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE(JetOrHeliReloadAmmoState, "JetOrHeliReloadAmmoState")		
 private:
-	UnsignedInt		m_reloadTime;
-	UnsignedInt		m_reloadDoneFrame;
+	UnsignedInt		m_reloadTime {};
+	UnsignedInt		m_reloadDoneFrame {};
 
 protected:
 
 	// snapshot interface
-	virtual void crc( Xfer *xfer )
+	virtual void crc( Xfer* /* xfer */ )
 	{
 		// empty. jba.
 	}
@@ -1462,13 +1462,13 @@ public:
 			if (w == NULL)
 				continue;
 			
-			Int remaining = w->getRemainingAmmo();
-			Int clipSize = w->getClipSize();
-			Int rt = w->getClipReloadTime(jet);
+			UnsignedInt remaining = w->getRemainingAmmo();
+			UnsignedInt clipSize = (UnsignedInt)w->getClipSize();
+			UnsignedInt rt = (UnsignedInt)w->getClipReloadTime(jet);
 			if (clipSize > 0)
 			{
 				// bias by amount empty.
-				Int needed = clipSize - remaining;
+				UnsignedInt needed = clipSize - remaining;
 				rt = (rt * needed) / clipSize;
 			}
 			if (rt > m_reloadTime)
@@ -1497,7 +1497,7 @@ public:
 			else
 				w->setClipPercentFull((Real)(m_reloadTime - (m_reloadDoneFrame - now)) / m_reloadTime, false);
 
-			if (w->getRemainingAmmo() != w->getClipSize())
+			if (w->getRemainingAmmo() != (UnsignedInt)w->getClipSize())
 				allDone = false;
 		}
 
@@ -1507,7 +1507,7 @@ public:
 		return STATE_CONTINUE;
 	}
 
-	virtual void onExit(StateExitType status)
+	virtual void onExit(StateExitType /* status */)
 	{
 		Object* jet = getMachineOwner();
 		JetAIUpdate* jetAI = (JetAIUpdate*)jet->getAIUpdateInterface();
@@ -1588,19 +1588,19 @@ public:
 //-------------------------------------------------------------------------------------------------
 JetAIStateMachine::JetAIStateMachine(Object *owner, AsciiString name) : AIStateMachine(owner, name)
 {
-	defineState( RETURNING_FOR_LANDING, newInstance(JetOrHeliReturnForLandingState)( this ), LANDING_AWAIT_CLEARANCE, RETURN_TO_DEAD_AIRFIELD );
-	defineState( TAKING_OFF_AWAIT_CLEARANCE, newInstance(JetAwaitingRunwayState)( this, false ), TAXI_TO_TAKEOFF, AI_IDLE );
-	defineState( TAXI_TO_TAKEOFF, newInstance(JetOrHeliTaxiState)( this, FROM_PARKING ), PAUSE_BEFORE_TAKEOFF, AI_IDLE );
-	defineState( PAUSE_BEFORE_TAKEOFF, newInstance(JetPauseBeforeTakeoffState)( this ), TAKING_OFF, AI_IDLE );
-	defineState( TAKING_OFF, newInstance(JetTakeoffOrLandingState)( this, false ), AI_IDLE, AI_IDLE );
-	defineState( LANDING_AWAIT_CLEARANCE, newInstance(JetAwaitingRunwayState)( this, true ), LANDING, AI_IDLE );
-	defineState( LANDING, newInstance(JetTakeoffOrLandingState)( this, true ), TAXI_FROM_LANDING, AI_IDLE );
-	defineState( TAXI_FROM_LANDING, newInstance(JetOrHeliTaxiState)( this, TO_PARKING ), ORIENT_FOR_PARKING_PLACE, AI_IDLE );
-	defineState( TAXI_FROM_HANGAR, newInstance(JetOrHeliTaxiState)( this, FROM_HANGAR ), ORIENT_FOR_PARKING_PLACE, AI_IDLE );
-	defineState( ORIENT_FOR_PARKING_PLACE, newInstance(JetOrHeliParkOrientState)( this ), RELOAD_AMMO, AI_IDLE );
-	defineState( RELOAD_AMMO, newInstance(JetOrHeliReloadAmmoState)( this ), AI_IDLE, AI_IDLE );
-	defineState( RETURN_TO_DEAD_AIRFIELD, newInstance(JetOrHeliReturningToDeadAirfieldState)( this ), CIRCLING_DEAD_AIRFIELD, RETURN_TO_DEAD_AIRFIELD );
-	defineState( CIRCLING_DEAD_AIRFIELD, newInstance(JetOrHeliCirclingDeadAirfieldState)( this ), AI_IDLE, AI_IDLE );
+	defineState( (StateID)RETURNING_FOR_LANDING, newInstance(JetOrHeliReturnForLandingState)( this ), (StateID)LANDING_AWAIT_CLEARANCE, (StateID)RETURN_TO_DEAD_AIRFIELD );
+	defineState( (StateID)TAKING_OFF_AWAIT_CLEARANCE, newInstance(JetAwaitingRunwayState)( this, false ), (StateID)TAXI_TO_TAKEOFF, (StateID)AI_IDLE );
+	defineState( (StateID)TAXI_TO_TAKEOFF, newInstance(JetOrHeliTaxiState)( this, FROM_PARKING ), (StateID)PAUSE_BEFORE_TAKEOFF, (StateID)AI_IDLE );
+	defineState( (StateID)PAUSE_BEFORE_TAKEOFF, newInstance(JetPauseBeforeTakeoffState)( this ), (StateID)TAKING_OFF, (StateID)AI_IDLE );
+	defineState( (StateID)TAKING_OFF, newInstance(JetTakeoffOrLandingState)( this, false ), (StateID)AI_IDLE, (StateID)AI_IDLE );
+	defineState( (StateID)LANDING_AWAIT_CLEARANCE, newInstance(JetAwaitingRunwayState)( this, true ), (StateID)LANDING, (StateID)AI_IDLE );
+	defineState( (StateID)LANDING, newInstance(JetTakeoffOrLandingState)( this, true ), (StateID)TAXI_FROM_LANDING, (StateID)AI_IDLE );
+	defineState( (StateID)TAXI_FROM_LANDING, newInstance(JetOrHeliTaxiState)( this, TO_PARKING ), (StateID)ORIENT_FOR_PARKING_PLACE, (StateID)AI_IDLE );
+	defineState( (StateID)TAXI_FROM_HANGAR, newInstance(JetOrHeliTaxiState)( this, FROM_HANGAR ), (StateID)ORIENT_FOR_PARKING_PLACE, (StateID)AI_IDLE );
+	defineState( (StateID)ORIENT_FOR_PARKING_PLACE, newInstance(JetOrHeliParkOrientState)( this ), (StateID)RELOAD_AMMO, (StateID)AI_IDLE );
+	defineState( (StateID)RELOAD_AMMO, newInstance(JetOrHeliReloadAmmoState)( this ), (StateID)AI_IDLE, (StateID)AI_IDLE );
+	defineState( (StateID)RETURN_TO_DEAD_AIRFIELD, newInstance(JetOrHeliReturningToDeadAirfieldState)( this ), (StateID)CIRCLING_DEAD_AIRFIELD, (StateID)RETURN_TO_DEAD_AIRFIELD );
+	defineState( (StateID)CIRCLING_DEAD_AIRFIELD, newInstance(JetOrHeliCirclingDeadAirfieldState)( this ), (StateID)AI_IDLE, (StateID)AI_IDLE );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1625,16 +1625,16 @@ public:
 //-------------------------------------------------------------------------------------------------
 HeliAIStateMachine::HeliAIStateMachine(Object *owner, AsciiString name) : AIStateMachine(owner, name)
 {
-	defineState( RETURNING_FOR_LANDING, newInstance(JetOrHeliReturnForLandingState)( this ), LANDING_AWAIT_CLEARANCE, RETURN_TO_DEAD_AIRFIELD );
-	defineState( TAKING_OFF_AWAIT_CLEARANCE, newInstance(SuccessState)( this ), TAKING_OFF, AI_IDLE );
-	defineState( TAKING_OFF, newInstance(HeliTakeoffOrLandingState)( this, false ), AI_IDLE, AI_IDLE );
-	defineState( LANDING_AWAIT_CLEARANCE, newInstance(SuccessState)( this ), ORIENT_FOR_PARKING_PLACE, AI_IDLE );
-	defineState( ORIENT_FOR_PARKING_PLACE, newInstance(JetOrHeliParkOrientState)( this ), LANDING, AI_IDLE );
-	defineState( LANDING, newInstance(HeliTakeoffOrLandingState)( this, true ), RELOAD_AMMO, AI_IDLE );
-	defineState( RELOAD_AMMO, newInstance(JetOrHeliReloadAmmoState)( this ), AI_IDLE, AI_IDLE );
-	defineState( RETURN_TO_DEAD_AIRFIELD, newInstance(JetOrHeliReturningToDeadAirfieldState)( this ), CIRCLING_DEAD_AIRFIELD, RETURN_TO_DEAD_AIRFIELD );
-	defineState( CIRCLING_DEAD_AIRFIELD, newInstance(JetOrHeliCirclingDeadAirfieldState)( this ), AI_IDLE, AI_IDLE );
-	defineState( TAXI_FROM_HANGAR, newInstance(JetOrHeliTaxiState)( this, FROM_HANGAR ), AI_IDLE, AI_IDLE );
+	defineState( (StateID)RETURNING_FOR_LANDING, newInstance(JetOrHeliReturnForLandingState)( this ), (StateID)LANDING_AWAIT_CLEARANCE, (StateID)RETURN_TO_DEAD_AIRFIELD );
+	defineState( (StateID)TAKING_OFF_AWAIT_CLEARANCE, newInstance(SuccessState)( this ), (StateID)TAKING_OFF, (StateID)AI_IDLE );
+	defineState( (StateID)TAKING_OFF, newInstance(HeliTakeoffOrLandingState)( this, false ), (StateID)AI_IDLE, (StateID)AI_IDLE );
+	defineState( (StateID)LANDING_AWAIT_CLEARANCE, newInstance(SuccessState)( this ), (StateID)ORIENT_FOR_PARKING_PLACE, (StateID)AI_IDLE );
+	defineState( (StateID)ORIENT_FOR_PARKING_PLACE, newInstance(JetOrHeliParkOrientState)( this ), (StateID)LANDING, (StateID)AI_IDLE );
+	defineState( (StateID)LANDING, newInstance(HeliTakeoffOrLandingState)( this, true ), (StateID)RELOAD_AMMO, (StateID)AI_IDLE );
+	defineState( (StateID)RELOAD_AMMO, newInstance(JetOrHeliReloadAmmoState)( this ), (StateID)AI_IDLE, (StateID)AI_IDLE );
+	defineState( (StateID)RETURN_TO_DEAD_AIRFIELD, newInstance(JetOrHeliReturningToDeadAirfieldState)( this ), (StateID)CIRCLING_DEAD_AIRFIELD, (StateID)RETURN_TO_DEAD_AIRFIELD );
+	defineState( (StateID)CIRCLING_DEAD_AIRFIELD, newInstance(JetOrHeliCirclingDeadAirfieldState)( this ), (StateID)AI_IDLE, (StateID)AI_IDLE );
+	defineState( (StateID)TAXI_FROM_HANGAR, newInstance(JetOrHeliTaxiState)( this, FROM_HANGAR ), (StateID)AI_IDLE, (StateID)AI_IDLE );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1649,55 +1649,57 @@ HeliAIStateMachine::~HeliAIStateMachine()
 //-------------------------------------------------------------------------------------------------
 JetAIUpdateModuleData::JetAIUpdateModuleData()
 {
-	m_outOfAmmoDamagePerSecond = 0;
-	m_needsRunway = true;
-	m_keepsParkingSpaceWhenAirborne = true;
-	m_takeoffDistForMaxLift = 0.0f;
-	m_minHeight = 0.0f;
-	m_parkingOffset = 0.0f;
-	m_sneakyOffsetWhenAttacking = 0.0f;
-	m_takeoffPause = 0;
-	m_attackingLoco = LOCOMOTORSET_NORMAL;
-	m_returningLoco = LOCOMOTORSET_NORMAL;
-	m_attackLocoPersistTime = 0;
-	m_attackersMissPersistTime = 0;
-	m_lockonTime = 0;
-	m_lockonCursor.clear();
-	m_lockonInitialDist = 100;
-	m_lockonFreq = 0.5;
-	m_lockonAngleSpin = 720;
-	m_returnToBaseIdleTime = 0;
+	m_ini.m_outOfAmmoDamagePerSecond = 0;
+	m_ini.m_needsRunway = true;
+	m_ini.m_keepsParkingSpaceWhenAirborne = true;
+	m_ini.m_takeoffDistForMaxLift = 0.0f;
+	m_ini.m_minHeight = 0.0f;
+	m_ini.m_parkingOffset = 0.0f;
+	m_ini.m_sneakyOffsetWhenAttacking = 0.0f;
+	m_ini.m_takeoffPause = 0;
+	m_ini.m_attackingLoco = LOCOMOTORSET_NORMAL;
+	m_ini.m_returningLoco = LOCOMOTORSET_NORMAL;
+	m_ini.m_attackLocoPersistTime = 0;
+	m_ini.m_attackersMissPersistTime = 0;
+	m_ini.m_lockonTime = 0;
+	m_ini.m_lockonCursor.clear();
+	m_ini.m_lockonInitialDist = 100;
+	m_ini.m_lockonFreq = 0.5;
+	m_ini.m_lockonAngleSpin = 720;
+	m_ini.m_returnToBaseIdleTime = 0;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void JetAIUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void JetAIUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  AIUpdateModuleData::buildFieldParse(p);
+	AIUpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "OutOfAmmoDamagePerSecond",			INI::parsePercentToReal, NULL, offsetof( JetAIUpdateModuleData, m_outOfAmmoDamagePerSecond ) },
-		{ "NeedsRunway",									INI::parseBool, NULL, offsetof( JetAIUpdateModuleData, m_needsRunway ) },
-		{ "KeepsParkingSpaceWhenAirborne",INI::parseBool, NULL, offsetof( JetAIUpdateModuleData, m_keepsParkingSpaceWhenAirborne ) },
-		{ "TakeoffDistForMaxLift",				INI::parsePercentToReal, NULL, offsetof( JetAIUpdateModuleData, m_takeoffDistForMaxLift ) },
-		{ "TakeoffPause",									INI::parseDurationUnsignedInt, NULL, offsetof( JetAIUpdateModuleData, m_takeoffPause ) },
-		{ "MinHeight",										INI::parseReal, NULL, offsetof( JetAIUpdateModuleData, m_minHeight ) },
-		{ "ParkingOffset",								INI::parseReal, NULL, offsetof( JetAIUpdateModuleData, m_parkingOffset ) },
-		{ "SneakyOffsetWhenAttacking",		INI::parseReal, NULL, offsetof( JetAIUpdateModuleData, m_sneakyOffsetWhenAttacking ) },
-		{ "AttackLocomotorType",					INI::parseIndexList, TheLocomotorSetNames, offsetof( JetAIUpdateModuleData, m_attackingLoco ) },
-		{ "AttackLocomotorPersistTime",		INI::parseDurationUnsignedInt, NULL, offsetof( JetAIUpdateModuleData, m_attackLocoPersistTime ) },
-		{ "AttackersMissPersistTime",			INI::parseDurationUnsignedInt, NULL, offsetof( JetAIUpdateModuleData, m_attackersMissPersistTime ) },
-		{ "ReturnForAmmoLocomotorType",		INI::parseIndexList, TheLocomotorSetNames, offsetof( JetAIUpdateModuleData, m_returningLoco ) },
-		{ "LockonTime",										INI::parseDurationUnsignedInt, NULL, offsetof( JetAIUpdateModuleData, m_lockonTime ) },
-		{ "LockonCursor",									INI::parseAsciiString, NULL, offsetof( JetAIUpdateModuleData, m_lockonCursor ) },
-		{ "LockonInitialDist",						INI::parseReal, NULL, offsetof( JetAIUpdateModuleData, m_lockonInitialDist ) },
-		{ "LockonFreq",										INI::parseReal, NULL, offsetof( JetAIUpdateModuleData, m_lockonFreq ) },
-		{ "LockonAngleSpin",							INI::parseAngleReal, NULL, offsetof( JetAIUpdateModuleData, m_lockonAngleSpin ) },
-		{ "LockonBlinky",									INI::parseBool, NULL, offsetof( JetAIUpdateModuleData, m_lockonBlinky ) },
-		{ "ReturnToBaseIdleTime",					INI::parseDurationUnsignedInt, NULL, offsetof( JetAIUpdateModuleData, m_returnToBaseIdleTime ) },
+		{ "OutOfAmmoDamagePerSecond",		INI::parsePercentToReal,		NULL,					offsetof( JetAIUpdateModuleData::IniData, m_outOfAmmoDamagePerSecond ) },
+		{ "NeedsRunway",					INI::parseBool,					NULL,					offsetof( JetAIUpdateModuleData::IniData, m_needsRunway ) },
+		{ "KeepsParkingSpaceWhenAirborne",	INI::parseBool,					NULL,					offsetof( JetAIUpdateModuleData::IniData, m_keepsParkingSpaceWhenAirborne ) },
+		{ "TakeoffDistForMaxLift",			INI::parsePercentToReal,		NULL,					offsetof( JetAIUpdateModuleData::IniData, m_takeoffDistForMaxLift ) },
+		{ "TakeoffPause",					INI::parseDurationUnsignedInt,	NULL,					offsetof( JetAIUpdateModuleData::IniData, m_takeoffPause ) },
+		{ "MinHeight",						INI::parseReal, 				NULL,					offsetof( JetAIUpdateModuleData::IniData, m_minHeight ) },
+		{ "ParkingOffset",					INI::parseReal, 				NULL,					offsetof( JetAIUpdateModuleData::IniData, m_parkingOffset ) },
+		{ "SneakyOffsetWhenAttacking",		INI::parseReal, 				NULL,					offsetof( JetAIUpdateModuleData::IniData, m_sneakyOffsetWhenAttacking ) },
+		{ "AttackLocomotorType",			INI::parseIndexList, 			TheLocomotorSetNames,	offsetof( JetAIUpdateModuleData::IniData, m_attackingLoco ) },
+		{ "AttackLocomotorPersistTime",		INI::parseDurationUnsignedInt,	NULL,					offsetof( JetAIUpdateModuleData::IniData, m_attackLocoPersistTime ) },
+		{ "AttackersMissPersistTime",		INI::parseDurationUnsignedInt,	NULL,					offsetof( JetAIUpdateModuleData::IniData, m_attackersMissPersistTime ) },
+		{ "ReturnForAmmoLocomotorType",		INI::parseIndexList,			TheLocomotorSetNames,	offsetof( JetAIUpdateModuleData::IniData, m_returningLoco ) },
+		{ "LockonTime",						INI::parseDurationUnsignedInt,	NULL,					offsetof( JetAIUpdateModuleData::IniData, m_lockonTime ) },
+		{ "LockonCursor",					INI::parseAsciiString,			NULL,					offsetof( JetAIUpdateModuleData::IniData, m_lockonCursor ) },
+		{ "LockonInitialDist",				INI::parseReal,					NULL,					offsetof( JetAIUpdateModuleData::IniData, m_lockonInitialDist ) },
+		{ "LockonFreq",						INI::parseReal,					NULL,					offsetof( JetAIUpdateModuleData::IniData, m_lockonFreq ) },
+		{ "LockonAngleSpin",				INI::parseAngleReal,			NULL,					offsetof( JetAIUpdateModuleData::IniData, m_lockonAngleSpin ) },
+		{ "LockonBlinky",					INI::parseBool,					NULL,					offsetof( JetAIUpdateModuleData::IniData, m_lockonBlinky ) },
+		{ "ReturnToBaseIdleTime",			INI::parseDurationUnsignedInt,	NULL,					offsetof( JetAIUpdateModuleData::IniData, m_returnToBaseIdleTime ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	JetAIUpdateModuleData* self {static_cast<JetAIUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1707,7 +1709,7 @@ JetAIUpdateModuleData::JetAIUpdateModuleData()
 //-------------------------------------------------------------------------------------------------
 AIStateMachine* JetAIUpdate::makeStateMachine()
 {
-	if (getJetAIUpdateModuleData()->m_needsRunway)
+	if (getJetAIUpdateModuleData()->m_ini.m_needsRunway)
 		return newInstance(JetAIStateMachine)( getObject(), "JetAIStateMachine");
 	else
 		return newInstance(HeliAIStateMachine)( getObject(), "HeliAIStateMachine");
@@ -1758,7 +1760,7 @@ Bool JetAIUpdate::isIdle() const
 Bool JetAIUpdate::isReloading() const
 {
 	StateID stateID = getStateMachine()->getCurrentStateID();
-	if( stateID == RELOAD_AMMO )
+	if( stateID == (StateID)RELOAD_AMMO )
 	{
 		return TRUE;
 	}
@@ -1769,7 +1771,7 @@ Bool JetAIUpdate::isReloading() const
 Bool JetAIUpdate::isTaxiingToParking() const
 {
 	StateID stateID = getStateMachine()->getCurrentStateID();
-	switch( stateID )
+	switch( (JetAIStateType)stateID )
 	{
 		case TAXI_FROM_HANGAR:
 		case TAXI_FROM_LANDING:
@@ -1780,6 +1782,8 @@ Bool JetAIUpdate::isTaxiingToParking() const
 		case PAUSE_BEFORE_TAKEOFF:
 		case TAKING_OFF:
 			return TRUE;
+		default:
+			break;
 	}
 	return FALSE;
 }
@@ -1855,7 +1859,7 @@ UpdateSleepTime JetAIUpdate::update()
 	// srj sez: not 100% sure on this. calling RELOAD_AMMO "idle" allows us to get healed while reloading,
 	// but might have other side effects we didn't want. if this does prove to cause a bug, be sure
 	// that jets (and ESPECIALLY comanches) are still getting healed at airfields.
-	if (AIUpdateInterface::isIdle() || getStateMachine()->getCurrentStateID() == RELOAD_AMMO)
+	if (AIUpdateInterface::isIdle() || getStateMachine()->getCurrentStateID() == (StateID)RELOAD_AMMO)
 	{
 		if (pp != NULL)
 		{
@@ -1869,7 +1873,7 @@ UpdateSleepTime JetAIUpdate::update()
 				friend_setAllowAirLoco(true);
 				getStateMachine()->clear();
 				setLastCommandSource( CMD_FROM_AI );
-				getStateMachine()->setState( TAKING_OFF_AWAIT_CLEARANCE );
+				getStateMachine()->setState((StateID)TAKING_OFF_AWAIT_CLEARANCE );
 			}
 			else
 			{
@@ -1887,11 +1891,11 @@ UpdateSleepTime JetAIUpdate::update()
 
 			setFlag(USE_SPECIAL_RETURN_LOCO, true);
 			setLastCommandSource( CMD_FROM_AI );
-			getStateMachine()->setState(RETURNING_FOR_LANDING);
+			getStateMachine()->setState((StateID)RETURNING_FOR_LANDING);
 		}
 		else if (getFlag(HAS_PENDING_COMMAND) 
 			// srj sez: if we are reloading ammo, wait will we are done before processing the pending command.
-			&& getStateMachine()->getCurrentStateID() != RELOAD_AMMO)
+			&& getStateMachine()->getCurrentStateID() != (StateID)RELOAD_AMMO)
 		{
 			m_returnToBaseFrame = 0;
 
@@ -1907,11 +1911,11 @@ UpdateSleepTime JetAIUpdate::update()
 			DEBUG_ASSERTCRASH(isOutOfSpecialReloadAmmo() == false, ("Hmm, this seems unlikely -- isOutOfSpecialReloadAmmo()==false"));
 			setFlag(USE_SPECIAL_RETURN_LOCO, false);
 			setLastCommandSource( CMD_FROM_AI );
-			getStateMachine()->setState(RETURNING_FOR_LANDING);
+			getStateMachine()->setState((StateID)RETURNING_FOR_LANDING);
 		}
-		else if (m_returnToBaseFrame  == 0 && d->m_returnToBaseIdleTime > 0 && getFlag(ALLOW_AIR_LOCO))
+		else if (m_returnToBaseFrame  == 0 && d->m_ini.m_returnToBaseIdleTime > 0 && getFlag(ALLOW_AIR_LOCO))
 		{
-			m_returnToBaseFrame = now + d->m_returnToBaseIdleTime;
+			m_returnToBaseFrame = now + d->m_ini.m_returnToBaseIdleTime;
 		}
 	}
 	else
@@ -1928,7 +1932,7 @@ UpdateSleepTime JetAIUpdate::update()
 			setFlag(HAS_PENDING_COMMAND, true);
 			setFlag(ALLOW_INTERRUPT_AND_RESUME_OF_CUR_STATE_FOR_RELOAD, false);
 			setLastCommandSource( CMD_FROM_AI );
-			getStateMachine()->setState(RETURNING_FOR_LANDING);
+			getStateMachine()->setState((StateID)RETURNING_FOR_LANDING);
 		}
 	}
 
@@ -1942,7 +1946,7 @@ UpdateSleepTime JetAIUpdate::update()
 	if (draw != NULL)
 	{
 		StateID id = getStateMachine()->getCurrentStateID();
-		Bool needToCheckMinHeight = (id >= JETAISTATETYPE_FIRST && id <= JETAISTATETYPE_LAST) || 
+		Bool needToCheckMinHeight = (id >= (StateID)JETAISTATETYPE_FIRST && id <= (StateID)JETAISTATETYPE_LAST) || 
 																	!jet->isAboveTerrain() ||
 																	!getFlag(ALLOW_AIR_LOCO);
 		if( needToCheckMinHeight || jet->getStatusBits().test( OBJECT_STATUS_DECK_HEIGHT_OFFSET ) )
@@ -1973,8 +1977,8 @@ UpdateSleepTime JetAIUpdate::update()
 
 	if (jet->testStatus(OBJECT_STATUS_IS_ATTACKING))
 	{
-		m_attackLocoExpireFrame = now + d->m_attackLocoPersistTime;
-		m_attackersMissExpireFrame = now + d->m_attackersMissPersistTime;
+		m_attackLocoExpireFrame = now + d->m_ini.m_attackLocoPersistTime;
+		m_attackersMissExpireFrame = now + d->m_ini.m_attackersMissPersistTime;
 	}
 	else
 	{
@@ -1997,11 +2001,11 @@ UpdateSleepTime JetAIUpdate::update()
 	
 	if (m_attackLocoExpireFrame != 0)
 	{
-		chooseLocomotorSet(d->m_attackingLoco);
+		chooseLocomotorSet(d->m_ini.m_attackingLoco);
 	}
 	else if (getFlag(USE_SPECIAL_RETURN_LOCO))
 	{
-		chooseLocomotorSet(d->m_returningLoco);
+		chooseLocomotorSet(d->m_ini.m_returningLoco);
 	}
 
 	
@@ -2049,11 +2053,11 @@ Bool JetAIUpdate::chooseLocomotorSet(LocomotorSetType wst)
 	}
 	else if (m_attackLocoExpireFrame != 0)
 	{
-		wst = d->m_attackingLoco;
+		wst = d->m_ini.m_attackingLoco;
 	}
 	else if (getFlag(USE_SPECIAL_RETURN_LOCO))
 	{
-		wst = d->m_returningLoco;
+		wst = d->m_ini.m_returningLoco;
 	}
 	return AIUpdateInterface::chooseLocomotorSet(wst);
 }
@@ -2087,8 +2091,8 @@ Bool JetAIUpdate::getSneakyTargetingOffset(Coord3D* offset) const
 			const JetAIUpdateModuleData* d = getJetAIUpdateModuleData();
 			const Object* jet = getObject();
 			const Coord3D* dir = jet->getUnitDirectionVector2D();
-			offset->x = dir->x * d->m_sneakyOffsetWhenAttacking;
-			offset->y = dir->y * d->m_sneakyOffsetWhenAttacking;
+			offset->x = dir->x * d->m_ini.m_sneakyOffsetWhenAttacking;
+			offset->y = dir->y * d->m_ini.m_sneakyOffsetWhenAttacking;
 			offset->z = 0.0f;
 		}
 		return true;
@@ -2134,13 +2138,13 @@ void JetAIUpdate::positionLockon()
 	const JetAIUpdateModuleData* d = getJetAIUpdateModuleData();
 	UnsignedInt now = TheGameLogic->getFrame();
 	UnsignedInt remaining = m_untargetableExpireFrame - now;
-	UnsignedInt elapsed = d->m_lockonTime - remaining;
+	UnsignedInt elapsed = d->m_ini.m_lockonTime - remaining;
 
 	Coord3D pos = *getObject()->getPosition();
-	Real frac = (Real)remaining / (Real)d->m_lockonTime;
+	Real frac = (Real)remaining / (Real)d->m_ini.m_lockonTime;
 	Real finalDist = getObject()->getGeometryInfo().getBoundingCircleRadius();
-	Real dist = finalDist + (d->m_lockonInitialDist - finalDist) * frac;
-	Real angle = d->m_lockonAngleSpin * frac;
+	Real dist = finalDist + (d->m_ini.m_lockonInitialDist - finalDist) * frac;
+	Real angle = d->m_ini.m_lockonAngleSpin * frac;
 
 	pos.x += Cos(angle) * dist;
 	pos.y += Sin(angle) * dist;
@@ -2158,7 +2162,7 @@ void JetAIUpdate::positionLockon()
 	//
 	Real elapsedTimeSumPrev = 0.5f * (elapsed-1) * (elapsed);
 	Real elapsedTimeSumCurr = elapsedTimeSumPrev + elapsed;
-	Real factor = d->m_lockonFreq / d->m_lockonTime;
+	Real factor = d->m_ini.m_lockonFreq / d->m_ini.m_lockonTime;
 	Bool lastPhase = ((Int)(factor * elapsedTimeSumPrev) & 1) != 0;
 	Bool thisPhase = ((Int)(factor * elapsedTimeSumCurr) & 1) != 0;
 
@@ -2167,12 +2171,12 @@ void JetAIUpdate::positionLockon()
 		AudioEventRTS lockonSound = TheAudio->getMiscAudio()->m_lockonTickSound;
 		lockonSound.setObjectID(getObject()->getID());
 		TheAudio->addAudioEvent(&lockonSound);
-		if (d->m_lockonBlinky)
+		if (d->m_ini.m_lockonBlinky)
 			m_lockonDrawable->setDrawableHidden(false);
 	}
 	else
 	{
-		if (d->m_lockonBlinky)
+		if (d->m_ini.m_lockonBlinky)
 			m_lockonDrawable->setDrawableHidden(true);
 	}
 }
@@ -2184,9 +2188,9 @@ void JetAIUpdate::buildLockonDrawableIfNecessary()
 		return;
 
 	const JetAIUpdateModuleData* d = getJetAIUpdateModuleData();
-	if (d->m_lockonCursor.isNotEmpty() && m_lockonDrawable == NULL)
+	if (d->m_ini.m_lockonCursor.isNotEmpty() && m_lockonDrawable == NULL)
 	{
-		const ThingTemplate* tt = TheThingFactory->findTemplate(d->m_lockonCursor);
+		const ThingTemplate* tt = TheThingFactory->findTemplate(d->m_ini.m_lockonCursor);
 		if (tt)
 		{
 			m_lockonDrawable = TheThingFactory->newDrawable(tt);
@@ -2199,7 +2203,7 @@ void JetAIUpdate::buildLockonDrawableIfNecessary()
 void JetAIUpdate::addTargeter(ObjectID id, Bool add)
 {
 	const JetAIUpdateModuleData* d = getJetAIUpdateModuleData();
-	UnsignedInt lockonTime = d->m_lockonTime;
+	UnsignedInt lockonTime = d->m_ini.m_lockonTime;
 	if (lockonTime != 0)
 	{
 		std::list<ObjectID>::iterator it = std::find(m_targetedBy.begin(), m_targetedBy.end(), id);
@@ -2280,9 +2284,9 @@ void JetAIUpdate::privateFollowPath( const std::vector<Coord3D>* path, Object *i
 			ignoreObstacle( ignoreObject );
 		setLastCommandSource( cmdSource );
 		if (getObject()->isKindOf(KINDOF_PRODUCED_AT_HELIPAD))
-			getStateMachine()->setState( TAKING_OFF_AWAIT_CLEARANCE );
+			getStateMachine()->setState((StateID)TAKING_OFF_AWAIT_CLEARANCE );
 		else
-			getStateMachine()->setState( TAXI_FROM_HANGAR );
+			getStateMachine()->setState((StateID)TAXI_FROM_HANGAR );
 	}
 	else
 	{
@@ -2332,7 +2336,7 @@ void JetAIUpdate::doLandingCommand(Object *airfield, CommandSourceType cmdSource
 			setFlag(USE_SPECIAL_RETURN_LOCO, false);
 			setFlag(ALLOW_INTERRUPT_AND_RESUME_OF_CUR_STATE_FOR_RELOAD, false);
 			setLastCommandSource( cmdSource );
-			getStateMachine()->setState(RETURNING_FOR_LANDING);
+			getStateMachine()->setState((StateID)RETURNING_FOR_LANDING);
 			return;
 		}
 	}
@@ -2341,7 +2345,7 @@ void JetAIUpdate::doLandingCommand(Object *airfield, CommandSourceType cmdSource
 //----------------------------------------------------------------------------------------
 void JetAIUpdate::notifyVictimIsDead()
 {
-	if (getJetAIUpdateModuleData()->m_needsRunway)
+	if (getJetAIUpdateModuleData()->m_ini.m_needsRunway)
 		m_returnToBaseFrame = TheGameLogic->getFrame();
 }
 
@@ -2418,7 +2422,7 @@ void JetAIUpdate::aiDoCommand(const AICommandParms* parms)
 		setFlag(HAS_PENDING_COMMAND, true);
 		return;
 	}
-	else if (parms->m_cmd == AICMD_IDLE && getStateMachine()->getCurrentStateID() == RELOAD_AMMO)
+	else if (parms->m_cmd == AICMD_IDLE && getStateMachine()->getCurrentStateID() == (StateID)RELOAD_AMMO)
 	{
 		// uber-special-case... if we are told to idle, but are reloading ammo, ignore it for now,
 		// since we're already doing "nothing" and responding to this will cease our reload...
@@ -2430,7 +2434,7 @@ void JetAIUpdate::aiDoCommand(const AICommandParms* parms)
 	{
 		getStateMachine()->clear();
 		setLastCommandSource( CMD_FROM_AI );
-		getStateMachine()->setState( RETURNING_FOR_LANDING );
+		getStateMachine()->setState((StateID)RETURNING_FOR_LANDING );
 		return;
 	}
 	else if (!getFlag(ALLOW_AIR_LOCO))
@@ -2451,6 +2455,7 @@ void JetAIUpdate::aiDoCommand(const AICommandParms* parms)
 					return;
 			
 				// else fall thru to the default case!
+				[[fallthrough]];
 
 			default:
 			{
@@ -2460,7 +2465,7 @@ void JetAIUpdate::aiDoCommand(const AICommandParms* parms)
 
 				getStateMachine()->clear();
 				setLastCommandSource( CMD_FROM_AI );
-				getStateMachine()->setState( TAKING_OFF_AWAIT_CLEARANCE );
+				getStateMachine()->setState((StateID)TAKING_OFF_AWAIT_CLEARANCE );
 				
 				return;
 			}

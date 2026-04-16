@@ -67,10 +67,10 @@ struct PickDrawableStruct
 {
 	// List to fill with Drawables. This should be provided by the caller.
 	DrawableList *drawableListToFill;
-	Bool forceAttackMode;
+	Bool forceAttackMode {};
 	
 	// Note, this is OR'd with the things we are attempting to select.
-	KindOfMaskType kindofsToMatch;
+	KindOfMaskType kindofsToMatch {};
 
 	PickDrawableStruct();
 };

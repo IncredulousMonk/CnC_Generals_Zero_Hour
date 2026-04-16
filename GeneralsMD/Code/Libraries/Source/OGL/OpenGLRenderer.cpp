@@ -144,7 +144,13 @@ out vec4 FragmentColour;
 
 void main(void)
 {
-   FragmentColour = texture(Texture, uv);
+   vec4 texel = texture(Texture, uv);
+   if (texel.a < 0.5) {
+      // We use linear filtering, so alpha may range anywhere from 0 to 1.
+      // Discard the texel if it is more transparent than opaque.
+      discard;
+   }
+   FragmentColour = texel;
 }
 )"};
 

@@ -39,7 +39,7 @@
 #include "GameLogic/TerrainLogic.h"
 #include "GameLogic/Module/SpawnPointProductionExitUpdate.h"
 
-#include "WWMath/Matrix3D.h"		///< @todo Replace with our own matrix library
+#include "WWMath/matrix3d.h"		///< @todo Replace with our own matrix library
 
 //-------------------------------------------------------------------------------------------------
 SpawnPointProductionExitUpdate::SpawnPointProductionExitUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateModule( thing, moduleData )
@@ -71,7 +71,8 @@ void SpawnPointProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDoor
 	Object *creationObject = getObject();
 	if (creationObject)
 	{
-		for( Int positionIndex = 0; positionIndex < m_spawnPointCount; positionIndex++ )
+		Int positionIndex {};
+		for( positionIndex = 0; positionIndex < m_spawnPointCount; positionIndex++ )
 		{
 			if( m_spawnPointOccupier[positionIndex] == INVALID_ID )
 				break;
@@ -113,7 +114,7 @@ void SpawnPointProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDoor
 }
 
 //-------------------------------------------------------------------------------------------------
-ExitDoorType SpawnPointProductionExitUpdate::reserveDoorForExit( const ThingTemplate* objType, Object *specificObject )
+ExitDoorType SpawnPointProductionExitUpdate::reserveDoorForExit( const ThingTemplate* /* objType */, Object* /* specificObject */ )
 {
 	if( !m_bonesInitialized )
 		initializeBonePositions();
@@ -133,7 +134,7 @@ ExitDoorType SpawnPointProductionExitUpdate::reserveDoorForExit( const ThingTemp
 }
 
 //-------------------------------------------------------------------------------------------------
-void SpawnPointProductionExitUpdate::unreserveDoorForExit( ExitDoorType exitDoor )
+void SpawnPointProductionExitUpdate::unreserveDoorForExit( ExitDoorType /* exitDoor */ )
 {
 	/* nothing */
 }
@@ -154,9 +155,9 @@ void SpawnPointProductionExitUpdate::initializeBonePositions()
 
 	// Get all the bones of the right name
 	const SpawnPointProductionExitUpdateModuleData* md = getSpawnPointProductionExitUpdateModuleData();
-	m_spawnPointCount = myDrawable->getPristineBonePositions( md->m_spawnPointBoneNameData.str(), 1, NULL, boneTransforms, MAX_SPAWN_POINTS );
+	m_spawnPointCount = myDrawable->getPristineBonePositions( md->m_ini.m_spawnPointBoneNameData.str(), 1, NULL, boneTransforms, MAX_SPAWN_POINTS );
 
-	for( matrixIndex = 0; matrixIndex < m_spawnPointCount; matrixIndex++ )
+	for( Int matrixIndex = 0; matrixIndex < m_spawnPointCount; matrixIndex++ )
 	{
 		Matrix3D *currentTransform = &(boneTransforms[matrixIndex]);
 		// Convert their matrix one by one

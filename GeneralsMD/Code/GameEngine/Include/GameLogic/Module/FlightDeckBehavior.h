@@ -50,41 +50,51 @@ enum
 
 struct RunwayDefinition
 {
-	RunwayDefinition::RunwayDefinition()
+	RunwayDefinition()
 	{
 		m_catapultParticleSystem = NULL;
 	}
 
-	std::vector<AsciiString> m_spacesBoneNames;
-	std::vector<AsciiString> m_taxiBoneNames;
-	std::vector<AsciiString> m_creationBoneNames;
+	// No copies allowed!
+	RunwayDefinition(const RunwayDefinition&) = delete;
+	RunwayDefinition& operator=(const RunwayDefinition&) = delete;
+
+	std::vector<AsciiString> m_spacesBoneNames {};
+	std::vector<AsciiString> m_taxiBoneNames {};
+	std::vector<AsciiString> m_creationBoneNames {};
 	AsciiString m_takeoffBoneNames[ NUM_RUNWAY_BONES ];
 	AsciiString m_landingBoneNames[ NUM_RUNWAY_BONES ];
-	const ParticleSystemTemplate *m_catapultParticleSystem;
+	const ParticleSystemTemplate *m_catapultParticleSystem {};
 };
 
 //-------------------------------------------------------------------------------------------------
 class FlightDeckBehaviorModuleData : public AIUpdateModuleData
 {
 public:
-	RunwayDefinition m_runwayInfo[ MAX_RUNWAYS ];
-	AsciiString   m_thingTemplateName;
-	Real					m_healAmount;
-	Real					m_approachHeight;
-	Real					m_landingDeckHeightOffset;
-	Int						m_numRows;
-	Int						m_numCols;
-	UnsignedInt		m_cleanupFrames;
-	UnsignedInt		m_humanFollowFrames;
-	UnsignedInt		m_replacementFrames;
-	UnsignedInt		m_dockAnimationFrames;
-	UnsignedInt		m_launchWaveFrames;
-	UnsignedInt   m_launchRampFrames;
-	UnsignedInt   m_lowerRampFrames;
-	UnsignedInt		m_catapultFireFrames;
+	// MG: Cannot apply offsetof to FlightDeckBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		RunwayDefinition	m_runwayInfo[ MAX_RUNWAYS ];
+		AsciiString			m_thingTemplateName;
+		Real				m_healAmount;
+		Real				m_approachHeight;
+		Real				m_landingDeckHeightOffset;
+		Int					m_numRows;
+		Int					m_numCols;
+		UnsignedInt			m_cleanupFrames;
+		UnsignedInt			m_humanFollowFrames;
+		UnsignedInt			m_replacementFrames;
+		UnsignedInt			m_dockAnimationFrames;
+		UnsignedInt			m_launchWaveFrames;
+		UnsignedInt			m_launchRampFrames;
+		UnsignedInt			m_lowerRampFrames;
+		UnsignedInt			m_catapultFireFrames;
+	};
+
+	IniData m_ini {};
 
 	FlightDeckBehaviorModuleData();
-	static void buildFieldParse( MultiIniFieldParse& p );
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 	static void parseRunwayStrip( INI* ini, void *instance, void *store, const void* /*userData*/ );
 };
 
@@ -105,6 +115,10 @@ public:
 	FlightDeckBehavior( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	FlightDeckBehavior(const FlightDeckBehavior&) = delete;
+	FlightDeckBehavior& operator=(const FlightDeckBehavior&) = delete;
+
 	static Int getInterfaceMask() { return UpdateModule::getInterfaceMask() | (MODULEINTERFACE_DIE); }
 
 	// BehaviorModule
@@ -117,10 +131,10 @@ public:
 	virtual ExitDoorType reserveDoorForExit( const ThingTemplate* objType, Object *specificObject );
 	virtual void exitObjectViaDoor( Object *newObj, ExitDoorType exitDoor );
 	virtual void unreserveDoorForExit( ExitDoorType exitDoor );
-	virtual void exitObjectByBudding( Object *newObj, Object *budHost ) { return; }
-	virtual Bool getExitPosition( Coord3D& rallyPoint ) const { return FALSE; }
-	virtual Bool getNaturalRallyPoint( Coord3D& rallyPoint, Bool offset = TRUE ) { return FALSE; }
-	virtual void setRallyPoint( const Coord3D *pos ) {}			
+	virtual void exitObjectByBudding( Object* /* newObj */, Object* /* budHost */ ) { return; }
+	virtual Bool getExitPosition( Coord3D& /* rallyPoint */ ) const { return FALSE; }
+	virtual Bool getNaturalRallyPoint( Coord3D& /* rallyPoint */, Bool /* offset = TRUE */ ) { return FALSE; }
+	virtual void setRallyPoint( const Coord3D* /* pos */ ) {}
 	virtual const Coord3D *getRallyPoint( void ) const { return NULL;}
 
 	// UpdateModule
@@ -142,8 +156,8 @@ public:
 	virtual Int getRunwayCount() const { return m_runways.size(); }
 	virtual ObjectID getRunwayReservation( Int r, RunwayReservationType type );
 	virtual void transferRunwayReservationToNextInLineForTakeoff(ObjectID id);
-	virtual Real getApproachHeight() const { return getFlightDeckBehaviorModuleData()->m_approachHeight; }
-	virtual Real getLandingDeckHeightOffset() const { return getFlightDeckBehaviorModuleData()->m_landingDeckHeightOffset; }
+	virtual Real getApproachHeight() const { return getFlightDeckBehaviorModuleData()->m_ini.m_approachHeight; }
+	virtual Real getLandingDeckHeightOffset() const { return getFlightDeckBehaviorModuleData()->m_ini.m_landingDeckHeightOffset; }
 	virtual void setHealee(Object* healee, Bool add);
 	virtual void killAllParkedUnits();
 	virtual void defectAllParkedUnits(Team* newTeam, UnsignedInt detectionTime);
@@ -167,10 +181,10 @@ private:
 
 	struct FlightDeckInfo
 	{
-		Coord3D				m_prep;
-		Real					m_orientation;
-		Int						m_runway;
-		ObjectID			m_objectInSpace;
+		Coord3D				m_prep {};
+		Real				m_orientation {};
+		Int					m_runway {};
+		ObjectID			m_objectInSpace {};
 
 		FlightDeckInfo()
 		{
@@ -183,22 +197,22 @@ private:
 
 	struct RunwayInfo
 	{
-		Coord3D		m_start;
-		Matrix3D  m_startTransform;
-		Coord3D		m_end;
-		Coord3D		m_landingStart;
-		Coord3D		m_landingEnd;
-		std::vector<Coord3D> m_taxi;
-		std::vector<Coord3D> m_creation;
-		Real			m_startOrient;
-		ObjectID	m_inUseByForTakeoff;
-		ObjectID	m_inUseByForLanding;
+		Coord3D		m_start {};
+		Matrix3D	m_startTransform {};
+		Coord3D		m_end {};
+		Coord3D		m_landingStart {};
+		Coord3D		m_landingEnd {};
+		std::vector<Coord3D> m_taxi {};
+		std::vector<Coord3D> m_creation {};
+		Real		m_startOrient {};
+		ObjectID	m_inUseByForTakeoff {};
+		ObjectID	m_inUseByForLanding {};
 	};
 
 	struct HealingInfo
 	{
-		ObjectID		m_gettingHealedID;
-		UnsignedInt	m_healStartFrame;
+		ObjectID	m_gettingHealedID {};
+		UnsignedInt	m_healStartFrame {};
 	};
 
 	void buildInfo( Bool createUnits = TRUE);
@@ -207,27 +221,25 @@ private:
 	FlightDeckInfo* findPPI(ObjectID id);
 	FlightDeckInfo* findEmptyPPI();
 
-  const ThingTemplate *m_thingTemplate;
+	const ThingTemplate *m_thingTemplate {};
 
-  
-	std::vector<FlightDeckInfo>		m_spaces;
-	std::vector<RunwayInfo>				m_runways;
-	std::list<HealingInfo>				m_healing;	// note, this list can vary in size, and be larger than the parking space count
-	UnsignedInt										m_nextHealFrame;
-	UnsignedInt										m_nextCleanupFrame;
-	UnsignedInt										m_startedProductionFrame;
-	UnsignedInt										m_nextAllowedProductionFrame;
-	UnsignedInt										m_nextLaunchWaveFrame[ MAX_RUNWAYS ];
-	UnsignedInt										m_rampUpFrame[ MAX_RUNWAYS ];		 //The frame the ramp has completed raising.
-	UnsignedInt										m_catapultSystemFrame[ MAX_RUNWAYS ]; //The frame the catapult effect created.
-	UnsignedInt										m_lowerRampFrame[ MAX_RUNWAYS ]; //The frame the ramp begins to lower.
-	ObjectID											m_designatedTarget;
-	AICommandType									m_designatedCommand;
-	Coord3D												m_designatedPosition;
-	Bool													m_gotInfo;
-	Bool													m_rampUp[ MAX_RUNWAYS ];
+	std::vector<FlightDeckInfo>		m_spaces {};
+	std::vector<RunwayInfo>			m_runways {};
+	std::list<HealingInfo>			m_healing {};	// note, this list can vary in size, and be larger than the parking space count
+	UnsignedInt						m_nextHealFrame {};
+	UnsignedInt						m_nextCleanupFrame {};
+	UnsignedInt						m_startedProductionFrame {};
+	UnsignedInt						m_nextAllowedProductionFrame {};
+	UnsignedInt						m_nextLaunchWaveFrame[ MAX_RUNWAYS ];
+	UnsignedInt						m_rampUpFrame[ MAX_RUNWAYS ];		 //The frame the ramp has completed raising.
+	UnsignedInt						m_catapultSystemFrame[ MAX_RUNWAYS ]; //The frame the catapult effect created.
+	UnsignedInt						m_lowerRampFrame[ MAX_RUNWAYS ]; //The frame the ramp begins to lower.
+	ObjectID						m_designatedTarget {};
+	AICommandType					m_designatedCommand {};
+	Coord3D							m_designatedPosition {};
+	Bool							m_gotInfo {};
+	Bool							m_rampUp[ MAX_RUNWAYS ];
 
 };
 
 #endif // __FLIGHT_DECK_BEHAVIOR_H
-

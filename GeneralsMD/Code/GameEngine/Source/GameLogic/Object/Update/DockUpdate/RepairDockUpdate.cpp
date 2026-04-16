@@ -40,24 +40,26 @@
 RepairDockUpdateModuleData::RepairDockUpdateModuleData( void )
 {
 
-	m_framesForFullHeal = 1.0f;  // 1 frame, instant heal by default (keeps away from divide by 0's)
+	m_ini.m_framesForFullHeal = 1.0f;  // 1 frame, instant heal by default (keeps away from divide by 0's)
 
 }  // end RepairDockUpdateModuleData
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void RepairDockUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void RepairDockUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
 
-	DockUpdateModuleData::buildFieldParse( p );
+	DockUpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "TimeForFullHeal", INI::parseDurationReal, NULL, offsetof( RepairDockUpdateModuleData, m_framesForFullHeal ) },
+		{ "TimeForFullHeal", INI::parseDurationReal, NULL, offsetof( RepairDockUpdateModuleData::IniData, m_framesForFullHeal ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	RepairDockUpdateModuleData* self {static_cast<RepairDockUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -118,7 +120,7 @@ Bool RepairDockUpdate::action( Object *docker, Object *drone )
 		// figure out how much health we need to add each frame to this object so that it's
 		// fully healed at the right time
 		//
-		m_healthToAddPerFrame = (body->getMaxHealth() - body->getHealth()) / modData->m_framesForFullHeal;
+		m_healthToAddPerFrame = (body->getMaxHealth() - body->getHealth()) / modData->m_ini.m_framesForFullHeal;
 
 	}  // end if
 

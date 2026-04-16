@@ -41,22 +41,30 @@
 class EnemyNearUpdateModuleData : public UpdateModuleData
 {
 public:
-	UnsignedInt m_enemyScanDelayTime;
+	// MG: Cannot apply offsetof to EnemyNearUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_enemyScanDelayTime;
+	};
+
+	IniData m_ini {};
 
 	EnemyNearUpdateModuleData()
 	{
-		m_enemyScanDelayTime = LOGICFRAMES_PER_SECOND;
+		m_ini.m_enemyScanDelayTime = LOGICFRAMES_PER_SECOND;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "ScanDelayTime",		INI::parseDurationUnsignedInt,		NULL, offsetof( EnemyNearUpdateModuleData, m_enemyScanDelayTime ) },
+			{ "ScanDelayTime",	INI::parseDurationUnsignedInt,	NULL, offsetof( EnemyNearUpdateModuleData::IniData, m_enemyScanDelayTime ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		EnemyNearUpdateModuleData* self {static_cast<EnemyNearUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -78,12 +86,11 @@ public:
 
 protected:
 
-	UnsignedInt m_enemyScanDelay;
-	Bool m_enemyNear;
+	UnsignedInt m_enemyScanDelay {};
+	Bool m_enemyNear {};
 
 	void checkForEnemies( void );
 
 };
 
 #endif // end __EnemyNearUpdate_H_
-

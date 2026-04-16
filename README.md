@@ -18,7 +18,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
 - I have added the skeleton of an OpenGL renderer, which is a prerequisite to doing any 3D rendering.
 - I have made a start on rendering the "shell map" (the 3D scene that plays behind the main menu).
 - The scripted camera fly around of the shell map works, though the camera parameters are not quite right yet.
-- I've added a simple textured mesh renderer, which I'm using to render the "quonset hut" map objects.
+- I've added a simple textured mesh renderer, which I'm using to render some static map objects.  **New screenshot in the wiki.**
 - The DynamicMemoryAllocator works.
 - Subsystems implemented:
   - TheNameKeyGenerator
@@ -36,7 +36,7 @@ You can learn a lot by reading source code, but you can learn a lot more by tryi
   - TheGlobalLanguageData
   - TheAudio
   - TheFunctionLexicon
-  - TheModuleFactory (85 out of 218 modules implemented)
+  - TheModuleFactory (135 out of 218 modules implemented)
   - TheParticleSystemManager (minimal)
   - TheMessageStream
   - TheSidesList
@@ -136,7 +136,15 @@ because, while it relies on a number of third-party libraries, it doesn't use a 
 <!---
 The DynamicMemoryAllocator works. If you compile in debug mode it dumps out memory pool stats, and tells you where you're leaking memory... neat! (I can't take any credit for that. It's all built in.)
 
+The module system
+
 The module system uses multiple inheritance. I'm not a big fan of multiple inheritance, and it seems that I'm not the only one, because I found this comment in the code: "I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP."
+
+.ini files and class offsets
+
+The message bus
+
+Signed vs unsigned
 -->
 
 ### Screen resolutions

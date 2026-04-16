@@ -1369,7 +1369,7 @@ void TerrainLogic::addWaypoint(MapObject *pMapObj)
 	Coord3D loc = *pMapObj->getLocation();
 	DEBUG_LOG((">>>>> Adding waypoint called \"%s\" at (%f, %f, %f)\n", pMapObj->getWaypointName().str(), loc.x, loc.y, loc.z));
 	// Snap the waypoint down to the terrain.
-	loc.z = getGroundHeight(loc.x, loc.y);
+	loc.z = getGroundHeight(loc.x, loc.y); // Note: this will return zero because TheTerrainVisual hasn't been loaded yet.
 	Bool exists;
 	AsciiString label1, label2, label3;
 	label1 = pMapObj->getProperties()->getAsciiString(TheKey_waypointPathLabel1, &exists);

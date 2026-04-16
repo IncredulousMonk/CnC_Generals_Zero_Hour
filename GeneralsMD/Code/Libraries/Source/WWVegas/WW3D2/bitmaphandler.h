@@ -301,6 +301,12 @@ WWINLINE void BitmapHandlerClass::Write_B8G8R8A8(
 	case WW3D_FORMAT_X8R8G8B8:
 		*(unsigned*)dest_ptr=*(unsigned*)argb;
 		break;
+	case WW3D_FORMAT_R8G8B8A8:
+		dest_ptr[0] = argb[2];
+		dest_ptr[1] = argb[1];
+		dest_ptr[2] = argb[0];
+		dest_ptr[3] = argb[3];
+		break;
 	case WW3D_FORMAT_R8G8B8:
 		*dest_ptr++=*argb++;
 		*dest_ptr++=*argb++;

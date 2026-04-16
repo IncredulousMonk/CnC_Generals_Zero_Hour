@@ -81,7 +81,7 @@ void DefaultProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDoorTyp
 		// in INI which is in model space, rotate it to match the building angle
 		// and translate for building location via a transform call
 		//
-		loc.Set( md->m_unitCreatePoint.x, md->m_unitCreatePoint.y, md->m_unitCreatePoint.z );
+		loc.Set( md->m_ini.m_unitCreatePoint.x, md->m_ini.m_unitCreatePoint.y, md->m_ini.m_unitCreatePoint.z );
 		transform->Transform_Vector( *transform, loc, &loc );
 
 		// make sure the point is on the terrain
@@ -136,7 +136,7 @@ Bool DefaultProductionExitUpdate::getExitPosition( Coord3D& exitPosition ) const
 	const DefaultProductionExitUpdateModuleData *md = getDefaultProductionExitUpdateModuleData();
 
 	Vector3 loc;
-	loc.Set( md->m_unitCreatePoint.x, md->m_unitCreatePoint.y, md->m_unitCreatePoint.z );
+	loc.Set( md->m_ini.m_unitCreatePoint.x, md->m_ini.m_unitCreatePoint.y, md->m_ini.m_unitCreatePoint.z );
 	transform->Transform_Vector( *transform, loc, &loc );
 
 	exitPosition.x = loc.X;
@@ -157,9 +157,9 @@ Bool DefaultProductionExitUpdate::getNaturalRallyPoint( Coord3D& rallyPoint, Boo
 	// get the natural rally point from the INI definition, this coord is in model space relative
 	// to the model (0,0,0)
 	//
-	p.X = data->m_naturalRallyPoint.x;
-	p.Y = data->m_naturalRallyPoint.y;
-	p.Z = data->m_naturalRallyPoint.z;
+	p.X = data->m_ini.m_naturalRallyPoint.x;
+	p.Y = data->m_ini.m_naturalRallyPoint.y;
+	p.Z = data->m_ini.m_naturalRallyPoint.z;
 
 	if ( offset )
 	{

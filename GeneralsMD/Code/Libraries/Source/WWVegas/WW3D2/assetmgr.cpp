@@ -1186,7 +1186,7 @@ TextureClass * WW3DAssetManager::Get_Texture
 }
 
 
-
+// #include <filesystem> // For path class.
 /***********************************************************************************************
  * WW3DAssetManager::Load_Texture -- load a texture file                                       *
  *=============================================================================================*/
@@ -1197,12 +1197,16 @@ TextureClass* WW3DAssetManager::Load_Texture(const char* filename)
 	if (dds_file.Is_Available() && dds_file.Load()) {
 		DEBUG_LOG(("WW3DAssetManager::Load_Texture: image size: %u x %u\n", dds_file.Get_Full_Width(), dds_file.Get_Full_Height()));
 		TextureClass* result {NEW_REF(TextureClass, (dds_file.Get_Full_Width(), dds_file.Get_Full_Height(), WW3D_FORMAT_A8R8G8B8))};
+		result->Set_Texture_Name(filename);
 		OpenGLTexture* gltex {result->Peek_GL_Texture()};
-		dds_file.Copy_Level_To_Surface(0, WW3D_FORMAT_A8R8G8B8, dds_file.Get_Full_Width(), dds_file.Get_Full_Height(),
+		dds_file.Copy_Level_To_Surface(0, WW3D_FORMAT_R8G8B8A8, dds_file.Get_Full_Width(), dds_file.Get_Full_Height(),
 			gltex->getDataPointer(), dds_file.Get_Full_Width() * 4);
 		gltex->createMipmappedTexture();
 		OpenGLSampler* sampler {result->Peek_GL_Sampler()};
-		sampler->createAnisotropicSampler();
+		sampler->createMipmappedSampler();
+		// std::filesystem::path p {filename};
+		// p.replace_extension("png");
+		// gltex->saveToPNG(p.c_str());
 		return result;
 	} else {
 		DEBUG_CRASH(("WW3DAssetManager::Load_Texture: image file not found: %s\n", filename));

@@ -50,8 +50,14 @@ public:
 
 	static void buildFieldParse( void* what, MultiIniFieldParse &p );
 
-	Real m_healthPercentToDrainPerSecond {};			///< when active, this much health is drained
-	Real m_notAllowedWhenHealthBelowPercent {};	///< you cannot overcharge when object is below this health %
+	// MG: Cannot apply offsetof to OverchargeBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_healthPercentToDrainPerSecond {};			///< when active, this much health is drained
+		Real m_notAllowedWhenHealthBelowPercent {};	///< you cannot overcharge when object is below this health %
+	};
+
+	IniData m_ini {};
 
 };
 

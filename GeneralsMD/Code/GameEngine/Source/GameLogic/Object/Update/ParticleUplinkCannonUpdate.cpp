@@ -32,31 +32,31 @@
 #define DEFINE_DEATH_NAMES
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
-#include "Common\ThingTemplate.h"
-#include "Common\ThingFactory.h"
-#include "Common\Player.h"
-#include "Common\PlayerList.h"
-#include "Common\Xfer.h"
-#include "Common\ClientUpdateModule.h"
+#include "Common/ThingTemplate.h"
+#include "Common/ThingFactory.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
+#include "Common/Xfer.h"
+#include "Common/ClientUpdateModule.h"
 
-#include "GameClient\ControlBar.h"
-#include "GameClient\GameClient.h"
-#include "GameClient\Drawable.h"
-#include "GameClient\ParticleSys.h"
-#include "GameClient\FXList.h"
+#include "GameClient/ControlBar.h"
+#include "GameClient/GameClient.h"
+#include "GameClient/Drawable.h"
+#include "GameClient/ParticleSys.h"
+#include "GameClient/FXList.h"
 
-#include "GameLogic\GameLogic.h"
-#include "GameLogic\PartitionManager.h"
-#include "GameLogic\Object.h"
-#include "GameLogic\ObjectIter.h"
-#include "GameLogic\Weaponset.h"
-#include "GameLogic\Weapon.h"
-#include "GameLogic\TerrainLogic.h"
-#include "GameLogic\Module\SpecialPowerModule.h"
-#include "GameLogic\Module\ParticleUplinkCannonUpdate.h"
-#include "GameLogic\Module\PhysicsUpdate.h"
-#include "GameLogic\Module\LaserUpdate.h"
-#include "GameLogic\Module\ActiveBody.h"
+#include "GameLogic/GameLogic.h"
+#include "GameLogic/PartitionManager.h"
+#include "GameLogic/Object.h"
+#include "GameLogic/ObjectIter.h"
+#include "GameLogic/WeaponSet.h"
+#include "GameLogic/Weapon.h"
+#include "GameLogic/TerrainLogic.h"
+#include "GameLogic/Module/SpecialPowerModule.h"
+#include "GameLogic/Module/ParticleUplinkCannonUpdate.h"
+#include "GameLogic/Module/PhysicsUpdate.h"
+#include "GameLogic/Module/LaserUpdate.h"
+#include "GameLogic/Module/ActiveBody.h"
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -69,97 +69,99 @@
 //-------------------------------------------------------------------------------------------------
 ParticleUplinkCannonUpdateModuleData::ParticleUplinkCannonUpdateModuleData()
 {
-	m_specialPowerTemplate					= NULL;
-	m_beginChargeFrames							= 0;
-	m_raiseAntennaFrames						= 0;
-	m_readyDelayFrames							= 0;
-	m_outerEffectNumBones						= 0;
-	m_beamTravelFrames							= 0;
-	m_widthGrowFrames								= 0;
-	m_totalFiringFrames							= 0;
-	m_totalScorchMarks							= 0;
-	m_scorchMarkScalar							= 1.0f;
-	m_damageRadiusScalar						= 1.0f;
-	m_groundHitFX										= NULL;
-	m_beamLaunchFX									= NULL;
-	m_framesBetweenLaunchFXRefresh  = 30;
-	m_totalDamagePulses							= 0;
-	m_damagePerSecond								= 0.0f;
-	m_damageType										= DAMAGE_LASER;
-	m_deathType											= DEATH_LASERED;
-	m_revealRange										= 0.0f;
-  m_manualDrivingSpeed						= 0.0f;
-  m_manualFastDrivingSpeed				= 0.0f;
-  m_doubleClickToFastDriveDelay		= 500;
+	m_ini.m_specialPowerTemplate			= NULL;
+	m_ini.m_beginChargeFrames				= 0;
+	m_ini.m_raiseAntennaFrames				= 0;
+	m_ini.m_readyDelayFrames				= 0;
+	m_ini.m_outerEffectNumBones				= 0;
+	m_ini.m_beamTravelFrames				= 0;
+	m_ini.m_widthGrowFrames					= 0;
+	m_ini.m_totalFiringFrames				= 0;
+	m_ini.m_totalScorchMarks				= 0;
+	m_ini.m_scorchMarkScalar				= 1.0f;
+	m_ini.m_damageRadiusScalar				= 1.0f;
+	m_ini.m_groundHitFX						= NULL;
+	m_ini.m_beamLaunchFX					= NULL;
+	m_ini.m_framesBetweenLaunchFXRefresh	= 30;
+	m_ini.m_totalDamagePulses				= 0;
+	m_ini.m_damagePerSecond					= 0.0f;
+	m_ini.m_damageType						= DAMAGE_LASER;
+	m_ini.m_deathType						= DEATH_LASERED;
+	m_ini.m_revealRange						= 0.0f;
+	m_ini.m_manualDrivingSpeed				= 0.0f;
+	m_ini.m_manualFastDrivingSpeed			= 0.0f;
+	m_ini.m_doubleClickToFastDriveDelay		= 500;
 	//Added by Sadullah Nader
 	//Initializations inserted
-	m_swathOfDeathAmplitude					= 0.0f;
-	m_swathOfDeathDistance					=	0.0f;
+	m_ini.m_swathOfDeathAmplitude			= 0.0f;
+	m_ini.m_swathOfDeathDistance			= 0.0f;
 	//
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void ParticleUplinkCannonUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void ParticleUplinkCannonUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "SpecialPowerTemplate",									INI::parseSpecialPowerTemplate,	NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_specialPowerTemplate ) },
-    { "BeginChargeTime",											INI::parseDurationUnsignedInt,	NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_beginChargeFrames ) },
-    { "RaiseAntennaTime",											INI::parseDurationUnsignedInt,	NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_raiseAntennaFrames ) },
-		{ "ReadyDelayTime",												INI::parseDurationUnsignedInt,  NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_readyDelayFrames ) },
-		{ "WidthGrowTime",												INI::parseDurationUnsignedInt,	NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_widthGrowFrames ) },
-		{ "BeamTravelTime",												INI::parseDurationUnsignedInt,	NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_beamTravelFrames ) },
-		{ "TotalFiringTime",											INI::parseDurationUnsignedInt,  NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_totalFiringFrames ) },
-		{ "RevealRange",													INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_revealRange ) },
+		{ "SpecialPowerTemplate",						INI::parseSpecialPowerTemplate,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_specialPowerTemplate ) },
+		{ "BeginChargeTime",							INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_beginChargeFrames ) },
+		{ "RaiseAntennaTime",							INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_raiseAntennaFrames ) },
+		{ "ReadyDelayTime",								INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_readyDelayFrames ) },
+		{ "WidthGrowTime",								INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_widthGrowFrames ) },
+		{ "BeamTravelTime",								INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_beamTravelFrames ) },
+		{ "TotalFiringTime",							INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_totalFiringFrames ) },
+		{ "RevealRange",								INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_revealRange ) },
 		
-		{ "OuterEffectBoneName",									INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_outerEffectBaseBoneName ) },
-		{ "OuterEffectNumBones",									INI::parseUnsignedInt,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_outerEffectNumBones ) },
-		{ "OuterNodesLightFlareParticleSystem",		INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_outerNodesLightFlareParticleSystemName ) },
-		{ "OuterNodesMediumFlareParticleSystem",	INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_outerNodesMediumFlareParticleSystemName ) },
-		{ "OuterNodesIntenseFlareParticleSystem",	INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_outerNodesIntenseFlareParticleSystemName ) },
+		{ "OuterEffectBoneName",						INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_outerEffectBaseBoneName ) },
+		{ "OuterEffectNumBones",						INI::parseUnsignedInt,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_outerEffectNumBones ) },
+		{ "OuterNodesLightFlareParticleSystem",			INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_outerNodesLightFlareParticleSystemName ) },
+		{ "OuterNodesMediumFlareParticleSystem",		INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_outerNodesMediumFlareParticleSystemName ) },
+		{ "OuterNodesIntenseFlareParticleSystem",		INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_outerNodesIntenseFlareParticleSystemName ) },
 
-		{ "ConnectorBoneName",										INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_connectorBoneName ) },
-		{ "ConnectorMediumLaserName",							INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_connectorMediumLaserNameName ) },
-		{ "ConnectorIntenseLaserName",						INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_connectorIntenseLaserNameName ) },
-		{ "ConnectorMediumFlare",									INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_connectorMediumFlareParticleSystemName ) },
-		{ "ConnectorIntenseFlare",								INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_connectorIntenseFlareParticleSystemName ) },
+		{ "ConnectorBoneName",							INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_connectorBoneName ) },
+		{ "ConnectorMediumLaserName",					INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_connectorMediumLaserNameName ) },
+		{ "ConnectorIntenseLaserName",					INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_connectorIntenseLaserNameName ) },
+		{ "ConnectorMediumFlare",						INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_connectorMediumFlareParticleSystemName ) },
+		{ "ConnectorIntenseFlare",						INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_connectorIntenseFlareParticleSystemName ) },
 
-		{ "FireBoneName",													   INI::parseAsciiString,				NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_fireBoneName ) },
-		{ "LaserBaseLightFlareParticleSystemName",   INI::parseAsciiString,				NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_laserBaseLightFlareParticleSystemName ) },
-		{ "LaserBaseMediumFlareParticleSystemName",	 INI::parseAsciiString,				NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_laserBaseMediumFlareParticleSystemName ) },
-		{ "LaserBaseIntenseFlareParticleSystemName", INI::parseAsciiString,				NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_laserBaseIntenseFlareParticleSystemName ) },
+		{ "FireBoneName",								INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_fireBoneName ) },
+		{ "LaserBaseLightFlareParticleSystemName",		INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_laserBaseLightFlareParticleSystemName ) },
+		{ "LaserBaseMediumFlareParticleSystemName",		INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_laserBaseMediumFlareParticleSystemName ) },
+		{ "LaserBaseIntenseFlareParticleSystemName",	INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_laserBaseIntenseFlareParticleSystemName ) },
 
-		{ "ParticleBeamLaserName",								INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_particleBeamLaserName ) },
+		{ "ParticleBeamLaserName",						INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_particleBeamLaserName ) },
 
-		{ "SwathOfDeathDistance",									INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_swathOfDeathDistance ) },
-		{ "SwathOfDeathAmplitude",								INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_swathOfDeathAmplitude ) },
-		{ "TotalScorchMarks",											INI::parseUnsignedInt,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_totalScorchMarks ) },
-		{ "ScorchMarkScalar",											INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_scorchMarkScalar ) },
-		{ "BeamLaunchFX",													INI::parseFXList,								NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_beamLaunchFX ) },
-		{ "DelayBetweenLaunchFX",									INI::parseDurationUnsignedInt,  NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_framesBetweenLaunchFXRefresh ) },
-		{ "GroundHitFX",													INI::parseFXList,								NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_groundHitFX ) },
+		{ "SwathOfDeathDistance",						INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_swathOfDeathDistance ) },
+		{ "SwathOfDeathAmplitude",						INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_swathOfDeathAmplitude ) },
+		{ "TotalScorchMarks",							INI::parseUnsignedInt,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_totalScorchMarks ) },
+		{ "ScorchMarkScalar",							INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_scorchMarkScalar ) },
+		{ "BeamLaunchFX",								INI::parseFXList,						NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_beamLaunchFX ) },
+		{ "DelayBetweenLaunchFX",						INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_framesBetweenLaunchFXRefresh ) },
+		{ "GroundHitFX",								INI::parseFXList,						NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_groundHitFX ) },
 
-		{ "DamagePerSecond",											INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_damagePerSecond ) },
-		{ "TotalDamagePulses",										INI::parseUnsignedInt,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_totalDamagePulses ) },
-		{ "DamageType",														DamageTypeFlags::parseSingleBitFromINI,	NULL,	offsetof( ParticleUplinkCannonUpdateModuleData, m_damageType ) },		
-		{ "DeathType",														INI::parseIndexList,						TheDeathNames,	offsetof( ParticleUplinkCannonUpdateModuleData, m_deathType ) },		
-		{ "DamageRadiusScalar",										INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_damageRadiusScalar ) },
+		{ "DamagePerSecond",							INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_damagePerSecond ) },
+		{ "TotalDamagePulses",							INI::parseUnsignedInt,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_totalDamagePulses ) },
+		{ "DamageType",									DamageTypeFlags::parseSingleBitFromINI,	NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_damageType ) },		
+		{ "DeathType",									INI::parseIndexList,					TheDeathNames,	offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_deathType ) },		
+		{ "DamageRadiusScalar",							INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_damageRadiusScalar ) },
 
-		{ "PoweringUpSoundLoop",									INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_powerupSoundName ) },
-		{ "UnpackToIdleSoundLoop",								INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_unpackToReadySoundName ) },
-		{ "FiringToPackSoundLoop",								INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_firingToIdleSoundName ) },
-		{ "GroundAnnihilationSoundLoop",					INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_annihilationSoundName ) },
-		{ "DamagePulseRemnantObjectName",					INI::parseAsciiString,					NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_damagePulseRemnantObjectName ) },
+		{ "PoweringUpSoundLoop",						INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_powerupSoundName ) },
+		{ "UnpackToIdleSoundLoop",						INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_unpackToReadySoundName ) },
+		{ "FiringToPackSoundLoop",						INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_firingToIdleSoundName ) },
+		{ "GroundAnnihilationSoundLoop",				INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_annihilationSoundName ) },
+		{ "DamagePulseRemnantObjectName",				INI::parseAsciiString,					NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_damagePulseRemnantObjectName ) },
 
-    { "ManualDrivingSpeed",										INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_manualDrivingSpeed ) },
-    { "ManualFastDrivingSpeed",								INI::parseReal,									NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_manualFastDrivingSpeed ) },
-    { "DoubleClickToFastDriveDelay",					INI::parseDurationUnsignedInt,	NULL, offsetof( ParticleUplinkCannonUpdateModuleData, m_doubleClickToFastDriveDelay ) },
+		{ "ManualDrivingSpeed",							INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_manualDrivingSpeed ) },
+		{ "ManualFastDrivingSpeed",						INI::parseReal,							NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_manualFastDrivingSpeed ) },
+		{ "DoubleClickToFastDriveDelay",				INI::parseDurationUnsignedInt,			NULL,			offsetof( ParticleUplinkCannonUpdateModuleData::IniData, m_doubleClickToFastDriveDelay ) },
 
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	ParticleUplinkCannonUpdateModuleData* self {static_cast<ParticleUplinkCannonUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -246,22 +248,22 @@ void ParticleUplinkCannonUpdate::onObjectCreated()
 	const ParticleUplinkCannonUpdateModuleData *data = getParticleUplinkCannonUpdateModuleData();
 	Object *obj = getObject();
 
-	if( !data->m_specialPowerTemplate )
+	if( !data->m_ini.m_specialPowerTemplate )
 	{
 		DEBUG_CRASH( ("%s object's ParticleUplinkCannonUpdate lacks access to the SpecialPowerTemplate. Needs to be specified in ini.", obj->getTemplate()->getName().str() ) );
 		m_invalidSettings = TRUE;
 		return;
 	}
 
-	m_specialPowerModule = obj->getSpecialPowerModule( data->m_specialPowerTemplate );
+	m_specialPowerModule = obj->getSpecialPowerModule( data->m_ini.m_specialPowerTemplate );
 	m_connectorNodePosition.set( obj->getPosition() );
 	m_laserOriginPosition.set( obj->getPosition() );
 
 	//Create instances of the sounds required.
-	m_powerupSound.setEventName( data->m_powerupSoundName );
-	m_unpackToReadySound.setEventName( data->m_unpackToReadySoundName );
-	m_firingToIdleSound.setEventName( data->m_firingToIdleSoundName );
-	m_annihilationSound.setEventName( data->m_annihilationSoundName );
+	m_powerupSound.setEventName( data->m_ini.m_powerupSoundName );
+	m_unpackToReadySound.setEventName( data->m_ini.m_unpackToReadySoundName );
+	m_firingToIdleSound.setEventName( data->m_ini.m_firingToIdleSoundName );
+	m_annihilationSound.setEventName( data->m_ini.m_annihilationSoundName );
 	TheAudio->getInfoForAudioEvent( &m_powerupSound );
 	TheAudio->getInfoForAudioEvent( &m_unpackToReadySound );
 	TheAudio->getInfoForAudioEvent( &m_firingToIdleSound );
@@ -344,7 +346,7 @@ Bool ParticleUplinkCannonUpdate::initiateIntentToDoSpecialPower(const SpecialPow
 		setLogicalStatus( STATUS_READY_TO_FIRE );
 		m_specialPowerModule->setReadyFrame( now );
 	}
-	m_startDecayFrame = m_startAttackFrame + data->m_totalFiringFrames;
+	m_startDecayFrame = m_startAttackFrame + data->m_ini.m_totalFiringFrames;
 
 	SpecialPowerModuleInterface *spmInterface = getObject()->getSpecialPowerModule( specialPowerTemplate );
 	if( spmInterface )
@@ -356,7 +358,7 @@ Bool ParticleUplinkCannonUpdate::initiateIntentToDoSpecialPower(const SpecialPow
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool ParticleUplinkCannonUpdate::isPowerCurrentlyInUse( const CommandButton *command ) const
+Bool ParticleUplinkCannonUpdate::isPowerCurrentlyInUse( const CommandButton* /* command */ ) const
 {
 	if( m_startAttackFrame != 0 && m_startAttackFrame <= TheGameLogic->getFrame() )
 	{
@@ -420,9 +422,9 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 	//2) If superweapon delay is nuked (cheat) then we need to make the building ready now.
 	UnsignedInt now = TheGameLogic->getFrame();
 	UnsignedInt readyToFireFrame = m_specialPowerModule->isReady() ? now : m_specialPowerModule->getReadyFrame();
-	UnsignedInt almostReadyFrame = readyToFireFrame - data->m_readyDelayFrames;
-	UnsignedInt raiseAntennaFrame = almostReadyFrame - data->m_raiseAntennaFrames;
-	UnsignedInt beginChargeFrame = raiseAntennaFrame - data->m_beginChargeFrames;
+	UnsignedInt almostReadyFrame = readyToFireFrame - data->m_ini.m_readyDelayFrames;
+	UnsignedInt raiseAntennaFrame = almostReadyFrame - data->m_ini.m_raiseAntennaFrames;
+	UnsignedInt beginChargeFrame = raiseAntennaFrame - data->m_ini.m_beginChargeFrames;
 
 	if( m_startAttackFrame != 0 && m_startAttackFrame <= now )
 	{
@@ -437,17 +439,17 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 				m_startDecayFrame = now;
 			}
 		}
-		UnsignedInt endDecayFrame			= m_startDecayFrame + data->m_widthGrowFrames;
-		UnsignedInt orbitalBirthFrame = m_startAttackFrame + data->m_beamTravelFrames;
-		UnsignedInt orbitalDecayStart = m_startDecayFrame + data->m_beamTravelFrames;
-		UnsignedInt orbitalDeathFrame = orbitalDecayStart + data->m_widthGrowFrames;
+		UnsignedInt endDecayFrame			= m_startDecayFrame + data->m_ini.m_widthGrowFrames;
+		UnsignedInt orbitalBirthFrame = m_startAttackFrame + data->m_ini.m_beamTravelFrames;
+		UnsignedInt orbitalDecayStart = m_startDecayFrame + data->m_ini.m_beamTravelFrames;
+		UnsignedInt orbitalDeathFrame = orbitalDecayStart + data->m_ini.m_widthGrowFrames;
 		switch( m_laserStatus )
 		{
 			case LASERSTATUS_NONE:
 				//Means we are eligible to fire!
 				if( orbitalBirthFrame <= now )
 				{
-					createOrbitToTargetLaser( data->m_widthGrowFrames );
+					createOrbitToTargetLaser( data->m_ini.m_widthGrowFrames );
 					m_laserStatus = LASERSTATUS_BORN;
 					m_scorchMarksMade		= 0;
 					m_nextScorchMarkFrame = now; 
@@ -467,7 +469,7 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 						LaserUpdate *update = (LaserUpdate*)beam->findClientUpdateModule( nameKeyClientUpdate );
 						if( update )
 						{
-							update->setDecayFrames( data->m_widthGrowFrames );
+							update->setDecayFrames( data->m_ini.m_widthGrowFrames );
 						}
 						m_laserStatus = LASERSTATUS_DECAYING;
 					}
@@ -510,11 +512,11 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 
 				//We're generating a swath that travels the points between sin( -1PI ) and sin( 1PI )
 				Real radians = (factor * TWO_PI) - PI;
-				Real cxDistance = (factor * data->m_swathOfDeathDistance ) - (data->m_swathOfDeathDistance * 0.5f); //cx is cartesian x
+				Real cxDistance = (factor * data->m_ini.m_swathOfDeathDistance ) - (data->m_ini.m_swathOfDeathDistance * 0.5f); //cx is cartesian x
 
 				//Now calculate the amplitude value.
 				Real height = sin( radians );
-				Real cxHeight = height * data->m_swathOfDeathAmplitude;
+				Real cxHeight = height * data->m_ini.m_swathOfDeathAmplitude;
 
 				Coord3D buildingToInitialTargetVector;
 				buildingToInitialTargetVector.set( &m_initialTargetPosition );
@@ -535,7 +537,7 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 				cartesianTargetVector.Normalize();
 
 				Real dotProduct = Vector2::Dot_Product( buildingToTargetVector, cartesianTargetVector );
-				dotProduct = __min( 0.99999f, __max( -0.99999f, dotProduct ) ); //Account for numerical errors.  Also, acos(-1.00000) is coming out QNAN on the superweapon general map.  Heh.
+				dotProduct = min( 0.99999f, max( -0.99999f, dotProduct ) ); //Account for numerical errors.  Also, acos(-1.00000) is coming out QNAN on the superweapon general map.  Heh.
 				Real angle = (Real)ACos( dotProduct );
 
 				if( buildingToTargetVector.Y >= 0 )
@@ -554,15 +556,15 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 			}
 			else
 			{
-				Real speed = data->m_manualDrivingSpeed;
-				if( m_scriptedWaypointMode || m_lastDrivingClickFrame - m_2ndLastDrivingClickFrame < data->m_doubleClickToFastDriveDelay )
+				Real speed = data->m_ini.m_manualDrivingSpeed;
+				if( m_scriptedWaypointMode || m_lastDrivingClickFrame - m_2ndLastDrivingClickFrame < data->m_ini.m_doubleClickToFastDriveDelay )
 				{
 					//Because we double clicked, use the faster driving speed.
-					speed = data->m_manualFastDrivingSpeed;
+					speed = data->m_ini.m_manualFastDrivingSpeed;
 				}
 
 				//Convert speed to speed per frame.
-				speed /= LOGICFRAMES_PER_SECOND;
+				speed /= (Real)LOGICFRAMES_PER_SECOND;
 
 				//Calculate the distance from our current position to our target dest.
 				Coord3D vector = m_overrideTargetDestination;
@@ -614,8 +616,8 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 			if( update )
 			{
 				update->initLaser( NULL, NULL, &orbitPosition, &m_currentTargetPosition, "" );
-				scorchRadius = update->getCurrentLaserRadius() * data->m_scorchMarkScalar;
-				damageRadius = update->getCurrentLaserRadius() * data->m_damageRadiusScalar;
+				scorchRadius = update->getCurrentLaserRadius() * data->m_ini.m_scorchMarkScalar;
+				damageRadius = update->getCurrentLaserRadius() * data->m_ini.m_damageRadiusScalar;
 			}
 
 			//Create scorch marks periodically
@@ -628,18 +630,18 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 				TheGameClient->addScorch( &m_currentTargetPosition, scorchRadius, scorchID );
 
 				//Calculate next scorch mark frame.
-				Real nextFactor = (Real)m_scorchMarksMade / (Real)data->m_totalScorchMarks;
+				Real nextFactor = (Real)m_scorchMarksMade / (Real)data->m_ini.m_totalScorchMarks;
 				m_nextScorchMarkFrame = orbitalBirthFrame + nextFactor * (orbitalDeathFrame - orbitalBirthFrame);
 
 				//Generate iteration of fxlist for beam hitting ground.
-				if( data->m_groundHitFX )
+				if( data->m_ini.m_groundHitFX )
 				{
-					FXList::doFXPos( data->m_groundHitFX, &m_currentTargetPosition, NULL );
+					FXList::doFXPos( data->m_ini.m_groundHitFX, &m_currentTargetPosition, NULL );
 				}
 
 				//Also reveal vision because the owning player has full rights to watch the carnage he created!
-				ThePartitionManager->doShroudReveal( m_currentTargetPosition.x, m_currentTargetPosition.y, data->m_revealRange, me->getControllingPlayer()->getPlayerMask() );
-				ThePartitionManager->undoShroudReveal( m_currentTargetPosition.x, m_currentTargetPosition.y, data->m_revealRange, me->getControllingPlayer()->getPlayerMask() );
+				ThePartitionManager->doShroudReveal( m_currentTargetPosition.x, m_currentTargetPosition.y, data->m_ini.m_revealRange, me->getControllingPlayer()->getPlayerMask() );
+				ThePartitionManager->undoShroudReveal( m_currentTargetPosition.x, m_currentTargetPosition.y, data->m_ini.m_revealRange, me->getControllingPlayer()->getPlayerMask() );
 			}
 
 			//Handle damage pulses
@@ -649,13 +651,13 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 
 				DamageInfo damageInfo;
 
-				Real totalFiringSeconds = data->m_totalFiringFrames / LOGICFRAMES_PER_SECOND;
-				Real damagePerPulse = (Real)(totalFiringSeconds * data->m_damagePerSecond) / (Real)data->m_totalDamagePulses;
+				Real totalFiringSeconds = data->m_ini.m_totalFiringFrames / LOGICFRAMES_PER_SECOND;
+				Real damagePerPulse = (Real)(totalFiringSeconds * data->m_ini.m_damagePerSecond) / (Real)data->m_ini.m_totalDamagePulses;
 
 				damageInfo.in.m_amount = damagePerPulse;
 				damageInfo.in.m_sourceID = me->getID();
-				damageInfo.in.m_damageType = data->m_damageType;
-				damageInfo.in.m_deathType = data->m_deathType;
+				damageInfo.in.m_damageType = data->m_ini.m_damageType;
+				damageInfo.in.m_deathType = data->m_ini.m_deathType;
 
 				PartitionFilterAlive filterAlive;
 				PartitionFilter *filters[] = { &filterAlive, NULL };
@@ -671,10 +673,10 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 					}
 				} 
 
-				if( data->m_damagePulseRemnantObjectName.isNotEmpty() )
+				if( data->m_ini.m_damagePulseRemnantObjectName.isNotEmpty() )
 				{
 					//Create a remnant damaging object that will fade over time to represent the burning trail.
-					const ThingTemplate *thing = TheThingFactory->findTemplate( data->m_damagePulseRemnantObjectName );
+					const ThingTemplate *thing = TheThingFactory->findTemplate( data->m_ini.m_damagePulseRemnantObjectName );
 					if( thing )
 					{
 						//Fire and forget
@@ -687,7 +689,7 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 				}
 
 				//Calculate next damage pulse frame.
-				Real nextFactor = (Real)m_damagePulsesMade / (Real)data->m_totalDamagePulses;
+				Real nextFactor = (Real)m_damagePulsesMade / (Real)data->m_ini.m_totalDamagePulses;
 				m_nextDamagePulseFrame = orbitalBirthFrame + nextFactor * (orbitalDeathFrame - orbitalBirthFrame);
 			}
 		}
@@ -737,11 +739,11 @@ UpdateSleepTime ParticleUplinkCannonUpdate::update()
 		if( m_nextLaunchFXFrame <= now )
 		{
 			//Generate iteration of fxlist for beam launching
-			if( data->m_beamLaunchFX )
+			if( data->m_ini.m_beamLaunchFX )
 			{
-				FXList::doFXPos( data->m_beamLaunchFX, &m_laserOriginPosition, NULL );
+				FXList::doFXPos( data->m_ini.m_beamLaunchFX, &m_laserOriginPosition, NULL );
 			}
-			m_nextLaunchFXFrame = now + data->m_framesBetweenLaunchFXRefresh;
+			m_nextLaunchFXFrame = now + data->m_ini.m_framesBetweenLaunchFXRefresh;
 		}
 	}
 
@@ -781,13 +783,13 @@ void ParticleUplinkCannonUpdate::createOuterNodeParticleSystems( IntensityTypes 
 	switch( intensity )
 	{
 		case IT_LIGHT:
-			str = data->m_outerNodesLightFlareParticleSystemName;
+			str = data->m_ini.m_outerNodesLightFlareParticleSystemName;
 			break;
 		case IT_MEDIUM:
-			str = data->m_outerNodesMediumFlareParticleSystemName;
+			str = data->m_ini.m_outerNodesMediumFlareParticleSystemName;
 			break;
 		case IT_INTENSE:
-			str = data->m_outerNodesIntenseFlareParticleSystemName;
+			str = data->m_ini.m_outerNodesIntenseFlareParticleSystemName;
 			break;
 		case IT_FINISH:
 			break;
@@ -799,7 +801,7 @@ void ParticleUplinkCannonUpdate::createOuterNodeParticleSystems( IntensityTypes 
 		if( tmp )
 		{
 			ParticleSystem *system;
-			for( int i = 0; i < data->m_outerEffectNumBones; i++ )
+			for( unsigned i = 0; i < data->m_ini.m_outerEffectNumBones; i++ )
 			{
 				system = TheParticleSystemManager->createParticleSystem( tmp );
 				if( system )
@@ -830,10 +832,10 @@ void ParticleUplinkCannonUpdate::createConnectorLasers( IntensityTypes intensity
 		case IT_LIGHT:
 			break;
 		case IT_MEDIUM:
-			str = data->m_connectorMediumLaserNameName;;
+			str = data->m_ini.m_connectorMediumLaserNameName;;
 			break;
 		case IT_INTENSE:
-			str = data->m_connectorIntenseLaserNameName;
+			str = data->m_ini.m_connectorIntenseLaserNameName;
 			break;
 		case IT_FINISH:
 			break;
@@ -844,7 +846,7 @@ void ParticleUplinkCannonUpdate::createConnectorLasers( IntensityTypes intensity
 		const ThingTemplate *thingTemplate = TheThingFactory->findTemplate( str );
 		if( thingTemplate )
 		{
-			for( int i = 0; i < data->m_outerEffectNumBones; i++ )
+			for( unsigned i = 0; i < data->m_ini.m_outerEffectNumBones; i++ )
 			{
 				Drawable *beam = TheThingFactory->newDrawable( thingTemplate );
 				if( beam )
@@ -873,10 +875,10 @@ void ParticleUplinkCannonUpdate::createConnectorFlare( IntensityTypes intensity 
 		case IT_LIGHT:
 			break;
 		case IT_MEDIUM:
-			str = data->m_connectorMediumFlareParticleSystemName;
+			str = data->m_ini.m_connectorMediumFlareParticleSystemName;
 			break;
 		case IT_INTENSE:
-			str = data->m_connectorIntenseFlareParticleSystemName;
+			str = data->m_ini.m_connectorIntenseFlareParticleSystemName;
 			break;
 		case IT_FINISH:
 			break;
@@ -906,13 +908,13 @@ void ParticleUplinkCannonUpdate::createLaserBaseFlare( IntensityTypes intensity 
 	switch( intensity )
 	{
 		case IT_LIGHT:
-			str = data->m_laserBaseLightFlareParticleSystemName;
+			str = data->m_ini.m_laserBaseLightFlareParticleSystemName;
 			break;
 		case IT_MEDIUM:
-			str = data->m_laserBaseMediumFlareParticleSystemName;
+			str = data->m_ini.m_laserBaseMediumFlareParticleSystemName;
 			break;
 		case IT_INTENSE:
-			str = data->m_laserBaseIntenseFlareParticleSystemName;
+			str = data->m_ini.m_laserBaseIntenseFlareParticleSystemName;
 			break;
 		case IT_FINISH:
 			break;
@@ -945,9 +947,9 @@ void ParticleUplinkCannonUpdate::createGroundToOrbitLaser( UnsignedInt growthFra
 		m_orbitToTargetBeamID = INVALID_DRAWABLE_ID;
 	}
 
-	if( data->m_particleBeamLaserName.isNotEmpty() )
+	if( data->m_ini.m_particleBeamLaserName.isNotEmpty() )
 	{
-		const ThingTemplate *thingTemplate = TheThingFactory->findTemplate( data->m_particleBeamLaserName );
+		const ThingTemplate *thingTemplate = TheThingFactory->findTemplate( data->m_ini.m_particleBeamLaserName );
 		if( thingTemplate )
 		{
 			Drawable *beam = TheThingFactory->newDrawable( thingTemplate );
@@ -962,7 +964,7 @@ void ParticleUplinkCannonUpdate::createGroundToOrbitLaser( UnsignedInt growthFra
 					Coord3D orbitPosition;
 					orbitPosition.set( &m_laserOriginPosition );
 					orbitPosition.z += 500.0f;
-					update->initLaser( NULL, NULL, &m_laserOriginPosition, &orbitPosition, "", growthFrames );
+					update->initLaser( NULL, NULL, &m_laserOriginPosition, &orbitPosition, "", (Int)growthFrames );
 				}
 			}
 		}
@@ -982,9 +984,9 @@ void ParticleUplinkCannonUpdate::createOrbitToTargetLaser( UnsignedInt growthFra
 		m_orbitToTargetBeamID = INVALID_DRAWABLE_ID;
 	}
 
-	if( data->m_particleBeamLaserName.isNotEmpty() )
+	if( data->m_ini.m_particleBeamLaserName.isNotEmpty() )
 	{
-		const ThingTemplate *thingTemplate = TheThingFactory->findTemplate( data->m_particleBeamLaserName );
+		const ThingTemplate *thingTemplate = TheThingFactory->findTemplate( data->m_ini.m_particleBeamLaserName );
 		if( thingTemplate )
 		{
 			Drawable *beam = TheThingFactory->newDrawable( thingTemplate );
@@ -998,7 +1000,7 @@ void ParticleUplinkCannonUpdate::createOrbitToTargetLaser( UnsignedInt growthFra
 					Coord3D orbitPosition;
 					orbitPosition.set( &m_initialTargetPosition );
 					orbitPosition.z += 500.0f;
-					update->initLaser( NULL, NULL, &orbitPosition, &m_initialTargetPosition, "", growthFrames );
+					update->initLaser( NULL, NULL, &orbitPosition, &m_initialTargetPosition, "", (Int)growthFrames );
 				}
 			}
 		}
@@ -1012,7 +1014,7 @@ void ParticleUplinkCannonUpdate::createOrbitToTargetLaser( UnsignedInt growthFra
 }
 
 //-------------------------------------------------------------------------------------------------
-void ParticleUplinkCannonUpdate::createGroundHitParticleSystem( IntensityTypes intensity )
+void ParticleUplinkCannonUpdate::createGroundHitParticleSystem( IntensityTypes /* intensity */ )
 {
 }
 
@@ -1020,7 +1022,7 @@ void ParticleUplinkCannonUpdate::createGroundHitParticleSystem( IntensityTypes i
 void ParticleUplinkCannonUpdate::removeAllEffects()
 {
 	const ParticleUplinkCannonUpdateModuleData *data = getParticleUplinkCannonUpdateModuleData();
-	for( int i = 0; i < data->m_outerEffectNumBones; i++ )
+	for( unsigned i = 0; i < data->m_ini.m_outerEffectNumBones; i++ )
 	{
 		if( m_outerSystemIDs && m_outerSystemIDs[ i ] )
 		{
@@ -1064,16 +1066,16 @@ Bool ParticleUplinkCannonUpdate::calculateDefaultInformation()
 	//Get the local bone positions for each of the outer nodes.
 	Coord3D bonePositions[ MAX_OUTER_NODES ];
 	Matrix3D boneMatrices[ MAX_OUTER_NODES ];
-	int numBones = obj->getMultiLogicalBonePosition( data->m_outerEffectBaseBoneName.str(), data->m_outerEffectNumBones, bonePositions, boneMatrices, FALSE );
+	Int numBones = obj->getMultiLogicalBonePosition( data->m_ini.m_outerEffectBaseBoneName.str(), (Int)data->m_ini.m_outerEffectNumBones, bonePositions, boneMatrices, FALSE );
 
-	if( numBones != data->m_outerEffectNumBones )
+	if( numBones != (Int)data->m_ini.m_outerEffectNumBones )
 	{
-		DEBUG_CRASH( ("Particle cannon requires %d outer node bones, but can only find %d bones.", data->m_outerEffectNumBones, numBones ) );
+		DEBUG_CRASH( ("Particle cannon requires %d outer node bones, but can only find %d bones.", data->m_ini.m_outerEffectNumBones, numBones ) );
 		m_invalidSettings = TRUE;
 		return FALSE;
 	}
 
-	for( int i = 0; i < data->m_outerEffectNumBones; i++ )
+	for( unsigned i = 0; i < data->m_ini.m_outerEffectNumBones; i++ )
 	{
 		m_laserBeamIDs[ i ] = INVALID_DRAWABLE_ID;
 		m_outerSystemIDs[ i ] = INVALID_PARTICLE_SYSTEM_ID;
@@ -1098,11 +1100,11 @@ Bool ParticleUplinkCannonUpdate::calculateUpBonePositions()
 	Coord3D pos;
 	if( draw )
 	{
-		if( data->m_connectorBoneName.isNotEmpty() && draw->getCurrentClientBonePositions( data->m_connectorBoneName.str(), 0, &pos, &mtx, 1 ) )
+		if( data->m_ini.m_connectorBoneName.isNotEmpty() && draw->getCurrentClientBonePositions( data->m_ini.m_connectorBoneName.str(), 0, &pos, &mtx, 1 ) )
 		{
 			obj->convertBonePosToWorldPos( &pos, &mtx, &m_connectorNodePosition, &mtx );
 		}
-		if( data->m_connectorBoneName.isNotEmpty() && draw->getCurrentClientBonePositions( data->m_fireBoneName.str(), 0, &pos, &mtx, 1 ) )
+		if( data->m_ini.m_connectorBoneName.isNotEmpty() && draw->getCurrentClientBonePositions( data->m_ini.m_fireBoneName.str(), 0, &pos, &mtx, 1 ) )
 		{
 			obj->convertBonePosToWorldPos( &pos, &mtx, &m_laserOriginPosition, &mtx );
 		}
@@ -1282,7 +1284,7 @@ void ParticleUplinkCannonUpdate::setClientStatus( PUCStatus newStatus, Bool reve
 			}
 			else
 			{
-				createGroundToOrbitLaser( data->m_widthGrowFrames );
+				createGroundToOrbitLaser( data->m_ini.m_widthGrowFrames );
 			}
 			createOuterNodeParticleSystems( IT_INTENSE );
 			createConnectorLasers( IT_INTENSE );
@@ -1310,7 +1312,7 @@ void ParticleUplinkCannonUpdate::setClientStatus( PUCStatus newStatus, Bool reve
 					}
 					else
 					{
-						update->setDecayFrames( data->m_widthGrowFrames );
+						update->setDecayFrames( data->m_ini.m_widthGrowFrames );
 					}
 				}
 			}
@@ -1444,7 +1446,7 @@ void ParticleUplinkCannonUpdate::xfer( Xfer *xfer )
 	}
 	else
 	{
-		m_startDecayFrame = m_startAttackFrame + data->m_totalFiringFrames;
+		m_startDecayFrame = m_startAttackFrame + data->m_ini.m_totalFiringFrames;
 	}
 
 	// the time of last manual target click

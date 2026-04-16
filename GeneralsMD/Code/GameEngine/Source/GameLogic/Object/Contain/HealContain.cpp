@@ -46,24 +46,26 @@
 HealContainModuleData::HealContainModuleData( void )
 {
 
-	m_framesForFullHeal = 0;
+	m_ini.m_framesForFullHeal = 0;
 
 }  // end HealContainModuleData
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void HealContainModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void HealContainModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
 
-  OpenContainModuleData::buildFieldParse( p );
+	OpenContainModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "TimeForFullHeal", INI::parseDurationUnsignedInt, NULL, offsetof( HealContainModuleData, m_framesForFullHeal ) },
+		{ "TimeForFullHeal", INI::parseDurationUnsignedInt, NULL, offsetof( HealContainModuleData::IniData, m_framesForFullHeal ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	HealContainModuleData* self {static_cast<HealContainModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -115,7 +117,7 @@ UpdateSleepTime HealContain::update( void )
 		++it;
 
 		// do the healing on this object
-		doneHealing = doHeal( obj, modData->m_framesForFullHeal );
+		doneHealing = doHeal( obj, modData->m_ini.m_framesForFullHeal );
 
 		// if we're done healing, we need to remove us from the healing container
 		if( doneHealing == TRUE )

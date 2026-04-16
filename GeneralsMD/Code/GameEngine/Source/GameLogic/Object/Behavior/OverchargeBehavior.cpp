@@ -54,26 +54,28 @@
 OverchargeBehaviorModuleData::OverchargeBehaviorModuleData( void )
 {
 
-	m_healthPercentToDrainPerSecond = 0.0f;
-	m_notAllowedWhenHealthBelowPercent = 0.0f;
+	m_ini.m_healthPercentToDrainPerSecond = 0.0f;
+	m_ini.m_notAllowedWhenHealthBelowPercent = 0.0f;
 
 }  // end OverchargeBehaviorModuleData
 
 //-------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void OverchargeBehaviorModuleData::buildFieldParse( MultiIniFieldParse &p ) 
+/*static*/ void OverchargeBehaviorModuleData::buildFieldParse(void* what, MultiIniFieldParse &p) 
 {
 
-  UpdateModuleData::buildFieldParse( p );
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "HealthPercentToDrainPerSecond", INI::parsePercentToReal,	NULL, offsetof( OverchargeBehaviorModuleData, m_healthPercentToDrainPerSecond ) },
-		{ "NotAllowedWhenHealthBelowPercent", INI::parsePercentToReal, NULL, offsetof( OverchargeBehaviorModuleData, m_notAllowedWhenHealthBelowPercent ) },
+		{ "HealthPercentToDrainPerSecond",		INI::parsePercentToReal, NULL, offsetof( OverchargeBehaviorModuleData::IniData, m_healthPercentToDrainPerSecond ) },
+		{ "NotAllowedWhenHealthBelowPercent",	INI::parsePercentToReal, NULL, offsetof( OverchargeBehaviorModuleData::IniData, m_notAllowedWhenHealthBelowPercent ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add( dataFieldParse );
+	OverchargeBehaviorModuleData* self {static_cast<OverchargeBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -117,14 +119,14 @@ UpdateSleepTime OverchargeBehavior::update( void )
 		// do some damage
 		BodyModuleInterface *body = us->getBodyModule();
 		DamageInfo damageInfo;
-		damageInfo.in.m_amount = (body->getMaxHealth() * modData->m_healthPercentToDrainPerSecond) / LOGICFRAMES_PER_SECOND;
+		damageInfo.in.m_amount = (body->getMaxHealth() * modData->m_ini.m_healthPercentToDrainPerSecond) / (Real)LOGICFRAMES_PER_SECOND;
 		damageInfo.in.m_sourceID = us->getID();
 		damageInfo.in.m_damageType = DAMAGE_PENALTY;
 		damageInfo.in.m_deathType = DEATH_NORMAL;
 		us->attemptDamage( &damageInfo );
 
 		// see if our health is below the allowable threshold
-		if( body->getHealth() < body->getMaxHealth() * modData->m_notAllowedWhenHealthBelowPercent )
+		if( body->getHealth() < body->getMaxHealth() * modData->m_ini.m_notAllowedWhenHealthBelowPercent )
 		{
 
 			// turn off the overcharge
@@ -155,7 +157,7 @@ UpdateSleepTime OverchargeBehavior::update( void )
 
 // ------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void OverchargeBehavior::onDamage( DamageInfo *damageInfo )
+void OverchargeBehavior::onDamage( DamageInfo* /* damageInfo */ )
 {
 
 }  // end onDie

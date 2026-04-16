@@ -57,25 +57,27 @@
 RebuildHoleExposeDieModuleData::RebuildHoleExposeDieModuleData()
 {
 
-	m_holeMaxHealth = 0.0f;
-	m_transferAttackers = true;
+	m_ini.m_holeMaxHealth = 0.0f;
+	m_ini.m_transferAttackers = true;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void RebuildHoleExposeDieModuleData::buildFieldParse( MultiIniFieldParse &p )
+/*static*/ void RebuildHoleExposeDieModuleData::buildFieldParse(void* what,  MultiIniFieldParse &p)
 {
-	DieModuleData::buildFieldParse(p);
+	DieModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "HoleName", INI::parseAsciiString, NULL, offsetof( RebuildHoleExposeDieModuleData, m_holeName ) },
-		{ "HoleMaxHealth", INI::parseReal, NULL, offsetof( RebuildHoleExposeDieModuleData, m_holeMaxHealth ) },
-		{ "TransferAttackers", INI::parseBool, NULL, offsetof( RebuildHoleExposeDieModuleData, m_transferAttackers ) },
+		{ "HoleName",			INI::parseAsciiString,	NULL, offsetof( RebuildHoleExposeDieModuleData::IniData, m_holeName ) },
+		{ "HoleMaxHealth",		INI::parseReal,			NULL, offsetof( RebuildHoleExposeDieModuleData::IniData, m_holeMaxHealth ) },
+		{ "TransferAttackers",	INI::parseBool,			NULL, offsetof( RebuildHoleExposeDieModuleData::IniData, m_transferAttackers ) },
 		{ 0, 0, 0, 0 }
 	};
 
-	p.add( dataFieldParse );
+	RebuildHoleExposeDieModuleData* self {static_cast<RebuildHoleExposeDieModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -136,7 +138,7 @@ void RebuildHoleExposeDie::onDie( const DamageInfo *damageInfo )
 		Object *hole;
 
 		// create the hole
-		hole = TheThingFactory->newObject( TheThingFactory->findTemplate( modData->m_holeName ),
+		hole = TheThingFactory->newObject( TheThingFactory->findTemplate( modData->m_ini.m_holeName ),
 																			 getObject()->getTeam() );
 
 		// put the hole at our position and angle
@@ -162,7 +164,7 @@ void RebuildHoleExposeDie::onDie( const DamageInfo *damageInfo )
 
 		// set the health of the hole to that defined by our data
 		BodyModuleInterface *body = hole->getBodyModule();
-		body->setMaxHealth( modData->m_holeMaxHealth );
+		body->setMaxHealth( modData->m_ini.m_holeMaxHealth );
 
 		// set the information in the hole about what to build
 		RebuildHoleBehaviorInterface *rhbi = RebuildHoleBehavior::getRebuildHoleBehaviorInterfaceFromObject( hole );
@@ -174,7 +176,7 @@ void RebuildHoleExposeDie::onDie( const DamageInfo *damageInfo )
 		if( rhbi )
 			rhbi->startRebuildProcess( us->getTemplate(), us->getID() );
 
-		if (modData->m_transferAttackers)
+		if (modData->m_ini.m_transferAttackers)
 		{
 			for ( Object *obj = TheGameLogic->getFirstObject(); obj; obj = obj->getNextObject() )
 			{

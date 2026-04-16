@@ -47,11 +47,17 @@ public:
 
 	SpyVisionSpecialPowerModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse& p );
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	UnsignedInt m_baseDurationInFrames;		///< duration of the demoralization (in frames)
-	UnsignedInt m_bonusDurationPerCapturedInFrames;	///< additional duration added for each prisoner we have
-	UnsignedInt m_maxDurationInFrames;		///< no matter how many prisoners we have, this is max
+	// MG: Cannot apply offsetof to SpyVisionSpecialPowerModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_baseDurationInFrames;		///< duration of the demoralization (in frames)
+		UnsignedInt m_bonusDurationPerCapturedInFrames;	///< additional duration added for each prisoner we have
+		UnsignedInt m_maxDurationInFrames;		///< no matter how many prisoners we have, this is max
+	};
+
+	IniData m_ini {};
 
 };
 

@@ -34,7 +34,6 @@
 #include "Common/Xfer.h"
 #include "GameLogic/GameLogic.h"
 #include "GameLogic/Module/BaseRegenerateUpdate.h"
-#include "GameLogic/Module/BodyModule.h"
 #include "GameLogic/Object.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,16 +49,16 @@ BaseRegenerateUpdateModuleData::BaseRegenerateUpdateModuleData()
 
 //-------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void BaseRegenerateUpdateModuleData::buildFieldParse( MultiIniFieldParse &p ) 
+void BaseRegenerateUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse &p) 
 {
-  UpdateModuleData::buildFieldParse( p );
+	UpdateModuleData::buildFieldParse( what, p );
 
 	static const FieldParse dataFieldParse[] = 
 	{
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add( dataFieldParse );
+	p.add( dataFieldParse );
 
 }
 
@@ -73,7 +72,7 @@ BaseRegenerateUpdate::BaseRegenerateUpdate( Thing *thing, const ModuleData* modu
 										: UpdateModule( thing, moduleData )
 {
 
-	if( TheGlobalData->m_baseRegenHealthPercentPerSecond == 0.0f )
+	if( TheGlobalData->m_data.m_baseRegenHealthPercentPerSecond == 0.0f )
 	{
 		setWakeFrame(getObject(), UPDATE_SLEEP_FOREVER);
 	}
@@ -94,10 +93,10 @@ BaseRegenerateUpdate::~BaseRegenerateUpdate( void )
 //-------------------------------------------------------------------------------------------------
 void BaseRegenerateUpdate::onDamage( DamageInfo *damageInfo )
 {
-	if (TheGlobalData->m_baseRegenHealthPercentPerSecond > 0.0 &&
+	if (TheGlobalData->m_data.m_baseRegenHealthPercentPerSecond > 0.0 &&
 			damageInfo->in.m_damageType != DAMAGE_HEALING)
 	{
-		setWakeFrame(getObject(), UPDATE_SLEEP(TheGlobalData->m_baseRegenDelay));
+		setWakeFrame(getObject(), UPDATE_SLEEP(TheGlobalData->m_data.m_baseRegenDelay));
 	}
 	else
 	{
@@ -137,8 +136,7 @@ UpdateSleepTime BaseRegenerateUpdate::update( void )
 		const Int HEAL_RATE = 3;
 
 		// do some healing
-		Real amount = HEAL_RATE * (body->getMaxHealth() * TheGlobalData->m_baseRegenHealthPercentPerSecond) / 
-														 LOGICFRAMES_PER_SECOND;
+		Real amount = HEAL_RATE * (body->getMaxHealth() * TheGlobalData->m_data.m_baseRegenHealthPercentPerSecond) / (Real)LOGICFRAMES_PER_SECOND;
 		me->attemptHealing(amount, me);
 
 		return UPDATE_SLEEP(HEAL_RATE);

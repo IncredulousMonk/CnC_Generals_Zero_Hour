@@ -43,7 +43,7 @@
 // #include "LinuxDevice/GameClient/Module/LinuxTruckDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxTankTruckDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxTracerDraw.h"
-// #include "LinuxDevice/GameClient/Module/LinuxTreeDraw.h"
+#include "LinuxDevice/GameClient/Module/LinuxTreeDraw.h"
 // #include "LinuxDevice/GameClient/Module/LinuxPropDraw.h"
 
 //-------------------------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ void LinuxModuleFactory::init()
    // addModule( LinuxTruckDraw );
    // addModule( LinuxTracerDraw );
    // addModule( LinuxTankTruckDraw );
-   // addModule( LinuxTreeDraw );
+   addModuleRename(LinuxTreeDraw, W3DTreeDraw);
    // addModule( LinuxPropDraw );
 
 }  // end init

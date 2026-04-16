@@ -71,10 +71,10 @@ static const char* TheOCLCreateLocTypeNames[] =
 //-------------------------------------------------------------------------------------------------
 OCLSpecialPowerModuleData::OCLSpecialPowerModuleData( void )
 {
-	m_defaultOCL = NULL;
-	m_upgradeOCL.clear();
-	m_createLoc = CREATE_AT_EDGE_NEAR_SOURCE;
-	m_isOCLAdjustPositionToPassable = FALSE;
+	m_ini.m_defaultOCL = NULL;
+	m_ini.m_upgradeOCL.clear();
+	m_ini.m_createLoc = CREATE_AT_EDGE_NEAR_SOURCE;
+	m_ini.m_isOCLAdjustPositionToPassable = FALSE;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -92,20 +92,22 @@ static void parseOCLUpgradePair( INI* ini, void * /*instance*/, void *store, con
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-/* static */ void OCLSpecialPowerModuleData::buildFieldParse(MultiIniFieldParse& p)
+/* static */ void OCLSpecialPowerModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	SpecialPowerModuleData::buildFieldParse( p );
+	SpecialPowerModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "UpgradeOCL", parseOCLUpgradePair, NULL, offsetof( OCLSpecialPowerModuleData, m_upgradeOCL ) },
-		{ "OCL", INI::parseObjectCreationList, NULL, offsetof( OCLSpecialPowerModuleData, m_defaultOCL ) },
-		{ "CreateLocation", INI::parseIndexList, TheOCLCreateLocTypeNames, offsetof( OCLSpecialPowerModuleData, m_createLoc ) },
-		{ "ReferenceObject", INI::parseAsciiString, NULL, offsetof( OCLSpecialPowerModuleData, m_referenceThingName ) },
-		{ "OCLAdjustPositionToPassable", INI::parseBool, NULL, offsetof( OCLSpecialPowerModuleData, m_isOCLAdjustPositionToPassable ) },
+		{ "UpgradeOCL",						parseOCLUpgradePair,			NULL,						offsetof( OCLSpecialPowerModuleData::IniData, m_upgradeOCL ) },
+		{ "OCL",							INI::parseObjectCreationList,	NULL,						offsetof( OCLSpecialPowerModuleData::IniData, m_defaultOCL ) },
+		{ "CreateLocation",					INI::parseIndexList,			TheOCLCreateLocTypeNames,	offsetof( OCLSpecialPowerModuleData::IniData, m_createLoc ) },
+		{ "ReferenceObject",				INI::parseAsciiString,			NULL,						offsetof( OCLSpecialPowerModuleData::IniData, m_referenceThingName ) },
+		{ "OCLAdjustPositionToPassable",	INI::parseBool,					NULL,						offsetof( OCLSpecialPowerModuleData::IniData, m_isOCLAdjustPositionToPassable ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	OCLSpecialPowerModuleData* self {static_cast<OCLSpecialPowerModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }
 
@@ -129,15 +131,15 @@ const ObjectCreationList* OCLSpecialPower::findOCL() const
 	const Player* controller = getObject()->getControllingPlayer();
 	if (controller != NULL)
 	{
-		for (std::vector<OCLSpecialPowerModuleData::Upgrades>::const_iterator it = d->m_upgradeOCL.begin(); 
-					it != d->m_upgradeOCL.end();
+		for (std::vector<OCLSpecialPowerModuleData::Upgrades>::const_iterator it = d->m_ini.m_upgradeOCL.begin(); 
+					it != d->m_ini.m_upgradeOCL.end();
 					++it)
 		{
 			if (controller->hasScience(it->m_science))
 				return it->m_ocl;
 		}
 	}
-	return d->m_defaultOCL;
+	return d->m_ini.m_defaultOCL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -164,7 +166,7 @@ void OCLSpecialPower::doSpecialPowerAtLocation( const Coord3D *loc, Real angle, 
 
 	Coord3D targetCoord = *loc;
 
-	if( modData->m_isOCLAdjustPositionToPassable )
+	if( modData->m_ini.m_isOCLAdjustPositionToPassable )
 	{
 		FindPositionOptions fpOptions;
 		fpOptions.flags = FPF_CLEAR_CELLS_ONLY;
@@ -184,7 +186,7 @@ void OCLSpecialPower::doSpecialPowerAtLocation( const Coord3D *loc, Real angle, 
 
 	// at what point will the "deliverer" come in
 	Coord3D creationCoord;
-	switch (modData->m_createLoc)
+	switch (modData->m_ini.m_createLoc)
 	{
 		case CREATE_AT_EDGE_NEAR_SOURCE:
 			creationCoord = TheTerrainLogic->findClosestEdgePoint( getObject()->getPosition() );
@@ -196,7 +198,7 @@ void OCLSpecialPower::doSpecialPowerAtLocation( const Coord3D *loc, Real angle, 
 			break;
 		case CREATE_AT_EDGE_FARTHEST_FROM_TARGET:
 			creationCoord = TheTerrainLogic->findFarthestEdgePoint(&targetCoord);
-			creationCoord.z += CREATE_ABOVE_LOCATION_HEIGHT;
+			creationCoord.z += (Real)CREATE_ABOVE_LOCATION_HEIGHT;
 			ObjectCreationList::create( ocl, getObject(), &creationCoord, &targetCoord, angle );
 			break;
 		case CREATE_AT_LOCATION:
@@ -211,7 +213,7 @@ void OCLSpecialPower::doSpecialPowerAtLocation( const Coord3D *loc, Real angle, 
 		case CREATE_ABOVE_LOCATION:
 			// this is the case where the special power stuff originates above the location of the mouse click
 			creationCoord = targetCoord;
-			creationCoord.z += CREATE_ABOVE_LOCATION_HEIGHT;
+			creationCoord.z += (Real)CREATE_ABOVE_LOCATION_HEIGHT;
 			ObjectCreationList::create( ocl, getObject(), &creationCoord, &targetCoord, angle );
 			break;
 	}
@@ -249,7 +251,7 @@ void OCLSpecialPower::doSpecialPower( UnsignedInt commandOptions )
 // ------------------------------------------------------------------------------------------------
 const ThingTemplate* OCLSpecialPower::getReferenceThingTemplate() const
 {
-	return TheThingFactory->findTemplate( getOCLSpecialPowerModuleData()->m_referenceThingName );
+	return TheThingFactory->findTemplate( getOCLSpecialPowerModuleData()->m_ini.m_referenceThingName );
 }
 
 // ------------------------------------------------------------------------------------------------

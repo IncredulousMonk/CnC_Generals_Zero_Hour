@@ -37,19 +37,21 @@
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void FireWeaponCollideModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void FireWeaponCollideModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  CollideModuleData::buildFieldParse(p);
+	CollideModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "CollideWeapon",		INI::parseWeaponTemplate,						NULL, offsetof( FireWeaponCollideModuleData, m_collideWeaponTemplate ) },
-		{ "FireOnce",					INI::parseBool,											NULL, offsetof( FireWeaponCollideModuleData, m_fireOnce ) },
-		{ "RequiredStatus",		ObjectStatusMaskType::parseFromINI,	NULL, offsetof( FireWeaponCollideModuleData, m_requiredStatus ) },
-		{ "ForbiddenStatus",	ObjectStatusMaskType::parseFromINI,	NULL, offsetof( FireWeaponCollideModuleData, m_forbiddenStatus ) },
+		{ "CollideWeapon",		INI::parseWeaponTemplate,			NULL, offsetof( FireWeaponCollideModuleData::IniData, m_collideWeaponTemplate ) },
+		{ "FireOnce",			INI::parseBool,						NULL, offsetof( FireWeaponCollideModuleData::IniData, m_fireOnce ) },
+		{ "RequiredStatus",		ObjectStatusMaskType::parseFromINI,	NULL, offsetof( FireWeaponCollideModuleData::IniData, m_requiredStatus ) },
+		{ "ForbiddenStatus",	ObjectStatusMaskType::parseFromINI,	NULL, offsetof( FireWeaponCollideModuleData::IniData, m_forbiddenStatus ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	FireWeaponCollideModuleData* self {static_cast<FireWeaponCollideModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ FireWeaponCollide::FireWeaponCollide( Thing *thing, const ModuleData* moduleData
 	CollideModule( thing, moduleData ),
 	m_collideWeapon(NULL)
 {
-	m_collideWeapon = TheWeaponStore->allocateNewWeapon(getFireWeaponCollideModuleData()->m_collideWeaponTemplate, PRIMARY_WEAPON);
+	m_collideWeapon = TheWeaponStore->allocateNewWeapon(getFireWeaponCollideModuleData()->m_ini.m_collideWeaponTemplate, PRIMARY_WEAPON);
 	m_everFired = FALSE;
 }
 
@@ -73,7 +75,7 @@ FireWeaponCollide::~FireWeaponCollide( void )
 //-------------------------------------------------------------------------------------------------
 /** The die callback. */
 //-------------------------------------------------------------------------------------------------
-void FireWeaponCollide::onCollide( Object *other, const Coord3D *loc, const Coord3D *normal )
+void FireWeaponCollide::onCollide( Object* other, const Coord3D* /* loc */, const Coord3D* /* normal */ )
 {
 	if( other == NULL )
 		return; //Don't shoot the ground
@@ -99,14 +101,14 @@ Bool FireWeaponCollide::shouldFireWeapon()
 	ObjectStatusMaskType status = getObject()->getStatusBits();
 	
 	//We need all required status or else we fail
-	if( !status.testForAll( d->m_requiredStatus ) )
+	if( !status.testForAll( d->m_ini.m_requiredStatus ) )
 		return FALSE; 
 
 	//If we have any forbidden statii, then fail
-	if( status.testForAny( d->m_forbiddenStatus ) )
+	if( status.testForAny( d->m_ini.m_forbiddenStatus ) )
 		return FALSE; 
 
-	if( m_everFired && d->m_fireOnce )
+	if( m_everFired && d->m_ini.m_fireOnce )
 		return FALSE;// can only fire once ever
 
 	return TRUE;

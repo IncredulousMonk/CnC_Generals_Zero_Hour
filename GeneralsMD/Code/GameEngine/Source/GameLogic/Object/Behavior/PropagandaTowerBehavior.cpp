@@ -66,8 +66,12 @@ public:
 
 	ObjectTracker( void ) { objectID = INVALID_ID; next = NULL; }
 
-	ObjectID objectID;
-	ObjectTracker *next;
+	// No copies allowed!
+	ObjectTracker(const ObjectTracker&) = delete;
+	ObjectTracker& operator=(const ObjectTracker&) = delete;
+
+	ObjectID objectID {};
+	ObjectTracker *next {};
 
 };
 ObjectTracker::~ObjectTracker( void ) { }
@@ -81,37 +85,39 @@ ObjectTracker::~ObjectTracker( void ) { }
 PropagandaTowerBehaviorModuleData::PropagandaTowerBehaviorModuleData( void )
 {
 
-	m_scanRadius = 1.0f;
-	m_scanDelayInFrames = 100;
-	m_autoHealPercentPerSecond = 0.01f;
-	m_upgradedAutoHealPercentPerSecond = 0.02f;
-	m_pulseFX = NULL;
-	m_upgradeRequired = NULL;
-	m_upgradedPulseFX = NULL;
-	m_affectsSelf = FALSE;
+	m_ini.m_scanRadius = 1.0f;
+	m_ini.m_scanDelayInFrames = 100;
+	m_ini.m_autoHealPercentPerSecond = 0.01f;
+	m_ini.m_upgradedAutoHealPercentPerSecond = 0.02f;
+	m_ini.m_pulseFX = NULL;
+	m_ini.m_upgradeRequired = NULL;
+	m_ini.m_upgradedPulseFX = NULL;
+	m_ini.m_affectsSelf = FALSE;
 
 }  // end PropagandaTowerBehaviorModuleData
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void PropagandaTowerBehaviorModuleData::buildFieldParse( MultiIniFieldParse &p )
+/*static*/ void PropagandaTowerBehaviorModuleData::buildFieldParse(void* what, MultiIniFieldParse &p)
 {
-  UpdateModuleData::buildFieldParse( p );
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "Radius",									INI::parseReal,									NULL,	offsetof( PropagandaTowerBehaviorModuleData, m_scanRadius ) },
-		{ "DelayBetweenUpdates",		INI::parseDurationUnsignedInt,	NULL,	offsetof( PropagandaTowerBehaviorModuleData, m_scanDelayInFrames ) },
-		{ "HealPercentEachSecond",	INI::parsePercentToReal,				NULL,	offsetof( PropagandaTowerBehaviorModuleData, m_autoHealPercentPerSecond ) },
-		{ "UpgradedHealPercentEachSecond",	INI::parsePercentToReal,NULL,	offsetof( PropagandaTowerBehaviorModuleData, m_upgradedAutoHealPercentPerSecond ) },
-		{ "PulseFX",								INI::parseFXList,								NULL,	offsetof( PropagandaTowerBehaviorModuleData, m_pulseFX ) },
-		{ "UpgradeRequired",				INI::parseAsciiString,					NULL, offsetof( PropagandaTowerBehaviorModuleData, m_upgradeRequired ) },
-		{ "UpgradedPulseFX",				INI::parseFXList,								NULL, offsetof( PropagandaTowerBehaviorModuleData, m_upgradedPulseFX ) },
-		{ "AffectsSelf",						INI::parseBool,									NULL, offsetof( PropagandaTowerBehaviorModuleData, m_affectsSelf ) },
+		{ "Radius",							INI::parseReal,					NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_scanRadius ) },
+		{ "DelayBetweenUpdates",			INI::parseDurationUnsignedInt,	NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_scanDelayInFrames ) },
+		{ "HealPercentEachSecond",			INI::parsePercentToReal,		NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_autoHealPercentPerSecond ) },
+		{ "UpgradedHealPercentEachSecond",	INI::parsePercentToReal,		NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_upgradedAutoHealPercentPerSecond ) },
+		{ "PulseFX",						INI::parseFXList,				NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_pulseFX ) },
+		{ "UpgradeRequired",				INI::parseAsciiString,			NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_upgradeRequired ) },
+		{ "UpgradedPulseFX",				INI::parseFXList,				NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_upgradedPulseFX ) },
+		{ "AffectsSelf",					INI::parseBool,					NULL, offsetof( PropagandaTowerBehaviorModuleData::IniData, m_affectsSelf ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add( dataFieldParse );
+	PropagandaTowerBehaviorModuleData* self {static_cast<PropagandaTowerBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -159,12 +165,12 @@ void PropagandaTowerBehavior::onObjectCreated( void )
 	const PropagandaTowerBehaviorModuleData *modData = getPropagandaTowerBehaviorModuleData();
 
 	// convert module upgrade name to a pointer
-	m_upgradeRequired = TheUpgradeCenter->findUpgrade( modData->m_upgradeRequired );
+	m_upgradeRequired = TheUpgradeCenter->findUpgrade( modData->m_ini.m_upgradeRequired );
 
 }  // end onObjectCreated
 
 // ------------------------------------------------------------------------------------------------
-void PropagandaTowerBehavior::onCapture( Player *oldOwner, Player *newOwner )
+void PropagandaTowerBehavior::onCapture( Player* /* oldOwner */, Player* newOwner )
 {
 	// We don't function for the neutral player.  
 	if( newOwner == ThePlayerList->getNeutralPlayer() )
@@ -223,7 +229,7 @@ UpdateSleepTime PropagandaTowerBehavior::update( void )
 	
 	// if it's not time to scan, nothing to do
 	UnsignedInt currentFrame = TheGameLogic->getFrame();
-	if( currentFrame - m_lastScanFrame >= modData->m_scanDelayInFrames )
+	if( currentFrame - m_lastScanFrame >= modData->m_ini.m_scanDelayInFrames )
 	{
 
 		// do a scan
@@ -278,7 +284,7 @@ UpdateSleepTime PropagandaTowerBehavior::update( void )
 // ------------------------------------------------------------------------------------------------
 /** The death callback */
 // ------------------------------------------------------------------------------------------------
-void PropagandaTowerBehavior::onDie( const DamageInfo *damageInfo )
+void PropagandaTowerBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 
 	// remove any benefits from anybody in our area of influence
@@ -322,11 +328,11 @@ void PropagandaTowerBehavior::effectLogic( Object *obj, Bool giving,
 		{
 			Real healthPercent;
 			if(effectUpgraded)
-				healthPercent = modData->m_upgradedAutoHealPercentPerSecond;
+				healthPercent = modData->m_ini.m_upgradedAutoHealPercentPerSecond;
 			else
-				healthPercent = modData->m_autoHealPercentPerSecond;
+				healthPercent = modData->m_ini.m_autoHealPercentPerSecond;
 
-			Real amount = healthPercent / LOGICFRAMES_PER_SECOND * body->getMaxHealth();
+			Real amount = healthPercent / (Real)LOGICFRAMES_PER_SECOND * body->getMaxHealth();
 
 	// Dustin wants the healing effect not to stack from multiple propaganda towers...
 	// To accomplish this, I'll give every object a single healing-sender (ID)
@@ -334,7 +340,7 @@ void PropagandaTowerBehavior::effectLogic( Object *obj, Bool giving,
 	// and cannot change healing senders until the previous one expires (its scandelay)
 
 //		obj->attemptHealing(amount, getObject()); // the regular way to give healing... 
-			obj->attemptHealingFromSoleBenefactor( amount, getObject(), modData->m_scanDelayInFrames );//the non-stacking way
+			obj->attemptHealingFromSoleBenefactor( amount, getObject(), modData->m_ini.m_scanDelayInFrames );//the non-stacking way
 
 		}  // end if
 
@@ -475,9 +481,9 @@ void PropagandaTowerBehavior::doScan( void )
   {
     // play the right pulse
 	  if( upgradePresent == TRUE )
-		  FXList::doFXObj( modData->m_upgradedPulseFX, us );
+		  FXList::doFXObj( modData->m_ini.m_upgradedPulseFX, us );
 	  else
-		  FXList::doFXObj( modData->m_pulseFX, us );
+		  FXList::doFXObj( modData->m_ini.m_pulseFX, us );
   }
 
 	// setup scan filters
@@ -494,7 +500,7 @@ void PropagandaTowerBehavior::doScan( void )
 
 	// scan objects in our region
 	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( us->getPosition(),
-																																		 modData->m_scanRadius,
+																																		 modData->m_ini.m_scanRadius,
 																																		 FROM_CENTER_2D, 
 																																		 filters );
 	MemoryPoolObjectHolder hold( iter );
@@ -504,7 +510,7 @@ void PropagandaTowerBehavior::doScan( void )
 	{
 
 		// ignore ourselves, unless Design wants us to affect ourselves
-		if( obj == us  &&  !modData->m_affectsSelf)
+		if( obj == us  &&  !modData->m_ini.m_affectsSelf)
 			continue;
 
 		// record this object as being in the new "in list"

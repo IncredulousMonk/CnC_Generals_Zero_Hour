@@ -2343,6 +2343,7 @@ TXTextureClass WorldHeightMap::getTextureFromIndex( Int textureIndex )
 
 void WorldHeightMap::getTerrainColorAt(Real x, Real y, RGBColor *pColor)
 {
+DEBUG_CRASH(("This code uses BorderSize!  You need to check the coordinates.\n"));
 	Int xIndex = REAL_TO_INT_FLOOR(x/MAP_XY_FACTOR);
 	Int yIndex = REAL_TO_INT_FLOOR(y/MAP_XY_FACTOR);
 	xIndex += m_borderSize;
@@ -2371,6 +2372,7 @@ void WorldHeightMap::getTerrainColorAt(Real x, Real y, RGBColor *pColor)
 
 AsciiString WorldHeightMap::getTerrainNameAt(Real x, Real y)
 {
+DEBUG_CRASH(("This code uses BorderSize!  You need to check the coordinates.\n"));
 	Int xIndex = REAL_TO_INT_FLOOR(x/MAP_XY_FACTOR);
 	Int yIndex = REAL_TO_INT_FLOOR(y/MAP_XY_FACTOR);
 	xIndex += m_borderSize;

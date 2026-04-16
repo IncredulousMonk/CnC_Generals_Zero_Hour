@@ -37,21 +37,23 @@
 // ------------------------------------------------------------------------------------------------
 ModelConditionUpgradeModuleData::ModelConditionUpgradeModuleData()
 {
-	m_conditionFlag = MODELCONDITION_INVALID;
+	m_ini.m_conditionFlag = MODELCONDITION_INVALID;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void ModelConditionUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void ModelConditionUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpgradeModuleData::buildFieldParse(p);
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "ConditionFlag",	ModelConditionFlags::parseSingleBitFromINI,	NULL, offsetof( ModelConditionUpgradeModuleData, m_conditionFlag ) },
+		{ "ConditionFlag",	ModelConditionFlags::parseSingleBitFromINI,	NULL, offsetof( ModelConditionUpgradeModuleData::IniData, m_conditionFlag ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	ModelConditionUpgradeModuleData* self {static_cast<ModelConditionUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -74,8 +76,8 @@ void ModelConditionUpgrade::upgradeImplementation( )
 
 	Object *me = getObject();	
 
-	if( data->m_conditionFlag != MODELCONDITION_INVALID )
-		me->setModelConditionState(data->m_conditionFlag);
+	if( data->m_ini.m_conditionFlag != MODELCONDITION_INVALID )
+		me->setModelConditionState(data->m_ini.m_conditionFlag);
 }
 
 // ------------------------------------------------------------------------------------------------

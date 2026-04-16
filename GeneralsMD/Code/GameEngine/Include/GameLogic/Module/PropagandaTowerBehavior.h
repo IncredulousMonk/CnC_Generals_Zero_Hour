@@ -52,16 +52,22 @@ public:
 
 	PropagandaTowerBehaviorModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse(void* what, MultiIniFieldParse &p);
 
-	Real m_scanRadius;													///< radius of our scan
-	UnsignedInt m_scanDelayInFrames;						///< how frequently we do an update scan
-	Real m_autoHealPercentPerSecond;						///< how much % of max health we heal per second
-	const FXList *m_pulseFX;										///< FXList to play when scan is updated
-	AsciiString m_upgradeRequired;							///< Upgrade required to use the upgraded pulse FX
-	Real m_upgradedAutoHealPercentPerSecond;		///< Different percent to use for healing if upgraded too
-	const FXList *m_upgradedPulseFX;						///< FXList to play for pulse when upgraded
-	Bool m_affectsSelf;													///< Allow effect to affect ourselves
+	// MG: Cannot apply offsetof to PropagandaTowerBehaviorModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_scanRadius;								///< radius of our scan
+		UnsignedInt m_scanDelayInFrames;				///< how frequently we do an update scan
+		Real m_autoHealPercentPerSecond;				///< how much % of max health we heal per second
+		const FXList *m_pulseFX;						///< FXList to play when scan is updated
+		AsciiString m_upgradeRequired;					///< Upgrade required to use the upgraded pulse FX
+		Real m_upgradedAutoHealPercentPerSecond;		///< Different percent to use for healing if upgraded too
+		const FXList *m_upgradedPulseFX;				///< FXList to play for pulse when upgraded
+		Bool m_affectsSelf;								///< Allow effect to affect ourselves
+	};
+
+	IniData m_ini {};
 
 };
 
@@ -71,13 +77,17 @@ class PropagandaTowerBehavior : public UpdateModule,
 																public DieModuleInterface
 {
 
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( PropagandaTowerBehavior, PropagandaTowerBehaviorModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( PropagandaTowerBehavior, PropagandaTowerBehaviorModuleData )
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( PropagandaTowerBehavior, "PropagandaTowerBehavior" )
 
 public:
 
 	PropagandaTowerBehavior( Thing *thing, const ModuleData *modData );
 	// virtual destructor prototype provided by MemoryPoolObject
+
+	// No copies allowed!
+	PropagandaTowerBehavior(const PropagandaTowerBehavior&) = delete;
+	PropagandaTowerBehavior& operator=(const PropagandaTowerBehavior&) = delete;
 
 	// module methods
 	static Int getInterfaceMask() { return UpdateModule::getInterfaceMask() | (MODULEINTERFACE_DIE); }
@@ -106,10 +116,10 @@ protected:
 	virtual void effectLogic( Object *obj, Bool giving, 
 														const PropagandaTowerBehaviorModuleData *modData);///< give/remove effect on object
 
-	UnsignedInt m_lastScanFrame;									///< last frame we did a scan on
+	UnsignedInt m_lastScanFrame {};									///< last frame we did a scan on
 
-	ObjectTracker *m_insideList;									///< objects that are inside our area of influence
-	const UpgradeTemplate *m_upgradeRequired;			///< Upgrade required to use the upgraded pulse FX
+	ObjectTracker *m_insideList {};									///< objects that are inside our area of influence
+	const UpgradeTemplate *m_upgradeRequired {};			///< Upgrade required to use the upgraded pulse FX
 
 };
 

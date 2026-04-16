@@ -31,6 +31,11 @@ OpenGLSampler::OpenGLSampler()
    glCreateSamplers(1, &m_id);
 }
 
+void OpenGLSampler::createMipmappedSampler() {
+   glSamplerParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+   glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+}
+
 void OpenGLSampler::createAnisotropicSampler() {
    glSamplerParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    glSamplerParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

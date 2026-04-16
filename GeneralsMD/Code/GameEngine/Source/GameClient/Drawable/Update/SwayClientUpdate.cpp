@@ -53,14 +53,14 @@
 //-------------------------------------------------------------------------------------------------
 SwayClientUpdate::SwayClientUpdate( Thing *thing, const ModuleData* moduleData ) :
 	ClientUpdateModule( thing, moduleData ),
-	m_curDelta(0),
 	m_curValue(0),
 	m_curAngle(0),
+	m_curDelta(0),
 	m_curAngleLimit(0),
 	m_leanAngle(0),
+	m_curVersion(-1),	// so that we never match the first time
 	m_swaying(true),
-	m_unused(false),
-	m_curVersion(-1)	// so that we never match the first time
+	m_unused(false)
 {
 
 	// don't do updateSway here; wait till the first time we go thru our update loop.

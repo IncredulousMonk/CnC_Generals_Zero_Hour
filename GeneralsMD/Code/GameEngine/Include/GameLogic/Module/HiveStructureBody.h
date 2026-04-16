@@ -44,21 +44,29 @@ class Object;
 class HiveStructureBodyModuleData : public StructureBodyModuleData
 {
 public:
-	DamageTypeFlags m_damageTypesToPropagateToSlaves;
-	DamageTypeFlags m_damageTypesToSwallow;							///< A subset of the damage types to propagate. Do not take them ourselves
+	// MG: Cannot apply offsetof to HiveStructureBodyModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		DamageTypeFlags m_damageTypesToPropagateToSlaves;
+		DamageTypeFlags m_damageTypesToSwallow;							///< A subset of the damage types to propagate. Do not take them ourselves
+	};
+
+	IniData m_ini {};
 
 	HiveStructureBodyModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    StructureBodyModuleData::buildFieldParse(p);
+		StructureBodyModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "PropagateDamageTypesToSlavesWhenExisting",   INI::parseDamageTypeFlags, NULL, offsetof( HiveStructureBodyModuleData, m_damageTypesToPropagateToSlaves ) },
-			{ "SwallowDamageTypesIfSlavesNotExisting",			INI::parseDamageTypeFlags, NULL, offsetof( HiveStructureBodyModuleData, m_damageTypesToSwallow ) },
+			{ "PropagateDamageTypesToSlavesWhenExisting",	INI::parseDamageTypeFlags, NULL, offsetof( HiveStructureBodyModuleData::IniData, m_damageTypesToPropagateToSlaves ) },
+			{ "SwallowDamageTypesIfSlavesNotExisting",		INI::parseDamageTypeFlags, NULL, offsetof( HiveStructureBodyModuleData::IniData, m_damageTypesToSwallow ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		HiveStructureBodyModuleData* self {static_cast<HiveStructureBodyModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -83,4 +91,3 @@ protected:
 };
 
 #endif // __HIVE_STRUCTURE_BODY_H
-

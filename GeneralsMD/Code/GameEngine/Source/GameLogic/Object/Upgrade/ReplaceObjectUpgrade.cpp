@@ -41,16 +41,18 @@
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void ReplaceObjectUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void ReplaceObjectUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpgradeModuleData::buildFieldParse(p);
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "ReplaceObject",	INI::parseAsciiString,	NULL, offsetof( ReplaceObjectUpgradeModuleData, m_replaceObjectName ) },
+		{ "ReplaceObject",	INI::parseAsciiString,	NULL, offsetof( ReplaceObjectUpgradeModuleData::IniData, m_replaceObjectName ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	ReplaceObjectUpgradeModuleData* self {static_cast<ReplaceObjectUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -76,10 +78,10 @@ void ReplaceObjectUpgrade::upgradeImplementation( )
 	Matrix3D myMatrix = *me->getTransformMatrix();
 	Team *myTeam = me->getTeam();// Team implies player.  It is a subset.
 
-	const ThingTemplate *replacementTemplate = TheThingFactory->findTemplate(data->m_replaceObjectName);
+	const ThingTemplate *replacementTemplate = TheThingFactory->findTemplate(data->m_ini.m_replaceObjectName);
 	if( replacementTemplate == NULL )
 	{
-		DEBUG_ASSERTCRASH(replacementTemplate != NULL, ("No such object '%s' in ReplaceObjectUpgrade.", data->m_replaceObjectName.str() ) );
+		DEBUG_ASSERTCRASH(replacementTemplate != NULL, ("No such object '%s' in ReplaceObjectUpgrade.", data->m_ini.m_replaceObjectName.str() ) );
 		return;
 	}
 

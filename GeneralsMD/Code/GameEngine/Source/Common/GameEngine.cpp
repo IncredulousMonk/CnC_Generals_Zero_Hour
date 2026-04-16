@@ -496,6 +496,9 @@ void GameEngine::init( int argc, char *argv[] )
 		// FIXME: Load specific object ini files.
 		ini.load("Data\\INI\\Object\\AmericaInfantry.ini", INI_LOAD_OVERWRITE, nullptr);
 		ini.load("Data\\INI\\Object\\CivilianBuilding.ini", INI_LOAD_OVERWRITE, nullptr);
+		ini.load("Data\\INI\\Object\\FactionBuilding.ini", INI_LOAD_OVERWRITE, nullptr);
+		ini.load("Data\\INI\\Object\\CivilianProp.ini", INI_LOAD_OVERWRITE, nullptr);
+		ini.load("Data\\INI\\Object\\NatureProp.ini", INI_LOAD_OVERWRITE, nullptr);
 
 	#ifdef DUMP_PERF_STATS///////////////////////////////////////////////////////////////////////////
 	GetPrecisionTimer(&endTime64);//////////////////////////////////////////////////////////////////

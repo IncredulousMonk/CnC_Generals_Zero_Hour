@@ -44,39 +44,47 @@ class Player;
 class SpyVisionUpdateModuleData : public UpdateModuleData
 {
 public:
-	UpgradeMuxData	m_upgradeMuxData;
+	// MG: Cannot apply offsetof to SpyVisionUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UpgradeMuxData	m_upgradeMuxData;
 
-	Bool						m_needsUpgrade;
-	Bool						m_selfPowered;
-	UnsignedInt			m_selfPoweredDuration;
-	UnsignedInt			m_selfPoweredInterval;
-	KindOfMaskType	m_spyOnKindof;
+		Bool			m_needsUpgrade;
+		Bool			m_selfPowered;
+		UnsignedInt		m_selfPoweredDuration;
+		UnsignedInt		m_selfPoweredInterval;
+		KindOfMaskType	m_spyOnKindof;
+	};
+
+	IniData m_ini {};
 
 	SpyVisionUpdateModuleData()
 	{
-		m_needsUpgrade = FALSE;
-		m_selfPowered = FALSE;
-		m_selfPoweredDuration = 0;
-		m_selfPoweredInterval = 0;
-		m_spyOnKindof = KINDOFMASK_NONE;
-		m_spyOnKindof.flip();
+		m_ini.m_needsUpgrade = FALSE;
+		m_ini.m_selfPowered = FALSE;
+		m_ini.m_selfPoweredDuration = 0;
+		m_ini.m_selfPoweredInterval = 0;
+		m_ini.m_spyOnKindof = KINDOFMASK_NONE;
+		m_ini.m_spyOnKindof.flip();
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "NeedsUpgrade",					INI::parseBool,									NULL, offsetof( SpyVisionUpdateModuleData, m_needsUpgrade ) },
-			{ "SelfPowered",					INI::parseBool,									NULL, offsetof( SpyVisionUpdateModuleData, m_selfPowered ) },
-			{ "SelfPoweredDuration",	INI::parseDurationUnsignedInt,	NULL, offsetof( SpyVisionUpdateModuleData, m_selfPoweredDuration ) },
-			{ "SelfPoweredInterval",	INI::parseDurationUnsignedInt,	NULL, offsetof( SpyVisionUpdateModuleData, m_selfPoweredInterval ) },
-			{ "SpyOnKindof",					KindOfMaskType::parseFromINI,		NULL, offsetof( SpyVisionUpdateModuleData, m_spyOnKindof ) },
+			{ "NeedsUpgrade",			INI::parseBool,					NULL, offsetof( SpyVisionUpdateModuleData::IniData, m_needsUpgrade ) },
+			{ "SelfPowered",			INI::parseBool,					NULL, offsetof( SpyVisionUpdateModuleData::IniData, m_selfPowered ) },
+			{ "SelfPoweredDuration",	INI::parseDurationUnsignedInt,	NULL, offsetof( SpyVisionUpdateModuleData::IniData, m_selfPoweredDuration ) },
+			{ "SelfPoweredInterval",	INI::parseDurationUnsignedInt,	NULL, offsetof( SpyVisionUpdateModuleData::IniData, m_selfPoweredInterval ) },
+			{ "SpyOnKindof",			KindOfMaskType::parseFromINI,	NULL, offsetof( SpyVisionUpdateModuleData::IniData, m_spyOnKindof ) },
 			{ 0, 0, 0, 0 }
 		};
 
-		UpdateModuleData::buildFieldParse(p);
-		p.add(dataFieldParse);
-		p.add(UpgradeMuxData::getFieldParse(), offsetof( SpyVisionUpdateModuleData, m_upgradeMuxData ));
+		UpdateModuleData::buildFieldParse(what, p);
+		SpyVisionUpdateModuleData* self {static_cast<SpyVisionUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
+		p.add(UpgradeMuxData::getFieldParse(), offset + offsetof( SpyVisionUpdateModuleData::IniData, m_upgradeMuxData ));
 	}
 };
 
@@ -118,21 +126,21 @@ protected:
 	virtual void upgradeImplementation();
 	virtual void getUpgradeActivationMasks(UpgradeMaskType& activation, UpgradeMaskType& conflicting) const
 	{
-		getSpyVisionUpdateModuleData()->m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
+		getSpyVisionUpdateModuleData()->m_ini.m_upgradeMuxData.getUpgradeActivationMasks(activation, conflicting);
 	}
 	virtual void performUpgradeFX()
 	{
-		getSpyVisionUpdateModuleData()->m_upgradeMuxData.performUpgradeFX(getObject());
+		getSpyVisionUpdateModuleData()->m_ini.m_upgradeMuxData.performUpgradeFX(getObject());
 	}
 	virtual void processUpgradeRemoval()
 	{
 		// I can't take it any more.  Let the record show that I think the UpgradeMux multiple inheritence is CRAP.
-		getSpyVisionUpdateModuleData()->m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
+		getSpyVisionUpdateModuleData()->m_ini.m_upgradeMuxData.muxDataProcessUpgradeRemoval(getObject());
 	}
 
 	virtual Bool requiresAllActivationUpgrades() const
 	{
-		return getSpyVisionUpdateModuleData()->m_upgradeMuxData.m_requiresAllTriggers;
+		return getSpyVisionUpdateModuleData()->m_ini.m_upgradeMuxData.m_requiresAllTriggers;
 	}
 	inline Bool isUpgradeActive() const { return isAlreadyUpgraded(); }
 	virtual Bool isSubObjectsUpgrade() { return false; }
@@ -141,11 +149,10 @@ private:
 
 	void doActivationWork( Player *playerToSetFor, Bool setting );
 
-	UnsignedInt m_deactivateFrame;
-	UnsignedInt m_disabledUntilFrame; //sabotaged, emp'd, etc.
-	Bool m_currentlyActive;
-	Bool m_resetTimersNextUpdate;
+	UnsignedInt m_deactivateFrame {};
+	UnsignedInt m_disabledUntilFrame {}; //sabotaged, emp'd, etc.
+	Bool m_currentlyActive {};
+	Bool m_resetTimersNextUpdate {};
 };
 
 #endif 
-

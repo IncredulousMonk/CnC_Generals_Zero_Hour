@@ -591,8 +591,6 @@ void VertexMaterialClass::Parse_Mapping_Args(const W3dVertexMaterialStruct & vma
 	int mapping = vmat.Attributes & W3DVERTMAT_STAGE0_MAPPING_MASK;
 
 // FIXME: Fancy vertex mapping
-DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("Vertex mapping must be 0!\n"));
-#if 0
 	switch(mapping) {
 		
 		case W3DVERTMAT_STAGE0_MAPPING_UV:
@@ -605,6 +603,7 @@ DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("Vertex mapping must
 				mapper->Release_Ref();
 			}
 			break;
+#if 0
 		case W3DVERTMAT_STAGE0_MAPPING_CHEAP_ENVIRONMENT:
 			{
 				ClassicEnvironmentMapperClass *mapper = NEW_REF(ClassicEnvironmentMapperClass,(0));
@@ -762,8 +761,10 @@ DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("Vertex mapping must
 				mapper->Release_Ref();
 			}
 			break;
+#endif // if 0
 
 		default:
+DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("VertexMaterialClass::Parse_Mapping_Args: Stage 0 vertex mapping is 0x%x!\n", mapping));
 			break;
 	}
 
@@ -781,6 +782,7 @@ DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("Vertex mapping must
 			mapper->Release_Ref();
 		}
 		break;
+#if 0
 		case W3DVERTMAT_STAGE1_MAPPING_CHEAP_ENVIRONMENT:
 		{
 			ClassicEnvironmentMapperClass *mapper = W3DNEW ClassicEnvironmentMapperClass(1);
@@ -939,11 +941,12 @@ DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("Vertex mapping must
 				mapper->Release_Ref();
 			}
 			break;
+#endif // if 0
 
 		default:
+DEBUG_ASSERTCRASH(mapping == W3DVERTMAT_STAGE0_MAPPING_UV, ("VertexMaterialClass::Parse_Mapping_Args: Stage 1 vertex mapping is 0x%x!\n", mapping));
 			break;
 	}
-#endif // if 0
 }
 
 

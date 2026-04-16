@@ -45,7 +45,13 @@ public:
 	SupplyCenterDockUpdateModuleData( void );
 	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	UnsignedInt m_grantTemporaryStealthFrames;
+	// MG: Cannot apply offsetof to SupplyCenterDockUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_grantTemporaryStealthFrames;
+	};
+
+	IniData m_ini {};
 };
 
 // ------------------------------------------------------------------------------------------------

@@ -46,7 +46,8 @@
 #include "GameLogic/Module/StealthUpdate.h"
 
 
-#define NONE_SPAWNED_YET (0xffffffff)
+// #define NONE_SPAWNED_YET (0xffffffff)
+#define NONE_SPAWNED_YET -1
 
 
 #ifdef _INTERNAL
@@ -66,7 +67,7 @@ SpawnBehavior::SpawnBehavior( Thing *thing, const ModuleData* moduleData )
 
 	// GEE, THIS IS NEW...
 	// NOW, WE CAN HAVE A LIST OF TEMPLATE NAMES
-	m_templateNameIterator = md->m_spawnTemplateNameData.begin();
+	m_templateNameIterator = md->m_ini.m_spawnTemplateNameData.begin();
 	m_spawnTemplate = TheThingFactory->findTemplate( *m_templateNameIterator );
 	//each time m_spawn template is used, it will increment m_templateNameIterator,
 	//thus scanning through the ordered list of template names
@@ -77,8 +78,8 @@ SpawnBehavior::SpawnBehavior( Thing *thing, const ModuleData* moduleData )
 	//Initialization(s) inserted
 	m_firstBatchCount = 0;
 	//
-	if( md->m_isOneShotData )
-		m_oneShotCountdown = md->m_spawnNumberData;
+	if( md->m_ini.m_isOneShotData )
+		m_oneShotCountdown = md->m_ini.m_spawnNumberData;
 	else
 		m_oneShotCountdown = -1;
 
@@ -86,12 +87,12 @@ SpawnBehavior::SpawnBehavior( Thing *thing, const ModuleData* moduleData )
 
 	m_replacementTimes.clear();
 	// The initializing of the initial bursters is handled in the first update @todo invent an object::postConstructionProcess() some day
-	m_initialBurstCountdown = md->m_initialBurst;
+	m_initialBurstCountdown = (UnsignedInt)md->m_ini.m_initialBurst;
 	m_initialBurstTimesInited = FALSE;
 
 
 	
-	m_aggregateHealth = md->m_aggregateHealth;
+	m_aggregateHealth = md->m_ini.m_aggregateHealth;
 
 	m_spawnCount = NONE_SPAWNED_YET;
 	m_active = TRUE;
@@ -110,7 +111,7 @@ void SpawnBehavior::onDelete()
 	const SpawnBehaviorModuleData *modData = getSpawnBehaviorModuleData();
 
 	// destroy anything that we have spawned that is not already dead
-	if( modData->m_spawnedRequireSpawner )
+	if( modData->m_ini.m_spawnedRequireSpawner )
 	{
 		Object *obj;
 
@@ -144,7 +145,7 @@ void SpawnBehavior::onDie( const DamageInfo *damageInfo )
 	const SpawnBehaviorModuleData *modData = getSpawnBehaviorModuleData();
 
 	///@todo isDieApplicable should be called outside of the onDie call
-	if( modData->m_dieMuxData.isDieApplicable( getObject(), damageInfo ) == FALSE )
+	if( modData->m_ini.m_dieMuxData.isDieApplicable( getObject(), damageInfo ) == FALSE )
 		return;
 
 	for( objectIDListIterator iter = m_spawnIDs.begin();
@@ -173,7 +174,7 @@ void SpawnBehavior::onDie( const DamageInfo *damageInfo )
 	}
 
 	// kill anything that we have spawned if our module data directs us to do so
-	if( modData->m_spawnedRequireSpawner )
+	if( modData->m_ini.m_spawnedRequireSpawner )
 	{
 		Object *obj;
 
@@ -213,17 +214,17 @@ UpdateSleepTime SpawnBehavior::update( void )
 		m_initialBurstTimesInited = TRUE;
 
 		Bool runtimeProduced = getObject()->getProducerID()!=INVALID_ID; //this was produced by a production module, rather than a script or worldbuilder
-		Int now = TheGameLogic->getFrame();
-		Int burstInitCount = m_initialBurstCountdown;
-		for( int listIndex = 0; listIndex < md->m_spawnNumberData; listIndex++ )
+		UnsignedInt now = TheGameLogic->getFrame();
+		UnsignedInt burstInitCount = m_initialBurstCountdown;
+		for( int listIndex = 0; listIndex < md->m_ini.m_spawnNumberData; listIndex++ )
 		{
-			if ( md->m_initialBurst > 0 )
+			if ( md->m_ini.m_initialBurst > 0 )
 			{
 				UnsignedInt birthFrame = now;
 				if ( runtimeProduced && burstInitCount > 0)
 				{
 					--burstInitCount;
-					birthFrame += (listIndex*SPAWN_DELAY_MIN_FRAMES);
+					birthFrame += (UnsignedInt)(listIndex*SPAWN_DELAY_MIN_FRAMES);
 				}
 				m_replacementTimes.push_back( runtimeProduced  );// Set all spawns to be created in rapid succession
 			}
@@ -254,7 +255,7 @@ UpdateSleepTime SpawnBehavior::update( void )
 		{
 			Int replacementTime = *iterator;
 			UnsignedInt currentTime = TheGameLogic->getFrame();
-			if( currentTime > replacementTime )
+			if( currentTime > (UnsignedInt)replacementTime )
 			{
 				//If you create one, you pop the number off the list
 				if( createSpawn() )	
@@ -266,7 +267,7 @@ UpdateSleepTime SpawnBehavior::update( void )
 				iterator++;
 		}
 
-		if( md->m_isOneShotData  &&  (m_oneShotCountdown <= 0) )
+		if( md->m_ini.m_isOneShotData  &&  (m_oneShotCountdown <= 0) )
 			stopSpawning(); //I only trigger one batch.  ie on Creation.
 	}
 	return UPDATE_SLEEP_NONE;
@@ -522,10 +523,10 @@ public:
 
 	OrphanData( void );
 
-	const ThingTemplate *m_matchTemplate;
-	Object *m_source;
-	Object *m_closest;
-	Real m_closestDistSq;
+	const ThingTemplate *m_matchTemplate {};
+	Object *m_source {};
+	Object *m_closest {};
+	Real m_closestDistSq {};
 
 };
 
@@ -583,8 +584,8 @@ Object *SpawnBehavior::reclaimOrphanSpawn( void )
 
 	OrphanData orphanData;
 	AsciiString prevName = "";
-	for (std::vector<AsciiString>::const_iterator tempName = md->m_spawnTemplateNameData.begin();
-			tempName != md->m_spawnTemplateNameData.end(); 
+	for (std::vector<AsciiString>::const_iterator tempName = md->m_ini.m_spawnTemplateNameData.begin();
+			tempName != md->m_ini.m_spawnTemplateNameData.end(); 
 			++tempName)
 	{
 		if (prevName.compare(*tempName)) // the list may have redundancy, this will skip some of it
@@ -621,7 +622,7 @@ Bool SpawnBehavior::createSpawn()
 	
 	// try to reclaim orphaned objects if possible
 	Bool reclaimedOrphan = FALSE;
-	if( md->m_canReclaimOrphans && md->m_isOneShotData == FALSE )
+	if( md->m_ini.m_canReclaimOrphans && md->m_ini.m_isOneShotData == FALSE )
 	{
 		newSpawn = reclaimOrphanSpawn();
 		if( newSpawn )
@@ -646,9 +647,9 @@ Bool SpawnBehavior::createSpawn()
 		// looping back to the beginning
 
 		++m_templateNameIterator;
-		if ( m_templateNameIterator == md->m_spawnTemplateNameData.end())
+		if ( m_templateNameIterator == md->m_ini.m_spawnTemplateNameData.end())
 		{
-			m_templateNameIterator = md->m_spawnTemplateNameData.begin();
+			m_templateNameIterator = md->m_ini.m_spawnTemplateNameData.begin();
 		}
 	}
 
@@ -670,7 +671,7 @@ Bool SpawnBehavior::createSpawn()
 
 	if( reclaimedOrphan == FALSE )
 	{
-		if ( md->m_exitByBudding )
+		if ( md->m_ini.m_exitByBudding )
 		{
 
 			Bool barracksExitSuccess = FALSE;
@@ -733,7 +734,7 @@ Bool SpawnBehavior::createSpawn()
 	else
 		exitInterface->unreserveDoorForExit( exitDoor );
 
-	if( md->m_isOneShotData )
+	if( md->m_ini.m_isOneShotData )
 		m_oneShotCountdown--;
 
 
@@ -763,7 +764,7 @@ void SpawnBehavior::onSpawnDeath( ObjectID deadSpawn, DamageInfo *damageInfo )
 	//When one dies, you push (now + delay) as the time a new one should be made
 	const SpawnBehaviorModuleData* md = getSpawnBehaviorModuleData();
 	
-	Int replacementTime = md->m_spawnReplaceDelayData + TheGameLogic->getFrame();
+	Int replacementTime = md->m_ini.m_spawnReplaceDelayData + (Int)TheGameLogic->getFrame();
 	m_replacementTimes.push_back( replacementTime );
 
 	m_spawnIDs.erase( it );
@@ -830,7 +831,7 @@ Bool SpawnBehavior::shouldTryToSpawn()
 	// Not if we are turned off
 	if( !m_active )
 		return FALSE;
-	if( getObject()->getStatusBits().test( OBJECT_STATUS_RECONSTRUCTING ) && modData->m_isOneShotData )
+	if( getObject()->getStatusBits().test( OBJECT_STATUS_RECONSTRUCTING ) && modData->m_ini.m_isOneShotData )
 	{
 		// If we are a Hole rebuild, not only should we not, but we should never ask again.
 		stopSpawning();
@@ -869,7 +870,7 @@ void SpawnBehavior::computeAggregateStates(void)
 	const SpawnBehaviorModuleData* md = getSpawnBehaviorModuleData();
 
 	Int spawnCount = 0;
-	Int spawnCountMax = md->m_spawnNumberData;
+	Int spawnCountMax = md->m_ini.m_spawnNumberData;
 	Coord3D avgSpawnPos; 
 
 	avgSpawnPos.set(0,0,0);
@@ -885,7 +886,7 @@ void SpawnBehavior::computeAggregateStates(void)
 	Drawable *spawnDraw = NULL;
 	Object *currentSpawn = NULL;
 
-	WeaponBonusConditionFlags spawnWeaponBonus; 
+	// WeaponBonusConditionFlags spawnWeaponBonus; 
 
 
 	m_selfTaskingSpawnCount = 0;
@@ -920,7 +921,7 @@ void SpawnBehavior::computeAggregateStates(void)
 				currentSpawn->getExperienceTracker()->setVeterancyLevel(vetLevel);
 			}
 
-			spawnWeaponBonus = currentSpawn->getWeaponBonusCondition();
+			// spawnWeaponBonus = currentSpawn->getWeaponBonusCondition();
 
 			avgSpawnPos.add(currentSpawn->getPosition());
 

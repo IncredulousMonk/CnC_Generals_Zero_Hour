@@ -55,11 +55,11 @@ SelectionInfo::SelectionInfo() :
 	currentCountFriends(0),
 	newCountEnemies(0),
 	newCountCivilians(0),
-	newCountCrates(0),
 	newCountMine(0),
 	newCountMineBuildings(0),
 	newCountFriends(0),
 	newCountGarrisonableBuildings(0),
+	newCountCrates(0),
 	selectEnemies(FALSE),
 	selectCivilians(FALSE),
 	selectMine(FALSE),
@@ -72,7 +72,7 @@ PickDrawableStruct::PickDrawableStruct() : drawableListToFill(NULL)
 {
 	//Added By Sadullah Nader
 	//Initializations inserted
-	drawableListToFill = FALSE;
+	drawableListToFill = nullptr;
 	//
 	forceAttackMode = TheInGameUI->isInForceAttackMode();
 	UnsignedInt pickType = getPickTypesForContext(forceAttackMode);
@@ -195,7 +195,7 @@ extern Bool contextCommandForNewSelection(const DrawableList *currentlySelectedD
 		return FALSE;
 	}
 
-	if (TheGlobalData->m_useAlternateMouse) {
+	if (TheGlobalData->m_data.m_useAlternateMouse) {
 		// context sensitive commands never apply when selecting in alternate mouse mode
 		return FALSE;
 	}
@@ -345,7 +345,7 @@ Bool addDrawableToList( Drawable *draw, void *userData )
 {
 	PickDrawableStruct *pds = (PickDrawableStruct *) userData;
 #if defined(_DEBUG) || defined(_INTERNAL)
-	if (TheGlobalData->m_allowUnselectableSelection) {
+	if (TheGlobalData->m_data.m_allowUnselectableSelection) {
 		pds->drawableListToFill->push_back(draw);
 		return TRUE;
 	}

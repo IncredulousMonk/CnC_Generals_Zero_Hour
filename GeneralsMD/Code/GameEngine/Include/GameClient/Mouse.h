@@ -269,6 +269,10 @@ public:
 	Int  getCursorTooltipDelay() { return m_tooltipDelay; }
 	void setCursorTooltipDelay(Int delay) { m_tooltipDelay = delay; }
 
+	UnsignedInt getDragTolerance() { return m_data.m_dragTolerance; }
+	UnsignedInt getDragTolerance3D() { return m_data.m_dragTolerance3D; }
+	UnsignedInt getDragToleranceMS() { return m_data.m_dragToleranceMS; }
+
 	void setCursorTooltip( UnicodeString tooltip, Int tooltipDelay = -1, const RGBColor *color = NULL, Real width = 1.0f );		///< set tooltip string at cursor
 	void setMouseText( UnicodeString text, const RGBAColorInt *color, const RGBAColorInt *dropColor );					///< set the cursor text, *NOT* the tooltip text
 	virtual void setMouseLimits( void );					///< update the limit extents the mouse can move in
@@ -307,12 +311,12 @@ public:
 		RedrawMode	m_currentRedrawMode;	///< mouse cursor drawing method
 		Bool m_useTooltipAltTextColor;		///< draw tooltip text with house colors?
 		Bool m_useTooltipAltBackColor;		///< draw tooltip backgrounds with house colors?
-		Bool m_adjustTooltipAltColor;			///< adjust house colors (darker/brighter) for tooltips?
-		Bool m_orthoCamera;								///< use an ortho camera for 3D cursors?
-		Real m_orthoZoom;									///< uniform zoom to apply to 3D cursors when using ortho cameras
+		Bool m_adjustTooltipAltColor;		///< adjust house colors (darker/brighter) for tooltips?
+		Bool m_orthoCamera;					///< use an ortho camera for 3D cursors?
+		Real m_orthoZoom;					///< uniform zoom to apply to 3D cursors when using ortho cameras
 		UnsignedInt m_dragTolerance;
 		UnsignedInt m_dragTolerance3D;
-		UnsignedInt m_dragToleranceMS;
+		UnsignedInt m_dragToleranceMS;		///< temporal tolerance
 	};
 
 	Data m_data {};

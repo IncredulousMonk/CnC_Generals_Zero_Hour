@@ -60,16 +60,18 @@
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void GrantScienceUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void GrantScienceUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpgradeModuleData::buildFieldParse(p);
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "GrantScience",		INI::parseAsciiString,	NULL, offsetof( GrantScienceUpgradeModuleData, m_grantScienceName ) },
+		{ "GrantScience",		INI::parseAsciiString,	NULL, offsetof( GrantScienceUpgradeModuleData::IniData, m_grantScienceName ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	GrantScienceUpgradeModuleData* self {static_cast<GrantScienceUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -92,7 +94,7 @@ void GrantScienceUpgrade::upgradeImplementation( )
 	if( m_scienceType == SCIENCE_INVALID )
 	{
 		const GrantScienceUpgradeModuleData *data = getGrantScienceUpgradeModuleData();
-		m_scienceType = TheScienceStore->getScienceFromInternalName( data->m_grantScienceName );
+		m_scienceType = TheScienceStore->getScienceFromInternalName( data->m_ini.m_grantScienceName );
 	}
 
 	Object *obj = getObject();	

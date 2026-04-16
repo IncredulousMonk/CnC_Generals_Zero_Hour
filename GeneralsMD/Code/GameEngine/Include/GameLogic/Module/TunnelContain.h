@@ -103,7 +103,7 @@ public:
 	virtual Bool isHealContain() const { return false; } ///< true when container only contains units while healing (not a transport!)
 	virtual Bool isTunnelContain() const { return TRUE; }
 	virtual Bool isImmuneToClearBuildingAttacks() const { return true; }
-  virtual Bool isSpecialOverlordStyleContainer() const {return FALSE;}
+	virtual Bool isSpecialOverlordStyleContainer() const {return FALSE;}
 
 	virtual void onContaining( Object *obj, Bool wasSelected );		///< object now contains 'obj'
 	virtual void onRemoving( Object *obj );			///< object no longer contains 'obj'
@@ -114,8 +114,8 @@ public:
 	virtual void addToContainList( Object *obj );		///< The part of AddToContain that inheritors can override (Can't do whole thing because of all the private stuff involved)
 	virtual void removeFromContain( Object *obj, Bool exposeStealthUnits = FALSE );	///< remove 'obj' from contain list
 	virtual void removeAllContained( Bool exposeStealthUnits = FALSE );				///< remove all objects on contain list
-  virtual void harmAndForceExitAllContained( DamageInfo *info );
-  virtual void killAllContained( void );				///< kill all objects on contain list
+	virtual void harmAndForceExitAllContained( DamageInfo *info );
+	virtual void killAllContained( void );				///< kill all objects on contain list
 
 	// contain list access
 	virtual void iterateContained( ContainIterateFunc func, void *userData, Bool reverse );
@@ -140,8 +140,8 @@ public:
 protected:
 
 	void scatterToNearbyPosition(Object* obj);
-	Bool m_needToRunOnBuildComplete; 
-	Bool m_isCurrentlyRegistered; ///< Keeps track if this is registered with the player, so we don't double remove and mess up
+	Bool m_needToRunOnBuildComplete {};
+	Bool m_isCurrentlyRegistered {}; ///< Keeps track if this is registered with the player, so we don't double remove and mess up
 
 };
 

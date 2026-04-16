@@ -1845,9 +1845,23 @@ void GameLogic::startNewGame( Bool loadingSaveGame )
 
 		for (pMapObj = MapObject::getFirstMapObject(); pMapObj; pMapObj = pMapObj->getNext()) 
 		{
-			if (pMapObj->getName().compare("QuonsetHut01") != 0) {
+			if (pMapObj->getName().compare("QuonsetHut01") == 0) {}
+			else if (pMapObj->getName().compare("ChinaRetail01") == 0) {}
+			else if (pMapObj->getName().compare("ChinaRetail02") == 0) {}
+			else if (pMapObj->getName().compare("ConvienceStore") == 0) {}
+			else if (pMapObj->getName().startsWith("ChainLink")) {}
+			else if (pMapObj->getName().startsWith("GLATrap")) {}
+			else if (pMapObj->getName().startsWith("Rock")) {}
+			else if (pMapObj->getName().compare("AsianRetailStore01") == 0) {}
+			else if (pMapObj->getName().compare("AsianApartment01") == 0) {}
+			else if (pMapObj->getName().compare("PlaygroundSet") == 0) {}
+			else if (pMapObj->getName().compare("Swing") == 0) {}
+			else {
+				DEBUG_LOG(("GameLogic::startNewGame: skipping map object %s\n", pMapObj->getName().str()));
 				continue; // FIXME: debugging!
 			}
+			DEBUG_LOG(("GameLogic::startNewGame: creating map object %s\n", pMapObj->getName().str()));
+			
 			if (pMapObj->getFlag(FLAG_BRIDGE_FLAGS) || pMapObj->getFlag(FLAG_ROAD_FLAGS)) {
 				continue;	// roads & bridges are special cased in the terrain side.
 			}

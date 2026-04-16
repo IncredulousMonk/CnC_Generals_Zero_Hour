@@ -43,14 +43,20 @@ class Player;
 class RadarUpgradeModuleData : public UpgradeModuleData
 {
 public:
-	Bool m_isDisableProof {};// Super radar, ignores radarDisabled checks
+	// MG: Cannot apply offsetof to RadarUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Bool m_isDisableProof {};// Super radar, ignores radarDisabled checks
+	};
+
+	IniData m_ini {};
 
 	RadarUpgradeModuleData()
 	{
-		m_isDisableProof = FALSE;
+		m_ini.m_isDisableProof = FALSE;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -60,7 +66,7 @@ class RadarUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( RadarUpgrade, "RadarUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( RadarUpgrade, RadarUpgradeModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( RadarUpgrade, RadarUpgradeModuleData )
 
 public:
 
@@ -69,7 +75,7 @@ public:
 
 	virtual void onDelete( void );																///< we have some work to do when this module goes away
 	virtual void onCapture( Player *oldOwner, Player *newOwner );	///< object containing upgrade has changed teams
-	Bool getIsDisableProof(void) const { return getRadarUpgradeModuleData()->m_isDisableProof; }
+	Bool getIsDisableProof(void) const { return getRadarUpgradeModuleData()->m_ini.m_isDisableProof; }
 
 protected:
 
@@ -80,4 +86,3 @@ protected:
 };
 
 #endif // __RADARUPGRADE_H_
-

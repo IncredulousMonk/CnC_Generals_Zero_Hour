@@ -44,16 +44,22 @@
 class DemoTrapUpdateModuleData : public ModuleData
 {
 public:
-	WeaponTemplate *m_detonationWeaponTemplate;
-	KindOfMaskType	m_ignoreKindOf;
-	WeaponSlotType  m_manualModeWeaponSlot;
-	WeaponSlotType  m_detonationWeaponSlot;
-	WeaponSlotType  m_proximityModeWeaponSlot;
-	Real			m_triggerDetonationRange;
-	UnsignedInt		m_scanFrames;
-	Bool			m_defaultsToProximityMode;
-	Bool			m_friendlyDetonation;
-	Bool			m_detonateWhenKilled;
+	// MG: Cannot apply offsetof to DemoTrapUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		WeaponTemplate *m_detonationWeaponTemplate;
+		KindOfMaskType	m_ignoreKindOf;
+		WeaponSlotType  m_manualModeWeaponSlot;
+		WeaponSlotType  m_detonationWeaponSlot;
+		WeaponSlotType  m_proximityModeWeaponSlot;
+		Real			m_triggerDetonationRange;
+		UnsignedInt		m_scanFrames;
+		Bool			m_defaultsToProximityMode;
+		Bool			m_friendlyDetonation;
+		Bool			m_detonateWhenKilled;
+	};
+
+	IniData m_ini {};
 	
 	DemoTrapUpdateModuleData();
 
@@ -88,10 +94,9 @@ public:
 
 protected:
 
-	Int m_nextScanFrames;
-	Bool m_detonated;
+	Int m_nextScanFrames {};
+	Bool m_detonated {};
 };
 
 
 #endif
-

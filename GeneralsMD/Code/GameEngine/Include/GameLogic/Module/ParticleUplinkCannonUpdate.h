@@ -51,63 +51,69 @@ enum ParticleSystemID;
 class ParticleUplinkCannonUpdateModuleData : public ModuleData
 {
 public:
-	UnsignedInt			m_beginChargeFrames;
-	UnsignedInt			m_raiseAntennaFrames;
-	UnsignedInt			m_readyDelayFrames;
-	UnsignedInt			m_widthGrowFrames;
-	UnsignedInt			m_beamTravelFrames;
-	UnsignedInt			m_totalFiringFrames;
-	UnsignedInt			m_framesBetweenLaunchFXRefresh;
+	// MG: Cannot apply offsetof to ParticleUplinkCannonUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt			m_beginChargeFrames;
+		UnsignedInt			m_raiseAntennaFrames;
+		UnsignedInt			m_readyDelayFrames;
+		UnsignedInt			m_widthGrowFrames;
+		UnsignedInt			m_beamTravelFrames;
+		UnsignedInt			m_totalFiringFrames;
+		UnsignedInt			m_framesBetweenLaunchFXRefresh;
 
-	AsciiString			m_outerEffectBaseBoneName;
-	UnsignedInt			m_outerEffectNumBones;
-	AsciiString			m_outerNodesLightFlareParticleSystemName;
-	AsciiString			m_outerNodesMediumFlareParticleSystemName;
-	AsciiString			m_outerNodesIntenseFlareParticleSystemName;
+		AsciiString			m_outerEffectBaseBoneName;
+		UnsignedInt			m_outerEffectNumBones;
+		AsciiString			m_outerNodesLightFlareParticleSystemName;
+		AsciiString			m_outerNodesMediumFlareParticleSystemName;
+		AsciiString			m_outerNodesIntenseFlareParticleSystemName;
 
-	AsciiString			m_connectorBoneName;
-	AsciiString			m_connectorMediumLaserNameName;
-	AsciiString			m_connectorIntenseLaserNameName;
-	AsciiString			m_connectorMediumFlareParticleSystemName;
-	AsciiString			m_connectorIntenseFlareParticleSystemName;
+		AsciiString			m_connectorBoneName;
+		AsciiString			m_connectorMediumLaserNameName;
+		AsciiString			m_connectorIntenseLaserNameName;
+		AsciiString			m_connectorMediumFlareParticleSystemName;
+		AsciiString			m_connectorIntenseFlareParticleSystemName;
 
-	AsciiString			m_laserBaseLightFlareParticleSystemName;
-	AsciiString			m_laserBaseMediumFlareParticleSystemName;
-	AsciiString			m_laserBaseIntenseFlareParticleSystemName;
-	
-	AsciiString			m_fireBoneName;
-	AsciiString			m_particleBeamLaserName;
+		AsciiString			m_laserBaseLightFlareParticleSystemName;
+		AsciiString			m_laserBaseMediumFlareParticleSystemName;
+		AsciiString			m_laserBaseIntenseFlareParticleSystemName;
+		
+		AsciiString			m_fireBoneName;
+		AsciiString			m_particleBeamLaserName;
 
-	FXList					*m_groundHitFX;
-	FXList					*m_beamLaunchFX;
+		FXList*				m_groundHitFX;
+		FXList*				m_beamLaunchFX;
 
-	Real						m_swathOfDeathDistance;
-	Real						m_swathOfDeathAmplitude;
-	UnsignedInt			m_totalScorchMarks;
-	Real						m_scorchMarkScalar;
+		Real				m_swathOfDeathDistance;
+		Real				m_swathOfDeathAmplitude;
+		UnsignedInt			m_totalScorchMarks;
+		Real				m_scorchMarkScalar;
 
-	UnsignedInt			m_totalDamagePulses;
-	Real						m_damagePerSecond;
-	DamageType			m_damageType;
-	DeathType				m_deathType;
-	Real						m_damageRadiusScalar;
-	Real						m_revealRange;
+		UnsignedInt			m_totalDamagePulses;
+		Real				m_damagePerSecond;
+		DamageType			m_damageType;
+		DeathType			m_deathType;
+		Real				m_damageRadiusScalar;
+		Real				m_revealRange;
 
-	SpecialPowerTemplate *m_specialPowerTemplate;
+		SpecialPowerTemplate *m_specialPowerTemplate;
 
 
-	AsciiString		m_powerupSoundName;
-	AsciiString		m_unpackToReadySoundName;
-	AsciiString		m_firingToIdleSoundName;
-	AsciiString		m_annihilationSoundName;
-	AsciiString		m_damagePulseRemnantObjectName;
+		AsciiString			m_powerupSoundName;
+		AsciiString			m_unpackToReadySoundName;
+		AsciiString			m_firingToIdleSoundName;
+		AsciiString			m_annihilationSoundName;
+		AsciiString			m_damagePulseRemnantObjectName;
 
-  Real					m_manualDrivingSpeed;
-  Real					m_manualFastDrivingSpeed;
-  UnsignedInt		m_doubleClickToFastDriveDelay;
+		Real				m_manualDrivingSpeed;
+		Real				m_manualFastDrivingSpeed;
+		UnsignedInt			m_doubleClickToFastDriveDelay;
+	};
+
+	IniData m_ini {};
 
 	ParticleUplinkCannonUpdateModuleData();
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private: 
 
@@ -149,12 +155,16 @@ class ParticleUplinkCannonUpdate : public SpecialPowerUpdateModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ParticleUplinkCannonUpdate, "ParticleUplinkCannonUpdate" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ParticleUplinkCannonUpdate, ParticleUplinkCannonUpdateModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ParticleUplinkCannonUpdate, ParticleUplinkCannonUpdateModuleData )
 
 public:
 
 	ParticleUplinkCannonUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
+
+	// No copies allowed!
+	ParticleUplinkCannonUpdate(const ParticleUplinkCannonUpdate&) = delete;
+	ParticleUplinkCannonUpdate& operator=(const ParticleUplinkCannonUpdate&) = delete;
 
 	// SpecialPowerUpdateInterface
 	virtual Bool initiateIntentToDoSpecialPower(const SpecialPowerTemplate *specialPowerTemplate, const Object *targetObj, const Coord3D *targetPos, const Waypoint *way, UnsignedInt commandOptions );
@@ -195,51 +205,50 @@ protected:
 	void setClientStatus( PUCStatus status, Bool revealThisFrame );
 	void killEverything();
 
-	SpecialPowerModuleInterface* m_specialPowerModule;
+	SpecialPowerModuleInterface* m_specialPowerModule {};
 
-	AudioEventRTS		m_powerupSound;
-	AudioEventRTS		m_unpackToReadySound;
-	AudioEventRTS		m_firingToIdleSound;
-	AudioEventRTS		m_annihilationSound;
+	AudioEventRTS		m_powerupSound {};
+	AudioEventRTS		m_unpackToReadySound {};
+	AudioEventRTS		m_firingToIdleSound {};
+	AudioEventRTS		m_annihilationSound {};
 
-	Matrix3D				m_outerNodeOrientations[ MAX_OUTER_NODES ];
+	Matrix3D			m_outerNodeOrientations[ MAX_OUTER_NODES ];
 
-	Coord3D					m_outerNodePositions[ MAX_OUTER_NODES ];
-	Coord3D					m_connectorNodePosition;
-	Coord3D					m_laserOriginPosition;
-	Coord3D					m_initialTargetPosition;
-	Coord3D					m_currentTargetPosition;
-	Coord3D					m_overrideTargetDestination;
+	Coord3D				m_outerNodePositions[ MAX_OUTER_NODES ];
+	Coord3D				m_connectorNodePosition {};
+	Coord3D				m_laserOriginPosition {};
+	Coord3D				m_initialTargetPosition {};
+	Coord3D				m_currentTargetPosition {};
+	Coord3D				m_overrideTargetDestination {};
 
-	PUCStatus					m_status;
-	LaserStatus				m_laserStatus;
-	UnsignedInt				m_frames;
+	PUCStatus			m_status {};
+	LaserStatus			m_laserStatus {};
+	UnsignedInt			m_frames {};
 	ParticleSystemID	m_outerSystemIDs[ MAX_OUTER_NODES ];
-	DrawableID				m_laserBeamIDs[ MAX_OUTER_NODES ];
-	DrawableID				m_groundToOrbitBeamID;
-	DrawableID				m_orbitToTargetBeamID;
-	ParticleSystemID	m_connectorSystemID;
-	ParticleSystemID	m_laserBaseSystemID;
+	DrawableID			m_laserBeamIDs[ MAX_OUTER_NODES ];
+	DrawableID			m_groundToOrbitBeamID {};
+	DrawableID			m_orbitToTargetBeamID {};
+	ParticleSystemID	m_connectorSystemID {};
+	ParticleSystemID	m_laserBaseSystemID {};
 
-	UnsignedInt			m_scorchMarksMade;
-	UnsignedInt			m_nextScorchMarkFrame;
-	UnsignedInt			m_nextLaunchFXFrame;
-	UnsignedInt			m_damagePulsesMade;
-	UnsignedInt			m_nextDamagePulseFrame;
-	UnsignedInt			m_startAttackFrame;
-	UnsignedInt			m_startDecayFrame;
-	UnsignedInt			m_lastDrivingClickFrame;
-	UnsignedInt			m_2ndLastDrivingClickFrame;
-	UnsignedInt			m_nextDestWaypointID;
+	UnsignedInt			m_scorchMarksMade {};
+	UnsignedInt			m_nextScorchMarkFrame {};
+	UnsignedInt			m_nextLaunchFXFrame {};
+	UnsignedInt			m_damagePulsesMade {};
+	UnsignedInt			m_nextDamagePulseFrame {};
+	UnsignedInt			m_startAttackFrame {};
+	UnsignedInt			m_startDecayFrame {};
+	UnsignedInt			m_lastDrivingClickFrame {};
+	UnsignedInt			m_2ndLastDrivingClickFrame {};
+	UnsignedInt			m_nextDestWaypointID {};
 
-	Bool						m_upBonesCached;
-	Bool						m_defaultInfoCached;
-	Bool						m_invalidSettings;
-	Bool						m_manualTargetMode;
-	Bool						m_scriptedWaypointMode;
-	Bool						m_clientShroudedLastFrame;
+	Bool				m_upBonesCached {};
+	Bool				m_defaultInfoCached {};
+	Bool				m_invalidSettings {};
+	Bool				m_manualTargetMode {};
+	Bool				m_scriptedWaypointMode {};
+	Bool				m_clientShroudedLastFrame {};
 };
 
 
 #endif
-

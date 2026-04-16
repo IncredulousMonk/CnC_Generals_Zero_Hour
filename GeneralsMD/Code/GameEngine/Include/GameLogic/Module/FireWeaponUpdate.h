@@ -40,13 +40,19 @@
 class FireWeaponUpdateModuleData : public UpdateModuleData
 {
 public:
-	const WeaponTemplate* m_weaponTemplate;
-  UnsignedInt m_initialDelayFrames;
-	UnsignedInt m_exclusiveWeaponDelay;	///< If non-zero, any other weapon having fired this recently will keep us from doing anything
+	// MG: Cannot apply offsetof to FireWeaponUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const WeaponTemplate* m_weaponTemplate;
+		UnsignedInt m_initialDelayFrames;
+		UnsignedInt m_exclusiveWeaponDelay;	///< If non-zero, any other weapon having fired this recently will keep us from doing anything
+	};
+
+	IniData m_ini {};
 	
 	FireWeaponUpdateModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 private:
 
@@ -65,16 +71,19 @@ public:
 	FireWeaponUpdate( Thing *thing, const ModuleData* moduleData );
 	// virtual destructor prototype provided by memory pool declaration
 
+	// No copies allowed!
+	FireWeaponUpdate(const FireWeaponUpdate&) = delete;
+	FireWeaponUpdate& operator=(const FireWeaponUpdate&) = delete;
+
 	virtual UpdateSleepTime update();
 
 protected:
 
 	Bool isOkayToFire();
 	
-	Weapon* m_weapon;
-  UnsignedInt m_initialDelayFrame;
+	Weapon* m_weapon {};
+	UnsignedInt m_initialDelayFrame {};
 
 };
 
 #endif
-

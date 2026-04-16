@@ -43,7 +43,7 @@
 #include "GameLogic/TerrainLogic.h"
 
 //-------------------------------------------------------------------------------------------------
-void parseFactionObjectCreationList( INI *ini, void *instance, void *store, const void *userData )
+void parseFactionObjectCreationList( INI* ini, void* instance, void* /* store */, const void* /* userData */ )
 {
 	OCLUpdateModuleData::FactionOCLInfo info;
 	info.m_factionName = "";
@@ -51,7 +51,7 @@ void parseFactionObjectCreationList( INI *ini, void *instance, void *store, cons
 
 	const char *token = ini->getNextToken( ini->getSepsColon() );
 
-	if ( stricmp(token, "Faction") == 0 )
+	if ( strcasecmp(token, "Faction") == 0 )
 	{
 		token = ini->getNextTokenOrNull( ini->getSepsColon() );
 		if (!token)	throw INI_INVALID_DATA;
@@ -63,44 +63,47 @@ void parseFactionObjectCreationList( INI *ini, void *instance, void *store, cons
 
 
 	token = ini->getNextTokenOrNull( ini->getSepsColon() );
-	if ( stricmp(token, "OCL") == 0 )
-		ini->parseObjectCreationList( ini, instance, &info.m_ocl, NULL );
+	if ( strcasecmp(token, "OCL") == 0 )
+		ini->parseObjectCreationList( ini, nullptr, &info.m_ocl, NULL );
 	else
 		throw INI_INVALID_DATA;
 
 	// Insert the info into the ocl hashmap
-	OCLUpdateModuleData::FactionOCLList * theList = (OCLUpdateModuleData::FactionOCLList*)store;
-	theList->push_back(info);
-	
+	// OCLUpdateModuleData::FactionOCLList * theList = (OCLUpdateModuleData::FactionOCLList*)store;
+	OCLUpdateModuleData* md {static_cast<OCLUpdateModuleData*>(instance)};
+	md->m_factionOCL.push_back(info);
+
 }  // end parseFactionObjectCreationList
 
 //-------------------------------------------------------------------------------------------------
 OCLUpdateModuleData::OCLUpdateModuleData()
 {
-	m_minDelay = 0;
-	m_maxDelay = 0;
-	m_ocl = NULL;
+	m_ini.m_minDelay = 0;
+	m_ini.m_maxDelay = 0;
+	m_ini.m_ocl = NULL;
 	m_factionOCL.clear();
-	m_isCreateAtEdge = FALSE;
-	m_isFactionTriggered = FALSE;
+	m_ini.m_isCreateAtEdge = FALSE;
+	m_ini.m_isFactionTriggered = FALSE;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void OCLUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void OCLUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "OCL",					INI::parseObjectCreationList,		NULL, offsetof( OCLUpdateModuleData, m_ocl ) },
-		{ "FactionOCL",		parseFactionObjectCreationList,	NULL, offsetof( OCLUpdateModuleData, m_factionOCL ) },
-		{ "MinDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( OCLUpdateModuleData, m_minDelay ) },
-		{ "MaxDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( OCLUpdateModuleData, m_maxDelay ) },
-		{ "CreateAtEdge",	INI::parseBool,									NULL, offsetof( OCLUpdateModuleData, m_isCreateAtEdge ) },
-		{ "FactionTriggered",	INI::parseBool,							NULL, offsetof( OCLUpdateModuleData, m_isFactionTriggered ) },
+		{ "OCL",				INI::parseObjectCreationList,		NULL, offsetof( OCLUpdateModuleData::IniData, m_ocl ) },
+		{ "FactionOCL",			parseFactionObjectCreationList,		NULL, 0 },
+		{ "MinDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( OCLUpdateModuleData::IniData, m_minDelay ) },
+		{ "MaxDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( OCLUpdateModuleData::IniData, m_maxDelay ) },
+		{ "CreateAtEdge",		INI::parseBool,						NULL, offsetof( OCLUpdateModuleData::IniData, m_isCreateAtEdge ) },
+		{ "FactionTriggered",	INI::parseBool,						NULL, offsetof( OCLUpdateModuleData::IniData, m_isFactionTriggered ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	OCLUpdateModuleData* self {static_cast<OCLUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -132,7 +135,7 @@ UpdateSleepTime OCLUpdate::update( void )
 	const OCLUpdateModuleData *data = getOCLUpdateModuleData();
 
 	// Test if the OCL update is faction dependant. If so, check for faction changes
-	if (data->m_isFactionTriggered)
+	if (data->m_ini.m_isFactionTriggered)
 	{
 		Player *player = getObject()->getControllingPlayer();
 
@@ -180,13 +183,13 @@ UpdateSleepTime OCLUpdate::update( void )
 		setNextCreationFrame();
 
 		Coord3D creationCoord;
-		if( getOCLUpdateModuleData()->m_isCreateAtEdge )
+		if( getOCLUpdateModuleData()->m_ini.m_isCreateAtEdge )
 			creationCoord = TheTerrainLogic->findClosestEdgePoint( getObject()->getPosition() );
 		else
 			creationCoord = *getObject()->getPosition();
 
 		// If this is faction triggered, search through the faction specific OCLs to find the match
-		if (data->m_isFactionTriggered)
+		if (data->m_ini.m_isFactionTriggered)
 		{
 			std::string playerFactionName("");
 
@@ -213,7 +216,7 @@ UpdateSleepTime OCLUpdate::update( void )
 		// Use the non faction OCL information
 		else
 		{
-			ObjectCreationList::create( data->m_ocl, getObject(), &creationCoord, getObject()->getPosition(), getObject()->getOrientation() );
+			ObjectCreationList::create( data->m_ini.m_ocl, getObject(), &creationCoord, getObject()->getPosition(), getObject()->getOrientation() );
 		}
 	}
 	return UPDATE_SLEEP_NONE;
@@ -242,8 +245,7 @@ Bool OCLUpdate::shouldCreate()
 // ------------------------------------------------------------------------------------------------
 void OCLUpdate::setNextCreationFrame()
 {
-	UnsignedInt delay = GameLogicRandomValue( getOCLUpdateModuleData()->m_minDelay, 
-																						getOCLUpdateModuleData()->m_maxDelay );
+	UnsignedInt delay = GameLogicRandomValueUnsigned( getOCLUpdateModuleData()->m_ini.m_minDelay, getOCLUpdateModuleData()->m_ini.m_maxDelay );
 	m_timerStartedFrame = TheGameLogic->getFrame();
 	m_nextCreationFrame = m_timerStartedFrame + delay;
 
@@ -304,7 +306,7 @@ void OCLUpdate::xfer( Xfer *xfer )
 	xfer->xferBool( &m_isFactionNeutral );
 	
 	// current owning player color
-	xfer->xferInt( &m_currentPlayerColor );
+	xfer->xferColor( &m_currentPlayerColor );
 
 }  // end xfer
 

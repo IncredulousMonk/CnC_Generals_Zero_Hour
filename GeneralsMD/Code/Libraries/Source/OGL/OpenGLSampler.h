@@ -37,6 +37,7 @@ private:
 public:
    OpenGLSampler();
 
+   void createMipmappedSampler();
    void createAnisotropicSampler();
    void bind(GLuint unit);
 

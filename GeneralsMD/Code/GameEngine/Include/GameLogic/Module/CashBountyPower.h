@@ -96,10 +96,16 @@ public:
 
 	std::vector<Upgrades>			m_upgrades;
 #endif
-	Real											m_defaultBounty;
+	// MG: Cannot apply offsetof to CashBountyPowerModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_defaultBounty;
+	};
+
+	IniData m_ini {};
 
 	CashBountyPowerModuleData( void );
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -109,7 +115,7 @@ class CashBountyPower : public SpecialPowerModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( CashBountyPower, "CashBountyPower" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( CashBountyPower, CashBountyPowerModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( CashBountyPower, CashBountyPowerModuleData )
 
 public:
 
@@ -120,7 +126,7 @@ public:
 
 	//virtual void onBuildComplete();	///< This is called when you are a finished game object
 	virtual void onSpecialPowerCreation();	///< This is called when you are a finished game object
-	virtual void doSpecialPower( UnsignedInt commandOptions ) { return; }
+	virtual void doSpecialPower( UnsignedInt /* commandOptions */ ) { return; }
 
 protected:
 

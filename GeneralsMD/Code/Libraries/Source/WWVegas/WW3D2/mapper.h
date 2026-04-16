@@ -110,7 +110,7 @@ class TextureMapperClass : public W3DMPO, public RefCountClass
 		virtual void							Calculate_Texture_Matrix(Matrix4x4 &tex_matrix) = 0;
 
 	protected:
-		unsigned int							Stage;
+		unsigned int							Stage {};
 };
 
 /*
@@ -133,7 +133,7 @@ public:
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 
 protected:
-	Vector2			Scale;		// Scale
+	Vector2			Scale {};		// Scale
 };
 
 /*
@@ -172,11 +172,11 @@ public:
 	unsigned int Get_LastUsedSyncTime() { return LastUsedSyncTime;}
 	
 protected:
-	Vector2			CurrentUVOffset;		// Current UV offset
-	Vector2			UVOffsetDeltaPerMS;	// Amount to increase offset each millisec
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
-	Vector2			StartingUVOffset;		// Need to store this for copy constructors
-	bool				ClampFix;				// Restrict the offset in a correct manner for clamped textures
+	Vector2			CurrentUVOffset {};		// Current UV offset
+	Vector2			UVOffsetDeltaPerMS {};	// Amount to increase offset each millisec
+	unsigned int	LastUsedSyncTime {};		// Sync time last used to update offset
+	Vector2			StartingUVOffset {};		// Need to store this for copy constructors
+	bool			ClampFix {};				// Restrict the offset in a correct manner for clamped textures
 };
 
 /*
@@ -210,17 +210,17 @@ protected:
 	void calculate_uv_offset(float * u_offset, float * v_offset);
 
 	// Constant properties
-	int				Sign;					// +1 if frame rate positive, -1 otherwise
-	unsigned int	MSPerFrame;			// milliseconds per frame
-	float				OOGridWidth;		// 1.0f / size of the side of the grid)
-	unsigned int	GridWidthLog2;		// log base 2 of size of the side of the grid
-	unsigned int	LastFrame;			// Last frame to use
-	unsigned int	Offset;				// Only affects initialization, but need to store it for copy CTors to work
+	int				Sign {};					// +1 if frame rate positive, -1 otherwise
+	unsigned int	MSPerFrame {};			// milliseconds per frame
+	float			OOGridWidth {};		// 1.0f / size of the side of the grid)
+	unsigned int	GridWidthLog2 {};		// log base 2 of size of the side of the grid
+	unsigned int	LastFrame {};			// Last frame to use
+	unsigned int	Offset {};				// Only affects initialization, but need to store it for copy CTors to work
 
 	// Temporal state
-	unsigned int	Remainder;			// used for timing calculations
-	unsigned int	CurrentFrame;		// current frame
-	unsigned int	LastUsedSyncTime;	// Sync time last used to update offset
+	unsigned int	Remainder {};			// used for timing calculations
+	unsigned int	CurrentFrame {};		// current frame
+	unsigned int	LastUsedSyncTime {};	// Sync time last used to update offset
 };
 
 /*
@@ -244,10 +244,10 @@ public:
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 
 private:
-	float CurrentAngle;
-	float RadiansPerMilliSec;
-	Vector2 Center;
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
+	float CurrentAngle {};
+	float RadiansPerMilliSec {};
+	Vector2 Center {};
+	unsigned int LastUsedSyncTime {};		// Sync time last used to update offset
 };
 
 /*
@@ -271,10 +271,10 @@ public:
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 
 private:
-	Vector3 UAFP;								// U Coordinate Amplitude frequency phase
-	Vector3 VAFP;								// V Coordinate Amplitude frequency phase
-	float CurrentAngle;
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
+	Vector3 UAFP {};								// U Coordinate Amplitude frequency phase
+	Vector3 VAFP {};								// V Coordinate Amplitude frequency phase
+	float CurrentAngle {};
+	unsigned int LastUsedSyncTime {};		// Sync time last used to update offset
 };
 
 /*
@@ -299,12 +299,12 @@ public:
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 
 private:
-	Vector2 Step;								// Size of step
-	float StepsPerMilliSec;					// Steps per millisecond
-	Vector2 CurrentStep;						// Current step
-	float	Remainder;							// Remainder time
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
-	bool	ClampFix;							// Restrict the offset in a correct manner for clamped textures
+	Vector2 Step {};								// Size of step
+	float StepsPerMilliSec {};					// Steps per millisecond
+	Vector2 CurrentStep {};						// Current step
+	float Remainder {};							// Remainder time
+	unsigned int LastUsedSyncTime {};		// Sync time last used to update offset
+	bool ClampFix {};							// Restrict the offset in a correct manner for clamped textures
 };
 
 /*
@@ -328,11 +328,11 @@ public:
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 
 private:
-	Vector2 Speed;								// Speed of zigzag in units per millisecond
-	float Period;								// Time taken for a period	in milliseconds
-	float Half_Period;						// Half of period
-	float Remainder;							// Remainder time in milliseconds
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
+	Vector2 Speed {};								// Speed of zigzag in units per millisecond
+	float Period {};								// Time taken for a period	in milliseconds
+	float Half_Period {};						// Half of period
+	float Remainder {};							// Remainder time in milliseconds
+	unsigned int LastUsedSyncTime {};		// Sync time last used to update offset
 };
 
 // ----------------------------------------------------------------------------
@@ -384,9 +384,9 @@ public:
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 
 protected:
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
-	float VSpeed,VOffset;
-	bool UseReflect;
+	unsigned int LastUsedSyncTime {};		// Sync time last used to update offset
+	float VSpeed {}, VOffset {};
+	bool UseReflect {};
 };
 
 class WSEnvMapperClass : public TextureMapperClass
@@ -399,7 +399,7 @@ public:
 	virtual bool Needs_Normals(void) { return true; }
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 protected:	
-	AxisType		Axis;
+	AxisType		Axis {};
 };
 
 class WSClassicEnvironmentMapperClass : public WSEnvMapperClass
@@ -496,12 +496,12 @@ public:
 
 protected:
 	void randomize(void);
-	float FPMS;									// frames per millisecond
-	float Remainder;							// remaining time
-	float CurrentAngle;
-	Vector2 Center;
-	Vector2 Speed;
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
+	float FPMS {};									// frames per millisecond
+	float Remainder {};							// remaining time
+	float CurrentAngle {};
+	Vector2 Center {};
+	Vector2 Speed {};
+	unsigned int LastUsedSyncTime {};		// Sync time last used to update offset
 };
 
 /**
@@ -526,10 +526,10 @@ public:
 
 protected:
 
-	unsigned int	LastUsedSyncTime;		// Sync time last used to update offset
-	float				CurrentAngle;
-	float				RadiansPerSecond;
-	float				ScaleFactor;
+	unsigned int	LastUsedSyncTime {};		// Sync time last used to update offset
+	float			CurrentAngle {};
+	float			RadiansPerSecond {};
+	float			ScaleFactor {};
 };
 
 class GridWSEnvMapperClass : public GridTextureMapperClass
@@ -542,7 +542,7 @@ public:
 	virtual void Calculate_Texture_Matrix(Matrix4x4 &tex_matrix);
 	virtual bool Needs_Normals(void) { return true; }
 protected:	
-	AxisType		Axis;
+	AxisType		Axis {};
 };
 
 class GridWSClassicEnvironmentMapperClass : public GridWSEnvMapperClass

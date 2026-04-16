@@ -40,16 +40,18 @@
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void RadarUpgradeModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void RadarUpgradeModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpgradeModuleData::buildFieldParse(p);
+	UpgradeModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "DisableProof",	INI::parseBool,	NULL, offsetof( RadarUpgradeModuleData, m_isDisableProof ) },
+		{ "DisableProof",	INI::parseBool,	NULL, offsetof( RadarUpgradeModuleData::IniData, m_isDisableProof ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	RadarUpgradeModuleData* self {static_cast<RadarUpgradeModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -84,7 +86,7 @@ void RadarUpgrade::onDelete( void )
 	// remove the radar from the player
 	Player *player = getObject()->getControllingPlayer();
 	if( player )
-		player->removeRadar( md->m_isDisableProof );
+		player->removeRadar( md->m_ini.m_isDisableProof );
 
 	// this upgrade module is now "not upgraded"
 	setUpgradeExecuted(FALSE);
@@ -109,14 +111,14 @@ void RadarUpgrade::onCapture( Player *oldOwner, Player *newOwner )
 	if( oldOwner )
 	{
 
-		oldOwner->removeRadar( md->m_isDisableProof );
+		oldOwner->removeRadar( md->m_ini.m_isDisableProof );
 		setUpgradeExecuted(FALSE);
 
 	}  // end if
 	if( newOwner )
 	{
 
-		newOwner->addRadar( md->m_isDisableProof );
+		newOwner->addRadar( md->m_ini.m_isDisableProof );
 		setUpgradeExecuted(TRUE);
 
 	}  // end if
@@ -132,7 +134,7 @@ void RadarUpgrade::upgradeImplementation( void )
 	Player *player = getObject()->getControllingPlayer();
 
 	// update the player with another radar facility
-	player->addRadar( md->m_isDisableProof );
+	player->addRadar( md->m_ini.m_isDisableProof );
 
 	// find the radar update module of this object
 	NameKeyType radarUpdateKey = NAMEKEY( "RadarUpdate" );

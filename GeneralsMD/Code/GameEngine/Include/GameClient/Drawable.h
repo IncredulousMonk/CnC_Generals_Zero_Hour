@@ -345,10 +345,10 @@ public:
 
 	void setSelectable( Bool selectable );												///< Changes the drawables selectability	
 	Bool isSelectable( void ) const;
-#if 0
 	Bool isMassSelectable( void ) const;
 
 
+#if 0
 	void setStealthLook(StealthLookType look);
 #endif // if 0
 	StealthLookType getStealthLook() const { return m_stealthLook; }
@@ -446,8 +446,8 @@ public:
 
 	void startAmbientSound( Bool onlyIfPermanent = false );
 	void stopAmbientSound( void );
-#if 0
 	void enableAmbientSound( Bool enable );
+#if 0
 	void setTimeOfDay( TimeOfDay tod );
 #endif // if 0
 	Bool getAmbientSoundEnabledFromScript( void ) const { return m_ambientSoundEnabledFromScript; }
@@ -516,9 +516,7 @@ public:
 		NOTE: this isn't very fast. Please call it sparingly and cache the result.
 	*/
 	Int getPristineBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
-#if 0
 	Int getCurrentClientBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const;
-#endif // if 0
 	
 	// this is a special-purpose call for W3DModelDraw. (srj)
 	Bool getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const;
@@ -587,9 +585,11 @@ public:
 
 #if 0
 	void preloadAssets( TimeOfDay timeOfDay );	///< preload the assets
+#endif // if 0
 	
 	Bool isVisible();											///< for limiting tree sway, etc to visible objects
 
+#if 0
 	Bool getShouldAnimate( Bool considerPower ) const;
 #endif // if 0
 

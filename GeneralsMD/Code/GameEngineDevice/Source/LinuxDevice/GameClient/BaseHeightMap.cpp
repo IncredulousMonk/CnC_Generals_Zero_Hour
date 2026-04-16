@@ -82,6 +82,7 @@
 // #include "LinuxDevice/GameClient/LinuxShadow.h"
 // #include "LinuxDevice/GameClient/LinuxWater.h"
 // #include "LinuxDevice/GameClient/LinuxShroud.h"
+#include "LinuxDevice/GameClient/Module/LinuxTreeDraw.h"
 // #include "WW3D2/DX8Wrapper.h"
 // #include "WW3D2/Light.h"
 // #include "WW3D2/Scene.h"
@@ -932,8 +933,8 @@ Real BaseHeightMapRenderObjClass::getHeightMapHeight(Real x, Real y, Coord3D* no
 	float fy = ydiv - iyf; //get fraction
 
 	// since ixf & iyf are already floor'ed, we can use the fastest f->i conversion we have...
-	Int	ix = fast_float2long_round(ixf) + logicHeightMap->getBorderSizeInline();
-	Int	iy = fast_float2long_round(iyf) + logicHeightMap->getBorderSizeInline();
+	Int	ix = fast_float2long_round(ixf); //+ logicHeightMap->getBorderSizeInline();
+	Int	iy = fast_float2long_round(iyf); //+ logicHeightMap->getBorderSizeInline();
 	Int xExtent = logicHeightMap->getXExtent();
 
 	// Check for extent-3, not extent-1: we go into the next row/column of data for smoothed triangle points, so extent-1
@@ -1814,13 +1815,12 @@ Int BaseHeightMapRenderObjClass::initHeightData(Int x, Int y, WorldHeightMap *pM
 {
 (void) x;
 (void) y;
-(void) pMap;
 (void) pLightsIteratork;
 (void) updateExtraPassTiles;
 DEBUG_LOG(("BaseHeightMapRenderObjClass::initHeightData: not yet implemented!\n"));
-#if 0
 	REF_PTR_SET(m_map, pMap);	//update our heightmap pointer in case it changed since last call.
 
+#if 0
 	if (m_shroud)
 		m_shroud->init(m_map,TheGlobalData->m_partitionCellSize,TheGlobalData->m_partitionCellSize);
 #ifdef DO_ROADS
@@ -2226,6 +2226,7 @@ void BaseHeightMapRenderObjClass::removeTreesAndPropsForConstruction(const Coord
 		m_propBuffer->removePropsForConstruction(pos, geom, angle);
 	}
 }
+#endif // if 0
 
 //=============================================================================
 // BaseHeightMapRenderObjClass::addTree
@@ -2233,13 +2234,24 @@ void BaseHeightMapRenderObjClass::removeTreesAndPropsForConstruction(const Coord
 /** Adds a tree to the tree buffer.*/
 //=============================================================================
 void BaseHeightMapRenderObjClass::addTree(DrawableID id, Coord3D location, Real scale, Real angle,
-								Real randomScaleAmount,  const W3DTreeDrawModuleData *data)
+	Real randomScaleAmount,  const LinuxTreeDrawModuleData *data)
 {
+(void) id;
+(void) location;
+(void) scale;
+(void) angle;
+(void) randomScaleAmount;
+(void) data;
+DEBUG_LOG(("BaseHeightMapRenderObjClass::addTree: not yet implemented!\n"));
+
+#if 0
 	if (m_treeBuffer) {
 		m_treeBuffer->addTree(id, location, scale, angle, randomScaleAmount, data); 
 	}
+#endif // if 0
 };
 
+#if 0
 //=============================================================================
 // BaseHeightMapRenderObjClass::removeTree
 //=============================================================================

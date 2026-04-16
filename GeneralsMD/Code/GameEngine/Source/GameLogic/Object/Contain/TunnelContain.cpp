@@ -350,7 +350,7 @@ void TunnelContain::scatterToNearbyPosition(Object* obj)
 void TunnelContain::onDie( const DamageInfo * damageInfo )
 {
 	// override the onDie we inherit from OpenContain. no super call.
-	if (!getTunnelContainModuleData()->m_dieMuxData.isDieApplicable(getObject(), damageInfo))
+	if (!getTunnelContainModuleData()->OpenContainModuleData::m_ini.m_dieMuxData.isDieApplicable(getObject(), damageInfo))
 		return;
 
 	if( !m_isCurrentlyRegistered )
@@ -479,7 +479,7 @@ UpdateSleepTime TunnelContain::update( void )
 		TunnelTracker *tunnelSystem = controllingPlayer->getTunnelSystem();
 		if (tunnelSystem)
 		{
-			tunnelSystem->healObjects(modData->m_framesForFullHeal);
+			tunnelSystem->healObjects(modData->m_ini.m_framesForFullHeal);
 		}
 
 		// check for attacked.

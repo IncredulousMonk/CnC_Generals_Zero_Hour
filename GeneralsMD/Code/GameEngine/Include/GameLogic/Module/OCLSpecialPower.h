@@ -66,17 +66,23 @@ public:
 		}
 	};
 
-	std::vector<Upgrades>			m_upgradeOCL;
-	const ObjectCreationList*	m_defaultOCL;
-	OCLCreateLocType					m_createLoc;
-	Bool											m_isOCLAdjustPositionToPassable; ///< Adjust target to nearest Passable cell
+	// MG: Cannot apply offsetof to OCLSpecialPowerModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		std::vector<Upgrades>		m_upgradeOCL;
+		const ObjectCreationList*	m_defaultOCL;
+		OCLCreateLocType			m_createLoc;
+		Bool						m_isOCLAdjustPositionToPassable; ///< Adjust target to nearest Passable cell
 
-	//We need to know what the final product is going to be for script placement calculations 
-	//for construction sites like the sneak attack.
-	AsciiString				m_referenceThingName;
+		//We need to know what the final product is going to be for script placement calculations 
+		//for construction sites like the sneak attack.
+		AsciiString					m_referenceThingName;
+	};
+
+	IniData m_ini {};
 
 	OCLSpecialPowerModuleData( void );
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
 };
 

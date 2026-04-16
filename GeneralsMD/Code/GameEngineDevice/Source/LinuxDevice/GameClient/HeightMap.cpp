@@ -1545,9 +1545,7 @@ Int HeightMapRenderObjClass::initHeightData(Int x, Int y, WorldHeightMap *pMap, 
 {
 (void) pLightsIterator;
 (void) updateExtraPassTiles;
-#if 0
 	BaseHeightMapRenderObjClass::initHeightData(x, y, pMap, pLightsIterator, updateExtraPassTiles);
-#endif // if 0
 //	Int	vertsPerRow=x*2-2;
 //	Int	vertsPerColumn=y*2-2;
 
@@ -1993,7 +1991,7 @@ is rendered. */
 //=============================================================================
 void HeightMapRenderObjClass::updateCenter(CameraClass *camera , RefRenderObjListIterator *pLightsIterator)
 {
-DEBUG_LOG(("HeightMapRenderObjClass::updateCenter\n"));
+DEBUG_CRASH(("HeightMapRenderObjClass::updateCenter\n"));
 	if (m_map==NULL) {
 		return;
 	}

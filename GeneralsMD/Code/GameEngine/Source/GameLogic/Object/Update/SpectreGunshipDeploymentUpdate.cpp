@@ -29,38 +29,38 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_DEATH_NAMES
+// #define DEFINE_DEATH_NAMES
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
-#include "Common\ThingTemplate.h"
-#include "Common\ThingFactory.h"
-#include "Common\Player.h"
-#include "Common\PlayerList.h"
-#include "Common\Xfer.h"
-#include "Common\ClientUpdateModule.h"
+#include "Common/ThingTemplate.h"
+#include "Common/ThingFactory.h"
+#include "Common/Player.h"
+#include "Common/PlayerList.h"
+#include "Common/Xfer.h"
+#include "Common/ClientUpdateModule.h"
 
-#include "GameClient\ControlBar.h"
-#include "GameClient\GameClient.h"
-#include "GameClient\Drawable.h"
-#include "GameClient\ParticleSys.h"
-#include "GameClient\FXList.h"
+#include "GameClient/ControlBar.h"
+#include "GameClient/GameClient.h"
+#include "GameClient/Drawable.h"
+#include "GameClient/ParticleSys.h"
+#include "GameClient/FXList.h"
 #include "GameClient/ParticleSys.h"
 
-#include "GameLogic\Locomotor.h"
-#include "GameLogic\GameLogic.h"
-#include "GameLogic\PartitionManager.h"
-#include "GameLogic\Object.h"
-#include "GameLogic\ObjectIter.h"
-#include "GameLogic\Weaponset.h"
-#include "GameLogic\Weapon.h"
-#include "GameLogic\TerrainLogic.h"
-#include "GameLogic\Module\SpecialPowerModule.h"
-#include "GameLogic\Module\SpectreGunshipDeploymentUpdate.h"
-#include "GameLogic\Module\PhysicsUpdate.h"
-#include "GameLogic\Module\LaserUpdate.h"
-#include "GameLogic\Module\ActiveBody.h"
-#include "GameLogic\Module\AIUpdate.h"
-#include "GameLogic\Module\ContainModule.h"
+#include "GameLogic/Locomotor.h"
+#include "GameLogic/GameLogic.h"
+#include "GameLogic/PartitionManager.h"
+#include "GameLogic/Object.h"
+#include "GameLogic/ObjectIter.h"
+#include "GameLogic/WeaponSet.h"
+#include "GameLogic/Weapon.h"
+#include "GameLogic/TerrainLogic.h"
+#include "GameLogic/Module/SpecialPowerModule.h"
+#include "GameLogic/Module/SpectreGunshipDeploymentUpdate.h"
+#include "GameLogic/Module/PhysicsUpdate.h"
+#include "GameLogic/Module/LaserUpdate.h"
+#include "GameLogic/Module/ActiveBody.h"
+#include "GameLogic/Module/AIUpdate.h"
+#include "GameLogic/Module/ContainModule.h"
 
 
 #ifdef _INTERNAL
@@ -74,10 +74,10 @@
 //-------------------------------------------------------------------------------------------------
 SpectreGunshipDeploymentUpdateModuleData::SpectreGunshipDeploymentUpdateModuleData()
 {
-	m_specialPowerTemplate			   = NULL;
-	m_extraRequiredScience				 = SCIENCE_INVALID;
-/******BOTH*******//*BOTH*//******BOTH*******//******BOTH*******/  m_attackAreaRadius             = 200.0f;
-	m_createLoc = CREATE_GUNSHIP_AT_EDGE_FARTHEST_FROM_TARGET;
+	m_ini.m_specialPowerTemplate			   = NULL;
+	m_ini.m_extraRequiredScience				 = SCIENCE_INVALID;
+/******BOTH*******//*BOTH*//******BOTH*******//******BOTH*******/  m_ini.m_attackAreaRadius             = 200.0f;
+	m_ini.m_createLoc = CREATE_GUNSHIP_AT_EDGE_FARTHEST_FROM_TARGET;
 
 }
 
@@ -85,7 +85,7 @@ SpectreGunshipDeploymentUpdateModuleData::SpectreGunshipDeploymentUpdateModuleDa
 static const char* TheGunshipCreateLocTypeNames[] =
 {
 	"CREATE_AT_EDGE_NEAR_SOURCE",
-  "CREATE_AT_EDGE_FARTHEST_FROM_SOURCE",
+	"CREATE_AT_EDGE_FARTHEST_FROM_SOURCE",
 	"CREATE_AT_EDGE_NEAR_TARGET",
 	"CREATE_AT_EDGE_FARTHEST_FROM_TARGET",
 	NULL
@@ -93,31 +93,33 @@ static const char* TheGunshipCreateLocTypeNames[] =
 
 
 
-static Real zero = 0.0f;
+// static Real zero = 0.0f;
 //-------------------------------------------------------------------------------------------------
-/*static*/ void SpectreGunshipDeploymentUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void SpectreGunshipDeploymentUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	ModuleData::buildFieldParse(p);
+	ModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "GunshipTemplateName",	    INI::parseAsciiString,				    NULL, offsetof( SpectreGunshipDeploymentUpdateModuleData, m_gunshipTemplateName ) },
-		{ "RequiredScience",					INI::parseScience,								NULL, offsetof( SpectreGunshipDeploymentUpdateModuleData, m_extraRequiredScience ) },
-/******BOTH*******/   { "SpecialPowerTemplate",     INI::parseSpecialPowerTemplate,   NULL, offsetof( SpectreGunshipDeploymentUpdateModuleData, m_specialPowerTemplate ) },
-/*******BOTH******/		{ "AttackAreaRadius",	        INI::parseReal,				            NULL, offsetof( SpectreGunshipDeploymentUpdateModuleData, m_attackAreaRadius ) },
-		{ "CreateLocation", INI::parseIndexList, TheGunshipCreateLocTypeNames, offsetof( SpectreGunshipDeploymentUpdateModuleData, m_createLoc ) },
+					{ "GunshipTemplateName",	INI::parseAsciiString,			NULL,							offsetof( SpectreGunshipDeploymentUpdateModuleData::IniData, m_gunshipTemplateName ) },
+					{ "RequiredScience",		INI::parseScience,				NULL,							offsetof( SpectreGunshipDeploymentUpdateModuleData::IniData, m_extraRequiredScience ) },
+/******BOTH*******/	{ "SpecialPowerTemplate",	INI::parseSpecialPowerTemplate,	NULL,							offsetof( SpectreGunshipDeploymentUpdateModuleData::IniData, m_specialPowerTemplate ) },
+/*******BOTH******/	{ "AttackAreaRadius",		INI::parseReal,					NULL,							offsetof( SpectreGunshipDeploymentUpdateModuleData::IniData, m_attackAreaRadius ) },
+					{ "CreateLocation",			INI::parseIndexList,			TheGunshipCreateLocTypeNames,	offsetof( SpectreGunshipDeploymentUpdateModuleData::IniData, m_createLoc ) },
 
-    { 0, 0, 0, 0 }
+					{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	SpectreGunshipDeploymentUpdateModuleData* self {static_cast<SpectreGunshipDeploymentUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
 SpectreGunshipDeploymentUpdate::SpectreGunshipDeploymentUpdate( Thing *thing, const ModuleData* moduleData ) : SpecialPowerUpdateModule( thing, moduleData )
 {
 	m_specialPowerModule = NULL;
-  m_gunshipID  = INVALID_ID;
-} 
+	m_gunshipID  = INVALID_ID;
+}
 
 //-------------------------------------------------------------------------------------------------
 SpectreGunshipDeploymentUpdate::~SpectreGunshipDeploymentUpdate( void )
@@ -132,17 +134,17 @@ void SpectreGunshipDeploymentUpdate::onObjectCreated()
 	const SpectreGunshipDeploymentUpdateModuleData *data = getSpectreGunshipDeploymentUpdateModuleData();
 	Object *obj = getObject();
 
-	if( !data->m_specialPowerTemplate )
+	if( !data->m_ini.m_specialPowerTemplate )
 	{
 		DEBUG_CRASH( ("%s object's SpectreGunshipDeploymentUpdate lacks access to the SpecialPowerTemplate. Needs to be specified in ini.", obj->getTemplate()->getName().str() ) );
 		return;
 	}
 
-	m_specialPowerModule = obj->getSpecialPowerModule( data->m_specialPowerTemplate );
+	m_specialPowerModule = obj->getSpecialPowerModule( data->m_ini.m_specialPowerTemplate );
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool SpectreGunshipDeploymentUpdate::initiateIntentToDoSpecialPower(const SpecialPowerTemplate *specialPowerTemplate, const Object *targetObj, const Coord3D *targetPos, const Waypoint *way, UnsignedInt commandOptions )
+Bool SpectreGunshipDeploymentUpdate::initiateIntentToDoSpecialPower(const SpecialPowerTemplate *specialPowerTemplate, const Object* /* targetObj */, const Coord3D* targetPos, const Waypoint* /* way */, UnsignedInt commandOptions )
 {
 	const SpectreGunshipDeploymentUpdateModuleData *data = getSpectreGunshipDeploymentUpdateModuleData();
 
@@ -167,7 +169,7 @@ Bool SpectreGunshipDeploymentUpdate::initiateIntentToDoSpecialPower(const Specia
 	}
 
    Object *newGunship = TheGameLogic->findObjectByID( m_gunshipID );
-	const ThingTemplate *gunshipTemplate = TheThingFactory->findTemplate( data->m_gunshipTemplateName );
+	const ThingTemplate *gunshipTemplate = TheThingFactory->findTemplate( data->m_ini.m_gunshipTemplateName );
 	if( newGunship != NULL )
   {
 //    disengageAndDepartAO( newGunship );
@@ -189,7 +191,7 @@ Bool SpectreGunshipDeploymentUpdate::initiateIntentToDoSpecialPower(const Specia
 
     //POSITION
     Coord3D creationCoord;
-	  switch (data->m_createLoc)
+	  switch (data->m_ini.m_createLoc)
 	  {
 		  case CREATE_GUNSHIP_AT_EDGE_NEAR_SOURCE:
 			  creationCoord = TheTerrainLogic->findClosestEdgePoint( getObject()->getPosition() );

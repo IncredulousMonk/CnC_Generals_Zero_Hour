@@ -43,34 +43,42 @@ class Object;
 class QueueProductionExitUpdateModuleData : public UpdateModuleData
 {
 public:
-	Coord3D m_unitCreatePoint;
-	Coord3D m_naturalRallyPoint;
-	UnsignedInt m_exitDelayData;
-	Bool m_allowAirborneCreationData;
-	UnsignedInt m_initialBurst; 
+	// MG: Cannot apply offsetof to QueueProductionExitUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Coord3D m_unitCreatePoint;
+		Coord3D m_naturalRallyPoint;
+		UnsignedInt m_exitDelayData;
+		Bool m_allowAirborneCreationData;
+		UnsignedInt m_initialBurst; 
+	};
+
+	IniData m_ini {};
 
 	QueueProductionExitUpdateModuleData()
 	{
-		m_unitCreatePoint.zero();
-		m_naturalRallyPoint.zero();
-		m_exitDelayData = 0;
-		m_allowAirborneCreationData = FALSE;
-		m_initialBurst = 0;
+		m_ini.m_unitCreatePoint.zero();
+		m_ini.m_naturalRallyPoint.zero();
+		m_ini.m_exitDelayData = 0;
+		m_ini.m_allowAirborneCreationData = FALSE;
+		m_ini.m_initialBurst = 0;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "UnitCreatePoint",				INI::parseCoord3D,							NULL, offsetof( QueueProductionExitUpdateModuleData, m_unitCreatePoint ) },
-			{ "NaturalRallyPoint",			INI::parseCoord3D,							NULL, offsetof( QueueProductionExitUpdateModuleData, m_naturalRallyPoint ) },
-			{ "ExitDelay",							INI::parseDurationUnsignedInt,	NULL, offsetof( QueueProductionExitUpdateModuleData, m_exitDelayData ) },
-			{ "AllowAirborneCreation",	INI::parseBool,									NULL, offsetof( QueueProductionExitUpdateModuleData, m_allowAirborneCreationData ) },
-			{ "InitialBurst",						INI::parseUnsignedInt,					NULL, offsetof( QueueProductionExitUpdateModuleData, m_initialBurst ) },
+			{ "UnitCreatePoint",		INI::parseCoord3D,				NULL, offsetof( QueueProductionExitUpdateModuleData::IniData, m_unitCreatePoint ) },
+			{ "NaturalRallyPoint",		INI::parseCoord3D,				NULL, offsetof( QueueProductionExitUpdateModuleData::IniData, m_naturalRallyPoint ) },
+			{ "ExitDelay",				INI::parseDurationUnsignedInt,	NULL, offsetof( QueueProductionExitUpdateModuleData::IniData, m_exitDelayData ) },
+			{ "AllowAirborneCreation",	INI::parseBool,					NULL, offsetof( QueueProductionExitUpdateModuleData::IniData, m_allowAirborneCreationData ) },
+			{ "InitialBurst",			INI::parseUnsignedInt,			NULL, offsetof( QueueProductionExitUpdateModuleData::IniData, m_initialBurst ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		QueueProductionExitUpdateModuleData* self {static_cast<QueueProductionExitUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -104,11 +112,11 @@ public:
 
 protected:
 
-	UnsignedInt m_currentDelay;							///< When this hits zero, I can exit again
-	Coord3D			m_rallyPoint;								///< Where units should move to after they have reached the "natural" rally point
-	Bool				m_rallyPointExists;					///< Only move to the rally point if this is true
-	Real				m_creationClearDistance;		///< I can think of myself as ready when the previous guy is this far away.
-	UnsignedInt m_currentBurstCount;				///< how many times must I still override the delay timer
+	UnsignedInt m_currentDelay {};				///< When this hits zero, I can exit again
+	Coord3D		m_rallyPoint {};				///< Where units should move to after they have reached the "natural" rally point
+	Bool		m_rallyPointExists {};			///< Only move to the rally point if this is true
+	Real		m_creationClearDistance {};		///< I can think of myself as ready when the previous guy is this far away.
+	UnsignedInt m_currentBurstCount {};			///< how many times must I still override the delay timer
 
 	Bool isFreeToExit() const; 
 };

@@ -44,7 +44,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include	"always.h"
-#include	"random.h"
+#include	"RANDOM.H"
 
 // Timing tests for random these random number generators in seconds for
 // 10000000 iterations. Testing done by Hector Yee, 6/20/01
@@ -233,7 +233,7 @@ int Random2Class::operator() (int minval, int maxval)
 **	that the algorithm is not vulnerable to being primed with a weak seed
 **	and thus prevents the algorithm from breaking down as a result.
 */
-int Random3Class::Mix1[20] = {
+unsigned int Random3Class::Mix1[20] = {
 	0x0baa96887, 0x01e17d32c, 0x003bcdc3c, 0x00f33d1b2,
 	0x076a6491d, 0x0c570d85d, 0x0e382b1e3, 0x078db4362,
 	0x07439a9d4, 0x09cea8ac5, 0x089537c5c, 0x02588f55d,
@@ -241,7 +241,7 @@ int Random3Class::Mix1[20] = {
 	0x03ea5cc8c, 0x0d26a0f74, 0x0f3a9222b, 0x048aad7e4
 };
 
-int Random3Class::Mix2[20] = {
+unsigned int Random3Class::Mix2[20] = {
 	0x04b0f3b58, 0x0e874f0c3, 0x06955c5a6, 0x055a7ca46,
 	0x04d9a9d86, 0x0fe28a195, 0x0b1ca7865, 0x06b235751,
 	0x09a997a61, 0x0aa6e95c8, 0x0aaa98ee1, 0x05af9154c,
@@ -278,7 +278,7 @@ Random3Class::Random3Class(unsigned seed1, unsigned seed2) :
 	Seed(seed1),
 	Index(seed2)
 {
-}	
+}
 
 
 /*********************************************************************************************** 
@@ -298,20 +298,20 @@ Random3Class::Random3Class(unsigned seed1, unsigned seed2) :
  *=============================================================================================*/
 int Random3Class::operator() (void)
 {
-	int loword = Seed;
-	int hiword = Index++;
+	unsigned int loword = Seed;
+	unsigned int hiword = Index++;
 	for (int i = 0; i < 4; i++) {
-		int hihold  = hiword;
-		int temp    = hihold ^  Mix1[i];
-		int itmpl   = temp   &  0xffff;
-		int itmph   = temp   >> 16;
+		unsigned int hihold  = hiword;
+		unsigned int temp    = hihold ^  Mix1[i];
+		unsigned int itmpl   = temp   &  0xffff;
+		unsigned int itmph   = temp   >> 16;
 		temp    = itmpl * itmpl + ~(itmph * itmph);
 		temp    = (temp >> 16) | (temp << 16);
 		hiword  = loword ^ ((temp ^ Mix2[i]) + itmpl * itmph);
 		loword  = hihold;
 	}
-	return(hiword);
-}	
+	return((int)hiword);
+}
 
 
 /*********************************************************************************************** 

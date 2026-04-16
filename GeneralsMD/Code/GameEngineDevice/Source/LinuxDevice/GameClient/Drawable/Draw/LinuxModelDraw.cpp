@@ -41,7 +41,6 @@
 #include "Common/PerfTimer.h"
 #include "Common/RandomValue.h"
 #include "Common/ThingTemplate.h"
-#include "Common/GameLOD.h"
 #include "Common/Xfer.h"
 #include "Common/GameState.h"
 #include "Common/QuickTrig.h"
@@ -1033,15 +1032,13 @@ void ModelConditionInfo::clear()
 }
 
 //-------------------------------------------------------------------------------------------------
-LinuxModelDrawModuleData::LinuxModelDrawModuleData() : 
-   m_minLODRequired(STATIC_GAME_LOD_LOW)
+LinuxModelDrawModuleData::LinuxModelDrawModuleData()
 {
-   const Real MAX_SHIFT = 3.0f;			
-   const Real INITIAL_RECOIL_RATE = 2.0f;	
-   const Real RECOIL_DAMPING = 0.4f;	
-   const Real SETTLE_RATE = 0.065f;		
+   const Real MAX_SHIFT = 3.0f;
+   const Real INITIAL_RECOIL_RATE = 2.0f;
+   const Real RECOIL_DAMPING = 0.4f;
+   const Real SETTLE_RATE = 0.065f;
 
-   m_projectileBoneFeedbackEnabledSlots = 0;
    m_initialRecoil = INITIAL_RECOIL_RATE;
    m_maxRecoil = MAX_SHIFT;
    m_recoilDamping = RECOIL_DAMPING;
@@ -1214,8 +1211,8 @@ void LinuxModelDrawModuleData::buildFieldParse(void* what, MultiIniFieldParse& p
       { "OkToChangeModelColor",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_okToChangeModelColor) },
       { "AnimationsRequirePower",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_animationsRequirePower) },
       { "ParticlesAttachedToAnimatedBones",	INI::parseBool, NULL, offsetof(LinuxModelDrawModuleData::IniData, m_particlesAttachedToAnimatedBones) },
-      // { "MinLODRequired",		INI::parseStaticGameLODLevel,	NULL,	offsetof(LinuxModelDrawModuleData, m_minLODRequired) },
-      // { "ProjectileBoneFeedbackEnabledSlots", INI::parseBitString32, TheWeaponSlotTypeNames, offsetof(LinuxModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots) },
+      { "MinLODRequired",		INI::parseStaticGameLODLevel,	NULL,	offsetof(LinuxModelDrawModuleData::IniData, m_minLODRequired) },
+      { "ProjectileBoneFeedbackEnabledSlots", INI::parseBitString32, TheWeaponSlotTypeNames, offsetof(LinuxModelDrawModuleData::IniData, m_projectileBoneFeedbackEnabledSlots) },
       { "DefaultConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_DEFAULT, 0 },
       { "ConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_NORMAL, 0 },
       { "AliasConditionState", LinuxModelDrawModuleData::parseConditionState, (void*)PARSE_ALIAS, 0 },
@@ -3565,7 +3562,6 @@ Bool LinuxModelDraw::clientOnly_getRenderObjBoneTransform(const AsciiString& bon
 }
 
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 Bool LinuxModelDraw::getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const
 {
@@ -3643,7 +3639,7 @@ Int LinuxModelDraw::getCurrentBonePositions(
    
    if (positions && transforms)
    {
-      for (i = 0; i < posCount; ++i)
+      for (Int i = 0; i < posCount; ++i)
       {
          Vector3 pos = transforms[i].Get_Translation();
          positions[i].x = pos.X;
@@ -3659,7 +3655,6 @@ Int LinuxModelDraw::getCurrentBonePositions(
 
    return posCount;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 void LinuxModelDraw::reactToTransformChange(const Matrix3D* /* oldMtx */, const Coord3D* /* oldPos */, Real /* oldAngle */)

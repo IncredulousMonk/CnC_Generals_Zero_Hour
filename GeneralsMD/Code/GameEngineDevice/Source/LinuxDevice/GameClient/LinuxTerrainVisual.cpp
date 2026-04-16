@@ -966,6 +966,7 @@ DEBUG_CRASH(("LinuxTerrainVisual::getWaterGridHeight not yet implemented!"));
 // ------------------------------------------------------------------------------------------------
 void LinuxTerrainVisual::setRawMapHeight(const ICoord2D *gridPos, Int height)
 {
+DEBUG_CRASH(("This code uses BorderSize!  You need to check the coordinates.\n"));
   // This method writes to the m_logicHeightMap member, 
   // since m_logicHeightMap is the true, golden standard to which m_clientHeightMap
   // interpolates during or after its Seismic simulation displaces it..
@@ -998,6 +999,7 @@ void LinuxTerrainVisual::setRawMapHeight(const ICoord2D *gridPos, Int height)
 // ------------------------------------------------------------------------------------------------
 Int LinuxTerrainVisual::getRawMapHeight(const ICoord2D *gridPos)
 {
+DEBUG_CRASH(("This code uses BorderSize!  You need to check the coordinates.\n"));
    if (m_logicHeightMap) {
       Int x = gridPos->x+m_logicHeightMap->getBorderSizeInline();
       Int y = gridPos->y+m_logicHeightMap->getBorderSizeInline();

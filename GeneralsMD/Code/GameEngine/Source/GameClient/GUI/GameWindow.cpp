@@ -1511,13 +1511,12 @@ WindowMsgHandledType GameWinBlockInput( GameWindow* /* window */, UnsignedInt ms
 	{
 		//stop drag selecting 
 
-		// FIXME: TheSelectionTranslator, TheTacticalView, TheInGameUI
-		// TheSelectionTranslator->setLeftMouseButton(FALSE);
-		// TheSelectionTranslator->setDragSelecting(FALSE);
+		TheSelectionTranslator->setLeftMouseButton(FALSE);
+		TheSelectionTranslator->setDragSelecting(FALSE);
 		
-		// TheTacticalView->setMouseLock( FALSE );
-		// TheInGameUI->setSelecting( FALSE );
-		// TheInGameUI->endAreaSelectHint(NULL);
+		TheTacticalView->setMouseLock( FALSE );
+		TheInGameUI->setSelecting( FALSE );
+		TheInGameUI->endAreaSelectHint(NULL);
 		
 	}
 

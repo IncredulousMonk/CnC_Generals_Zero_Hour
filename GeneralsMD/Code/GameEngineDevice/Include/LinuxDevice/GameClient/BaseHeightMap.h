@@ -54,7 +54,7 @@ class SimpleSceneClass;
 class W3DShroud;
 class W3DPropDrawModuleData;
 class W3DPropBuffer;
-class W3DTreeDrawModuleData;
+class LinuxTreeDrawModuleData;
 class GeometryInfo;
 
 // FIXME: Once headers are sorted out.
@@ -180,8 +180,10 @@ public:
 	void doTheLight(VERTEX_FORMAT *vb, Vector3*light, Vector3*normal, RefRenderObjListIterator *pLightsIterator, UnsignedByte alpha);
 #if 0
 	void addScorch(Vector3 location, Real radius, Scorches type);
+#endif // if 0
 	void addTree(DrawableID id, Coord3D location, Real scale, Real angle,
-								Real randomScaleAmount,  const W3DTreeDrawModuleData *data);
+		Real randomScaleAmount,  const LinuxTreeDrawModuleData *data);
+#if 0
 	void removeAllTrees(void);
 	void removeTree(DrawableID id);
 	Bool updateTreePosition(DrawableID id, Coord3D location, Real angle);

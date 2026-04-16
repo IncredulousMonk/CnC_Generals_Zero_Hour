@@ -49,8 +49,8 @@
 //-------------------------------------------------------------------------------------------------
 HiveStructureBodyModuleData::HiveStructureBodyModuleData()
 {
-	m_damageTypesToPropagateToSlaves = DAMAGE_TYPE_FLAGS_NONE;
-	m_damageTypesToSwallow = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageTypesToPropagateToSlaves = DAMAGE_TYPE_FLAGS_NONE;
+	m_ini.m_damageTypesToSwallow = DAMAGE_TYPE_FLAGS_NONE;
 }
 
 
@@ -71,7 +71,7 @@ void HiveStructureBody::attemptDamage( DamageInfo *damageInfo )
 	const HiveStructureBodyModuleData *data = getHiveStructureBodyModuleData();
 	Object *hive = getObject();
 	
-	if( getDamageTypeFlag( data->m_damageTypesToPropagateToSlaves, damageInfo->in.m_damageType ) )
+	if( getDamageTypeFlag( data->m_ini.m_damageTypesToPropagateToSlaves, damageInfo->in.m_damageType ) )
 	{
 		
     //We have the right type of damage types incoming to propagate to slaves. Do we have slaves?
@@ -89,7 +89,7 @@ void HiveStructureBody::attemptDamage( DamageInfo *damageInfo )
 					slave->attemptDamage( damageInfo );
 					return;
 				}
-				else if( getDamageTypeFlag( data->m_damageTypesToSwallow, damageInfo->in.m_damageType ) )
+				else if( getDamageTypeFlag( data->m_ini.m_damageTypesToSwallow, damageInfo->in.m_damageType ) )
 				{
 					//no slave to give to, so eat it
 					damageInfo->out.m_actualDamageDealt = 0.0f;
@@ -113,7 +113,7 @@ void HiveStructureBody::attemptDamage( DamageInfo *damageInfo )
 					rider->attemptDamage( damageInfo );
 					return;
 				}
-				else if( getDamageTypeFlag( data->m_damageTypesToSwallow, damageInfo->in.m_damageType ) )
+				else if( getDamageTypeFlag( data->m_ini.m_damageTypesToSwallow, damageInfo->in.m_damageType ) )
 				{
 					//no slave to give to, so eat it
 					damageInfo->out.m_actualDamageDealt = 0.0f;

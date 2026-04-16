@@ -43,8 +43,8 @@
 // ------------------------------------------------------------------------------------------------
 CashHackSpecialPowerModuleData::CashHackSpecialPowerModuleData( void )
 {
-	m_upgrades.clear();
-	m_defaultAmountToSteal = 0;
+	m_ini.m_upgrades.clear();
+	m_ini.m_defaultAmountToSteal = 0;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -62,17 +62,19 @@ static void parseCashHackUpgradePair( INI* ini, void * /*instance*/, void *store
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void CashHackSpecialPowerModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void CashHackSpecialPowerModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	SpecialPowerModuleData::buildFieldParse( p );
+	SpecialPowerModuleData::buildFieldParse(what, p);
 	
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "UpgradeMoneyAmount", parseCashHackUpgradePair, NULL, offsetof( CashHackSpecialPowerModuleData, m_upgrades ) },
-		{ "MoneyAmount", INI::parseInt, NULL, offsetof( CashHackSpecialPowerModuleData, m_defaultAmountToSteal ) },
+		{ "UpgradeMoneyAmount",	parseCashHackUpgradePair,	NULL, offsetof( CashHackSpecialPowerModuleData::IniData, m_upgrades ) },
+		{ "MoneyAmount",		INI::parseInt,				NULL, offsetof( CashHackSpecialPowerModuleData::IniData, m_defaultAmountToSteal ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	CashHackSpecialPowerModuleData* self {static_cast<CashHackSpecialPowerModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 	
 }  // end buildFieldParse
 
@@ -97,7 +99,7 @@ CashHackSpecialPower::~CashHackSpecialPower( void )
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void CashHackSpecialPower::doSpecialPowerAtLocation( const Coord3D *loc, Real angle, UnsignedInt commandOptions )
+void CashHackSpecialPower::doSpecialPowerAtLocation( const Coord3D* /* loc */, Real /* angle */, UnsignedInt /* commandOptions */ )
 {
 	if (getObject()->isDisabled())
 		return;
@@ -114,15 +116,15 @@ Int CashHackSpecialPower::findAmountToSteal() const
 	const Player* controller = getObject()->getControllingPlayer();
 	if (controller != NULL)
 	{
-		for (std::vector<CashHackSpecialPowerModuleData::Upgrades>::const_iterator it = d->m_upgrades.begin(); 
-					it != d->m_upgrades.end();
+		for (std::vector<CashHackSpecialPowerModuleData::Upgrades>::const_iterator it = d->m_ini.m_upgrades.begin(); 
+					it != d->m_ini.m_upgrades.end();
 					++it)
 		{
 			if (controller->hasScience(it->m_science))
 				return it->m_amountToSteal;
 		}
 	}
-	return d->m_defaultAmountToSteal;
+	return d->m_ini.m_defaultAmountToSteal;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -148,7 +150,7 @@ void CashHackSpecialPower::doSpecialPowerAtObject( Object *victim, UnsignedInt c
 	if( targetMoney && selfMoney )
 	{
 		UnsignedInt cash = targetMoney->countMoney();
-		UnsignedInt desiredAmount = findAmountToSteal();
+		UnsignedInt desiredAmount = (UnsignedInt)findAmountToSteal();
 		//Check to see if they have 1000 cash, otherwise, take the remainder!
 		cash = min( desiredAmount, cash );
 		if( cash > 0 )
@@ -156,7 +158,7 @@ void CashHackSpecialPower::doSpecialPowerAtObject( Object *victim, UnsignedInt c
 			//Steal the cash
 			targetMoney->withdraw( cash );
 			selfMoney->deposit( cash );
-			self->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( cash );
+			self->getControllingPlayer()->getScoreKeeper()->addMoneyEarned( (Int)cash );
 
 			//Display cash income floating over the blacklotus
 			UnicodeString moneyString;

@@ -95,6 +95,7 @@ void Get_WW3D_Format_Name(WW3DFormat format, StringClass& name)
 	case WW3D_FORMAT_DXT3: name="DXT3"; break;
 	case WW3D_FORMAT_DXT4: name="DXT4"; break;
 	case WW3D_FORMAT_DXT5: name="DXT5"; break;
+	case WW3D_FORMAT_R8G8B8A8: name="R8G8B8A8"; break;
 	}
 }
 
@@ -140,7 +141,7 @@ void Vector4_to_Color(unsigned int *outc,const Vector4 &inc,const WW3DFormat for
 
 	switch (format)
 	{
-	case WW3D_FORMAT_R8G8B8:		
+	case WW3D_FORMAT_R8G8B8:
 	case WW3D_FORMAT_A8R8G8B8:
 	case WW3D_FORMAT_X8R8G8B8:
 		*outc=color;
@@ -397,7 +398,8 @@ unsigned Get_Bytes_Per_Pixel(WW3DFormat format)
 	switch (format) {
 	case WW3D_FORMAT_X8R8G8B8:
 	case WW3D_FORMAT_X8L8V8U8:
-	case WW3D_FORMAT_A8R8G8B8: return 4;
+	case WW3D_FORMAT_A8R8G8B8:
+	case WW3D_FORMAT_R8G8B8A8: return 4;
 	case WW3D_FORMAT_R8G8B8: return 3;
 	case WW3D_FORMAT_A1R5G5B5:
 	case WW3D_FORMAT_A4R4G4B4:

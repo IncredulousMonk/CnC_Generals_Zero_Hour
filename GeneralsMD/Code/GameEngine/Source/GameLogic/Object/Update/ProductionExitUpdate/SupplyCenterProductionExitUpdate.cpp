@@ -81,7 +81,7 @@ void SupplyCenterProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDo
 		// in INI which is in model space, rotate it to match the building angle
 		// and translate for building location via a transform call
 		//
-		loc.Set( md->m_unitCreatePoint.x, md->m_unitCreatePoint.y, md->m_unitCreatePoint.z );
+		loc.Set( md->m_ini.m_unitCreatePoint.x, md->m_ini.m_unitCreatePoint.y, md->m_ini.m_unitCreatePoint.z );
 		transform->Transform_Vector( *transform, loc, &loc );
 
 		// make sure the point is on the terrain
@@ -106,9 +106,9 @@ void SupplyCenterProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDo
 		// get the natural rally point from the INI definition, this coord is in model space relative
 		// to the model (0,0,0)
 		//
-		p.X = md->m_naturalRallyPoint.x;
-		p.Y = md->m_naturalRallyPoint.y;
-		p.Z = md->m_naturalRallyPoint.z;
+		p.X = md->m_ini.m_naturalRallyPoint.x;
+		p.Y = md->m_ini.m_naturalRallyPoint.y;
+		p.Z = md->m_ini.m_naturalRallyPoint.z;
 
 		// transform the point into world space
 		transform->Transform_Vector( *transform, p, &p );
@@ -135,7 +135,7 @@ void SupplyCenterProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDo
 				supplyTruckAI->setForceWantingState(true);
 		}
 		
-		if( md->m_grantTemporaryStealthFrames )
+		if( md->m_ini.m_grantTemporaryStealthFrames )
 		{
 			StealthUpdate *stealth = newObj->getStealth();
 			//Only grant temporary stealth to the default stealth update. It's
@@ -145,7 +145,7 @@ void SupplyCenterProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDo
 			{
 				if( stealth->isTemporaryGrant() || !newObj->testStatus( OBJECT_STATUS_CAN_STEALTH ) )
 				{
-					stealth->receiveGrant( TRUE, md->m_grantTemporaryStealthFrames );
+					stealth->receiveGrant( TRUE, md->m_ini.m_grantTemporaryStealthFrames );
 				}
 			}
 		}
@@ -165,7 +165,7 @@ Bool SupplyCenterProductionExitUpdate::getExitPosition( Coord3D& exitPosition ) 
 	const SupplyCenterProductionExitUpdateModuleData *md = getSupplyCenterProductionExitUpdateModuleData();
 
 	Vector3 loc;
-	loc.Set( md->m_unitCreatePoint.x, md->m_unitCreatePoint.y, md->m_unitCreatePoint.z );
+	loc.Set( md->m_ini.m_unitCreatePoint.x, md->m_ini.m_unitCreatePoint.y, md->m_ini.m_unitCreatePoint.z );
 	transform->Transform_Vector( *transform, loc, &loc );
 
 	exitPosition.x = loc.X;
@@ -187,9 +187,9 @@ Bool SupplyCenterProductionExitUpdate::getNaturalRallyPoint( Coord3D& rallyPoint
 	// get the natural rally point from the INI definition, this coord is in model space relative
 	// to the model (0,0,0)
 	//
-	p.X = data->m_naturalRallyPoint.x;
-	p.Y = data->m_naturalRallyPoint.y;
-	p.Z = data->m_naturalRallyPoint.z;
+	p.X = data->m_ini.m_naturalRallyPoint.x;
+	p.Y = data->m_ini.m_naturalRallyPoint.y;
+	p.Z = data->m_ini.m_naturalRallyPoint.z;
 
 	if ( offset )
 	{

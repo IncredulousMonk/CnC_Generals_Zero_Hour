@@ -30,7 +30,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_WEAPONSLOTTYPE_NAMES
+#define DEFINE_WEAPONSLOTTYPE_NAMES_LOOKUP
 #include "Common/Player.h"
 #include "Common/ThingFactory.h"
 #include "Common/Xfer.h"
@@ -52,18 +52,20 @@
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void AssistedTargetingUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+void AssistedTargetingUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "AssistingClipSize",		INI::parseInt,		NULL, offsetof( AssistedTargetingUpdateModuleData, m_clipSize ) },
-		{ "AssistingWeaponSlot",	INI::parseLookupList,	TheWeaponSlotTypeNamesLookupList, offsetof( AssistedTargetingUpdateModuleData, m_weaponSlot ) },
-		{ "LaserFromAssisted",		INI::parseAsciiString,				NULL, offsetof( AssistedTargetingUpdateModuleData, m_laserFromAssistedName ) },
-		{ "LaserToTarget",				INI::parseAsciiString,				NULL, offsetof( AssistedTargetingUpdateModuleData, m_laserToTargetName ) },
+		{ "AssistingClipSize",		INI::parseInt,			NULL,								offsetof( AssistedTargetingUpdateModuleData::IniData, m_clipSize ) },
+		{ "AssistingWeaponSlot",	INI::parseLookupList,	TheWeaponSlotTypeNamesLookupList,	offsetof( AssistedTargetingUpdateModuleData::IniData, m_weaponSlot ) },
+		{ "LaserFromAssisted",		INI::parseAsciiString,	NULL,								offsetof( AssistedTargetingUpdateModuleData::IniData, m_laserFromAssistedName ) },
+		{ "LaserToTarget",			INI::parseAsciiString,	NULL,								offsetof( AssistedTargetingUpdateModuleData::IniData, m_laserToTargetName ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	AssistedTargetingUpdateModuleData* self {static_cast<AssistedTargetingUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -103,8 +105,8 @@ void AssistedTargetingUpdate::assistAttack( const Object *requestingObject, Obje
 		return;
 
 	// lock it just till the weapon is empty or the attack is "done"
-	me->setWeaponLock( md->m_weaponSlot, LOCKED_TEMPORARILY );
-	me->getAI()->aiAttackObject( victimObject, md->m_clipSize, CMD_FROM_AI );
+	me->setWeaponLock( md->m_ini.m_weaponSlot, LOCKED_TEMPORARILY );
+	me->getAI()->aiAttackObject( victimObject, md->m_ini.m_clipSize, CMD_FROM_AI );
 
 
 	if( m_laserFromAssisted )
@@ -147,10 +149,10 @@ UpdateSleepTime AssistedTargetingUpdate::update( void )
 
   const AssistedTargetingUpdateModuleData *d = getAssistedTargetingUpdateModuleData();
 
-	m_laserFromAssisted = TheThingFactory->findTemplate( d->m_laserFromAssistedName );
+	m_laserFromAssisted = TheThingFactory->findTemplate( d->m_ini.m_laserFromAssistedName );
 
 
-	m_laserToTarget =TheThingFactory->findTemplate( d->m_laserFromAssistedName );
+	m_laserToTarget =TheThingFactory->findTemplate( d->m_ini.m_laserFromAssistedName );
 
 
 	return UPDATE_SLEEP_FOREVER;
@@ -192,8 +194,8 @@ void AssistedTargetingUpdate::loadPostProcess( void )
 {
   const AssistedTargetingUpdateModuleData *d = getAssistedTargetingUpdateModuleData();
 
-	m_laserFromAssisted = TheThingFactory->findTemplate( d->m_laserFromAssistedName );
-	m_laserToTarget =TheThingFactory->findTemplate( d->m_laserFromAssistedName );
+	m_laserFromAssisted = TheThingFactory->findTemplate( d->m_ini.m_laserFromAssistedName );
+	m_laserToTarget =TheThingFactory->findTemplate( d->m_ini.m_laserFromAssistedName );
 
 	// extend base class
 	UpdateModule::loadPostProcess();

@@ -42,7 +42,7 @@
 RadarUpdateModuleData::RadarUpdateModuleData( void )
 {
 
-	m_radarExtendTime = 0.0f;
+	m_ini.m_radarExtendTime = 0.0f;
 
 }  // end RadarUpdateModuleData
 
@@ -81,7 +81,7 @@ void RadarUpdate::extendRadar( void )
 		draw->setModelConditionState( MODELCONDITION_RADAR_EXTENDING );
 
 	// mark the frame that the extension will be done on
-	m_extendDoneFrame = TheGameLogic->getFrame() + modData->m_radarExtendTime;
+	m_extendDoneFrame = TheGameLogic->getFrame() + modData->m_ini.m_radarExtendTime;
 
 	//Change this to make the radar active after extension...
 	m_radarActive = true;

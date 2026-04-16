@@ -98,6 +98,7 @@ enum WW3DFormat {
 	WW3D_FORMAT_DXT3,
 	WW3D_FORMAT_DXT4,
 	WW3D_FORMAT_DXT5,
+	WW3D_FORMAT_R8G8B8A8,	// For OpenGL
 	WW3D_FORMAT_COUNT	// Used only to determine number of surface formats
 };
 
@@ -137,6 +138,7 @@ inline bool Has_Alpha(WW3DFormat format) {
 		case WW3D_FORMAT_DXT3:
 		case WW3D_FORMAT_DXT4:
 		case WW3D_FORMAT_DXT5:
+		case WW3D_FORMAT_R8G8B8A8:
 			return true;
 			break;
 		default:
@@ -152,6 +154,7 @@ inline int Alpha_Bits(WW3DFormat format) {
 		case WW3D_FORMAT_A8R3G3B2:
 		case WW3D_FORMAT_A8P8:
 		case WW3D_FORMAT_A8L8:
+		case WW3D_FORMAT_R8G8B8A8:
 			return 8;
 			break;
 		case WW3D_FORMAT_A4R4G4B4:

@@ -88,7 +88,7 @@
 #include "assetmgr.h"
 #include "simplevec.h"
 #include "realcrc.h"
-// #include "dx8wrapper.h"
+#include "dx8wrapper.h"
 
 #include <stdio.h>
 
@@ -228,6 +228,8 @@ public:
 };
 
 
+#include <filesystem> // For path class.
+#include <string>
 /***********************************************************************************************
  * MeshModelClass::Load_W3D -- Load a mesh from a W3D file                                     *
  *                                                                                             *
@@ -243,6 +245,8 @@ public:
 WW3DErrorType MeshModelClass::Load_W3D(ChunkLoadClass & cload)
 {
 	MeshLoadContextClass * context = NULL;
+	std::string filename {};
+	std::filesystem::path p {};
 
 	/*
 	**	Open the first chunk, it should be the mesh header
@@ -429,7 +433,12 @@ WW3DErrorType MeshModelClass::Load_W3D(ChunkLoadClass & cload)
 	post_process();
 
 	generate_render_data();
-	
+
+	filename = Get_Name();
+	std::transform(filename.begin(), filename.end(), filename.begin(), [](unsigned char c){ return std::tolower(c); });
+	p = filename;
+	p.replace_extension("obj");
+	DEBUG_LOG((">>> Mesh filename: %s\n",p.c_str()));
 	// DEBUG_LOG(("# quonset.obj start\n"));
 	// for (int i {0}; i < Vertex->Get_Count(); ++i) {
 	// 	DEBUG_LOG(("v %f %f %f\n", Vertex->Get_Array()[i].X, Vertex->Get_Array()[i].Y, Vertex->Get_Array()[i].Z));
@@ -1278,11 +1287,6 @@ WW3DErrorType MeshModelClass::read_shader_ids(ChunkLoadClass & cload,MeshLoadCon
  *=============================================================================================*/
 WW3DErrorType MeshModelClass::read_dcg(ChunkLoadClass & cload,MeshLoadContextClass * context)
 {
-(void) cload;
-(void) context;
-DEBUG_CRASH(("MeshModelClass::read_dcg not yet implemented!\n"));
-return WW3D_ERROR_LOAD_FAILED;
-#if 0
 	/*
 	** Determine whether this chunk should be read into the default or alternate material description
 	*/
@@ -1332,7 +1336,6 @@ return WW3D_ERROR_LOAD_FAILED;
 	matdesc->Set_DCG_Source(context->CurPass,VertexMaterialClass::COLOR1);
 
 	return WW3D_ERROR_OK;
-#endif // if 0
 }
 
 

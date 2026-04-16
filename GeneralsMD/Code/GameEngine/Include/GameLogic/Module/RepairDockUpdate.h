@@ -45,9 +45,15 @@ public:
 
 	RepairDockUpdateModuleData( void );
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	Real m_framesForFullHeal;			///< time (in frames) something becomes fully repaired
+	// MG: Cannot apply offsetof to RepairDockUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Real m_framesForFullHeal;			///< time (in frames) something becomes fully repaired
+	};
+
+	IniData m_ini {};
 
 };
 
@@ -72,8 +78,8 @@ public:
 
 protected:
 
-  ObjectID m_lastRepair;			///< object we were repairing last
-	Real m_healthToAddPerFrame;	///< health to add per frame to current docked object
+	ObjectID m_lastRepair {};			///< object we were repairing last
+	Real m_healthToAddPerFrame {};		///< health to add per frame to current docked object
 	
 };
 

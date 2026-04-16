@@ -41,27 +41,35 @@ class Object;
 class SupplyCenterProductionExitUpdateModuleData : public UpdateModuleData
 {
 public:
-	Coord3D m_unitCreatePoint;
-	Coord3D m_naturalRallyPoint;
-	UnsignedInt m_grantTemporaryStealthFrames;
+	// MG: Cannot apply offsetof to SupplyCenterProductionExitUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		Coord3D m_unitCreatePoint;
+		Coord3D m_naturalRallyPoint;
+		UnsignedInt m_grantTemporaryStealthFrames;
+	};
+
+	IniData m_ini {};
 
 	SupplyCenterProductionExitUpdateModuleData()
 	{
-		m_unitCreatePoint.zero();
-		m_naturalRallyPoint.zero();
+		m_ini.m_unitCreatePoint.zero();
+		m_ini.m_naturalRallyPoint.zero();
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "UnitCreatePoint",		INI::parseCoord3D,		NULL, offsetof( SupplyCenterProductionExitUpdateModuleData, m_unitCreatePoint ) },
-			{ "NaturalRallyPoint",  INI::parseCoord3D,		NULL, offsetof( SupplyCenterProductionExitUpdateModuleData, m_naturalRallyPoint ) },
-			{ "GrantTemporaryStealth",INI::parseDurationUnsignedInt,  NULL, offsetof( SupplyCenterProductionExitUpdateModuleData, m_grantTemporaryStealthFrames ) },
+			{ "UnitCreatePoint",		INI::parseCoord3D,				NULL, offsetof( SupplyCenterProductionExitUpdateModuleData::IniData, m_unitCreatePoint ) },
+			{ "NaturalRallyPoint",		INI::parseCoord3D,				NULL, offsetof( SupplyCenterProductionExitUpdateModuleData::IniData, m_naturalRallyPoint ) },
+			{ "GrantTemporaryStealth",	INI::parseDurationUnsignedInt,	NULL, offsetof( SupplyCenterProductionExitUpdateModuleData::IniData, m_grantTemporaryStealthFrames ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		SupplyCenterProductionExitUpdateModuleData* self {static_cast<SupplyCenterProductionExitUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -81,10 +89,10 @@ public:
 
 	// Required funcs to fufill interface requirements
 	virtual Bool isExitBusy() const {return FALSE;}	///< Contain style exiters are getting the ability to space out exits, so ask this before reserveDoor as a kind of no-commitment check.
-	virtual ExitDoorType reserveDoorForExit( const ThingTemplate* objType, Object *specificObject ) { return DOOR_1; }
+	virtual ExitDoorType reserveDoorForExit( const ThingTemplate* /* objType */, Object* /* specificObject */ ) { return DOOR_1; }
 	virtual void exitObjectViaDoor( Object *newObj, ExitDoorType exitDoor );
-	virtual void unreserveDoorForExit( ExitDoorType exitDoor ) { /* nothing */ }
-	virtual void exitObjectByBudding( Object *newObj, Object *budHost ) { return; }
+	virtual void unreserveDoorForExit( ExitDoorType /* exitDoor */ ) { /* nothing */ }
+	virtual void exitObjectByBudding( Object* /* newObj */, Object* /* budHost */ ) { return; }
 
 	virtual void setRallyPoint( const Coord3D *pos );			///< define a "rally point" for units to move towards
 	virtual const Coord3D *getRallyPoint( void ) const;			///< define a "rally point" for units to move towards
@@ -95,8 +103,8 @@ public:
 
 protected:
 
-	Coord3D m_rallyPoint;						///< Where units should move to after they have reached the "natural" rally point
-	Bool m_rallyPointExists;				///< Only move to the rally point if this is true
+	Coord3D m_rallyPoint {};		///< Where units should move to after they have reached the "natural" rally point
+	Bool m_rallyPointExists {};		///< Only move to the rally point if this is true
 
 	// Required func to fufill Module requirement
 };

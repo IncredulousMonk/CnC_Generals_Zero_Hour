@@ -49,7 +49,7 @@
 PowerPlantUpdateModuleData::PowerPlantUpdateModuleData( void )
 {
 
-	m_rodsExtendTime = 0;
+	m_ini.m_rodsExtendTime = 0;
 
 }  // end PowerPlantUpdateModuleData
 
@@ -91,7 +91,7 @@ void PowerPlantUpdate::extendRods( Bool extend )
 				draw->setModelConditionState( MODELCONDITION_POWER_PLANT_UPGRADING );
 
 			m_extended = TRUE;
-			setWakeFrame(getObject(), UPDATE_SLEEP(modData->m_rodsExtendTime));
+			setWakeFrame(getObject(), UPDATE_SLEEP(modData->m_ini.m_rodsExtendTime));
 		}
 	}
 	else

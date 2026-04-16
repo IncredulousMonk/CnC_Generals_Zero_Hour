@@ -147,9 +147,9 @@ UpdateSleepTime SpyVisionUpdate::update( void )
 	{
 		m_resetTimersNextUpdate = FALSE;
 		
-		if( data->m_selfPowered )
+		if( data->m_ini.m_selfPowered )
 		{
-			if( data->m_selfPoweredInterval == 0 )
+			if( data->m_ini.m_selfPoweredInterval == 0 )
 			{
 				//It's an always on self-powered special. So turn it back on now.
 				doActivationWork( getObject()->getControllingPlayer(), TRUE );
@@ -158,7 +158,7 @@ UpdateSleepTime SpyVisionUpdate::update( void )
 			else
 			{
 				//Reset the interval timer via sleeping (so we have to wait a longer time before going on)
-				return UPDATE_SLEEP( data->m_selfPoweredInterval );
+				return UPDATE_SLEEP( data->m_ini.m_selfPoweredInterval );
 			}
 		}
 	}
@@ -170,21 +170,21 @@ UpdateSleepTime SpyVisionUpdate::update( void )
 
 		m_deactivateFrame = 0;
 	}
-	else if( !m_currentlyActive && data->m_selfPowered )
+	else if( !m_currentlyActive && data->m_ini.m_selfPowered )
 	{
 		doActivationWork( getObject()->getControllingPlayer(), TRUE );
-		if( data->m_selfPoweredDuration == 0 )
+		if( data->m_ini.m_selfPoweredDuration == 0 )
 			m_deactivateFrame = UINT_MAX;
 		else
-			m_deactivateFrame = now + data->m_selfPoweredDuration;
+			m_deactivateFrame = now + data->m_ini.m_selfPoweredDuration;
 	}
 
-	if( data->m_selfPowered )
+	if( data->m_ini.m_selfPowered )
 	{
 		if( m_currentlyActive )
-			return UPDATE_SLEEP(data->m_selfPoweredDuration);
+			return UPDATE_SLEEP(data->m_ini.m_selfPoweredDuration);
 		else
-			return UPDATE_SLEEP(data->m_selfPoweredInterval);
+			return UPDATE_SLEEP(data->m_ini.m_selfPoweredInterval);
 	}
 
 	return UPDATE_SLEEP_FOREVER;
@@ -202,7 +202,7 @@ void SpyVisionUpdate::doActivationWork( Player *playerToSetFor, Bool setting )
 		Player *player = ThePlayerList->getNthPlayer(i);
 		if( playerToSetFor->getRelationship(player->getDefaultTeam()) == ENEMIES )
 		{
-			player->setUnitsVisionSpied( setting, data->m_spyOnKindof, playerToSetFor->getPlayerIndex() );
+			player->setUnitsVisionSpied( setting, data->m_ini.m_spyOnKindof, playerToSetFor->getPlayerIndex() );
 		}
 	}
 
@@ -223,9 +223,9 @@ void SpyVisionUpdate::onDelete( void )
 void SpyVisionUpdate::upgradeImplementation()
 {
 	const SpyVisionUpdateModuleData *data = getSpyVisionUpdateModuleData();
-	if( data->m_needsUpgrade && !isAlreadyUpgraded() )
+	if( data->m_ini.m_needsUpgrade && !isAlreadyUpgraded() )
 	{
-		activateSpyVision(data->m_selfPoweredDuration);// If zero, will turn on permanently.  And it does the wake up setting
+		activateSpyVision(data->m_ini.m_selfPoweredDuration);// If zero, will turn on permanently.  And it does the wake up setting
 	}
 }
 

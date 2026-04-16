@@ -46,7 +46,13 @@ public:
 
 	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 
-	UnsignedInt m_framesForFullHeal;			///< time (in frames) something becomes fully healed
+	// MG: Cannot apply offsetof to HealContainModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_framesForFullHeal;			///< time (in frames) something becomes fully healed
+	};
+
+	IniData m_ini {};
 
 };
 

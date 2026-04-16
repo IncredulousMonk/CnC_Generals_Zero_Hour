@@ -76,7 +76,7 @@ CashBountyPowerModuleData::CashBountyPowerModuleData()
 #ifdef NOT_IN_USE
 	m_upgrades.clear();
 #endif
-	m_defaultBounty = 0.0;
+	m_ini.m_defaultBounty = 0.0;
 } 
 
 #ifdef NOT_IN_USE
@@ -96,19 +96,21 @@ static void parseBountyUpgradePair( INI* ini, void * /*instance*/, void *store, 
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-/* static */ void CashBountyPowerModuleData::buildFieldParse(MultiIniFieldParse& p)
+/* static */ void CashBountyPowerModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	SpecialPowerModuleData::buildFieldParse( p );
+	SpecialPowerModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
 #ifdef NOT_IN_USE
 		{ "UpgradeBounty", parseBountyUpgradePair, NULL, offsetof( CashBountyPowerModuleData, m_upgrades ) },
 #endif
-		{ "Bounty",			INI::parsePercentToReal, NULL, offsetof( CashBountyPowerModuleData, m_defaultBounty ) },
+		{ "Bounty",			INI::parsePercentToReal, NULL, offsetof( CashBountyPowerModuleData::IniData, m_defaultBounty ) },
 		{ 0, 0, 0, 0 } 
 	};
-	p.add(dataFieldParse);
+	CashBountyPowerModuleData* self {static_cast<CashBountyPowerModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -161,7 +163,7 @@ Real CashBountyPower::findBounty() const
 		}
 	}
 #endif
-	return d->m_defaultBounty;
+	return d->m_ini.m_defaultBounty;
 }
 
 //-------------------------------------------------------------------------------------------------

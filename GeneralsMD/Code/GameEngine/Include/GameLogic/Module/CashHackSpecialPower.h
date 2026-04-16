@@ -57,11 +57,18 @@ public:
 		{
 		}
 	};
-	std::vector<Upgrades> m_upgrades;
-	Int m_defaultAmountToSteal;					///< the amount of money that we will steal
+
+	// MG: Cannot apply offsetof to CashHackSpecialPowerModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		std::vector<Upgrades> m_upgrades;
+		Int m_defaultAmountToSteal;					///< the amount of money that we will steal
+	};
+
+	IniData m_ini {};
 
 	CashHackSpecialPowerModuleData( void );
-	static void buildFieldParse( MultiIniFieldParse& p );
+	static void buildFieldParse(void* what,  MultiIniFieldParse& p);
 };
 
 //-------------------------------------------------------------------------------------------------

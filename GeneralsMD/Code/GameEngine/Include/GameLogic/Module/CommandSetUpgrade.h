@@ -38,18 +38,24 @@
 class CommandSetUpgradeModuleData : public UpgradeModuleData
 {
 public:
-	AsciiString m_newCommandSet;
-	AsciiString m_newCommandSetAlt;
-	AsciiString m_triggerAlt;
+	// MG: Cannot apply offsetof to CommandSetUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_newCommandSet;
+		AsciiString m_newCommandSetAlt;
+		AsciiString m_triggerAlt;
+	};
+
+	IniData m_ini {};
 
 	CommandSetUpgradeModuleData()
 	{
-		m_newCommandSet			= AsciiString::TheEmptyString;
-		m_newCommandSetAlt	= AsciiString::TheEmptyString;
-		m_triggerAlt				= "none";
+		m_ini.m_newCommandSet		= AsciiString::TheEmptyString;
+		m_ini.m_newCommandSetAlt	= AsciiString::TheEmptyString;
+		m_ini.m_triggerAlt		= "none";
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-----------------------------------------------------------------------------
@@ -57,7 +63,7 @@ class CommandSetUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( CommandSetUpgrade, "CommandSetUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( CommandSetUpgrade, CommandSetUpgradeModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( CommandSetUpgrade, CommandSetUpgradeModuleData )
 
 public:
 

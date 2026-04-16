@@ -58,7 +58,7 @@ QueueProductionExitUpdate::QueueProductionExitUpdate( Thing *thing, const Module
 	const QueueProductionExitUpdateModuleData* md = getQueueProductionExitUpdateModuleData();
 	if (md) //sanity
 	{
-		m_currentBurstCount = md->m_initialBurst;
+		m_currentBurstCount = md->m_ini.m_initialBurst;
 	}
 }
 
@@ -87,7 +87,7 @@ void QueueProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDoorType 
 		// in INI which is in model space, rotate it to match the building angle
 		// and translate for building location via a transform call
 		//
-		loc.Set( md->m_unitCreatePoint.x, md->m_unitCreatePoint.y, md->m_unitCreatePoint.z );
+		loc.Set( md->m_ini.m_unitCreatePoint.x, md->m_ini.m_unitCreatePoint.y, md->m_ini.m_unitCreatePoint.z );
 		transform->Transform_Vector( *transform, loc, &loc );
 
 		Bool creationInAir = FALSE;
@@ -97,7 +97,7 @@ void QueueProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDoorType 
 				creationInAir = TRUE;
 		}
 		// make sure the point is on the terrain
-		if( creationInAir && !md->m_allowAirborneCreationData )
+		if( creationInAir && !md->m_ini.m_allowAirborneCreationData )
 			loc.Z = TheTerrainLogic ? TheTerrainLogic->getGroundHeight( loc.X, loc.Y ) : 0.0f;
 
 		// we need it in Coord3D form
@@ -157,7 +157,7 @@ void QueueProductionExitUpdate::exitObjectViaDoor( Object *newObj, ExitDoorType 
 		if (ai) {
 			ai->aiFollowExitProductionPath( &exitPath, creationObject, CMD_FROM_AI );
 		}
-		m_currentDelay = md->m_exitDelayData;
+		m_currentDelay = md->m_ini.m_exitDelayData;
 
 		if (m_currentBurstCount)
 			m_currentBurstCount--; // fewer and fewer units to burst
@@ -178,7 +178,7 @@ Bool QueueProductionExitUpdate::getExitPosition( Coord3D& exitPosition ) const
 	const QueueProductionExitUpdateModuleData *md = getQueueProductionExitUpdateModuleData();
 
 	Vector3 loc;
-	loc.Set( md->m_unitCreatePoint.x, md->m_unitCreatePoint.y, md->m_unitCreatePoint.z );
+	loc.Set( md->m_ini.m_unitCreatePoint.x, md->m_ini.m_unitCreatePoint.y, md->m_ini.m_unitCreatePoint.z );
 	transform->Transform_Vector( *transform, loc, &loc );
 
 	exitPosition.x = loc.X;
@@ -191,13 +191,13 @@ Bool QueueProductionExitUpdate::getExitPosition( Coord3D& exitPosition ) const
 
 
 //-------------------------------------------------------------------------------------------------
-ExitDoorType QueueProductionExitUpdate::reserveDoorForExit( const ThingTemplate* objType, Object *specificObject )
+ExitDoorType QueueProductionExitUpdate::reserveDoorForExit( const ThingTemplate* /* objType */, Object* /* specificObject */ )
 {
 	return isFreeToExit() ? DOOR_1 : DOOR_NONE_AVAILABLE;
 }
 
 //-------------------------------------------------------------------------------------------------
-void QueueProductionExitUpdate::unreserveDoorForExit( ExitDoorType exitDoor )
+void QueueProductionExitUpdate::unreserveDoorForExit( ExitDoorType /* exitDoor */ )
 {
 	/* nothing */
 }
@@ -258,7 +258,7 @@ void QueueProductionExitUpdate::exitObjectByBudding( Object *newObj, Object *bud
 	}
 
 	const QueueProductionExitUpdateModuleData* data = getQueueProductionExitUpdateModuleData();
-	m_currentDelay = data->m_exitDelayData;
+	m_currentDelay = data->m_ini.m_exitDelayData;
 
 	if (m_currentBurstCount)
 		m_currentBurstCount--; // fewer and fewer units to burst
@@ -278,9 +278,9 @@ Bool QueueProductionExitUpdate::getNaturalRallyPoint( Coord3D& rallyPoint, Bool 
 	// get the natural rally point from the INI definition, this coord is in model space relative
 	// to the model (0,0,0)
 	//
-	p.X = data->m_naturalRallyPoint.x;
-	p.Y = data->m_naturalRallyPoint.y;
-	p.Z = data->m_naturalRallyPoint.z;
+	p.X = data->m_ini.m_naturalRallyPoint.x;
+	p.Y = data->m_ini.m_naturalRallyPoint.y;
+	p.Z = data->m_ini.m_naturalRallyPoint.z;
 
 	if ( offset )
 	{

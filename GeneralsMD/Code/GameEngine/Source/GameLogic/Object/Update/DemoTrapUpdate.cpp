@@ -29,7 +29,7 @@
 
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#define DEFINE_WEAPONSLOTTYPE_NAMES
+#define DEFINE_WEAPONSLOTTYPE_NAMES_LOOKUP
 
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "Common/BitFlagsIO.h"
@@ -49,15 +49,15 @@
 //-------------------------------------------------------------------------------------------------
 DemoTrapUpdateModuleData::DemoTrapUpdateModuleData()
 {
-	m_defaultsToProximityMode				= false;
-	m_friendlyDetonation						= false;
-	m_manualModeWeaponSlot					= PRIMARY_WEAPON;
-	m_detonationWeaponSlot					= PRIMARY_WEAPON;
-	m_proximityModeWeaponSlot				= PRIMARY_WEAPON;
-	m_triggerDetonationRange				= 0.0f;
-	m_scanFrames										= 0;
-	m_detonationWeaponTemplate			= NULL;
-	m_detonateWhenKilled						= false;
+	m_ini.m_defaultsToProximityMode				= false;
+	m_ini.m_friendlyDetonation					= false;
+	m_ini.m_manualModeWeaponSlot				= PRIMARY_WEAPON;
+	m_ini.m_detonationWeaponSlot				= PRIMARY_WEAPON;
+	m_ini.m_proximityModeWeaponSlot				= PRIMARY_WEAPON;
+	m_ini.m_triggerDetonationRange				= 0.0f;
+	m_ini.m_scanFrames							= 0;
+	m_ini.m_detonationWeaponTemplate			= NULL;
+	m_ini.m_detonateWhenKilled					= false;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -67,19 +67,21 @@ DemoTrapUpdateModuleData::DemoTrapUpdateModuleData()
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "DefaultProximityMode",      INI::parseBool,								NULL, offsetof( DemoTrapUpdateModuleData, m_defaultsToProximityMode ) },
-		{ "DetonationWeaponSlot",      INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_detonationWeaponSlot ) },
-		{ "ProximityModeWeaponSlot",   INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_proximityModeWeaponSlot ) },
-		{ "ManualModeWeaponSlot",      INI::parseLookupList,					TheWeaponSlotTypeNamesLookupList, offsetof( DemoTrapUpdateModuleData, m_manualModeWeaponSlot ) },
-		{ "TriggerDetonationRange",    INI::parseReal,								NULL, offsetof( DemoTrapUpdateModuleData, m_triggerDetonationRange ) },
-		{ "IgnoreTargetTypes",         KindOfMaskType::parseFromINI,							NULL, offsetof( DemoTrapUpdateModuleData, m_ignoreKindOf ) },
-		{ "ScanRate",									 INI::parseDurationUnsignedInt,	NULL, offsetof( DemoTrapUpdateModuleData, m_scanFrames ) },
-		{ "AutoDetonationWithFriendsInvolved", INI::parseBool,				NULL, offsetof( DemoTrapUpdateModuleData, m_friendlyDetonation ) },
-		{ "DetonationWeapon",					 INI::parseWeaponTemplate,			NULL, offsetof( DemoTrapUpdateModuleData, m_detonationWeaponTemplate ) },
-		{ "DetonateWhenKilled",				 INI::parseBool,								NULL, offsetof( DemoTrapUpdateModuleData, m_detonateWhenKilled ) },
+		{ "DefaultProximityMode",				INI::parseBool,					NULL, 								offsetof( DemoTrapUpdateModuleData::IniData, m_defaultsToProximityMode ) },
+		{ "DetonationWeaponSlot",				INI::parseLookupList,			TheWeaponSlotTypeNamesLookupList,	offsetof( DemoTrapUpdateModuleData::IniData, m_detonationWeaponSlot ) },
+		{ "ProximityModeWeaponSlot",			INI::parseLookupList,			TheWeaponSlotTypeNamesLookupList,	offsetof( DemoTrapUpdateModuleData::IniData, m_proximityModeWeaponSlot ) },
+		{ "ManualModeWeaponSlot",				INI::parseLookupList,			TheWeaponSlotTypeNamesLookupList,	offsetof( DemoTrapUpdateModuleData::IniData, m_manualModeWeaponSlot ) },
+		{ "TriggerDetonationRange",				INI::parseReal,					NULL,								offsetof( DemoTrapUpdateModuleData::IniData, m_triggerDetonationRange ) },
+		{ "IgnoreTargetTypes",					KindOfMaskType::parseFromINI,	NULL,								offsetof( DemoTrapUpdateModuleData::IniData, m_ignoreKindOf ) },
+		{ "ScanRate",							INI::parseDurationUnsignedInt,	NULL,								offsetof( DemoTrapUpdateModuleData::IniData, m_scanFrames ) },
+		{ "AutoDetonationWithFriendsInvolved",	INI::parseBool,					NULL,								offsetof( DemoTrapUpdateModuleData::IniData, m_friendlyDetonation ) },
+		{ "DetonationWeapon",					INI::parseWeaponTemplate,		NULL,								offsetof( DemoTrapUpdateModuleData::IniData, m_detonationWeaponTemplate ) },
+		{ "DetonateWhenKilled",					INI::parseBool,					NULL,								offsetof( DemoTrapUpdateModuleData::IniData, m_detonateWhenKilled ) },
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	DemoTrapUpdateModuleData* self {static_cast<DemoTrapUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -105,23 +107,23 @@ void DemoTrapUpdate::onObjectCreated()
 
 	const DemoTrapUpdateModuleData *data = getDemoTrapUpdateModuleData();
 
-	if( data->m_detonationWeaponSlot == data->m_proximityModeWeaponSlot ||
-			data->m_detonationWeaponSlot == data->m_manualModeWeaponSlot ||
-			data->m_proximityModeWeaponSlot == data->m_manualModeWeaponSlot )
+	if( data->m_ini.m_detonationWeaponSlot == data->m_ini.m_proximityModeWeaponSlot ||
+			data->m_ini.m_detonationWeaponSlot == data->m_ini.m_manualModeWeaponSlot ||
+			data->m_ini.m_proximityModeWeaponSlot == data->m_ini.m_manualModeWeaponSlot )
 	{
 		DEBUG_CRASH( ("The demo trap requires three weaponslots: One for each of the detonation mode, proximity mode, and manual mode.") );
 	}
 
 	getObject()->setWeaponSetFlag( WEAPONSET_VETERAN );
-	if( data->m_defaultsToProximityMode )
+	if( data->m_ini.m_defaultsToProximityMode )
 	{
 		// lock it just till the weapon is empty or the attack is "done"
-		getObject()->setWeaponLock( data->m_proximityModeWeaponSlot, LOCKED_TEMPORARILY );
+		getObject()->setWeaponLock( data->m_ini.m_proximityModeWeaponSlot, LOCKED_TEMPORARILY );
 	}
 	else
 	{
 		// lock it just till the weapon is empty or the attack is "done"
-		getObject()->setWeaponLock( data->m_manualModeWeaponSlot, LOCKED_TEMPORARILY );
+		getObject()->setWeaponLock( data->m_ini.m_manualModeWeaponSlot, LOCKED_TEMPORARILY );
 	}
 }
 
@@ -147,7 +149,7 @@ UpdateSleepTime DemoTrapUpdate::update()
 
 	if( me->isEffectivelyDead() )
 	{
-		if( data->m_detonateWhenKilled )
+		if( data->m_ini.m_detonateWhenKilled )
 		{
 			detonate();
 		}
@@ -157,7 +159,7 @@ UpdateSleepTime DemoTrapUpdate::update()
 	//Get the current weapon slot -- this determines what mode we're in.
 	WeaponSlotType weaponSlot = getObject()->getCurrentWeapon()->getWeaponSlot();
 
-	if( weaponSlot == data->m_detonationWeaponSlot )
+	if( weaponSlot == data->m_ini.m_detonationWeaponSlot )
 	{
 		//We've been externally triggered by the press of a command button.
 		detonate();
@@ -172,7 +174,7 @@ UpdateSleepTime DemoTrapUpdate::update()
 	}
 
 	
-	if( weaponSlot == data->m_manualModeWeaponSlot )
+	if( weaponSlot == data->m_ini.m_manualModeWeaponSlot )
 	{
 		//Don't scan!
 		return UPDATE_SLEEP_NONE;
@@ -180,11 +182,11 @@ UpdateSleepTime DemoTrapUpdate::update()
 
 	//Reset timer here -- because if we are in manual mode, and switch, we want instant
 	//gratification (if possible).
-	m_nextScanFrames = data->m_scanFrames;
+	m_nextScanFrames = (Int)data->m_ini.m_scanFrames;
 
 	//Scan for a valid enemy in proximity range.
 
-	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_triggerDetonationRange, FROM_CENTER_2D );
+	ObjectIterator *iter = ThePartitionManager->iterateObjectsInRange( me->getPosition(), data->m_ini.m_triggerDetonationRange, FROM_CENTER_2D );
 	MemoryPoolObjectHolder hold(iter);
 
 	Bool shallDetonate = false;
@@ -192,7 +194,7 @@ UpdateSleepTime DemoTrapUpdate::update()
 	//Now iterate through each object in range and check to see if it should detonate us!
 	for( Object *other = iter->first(); other; other = iter->next() )
 	{
-		if( other->isAnyKindOf( data->m_ignoreKindOf ) )
+		if( other->isAnyKindOf( data->m_ini.m_ignoreKindOf ) )
 		{
 			//Skip specified types to ignore.
 			continue;
@@ -219,7 +221,7 @@ UpdateSleepTime DemoTrapUpdate::update()
 			// order matters: we want to know if I consider it to be an enemy, not vice versa
 		if( getObject()->getRelationship( other ) != ENEMIES )
 		{
-			if( !data->m_friendlyDetonation )
+			if( !data->m_ini.m_friendlyDetonation )
 			{
 				//Not allowed to proximity detonate with friends nearby
 				return UPDATE_SLEEP_NONE;
@@ -236,12 +238,12 @@ UpdateSleepTime DemoTrapUpdate::update()
 
 		//Anyone close enough?
 		Real fDist = ThePartitionManager->getDistanceSquared( me, other, FROM_CENTER_2D );
-		if( fDist <= data->m_triggerDetonationRange * data->m_triggerDetonationRange )
+		if( fDist <= data->m_ini.m_triggerDetonationRange * data->m_ini.m_triggerDetonationRange )
 		{
 			//Yeehaw!
 			shallDetonate = true;
 
-			if( data->m_friendlyDetonation )
+			if( data->m_ini.m_friendlyDetonation )
 			{
 				//Okay, no need to look for friends because we don't care. All we care
 				//about is the fact that there is an enemy nearby!
@@ -268,7 +270,7 @@ void DemoTrapUpdate::detonate()
 
 	// Only shoot the weapon if not being built or sold.
 	if( !me->testStatus(OBJECT_STATUS_UNDER_CONSTRUCTION) && !me->testStatus(OBJECT_STATUS_SOLD) )
-		TheWeaponStore->createAndFireTempWeapon( data->m_detonationWeaponTemplate, me, me->getPosition() );
+		TheWeaponStore->createAndFireTempWeapon( data->m_ini.m_detonationWeaponTemplate, me, me->getPosition() );
 
 	me->kill();
 	m_detonated = true;

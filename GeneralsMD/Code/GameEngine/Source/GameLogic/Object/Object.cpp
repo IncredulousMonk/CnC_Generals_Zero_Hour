@@ -6440,7 +6440,6 @@ Real Object::getCarrierDeckHeight() const
 	return 0.0f;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 CountermeasuresBehaviorInterface* Object::getCountermeasuresBehaviorInterface()
 {
@@ -6469,6 +6468,7 @@ const CountermeasuresBehaviorInterface* Object::getCountermeasuresBehaviorInterf
 	return NULL;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Bool Object::hasCountermeasures() const
 {

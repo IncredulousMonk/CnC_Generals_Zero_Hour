@@ -50,15 +50,15 @@ InternetHackContainModuleData::InternetHackContainModuleData()
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void InternetHackContainModuleData::buildFieldParse(MultiIniFieldParse& p)
+void InternetHackContainModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-  TransportContainModuleData::buildFieldParse(p);
+	TransportContainModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	p.add(dataFieldParse);
 }
 
 

@@ -48,17 +48,25 @@ enum
 class SpawnPointProductionExitUpdateModuleData : public UpdateModuleData
 {
 public:
-	AsciiString m_spawnPointBoneNameData;
-
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	// MG: Cannot apply offsetof to SpawnPointProductionExitUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
 	{
-    UpdateModuleData::buildFieldParse(p);
+		AsciiString m_spawnPointBoneNameData;
+	};
+
+	IniData m_ini {};
+
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
+	{
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "SpawnPointBoneName",		INI::parseAsciiString,		NULL, offsetof( SpawnPointProductionExitUpdateModuleData, m_spawnPointBoneNameData ) },
+			{ "SpawnPointBoneName",	INI::parseAsciiString,	NULL, offsetof( SpawnPointProductionExitUpdateModuleData::IniData, m_spawnPointBoneNameData ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		SpawnPointProductionExitUpdateModuleData* self {static_cast<SpawnPointProductionExitUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -83,13 +91,13 @@ public:
 	virtual void unreserveDoorForExit( ExitDoorType exitDoor );
 	virtual void setRallyPoint( const Coord3D * ){}
 	virtual const Coord3D *getRallyPoint() const { return NULL; }
-	virtual void exitObjectByBudding( Object *newObj, Object *budHost ) { return; }
+	virtual void exitObjectByBudding( Object* /* newObj */, Object* /* budHost */ ) { return; }
 
 	virtual UpdateSleepTime update()										{ return UPDATE_SLEEP_FOREVER; }
 
 protected:
-	Bool m_bonesInitialized;													///< To prevent creation bugs, only init the World coords when first asked for one
-	Int m_spawnPointCount;														///< How many in the array are actually live and valid
+	Bool m_bonesInitialized {};													///< To prevent creation bugs, only init the World coords when first asked for one
+	Int m_spawnPointCount {};														///< How many in the array are actually live and valid
 	Coord3D m_worldCoordSpawnPoints[MAX_SPAWN_POINTS];///< Where my little friends will be created
 	Real m_worldAngleSpawnPoints[MAX_SPAWN_POINTS];		///< And what direction they should face
 	ObjectID m_spawnPointOccupier[MAX_SPAWN_POINTS];	///< Who I think is in each spot.  I can validate their existance to see if I am free to exit something.

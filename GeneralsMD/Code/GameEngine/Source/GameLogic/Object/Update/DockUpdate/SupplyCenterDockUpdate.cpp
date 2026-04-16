@@ -47,23 +47,25 @@
 // ------------------------------------------------------------------------------------------------
 SupplyCenterDockUpdateModuleData::SupplyCenterDockUpdateModuleData( void )
 {
-	m_grantTemporaryStealthFrames = 0;
+	m_ini.m_grantTemporaryStealthFrames = 0;
 }
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-/*static*/ void SupplyCenterDockUpdateModuleData::buildFieldParse(MultiIniFieldParse& p)
+/*static*/ void SupplyCenterDockUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
 
-	DockUpdateModuleData::buildFieldParse( p );
+	DockUpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "GrantTemporaryStealth",		INI::parseDurationUnsignedInt,  NULL, offsetof( SupplyCenterDockUpdateModuleData, m_grantTemporaryStealthFrames ) },
+		{ "GrantTemporaryStealth",		INI::parseDurationUnsignedInt,  NULL, offsetof( SupplyCenterDockUpdateModuleData::IniData, m_grantTemporaryStealthFrames ) },
 		{ 0, 0, 0, 0 }
 	};
 
-  p.add(dataFieldParse);
+	SupplyCenterDockUpdateModuleData* self {static_cast<SupplyCenterDockUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 
 }  // end buildFieldParse
 
@@ -85,7 +87,7 @@ SupplyCenterDockUpdate::~SupplyCenterDockUpdate()
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Bool SupplyCenterDockUpdate::action( Object* docker, Object *drone )
+Bool SupplyCenterDockUpdate::action( Object* docker, Object* /* drone */ )
 {
 	const SupplyCenterDockUpdateModuleData *data = getSupplyCenterDockUpdateModuleData();
 	SupplyTruckAIInterface* supplyTruckAI = NULL;
@@ -104,16 +106,16 @@ Bool SupplyCenterDockUpdate::action( Object* docker, Object *drone )
 		value += ownerPlayer->getSupplyBoxValue();
 	
 	// Add money boost from upgrades that give extra money
-	value += supplyTruckAI->getUpgradedSupplyBoost();
+	value += (UnsignedInt)supplyTruckAI->getUpgradedSupplyBoost();
 
 	if( value > 0)
 	{
 		Money *ownerPlayerMoney = ownerPlayer->getMoney();
 		ownerPlayerMoney->deposit(value);
-		ownerPlayer->getScoreKeeper()->addMoneyEarned(value);
+		ownerPlayer->getScoreKeeper()->addMoneyEarned((Int)value);
 
 
-		if( data->m_grantTemporaryStealthFrames > 0 )
+		if( data->m_ini.m_grantTemporaryStealthFrames > 0 )
 		{
 			StealthUpdate *stealth = docker->getStealth();
 			//Only grant temporary stealth to the default stealth update. It's
@@ -127,7 +129,7 @@ Bool SupplyCenterDockUpdate::action( Object* docker, Object *drone )
 				}
 				else if( stealth->isTemporaryGrant() || !docker->testStatus( OBJECT_STATUS_CAN_STEALTH ) )
 				{
-					stealth->receiveGrant( TRUE, data->m_grantTemporaryStealthFrames );
+					stealth->receiveGrant( TRUE, data->m_ini.m_grantTemporaryStealthFrames );
 				}
 			}
 		}

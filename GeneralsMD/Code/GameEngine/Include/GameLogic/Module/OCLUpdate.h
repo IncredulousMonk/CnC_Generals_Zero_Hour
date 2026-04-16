@@ -44,18 +44,24 @@ public:
 
 	struct FactionOCLInfo
 	{
-		std::string					m_factionName;
-		const ObjectCreationList *	m_ocl;
+		std::string					m_factionName {};
+		const ObjectCreationList *	m_ocl {};
 	};
 
 	typedef std::list<FactionOCLInfo> FactionOCLList;
+	FactionOCLList					m_factionOCL {};
 
-	const ObjectCreationList *	m_ocl;
-	FactionOCLList				m_factionOCL;
-	UnsignedInt					m_minDelay;
-	UnsignedInt					m_maxDelay;
-	Bool						m_isCreateAtEdge;				///< Otherwise, it is created on top of myself
-	Bool						m_isFactionTriggered;		///< Faction has to be present before update will happen
+	// MG: Cannot apply offsetof to OCLUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		const ObjectCreationList *	m_ocl;
+		UnsignedInt					m_minDelay;
+		UnsignedInt					m_maxDelay;
+		Bool						m_isCreateAtEdge;				///< Otherwise, it is created on top of myself
+		Bool						m_isFactionTriggered;		///< Faction has to be present before update will happen
+	};
+
+	IniData m_ini {};
 	
 	OCLUpdateModuleData();
 
@@ -91,10 +97,10 @@ public:
 
 protected:
 	
-	UnsignedInt			m_nextCreationFrame;
-	UnsignedInt			m_timerStartedFrame;
-	Bool						m_isFactionNeutral;
-	Color						m_currentPlayerColor;
+	UnsignedInt			m_nextCreationFrame {};
+	UnsignedInt			m_timerStartedFrame {};
+	Bool				m_isFactionNeutral {};
+	Color				m_currentPlayerColor {};
 
 	Bool shouldCreate();
 	void setNextCreationFrame();
@@ -102,4 +108,3 @@ protected:
 };
 
 #endif
-

@@ -45,18 +45,18 @@ class SelectionTranslator : public GameMessageTranslator
 	friend Bool killThemKillThemAllWrapper( Drawable *draw, void *userData );
 private:
 
-	Bool m_leftMouseButtonIsDown;
-	Bool m_dragSelecting;
-	UnsignedInt m_lastGroupSelTime;
-	Int m_lastGroupSelGroup;
-	ICoord2D m_selectFeedbackAnchor;		// Note: Used for drawing feedback only.
-	ICoord2D m_deselectFeedbackAnchor;	// Note: Used for drawing feedback only.
-	Bool m_displayedMaxWarning;	// did we already display a warning about selecting too many units?
-	UnsignedInt m_lastClick;    ///< timer used for checking double click for type selection
+	Bool m_leftMouseButtonIsDown {};
+	Bool m_dragSelecting {};
+	UnsignedInt m_lastGroupSelTime {};
+	Int m_lastGroupSelGroup {};
+	ICoord2D m_selectFeedbackAnchor {};		// Note: Used for drawing feedback only.
+	ICoord2D m_deselectFeedbackAnchor {};	// Note: Used for drawing feedback only.
+	Bool m_displayedMaxWarning {};			// did we already display a warning about selecting too many units?
+	UnsignedInt m_lastClick {};				///< timer used for checking double click for type selection
 
-	SelectCountMap m_selectCountMap;
+	SelectCountMap m_selectCountMap {};
 
-	Coord3D m_deselectDownCameraPosition;
+	Coord3D m_deselectDownCameraPosition {};
 
 	Bool selectFriends( Drawable *draw, GameMessage *createTeamMsg, Bool dragSelecting );
 	Bool killThemKillThemAll( Drawable *draw, GameMessage *killThemAllMsg );
@@ -75,7 +75,7 @@ public:
 	void setLeftMouseButton(Bool state);
   
 #if defined(_DEBUG) || defined(_INTERNAL) || defined(_ALLOW_DEBUG_CHEATS_IN_RELEASE)
-  Bool m_HandOfGodSelectionMode;
+  Bool m_HandOfGodSelectionMode {};
   Bool isHandOfGodSelectionMode( void) { return m_HandOfGodSelectionMode; };
 #endif
 

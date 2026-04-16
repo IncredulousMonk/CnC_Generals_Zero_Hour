@@ -39,11 +39,17 @@ enum ModelConditionFlagType;
 class ModelConditionUpgradeModuleData : public UpgradeModuleData
 {
 public:
-	ModelConditionFlagType m_conditionFlag;
+	// MG: Cannot apply offsetof to ModelConditionUpgradeModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		ModelConditionFlagType m_conditionFlag;
+	};
+
+	IniData m_ini {};
 
 	ModelConditionUpgradeModuleData();
 
-	static void buildFieldParse(MultiIniFieldParse& p);
+	static void buildFieldParse(void* what, MultiIniFieldParse& p);
 };
 
 //-----------------------------------------------------------------------------
@@ -51,7 +57,7 @@ class ModelConditionUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( ModelConditionUpgrade, "ModelConditionUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ModelConditionUpgrade, ModelConditionUpgradeModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( ModelConditionUpgrade, ModelConditionUpgradeModuleData )
 
 public:
 

@@ -245,8 +245,8 @@ public:  // height map info.
 	inline Int getDrawHeight(void) {return m_drawHeightY;}
 	inline void setDrawWidth(Int width) {m_drawWidthX = width; if (m_drawWidthX>m_width) m_drawWidthX = m_width;}
 	inline void setDrawHeight(Int height) {m_drawHeightY = height; if (m_drawHeightY>m_height) m_drawHeightY = m_height;}
-	virtual Int getBorderSize(void) {return m_borderSize;}
-	inline Int getBorderSizeInline(void) const { return m_borderSize; }
+	virtual Int getBorderSize(void) { DEBUG_CRASH(("This code uses BorderSize!  You need to check the coordinates.\n")); return m_borderSize; }
+	inline Int getBorderSizeInline(void) const { DEBUG_CRASH(("This code uses BorderSize!  You need to check the coordinates.\n")); return m_borderSize; }
 	/// Get height with the offset that HeightMapRenderObjClass uses built in.
 	inline UnsignedByte getDisplayHeight(Int x, Int y) { return m_data[x+m_drawOriginX+m_width*(y+m_drawOriginY)];}
 

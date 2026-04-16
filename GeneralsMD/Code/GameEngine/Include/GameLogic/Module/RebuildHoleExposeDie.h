@@ -48,11 +48,17 @@ public:
 
 	RebuildHoleExposeDieModuleData( void );
 
-	static void buildFieldParse( MultiIniFieldParse &p );
+	static void buildFieldParse(void* what,  MultiIniFieldParse &p);
 
-	AsciiString m_holeName;			///< name of hole object to create
-	Real m_holeMaxHealth;				///< max health of hole to create
-	Bool m_transferAttackers;		///< if true, people attacking us should switch attacks to the hole when we die
+	// MG: Cannot apply offsetof to RebuildHoleExposeDieModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		AsciiString m_holeName;			///< name of hole object to create
+		Real m_holeMaxHealth;				///< max health of hole to create
+		Bool m_transferAttackers;		///< if true, people attacking us should switch attacks to the hole when we die
+	};
+
+	IniData m_ini {};
 
 };
 
@@ -62,7 +68,7 @@ class RebuildHoleExposeDie : public DieModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( RebuildHoleExposeDie, "RebuildHoleExposeDie"  )
-	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( RebuildHoleExposeDie, RebuildHoleExposeDieModuleData );
+	MAKE_STANDARD_MODULE_MACRO_WITH_MODULE_DATA( RebuildHoleExposeDie, RebuildHoleExposeDieModuleData )
 
 public:
 

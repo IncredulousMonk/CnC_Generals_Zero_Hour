@@ -218,8 +218,8 @@ private:
 	ParkingPlaceInfo* findPPI(ObjectID id);
 	ParkingPlaceInfo* findEmptyPPI();
 
-	Coord3D m_heliRallyPoint;		
-	Bool m_heliRallyPointExists;				///< Only move to the rally point if this is true
+	Coord3D m_heliRallyPoint {};
+	Bool m_heliRallyPointExists {};				///< Only move to the rally point if this is true
 };
 
 #endif // __ParkingPlaceBehavior_H_

@@ -45,22 +45,30 @@
 class CheckpointUpdateModuleData : public UpdateModuleData
 {
 public:
-	UnsignedInt m_enemyScanDelayTime;
+	// MG: Cannot apply offsetof to CheckpointUpdateModuleData, so had to move data into an embedded struct.
+	struct IniData
+	{
+		UnsignedInt m_enemyScanDelayTime;
+	};
+
+	IniData m_ini {};
 
 	CheckpointUpdateModuleData()
 	{
-		m_enemyScanDelayTime = LOGICFRAMES_PER_SECOND;
+		m_ini.m_enemyScanDelayTime = LOGICFRAMES_PER_SECOND;
 	}
 
-	static void buildFieldParse(MultiIniFieldParse& p) 
+	static void buildFieldParse(void* what, MultiIniFieldParse& p) 
 	{
-    UpdateModuleData::buildFieldParse(p);
+		UpdateModuleData::buildFieldParse(what, p);
 		static const FieldParse dataFieldParse[] = 
 		{
-			{ "ScanDelayTime",		INI::parseDurationUnsignedInt,		NULL, offsetof( CheckpointUpdateModuleData, m_enemyScanDelayTime ) },
+			{ "ScanDelayTime",	INI::parseDurationUnsignedInt,	NULL, offsetof( CheckpointUpdateModuleData::IniData, m_enemyScanDelayTime ) },
 			{ 0, 0, 0, 0 }
 		};
-    p.add(dataFieldParse);
+		CheckpointUpdateModuleData* self {static_cast<CheckpointUpdateModuleData*>(what)};
+		size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+		p.add(dataFieldParse, offset);
 	}
 };
 
@@ -90,4 +98,3 @@ protected:
 };
 
 #endif // end CHECKPOINT_UPDATE_H
-

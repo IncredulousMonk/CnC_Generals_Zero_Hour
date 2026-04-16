@@ -89,14 +89,14 @@ void ParkingPlaceBehavior::buildInfo()
 	const ParkingPlaceBehaviorModuleData* d = getParkingPlaceBehaviorModuleData();
 	ProductionUpdateInterface* pu = getObject()->getProductionUpdateInterface();
 
-	m_spaces.reserve(d->m_numRows * d->m_numCols);
+	m_spaces.reserve((size_t)(d->m_ini.m_numRows * d->m_ini.m_numCols));
 
 	Int door = 0;
 	{
 		ParkingPlaceInfo info;
-		for (Int row = 0; row < d->m_numRows; ++row)
+		for (Int row = 0; row < d->m_ini.m_numRows; ++row)
 		{
-			for (Int col = 0; col < d->m_numCols; ++col)
+			for (Int col = 0; col < d->m_ini.m_numCols; ++col)
 			{
 				AsciiString tmp;
 				Matrix3D mtx;
@@ -124,11 +124,11 @@ void ParkingPlaceBehavior::buildInfo()
 		}
 	}
 
-	if (d->m_hasRunways)
+	if (d->m_ini.m_hasRunways)
 	{
 		RunwayInfo info;
-		m_runways.reserve(d->m_numCols);
-		for (Int col = 0; col < d->m_numCols; ++col)
+		m_runways.reserve((size_t)d->m_ini.m_numCols);
+		for (Int col = 0; col < d->m_ini.m_numCols; ++col)
 		{
 			AsciiString tmp;
 
@@ -351,7 +351,7 @@ Bool ParkingPlaceBehavior::reserveSpace(ObjectID id, Real parkingOffset, Parking
 	ppi->m_objectInSpace = id;
 	ppi->m_reservedForExit = false;
 	
-	if( d->m_landingDeckHeightOffset )
+	if( d->m_ini.m_landingDeckHeightOffset )
 	{
 		Object *obj = TheGameLogic->findObjectByID( id );
 		if( obj )
@@ -387,14 +387,14 @@ void ParkingPlaceBehavior::calcPPInfo( ObjectID id, PPInfo *info )
 		//Utter failure.
 		return;
 	}
-	const RunwayInfo& rr = m_runways[ ppi->m_runway ];
+	const RunwayInfo& rr = m_runways.data()[ ppi->m_runway ];
 
 	if( info )
 	{
 		const ParkingPlaceBehaviorModuleData* d = getParkingPlaceBehaviorModuleData();
-		info->parkingSpace = d->m_parkInHangars ? ppi->m_hangarStart : ppi->m_location;
+		info->parkingSpace = d->m_ini.m_parkInHangars ? ppi->m_hangarStart : ppi->m_location;
 		info->runwayPrep = ppi->m_prep;
-		info->parkingOrientation = d->m_parkInHangars ? ppi->m_hangarStartOrient : ppi->m_orientation;
+		info->parkingOrientation = d->m_ini.m_parkInHangars ? ppi->m_hangarStartOrient : ppi->m_orientation;
 		info->runwayStart = rr.m_start;
 		info->runwayEnd = rr.m_end;
 		info->runwayApproach = rr.m_end;
@@ -402,7 +402,7 @@ void ParkingPlaceBehavior::calcPPInfo( ObjectID id, PPInfo *info )
 		const Real APPROACH_DIST = 0.75f;
 		info->runwayApproach.x += (rr.m_end.x - rr.m_start.x) * APPROACH_DIST;
 		info->runwayApproach.y += (rr.m_end.y - rr.m_start.y) * APPROACH_DIST;
-		info->runwayApproach.z = rr.m_end.z + d->m_approachHeight + d->m_landingDeckHeightOffset;
+		info->runwayApproach.z = rr.m_end.z + d->m_ini.m_approachHeight + d->m_ini.m_landingDeckHeightOffset;
 		info->runwayExit = info->runwayApproach;
 		info->hangarInternal = ppi->m_hangarStart;
 		info->hangarInternalOrient = ppi->m_hangarStartOrient;
@@ -449,12 +449,12 @@ void ParkingPlaceBehavior::releaseSpace(ObjectID id)
 }
 
 //-------------------------------------------------------------------------------------------------
-ObjectID ParkingPlaceBehavior::getRunwayReservation( Int runway, RunwayReservationType type )
+ObjectID ParkingPlaceBehavior::getRunwayReservation( Int runway, RunwayReservationType /* type */ )
 {
 	//Note: We don't care about type because these runways share the runway for taking off and landing.
 	buildInfo();
 	purgeDead();
-	return m_runways[runway].m_inUseBy;
+	return m_runways.data()[runway].m_inUseBy;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -495,7 +495,7 @@ Bool ParkingPlaceBehavior::reserveRunway(ObjectID id, Bool forLanding)
 		return false;
 	}
 
-	RunwayInfo& info = m_runways[runway];
+	RunwayInfo& info = m_runways.data()[runway];
 	if (info.m_inUseBy == id)
 	{
 		return true;
@@ -664,7 +664,7 @@ void ParkingPlaceBehavior::killAllParkedUnits()
 }
 
 //-------------------------------------------------------------------------------------------------
-void ParkingPlaceBehavior::onDie( const DamageInfo *damageInfo )
+void ParkingPlaceBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 	killAllParkedUnits();
 }
@@ -699,7 +699,7 @@ UpdateSleepTime ParkingPlaceBehavior::update()
 					healInfo.in.m_damageType = DAMAGE_HEALING;
 					healInfo.in.m_deathType = DEATH_NONE;
 					healInfo.in.m_sourceID = getObject()->getID();
-  				healInfo.in.m_amount = HEAL_RATE_FRAMES * d->m_healAmount * SECONDS_PER_LOGICFRAME_REAL;
+  				healInfo.in.m_amount = HEAL_RATE_FRAMES * d->m_ini.m_healAmount * SECONDS_PER_LOGICFRAME_REAL;
 
 //          if ( objToHeal->isKindOf( KINDOF_PRODUCED_AT_HELIPAD ) )
 //            healInfo.in.m_amount += HEAL_RATE_FRAMES * d->m_extraHealAmount4Helicopters * SECONDS_PER_LOGICFRAME_REAL;
@@ -716,7 +716,7 @@ UpdateSleepTime ParkingPlaceBehavior::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-ExitDoorType ParkingPlaceBehavior::reserveDoorForExit( const ThingTemplate* objType, Object *specificObject )
+ExitDoorType ParkingPlaceBehavior::reserveDoorForExit( const ThingTemplate* objType, Object* /* specificObject */ )
 {
 	buildInfo();
 	purgeDead();
@@ -887,7 +887,7 @@ Bool ParkingPlaceBehavior::getExitPosition( Coord3D& exitPosition ) const
 }
 
 //-------------------------------------------------------------------------------------------------
-Bool ParkingPlaceBehavior::getNaturalRallyPoint( Coord3D& rallyPoint, Bool offset ) const
+Bool ParkingPlaceBehavior::getNaturalRallyPoint( Coord3D& rallyPoint, Bool /* offset */ ) const
 {
 	Matrix3D mtx;
 	return getObject()->getSingleLogicalBonePosition("HeliPark01", &rallyPoint, &mtx );

@@ -45,7 +45,7 @@ class StealthUpgrade : public UpgradeModule
 {
 
 	MEMORY_POOL_GLUE_WITH_USERLOOKUP_CREATE( StealthUpgrade, "StealthUpgrade" )
-	MAKE_STANDARD_MODULE_MACRO( StealthUpgrade );
+	MAKE_STANDARD_MODULE_MACRO( StealthUpgrade )
 
 public:
 
@@ -60,4 +60,3 @@ protected:
 
 
 #endif
-

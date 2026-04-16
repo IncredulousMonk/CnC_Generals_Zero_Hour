@@ -71,7 +71,7 @@
 #include "GameClient/ParticleSys.h"
 // #include "GameClient/PlaceEventTranslator.h"
 // #include "GameClient/RayEffect.h"
-// #include "GameClient/SelectionXlat.h"
+#include "GameClient/SelectionXlat.h"
 #include "GameClient/Shell.h"
 // #include "GameClient/Snow.h"
 #include "GameClient/TerrainVisual.h"
@@ -299,7 +299,7 @@ void GameClient::init( void )
 		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") HotKeyTranslator,	25 );
 		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") PlaceEventTranslator,	30 );
 		// m_translators[ m_numTranslators++ ] = TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") GUICommandTranslator, 40 );
-		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") SelectionTranslator,	50 );
+		m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") SelectionTranslator,	50 );
 		// m_translators[ m_numTranslators++ ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") LookAtTranslator,			60 );
 		// m_translators[ m_numTranslators ] =	TheMessageStream->attachTranslator( MSGNEW("GameClientSubsystem") CommandTranslator,		70 );
 		// // we keep a pointer to the command translator because it's useful

@@ -215,11 +215,11 @@ Bool CanSelectDrawable( const Drawable *draw, Bool dragSelecting )
 }  // end canSelect
 
 //-----------------------------------------------------------------------------
-static Bool canSelectWrapper( Drawable *draw, void *userData )
-{
-	Bool dragSelecting = *((Bool *)userData);
-	return CanSelectDrawable( draw, dragSelecting );
-}
+// static Bool canSelectWrapper( Drawable *draw, void *userData )
+// {
+// 	Bool dragSelecting = *((Bool *)userData);
+// 	return CanSelectDrawable( draw, dragSelecting );
+// }
 
 //-----------------------------------------------------------------------------
 /**
@@ -421,7 +421,7 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 				delta.y = abs(pixel.y - m_selectFeedbackAnchor.y);
 
 				// if mouse has moved while left button is down, begin drag selection
-				if (delta.x > TheMouse->m_dragTolerance || delta.y > TheMouse->m_dragTolerance)
+				if ((delta.x > (int)TheMouse->getDragTolerance()) | (delta.y > (int)TheMouse->getDragTolerance()))
 				{
 					if (m_dragSelecting == false)
 					{
@@ -954,7 +954,7 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 				if( !TheInGameUI->getGUICommand() && !TheKeyboard->isShift() && !TheKeyboard->isCtrl() && !TheKeyboard->isAlt() )
 				{
 					//No GUI command mode, so deselect everyone if we're in alternate mouse mode.
-					if( TheGlobalData->m_useAlternateMouse && TheInGameUI->getPendingPlaceSourceObjectID() == INVALID_ID )
+					if( TheGlobalData->m_data.m_useAlternateMouse && TheInGameUI->getPendingPlaceSourceObjectID() == INVALID_ID )
 					{
 						if( !TheInGameUI->getPreventLeftClickDeselectionInAlternateMouseModeForOneClick() )
 						{
@@ -1004,21 +1004,19 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 			delta.y = m_deselectFeedbackAnchor.y - pixel.y;
 
 			Bool isClick = TRUE;
-			if (isClick && 
-					abs(delta.x) > TheMouse->m_dragTolerance || 
-					abs(delta.y) > TheMouse->m_dragTolerance)
+			if (isClick && (abs(delta.x) > (int)TheMouse->getDragTolerance() || abs(delta.y) > (int)TheMouse->getDragTolerance()))
 			{
 				isClick = FALSE;
 			}
 
 			if (isClick && 
-					currentTime - m_lastClick > TheMouse->m_dragToleranceMS)
+					currentTime - m_lastClick > TheMouse->getDragToleranceMS())
 			{
 				isClick = FALSE;
 			}
 
 			if (isClick &&
-					cameraPos.length() > TheMouse->m_dragTolerance3D)
+					cameraPos.length() > TheMouse->getDragTolerance3D())
 			{
 				isClick = FALSE;
 			}
@@ -1041,7 +1039,7 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 				{
 					//No GUI command mode, so deselect everyone if we're in regular mouse mode.
 					//In alternate mouse mode, right click still cancels building placement.
-					if (! TheGlobalData->m_useAlternateMouse || TheInGameUI->getPendingPlaceSourceObjectID() != INVALID_ID)
+					if (! TheGlobalData->m_data.m_useAlternateMouse || TheInGameUI->getPendingPlaceSourceObjectID() != INVALID_ID)
 					{
 						deselectAll();
 					}
@@ -1121,7 +1119,7 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 							if (numObjs > 0)
 							{
 								// if theres someone in the group, center the camera on them.
-								TheTacticalView->lookAt( objlist[numObjs-1]->getDrawable()->getPosition() );
+								TheTacticalView->lookAt( objlist.data()[numObjs-1]->getDrawable()->getPosition() );
 							}
 						}
 					}
@@ -1142,9 +1140,9 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 							Int numObjs = objlist.size();
 							for (Int i = 0; i < numObjs; ++i)
 							{
-								if( objlist[i]->getControllingPlayer() == player )
+								if( objlist.data()[i]->getControllingPlayer() == player )
 								{
-									TheInGameUI->selectDrawable(objlist[i]->getDrawable());
+									TheInGameUI->selectDrawable(objlist.data()[i]->getDrawable());
 								}
 							}
 						}
@@ -1195,7 +1193,7 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 							if (numObjs > 0)
 							{
 								// if theres someone in the group, center the camera on them.
-								TheTacticalView->lookAt( objlist[numObjs-1]->getDrawable()->getPosition() );
+								TheTacticalView->lookAt( objlist.data()[numObjs-1]->getDrawable()->getPosition() );
 							}
 						}
 					}
@@ -1225,7 +1223,7 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 							Int numObjs = objlist.size();
 							for (Int i = 0; i < numObjs; ++i)
 							{
-								TheInGameUI->selectDrawable(objlist[i]->getDrawable());
+								TheInGameUI->selectDrawable(objlist.data()[i]->getDrawable());
 							}
 						}
 					}
@@ -1264,7 +1262,7 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 						if (numObjs > 0) 
 						{
 							// if theres someone in the group, center the camera on them.
-							TheTacticalView->lookAt( objlist[ numObjs-1 ]->getDrawable()->getPosition() );
+							TheTacticalView->lookAt( objlist.data()[ numObjs-1 ]->getDrawable()->getPosition() );
 						}
 					}
 				}
@@ -1338,6 +1336,9 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 			break;
 		}
 #endif
+
+		default:
+			break;
 	}
 
 	return disp;

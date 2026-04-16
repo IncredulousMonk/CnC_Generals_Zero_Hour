@@ -341,10 +341,10 @@ public:
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestinationActive( SpecialPowerType type = SPECIAL_INVALID ) const;
 #if 0
 	SpecialPowerUpdateInterface* findSpecialPowerWithOverridableDestination( SpecialPowerType type = SPECIAL_INVALID ) const;
+#endif // if 0
 
 	CountermeasuresBehaviorInterface* getCountermeasuresBehaviorInterface();
 	const CountermeasuresBehaviorInterface* getCountermeasuresBehaviorInterface() const;
-#endif // if 0
 
 	inline ObjectStatusMaskType getStatusBits() const { return m_status; }
 	inline Bool testStatus( ObjectStatusTypes bit ) const { return m_status.test( bit ); }
@@ -487,9 +487,7 @@ public:
 		 For Object specific dynamic command sets.  Different from the Science specific ones handled in ThingTemplate
 	*/
 	const AsciiString& getCommandSetString() const;
-#if 0
 	void setCommandSetStringOverride( AsciiString newCommandSetString ) { m_commandSetStringOverride = newCommandSetString; }
-#endif // if 0
 
 	/// People are faking their commandsets, and, Surprise!, they are authoritative.  Challenge everything.
 	Bool canProduceUpgrade( const UpgradeTemplate *upgrade ); 
@@ -629,9 +627,9 @@ public:
 	
 #if 0
 	Int getNumConsecutiveShotsFiredAtTarget( const Object *victim) const;
+#endif // if 0
 
 	void setHealthBoxOffset( const Coord3D& offset ) { m_healthBoxOffset = offset; } ///< for special amorphous like angry mob
-#endif // if 0
 
 	void defect( Team *newTeam, UnsignedInt detectionTime );
 	void goInvulnerable( UnsignedInt time );

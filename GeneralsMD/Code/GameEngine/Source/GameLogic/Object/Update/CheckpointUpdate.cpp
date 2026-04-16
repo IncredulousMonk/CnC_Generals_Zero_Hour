@@ -44,15 +44,15 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 CheckpointUpdate::CheckpointUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateModule( thing, moduleData ),
-m_allyNear(false),
-m_enemyNear(false),
-m_enemyScanDelay(0),
-m_maxMinorRadius(0)
+	m_enemyNear(false),
+	m_allyNear(false),
+	m_maxMinorRadius(0),
+	m_enemyScanDelay(0)
 {
 	m_maxMinorRadius = getObject()->getGeometryInfo().getMinorRadius();
 
 	// bias a random amount so everyone doesn't spike at once
-	m_enemyScanDelay += GameLogicRandomValue(0, getCheckpointUpdateModuleData()->m_enemyScanDelayTime);
+	m_enemyScanDelay += GameLogicRandomValueUnsigned(0, getCheckpointUpdateModuleData()->m_ini.m_enemyScanDelayTime);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ void CheckpointUpdate::checkForAlliesAndEnemies( void )
 	// periodic enemy checks
 	if (m_enemyScanDelay == 0 || TRUE)
 	{
-		m_enemyScanDelay = getCheckpointUpdateModuleData()->m_enemyScanDelayTime;
+		m_enemyScanDelay = getCheckpointUpdateModuleData()->m_ini.m_enemyScanDelayTime;
 
 		// Kind of weird, but we have to set the geometry extents to the max extent
 		//before checking for nearest enemies and allies, or else the stretch reaction

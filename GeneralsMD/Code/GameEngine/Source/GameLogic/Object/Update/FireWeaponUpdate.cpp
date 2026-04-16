@@ -46,24 +46,26 @@
 //-------------------------------------------------------------------------------------------------
 FireWeaponUpdateModuleData::FireWeaponUpdateModuleData()
 {
-	m_weaponTemplate = NULL;
-  m_initialDelayFrames = 0;
-	m_exclusiveWeaponDelay = 0;
+	m_ini.m_weaponTemplate = NULL;
+	m_ini.m_initialDelayFrames = 0;
+	m_ini.m_exclusiveWeaponDelay = 0;
 }
 
 //-------------------------------------------------------------------------------------------------
-/*static*/ void FireWeaponUpdateModuleData::buildFieldParse(MultiIniFieldParse& p) 
+/*static*/ void FireWeaponUpdateModuleData::buildFieldParse(void* what, MultiIniFieldParse& p) 
 {
-  UpdateModuleData::buildFieldParse(p);
+	UpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "Weapon",								INI::parseWeaponTemplate,	      NULL, offsetof( FireWeaponUpdateModuleData, m_weaponTemplate ) },
-		{ "InitialDelay",					INI::parseDurationUnsignedInt,	NULL, offsetof( FireWeaponUpdateModuleData, m_initialDelayFrames ) },
-		{ "ExclusiveWeaponDelay",	INI::parseDurationUnsignedInt,	NULL, offsetof( FireWeaponUpdateModuleData, m_exclusiveWeaponDelay ) },
+		{ "Weapon",					INI::parseWeaponTemplate,		NULL, offsetof( FireWeaponUpdateModuleData::IniData, m_weaponTemplate ) },
+		{ "InitialDelay",			INI::parseDurationUnsignedInt,	NULL, offsetof( FireWeaponUpdateModuleData::IniData, m_initialDelayFrames ) },
+		{ "ExclusiveWeaponDelay",	INI::parseDurationUnsignedInt,	NULL, offsetof( FireWeaponUpdateModuleData::IniData, m_exclusiveWeaponDelay ) },
 		{ 0, 0, 0, 0 }
 	};
-  p.add(dataFieldParse);
+	FireWeaponUpdateModuleData* self {static_cast<FireWeaponUpdateModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -72,7 +74,7 @@ FireWeaponUpdate::FireWeaponUpdate( Thing *thing, const ModuleData* moduleData )
 	UpdateModule( thing, moduleData ),
 	m_weapon(NULL)
 {
-	const WeaponTemplate *tmpl = getFireWeaponUpdateModuleData()->m_weaponTemplate;
+	const WeaponTemplate *tmpl = getFireWeaponUpdateModuleData()->m_ini.m_weaponTemplate;
 	if (tmpl)
 	{
 		m_weapon = TheWeaponStore->allocateNewWeapon(tmpl, PRIMARY_WEAPON);
@@ -80,7 +82,7 @@ FireWeaponUpdate::FireWeaponUpdate( Thing *thing, const ModuleData* moduleData )
 	}
 
 
-  m_initialDelayFrame = TheGameLogic->getFrame() + getFireWeaponUpdateModuleData()->m_initialDelayFrames;
+  m_initialDelayFrame = TheGameLogic->getFrame() + getFireWeaponUpdateModuleData()->m_ini.m_initialDelayFrames;
 
 }
 
@@ -127,7 +129,7 @@ Bool FireWeaponUpdate::isOkayToFire()
 		return FALSE; // no hitting with a 0% building, cheater
 
 	// Firing a real weapon surpresses this module
-	if( data->m_exclusiveWeaponDelay > 0  &&  ( TheGameLogic->getFrame() < (me->getLastShotFiredFrame() + data->m_exclusiveWeaponDelay) ) )
+	if( data->m_ini.m_exclusiveWeaponDelay > 0  &&  ( TheGameLogic->getFrame() < (me->getLastShotFiredFrame() + data->m_ini.m_exclusiveWeaponDelay) ) )
 		return FALSE;
 
 	return TRUE;

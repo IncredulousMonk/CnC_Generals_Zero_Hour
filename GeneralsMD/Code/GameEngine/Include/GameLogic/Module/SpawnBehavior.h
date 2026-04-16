@@ -44,7 +44,7 @@ const Int SPAWN_UPDATE_RATE = LOGICFRAMES_PER_SECOND/2; ///< This is a low prior
 
 //-------------------------------------------------------------------------------------------------
 class ThingTemplate;
-enum CanAttackResult;
+enum CanAttackResult: int;
 
 //-------------------------------------------------------------------------------------------------
 class SpawnBehaviorModuleData : public BehaviorModuleData
@@ -210,10 +210,10 @@ private:
 	Bool shouldTryToSpawn(); ///< For my own use, should I even think of spawning
 	Bool createSpawn();										///< Actual work of creating a guy
 
-	const ThingTemplate* m_spawnTemplate;	///< What it is I spawn
-	Int m_oneShotCountdown;						///< and if so, this is what "once" entails
-	Int m_framesToWait;
-	Int m_firstBatchCount;   ///<how many to start off with on the first Update();
+	const ThingTemplate* m_spawnTemplate {};	///< What it is I spawn
+	Int m_oneShotCountdown {};						///< and if so, this is what "once" entails
+	Int m_framesToWait {};
+	Int m_firstBatchCount {};   ///<how many to start off with on the first Update();
 
 	/// @todo Make sure the allocator for std::list<> is a good one.  Otherwise override it.
 	typedef std::list<Int> intList;
@@ -223,21 +223,21 @@ private:
 	typedef std::list<ObjectID>::iterator objectIDListIterator;
 	typedef std::list<ObjectID>::reverse_iterator objectIDListReverseIterator;
 
-	intList m_replacementTimes;			///< A list of frame times that I need to create new spawns
-	objectIDList m_spawnIDs;				///< My darling little spawns.  I need to keep track of them explicitly for the Slave type stuff
-	Bool m_active;									///< Am I currently turned on
+	intList m_replacementTimes {};			///< A list of frame times that I need to create new spawns
+	objectIDList m_spawnIDs {};				///< My darling little spawns.  I need to keep track of them explicitly for the Slave type stuff
+	Bool m_active {};									///< Am I currently turned on
 	
 
 	Object *reclaimOrphanSpawn( void );		///< find existing orphaned spawn object if present
 
-	Bool m_aggregateHealth;			///< should I calc an offset for the healthbox, averaging all my spawn
-	Bool m_initialBurstTimesInited;
-	Int m_spawnCount;						///< so I can track for zero = kill; (aggregate)
-	UnsignedInt m_selfTaskingSpawnCount;		///< How many of my spawn have I authorized to do their own thing?
+	Bool m_aggregateHealth {};			///< should I calc an offset for the healthbox, averaging all my spawn
+	Bool m_initialBurstTimesInited {};
+	Int m_spawnCount {};						///< so I can track for zero = kill; (aggregate)
+	UnsignedInt m_selfTaskingSpawnCount {};		///< How many of my spawn have I authorized to do their own thing?
 
-	UnsignedInt m_initialBurstCountdown;
+	UnsignedInt m_initialBurstCountdown {};
 
-	std::vector<AsciiString>::const_iterator m_templateNameIterator;
+	std::vector<AsciiString>::const_iterator m_templateNameIterator {};
 
 };
 

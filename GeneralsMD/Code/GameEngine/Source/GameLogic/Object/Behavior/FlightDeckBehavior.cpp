@@ -61,17 +61,17 @@
 FlightDeckBehaviorModuleData::FlightDeckBehaviorModuleData()
 {
 	//m_framesForFullHeal = 0;
-	m_healAmount = 0;
-	m_numRows = 0;
-	m_numCols = 0;
-	m_approachHeight = 0.0f;
-	m_landingDeckHeightOffset = 0.0f;
-	m_dockAnimationFrames = 0;
-	m_catapultFireFrames = 0;
+	m_ini.m_healAmount = 0;
+	m_ini.m_numRows = 0;
+	m_ini.m_numCols = 0;
+	m_ini.m_approachHeight = 0.0f;
+	m_ini.m_landingDeckHeightOffset = 0.0f;
+	m_ini.m_dockAnimationFrames = 0;
+	m_ini.m_catapultFireFrames = 0;
 }
 
 //-------------------------------------------------------------------------------------------------
-void FlightDeckBehaviorModuleData::parseRunwayStrip( INI* ini, void *instance, void *store, const void* /*userData*/ )
+void FlightDeckBehaviorModuleData::parseRunwayStrip( INI* ini, void* /* instance */, void *store, const void* /*userData*/ )
 {
 	AsciiString *runwayNames = (AsciiString*)store;
 	
@@ -88,45 +88,47 @@ void FlightDeckBehaviorModuleData::parseRunwayStrip( INI* ini, void *instance, v
 }
 
 //-------------------------------------------------------------------------------------------------
-void FlightDeckBehaviorModuleData::buildFieldParse(MultiIniFieldParse& p)
+void FlightDeckBehaviorModuleData::buildFieldParse(void* what, MultiIniFieldParse& p)
 {
-	AIUpdateModuleData::buildFieldParse(p);
+	AIUpdateModuleData::buildFieldParse(what, p);
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "NumRunways",							INI::parseInt,										NULL, offsetof( FlightDeckBehaviorModuleData, m_numCols ) },
-		{ "NumSpacesPerRunway",			INI::parseInt,										NULL, offsetof( FlightDeckBehaviorModuleData, m_numRows ) },
+		{ "NumRunways",					INI::parseInt,						NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_numCols ) },
+		{ "NumSpacesPerRunway",			INI::parseInt,						NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_numRows ) },
 
-		{ "Runway1Spaces",					INI::parseAsciiStringVector,			NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 0 ].m_spacesBoneNames ) },
-		{ "Runway1Takeoff",					parseRunwayStrip,									NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 0 ].m_takeoffBoneNames ) },
-		{ "Runway1Landing",					parseRunwayStrip,									NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 0 ].m_landingBoneNames ) },
-		{ "Runway1Taxi",						INI::parseAsciiStringVector,			NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 0 ].m_taxiBoneNames ) },
-		{ "Runway1Creation",				INI::parseAsciiStringVector,			NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 0 ].m_creationBoneNames ) },
-		{ "Runway1CatapultSystem",	INI::parseParticleSystemTemplate,	NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 0 ].m_catapultParticleSystem ) },
+		{ "Runway1Spaces",				INI::parseAsciiStringVector,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 0 ].m_spacesBoneNames ) },
+		{ "Runway1Takeoff",				parseRunwayStrip,					NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 0 ].m_takeoffBoneNames ) },
+		{ "Runway1Landing",				parseRunwayStrip,					NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 0 ].m_landingBoneNames ) },
+		{ "Runway1Taxi",				INI::parseAsciiStringVector,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 0 ].m_taxiBoneNames ) },
+		{ "Runway1Creation",			INI::parseAsciiStringVector,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 0 ].m_creationBoneNames ) },
+		{ "Runway1CatapultSystem",		INI::parseParticleSystemTemplate,	NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 0 ].m_catapultParticleSystem ) },
 		
-		{ "Runway2Spaces",					INI::parseAsciiStringVector,			NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 1 ].m_spacesBoneNames ) },
-		{ "Runway2Takeoff",					parseRunwayStrip,									NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 1 ].m_takeoffBoneNames ) },
-		{ "Runway2Landing",					parseRunwayStrip,									NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 1 ].m_landingBoneNames ) },
-		{ "Runway2Taxi",						INI::parseAsciiStringVector,			NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 1 ].m_taxiBoneNames ) },
-		{ "Runway2Creation",				INI::parseAsciiStringVector,			NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 1 ].m_creationBoneNames ) },
-		{ "Runway2CatapultSystem",	INI::parseParticleSystemTemplate,	NULL, offsetof( FlightDeckBehaviorModuleData, m_runwayInfo[ 1 ].m_catapultParticleSystem ) },
+		{ "Runway2Spaces",				INI::parseAsciiStringVector,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 1 ].m_spacesBoneNames ) },
+		{ "Runway2Takeoff",				parseRunwayStrip,					NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 1 ].m_takeoffBoneNames ) },
+		{ "Runway2Landing",				parseRunwayStrip,					NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 1 ].m_landingBoneNames ) },
+		{ "Runway2Taxi",				INI::parseAsciiStringVector,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 1 ].m_taxiBoneNames ) },
+		{ "Runway2Creation",			INI::parseAsciiStringVector,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 1 ].m_creationBoneNames ) },
+		{ "Runway2CatapultSystem",		INI::parseParticleSystemTemplate,	NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_runwayInfo[ 1 ].m_catapultParticleSystem ) },
 
-		{ "ApproachHeight",					INI::parseReal,										NULL, offsetof( FlightDeckBehaviorModuleData, m_approachHeight ) },
-		{ "LandingDeckHeightOffset",INI::parseReal,										NULL, offsetof( FlightDeckBehaviorModuleData, m_landingDeckHeightOffset ) },
-		{ "HealAmountPerSecond",		INI::parseReal,										NULL, offsetof( FlightDeckBehaviorModuleData, m_healAmount ) },
-		{ "ParkingCleanupPeriod",		INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData, m_cleanupFrames ) },
-		{ "HumanFollowPeriod",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData, m_humanFollowFrames ) },
-		{ "PayloadTemplate",				INI::parseAsciiString,				  	NULL, offsetof( FlightDeckBehaviorModuleData, m_thingTemplateName ) },
-		{ "ReplacementDelay",				INI::parseDurationUnsignedInt, 		NULL, offsetof( FlightDeckBehaviorModuleData, m_replacementFrames ) },
-		{ "DockAnimationDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData, m_dockAnimationFrames ) },
-		{ "LaunchWaveDelay",				INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData, m_launchWaveFrames ) },
-		{ "LaunchRampDelay",				INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData, m_launchRampFrames ) },
-		{ "LowerRampDelay",					INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData, m_lowerRampFrames ) },
-		{ "CatapultFireDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData, m_catapultFireFrames ) },
+		{ "ApproachHeight",				INI::parseReal,						NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_approachHeight ) },
+		{ "LandingDeckHeightOffset",	INI::parseReal,						NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_landingDeckHeightOffset ) },
+		{ "HealAmountPerSecond",		INI::parseReal,						NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_healAmount ) },
+		{ "ParkingCleanupPeriod",		INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_cleanupFrames ) },
+		{ "HumanFollowPeriod",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_humanFollowFrames ) },
+		{ "PayloadTemplate",			INI::parseAsciiString,				NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_thingTemplateName ) },
+		{ "ReplacementDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_replacementFrames ) },
+		{ "DockAnimationDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_dockAnimationFrames ) },
+		{ "LaunchWaveDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_launchWaveFrames ) },
+		{ "LaunchRampDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_launchRampFrames ) },
+		{ "LowerRampDelay",				INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_lowerRampFrames ) },
+		{ "CatapultFireDelay",			INI::parseDurationUnsignedInt,		NULL, offsetof( FlightDeckBehaviorModuleData::IniData, m_catapultFireFrames ) },
 
 		{ 0, 0, 0, 0 }
 	};
-	p.add(dataFieldParse);
+	FlightDeckBehaviorModuleData* self {static_cast<FlightDeckBehaviorModuleData*>(what)};
+	size_t offset {static_cast<size_t>(MEMORY_OFFSET(self, &self->m_ini))};
+	p.add(dataFieldParse, offset);
 }
 
 
@@ -154,7 +156,7 @@ FlightDeckBehavior::FlightDeckBehavior( Thing *thing, const ModuleData* moduleDa
 		m_rampUp[ i ] = FALSE;
 	}
 
-  m_thingTemplate = NULL;
+	m_thingTemplate = NULL;
 
 }
 
@@ -173,7 +175,7 @@ void FlightDeckBehavior::buildInfo(Bool createUnits)
 
 	const FlightDeckBehaviorModuleData* data = getFlightDeckBehaviorModuleData();
 
-	m_thingTemplate = TheThingFactory->findTemplate( data->m_thingTemplateName );
+	m_thingTemplate = TheThingFactory->findTemplate( data->m_ini.m_thingTemplateName );
 
 	if (getObject()->testStatus(OBJECT_STATUS_UNDER_CONSTRUCTION) ||
 			getObject()->testStatus(OBJECT_STATUS_SOLD))
@@ -181,17 +183,17 @@ void FlightDeckBehavior::buildInfo(Bool createUnits)
 
 	//ProductionUpdateInterface* pu = getObject()->getProductionUpdateInterface();
 
-	m_spaces.reserve( data->m_numRows * data->m_numCols );
+	m_spaces.reserve( (size_t)(data->m_ini.m_numRows * data->m_ini.m_numCols) );
 
 	//Initialize the spaces that planes will eventually be assigned to for parking purposes
 	FlightDeckInfo flightDeckInfo;
 
 	//We want to sort the spaces so that we have runway 1 space 1, runway 2 space 1, R1S2, R2S2, R1S3...
-	for( Int row = 0; row < data->m_numRows; row++ )
+	for( Int row = 0; row < data->m_ini.m_numRows; row++ )
 	{
-		for( Int col = 0; col < data->m_numCols; col++ )
+		for( Int col = 0; col < data->m_ini.m_numCols; col++ )
 		{
-			std::vector<AsciiString> spaces = data->m_runwayInfo[ col ].m_spacesBoneNames;
+			std::vector<AsciiString> spaces = data->m_ini.m_runwayInfo[ col ].m_spacesBoneNames;
 			std::vector<AsciiString>::const_iterator it;
 
 			Int counter = 0; 
@@ -237,21 +239,21 @@ void FlightDeckBehavior::buildInfo(Bool createUnits)
 
 	//Now initialize the runway take-off and landing information.
 	RunwayInfo info;
-	m_runways.reserve(data->m_numCols);
-	for( Int col = 0; col < data->m_numCols; ++col )
+	m_runways.reserve((size_t)data->m_ini.m_numCols);
+	for( Int col = 0; col < data->m_ini.m_numCols; ++col )
 	{
 		AsciiString tmp;
 
-		getObject()->getSingleLogicalBonePosition( data->m_runwayInfo[ col ].m_takeoffBoneNames[ RUNWAY_START_BONE ].str(), &info.m_start, NULL);
-		getObject()->getSingleLogicalBonePosition( data->m_runwayInfo[ col ].m_takeoffBoneNames[ RUNWAY_END_BONE ].str(), &info.m_end, NULL);
-		getObject()->getSingleLogicalBonePosition( data->m_runwayInfo[ col ].m_landingBoneNames[ RUNWAY_START_BONE ].str(), &info.m_landingStart, NULL);
-		getObject()->getSingleLogicalBonePosition( data->m_runwayInfo[ col ].m_landingBoneNames[ RUNWAY_END_BONE ].str(), &info.m_landingEnd, NULL);
+		getObject()->getSingleLogicalBonePosition( data->m_ini.m_runwayInfo[ col ].m_takeoffBoneNames[ RUNWAY_START_BONE ].str(), &info.m_start, NULL);
+		getObject()->getSingleLogicalBonePosition( data->m_ini.m_runwayInfo[ col ].m_takeoffBoneNames[ RUNWAY_END_BONE ].str(), &info.m_end, NULL);
+		getObject()->getSingleLogicalBonePosition( data->m_ini.m_runwayInfo[ col ].m_landingBoneNames[ RUNWAY_START_BONE ].str(), &info.m_landingStart, NULL);
+		getObject()->getSingleLogicalBonePosition( data->m_ini.m_runwayInfo[ col ].m_landingBoneNames[ RUNWAY_END_BONE ].str(), &info.m_landingEnd, NULL);
 
 		info.m_inUseByForTakeoff = INVALID_ID;
 		info.m_inUseByForLanding = INVALID_ID;
 
 		//Get the taxi bones and store them as well (possible to have none!)
-		std::vector<AsciiString> locations = data->m_runwayInfo[ col ].m_taxiBoneNames;
+		std::vector<AsciiString> locations = data->m_ini.m_runwayInfo[ col ].m_taxiBoneNames;
 		std::vector<AsciiString>::const_iterator it;
 		info.m_taxi.clear();
 		for( it = locations.begin(); it != locations.end(); it++ )
@@ -267,7 +269,7 @@ void FlightDeckBehavior::buildInfo(Bool createUnits)
 		}
 
 		//Get the creation bones and store them as well 
-		locations = data->m_runwayInfo[ col ].m_creationBoneNames;
+		locations = data->m_ini.m_runwayInfo[ col ].m_creationBoneNames;
 		info.m_creation.clear();
 		Bool firstTime = TRUE;
 		for( it = locations.begin(); it != locations.end(); it++ )
@@ -405,7 +407,7 @@ FlightDeckBehavior::FlightDeckInfo* FlightDeckBehavior::findPPI(ObjectID id)
 	for (std::vector<FlightDeckInfo>::iterator it = m_spaces.begin(); it != m_spaces.end(); ++it)
 	{
 		if (it->m_objectInSpace == id)
-			return it;
+			return &(*it);
 	}
 
 	return NULL; 
@@ -420,7 +422,7 @@ FlightDeckBehavior::FlightDeckInfo* FlightDeckBehavior::findEmptyPPI()
 	for (std::vector<FlightDeckInfo>::iterator it = m_spaces.begin(); it != m_spaces.end(); ++it)
 	{
 		if( it->m_objectInSpace == INVALID_ID )
-			return it;
+			return &(*it);
 	}
 
 	return NULL;
@@ -428,14 +430,14 @@ FlightDeckBehavior::FlightDeckInfo* FlightDeckBehavior::findEmptyPPI()
 
 //-------------------------------------------------------------------------------------------------
 // note: called from client, so MUST NOT modify self in any way, or desyncs will occur
-Bool FlightDeckBehavior::shouldReserveDoorWhenQueued(const ThingTemplate* thing) const
+Bool FlightDeckBehavior::shouldReserveDoorWhenQueued(const ThingTemplate* /* thing */) const
 {
 	return true;
 }
 
 //-------------------------------------------------------------------------------------------------
 // note: called from client, so MUST NOT modify self in any way, or desyncs will occur
-Bool FlightDeckBehavior::hasAvailableSpaceFor(const ThingTemplate* thing) const
+Bool FlightDeckBehavior::hasAvailableSpaceFor(const ThingTemplate* /* thing */) const
 {
 	if (!m_gotInfo)	// degenerate case, shouldn't happen, but just in case...
 		return false;
@@ -485,7 +487,7 @@ Bool FlightDeckBehavior::reserveSpace(ObjectID id, Real parkingOffset, ParkingPl
 	ppi->m_objectInSpace = id;
 	//validateAssignments();
 	
-	if( d->m_landingDeckHeightOffset )
+	if( d->m_ini.m_landingDeckHeightOffset )
 	{
 		Object *obj = TheGameLogic->findObjectByID( id );
 		if( obj )
@@ -541,7 +543,7 @@ void FlightDeckBehavior::calcPPInfo( ObjectID id, PPInfo *info )
 		//Utter failure.
 		return;
 	}
-	const RunwayInfo& rr = m_runways[ ppi->m_runway ];
+	const RunwayInfo& rr = m_runways.data()[ ppi->m_runway ];
 
 	if( info )
 	{
@@ -555,14 +557,14 @@ void FlightDeckBehavior::calcPPInfo( ObjectID id, PPInfo *info )
 		info->runwayExit = rr.m_end;
 		info->runwayExit.x += (rr.m_end.x - rr.m_start.x) * APPROACH_DIST;
 		info->runwayExit.y += (rr.m_end.y - rr.m_start.y) * APPROACH_DIST;
-		info->runwayExit.z = rr.m_end.z + d->m_approachHeight + d->m_landingDeckHeightOffset;
+		info->runwayExit.z = rr.m_end.z + d->m_ini.m_approachHeight + d->m_ini.m_landingDeckHeightOffset;
 
 		info->runwayLandingStart = rr.m_landingStart;
 		info->runwayLandingEnd = rr.m_landingEnd;
 		info->runwayApproach = rr.m_landingStart;
 		info->runwayApproach.x += (rr.m_landingStart.x - rr.m_landingEnd.x) * APPROACH_DIST;
 		info->runwayApproach.y += (rr.m_landingStart.y - rr.m_landingEnd.y) * APPROACH_DIST;
-		info->runwayApproach.z = rr.m_landingStart.z + d->m_approachHeight + d->m_landingDeckHeightOffset;
+		info->runwayApproach.z = rr.m_landingStart.z + d->m_ini.m_approachHeight + d->m_ini.m_landingDeckHeightOffset;
 
 		//Cache the runway's takeoff distance used by JetAIUpdate for calculating lift.
 		Coord3D vector = info->runwayStart;
@@ -610,16 +612,16 @@ ObjectID FlightDeckBehavior::getRunwayReservation( Int runway, RunwayReservation
 	switch( type )
 	{
 		case RESERVATION_TAKEOFF:
-			return m_runways[runway].m_inUseByForTakeoff;
+			return m_runways.data()[runway].m_inUseByForTakeoff;
 		case RESERVATION_LANDING:
-			return m_runways[runway].m_inUseByForLanding;
+			return m_runways.data()[runway].m_inUseByForLanding;
 		default:
 			return INVALID_ID;
 	}
 }
 
 //-------------------------------------------------------------------------------------------------
-void FlightDeckBehavior::transferRunwayReservationToNextInLineForTakeoff(ObjectID id)
+void FlightDeckBehavior::transferRunwayReservationToNextInLineForTakeoff(ObjectID /* id */)
 {
 	//Aircraft carrier controls this functionality with an iron fist.
 }
@@ -636,11 +638,11 @@ Bool FlightDeckBehavior::reserveRunway(ObjectID id, Bool forLanding)
 	{
 		//Only look at the front spaces for takeoff. You can't take off from the back!
 		const FlightDeckBehaviorModuleData *data = getFlightDeckBehaviorModuleData();
-		for( Int i = 0; i < data->m_numCols; i++ )
+		for( Int i = 0; i < data->m_ini.m_numCols; i++ )
 		{
-			if( m_spaces[ i ].m_objectInSpace == id )
+			if( m_spaces.data()[ i ].m_objectInSpace == id )
 			{
-				runway = m_spaces[ i ].m_runway;
+				runway = m_spaces.data()[ i ].m_runway;
 				break;
 			}
 		}
@@ -666,12 +668,12 @@ Bool FlightDeckBehavior::reserveRunway(ObjectID id, Bool forLanding)
 		return false;
 	}
 
-	RunwayInfo& info = m_runways[runway];
-	if( info.m_inUseByForTakeoff == id && !forLanding || info.m_inUseByForLanding == id && forLanding )
+	RunwayInfo& info = m_runways.data()[runway];
+	if( (info.m_inUseByForTakeoff == id && !forLanding) || (info.m_inUseByForLanding == id && forLanding) )
 	{
 		return true;
 	}
-	else if( info.m_inUseByForTakeoff == INVALID_ID && !forLanding || info.m_inUseByForLanding == INVALID_ID && forLanding )
+	else if( (info.m_inUseByForTakeoff == INVALID_ID && !forLanding) || (info.m_inUseByForLanding == INVALID_ID && forLanding) )
 	{
 		if( forLanding )
 		{
@@ -729,7 +731,7 @@ const std::vector<Coord3D>* FlightDeckBehavior::getTaxiLocations( ObjectID id ) 
 	}
 
 	//Now get the runway we're assigned to and return it's taxi vector 
-	return &(m_runways[ runway ].m_taxi);
+	return &(m_runways.data()[ runway ].m_taxi);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -753,7 +755,7 @@ const std::vector<Coord3D>* FlightDeckBehavior::getCreationLocations( ObjectID i
 	}
 
 	//Now get the runway we're assigned to and return it's creation vector 
-	return &(m_runways[ runway ].m_creation);
+	return &(m_runways.data()[ runway ].m_creation);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -802,16 +804,16 @@ Bool FlightDeckBehavior::isInPositionToTakeoff( const Object &jet ) const
 	const FlightDeckBehaviorModuleData *data = getFlightDeckBehaviorModuleData();
 	if( ai )
 	{
-		for( int i = 0; i < data->m_numCols; i++ )
+		for( int i = 0; i < data->m_ini.m_numCols; i++ )
 		{
-			if( m_spaces[ i ].m_objectInSpace == jet.getID() )
+			if( m_spaces.data()[ i ].m_objectInSpace == jet.getID() )
 			{
 				//This code fixes a problem where there is a one frame lag between the
 				//time a jet gets assigned to the front spot, and the time it's AI is able to
 				//order it to taxi into the position. When this happens, the ramp triggers its
 				//animation, and the jet drives through it. So to counter that, simply check
 				//the distance between the jet and the space.
-				Real distanceSqr = ThePartitionManager->getDistanceSquared( &jet, &m_spaces[ i ].m_prep, FROM_CENTER_2D );
+				Real distanceSqr = ThePartitionManager->getDistanceSquared( &jet, &m_spaces.data()[ i ].m_prep, FROM_CENTER_2D );
 				if( distanceSqr < 10.0f )
 				{
 					return TRUE;
@@ -853,7 +855,8 @@ Bool FlightDeckBehavior::calcBestParkingAssignment( ObjectID id, Coord3D *pos, I
 	//Find the runway the object is assigned to.
 	Int runway = -1;
 	Int myIndex = 0;
-	for( std::vector<FlightDeckInfo>::iterator myIt = m_spaces.begin(); myIt != m_spaces.end(); myIt++, myIndex++ )
+	std::vector<FlightDeckInfo>::iterator myIt {};
+	for( myIt = m_spaces.begin(); myIt != m_spaces.end(); myIt++, myIndex++ )
 	{
 		if( myIt->m_objectInSpace == id )
 		{
@@ -879,7 +882,7 @@ Bool FlightDeckBehavior::calcBestParkingAssignment( ObjectID id, Coord3D *pos, I
 	//the back and keep looking at empty spaces until we find one with a plane blocking.
 
 	Bool checkForPlaneInWay = FALSE;
-	std::vector<FlightDeckInfo>::iterator bestIt = NULL;
+	std::vector<FlightDeckInfo>::iterator bestIt {m_spaces.end()};
 	Object *bestJet = NULL;
 	Int bestIndex = 0, index = 0;
 	for( std::vector<FlightDeckInfo>::iterator thatIt = m_spaces.begin(); thatIt != m_spaces.end(); thatIt++, index++ )
@@ -888,7 +891,7 @@ Bool FlightDeckBehavior::calcBestParkingAssignment( ObjectID id, Coord3D *pos, I
 		if( myIt == thatIt )
 		{
 			//Done, don't look at my spot, nor spots behind me.
-			if( bestIt )
+			if( bestIt != m_spaces.end() )
 			{
 				myIt->m_objectInSpace = bestJet ? bestJet->getID() : INVALID_ID;
 				bestIt->m_objectInSpace = id;
@@ -940,7 +943,7 @@ Bool FlightDeckBehavior::calcBestParkingAssignment( ObjectID id, Coord3D *pos, I
 				if( pos )
 				{
 					pos->set( &myIt->m_prep ); //reset the original position.
-					bestIt = NULL;
+					bestIt = m_spaces.end();
 				}
 			}
 		}
@@ -1071,7 +1074,7 @@ void FlightDeckBehavior::killAllParkedUnits()
 }
 
 //-------------------------------------------------------------------------------------------------
-void FlightDeckBehavior::onDie( const DamageInfo *damageInfo )
+void FlightDeckBehavior::onDie( const DamageInfo* /* damageInfo */ )
 {
 	killAllParkedUnits();
 }
@@ -1106,7 +1109,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 					healInfo.in.m_damageType = DAMAGE_HEALING;
 					healInfo.in.m_deathType = DEATH_NONE;
 					healInfo.in.m_sourceID = getObject()->getID();
-					healInfo.in.m_amount = HEAL_RATE_FRAMES * data->m_healAmount * SECONDS_PER_LOGICFRAME_REAL;
+					healInfo.in.m_amount = HEAL_RATE_FRAMES * data->m_ini.m_healAmount * SECONDS_PER_LOGICFRAME_REAL;
 					BodyModuleInterface *body = objToHeal->getBodyModule();
 					body->attemptHealing( &healInfo );
 					++it;
@@ -1122,7 +1125,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 	//     get assigned to it's old spot (thus bubblesorted eventually to the rear).
 	if( now >= m_nextCleanupFrame )
 	{
-		m_nextCleanupFrame = now + data->m_cleanupFrames;
+		m_nextCleanupFrame = now + data->m_ini.m_cleanupFrames;
 		std::vector<FlightDeckInfo>::iterator tempIt;
 		Int spaceID = 0;
 
@@ -1134,7 +1137,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 			{
 				//Either we don't have a jet, or the jet is busy (meaning it's not parked there). When a jet
 				//isn't in his spot, we will look for jets behind him to move up to take up his spot.
-				Int runwayCount = data->m_numCols;
+				Int runwayCount = data->m_ini.m_numCols;
 				Int tempID = spaceID;
 				for( tempIt = it; tempIt != m_spaces.end(); tempIt++, tempID++ )
 				{
@@ -1176,7 +1179,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 						//additional planes instead of moving them all simultaneously. So this is the exit
 						//condition if one plane per runway has been bumped.
 						complete[ it->m_runway ] = TRUE;
-						m_nextCleanupFrame = now + data->m_humanFollowFrames;
+						m_nextCleanupFrame = now + data->m_ini.m_humanFollowFrames;
 					}
 					//Break through and advance to the next spot!
 					break;				
@@ -1213,7 +1216,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 				pu->queueCreateUnit( m_thingTemplate, pu->requestUniqueUnitID() );
 
 				m_startedProductionFrame = now;
-				m_nextAllowedProductionFrame = now + data->m_replacementFrames + data->m_dockAnimationFrames;
+				m_nextAllowedProductionFrame = now + data->m_ini.m_replacementFrames + data->m_ini.m_dockAnimationFrames;
 			}
 
 			break;
@@ -1222,7 +1225,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 
 	//If the carrier has at least one aircraft, then allow it to attack.
 	Bool hasAircraft = FALSE;
-	for( it = m_spaces.begin(); it != m_spaces.end(); it++ )
+	for( std::vector<FlightDeckInfo>::iterator it = m_spaces.begin(); it != m_spaces.end(); it++ )
 	{
 		if( it->m_objectInSpace != INVALID_ID )
 		{
@@ -1234,9 +1237,9 @@ UpdateSleepTime FlightDeckBehavior::update()
 	Drawable *draw = getObject()->getDrawable();
 
 	//Check for timer expiry -- are we allowed to launch the next wave yet?
-	for( int i = 0; i < data->m_numCols; i++ )
+	for( int i = 0; i < data->m_ini.m_numCols; i++ )
 	{
-		Object *jet = TheGameLogic->findObjectByID( m_spaces[ i ].m_objectInSpace );
+		Object *jet = TheGameLogic->findObjectByID( m_spaces.data()[ i ].m_objectInSpace );
 		if( jet && !isAbleToGiveUpParkingSpace( jet ) && isInPositionToTakeoff( *jet ) && hasTakeoffOrders() )
 		{
 			if( m_nextLaunchWaveFrame[ i ] <= now )
@@ -1245,7 +1248,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 				if( !m_rampUp[ i ] )
 				{
 					m_rampUp[ i ] = TRUE;
-					m_rampUpFrame[ i ] = now + data->m_launchRampFrames;
+					m_rampUpFrame[ i ] = now + data->m_ini.m_launchRampFrames;
 					m_lowerRampFrame[ i ] = FOREVER;
 					//****MAX_RUNWAYS***** if defined beyond 3, then this code will need to be rewritten or more modelcondition flags will
 					//                     need to be added.
@@ -1261,23 +1264,23 @@ UpdateSleepTime FlightDeckBehavior::update()
 					if( jetAI )
 					{
 						propagateOrderToSpecificPlane( jet );
-						m_nextLaunchWaveFrame[ i ] = now + data->m_launchWaveFrames;
-						m_catapultSystemFrame[ i ] = now + data->m_catapultFireFrames;
-						m_lowerRampFrame[ i ] = now + data->m_lowerRampFrames;
+						m_nextLaunchWaveFrame[ i ] = now + data->m_ini.m_launchWaveFrames;
+						m_catapultSystemFrame[ i ] = now + data->m_ini.m_catapultFireFrames;
+						m_lowerRampFrame[ i ] = now + data->m_ini.m_lowerRampFrames;
 					}
 				}
 			}
 		}
 
 		//Handle firing of the catapult steam effect upon launching planes.
-		if( m_catapultSystemFrame[ i ] <= now && data->m_runwayInfo[ i ].m_catapultParticleSystem )
+		if( m_catapultSystemFrame[ i ] <= now && data->m_ini.m_runwayInfo[ i ].m_catapultParticleSystem )
 		{
-			ParticleSystem *ps = TheParticleSystemManager->createParticleSystem( data->m_runwayInfo[ i ].m_catapultParticleSystem );
+			ParticleSystem *ps = TheParticleSystemManager->createParticleSystem( data->m_ini.m_runwayInfo[ i ].m_catapultParticleSystem );
 			m_catapultSystemFrame[ i ] = FOREVER;
 			if( ps )
 			{
-				ps->setLocalTransform( &m_runways[ i ].m_startTransform );
-				ps->setPosition( &m_runways[ i ].m_start );
+				ps->setLocalTransform( &m_runways.data()[ i ].m_startTransform );
+				ps->setPosition( &m_runways.data()[ i ].m_start );
 			}
 		}
 		
@@ -1296,7 +1299,7 @@ UpdateSleepTime FlightDeckBehavior::update()
 }
 
 //-------------------------------------------------------------------------------------------------
-ExitDoorType FlightDeckBehavior::reserveDoorForExit( const ThingTemplate* objType, Object *specificObject )
+ExitDoorType FlightDeckBehavior::reserveDoorForExit( const ThingTemplate* /* objType */, Object* /* specificObject */ )
 {
 	//Uses the same door for all production.
 	return DOOR_1;
@@ -1354,8 +1357,8 @@ void FlightDeckBehavior::exitObjectViaDoor( Object *newObj, ExitDoorType exitDoo
 		return;
 	}
 
-	newObj->setPosition( pCreationLocations->begin() );
-	newObj->setOrientation( m_runways[ ppi->m_runway ].m_startOrient );
+	newObj->setPosition( &(*pCreationLocations->begin()) );
+	newObj->setOrientation( m_runways.data()[ ppi->m_runway ].m_startOrient );
 	TheAI->pathfinder()->addObjectToPathfindMap( newObj );
 
 	AIUpdateInterface  *ai = newObj->getAIUpdateInterface();
@@ -1371,7 +1374,7 @@ void FlightDeckBehavior::exitObjectViaDoor( Object *newObj, ExitDoorType exitDoo
 }
 
 //-------------------------------------------------------------------------------------------------
-void FlightDeckBehavior::unreserveDoorForExit( ExitDoorType exitDoor )
+void FlightDeckBehavior::unreserveDoorForExit( ExitDoorType /* exitDoor */ )
 {
 	//Aircraft carrier doesn't use the door reservation system.
 }
@@ -1503,6 +1506,8 @@ void FlightDeckBehavior::propagateOrderToSpecificPlane( Object *jet )
 					break;
 				case AICMD_IDLE:
 					ai->aiEnter( getObject(), CMD_FROM_AI );
+					break;
+				default:
 					break;
 			}
 		}
@@ -1713,7 +1718,7 @@ void FlightDeckBehavior::loadPostProcess( void )
 
 
 	const FlightDeckBehaviorModuleData* data = getFlightDeckBehaviorModuleData();
-	m_thingTemplate = TheThingFactory->findTemplate( data->m_thingTemplateName );
+	m_thingTemplate = TheThingFactory->findTemplate( data->m_ini.m_thingTemplateName );
 
 
 	// extend base class

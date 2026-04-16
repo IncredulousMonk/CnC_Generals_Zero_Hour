@@ -617,7 +617,6 @@ void Drawable::onDestroy( void )
 
 }  // end onDestroy
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 Bool Drawable::isVisible()
 {
@@ -631,6 +630,7 @@ Bool Drawable::isVisible()
 	return FALSE;
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 Bool Drawable::getShouldAnimate( Bool considerPower ) const
 {
@@ -837,7 +837,6 @@ Int Drawable::getPristineBonePositions(const char* boneNamePrefix, Int startInde
 	return count;
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 Int Drawable::getCurrentClientBonePositions(const char* boneNamePrefix, Int startIndex, Coord3D* positions, Matrix3D* transforms, Int maxBones) const
 {
@@ -866,7 +865,6 @@ Int Drawable::getCurrentClientBonePositions(const char* boneNamePrefix, Int star
 	}
 	return count;
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 Bool Drawable::getCurrentWorldspaceClientBonePositions(const char* boneName, Matrix3D& transform) const
@@ -4670,7 +4668,6 @@ void Drawable::stopAmbientSound( void )
 	}
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 // Enable and disable ambient sound from the game logic
 void Drawable::enableAmbientSound( Bool enable )
@@ -4683,17 +4680,16 @@ void Drawable::enableAmbientSound( Bool enable )
 	m_ambientSoundEnabled = enable;
 	if( enable )
 	{
-    if ( m_ambientSoundEnabledFromScript )
-    {
-      startAmbientSound();
-    }
+		if ( m_ambientSoundEnabledFromScript )
+		{
+			startAmbientSound();
+		}
 	}
 	else
 	{
 		stopAmbientSound();
 	}
 }
-#endif // if 0
 
 //-------------------------------------------------------------------------------------------------
 // Enable and disable sound because the map designer wants us too
@@ -4817,7 +4813,7 @@ void Drawable::notifyDrawableDependencyCleared()
 void Drawable::setSelectable( Bool selectable )
 {
 (void) selectable;
-DEBUG_CRASH(("Drawable::setSelectable not yet implemented!"));
+DEBUG_LOG(("Drawable::setSelectable not yet implemented!\n"));
 #if 0
 	// unselect drawable if it is no longer selectable.
 	if( !selectable )
@@ -4840,7 +4836,6 @@ Bool Drawable::isSelectable( void ) const
 	return getObject() && getObject()->isSelectable();
 }
 
-#if 0
 //-------------------------------------------------------------------------------------------------
 /** Return whether or not this Drawable is selectable as part of a group. */
 //-------------------------------------------------------------------------------------------------
@@ -4849,6 +4844,7 @@ Bool Drawable::isMassSelectable( void ) const
 	return getObject() && getObject()->isMassSelectable();
 }
 
+#if 0
 //-------------------------------------------------------------------------------------------------
 /** Preload all our assets that we can for all our possible states in this time of day */
 //-------------------------------------------------------------------------------------------------

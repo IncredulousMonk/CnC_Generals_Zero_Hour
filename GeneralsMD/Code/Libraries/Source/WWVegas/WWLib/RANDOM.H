@@ -145,10 +145,10 @@ class Random3Class {
 		};
 
 	protected:
-		static int Mix1[20];
-		static int Mix2[20];
-		int Seed;
-		int Index;
+		static unsigned int Mix1[20];
+		static unsigned int Mix2[20];
+		unsigned int Seed;
+		unsigned int Index;
 };
 
 /*
@@ -187,7 +187,7 @@ class Random4Class {
 		
 	protected:
 		unsigned int mt[624]; // state vector
-		int mti;			 // index
+		int mti {};			 // index
 };
 
 

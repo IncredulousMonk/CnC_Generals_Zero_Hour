@@ -449,12 +449,10 @@ public:
 	virtual void					Create_Decal(DecalGeneratorClass * /* generator */)						{ }
 	virtual void					Delete_Decal(uint32 /* decal_id */)										{ }
 	
-#if 0
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Render Object Interface - Attributes, Options, Properties, etc
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual MaterialInfoClass * Get_Material_Info(void) 													{ return NULL; }
-#endif // if 0
 	virtual void				Set_User_Data(void *value, bool /* recursive */ = false) { User_Data = value; };
 	virtual void *				Get_User_Data() { return User_Data; };
 #if 0

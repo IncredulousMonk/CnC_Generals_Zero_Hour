@@ -77,15 +77,17 @@ layout(location = 1) in vec4 Colour;
 layout(location = 2) in vec2 uv1;
 layout(location = 3) in vec2 uv2;
 
-//out vec4 VertexColour;
+out vec4 VertexColour;
 out float VertexZ;
-out vec2 uv;
+out vec2 UV1;
+out vec2 UV2;
 
 void main(void)
 {
-   //VertexColour = Colour;
+   VertexColour = Colour;
    VertexZ = Position.z;
-   uv = uv1;
+   UV1 = uv1;
+   UV2 = uv2;
    gl_Position = ProjectionMatrix * ViewMatrix * vec4(Position, 1);
 }
 )"};
@@ -96,9 +98,10 @@ static const char* terrainFragSource {R"(
 //layout(binding = 0) uniform sampler1D Texture;
 layout(binding = 0) uniform sampler2D Texture;
 
-//in vec4 VertexColour;
-in float VertexZ; // Range is approx 0 to 32
-in vec2 uv;
+in vec4 VertexColour;
+in float VertexZ; // Range is approx 0 to 160
+in vec2 UV1;
+in vec2 UV2;
 
 out vec4 FragmentColour;
 
@@ -107,7 +110,15 @@ void main(void)
    //float u = VertexZ * 4.0 / 128.0;
    //float u = VertexZ / 160.0;
    //FragmentColour = texture(Texture, u);
-   FragmentColour = texture(Texture, uv);
+   vec4 texColour1 = texture(Texture, UV1);
+   //vec4 texColour2 = texture(Texture, UV2);
+   //FragmentColour = mix(texColour1, texColour2, VertexColour.w);
+   FragmentColour = texColour1;
+   //FragmentColour = vec4(1.0, VertexZ / 160.0, 1.0, 1.0);
+   //texColour.x = VertexColour.w;
+   //FragmentColour = texColour;
+   //FragmentColour = (VertexColour.w > 0.1) ? vec4(1.0, 0.0, 0.0, 1.0) : texColour;
+   //FragmentColour = texture(Texture, UV2);
    //FragmentColour = VertexColour;
    //FragmentColour = vec4(0.5, 0.5, 1.0, 1.0);
 }

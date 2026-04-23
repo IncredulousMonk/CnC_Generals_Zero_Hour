@@ -884,6 +884,7 @@ bool BaseHeightMapRenderObjClass::Cast_Ray(RayCollisionTestClass & raytest)
 // BaseHeightMapRenderObjClass::getHeightMapHeight
 //=============================================================================
 /** return the height and normal of the triangle plane containing given location within heightmap. */
+/** x and y coordinates are relative to the map border. */
 //=============================================================================
 Real BaseHeightMapRenderObjClass::getHeightMapHeight(Real x, Real y, Coord3D* normal) const
 {
@@ -892,8 +893,8 @@ Real BaseHeightMapRenderObjClass::getHeightMapHeight(Real x, Real y, Coord3D* no
 	// Had to make this function logic safe, so,
 	// even though this is a renderObject, and is thus classified as client-side
 	// it is responsible for reporting height map heights (for reasons I can't say)
-	// but to do so safely, I am going to pass it the logical heighmap from the W3dTerrainVisual
-	// yes another nosequiter. Ugh!
+	// but to do so safely, I am going to pass it the logical heightmap from TheTerrainVisual
+	// yes another non sequitur. Ugh!
 
 	// M Lorenzen
 
@@ -933,8 +934,8 @@ Real BaseHeightMapRenderObjClass::getHeightMapHeight(Real x, Real y, Coord3D* no
 	float fy = ydiv - iyf; //get fraction
 
 	// since ixf & iyf are already floor'ed, we can use the fastest f->i conversion we have...
-	Int	ix = fast_float2long_round(ixf); //+ logicHeightMap->getBorderSizeInline();
-	Int	iy = fast_float2long_round(iyf); //+ logicHeightMap->getBorderSizeInline();
+	Int	ix = fast_float2long_round(ixf) + logicHeightMap->getBorderSizeInline();
+	Int	iy = fast_float2long_round(iyf) + logicHeightMap->getBorderSizeInline();
 	Int xExtent = logicHeightMap->getXExtent();
 
 	// Check for extent-3, not extent-1: we go into the next row/column of data for smoothed triangle points, so extent-1

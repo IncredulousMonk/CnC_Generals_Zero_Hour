@@ -1234,14 +1234,14 @@ Bool WorldHeightMap::ParseObjectDataChunk(DataChunkInput &file, DataChunkInfo *i
 * Format is the newer CHUNKY format.
 *	See WHeightMapEdit.cpp for the writer.
 *	Input: DataChunkInput 
-*		
+*
 */
 Bool WorldHeightMap::ParseObjectData(DataChunkInput &file, DataChunkInfo *info, void* /* userData */, Bool readDict)
 {
 	MapObject *pPrevious = (MapObject *)file.m_currentObject;
 
 	Coord3D loc;
-	loc.x = file.readReal();
+	loc.x = file.readReal(); // Object location is relative to the map border.
 	loc.y = file.readReal();
 	loc.z = file.readReal();
 

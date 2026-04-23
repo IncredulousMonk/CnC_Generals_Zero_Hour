@@ -128,7 +128,9 @@ static ShaderClass detailOpaqueShader(SC_DETAIL_BLEND);
 #define DEFAULT_MAX_MAP_SHORELINE_TILES		4096	//default size of array allocated to hold all map shoreline tiles.
 #endif // if 0
 
-#define ADJUST_FROM_INDEX_TO_REAL(k) ((k-m_map->getBorderSizeInline())*MAP_XY_FACTOR)
+// All object coordinates are relative to the map border, so we must translate the height map coordinates
+// to place the height map's lower-left border at the origin.
+#define ADJUST_FROM_INDEX_TO_REAL(k) ((float)(k - m_map->getBorderSizeInline()) * MAP_XY_FACTOR)
 inline Int IABS(Int x) { if (x>=0) return x; return -x; };
 
 //-----------------------------------------------------------------------------
@@ -1168,32 +1170,32 @@ Int HeightMapRenderObjClass::updateBlock(Int x0, Int y0, Int x1, Int y1,  WorldH
 DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 	glCreateBuffers(1, &m_vertexBuffer);
 	DEBUG_ASSERTCRASH(pMap->getXExtent() == pMap->getYExtent(), ("Height map is not square."));
-	size_t mapSize {(size_t)pMap->getXExtent()};
-	size_t tilesPerDimension {((mapSize - 1) + 31) >> 5}; // N * N tiles, where each tile is 32 * 32.
-	size_t roundedMapSize {tilesPerDimension << 5}; // Map size rounded up to nearest 32.
-	constexpr size_t valuesPerSquare {4}; // 4 vertices in each 2x2 square.
+	Int mapSize {(Int)pMap->getXExtent()};
+	Int tilesPerDimension {((mapSize - 1) + 31) >> 5}; // N * N tiles, where each tile is 32 * 32.
+	Int roundedMapSize {tilesPerDimension << 5}; // Map size rounded up to nearest 32.
+	constexpr Int valuesPerSquare {4}; // 4 vertices in each 2x2 square.
 
-	size_t vertexBufferSize {roundedMapSize * roundedMapSize * valuesPerSquare * sizeof(VERTEX_FORMAT)};
+	size_t vertexBufferSize {(size_t)(roundedMapSize * roundedMapSize * valuesPerSquare) * sizeof(VERTEX_FORMAT)};
 	VERTEX_FORMAT* vertexBufferData {static_cast<VERTEX_FORMAT*>(TheDynamicMemoryAllocator->allocateBytes(vertexBufferSize, "Height map vertex buffer"))};
 
 	m_tileCount = static_cast<Int>(tilesPerDimension * tilesPerDimension);
 	m_tiles = MSGNEW("HeightMap tile array") Tile[m_tileCount];
 
-	for (size_t tileY {0}; tileY < tilesPerDimension; ++tileY) {
-		size_t heightOffsetY {tileY * VERTEX_BUFFER_TILE_LENGTH};
-		size_t groundOffsetY {tileY * roundedMapSize * VERTEX_BUFFER_TILE_LENGTH};
-		for (size_t tileX {0}; tileX < tilesPerDimension; ++tileX) {
+	for (Int tileY {0}; tileY < tilesPerDimension; ++tileY) {
+		Int heightOffsetY {tileY * VERTEX_BUFFER_TILE_LENGTH};
+		Int groundOffsetY {tileY * roundedMapSize * VERTEX_BUFFER_TILE_LENGTH};
+		for (Int tileX {0}; tileX < tilesPerDimension; ++tileX) {
 			Coord3D min {1e+6, 1e+6, 1e+6};
 			Coord3D max {-1e+6, -1e+6, -1e+6};
-			size_t heightOffsetX {tileX * VERTEX_BUFFER_TILE_LENGTH};
-			size_t groundOffsetX {tileX * VERTEX_BUFFER_TILE_LENGTH * VERTEX_BUFFER_TILE_LENGTH};
-			for (size_t y {0}; y < VERTEX_BUFFER_TILE_LENGTH; ++y) {
-				for (size_t x {0}; x < VERTEX_BUFFER_TILE_LENGTH; ++x) {
-					size_t hx {};
-					size_t hy {};
-					size_t gx {groundOffsetX + x};
-					size_t gy {groundOffsetY + y * VERTEX_BUFFER_TILE_LENGTH};
-					size_t squareOffset {(gy + gx) * valuesPerSquare};
+			Int heightOffsetX {tileX * VERTEX_BUFFER_TILE_LENGTH};
+			Int groundOffsetX {tileX * VERTEX_BUFFER_TILE_LENGTH * VERTEX_BUFFER_TILE_LENGTH};
+			for (Int y {0}; y < VERTEX_BUFFER_TILE_LENGTH; ++y) {
+				for (Int x {0}; x < VERTEX_BUFFER_TILE_LENGTH; ++x) {
+					Int hx {};
+					Int hy {};
+					Int gx {groundOffsetX + x};
+					Int gy {groundOffsetY + y * VERTEX_BUFFER_TILE_LENGTH};
+					Int squareOffset {(gy + gx) * valuesPerSquare};
 					unsigned char height {};
 
 					float U[4], V[4];
@@ -1210,8 +1212,10 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					hx = heightOffsetX + x;
 					hy = heightOffsetY + y + 1;
 					height = (hx < mapSize && hy < mapSize) ? pMap->getHeight(hx, hy) : 0;
-					float sx {hx * MAP_XY_FACTOR}; // Scaled x
-					float sy {hy * MAP_XY_FACTOR};
+					// float sx {hx * MAP_XY_FACTOR}; // Scaled x
+					// float sy {hy * MAP_XY_FACTOR};
+					float sx {ADJUST_FROM_INDEX_TO_REAL(hx)};
+					float sy {ADJUST_FROM_INDEX_TO_REAL(hy)};
 					float sz {height * MAP_HEIGHT_SCALE};
 					if (sx < min.x) { min.x = sx; }
 					if (sy < min.y) { min.y = sy; }
@@ -1225,7 +1229,7 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					vertexBufferData[squareOffset + 0].r = 1.0f;
 					vertexBufferData[squareOffset + 0].g = 1.0f;
 					vertexBufferData[squareOffset + 0].b = 1.0f;
-					vertexBufferData[squareOffset + 0].a = 1.0f;
+					vertexBufferData[squareOffset + 0].a = alpha[0] / 255.0f;
 					vertexBufferData[squareOffset + 0].u1 = U[0];
 					vertexBufferData[squareOffset + 0].v1 = V[0];
 					vertexBufferData[squareOffset + 0].u2 = UA[0];
@@ -1234,8 +1238,10 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					hx = heightOffsetX + x + 1;
 					hy = heightOffsetY + y + 1;
 					height = (hx < mapSize && hy < mapSize) ? pMap->getHeight(hx, hy) : 0;
-					sx = hx * MAP_XY_FACTOR;
-					sy = hy * MAP_XY_FACTOR;
+					// sx = hx * MAP_XY_FACTOR;
+					// sy = hy * MAP_XY_FACTOR;
+					sx = ADJUST_FROM_INDEX_TO_REAL(hx);
+					sy = ADJUST_FROM_INDEX_TO_REAL(hy);
 					sz = height * MAP_HEIGHT_SCALE;
 					if (sx < min.x) { min.x = sx; }
 					if (sy < min.y) { min.y = sy; }
@@ -1249,7 +1255,7 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					vertexBufferData[squareOffset + 1].r = 1.0f;
 					vertexBufferData[squareOffset + 1].g = 1.0f;
 					vertexBufferData[squareOffset + 1].b = 1.0f;
-					vertexBufferData[squareOffset + 1].a = 1.0f;
+					vertexBufferData[squareOffset + 1].a = alpha[1] / 255.0f;
 					vertexBufferData[squareOffset + 1].u1 = U[1];
 					vertexBufferData[squareOffset + 1].v1 = V[1];
 					vertexBufferData[squareOffset + 1].u2 = UA[1];
@@ -1258,8 +1264,10 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					hx = heightOffsetX + x + 1;
 					hy = heightOffsetY + y;
 					height = (hx < mapSize && hy < mapSize) ? pMap->getHeight(hx, hy) : 0;
-					sx = hx * MAP_XY_FACTOR;
-					sy = hy * MAP_XY_FACTOR;
+					// sx = hx * MAP_XY_FACTOR;
+					// sy = hy * MAP_XY_FACTOR;
+					sx = ADJUST_FROM_INDEX_TO_REAL(hx);
+					sy = ADJUST_FROM_INDEX_TO_REAL(hy);
 					sz = height * MAP_HEIGHT_SCALE;
 					if (sx < min.x) { min.x = sx; }
 					if (sy < min.y) { min.y = sy; }
@@ -1273,7 +1281,7 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					vertexBufferData[squareOffset + 2].r = 1.0f;
 					vertexBufferData[squareOffset + 2].g = 1.0f;
 					vertexBufferData[squareOffset + 2].b = 1.0f;
-					vertexBufferData[squareOffset + 2].a = 1.0f;
+					vertexBufferData[squareOffset + 2].a = alpha[2] / 255.0f;
 					vertexBufferData[squareOffset + 2].u1 = U[2];
 					vertexBufferData[squareOffset + 2].v1 = V[2];
 					vertexBufferData[squareOffset + 2].u2 = UA[2];
@@ -1282,8 +1290,10 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					hx = heightOffsetX + x;
 					hy = heightOffsetY + y;
 					height = (hx < mapSize && hy < mapSize) ? pMap->getHeight(hx, hy) : 0;
-					sx = hx * MAP_XY_FACTOR;
-					sy = hy * MAP_XY_FACTOR;
+					// sx = hx * MAP_XY_FACTOR;
+					// sy = hy * MAP_XY_FACTOR;
+					sx = ADJUST_FROM_INDEX_TO_REAL(hx);
+					sy = ADJUST_FROM_INDEX_TO_REAL(hy);
 					sz = height * MAP_HEIGHT_SCALE;
 					if (sx < min.x) { min.x = sx; }
 					if (sy < min.y) { min.y = sy; }
@@ -1297,14 +1307,24 @@ DEBUG_LOG(("<<< Create big vertex buffer here >>>\n"));
 					vertexBufferData[squareOffset + 3].r = 1.0f;
 					vertexBufferData[squareOffset + 3].g = 1.0f;
 					vertexBufferData[squareOffset + 3].b = 1.0f;
-					vertexBufferData[squareOffset + 3].a = 1.0f;
+					vertexBufferData[squareOffset + 3].a = alpha[3] / 255.0f;
 					vertexBufferData[squareOffset + 3].u1 = U[3];
 					vertexBufferData[squareOffset + 3].v1 = V[3];
 					vertexBufferData[squareOffset + 3].u2 = UA[3];
 					vertexBufferData[squareOffset + 3].v2 = VA[3];
+
+#ifdef FLIP_TRIANGLES // jba - reduces "diamonding" in some cases, not others.  Better cliffs, though.
+				// if (flipForBlend) {
+				// 	VERTEX_FORMAT tmpVertex {vertexBufferData[squareOffset + 0]};
+				// 	vertexBufferData[squareOffset + 0] = vertexBufferData[squareOffset + 1];
+				// 	vertexBufferData[squareOffset + 1] = vertexBufferData[squareOffset + 2];
+				// 	vertexBufferData[squareOffset + 2] = vertexBufferData[squareOffset + 3];
+				// 	vertexBufferData[squareOffset + 3] = tmpVertex;
+				// }
+#endif
 				}
 			}
-			size_t tileIndex {tileY * tilesPerDimension + tileX};
+			Int tileIndex {tileY * tilesPerDimension + tileX};
 			m_tiles[tileIndex].min = min;
 			m_tiles[tileIndex].max = max;
 			m_tiles[tileIndex].offset = static_cast<Int>(tileIndex * VERTEX_BUFFER_TILE_LENGTH * VERTEX_BUFFER_TILE_LENGTH * 4);
@@ -1693,7 +1713,6 @@ DEBUG_LOG(("HeightMap: x = %d, y = %d, m_numVBTilesX = %d, m_numVBTilesY = %d, m
 		//go with a preset material for now.
 	}
 
-	pMap->setDrawOrg(70, 70); // MG: Fudge to try to display something more useful!
 	updateBlock(0, 0, x-1, y-1, pMap, pLightsIterator);
 
 	return 0;
